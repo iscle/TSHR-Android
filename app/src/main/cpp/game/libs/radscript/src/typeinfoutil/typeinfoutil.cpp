@@ -14,9 +14,8 @@
 
 static unsigned int g_SyncLoadCount = 0;
 
-static void SyncLoadCallback( void * pUserData )
-{
-    rAssert( g_SyncLoadCount > 0 );
+static void SyncLoadCallback(void *pUserData) {
+    rAssert(g_SyncLoadCount > 0);
 
     g_SyncLoadCount--;
 }

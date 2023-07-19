@@ -14,62 +14,57 @@
 //============================================================================
 
 struct radTypeInfoInstanceMethod
-    :
-    public IRadTypeInfoInstanceMethod,
-    public radRefCount
-{
+        :
+                public IRadTypeInfoInstanceMethod,
+                public radRefCount {
 
     //========================================================================
     // Data Members
     //========================================================================
 
-    ref< IRefCount > m_xIRefCount;
-    ref< IRadTypeInfoMethod > m_xIRadTypeInfoMethod;
+    ref <IRefCount> m_xIRefCount;
+    ref <IRadTypeInfoMethod> m_xIRadTypeInfoMethod;
 
-    IMPLEMENT_REFCOUNTED( "RadTypeInfoInstanceMethod" )
+    IMPLEMENT_REFCOUNTED("RadTypeInfoInstanceMethod")
 
     //========================================================================
     // RadTypeInfoInstanceMethod::radTypeInfoInstanceMethod
     //========================================================================
 
-    radTypeInfoInstanceMethod( IRefCount * pIRefCount, const char * pMethodName )
-        :
-        radRefCount( 0 ),
-        m_xIRefCount( pIRefCount )
-    {
-        m_xIRadTypeInfoMethod = ::radTypeInfoSystemGet( )->GetTypeInfoMethod( pIRefCount, pMethodName );
+    radTypeInfoInstanceMethod(IRefCount *pIRefCount, const char *pMethodName)
+            :
+            radRefCount(0),
+            m_xIRefCount(pIRefCount) {
+        m_xIRadTypeInfoMethod = ::radTypeInfoSystemGet()->GetTypeInfoMethod(pIRefCount,
+                                                                            pMethodName);
     }
 
     //========================================================================
     // RadTypeInfoInstanceMethod::Invoke
     //========================================================================
 
-    virtual int Invoke( void * pParams, unsigned int numParams )
-    {
-        return m_xIRadTypeInfoMethod->Invoke( m_xIRefCount.m_pInterface, pParams, numParams );
+    virtual int Invoke(void *pParams, unsigned int numParams) {
+        return m_xIRadTypeInfoMethod->Invoke(m_xIRefCount.m_pInterface, pParams, numParams);
     }
 
     //========================================================================
     // RadTypeInfoInstanceMethod::GetObject
     //========================================================================
 
-    virtual IRefCount * GetObject( void )
-    {
+    virtual IRefCount *GetObject(void) {
         return m_xIRefCount;
     }
 
-	//========================================================================
+    //========================================================================
     // RadTypeInfoInstanceMethod::GetMethod
     //========================================================================
-	
-	virtual const char * GetMethodName( void )
-	{
-		return m_xIRadTypeInfoMethod->GetName( );
-	}
 
-    virtual unsigned int GetMethodHashedName( void )
-    {
-        return m_xIRadTypeInfoMethod->GetHashedName( );
+    virtual const char *GetMethodName(void) {
+        return m_xIRadTypeInfoMethod->GetName();
+    }
+
+    virtual unsigned int GetMethodHashedName(void) {
+        return m_xIRadTypeInfoMethod->GetHashedName();
     }
 };
 
@@ -77,8 +72,9 @@ struct radTypeInfoInstanceMethod
 // ::rfcCreateTypeInfoInstanceMethod
 //============================================================================
 
-IRadTypeInfoInstanceMethod * radTypeInfoCreateInstanceMethod( IRefCount * pIRefCount, const char * pMethodName, unsigned int allocator )
-{
-    return new( allocator ) radTypeInfoInstanceMethod( pIRefCount, pMethodName );
+IRadTypeInfoInstanceMethod *
+radTypeInfoCreateInstanceMethod(IRefCount *pIRefCount, const char *pMethodName,
+                                unsigned int allocator) {
+    return new(allocator) radTypeInfoInstanceMethod(pIRefCount, pMethodName);
 
 }

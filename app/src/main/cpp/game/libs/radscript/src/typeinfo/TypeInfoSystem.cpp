@@ -22,34 +22,34 @@
 //============================================================================
 // Global variables
 //============================================================================
-const unsigned int ParserConst::TOK_CREATE        = ParserConst::GetTokenID( "create" );
-const unsigned int ParserConst::TOK_WITH          = ParserConst::GetTokenID( "with" );
-const unsigned int ParserConst::TOK_NAMED         = ParserConst::GetTokenID( "named" );
-const unsigned int ParserConst::TOK_OPTION        = ParserConst::GetTokenID( "option" );
-const unsigned int ParserConst::TOK_PC            = ParserConst::GetTokenID( "PC" );
-const unsigned int ParserConst::TOK_PS2           = ParserConst::GetTokenID( "PS2" );
-const unsigned int ParserConst::TOK_XBOX          = ParserConst::GetTokenID( "XBOX" );
-const unsigned int ParserConst::TOK_GCN           = ParserConst::GetTokenID( "GCN" );
-const unsigned int ParserConst::TOK_REF           = ParserConst::GetTokenID( "ref:" );
+const unsigned int ParserConst::TOK_CREATE = ParserConst::GetTokenID("create");
+const unsigned int ParserConst::TOK_WITH = ParserConst::GetTokenID("with");
+const unsigned int ParserConst::TOK_NAMED = ParserConst::GetTokenID("named");
+const unsigned int ParserConst::TOK_OPTION = ParserConst::GetTokenID("option");
+const unsigned int ParserConst::TOK_PC = ParserConst::GetTokenID("PC");
+const unsigned int ParserConst::TOK_PS2 = ParserConst::GetTokenID("PS2");
+const unsigned int ParserConst::TOK_XBOX = ParserConst::GetTokenID("XBOX");
+const unsigned int ParserConst::TOK_GCN = ParserConst::GetTokenID("GCN");
+const unsigned int ParserConst::TOK_REF = ParserConst::GetTokenID("ref:");
 
-const unsigned int ParserConst::TOK_LCURLY        = ParserConst::GetTokenID( "{" );
-const unsigned int ParserConst::TOK_RCURLY        = ParserConst::GetTokenID( "}" );
-const unsigned int ParserConst::TOK_LPAREN        = ParserConst::GetTokenID( "(" );
-const unsigned int ParserConst::TOK_RPAREN        = ParserConst::GetTokenID( ")" );
+const unsigned int ParserConst::TOK_LCURLY = ParserConst::GetTokenID("{");
+const unsigned int ParserConst::TOK_RCURLY = ParserConst::GetTokenID("}");
+const unsigned int ParserConst::TOK_LPAREN = ParserConst::GetTokenID("(");
+const unsigned int ParserConst::TOK_RPAREN = ParserConst::GetTokenID(")");
 
-const unsigned int ParserConst::TOK_BOOL          = ParserConst::GetTokenID( "bool" );
-const unsigned int ParserConst::TOK_CHAR          = ParserConst::GetTokenID( "char" );
-const unsigned int ParserConst::TOK_UCHAR         = ParserConst::GetTokenID( "unsigned char" );
-const unsigned int ParserConst::TOK_SHORT         = ParserConst::GetTokenID( "short" );
-const unsigned int ParserConst::TOK_USHORT        = ParserConst::GetTokenID( "unsigned short" );
-const unsigned int ParserConst::TOK_INT           = ParserConst::GetTokenID( "int" );
-const unsigned int ParserConst::TOK_UINT          = ParserConst::GetTokenID( "unsigned int" );
-const unsigned int ParserConst::TOK_LONG          = ParserConst::GetTokenID( "long" );
-const unsigned int ParserConst::TOK_ULONG         = ParserConst::GetTokenID( "unsigned long" );
-const unsigned int ParserConst::TOK_FLOAT         = ParserConst::GetTokenID( "float" );
-const unsigned int ParserConst::TOK_DOUBLE        = ParserConst::GetTokenID( "double" );
+const unsigned int ParserConst::TOK_BOOL = ParserConst::GetTokenID("bool");
+const unsigned int ParserConst::TOK_CHAR = ParserConst::GetTokenID("char");
+const unsigned int ParserConst::TOK_UCHAR = ParserConst::GetTokenID("unsigned char");
+const unsigned int ParserConst::TOK_SHORT = ParserConst::GetTokenID("short");
+const unsigned int ParserConst::TOK_USHORT = ParserConst::GetTokenID("unsigned short");
+const unsigned int ParserConst::TOK_INT = ParserConst::GetTokenID("int");
+const unsigned int ParserConst::TOK_UINT = ParserConst::GetTokenID("unsigned int");
+const unsigned int ParserConst::TOK_LONG = ParserConst::GetTokenID("long");
+const unsigned int ParserConst::TOK_ULONG = ParserConst::GetTokenID("unsigned long");
+const unsigned int ParserConst::TOK_FLOAT = ParserConst::GetTokenID("float");
+const unsigned int ParserConst::TOK_DOUBLE = ParserConst::GetTokenID("double");
 
-const unsigned int ParserConst::TOK_IREFCOUNT     = ParserConst::GetTokenID( "IRefCount" );
+const unsigned int ParserConst::TOK_IREFCOUNT = ParserConst::GetTokenID("IRefCount");
 
 
 //============================================================================
@@ -59,17 +59,16 @@ const unsigned int ParserConst::TOK_IREFCOUNT     = ParserConst::GetTokenID( "IR
 // Component: IRadTypeInfoSystem
 //========================================================================
 
-ref< IRadString > IRadTypeInfoSystem::ms_pEmptyString = NULL;
+ref <IRadString> IRadTypeInfoSystem::ms_pEmptyString = NULL;
 
-ref< IRadTypeInfoSystem > IRadTypeInfoSystem::s_pTheTypeInfoSystem = NULL;
+ref <IRadTypeInfoSystem> IRadTypeInfoSystem::s_pTheTypeInfoSystem = NULL;
 
 //============================================================================
 // ::radTypeInfoSystemGet
 //============================================================================
 
-IRadTypeInfoSystem * radTypeInfoSystemGet( void )
-{
-    rAssert( IRadTypeInfoSystem::s_pTheTypeInfoSystem != NULL );
+IRadTypeInfoSystem *radTypeInfoSystemGet(void) {
+    rAssert(IRadTypeInfoSystem::s_pTheTypeInfoSystem != NULL);
 
     return IRadTypeInfoSystem::s_pTheTypeInfoSystem;
 }
@@ -78,15 +77,11 @@ IRadTypeInfoSystem * radTypeInfoSystemGet( void )
 // ::IsRadTypeInfoSystemInitialize
 //============================================================================
 
-bool IsRadTypeInfoSystemInitialize()
-{
-    if (IRadTypeInfoSystem::s_pTheTypeInfoSystem == NULL)
-    {
-        return(false);
-    }
-    else
-    {
-        return(true);
+bool IsRadTypeInfoSystemInitialize() {
+    if (IRadTypeInfoSystem::s_pTheTypeInfoSystem == NULL) {
+        return (false);
+    } else {
+        return (true);
     }
 }
 
@@ -94,17 +89,13 @@ bool IsRadTypeInfoSystemInitialize()
 // ::radTypeInfoInitialize
 //============================================================================
 
-void radTypeInfoSystemInitialize( radMemoryAllocator allocator )
-{
-    if ( IRadTypeInfoSystem::s_pTheTypeInfoSystem == NULL )
-    {
-        new ( allocator ) IRadTypeInfoSystem( allocator );
-        ::radStringCreate( & IRadTypeInfoSystem::ms_pEmptyString, allocator );
-        IRadTypeInfoSystem::ms_pEmptyString->Copy( "String Not Found" );
-    }
-    else
-    {
-        rAssertMsg( 0, "Type info system already initialized" );
+void radTypeInfoSystemInitialize(radMemoryAllocator allocator) {
+    if (IRadTypeInfoSystem::s_pTheTypeInfoSystem == NULL) {
+        new(allocator) IRadTypeInfoSystem(allocator);
+        ::radStringCreate(&IRadTypeInfoSystem::ms_pEmptyString, allocator);
+        IRadTypeInfoSystem::ms_pEmptyString->Copy("String Not Found");
+    } else {
+        rAssertMsg(0, "Type info system already initialized");
     }
 }
 
@@ -112,20 +103,18 @@ void radTypeInfoSystemInitialize( radMemoryAllocator allocator )
 // ::radTypeInfoTermaine
 //============================================================================
 
-void radTypeInfoSystemTerminate( void )
-{
-    rAssert( IRadTypeInfoSystem::s_pTheTypeInfoSystem != NULL );
+void radTypeInfoSystemTerminate(void) {
+    rAssert(IRadTypeInfoSystem::s_pTheTypeInfoSystem != NULL);
     IRadTypeInfoSystem::ms_pEmptyString = NULL;
     IRadTypeInfoSystem::s_pTheTypeInfoSystem = NULL;
 }
 
-void radScriptUnLoadAllTypeInfo( void )
-{
-    IRadTypeInfoSystem * pSys = (IRadTypeInfoSystem*) IRadTypeInfoSystem::s_pTheTypeInfoSystem.m_pInterface;
-    
-    pSys->m_xIOl_TypeInfo->RemoveAll( ); 
-    pSys->m_xIOl_Enum->RemoveAll( );
-    pSys->m_xIOt_StringTable->RemoveAll( );
+void radScriptUnLoadAllTypeInfo(void) {
+    IRadTypeInfoSystem *pSys = (IRadTypeInfoSystem *) IRadTypeInfoSystem::s_pTheTypeInfoSystem.m_pInterface;
+
+    pSys->m_xIOl_TypeInfo->RemoveAll();
+    pSys->m_xIOl_Enum->RemoveAll();
+    pSys->m_xIOt_StringTable->RemoveAll();
 }
 
 

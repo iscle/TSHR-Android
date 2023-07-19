@@ -15,12 +15,11 @@
 //============================================================================
 
 struct radTypeInfoDistributor
-    :
-    public IRadTypeInfoDistributor,
-    public radRefCount
-{
+        :
+                public IRadTypeInfoDistributor,
+                public radRefCount {
 
-    IMPLEMENT_REFCOUNTED( "radTypeInfoDistributor" )
+    IMPLEMENT_REFCOUNTED("radTypeInfoDistributor")
 
     //========================================================================
     // Data Members
@@ -28,94 +27,85 @@ struct radTypeInfoDistributor
 
     radMemoryAllocator m_ThisAllocator;
 
-    ref< IRadObjectList > m_xIOl_InstanceMethods;
+    ref <IRadObjectList> m_xIOl_InstanceMethods;
 
     //========================================================================
     // radTypeInfoDistributor::radTypeInfoDistributor
     //========================================================================
 
-    radTypeInfoDistributor( radMemoryAllocator allocator )
-        :
-        radRefCount( 0 ),
-        m_ThisAllocator( allocator )
-    {
-        ::radObjectListCreate( & m_xIOl_InstanceMethods, m_ThisAllocator );        
+    radTypeInfoDistributor(radMemoryAllocator allocator)
+            :
+            radRefCount(0),
+            m_ThisAllocator(allocator) {
+        ::radObjectListCreate(&m_xIOl_InstanceMethods, m_ThisAllocator);
     }
 
     //========================================================================
     // radTypeInfoDistributor::radTypeInfoDistributor
     //========================================================================
 
-    ~radTypeInfoDistributor( void )
-    {
-        // rAssert( m_xIOl_InstanceMethods->GetSize( ) == 0 );
+    ~radTypeInfoDistributor(void) {
+        // rAssert(m_xIOl_InstanceMethods->GetSize() == 0);
     }
 
     //========================================================================
     // radTypeInfoDistributor::AddObject
     //========================================================================
 
-    virtual void AddObject( IRefCount * pIRefCount, const char * pMethodName )
-    {
-        rAssert( pIRefCount != NULL );
-        rAssert( pMethodName != NULL );
+    virtual void AddObject(IRefCount *pIRefCount, const char *pMethodName) {
+        rAssert(pIRefCount != NULL);
+        rAssert(pMethodName != NULL);
 
-        ref< IRadTypeInfoInstanceMethod > xITiim;
+        ref <IRadTypeInfoInstanceMethod> xITiim;
 
-        xITiim = ::radTypeInfoCreateInstanceMethod( pIRefCount, pMethodName, m_ThisAllocator );
+        xITiim = ::radTypeInfoCreateInstanceMethod(pIRefCount, pMethodName, m_ThisAllocator);
 
-        if ( xITiim != NULL )
-        {
-            m_xIOl_InstanceMethods->AddObject( xITiim ); 
+        if (xITiim != NULL) {
+            m_xIOl_InstanceMethods->AddObject(xITiim);
+        } else {
+            rDebugString("radTypeInfoDistributor - Interface has no such method: [");
+            rDebugString(pMethodName);
+            rDebugString("]\n");
         }
-        else
-        {
-            rDebugString( "radTypeInfoDistributor - Interface has no such method: [" );
-            rDebugString( pMethodName );
-            rDebugString( "]\n" );
-        }       
     }
 
     //========================================================================
     // radTypeInfoDistributor::RemoveObject
     //========================================================================
 
-    virtual void RemoveObject( IRefCount * pIObject, const char * pPropery )
-    {
-        ref< IRefCount >                 xIRefCount;
+    virtual void RemoveObject(IRefCount *pIObject, const char *pPropery) {
+        ref <IRefCount> xIRefCount;
 
-        IRadTypeInfoInstanceMethod * pIRadTypeInfoInstanceMethod;
-        for( unsigned int i = 0; i < m_xIOl_InstanceMethods->GetSize( ); i ++ )
-        {
-            pIRadTypeInfoInstanceMethod = static_cast< IRadTypeInfoInstanceMethod * >( m_xIOl_InstanceMethods->GetAt( i ) );
+        IRadTypeInfoInstanceMethod *pIRadTypeInfoInstanceMethod;
+        for (unsigned int i = 0; i < m_xIOl_InstanceMethods->GetSize(); i++) {
+            pIRadTypeInfoInstanceMethod = static_cast<IRadTypeInfoInstanceMethod *>(m_xIOl_InstanceMethods->GetAt(
+                    i));
 
             if
-			(
-				( pIRadTypeInfoInstanceMethod->GetObject( ) == pIObject ) &&
-                ( pIRadTypeInfoInstanceMethod->GetMethodHashedName( ) == ::radMakeKey32( pPropery ) )
-			)
-            {
-                m_xIOl_InstanceMethods->RemoveObject( pIRadTypeInfoInstanceMethod );
+                    (
+                    (pIRadTypeInfoInstanceMethod->GetObject() == pIObject) &&
+                    (pIRadTypeInfoInstanceMethod->GetMethodHashedName() == ::radMakeKey32(pPropery))
+                    ) {
+                m_xIOl_InstanceMethods->RemoveObject(pIRadTypeInfoInstanceMethod);
                 return;
             }
         }
 
-        rDebugString( "radTypeInfoDistributor - Can't find object to remove it\n" );
+        rDebugString("radTypeInfoDistributor - Can't find object to remove it\n");
     }
 
     //========================================================================
     // radTypeInfoDistributor::Invoke
     //========================================================================
 
-    virtual void Invoke( void * pParams, unsigned int numParams )
-    {
-        IRadTypeInfoInstanceMethod * pIRadTypeInfoInstanceMethod;
+    virtual void Invoke(void *pParams, unsigned int numParams) {
+        IRadTypeInfoInstanceMethod *pIRadTypeInfoInstanceMethod;
 
-        for( unsigned int i = 0; i < m_xIOl_InstanceMethods->GetSize( ); i ++ )
-        {
-            pIRadTypeInfoInstanceMethod = static_cast< IRadTypeInfoInstanceMethod * >( m_xIOl_InstanceMethods->GetAt( i ) );
-            
-            pIRadTypeInfoInstanceMethod->Invoke( pParams, numParams );
+        for (unsigned int i = 0; i < m_xIOl_InstanceMethods->GetSize(); i++) {
+            pIRadTypeInfoInstanceMethod = static_cast<IRadTypeInfoInstanceMethod *>(m_xIOl_InstanceMethods->GetAt(
+                    i));
+
+            pIRadTypeInfoInstanceMethod->Invoke(pParams, numParams);
         }
     }
 };
@@ -124,7 +114,6 @@ struct radTypeInfoDistributor
 // ::radTypeInfoCreateDistributor
 //============================================================================
 
-IRadTypeInfoDistributor * radTypeInfoCreateDistributor( radMemoryAllocator allocator )
-{
-    return new( allocator ) radTypeInfoDistributor( allocator );
+IRadTypeInfoDistributor *radTypeInfoCreateDistributor(radMemoryAllocator allocator) {
+    return new(allocator) radTypeInfoDistributor(allocator);
 }

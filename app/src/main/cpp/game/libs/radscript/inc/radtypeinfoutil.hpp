@@ -35,38 +35,41 @@ struct IRadTypeInfoInstanceMethod;
 // Factories & Functions
 //============================================================================
 
-IRadTypeInfoDistributor *    radTypeInfoCreateDistributor( radMemoryAllocator allocator = RADMEMORY_ALLOC_DEFAULT );
-IRadTypeInfoInstanceMethod * radTypeInfoCreateInstanceMethod( IRefCount * pIRefCount, const char * pMethodName, unsigned int allocator = RADMEMORY_ALLOC_DEFAULT );
+IRadTypeInfoDistributor *
+radTypeInfoCreateDistributor(radMemoryAllocator allocator = RADMEMORY_ALLOC_DEFAULT);
+
+IRadTypeInfoInstanceMethod *
+radTypeInfoCreateInstanceMethod(IRefCount *pIRefCount, const char *pMethodName,
+                                unsigned int allocator = RADMEMORY_ALLOC_DEFAULT);
 
 // Helpers
 
-void radTypeInfoLoadTypeInfoSync( const char * pTypeInfo );
+void radTypeInfoLoadTypeInfoSync(const char *pTypeInfo);
 
 //============================================================================
 // Interface: IRadTypeInfoDistributor
 //============================================================================
 
-struct IRadTypeInfoDistributor : public IRefCount
-{
-    virtual void AddObject( IRefCount * pIRefCount, const char * pMethodName ) = 0;
-    virtual void RemoveObject( IRefCount * pIRefCount, const char * pMethodName ) = 0;
+struct IRadTypeInfoDistributor : public IRefCount {
+    virtual void AddObject(IRefCount *pIRefCount, const char *pMethodName) = 0;
 
-    virtual void Invoke( void * pParams, unsigned int numParams ) = 0;
+    virtual void RemoveObject(IRefCount *pIRefCount, const char *pMethodName) = 0;
+
+    virtual void Invoke(void *pParams, unsigned int numParams) = 0;
 };
 
 //============================================================================
 // Interface: IRadTypeInfoInstanceMethod
 //============================================================================
 
-struct IRadTypeInfoInstanceMethod : public IRefCount
-{    
-    virtual int Invoke( void * pParams, unsigned int numParams ) = 0;
+struct IRadTypeInfoInstanceMethod : public IRefCount {
+    virtual int Invoke(void *pParams, unsigned int numParams) = 0;
 
-    virtual IRefCount * GetObject( void ) = 0;
+    virtual IRefCount *GetObject(void) = 0;
 
-	virtual const char * GetMethodName( void ) = 0;
+    virtual const char *GetMethodName(void) = 0;
 
-    virtual unsigned int GetMethodHashedName( void ) = 0;
+    virtual unsigned int GetMethodHashedName(void) = 0;
 };
 
 #endif

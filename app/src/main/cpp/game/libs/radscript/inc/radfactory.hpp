@@ -30,23 +30,30 @@
 // Types
 //============================================================================
 
-typedef IRefCount * (radFactoryProc)( radMemoryAllocator allocator );
-typedef void (radFactoryOutParamProc)( IRefCount ** pIRefCount, radMemoryAllocator allocator );
+typedef IRefCount *(radFactoryProc)(radMemoryAllocator allocator);
+
+typedef void (radFactoryOutParamProc)(IRefCount **pIRefCount, radMemoryAllocator allocator);
 
 //============================================================================
 // Functions
 //============================================================================
 
-void radFactoryInitialize( radMemoryAllocator allocator );
-void radFactoryTerminate( void );
+void radFactoryInitialize(radMemoryAllocator allocator);
 
-void radFactoryRegister( const char * pClassName, radFactoryProc );
-void radFactoryRegister( radKey32 key, radFactoryProc );
+void radFactoryTerminate(void);
 
-void radFactoryRegister( const char * pClassName, radFactoryOutParamProc );
-void radFactoryRegister( radKey32 key, radFactoryOutParamProc );
+void radFactoryRegister(const char *pClassName, radFactoryProc);
 
-void radFactoryCreateInstance( const char * pClassName, IRefCount ** ppIRefCount, radMemoryAllocator = RADMEMORY_ALLOC_DEFAULT );
-void radFactoryCreateInstance( radKey32 key, IRefCount ** ppIRefCount, radMemoryAllocator allocator = RADMEMORY_ALLOC_DEFAULT );
+void radFactoryRegister(radKey32 key, radFactoryProc);
+
+void radFactoryRegister(const char *pClassName, radFactoryOutParamProc);
+
+void radFactoryRegister(radKey32 key, radFactoryOutParamProc);
+
+void radFactoryCreateInstance(const char *pClassName, IRefCount **ppIRefCount,
+                              radMemoryAllocator = RADMEMORY_ALLOC_DEFAULT);
+
+void radFactoryCreateInstance(radKey32 key, IRefCount **ppIRefCount,
+                              radMemoryAllocator allocator = RADMEMORY_ALLOC_DEFAULT);
 
 #endif

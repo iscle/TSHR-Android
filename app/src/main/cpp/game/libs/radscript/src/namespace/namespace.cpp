@@ -37,8 +37,8 @@
 //
 // By default there are no namespaces
 //
-IRadNameSpace* radLinkedClass< IRadNameSpace >::s_pLinkedClassHead = NULL;
-IRadNameSpace* radLinkedClass< IRadNameSpace >::s_pLinkedClassTail = NULL;
+IRadNameSpace *radLinkedClass<IRadNameSpace>::s_pLinkedClassHead = NULL;
+IRadNameSpace *radLinkedClass<IRadNameSpace>::s_pLinkedClassTail = NULL;
 
 
 //=============================================================================
@@ -56,12 +56,11 @@ IRadNameSpace* radLinkedClass< IRadNameSpace >::s_pLinkedClassTail = NULL;
 //
 //=============================================================================
 
-IRadNameSpace* radNameSpaceCreate
-(
-    unsigned int allocator
-)
-{
-    return new( allocator ) IRadNameSpace( );
+IRadNameSpace *radNameSpaceCreate
+        (
+                unsigned int allocator
+        ) {
+    return new(allocator) IRadNameSpace();
 }
 
 //=============================================================================
@@ -76,23 +75,20 @@ IRadNameSpace* radNameSpaceCreate
 //
 //=============================================================================
 
-IRadNameSpace* radNameSpaceGet
-(
-    radKey32 key
-)
-{
-    IRadNameSpace* pSearch = IRadNameSpace::GetLinkedClassHead( );
-    
-    while( pSearch != NULL )
-    {
-        if( pSearch->m_Name == key )
-        {
+IRadNameSpace *radNameSpaceGet
+        (
+                radKey32 key
+        ) {
+    IRadNameSpace *pSearch = IRadNameSpace::GetLinkedClassHead();
+
+    while (pSearch != NULL) {
+        if (pSearch->m_Name == key) {
             return pSearch;
         }
-        
-        pSearch = pSearch->GetLinkedClassNext( );
+
+        pSearch = pSearch->GetLinkedClassNext();
     }
-    
+
     return NULL;
 }
 
@@ -108,12 +104,11 @@ IRadNameSpace* radNameSpaceGet
 //
 //=============================================================================
 
-IRadNameSpace* radNameSpaceGet
-(
-    const char* pName
-)
-{
-    return ::radNameSpaceGet( radMakeKey32( pName ) );
+IRadNameSpace *radNameSpaceGet
+        (
+                const char *pName
+        ) {
+    return ::radNameSpaceGet(radMakeKey32(pName));
 }
 
 //=============================================================================
@@ -130,19 +125,17 @@ IRadNameSpace* radNameSpaceGet
 //
 //=============================================================================
 
-IRefCount* radNameSpaceGetInstance
-(
-    radKey32 nameSpaceKey,
-    radKey32 instanceKey
-)
-{
-    ref< IRadNameSpace > xIRadNameSpace( ::radNameSpaceGet( nameSpaceKey ) );
-    
-    if ( xIRadNameSpace != NULL )
-    {
-        return xIRadNameSpace->GetInstance( instanceKey );
+IRefCount *radNameSpaceGetInstance
+        (
+                radKey32 nameSpaceKey,
+                radKey32 instanceKey
+        ) {
+    ref <IRadNameSpace> xIRadNameSpace(::radNameSpaceGet(nameSpaceKey));
+
+    if (xIRadNameSpace != NULL) {
+        return xIRadNameSpace->GetInstance(instanceKey);
     }
-    
+
     return NULL;
 }
 
@@ -160,17 +153,16 @@ IRefCount* radNameSpaceGetInstance
 //
 //=============================================================================
 
-IRefCount* radNameSpaceGetInstance
-(
-    const char* pNameSpaceName,
-    const char* pInstanceName
-)
-{
+IRefCount *radNameSpaceGetInstance
+        (
+                const char *pNameSpaceName,
+                const char *pInstanceName
+        ) {
     return ::radNameSpaceGetInstance
-    (
-        radMakeKey32( pNameSpaceName ),
-        radMakeKey32( pInstanceName )
-    );
+            (
+                    radMakeKey32(pNameSpaceName),
+                    radMakeKey32(pInstanceName)
+            );
 }
 
 //=============================================================================
@@ -187,23 +179,20 @@ IRefCount* radNameSpaceGetInstance
 //
 //=============================================================================
 
-IRadNameSpace* radNameSpaceFindObjectNameSpace
-(
-    const char* pName
-)
-{
-    IRadNameSpace* pSearch = IRadNameSpace::GetLinkedClassHead( );
-    
-    while( pSearch != NULL )
-    {
-        if( pSearch->GetInstance( pName ) )
-        {
+IRadNameSpace *radNameSpaceFindObjectNameSpace
+        (
+                const char *pName
+        ) {
+    IRadNameSpace *pSearch = IRadNameSpace::GetLinkedClassHead();
+
+    while (pSearch != NULL) {
+        if (pSearch->GetInstance(pName)) {
             return pSearch;
         }
-        
-        pSearch = pSearch->GetLinkedClassNext( );
+
+        pSearch = pSearch->GetLinkedClassNext();
     }
-    
+
     return NULL;
 }
 

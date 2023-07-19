@@ -14,24 +14,23 @@
 
 #ifdef RADSCRIPT_DEBUG
 static const char dc[] = "radTypeInfoLoader";
-#endif 
+#endif
 
-static inline unsigned int radEndianLittleToPlat( unsigned int in )
-{
-	#ifdef RAD_GAMECUBE
-		unsigned int out;
-	
-		((char*)&out)[ 0 ] = ((char*)&in)[ 3 ];
-		((char*)&out)[ 1 ] = ((char*)&in)[ 2 ];
-		((char*)&out)[ 2 ] = ((char*)&in)[ 1 ];
-		((char*)&out)[ 3 ] = ((char*)&in)[ 0 ];
-	
-		return out;
-	#else
-		
-		return in;
-		
-	#endif
+static inline unsigned int radEndianLittleToPlat(unsigned int in) {
+#ifdef RAD_GAMECUBE
+    unsigned int out;
+
+    ((char*)&out)[ 0 ] = ((char*)&in)[ 3 ];
+    ((char*)&out)[ 1 ] = ((char*)&in)[ 2 ];
+    ((char*)&out)[ 2 ] = ((char*)&in)[ 1 ];
+    ((char*)&out)[ 3 ] = ((char*)&in)[ 0 ];
+
+    return out;
+#else
+
+    return in;
+
+#endif
 }
 /*
 struct MemoryImageParam
@@ -55,54 +54,51 @@ struct MemoryImageIntLiteral
 //========================================================================
 
 struct radTypeInfoLoader
-    :
-    public IRadTypeInfoLoader,
-	public IRadFileCompletionCallback,
-	public radRefCount
-{
+        :
+                public IRadTypeInfoLoader,
+                public IRadFileCompletionCallback,
+                public radRefCount {
 
-    IMPLEMENT_REFCOUNTED( "radTypeInfoLoader" )
+    IMPLEMENT_REFCOUNTED("radTypeInfoLoader")
 
     //========================================================================
     // Data Members
     //========================================================================
-    
-    radMemoryAllocator     m_TypeInfoAllocator;
-    
-    TypeInfoLoadCallback * m_pTypeInfoLoadCallback;
-    void                 * m_pTypeInfoLoadCallbackUserData;
 
-    char                 * m_pTypeInfoMemory;
-    unsigned int           m_TypeInfoMemorySize;
-    
-    ref< IRadTypeInfoSystem > m_xIRadTypeInfoSystem;
+    radMemoryAllocator m_TypeInfoAllocator;
 
-	ref< IRadFile >        m_pIRadFile;
+    TypeInfoLoadCallback *m_pTypeInfoLoadCallback;
+    void *m_pTypeInfoLoadCallbackUserData;
 
-    bool                   m_bLoadEnum;
+    char *m_pTypeInfoMemory;
+    unsigned int m_TypeInfoMemorySize;
 
-	enum FileLoadState
-	{
-		GetSize,
-		ReadFile,
-		None
-	};
+    ref <IRadTypeInfoSystem> m_xIRadTypeInfoSystem;
+
+    ref <IRadFile> m_pIRadFile;
+
+    bool m_bLoadEnum;
+
+    enum FileLoadState {
+        GetSize,
+        ReadFile,
+        None
+    };
 
     //========================================================================
     // radTypeInfoLoader::radTypeInfoLoader
     //========================================================================
 
-    radTypeInfoLoader( void )
-        :
-        radRefCount( 0 ),
-        m_TypeInfoAllocator( RADMEMORY_ALLOC_DEFAULT ),
-        m_pTypeInfoLoadCallback( NULL ),
-        m_pTypeInfoLoadCallbackUserData( NULL ),
-        m_pTypeInfoMemory( NULL ),
-        m_TypeInfoMemorySize( 0 ),
-		m_pIRadFile( NULL ),
-        m_bLoadEnum( false )
-    {
+    radTypeInfoLoader(void)
+            :
+            radRefCount(0),
+            m_TypeInfoAllocator(RADMEMORY_ALLOC_DEFAULT),
+            m_pTypeInfoLoadCallback(NULL),
+            m_pTypeInfoLoadCallbackUserData(NULL),
+            m_pTypeInfoMemory(NULL),
+            m_TypeInfoMemorySize(0),
+            m_pIRadFile(NULL),
+            m_bLoadEnum(false) {
 
     }
 
@@ -111,16 +107,15 @@ struct radTypeInfoLoader
     //========================================================================
 
     virtual void Initialize
-    (
-        IRadTypeInfoSystem * pITis,
-        radMemoryAllocator allocator,
-        const char * pFileName,
-        TypeInfoLoadCallback * pCb,
-        void * pUserData,
-        bool bLoadEnum = false 
-    )
-    {
-        rAssert( pCb != NULL );
+            (
+                    IRadTypeInfoSystem *pITis,
+                    radMemoryAllocator allocator,
+                    const char *pFileName,
+                    TypeInfoLoadCallback *pCb,
+                    void *pUserData,
+                    bool bLoadEnum = false
+            ) {
+        rAssert(pCb != NULL);
 
         m_TypeInfoAllocator = allocator;
         m_pTypeInfoLoadCallback = pCb;
@@ -129,30 +124,31 @@ struct radTypeInfoLoader
 
         m_bLoadEnum = bLoadEnum;
 
-        radFileOpen( &m_pIRadFile, pFileName, false, OpenExisting, NormalPriority, 0, RADMEMORY_ALLOC_TEMP );		
-        m_pIRadFile->GetSizeAsync( & m_TypeInfoMemorySize );
-		m_pIRadFile->AddCompletionCallback( this, (void*) GetSize );
+        radFileOpen(&m_pIRadFile, pFileName, false, OpenExisting, NormalPriority, 0,
+                    RADMEMORY_ALLOC_TEMP);
+        m_pIRadFile->GetSizeAsync(&m_TypeInfoMemorySize);
+        m_pIRadFile->AddCompletionCallback(this, (void *) GetSize);
     }
 
     //========================================================================
     // radTypeInfoLoader::~radTypeInfoLoader
     //========================================================================
 
-    ~radTypeInfoLoader( void )
-    {
-        radMemoryFreeAligned( RADMEMORY_ALLOC_TEMP, m_pTypeInfoMemory );
+    ~radTypeInfoLoader(void) {
+        radMemoryFreeAligned(RADMEMORY_ALLOC_TEMP, m_pTypeInfoMemory);
     }
-    
+
 
     //
     // Help function, read string, and advance the file pointer
     //
-    char * ReadString( unsigned int ** p )
-    {
-        // size of string in byte, always multiple of 4 ( PS2/GCN alignment )
-        unsigned int uStringLength = **p; (*p)++; uStringLength = radEndianLittleToPlat( uStringLength );
-        char * pName = reinterpret_cast< char * >( *p );
-        (*p) += uStringLength * sizeof( char ) / sizeof( *p );
+    char *ReadString(unsigned int **p) {
+        // size of string in byte, always multiple of 4 (PS2/GCN alignment)
+        unsigned int uStringLength = **p;
+        (*p)++;
+        uStringLength = radEndianLittleToPlat(uStringLength);
+        char *pName = reinterpret_cast<char *>(*p);
+        (*p) += uStringLength * sizeof(char) / sizeof(*p);
         return pName;
     }
 
@@ -160,11 +156,10 @@ struct radTypeInfoLoader
     // radTypeInfoLoader::OnReadAsyncComplete
     //========================================================================
 
-    virtual void OnFileOperationsComplete( void* pUserData )
-    {
+    virtual void OnFileOperationsComplete(void *pUserData) {
         ParserConst::TokenType token;
-        unsigned int * p = (unsigned int *)m_pTypeInfoMemory;
-        
+        unsigned int *p = (unsigned int *) m_pTypeInfoMemory;
+
         // we only assume all class is only derived from IRefCount.
         const int nBaseClassMethodCount = 1;
 
@@ -174,60 +169,60 @@ struct radTypeInfoLoader
         unsigned int nTotalEnumCount = 0;
         unsigned int enumNumber = 0;
 
-        ref< IRadTypeInfo > xIRadTypeInfo;
+        ref <IRadTypeInfo> xIRadTypeInfo;
 
-		switch( (FileLoadState) (int) pUserData )
-		{
-			case GetSize:
-			{
-				// GetSizeAsync is complete. Read into aligned memory to improve performance.
-                unsigned int readSize = ::radMemoryRoundUp( m_TypeInfoMemorySize, m_pIRadFile->GetOptimalSize( ) );
+        switch ((FileLoadState) (int) pUserData) {
+            case GetSize: {
+                // GetSizeAsync is complete. Read into aligned memory to improve performance.
+                unsigned int readSize = ::radMemoryRoundUp(m_TypeInfoMemorySize,
+                                                           m_pIRadFile->GetOptimalSize());
 
-		        m_pTypeInfoMemory = (char*) radMemoryAllocAligned( RADMEMORY_ALLOC_TEMP, readSize, 128 );
+                m_pTypeInfoMemory = (char *) radMemoryAllocAligned(RADMEMORY_ALLOC_TEMP, readSize,
+                                                                   128);
 
-				m_pIRadFile->ReadAsync( m_pTypeInfoMemory, readSize );
+                m_pIRadFile->ReadAsync(m_pTypeInfoMemory, readSize);
 
-				m_pIRadFile->AddCompletionCallback( this, (void*) ReadFile );
+                m_pIRadFile->AddCompletionCallback(this, (void *) ReadFile);
 
-				break;
-			}
-			case ReadFile:
-			{
-				// ReadAsync is complete
+                break;
+            }
+            case ReadFile: {
+                // ReadAsync is complete
 
-				while ( (char *)p < m_pTypeInfoMemory + m_TypeInfoMemorySize )
-				{
-					token = static_cast< ParserConst::TokenType >( *p ); p++; token = static_cast< ParserConst::TokenType >( radEndianLittleToPlat( token ) );
+                while ((char *) p < m_pTypeInfoMemory + m_TypeInfoMemorySize) {
+                    token = static_cast<ParserConst::TokenType>(*p);
+                    p++;
+                    token = static_cast<ParserConst::TokenType>(radEndianLittleToPlat(token));
 
-					switch (token)
-					{
-						case ParserConst::TOK_CLASS:
-						{
-							if ( xIRadTypeInfo != NULL )
-							{
-								m_xIRadTypeInfoSystem->AddTypeInfo( xIRadTypeInfo );
-								xIRadTypeInfo = NULL;
-								methodNumber = nBaseClassMethodCount;
-							}
+                    switch (token) {
+                        case ParserConst::TOK_CLASS: {
+                            if (xIRadTypeInfo != NULL) {
+                                m_xIRadTypeInfoSystem->AddTypeInfo(xIRadTypeInfo);
+                                xIRadTypeInfo = NULL;
+                                methodNumber = nBaseClassMethodCount;
+                            }
 
-							xIRadTypeInfo = ::radTypeInfoCreate( m_TypeInfoAllocator );
+                            xIRadTypeInfo = ::radTypeInfoCreate(m_TypeInfoAllocator);
 
-                            char * pName = ReadString( &p );
+                            char *pName = ReadString(&p);
 
-							xIRadTypeInfo->Initialize( pName ); // iid / piid legacy
+                            xIRadTypeInfo->Initialize(pName); // iid / piid legacy
 
-                            nTotalMethodCount = (*p); p++; nTotalMethodCount = radEndianLittleToPlat( nTotalMethodCount );
+                            nTotalMethodCount = (*p);
+                            p++;
+                            nTotalMethodCount = radEndianLittleToPlat(nTotalMethodCount);
                             nTotalMethodCount += nBaseClassMethodCount;
-                            nTotalEnumCount   = *p; p ++; nTotalEnumCount = radEndianLittleToPlat( nTotalEnumCount );
+                            nTotalEnumCount = *p;
+                            p++;
+                            nTotalEnumCount = radEndianLittleToPlat(nTotalEnumCount);
 
                             methodNumber = nBaseClassMethodCount;
                             enumNumber = 0;
 
                             break;
-						}
+                        }
 
-						case ParserConst::TOK_METHOD:
-						{
+                        case ParserConst::TOK_METHOD: {
                             //
                             // Method format layout
                             //
@@ -238,156 +233,154 @@ struct radTypeInfoLoader
                             // Return Arg 
                             // Arguments list
                             //
-                            ref< IRadTypeInfoMethod > xIRadTypeInfoMethod ( ::radTypeInfoMethodCreate( m_TypeInfoAllocator ) );
+                            ref <IRadTypeInfoMethod> xIRadTypeInfoMethod(
+                                    ::radTypeInfoMethodCreate(m_TypeInfoAllocator));
 
-                            char * pName = ReadString( &p );
+                            char *pName = ReadString(&p);
 
-                            unsigned int numParams = *p; p++; numParams = radEndianLittleToPlat( numParams );
+                            unsigned int numParams = *p;
+                            p++;
+                            numParams = radEndianLittleToPlat(numParams);
 
-                            char * pParamName;
-                            char * pParamType;
+                            char *pParamName;
+                            char *pParamType;
                             int nIndLvl;
 
                             //
                             // Return type
                             //
-                            pParamName = ReadString( &p );
-                            pParamType = ReadString( &p );
-                            nIndLvl = radEndianLittleToPlat( *p ); p ++;
+                            pParamName = ReadString(&p);
+                            pParamType = ReadString(&p);
+                            nIndLvl = radEndianLittleToPlat(*p);
+                            p++;
 
-                            ref< IRadTypeInfoParam > pRTIReturnParam( ::radTypeInfoParamCreate( m_TypeInfoAllocator ) );
-                            pRTIReturnParam->Initialize( pParamName, pParamType, nIndLvl );
+                            ref <IRadTypeInfoParam> pRTIReturnParam(
+                                    ::radTypeInfoParamCreate(m_TypeInfoAllocator));
+                            pRTIReturnParam->Initialize(pParamName, pParamType, nIndLvl);
 
                             //
                             // Initalize the method
                             //
-                            xIRadTypeInfoMethod->Initialize( pName, methodNumber - 1, pRTIReturnParam );
+                            xIRadTypeInfoMethod->Initialize(pName, methodNumber - 1,
+                                                            pRTIReturnParam);
 
                             //
                             // Parameter type
                             //
-                            for ( unsigned int i = 0; i < numParams; i++ )
-                            {
-                                pParamName = ReadString( &p );
-                                pParamType = ReadString( &p );
-                                nIndLvl = radEndianLittleToPlat( *p ); p ++;
+                            for (unsigned int i = 0; i < numParams; i++) {
+                                pParamName = ReadString(&p);
+                                pParamType = ReadString(&p);
+                                nIndLvl = radEndianLittleToPlat(*p);
+                                p++;
 
-                                ref< IRadTypeInfoParam > pRTIParam( ::radTypeInfoParamCreate( m_TypeInfoAllocator ) );
-                                pRTIParam->Initialize( pParamName, pParamType, nIndLvl );
-                                xIRadTypeInfoMethod->AddParamPtr( pRTIParam );
+                                ref <IRadTypeInfoParam> pRTIParam(
+                                        ::radTypeInfoParamCreate(m_TypeInfoAllocator));
+                                pRTIParam->Initialize(pParamName, pParamType, nIndLvl);
+                                xIRadTypeInfoMethod->AddParamPtr(pRTIParam);
                             }
 
-							xIRadTypeInfo->AddMethod( xIRadTypeInfoMethod );
+                            xIRadTypeInfo->AddMethod(xIRadTypeInfoMethod);
 
-							methodNumber++;
+                            methodNumber++;
 
                             // reset Total method count to 0 when we got all method for this class
-                            if (methodNumber == nTotalMethodCount)
-                            {
+                            if (methodNumber == nTotalMethodCount) {
                                 nTotalMethodCount = 0;
                             }
-							break;
-						}
+                            break;
+                        }
 
-                        case ParserConst::TOK_ENUM:
-						{
+                        case ParserConst::TOK_ENUM: {
                             //
                             // TOK_ENUM
                             // Name
                             // enum count
                             // enum list
                             //
-                            char * pName = ReadString( &p );
+                            char *pName = ReadString(&p);
 
-                            unsigned int numEnum = *p; p += 1; numEnum = radEndianLittleToPlat( numEnum );
+                            unsigned int numEnum = *p;
+                            p += 1;
+                            numEnum = radEndianLittleToPlat(numEnum);
 
-                            ref< IRadTypeInfoEnum > xIRadTypeInfoEnum;
+                            ref <IRadTypeInfoEnum> xIRadTypeInfoEnum;
 
-                            if (m_bLoadEnum)
-                            {
-                                xIRadTypeInfoEnum = ::radTypeInfoEnumCreate( m_TypeInfoAllocator );
-    							xIRadTypeInfoEnum->Initialize( pName );
+                            if (m_bLoadEnum) {
+                                xIRadTypeInfoEnum = ::radTypeInfoEnumCreate(m_TypeInfoAllocator);
+                                xIRadTypeInfoEnum->Initialize(pName);
                             }
 
-                            for (unsigned int i = 0; i < numEnum; i++)
-                            {
-                                char * pIntLiteralName = ReadString( &p );
-                                int nIntLiteralValue = radEndianLittleToPlat( *p ); p++;
+                            for (unsigned int i = 0; i < numEnum; i++) {
+                                char *pIntLiteralName = ReadString(&p);
+                                int nIntLiteralValue = radEndianLittleToPlat(*p);
+                                p++;
 
-                                if (m_bLoadEnum)
-                                {
-                                    ref< IRadTypeInfoIntLiteral > pRTIIntLiteral( ::radTypeInfoIntLiteralCreate( m_TypeInfoAllocator ) );
-                                    pRTIIntLiteral->Initialize( pIntLiteralName, nIntLiteralValue );
-                                    xIRadTypeInfoEnum->AddIntLiteral( pRTIIntLiteral );
+                                if (m_bLoadEnum) {
+                                    ref <IRadTypeInfoIntLiteral> pRTIIntLiteral(
+                                            ::radTypeInfoIntLiteralCreate(m_TypeInfoAllocator));
+                                    pRTIIntLiteral->Initialize(pIntLiteralName, nIntLiteralValue);
+                                    xIRadTypeInfoEnum->AddIntLiteral(pRTIIntLiteral);
                                 }
                             }
 
-                            if (m_bLoadEnum)
-                            {
+                            if (m_bLoadEnum) {
                                 // if current class does not have any more enumeration, then
                                 // the enumeration must be belong to global enumeration list.
-                                if (nTotalEnumCount > 0)
-                                {
+                                if (nTotalEnumCount > 0) {
                                     // adding enum into current class
-							        xIRadTypeInfo->AddEnum( xIRadTypeInfoEnum );
-                                }
-                                else
-                                {
+                                    xIRadTypeInfo->AddEnum(xIRadTypeInfoEnum);
+                                } else {
                                     // adding enum into global list
-                                    radTypeInfoSystemGet()->AddEnum( xIRadTypeInfoEnum );
+                                    radTypeInfoSystemGet()->AddEnum(xIRadTypeInfoEnum);
                                 }
                             }
 
                             enumNumber++;
                             // reset Total enum count to 0 when we got all enum for this class
-                            if (methodNumber == nTotalEnumCount)
-                            {
+                            if (methodNumber == nTotalEnumCount) {
                                 nTotalMethodCount = 0;
                             }
                             break;
-						}
+                        }
 
-                        case ParserConst::TOK_VERSION:
-						{
-							token = static_cast<ParserConst::TokenType>(*p); p++; token = static_cast<ParserConst::TokenType>(radEndianLittleToPlat( token ));
+                        case ParserConst::TOK_VERSION: {
+                            token = static_cast<ParserConst::TokenType>(*p);
+                            p++;
+                            token = static_cast<ParserConst::TokenType>(radEndianLittleToPlat(
+                                    token));
 
-							rAssert( token == TYP_FILE_VERSION );
-							break;
-						}
+                            rAssert(token == TYP_FILE_VERSION);
+                            break;
+                        }
 
-                        default:
-						{
-							rAssert(!"unknown token");
-						}
-					}
-				}
+                        default: {
+                            rAssert(!"unknown token");
+                        }
+                    }
+                }
 
-				if ( xIRadTypeInfo != NULL )
-				{
-					m_xIRadTypeInfoSystem->AddTypeInfo( xIRadTypeInfo );
-					xIRadTypeInfo = NULL;
-				}
+                if (xIRadTypeInfo != NULL) {
+                    m_xIRadTypeInfoSystem->AddTypeInfo(xIRadTypeInfo);
+                    xIRadTypeInfo = NULL;
+                }
 
-				if ( m_pTypeInfoLoadCallback != NULL )
-				{
-					m_pTypeInfoLoadCallback( m_pTypeInfoLoadCallbackUserData );
-				}        
+                if (m_pTypeInfoLoadCallback != NULL) {
+                    m_pTypeInfoLoadCallback(m_pTypeInfoLoadCallbackUserData);
+                }
 
-				break;
-			}
-			default:
-			{
-				rAssert( 0 ); // somethings REALLY wrong.
-			}
-		}
-	}
+                break;
+            }
+            default: {
+                rAssert(0); // somethings REALLY wrong.
+            }
+        }
+    }
 };
 
 //============================================================================
 // ::radTypeInfoCreateLoader
 //============================================================================
 
-IRadTypeInfoLoader * radTypeInfoLoaderCreate( radMemoryAllocator allocator )
-{
-    return new ( allocator ) radTypeInfoLoader( );
+IRadTypeInfoLoader *radTypeInfoLoaderCreate(radMemoryAllocator allocator) {
+    return new(allocator) radTypeInfoLoader();
 }

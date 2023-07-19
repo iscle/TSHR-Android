@@ -13,15 +13,15 @@
 //
 //=============================================================================
 
-#ifndef	TYPEINFO_HPP
+#ifndef    TYPEINFO_HPP
 #define TYPEINFO_HPP
 
 //=============================================================================
 // Build Configuration Check
 //=============================================================================
 
-#if !defined(RAD_DEBUG) && !defined(RAD_TUNE) && !defined(RAD_RELEASE) 
-    #error 'FTech requires definition of RAD_DEBUG, RAD_TUNE, or RAD_RELEASE'
+#if !defined(RAD_DEBUG) && !defined(RAD_TUNE) && !defined(RAD_RELEASE)
+#error 'FTech requires definition of RAD_DEBUG, RAD_TUNE, or RAD_RELEASE'
 #endif
 
 //============================================================================
@@ -43,36 +43,32 @@
 //============================================================================
 const int TYP_FILE_VERSION = 0x04;
 
-namespace ParserConst
-{
+namespace ParserConst {
     //========================================================================
     // Inline
     //========================================================================
-    inline unsigned int GetTokenID( const char * pToken )
-    {
-        return radMakeKey32( pToken );
+    inline unsigned int GetTokenID(const char *pToken) {
+        return radMakeKey32(pToken);
     }
 
     //
     // list of token used in the type info file
     //
-    enum TokenType
-    {
-        TOK_VERSION     = 0x43,     // typeinfo file version
-        TOK_CLASS       = 0x40,     // class
-        TOK_METHOD      = 0x41,     // method
-        TOK_ENUM        = 0x44      // enum
+    enum TokenType {
+        TOK_VERSION = 0x43,     // typeinfo file version
+        TOK_CLASS = 0x40,     // class
+        TOK_METHOD = 0x41,     // method
+        TOK_ENUM = 0x44      // enum
     };
 
-    enum PlatformType
-    {
-        PT_PC           = 0x0001,
-        PT_XBOX         = 0x0002,
-        PT_PS2          = 0x0004,
-        PT_GCN          = 0x0008,
+    enum PlatformType {
+        PT_PC = 0x0001,
+        PT_XBOX = 0x0002,
+        PT_PS2 = 0x0004,
+        PT_GCN = 0x0008,
 
-        PT_ALL          = PT_PC | PT_XBOX | PT_PS2 | PT_GCN,
-        PT_DEFAULT      = -1
+        PT_ALL = PT_PC | PT_XBOX | PT_PS2 | PT_GCN,
+        PT_DEFAULT = -1
     };
 
     const unsigned int MAX_ID_STRING_SIZE = 64;
@@ -123,76 +119,91 @@ struct IRadTypeInfoLoader;
 //============================================================================
 
 bool IsRadTypeInfoSystemInitialize();
-void radTypeInfoSystemInitialize( radMemoryAllocator allocator );
-void radTypeInfoSystemTerminate( void );
 
-IRadTypeInfoSystem * radTypeInfoSystemGet( void );
+void radTypeInfoSystemInitialize(radMemoryAllocator allocator);
 
-IRadTypeInfo *       radTypeInfoCreate( radMemoryAllocator allocator = RADMEMORY_ALLOC_DEFAULT );
-inline IRadTypeInfoMethod * radTypeInfoMethodCreate( radMemoryAllocator allocator = RADMEMORY_ALLOC_DEFAULT );
-inline IRadTypeInfoParam *  radTypeInfoParamCreate( radMemoryAllocator allocator = RADMEMORY_ALLOC_DEFAULT );
-inline IRadTypeInfoIntLiteral *  radTypeInfoIntLiteralCreate( radMemoryAllocator allocator = RADMEMORY_ALLOC_DEFAULT );
-IRadTypeInfoLoader * radTypeInfoLoaderCreate( radMemoryAllocator allocator = RADMEMORY_ALLOC_DEFAULT );
+void radTypeInfoSystemTerminate(void);
+
+IRadTypeInfoSystem *radTypeInfoSystemGet(void);
+
+IRadTypeInfo *radTypeInfoCreate(radMemoryAllocator allocator = RADMEMORY_ALLOC_DEFAULT);
+
+inline IRadTypeInfoMethod *
+radTypeInfoMethodCreate(radMemoryAllocator allocator = RADMEMORY_ALLOC_DEFAULT);
+
+inline IRadTypeInfoParam *
+radTypeInfoParamCreate(radMemoryAllocator allocator = RADMEMORY_ALLOC_DEFAULT);
+
+inline IRadTypeInfoIntLiteral *
+radTypeInfoIntLiteralCreate(radMemoryAllocator allocator = RADMEMORY_ALLOC_DEFAULT);
+
+IRadTypeInfoLoader *radTypeInfoLoaderCreate(radMemoryAllocator allocator = RADMEMORY_ALLOC_DEFAULT);
 
 //============================================================================
 // Interface: IRadTypeInfoSystem
 //============================================================================
 
-typedef void (TypeInfoLoadCallback)( void * pUserData );
+typedef void (TypeInfoLoadCallback)(void *pUserData);
 
 struct IRadTypeInfoSystem
-    :
-    public radRefCount
-{
+        :
+                public radRefCount {
 public:
-    IMPLEMENT_REFCOUNTED( "IRadTypeInfoSystem" )
+    IMPLEMENT_REFCOUNTED("IRadTypeInfoSystem")
 
-    inline IRadTypeInfoSystem( radMemoryAllocator allocator );
-    inline virtual ~IRadTypeInfoSystem( void );
+    inline IRadTypeInfoSystem(radMemoryAllocator allocator);
 
-    inline void LoadTypeInfo( radMemoryAllocator alloc, const char * pFileName, TypeInfoLoadCallback *, void * pUserData );
+    inline virtual ~IRadTypeInfoSystem(void);
 
-    inline IRadTypeInfo * GetTypeInfo( IRefCount * pIRefCount );
-    inline IRadTypeInfoMethod * GetTypeInfoMethod( IRefCount * pIRefCount, const char * pMethodName );
-                 
-    inline void AddTypeInfo( IRadTypeInfo * pIRadTypeInfo );
+    inline void
+    LoadTypeInfo(radMemoryAllocator alloc, const char *pFileName, TypeInfoLoadCallback *,
+                 void *pUserData);
 
-    inline void AddEnum( IRadTypeInfoEnum * pIRadTypeInfoEnum );
+    inline IRadTypeInfo *GetTypeInfo(IRefCount *pIRefCount);
 
-    inline int GetTypeInfoCount( void );
-    inline IRadTypeInfo * GetTypeInfoAt( unsigned int index );
+    inline IRadTypeInfoMethod *GetTypeInfoMethod(IRefCount *pIRefCount, const char *pMethodName);
 
-    inline int GetEnumCount( void );
-    inline IRadTypeInfoEnum * GetEnumAt( unsigned int index );
+    inline void AddTypeInfo(IRadTypeInfo *pIRadTypeInfo);
 
-    inline bool GetLoadString( void );
-    inline void SetLoadString( bool bLoadString );
+    inline void AddEnum(IRadTypeInfoEnum *pIRadTypeInfoEnum);
 
-    inline void AddString( unsigned int uHashValue, const char * szString );
+    inline int GetTypeInfoCount(void);
 
-    inline const char * LookupString( unsigned int uHashValue );
+    inline IRadTypeInfo *GetTypeInfoAt(unsigned int index);
 
-    inline void EmptyStrTbl( );
+    inline int GetEnumCount(void);
+
+    inline IRadTypeInfoEnum *GetEnumAt(unsigned int index);
+
+    inline bool GetLoadString(void);
+
+    inline void SetLoadString(bool bLoadString);
+
+    inline void AddString(unsigned int uHashValue, const char *szString);
+
+    inline const char *LookupString(unsigned int uHashValue);
+
+    inline void EmptyStrTbl();
 
 #ifdef RADSCRIPT_DEBUG
-    inline void DebugDump( void );
+    inline void DebugDump(void);
 #endif
 
-    static ref< IRadTypeInfoSystem > s_pTheTypeInfoSystem;
-    static ref< IRadString > ms_pEmptyString;
+    static ref <IRadTypeInfoSystem> s_pTheTypeInfoSystem;
+    static ref <IRadString> ms_pEmptyString;
 
     //========================================================================
     // DataMembers
     //========================================================================
-    radMemoryAllocator      m_ThisAllocator;
+    radMemoryAllocator m_ThisAllocator;
 
-    bool                    m_bLoadString;
+    bool m_bLoadString;
 
-    ref< IRadObjectList >   m_xIOl_TypeInfo;
-    ref< IRadObjectList >   m_xIOl_Enum;
+    ref <IRadObjectList> m_xIOl_TypeInfo;
+    ref <IRadObjectList> m_xIOl_Enum;
 
     // string table used for all typeinfo string in typeinfo system
-    ref< radObjectBTree >  m_xIOt_StringTable;
+    ref <radObjectBTree> m_xIOt_StringTable;
 
 };
 
@@ -201,9 +212,10 @@ public:
 // Interface: IRadTypeInfoLoader
 //============================================================================
 
-struct IRadTypeInfoLoader : public IRefCount
-{
-    virtual void Initialize( IRadTypeInfoSystem *, radMemoryAllocator allocator, const char * pFileName, TypeInfoLoadCallback * , void * pUserData , bool bLoadEnum = false ) = 0;
+struct IRadTypeInfoLoader : public IRefCount {
+    virtual void
+    Initialize(IRadTypeInfoSystem *, radMemoryAllocator allocator, const char *pFileName,
+               TypeInfoLoadCallback *, void *pUserData, bool bLoadEnum = false) = 0;
 };
 
 //============================================================================
@@ -211,33 +223,39 @@ struct IRadTypeInfoLoader : public IRefCount
 //============================================================================
 
 struct IRadTypeInfo :
-    public IRefCount,
-    public radRefCount
-{
+        public IRefCount,
+        public radRefCount {
 public:
-    IMPLEMENT_REFCOUNTED( "IRadTypeInfo" )
+    IMPLEMENT_REFCOUNTED("IRadTypeInfo")
 
-    IRadTypeInfo( radMemoryAllocator allocator );
+    IRadTypeInfo(radMemoryAllocator allocator);
 
-    inline virtual ~IRadTypeInfo( void );
+    inline virtual ~IRadTypeInfo(void);
 
-    inline void Initialize( const char * pInterfaceName  );
-    inline const char * GetName( void );
-    inline unsigned int GetHashedName( void );
+    inline void Initialize(const char *pInterfaceName);
 
-    inline unsigned int  GetNumberOfMethods( void );
-    inline IRadTypeInfoMethod * GetMethodByIndex( unsigned int index );
-    inline IRadTypeInfoMethod * GetMethodByName( const char * pName );
+    inline const char *GetName(void);
 
-    inline unsigned int  GetNumberOfEnums( void );
-    inline IRadTypeInfoEnum * GetEnumByIndex( unsigned int index );
-    inline IRadTypeInfoEnum * GetEnumByName( const char * pName );
+    inline unsigned int GetHashedName(void);
 
-    inline void AddMethod( IRadTypeInfoMethod * pIRadTypeInfoMethod );
-    inline void AddEnum( IRadTypeInfoEnum * pIRadTypeInfoEnum );
+    inline unsigned int GetNumberOfMethods(void);
+
+    inline IRadTypeInfoMethod *GetMethodByIndex(unsigned int index);
+
+    inline IRadTypeInfoMethod *GetMethodByName(const char *pName);
+
+    inline unsigned int GetNumberOfEnums(void);
+
+    inline IRadTypeInfoEnum *GetEnumByIndex(unsigned int index);
+
+    inline IRadTypeInfoEnum *GetEnumByName(const char *pName);
+
+    inline void AddMethod(IRadTypeInfoMethod *pIRadTypeInfoMethod);
+
+    inline void AddEnum(IRadTypeInfoEnum *pIRadTypeInfoEnum);
 
 #ifdef RADSCRIPT_DEBUG
-    inline void DebugDump( void );
+    inline void DebugDump(void);
 #endif
 
 private:
@@ -245,11 +263,11 @@ private:
     //========================================================================
     // Data Members
     //========================================================================
-    radMemoryAllocator      m_ThisAllocator;
+    radMemoryAllocator m_ThisAllocator;
 
-    unsigned int            m_uHashedName;
-    ref< IRadObjectList >   m_xIOl_Methods;
-    ref< IRadObjectList >   m_xIOl_Enums;
+    unsigned int m_uHashedName;
+    ref <IRadObjectList> m_xIOl_Methods;
+    ref <IRadObjectList> m_xIOl_Enums;
 };
 
 //============================================================================
@@ -257,26 +275,25 @@ private:
 //============================================================================
 
 struct IRadTypeInfoIntLiteral :
-    public IRefCount,
-    public radRefCount
-{
+        public IRefCount,
+        public radRefCount {
 public:
-    IMPLEMENT_REFCOUNTED( "IRadTypeInfoIntLiteral" )
+    IMPLEMENT_REFCOUNTED("IRadTypeInfoIntLiteral")
 
-    inline IRadTypeInfoIntLiteral( );
+    inline IRadTypeInfoIntLiteral();
 
-    inline virtual ~IRadTypeInfoIntLiteral( void );
+    inline virtual ~IRadTypeInfoIntLiteral(void);
 
-    inline void Initialize( const char * szName, int nValue );
+    inline void Initialize(const char *szName, int nValue);
 
-    inline const char * GetName( void );
+    inline const char *GetName(void);
 
-    inline unsigned int GetHashedName( void );
+    inline unsigned int GetHashedName(void);
 
-    inline int GetValue( void );
+    inline int GetValue(void);
 
 #ifdef RADSCRIPT_DEBUG
-    inline void DebugDump( void );
+    inline void DebugDump(void);
 #endif
 
 private:
@@ -284,8 +301,8 @@ private:
     //========================================================================
     // Data Members
     //========================================================================
-    unsigned int            m_uHashedName;
-    int                     m_nValue;
+    unsigned int m_uHashedName;
+    int m_nValue;
 };
 
 
@@ -294,69 +311,71 @@ private:
 //============================================================================
 
 struct IRadTypeInfoEnum :
-    public IRefCount,
-    public radRefCount
-{
+        public IRefCount,
+        public radRefCount {
 public:
-    IMPLEMENT_REFCOUNTED( "IRadTypeInfoEnum" )
+    IMPLEMENT_REFCOUNTED("IRadTypeInfoEnum")
 
-    inline IRadTypeInfoEnum( );
+    inline IRadTypeInfoEnum();
 
-    inline virtual ~IRadTypeInfoEnum( void );
+    inline virtual ~IRadTypeInfoEnum(void);
 
-    inline void Initialize( const char * pName );
+    inline void Initialize(const char *pName);
 
-    inline void AddIntLiteral( IRadTypeInfoIntLiteral * pIntLiteral );
+    inline void AddIntLiteral(IRadTypeInfoIntLiteral *pIntLiteral);
 
-    inline const char *  GetName( void );
+    inline const char *GetName(void);
 
-    inline unsigned int GetHashedName( void );
+    inline unsigned int GetHashedName(void);
 
-    inline unsigned int  GetNumberOfIntLiteral( void );
-    inline IRadTypeInfoIntLiteral * GetIntLiteralPtrAt( unsigned int nIndex );
-    inline int           GetValueByName( const char * pName );
+    inline unsigned int GetNumberOfIntLiteral(void);
+
+    inline IRadTypeInfoIntLiteral *GetIntLiteralPtrAt(unsigned int nIndex);
+
+    inline int GetValueByName(const char *pName);
 
 #ifdef RADSCRIPT_DEBUG
-    inline void DebugDump( void );
+    inline void DebugDump(void);
 #endif
 
 private:
 
-    unsigned int                m_uHashedName;
+    unsigned int m_uHashedName;
 
-    ref< IRadObjectList >       m_lstIntLiteralsPtr;
+    ref <IRadObjectList> m_lstIntLiteralsPtr;
 };
 
 struct IRadTypeInfoParam
-    :
-    public IRefCount,
-    public radRefCount
-{
+        :
+                public IRefCount,
+                public radRefCount {
 public:
 
-    IMPLEMENT_REFCOUNTED( "IRadTypeInfoParam" )
+    IMPLEMENT_REFCOUNTED("IRadTypeInfoParam")
 
-    inline IRadTypeInfoParam( );
+    inline IRadTypeInfoParam();
 
-    inline virtual void Initialize( const char * szName, const char * szType, int nIndLvl );
+    inline virtual void Initialize(const char *szName, const char *szType, int nIndLvl);
 
-    inline const char * GetName( void );
-    inline unsigned int GetHashedName( void );
+    inline const char *GetName(void);
 
-    inline const char * GetType( void );
-    inline unsigned int GetHashedType( void );
+    inline unsigned int GetHashedName(void);
 
-    inline int GetIndLvl( void );
+    inline const char *GetType(void);
 
-    inline bool CompareType( IRadTypeInfoParam * pParam );
+    inline unsigned int GetHashedType(void);
+
+    inline int GetIndLvl(void);
+
+    inline bool CompareType(IRadTypeInfoParam *pParam);
 
 #ifdef RADSCRIPT_DEBUG
-    inline void DebugDump( void );
+    inline void DebugDump(void);
 #endif
 
-    unsigned int        m_uHashedName;
-    unsigned int        m_uHashedType;
-    int                 m_nIndLvl;
+    unsigned int m_uHashedName;
+    unsigned int m_uHashedType;
+    int m_nIndLvl;
 };
 
 
@@ -366,50 +385,49 @@ public:
 //============================================================================
 
 struct IRadTypeInfoMethod :
-    public IRefCount,
-    public radRefCount
-{
+        public IRefCount,
+        public radRefCount {
 public:
-    
-    IMPLEMENT_REFCOUNTED( "IRadTypeInfoMethod" )
 
-    inline IRadTypeInfoMethod( );
+    IMPLEMENT_REFCOUNTED("IRadTypeInfoMethod")
 
-    inline virtual ~IRadTypeInfoMethod( void );
+    inline IRadTypeInfoMethod();
 
-    inline void Initialize( const char * pName,
-                             unsigned int vTableOffset,
-                             IRadTypeInfoParam * pResult );
+    inline virtual ~IRadTypeInfoMethod(void);
 
-    inline void AddParamPtr( IRadTypeInfoParam * pParam );
+    inline void Initialize(const char *pName,
+                           unsigned int vTableOffset,
+                           IRadTypeInfoParam *pResult);
 
-    inline const char * GetName( void );
+    inline void AddParamPtr(IRadTypeInfoParam *pParam);
 
-    inline unsigned int GetHashedName( void );
-    
-    inline unsigned int GetNumberOfParams( void );
-    
-    inline IRadTypeInfoParam * GetParamInfoAt( unsigned int nParamIndex );
-    
-    inline IRadTypeInfoParam * GetReturnInfo( void );
-    
-    inline unsigned int GetVTableOffset( void );
+    inline const char *GetName(void);
 
-    unsigned int Invoke( void * pInterface, void * pParams, unsigned int numParams );
+    inline unsigned int GetHashedName(void);
+
+    inline unsigned int GetNumberOfParams(void);
+
+    inline IRadTypeInfoParam *GetParamInfoAt(unsigned int nParamIndex);
+
+    inline IRadTypeInfoParam *GetReturnInfo(void);
+
+    inline unsigned int GetVTableOffset(void);
+
+    unsigned int Invoke(void *pInterface, void *pParams, unsigned int numParams);
 
 #ifdef RADSCRIPT_DEBUG
-    inline void DebugDump( void );
+    inline void DebugDump(void);
 #endif
 
 private:
 
-    unsigned int                m_VTableOffset;
+    unsigned int m_VTableOffset;
 
-    ref< IRadTypeInfoParam >    m_pReturnParam;
+    ref <IRadTypeInfoParam> m_pReturnParam;
 
-    ref< IRadObjectList >       m_lstParamsPtr;
+    ref <IRadObjectList> m_lstParamsPtr;
 
-    unsigned int                m_uHashedName;
+    unsigned int m_uHashedName;
 
 };
 
@@ -418,34 +436,31 @@ private:
 // IRadTypeInfoSystem::AddString
 //========================================================================
 
-inline void IRadTypeInfoSystem::AddString( unsigned int uHashValue, const char * szString )
-{
-    if ( m_bLoadString )
-    {
-        rAssert( szString );
+inline void IRadTypeInfoSystem::AddString(unsigned int uHashValue, const char *szString) {
+    if (m_bLoadString) {
+        rAssert(szString);
 
 #ifdef RADSCRIPT_DEBUG
         // hash collision detection
         // see if string already present in the tree
-        ref< IRadString > pFindString = static_cast< IRadString * >( m_xIOt_StringTable->FindObject( uHashValue ) );
+        ref<IRadString> pFindString = static_cast<IRadString *>(m_xIOt_StringTable->FindObject(uHashValue));
 
-        if ( pFindString != NULL && strcmp( pFindString->GetChars( ), szString ) != 0 )
+        if (pFindString != NULL && strcmp(pFindString->GetChars(), szString) != 0)
         {
             char szBuffer[256];
-            sprintf( szBuffer, "radScript: string collision detected [%s] and [%s].\n",
-                     pFindString->GetChars( ), szString );
-            rDebugString( szBuffer );
+            sprintf(szBuffer, "radScript: string collision detected [%s] and [%s].\n",
+                     pFindString->GetChars(), szString);
+            rDebugString(szBuffer);
         }
-#endif 
+#endif
 
-		if ( m_xIOt_StringTable->FindObject( uHashValue ) == NULL )
-		{
-			ref< IRadString > pString;
-			::radStringCreate( & pString, m_ThisAllocator );
-			pString->Copy( szString );
-							
-			m_xIOt_StringTable->AddObject( uHashValue, pString );
-		}
+        if (m_xIOt_StringTable->FindObject(uHashValue) == NULL) {
+            ref <IRadString> pString;
+            ::radStringCreate(&pString, m_ThisAllocator);
+            pString->Copy(szString);
+
+            m_xIOt_StringTable->AddObject(uHashValue, pString);
+        }
     }
 }
 
@@ -453,28 +468,25 @@ inline void IRadTypeInfoSystem::AddString( unsigned int uHashValue, const char *
 // IRadTypeInfoSystem::LookupString
 //========================================================================
 
-inline const char * IRadTypeInfoSystem::LookupString( unsigned int uHashValue )
-{
-    if ( m_bLoadString )
-    {
-        ref< IRadString > pFindString = static_cast< IRadString * >( m_xIOt_StringTable->FindObject( uHashValue ) );
+inline const char *IRadTypeInfoSystem::LookupString(unsigned int uHashValue) {
+    if (m_bLoadString) {
+        ref <IRadString> pFindString = static_cast<IRadString *>(m_xIOt_StringTable->FindObject(
+                uHashValue));
 
-        if ( pFindString == NULL )
-        {
-            return ms_pEmptyString->GetChars( );
+        if (pFindString == NULL) {
+            return ms_pEmptyString->GetChars();
         }
 
-        return pFindString->GetChars( );
+        return pFindString->GetChars();
     }
-    return ms_pEmptyString->GetChars( );
+    return ms_pEmptyString->GetChars();
 }
 
 //========================================================================
 // IRadTypeInfoIntLiteral::GetHashedName
 //========================================================================
 
-inline unsigned int IRadTypeInfoIntLiteral::GetHashedName( void )
-{
+inline unsigned int IRadTypeInfoIntLiteral::GetHashedName(void) {
     return m_uHashedName;
 }
 
@@ -482,8 +494,7 @@ inline unsigned int IRadTypeInfoIntLiteral::GetHashedName( void )
 // IRadTypeInfoIntLiteral::GetValue
 //========================================================================
 
-inline int IRadTypeInfoIntLiteral::GetValue( void )
-{
+inline int IRadTypeInfoIntLiteral::GetValue(void) {
     return m_uHashedName;
 }
 
@@ -494,63 +505,51 @@ inline int IRadTypeInfoIntLiteral::GetValue( void )
 //
 //
 
-inline IRadTypeInfoEnum::IRadTypeInfoEnum( ) :
-    radRefCount( 0 )
-{
-    radObjectListCreate( & m_lstIntLiteralsPtr, GetThisAllocator( ) );
+inline IRadTypeInfoEnum::IRadTypeInfoEnum() :
+        radRefCount(0) {
+    radObjectListCreate(&m_lstIntLiteralsPtr, GetThisAllocator());
 }
 
-inline IRadTypeInfoEnum * radTypeInfoEnumCreate( radMemoryAllocator allocator )
-{
-    return new ( allocator ) IRadTypeInfoEnum( );
+inline IRadTypeInfoEnum *radTypeInfoEnumCreate(radMemoryAllocator allocator) {
+    return new(allocator) IRadTypeInfoEnum();
 }
 
-inline IRadTypeInfoEnum::~IRadTypeInfoEnum( void )
-{
+inline IRadTypeInfoEnum::~IRadTypeInfoEnum(void) {
 }
 
-inline void IRadTypeInfoEnum::Initialize( const char * pName )
-{
+inline void IRadTypeInfoEnum::Initialize(const char *pName) {
     // copy name
-    m_uHashedName = ::radMakeKey32( pName );
-    ::radTypeInfoSystemGet( )->AddString( m_uHashedName, pName );
+    m_uHashedName = ::radMakeKey32(pName);
+    ::radTypeInfoSystemGet()->AddString(m_uHashedName, pName);
 }
 
-inline void IRadTypeInfoEnum::AddIntLiteral( IRadTypeInfoIntLiteral * pIntLiteral )
-{
-    m_lstIntLiteralsPtr->AddObject( pIntLiteral );
+inline void IRadTypeInfoEnum::AddIntLiteral(IRadTypeInfoIntLiteral *pIntLiteral) {
+    m_lstIntLiteralsPtr->AddObject(pIntLiteral);
 }
 
-inline const char *  IRadTypeInfoEnum::GetName( void )
-{
-    return ::radTypeInfoSystemGet( )->LookupString( m_uHashedName );
+inline const char *IRadTypeInfoEnum::GetName(void) {
+    return ::radTypeInfoSystemGet()->LookupString(m_uHashedName);
 }
 
-inline unsigned int IRadTypeInfoEnum::GetHashedName( void )
-{
+inline unsigned int IRadTypeInfoEnum::GetHashedName(void) {
     return m_uHashedName;
 }
 
-inline unsigned int  IRadTypeInfoEnum::GetNumberOfIntLiteral( void )
-{
-    return m_lstIntLiteralsPtr->GetSize( );
+inline unsigned int IRadTypeInfoEnum::GetNumberOfIntLiteral(void) {
+    return m_lstIntLiteralsPtr->GetSize();
 }
 
-inline IRadTypeInfoIntLiteral * IRadTypeInfoEnum::GetIntLiteralPtrAt( unsigned int nIndex )
-{
-    return static_cast< IRadTypeInfoIntLiteral * >( m_lstIntLiteralsPtr->GetAt( nIndex ) );
+inline IRadTypeInfoIntLiteral *IRadTypeInfoEnum::GetIntLiteralPtrAt(unsigned int nIndex) {
+    return static_cast<IRadTypeInfoIntLiteral *>(m_lstIntLiteralsPtr->GetAt(nIndex));
 }
 
-inline int IRadTypeInfoEnum::GetValueByName( const char * pName )
-{
-    unsigned int uHashedName = ::radMakeKey32( pName );
-    ref< IRadTypeInfoIntLiteral > pIntLiteral;
-    for ( unsigned int i = 0; i < m_lstIntLiteralsPtr->GetSize( ); i ++ )
-    {
-        pIntLiteral = static_cast< IRadTypeInfoIntLiteral * >( m_lstIntLiteralsPtr->GetAt( i ) );
-        if ( pIntLiteral->GetHashedName( ) == uHashedName )
-        {
-            return pIntLiteral->GetValue( );
+inline int IRadTypeInfoEnum::GetValueByName(const char *pName) {
+    unsigned int uHashedName = ::radMakeKey32(pName);
+    ref <IRadTypeInfoIntLiteral> pIntLiteral;
+    for (unsigned int i = 0; i < m_lstIntLiteralsPtr->GetSize(); i++) {
+        pIntLiteral = static_cast<IRadTypeInfoIntLiteral *>(m_lstIntLiteralsPtr->GetAt(i));
+        if (pIntLiteral->GetHashedName() == uHashedName) {
+            return pIntLiteral->GetValue();
         }
     }
 
@@ -558,27 +557,27 @@ inline int IRadTypeInfoEnum::GetValueByName( const char * pName )
 
     char szBuffer[ 256 ];
 
-    sprintf( szBuffer, "radScript: Cannot find Integer Literal named [%s] in Enumeration [%s].\n",
-             pName, GetName( ) );
-    rDebugString( szBuffer );
+    sprintf(szBuffer, "radScript: Cannot find Integer Literal named [%s] in Enumeration [%s].\n",
+             pName, GetName());
+    rDebugString(szBuffer);
 
-    rAssert( 0 );
-#endif 
+    rAssert(0);
+#endif
     return 0;
 }
 
 #ifdef RADSCRIPT_DEBUG
-inline void IRadTypeInfoEnum::DebugDump( void )
+inline void IRadTypeInfoEnum::DebugDump(void)
 {
     char szBuffer[ 256 ];
 
-    sprintf( szBuffer, "Enum: Name:[%s], Number of Integer Literal: [%i]\n",
-        GetName( ), GetNumberOfIntLiteral( ) );
-    rDebugString( szBuffer );
+    sprintf(szBuffer, "Enum: Name:[%s], Number of Integer Literal: [%i]\n",
+        GetName(), GetNumberOfIntLiteral());
+    rDebugString(szBuffer);
 
-    for ( unsigned int i = 0; i < m_lstIntLiteralsPtr->GetSize( ); i ++ )
+    for (unsigned int i = 0; i <m_lstIntLiteralsPtr->GetSize(); i ++)
     {
-        static_cast< IRadTypeInfoIntLiteral * >( m_lstIntLiteralsPtr->GetAt( i ) )->DebugDump( );
+        static_cast<IRadTypeInfoIntLiteral *>(m_lstIntLiteralsPtr->GetAt(i))->DebugDump();
     }
 }
 #endif
@@ -593,30 +592,27 @@ inline void IRadTypeInfoEnum::DebugDump( void )
 // IRadTypeInfoIntLiteral::IRadTypeInfoIntLiteral
 //========================================================================
 
-inline IRadTypeInfoIntLiteral::IRadTypeInfoIntLiteral( ) :
-    radRefCount( 0 ),
-    m_uHashedName( 0 ),
-    m_nValue( 0 )
-{
+inline IRadTypeInfoIntLiteral::IRadTypeInfoIntLiteral() :
+        radRefCount(0),
+        m_uHashedName(0),
+        m_nValue(0) {
 }
 
 //========================================================================
 // IRadTypeInfoIntLiteral::~IRadTypeInfoIntLiteral
 //========================================================================
 
-inline IRadTypeInfoIntLiteral::~IRadTypeInfoIntLiteral( void )
-{
+inline IRadTypeInfoIntLiteral::~IRadTypeInfoIntLiteral(void) {
 }
 
 //========================================================================
 // IRadTypeInfoIntLiteral::Initialize
 //========================================================================
 
-inline void IRadTypeInfoIntLiteral::Initialize( const char * szName, int nValue )
-{
+inline void IRadTypeInfoIntLiteral::Initialize(const char *szName, int nValue) {
     // copy name
-    m_uHashedName = ::radMakeKey32( szName );
-    ::radTypeInfoSystemGet( )->AddString( m_uHashedName, szName );
+    m_uHashedName = ::radMakeKey32(szName);
+    ::radTypeInfoSystemGet()->AddString(m_uHashedName, szName);
 
     m_nValue = nValue;
 }
@@ -625,9 +621,8 @@ inline void IRadTypeInfoIntLiteral::Initialize( const char * szName, int nValue 
 // IRadTypeInfoIntLiteral::GetName
 //========================================================================
 
-inline const char * IRadTypeInfoIntLiteral::GetName( void )
-{
-    return ::radTypeInfoSystemGet( )->LookupString( m_uHashedName );
+inline const char *IRadTypeInfoIntLiteral::GetName(void) {
+    return ::radTypeInfoSystemGet()->LookupString(m_uHashedName);
 }
 
 #ifdef RADSCRIPT_DEBUG
@@ -635,7 +630,7 @@ inline const char * IRadTypeInfoIntLiteral::GetName( void )
 // IRadTypeInfoIntLiteral::DebugDump
 //========================================================================
 
-inline void IRadTypeInfoIntLiteral::DebugDump( void )
+inline void IRadTypeInfoIntLiteral::DebugDump(void)
 {
     char buf[ 255 ];
 
@@ -643,11 +638,11 @@ inline void IRadTypeInfoIntLiteral::DebugDump( void )
     (
         buf,
         "       Integer Iteral:  Name:[%s] Value: [%i]\n",
-        GetName( ),
-        GetValue( )
-    );
+        GetName(),
+        GetValue()
+);
 
-    rDebugString( buf );
+    rDebugString(buf);
 }
 #endif
 
@@ -655,9 +650,8 @@ inline void IRadTypeInfoIntLiteral::DebugDump( void )
 // ::radTypeInfoIntLiteralCreate
 //============================================================================
 
-inline IRadTypeInfoIntLiteral *  radTypeInfoIntLiteralCreate( radMemoryAllocator allocator )
-{
-    return new ( allocator ) IRadTypeInfoIntLiteral( );
+inline IRadTypeInfoIntLiteral *radTypeInfoIntLiteralCreate(radMemoryAllocator allocator) {
+    return new(allocator) IRadTypeInfoIntLiteral();
 }
 
 //
@@ -671,23 +665,21 @@ inline IRadTypeInfoIntLiteral *  radTypeInfoIntLiteralCreate( radMemoryAllocator
 //========================================================================
 // IRadTypeInfoParam::IRadTypeInfoParam
 //========================================================================
-inline IRadTypeInfoParam::IRadTypeInfoParam( ) :
-    radRefCount( 0 ),
-    m_uHashedType( 0 ),
-    m_nIndLvl( 0 )
-{
+inline IRadTypeInfoParam::IRadTypeInfoParam() :
+        radRefCount(0),
+        m_uHashedType(0),
+        m_nIndLvl(0) {
 }
 
 //========================================================================
 // IRadTypeInfoParam::Initialize
 //========================================================================
-inline void IRadTypeInfoParam::Initialize( const char * szName, const char * szType, int nIndLvl )
-{
-    m_uHashedName = ::radMakeKey32( szName );
-    ::radTypeInfoSystemGet( )->AddString( m_uHashedName, szName );
+inline void IRadTypeInfoParam::Initialize(const char *szName, const char *szType, int nIndLvl) {
+    m_uHashedName = ::radMakeKey32(szName);
+    ::radTypeInfoSystemGet()->AddString(m_uHashedName, szName);
 
-    m_uHashedType = ::radMakeKey32( szType );
-    ::radTypeInfoSystemGet( )->AddString( m_uHashedType, szType );
+    m_uHashedType = ::radMakeKey32(szType);
+    ::radTypeInfoSystemGet()->AddString(m_uHashedType, szType);
 
     m_nIndLvl = nIndLvl;
 }
@@ -695,51 +687,44 @@ inline void IRadTypeInfoParam::Initialize( const char * szName, const char * szT
 //========================================================================
 // IRadTypeInfoParam::GetName
 //========================================================================
-inline const char * IRadTypeInfoParam::GetName( void )
-{
-    return ::radTypeInfoSystemGet( )->LookupString( m_uHashedName );
+inline const char *IRadTypeInfoParam::GetName(void) {
+    return ::radTypeInfoSystemGet()->LookupString(m_uHashedName);
 }
 
 //========================================================================
 // IRadTypeInfoParam::GetHashedName
 //========================================================================
-inline unsigned int IRadTypeInfoParam::GetHashedName( void )
-{
+inline unsigned int IRadTypeInfoParam::GetHashedName(void) {
     return m_uHashedName;
 }
 
 //========================================================================
 // IRadTypeInfoParam::GetType
 //========================================================================
-inline const char * IRadTypeInfoParam::GetType( void )
-{
-    return ::radTypeInfoSystemGet( )->LookupString( m_uHashedType );
+inline const char *IRadTypeInfoParam::GetType(void) {
+    return ::radTypeInfoSystemGet()->LookupString(m_uHashedType);
 }
 
 //========================================================================
 // IRadTypeInfoParam::GetHashedType
 //========================================================================
-inline unsigned int IRadTypeInfoParam::GetHashedType( void )
-{
+inline unsigned int IRadTypeInfoParam::GetHashedType(void) {
     return m_uHashedType;
 }
 
 //========================================================================
 // IRadTypeInfoParam::GetIndLvl
 //========================================================================
-inline int IRadTypeInfoParam::GetIndLvl( void )
-{
+inline int IRadTypeInfoParam::GetIndLvl(void) {
     return m_nIndLvl;
 }
 
 //========================================================================
 // IRadTypeInfoParam::CompareType
 //========================================================================
-inline bool IRadTypeInfoParam::CompareType( IRadTypeInfoParam * pParam )
-{
-    if ( ( GetHashedType( ) == pParam->GetHashedType( ) ) &&
-         ( GetIndLvl( ) == pParam->GetIndLvl( ) ) )
-    {
+inline bool IRadTypeInfoParam::CompareType(IRadTypeInfoParam *pParam) {
+    if ((GetHashedType() == pParam->GetHashedType()) &&
+        (GetIndLvl() == pParam->GetIndLvl())) {
         return true;
     }
 
@@ -750,23 +735,22 @@ inline bool IRadTypeInfoParam::CompareType( IRadTypeInfoParam * pParam )
 //========================================================================
 // IRadTypeInfoParam::DebugDump
 //========================================================================
-inline void IRadTypeInfoParam::DebugDump( void )
+inline void IRadTypeInfoParam::DebugDump(void)
 {
     char buf[ 256 ];
-    sprintf( buf, "    Param: Type [%s]; IndLvl [%i].\n",
-             GetType( ),
-             GetIndLvl( ) );
+    sprintf(buf, "    Param: Type [%s]; IndLvl [%i].\n",
+             GetType(),
+             GetIndLvl());
 
-    rDebugString( buf );
+    rDebugString(buf);
 }
 #endif
 
 //========================================================================
 // radTypeInfoParamCreate
 //========================================================================
-inline IRadTypeInfoParam *  radTypeInfoParamCreate( radMemoryAllocator allocator )
-{
-    return new ( allocator ) IRadTypeInfoParam( );
+inline IRadTypeInfoParam *radTypeInfoParamCreate(radMemoryAllocator allocator) {
+    return new(allocator) IRadTypeInfoParam();
 }
 
 
@@ -782,33 +766,30 @@ inline IRadTypeInfoParam *  radTypeInfoParamCreate( radMemoryAllocator allocator
 // IRadTypeInfoMethod::IRadTypeInfoMethod
 //========================================================================
 
-inline IRadTypeInfoMethod::IRadTypeInfoMethod( ) :
-    radRefCount( 0 ),
-    m_VTableOffset( 0xDEADBEEF )
-{
-    ::radObjectListCreate( & m_lstParamsPtr, GetThisAllocator( ) );
+inline IRadTypeInfoMethod::IRadTypeInfoMethod() :
+        radRefCount(0),
+        m_VTableOffset(0xDEADBEEF) {
+    ::radObjectListCreate(&m_lstParamsPtr, GetThisAllocator());
 }
 
 //========================================================================
 // IRadTypeInfoMethod::~IRadTypeInfoMethod
 //========================================================================
-inline IRadTypeInfoMethod::~IRadTypeInfoMethod( void )
-{
+inline IRadTypeInfoMethod::~IRadTypeInfoMethod(void) {
 }
 
 //========================================================================
 // IRadTypeInfoMethod::Initialize
 //========================================================================
 inline void IRadTypeInfoMethod::Initialize
-(
-    const char * pName,
-    unsigned int vTableOffset,
-    IRadTypeInfoParam * pResult
-)
-{
+        (
+                const char *pName,
+                unsigned int vTableOffset,
+                IRadTypeInfoParam *pResult
+        ) {
     // copy name
-    m_uHashedName = ::radMakeKey32( pName );
-    ::radTypeInfoSystemGet( )->AddString( m_uHashedName, pName );
+    m_uHashedName = ::radMakeKey32(pName);
+    ::radTypeInfoSystemGet()->AddString(m_uHashedName, pName);
 
     m_VTableOffset = vTableOffset;
 
@@ -819,58 +800,51 @@ inline void IRadTypeInfoMethod::Initialize
 //========================================================================
 // IRadTypeInfoMethod::AddParamPtr
 //========================================================================
-inline void IRadTypeInfoMethod::AddParamPtr( IRadTypeInfoParam * pParam )
-{
-    rAssert( pParam );
-    m_lstParamsPtr->AddObject( pParam );
+inline void IRadTypeInfoMethod::AddParamPtr(IRadTypeInfoParam *pParam) {
+    rAssert(pParam);
+    m_lstParamsPtr->AddObject(pParam);
 }
 
 //========================================================================
 // IRadTypeInfoMethod::GetName
 //========================================================================
-inline const char * IRadTypeInfoMethod::GetName( void )
-{
-    return ::radTypeInfoSystemGet( )->LookupString( m_uHashedName );
+inline const char *IRadTypeInfoMethod::GetName(void) {
+    return ::radTypeInfoSystemGet()->LookupString(m_uHashedName);
 }
 
 //========================================================================
 // IRadTypeInfoMethod::GetName
 //========================================================================
-inline unsigned int IRadTypeInfoMethod::GetHashedName( void )
-{
+inline unsigned int IRadTypeInfoMethod::GetHashedName(void) {
     return m_uHashedName;
 }
 
 //========================================================================
 // IRadTypeInfoMethod::GetNumberOfParams
 //========================================================================
-inline unsigned int IRadTypeInfoMethod::GetNumberOfParams( void )
-{
-    return m_lstParamsPtr->GetSize( );
+inline unsigned int IRadTypeInfoMethod::GetNumberOfParams(void) {
+    return m_lstParamsPtr->GetSize();
 }
 
 //========================================================================
 // IRadTypeInfoMethod::GetParamInfo
 //========================================================================
-inline IRadTypeInfoParam * IRadTypeInfoMethod::GetParamInfoAt( unsigned int nParamIndex )
-{
-    return static_cast< IRadTypeInfoParam * >( m_lstParamsPtr->GetAt( nParamIndex ) );
+inline IRadTypeInfoParam *IRadTypeInfoMethod::GetParamInfoAt(unsigned int nParamIndex) {
+    return static_cast<IRadTypeInfoParam *>(m_lstParamsPtr->GetAt(nParamIndex));
 }
 
 //========================================================================
 // IRadTypeInfoMethod::GetReturnInfo
 //========================================================================
-inline IRadTypeInfoParam * IRadTypeInfoMethod::GetReturnInfo( void )
-{
-    rAssert( m_pReturnParam );
+inline IRadTypeInfoParam *IRadTypeInfoMethod::GetReturnInfo(void) {
+    rAssert(m_pReturnParam);
     return m_pReturnParam;
 }
 
 //========================================================================
 // IRadTypeInfoMethod::GetVTableOffset
 //========================================================================
-inline unsigned int IRadTypeInfoMethod::GetVTableOffset( void )
-{
+inline unsigned int IRadTypeInfoMethod::GetVTableOffset(void) {
     return m_VTableOffset;
 }
 
@@ -878,18 +852,18 @@ inline unsigned int IRadTypeInfoMethod::GetVTableOffset( void )
 // IRadTypeInfoMethod::DebugDump
 //========================================================================
 #ifdef RADSCRIPT_DEBUG
-inline void IRadTypeInfoMethod::DebugDump( void )
+inline void IRadTypeInfoMethod::DebugDump(void)
 {
-    ref< IRadTypeInfoParam > pParam;
+    ref<IRadTypeInfoParam> pParam;
 
     char buf[ 256 ];
-    sprintf( buf, "    Method: Name: [%s] VTable Offset: [0x%x]\n", GetName( ), GetVTableOffset( ) );
-    rDebugString( buf );
+    sprintf(buf, "    Method: Name: [%s] VTable Offset: [0x%x]\n", GetName(), GetVTableOffset());
+    rDebugString(buf);
 
-    for( unsigned int i = 0; i < GetNumberOfParams( ); i ++ )
+    for(unsigned int i = 0; i <GetNumberOfParams(); i ++)
     {
-        pParam = GetParamInfoAt( i );
-        pParam->DebugDump( );
+        pParam = GetParamInfoAt(i);
+        pParam->DebugDump();
     }
 }
 #endif
@@ -898,9 +872,8 @@ inline void IRadTypeInfoMethod::DebugDump( void )
 //============================================================================
 // ::radTypeInfoCreateMethod
 //============================================================================
-inline IRadTypeInfoMethod * radTypeInfoMethodCreate( radMemoryAllocator allocator )
-{
-    return new ( allocator ) IRadTypeInfoMethod( );
+inline IRadTypeInfoMethod *radTypeInfoMethodCreate(radMemoryAllocator allocator) {
+    return new(allocator) IRadTypeInfoMethod();
 }
 
 
@@ -911,49 +884,44 @@ inline IRadTypeInfoMethod * radTypeInfoMethodCreate( radMemoryAllocator allocato
 //
 //
 
-inline IRadTypeInfo::IRadTypeInfo( radMemoryAllocator allocator )
-    :
-    radRefCount( 0 ),
-    m_ThisAllocator( allocator )
-{
-    radObjectListCreate( & m_xIOl_Methods, allocator );
-    radObjectListCreate( & m_xIOl_Enums, allocator );
+inline IRadTypeInfo::IRadTypeInfo(radMemoryAllocator allocator)
+        :
+        radRefCount(0),
+        m_ThisAllocator(allocator) {
+    radObjectListCreate(&m_xIOl_Methods, allocator);
+    radObjectListCreate(&m_xIOl_Enums, allocator);
 }
 
 //========================================================================
 // IRadTypeInfo::IRadTypeInfo
 //========================================================================
 
-inline IRadTypeInfo::~IRadTypeInfo( void )
-{
+inline IRadTypeInfo::~IRadTypeInfo(void) {
 }
 
 //========================================================================
 // IRadTypeInfo::Initialize
 //========================================================================
 
-inline void IRadTypeInfo::Initialize( const char * pName )
-{
+inline void IRadTypeInfo::Initialize(const char *pName) {
     // copy name
-    m_uHashedName = ::radMakeKey32( pName );
-    ::radTypeInfoSystemGet( )->AddString( m_uHashedName, pName );
+    m_uHashedName = ::radMakeKey32(pName);
+    ::radTypeInfoSystemGet()->AddString(m_uHashedName, pName);
 }
 
 //========================================================================
 // IRadTypeInfo::GetName
 //========================================================================
 
-inline const char * IRadTypeInfo::GetName( void )
-{
-    return ::radTypeInfoSystemGet( )->LookupString( m_uHashedName );
+inline const char *IRadTypeInfo::GetName(void) {
+    return ::radTypeInfoSystemGet()->LookupString(m_uHashedName);
 }
 
 //========================================================================
 // IRadTypeInfo::GetHashedName
 //========================================================================
 
-inline unsigned int IRadTypeInfo::GetHashedName( void )
-{
+inline unsigned int IRadTypeInfo::GetHashedName(void) {
     return m_uHashedName;
 }
 
@@ -961,43 +929,37 @@ inline unsigned int IRadTypeInfo::GetHashedName( void )
 // IRadTypeInfo::GetNumberOfMethods
 //========================================================================
 
-inline unsigned int IRadTypeInfo::GetNumberOfMethods( void )
-{
-    return m_xIOl_Methods->GetSize( );
-} 
+inline unsigned int IRadTypeInfo::GetNumberOfMethods(void) {
+    return m_xIOl_Methods->GetSize();
+}
 //========================================================================
 // IRadTypeInfo::AddMethod
 //========================================================================
-   
-inline void IRadTypeInfo::AddMethod( IRadTypeInfoMethod * pIRadTypeInfoMethod )
-{
-    m_xIOl_Methods->AddObject( (IRefCount*) pIRadTypeInfoMethod );
-} 
+
+inline void IRadTypeInfo::AddMethod(IRadTypeInfoMethod *pIRadTypeInfoMethod) {
+    m_xIOl_Methods->AddObject((IRefCount *) pIRadTypeInfoMethod);
+}
 
 //========================================================================
 // IRadTypeInfo::GetMethodByIndex
 //========================================================================
 
-inline IRadTypeInfoMethod * IRadTypeInfo::GetMethodByIndex( unsigned int i )
-{
-    return static_cast< IRadTypeInfoMethod * >( m_xIOl_Methods->GetAt( i ) );
+inline IRadTypeInfoMethod *IRadTypeInfo::GetMethodByIndex(unsigned int i) {
+    return static_cast<IRadTypeInfoMethod *>(m_xIOl_Methods->GetAt(i));
 }
 
 //========================================================================
 // IRadTypeInfo::GetMethodByName
 //========================================================================
 
-inline IRadTypeInfoMethod * IRadTypeInfo::GetMethodByName( const char * pName )
-{
-    IRadTypeInfoMethod * pITim = NULL;
-    unsigned int uHashedName = ::radMakeKey32( pName );
+inline IRadTypeInfoMethod *IRadTypeInfo::GetMethodByName(const char *pName) {
+    IRadTypeInfoMethod *pITim = NULL;
+    unsigned int uHashedName = ::radMakeKey32(pName);
 
-    for( unsigned int i = 0; i < m_xIOl_Methods->GetSize( ); i ++ )
-    {
-        pITim = static_cast< IRadTypeInfoMethod * >( m_xIOl_Methods->GetAt( i ) );
+    for (unsigned int i = 0; i < m_xIOl_Methods->GetSize(); i++) {
+        pITim = static_cast<IRadTypeInfoMethod *>(m_xIOl_Methods->GetAt(i));
 
-        if ( pITim->GetHashedName( ) == uHashedName )
-        {
+        if (pITim->GetHashedName() == uHashedName) {
             return pITim;
         }
     }
@@ -1009,35 +971,30 @@ inline IRadTypeInfoMethod * IRadTypeInfo::GetMethodByName( const char * pName )
 // IRadTypeInfo::GetNumberOfEnums
 //========================================================================
 
-inline unsigned int IRadTypeInfo::GetNumberOfEnums( void )
-{
-    return m_xIOl_Enums->GetSize( );
+inline unsigned int IRadTypeInfo::GetNumberOfEnums(void) {
+    return m_xIOl_Enums->GetSize();
 }
 
 //========================================================================
 // IRadTypeInfo::GetNumberOfEnums
 //========================================================================
 
-inline IRadTypeInfoEnum * IRadTypeInfo::GetEnumByIndex( unsigned int index )
-{
-    return static_cast< IRadTypeInfoEnum * >( m_xIOl_Enums->GetAt( index ) );
+inline IRadTypeInfoEnum *IRadTypeInfo::GetEnumByIndex(unsigned int index) {
+    return static_cast<IRadTypeInfoEnum *>(m_xIOl_Enums->GetAt(index));
 }
 
 //========================================================================
 // IRadTypeInfo::GetEnumByName  Linear search dohhhhhh!!!
 //========================================================================
 
-inline IRadTypeInfoEnum * IRadTypeInfo::GetEnumByName( const char * pName )
-{
-    ref< IRadTypeInfoEnum > pTypeInfoEnum = NULL;
-    unsigned int uEnumName = ::radMakeKey32( pName );
+inline IRadTypeInfoEnum *IRadTypeInfo::GetEnumByName(const char *pName) {
+    ref <IRadTypeInfoEnum> pTypeInfoEnum = NULL;
+    unsigned int uEnumName = ::radMakeKey32(pName);
 
-    for (unsigned int i = 0; i < m_xIOl_Enums->GetSize( ); i++)
-    {
-        pTypeInfoEnum = static_cast< IRadTypeInfoEnum * >( m_xIOl_Enums->GetAt( i ) );
+    for (unsigned int i = 0; i < m_xIOl_Enums->GetSize(); i++) {
+        pTypeInfoEnum = static_cast<IRadTypeInfoEnum *>(m_xIOl_Enums->GetAt(i));
 
-        if ( pTypeInfoEnum->GetHashedName( ) == uEnumName )
-        {
+        if (pTypeInfoEnum->GetHashedName() == uEnumName) {
             return pTypeInfoEnum;
         }
     }
@@ -1048,13 +1005,12 @@ inline IRadTypeInfoEnum * IRadTypeInfo::GetEnumByName( const char * pName )
 // IRadTypeInfo::AddEnum
 //========================================================================
 
-inline void IRadTypeInfo::AddEnum( IRadTypeInfoEnum * pIRadTypeInfoEnum )
-{
-    m_xIOl_Enums->AddObject( pIRadTypeInfoEnum );
+inline void IRadTypeInfo::AddEnum(IRadTypeInfoEnum *pIRadTypeInfoEnum) {
+    m_xIOl_Enums->AddObject(pIRadTypeInfoEnum);
 }
 
 #ifdef RADSCRIPT_DEBUG
-inline void IRadTypeInfo::DebugDump( void )
+inline void IRadTypeInfo::DebugDump(void)
 {
     char buf[ 255 ];
 
@@ -1062,20 +1018,20 @@ inline void IRadTypeInfo::DebugDump( void )
     (
         buf,
         "TypeInfo:  Name:[%s] NumMethods: [0x%x]\n",
-        GetName( ),
-        GetNumberOfMethods( )
-    );
+        GetName(),
+        GetNumberOfMethods()
+);
 
-    rDebugString( buf );
+    rDebugString(buf);
 
-    for( unsigned int i = 0; i < m_xIOl_Methods->GetSize( ); i ++ )
+    for(unsigned int i = 0; i <m_xIOl_Methods->GetSize(); i ++)
     {
-        static_cast< IRadTypeInfoMethod * >( m_xIOl_Methods->GetAt( i ) )->DebugDump( );
+        static_cast<IRadTypeInfoMethod *>(m_xIOl_Methods->GetAt(i))->DebugDump();
     }
 
-    for( unsigned int j = 0; j < m_xIOl_Enums->GetSize( ); j ++ )
+    for(unsigned int j = 0; j <m_xIOl_Enums->GetSize(); j ++)
     {
-        static_cast< IRadTypeInfoEnum * >( m_xIOl_Enums->GetAt( j ) )->DebugDump( );
+        static_cast<IRadTypeInfoEnum *>(m_xIOl_Enums->GetAt(j))->DebugDump();
     }
 }
 #endif
@@ -1084,9 +1040,8 @@ inline void IRadTypeInfo::DebugDump( void )
 // ::radTypeInfoCreate
 //============================================================================
 
-inline IRadTypeInfo * radTypeInfoCreate( radMemoryAllocator allocator )
-{
-    return new ( allocator ) IRadTypeInfo( allocator );
+inline IRadTypeInfo *radTypeInfoCreate(radMemoryAllocator allocator) {
+    return new(allocator) IRadTypeInfo(allocator);
 }
 
 
@@ -1096,21 +1051,21 @@ inline IRadTypeInfo * radTypeInfoCreate( radMemoryAllocator allocator )
 //
 //
 
-inline IRadTypeInfoSystem::IRadTypeInfoSystem( radMemoryAllocator allocator ) :
-    radRefCount( 0 ),
-    m_ThisAllocator( allocator ),
+inline IRadTypeInfoSystem::IRadTypeInfoSystem(radMemoryAllocator allocator) :
+        radRefCount(0),
+        m_ThisAllocator(allocator),
 #ifdef RADSCRIPT_DEBUG
-    m_bLoadString( true )
+        m_bLoadString(true)
 #else
-    m_bLoadString( false )
+        m_bLoadString(false)
 #endif
 {
     // singalton object check
-    rAssert( s_pTheTypeInfoSystem == NULL );
+    rAssert(s_pTheTypeInfoSystem == NULL);
 
-    ::radObjectListCreate( & m_xIOl_TypeInfo, m_ThisAllocator );
-    ::radObjectListCreate( & m_xIOl_Enum, m_ThisAllocator );
-    m_xIOt_StringTable = new( m_ThisAllocator ) radObjectBTree( );
+    ::radObjectListCreate(&m_xIOl_TypeInfo, m_ThisAllocator);
+    ::radObjectListCreate(&m_xIOl_Enum, m_ThisAllocator);
+    m_xIOt_StringTable = new(m_ThisAllocator) radObjectBTree();
 
     s_pTheTypeInfoSystem = this;
 }
@@ -1119,8 +1074,7 @@ inline IRadTypeInfoSystem::IRadTypeInfoSystem( radMemoryAllocator allocator ) :
 // IRadTypeInfoSystem::~IRadTypeInfoSystem
 //========================================================================
 
-inline IRadTypeInfoSystem::~IRadTypeInfoSystem( void )
-{
+inline IRadTypeInfoSystem::~IRadTypeInfoSystem(void) {
 
 }
 
@@ -1128,35 +1082,33 @@ inline IRadTypeInfoSystem::~IRadTypeInfoSystem( void )
 // IRadTypeInfoSystem::LoadTypeInfo
 //========================================================================
 
-inline void IRadTypeInfoSystem::LoadTypeInfo( radMemoryAllocator alloc, const char * pFileName, TypeInfoLoadCallback *pCb, void * pUserData )
-{
-    ref< IRadTypeInfoLoader > xIRadTypeInfoLoader( ::radTypeInfoLoaderCreate( RADMEMORY_ALLOC_TEMP ) );
+inline void IRadTypeInfoSystem::LoadTypeInfo(radMemoryAllocator alloc, const char *pFileName,
+                                             TypeInfoLoadCallback *pCb, void *pUserData) {
+    ref <IRadTypeInfoLoader> xIRadTypeInfoLoader(::radTypeInfoLoaderCreate(RADMEMORY_ALLOC_TEMP));
 
-    xIRadTypeInfoLoader->Initialize( this, alloc, pFileName, pCb, pUserData );
+    xIRadTypeInfoLoader->Initialize(this, alloc, pFileName, pCb, pUserData);
 }
 
 //========================================================================
 // IRadTypeInfoSystem::GetTypeInfo
 //========================================================================
 
-inline IRadTypeInfo * IRadTypeInfoSystem::GetTypeInfo( IRefCount * pIRefCount )
-{
-    rAssert( pIRefCount != NULL );
+inline IRadTypeInfo *IRadTypeInfoSystem::GetTypeInfo(IRefCount *pIRefCount) {
+    rAssert(pIRefCount != NULL);
 
-    if ( pIRefCount != NULL )
-    {
+    if (pIRefCount != NULL) {
         //
         // Figure out what class this thing is
         //
 
-        const char * pName = typeid( *pIRefCount).name();
-    
-        rAssert( pName != NULL );
+        const char *pName = typeid(*pIRefCount).name();
 
-        char interfaceName[ 128 ]; 
-        const char * pClassName = NULL;
-    
-        #if defined (RAD_WIN32) || defined (RAD_XBOX)
+        rAssert(pName != NULL);
+
+        char interfaceName[128];
+        const char *pClassName = NULL;
+
+#if defined (RAD_WIN32) || defined (RAD_XBOX)
         {
             //
             // The pName takes the form "class Scope::ClassName" or
@@ -1166,63 +1118,61 @@ inline IRadTypeInfo * IRadTypeInfoSystem::GetTypeInfo( IRefCount * pIRefCount )
             //
             unsigned int uStrIdx = 0;
             pClassName = pName;
-            while( pName[ uStrIdx ] != '\0' )
+            while(pName[ uStrIdx ] != '\0')
             {
                 if
                 (
-                    ( pName[ uStrIdx ] == ':' ) ||
-                    ( pName[ uStrIdx ] == ' ' )
-                )
+                    (pName[ uStrIdx ] == ':') ||
+                    (pName[ uStrIdx ] == ' ')
+)
                 {
                     pClassName = pName + uStrIdx + 1;
-                    rAssert( *pClassName != '\0' );
+                    rAssert(*pClassName != '\0');
                 }
                 uStrIdx++;
             }
             interfaceName[ 0 ] = 'I';
-            strcpy( interfaceName + 1, pClassName );
+            strcpy(interfaceName + 1, pClassName);
         }
-        #endif
-   
-	    #ifdef RAD_PS2
+#endif
 
-            unsigned int crappyGccShit;
+#ifdef RAD_PS2
 
-            for( crappyGccShit = 0; crappyGccShit < strlen( pName ); crappyGccShit ++ )
+        unsigned int crappyGccShit;
+
+        for(crappyGccShit = 0; crappyGccShit <strlen(pName); crappyGccShit ++)
+        {
+            if (!(pName[ crappyGccShit ]>= '0' && pName[ crappyGccShit ] <= '9'))
             {
-                if ( !( pName[ crappyGccShit ] >= '0' && pName[ crappyGccShit ] <= '9' ) )
-                {
-                    break;
-                }
+                break;
             }
+        }
 
-            pClassName = pName + crappyGccShit;
-		    
-		    // compiler does not like this instruction...
-		    sprintf( interfaceName, "%s%s", "I", pClassName );
+        pClassName = pName + crappyGccShit;
 
-        #endif
-    
-        #ifdef RAD_GAMECUBE
-		    sprintf( interfaceName, "%s%s", "I", pName ); // Yay, metroworks got it right!
-        #endif
+        // compiler does not like this instruction...
+        sprintf(interfaceName, "%s%s", "I", pClassName);
 
-        interfaceName[ 1 ] = toupper( interfaceName[ 1 ] );                                             
+#endif
+
+#ifdef RAD_GAMECUBE
+        sprintf(interfaceName, "%s%s", "I", pName); // Yay, metroworks got it right!
+#endif
+
+        interfaceName[1] = toupper(interfaceName[1]);
 
         //
         // find the typeinfo with the same name
         //
-        unsigned int nHashedName = ::radMakeKey32( interfaceName );
-        ref< IRadTypeInfo > pIRadTypeInfo = NULL;
+        unsigned int nHashedName = ::radMakeKey32(interfaceName);
+        ref <IRadTypeInfo> pIRadTypeInfo = NULL;
 
-        for( unsigned int i = 0; i < m_xIOl_TypeInfo->GetSize( ); i++ )
-        {
-            pIRadTypeInfo = static_cast< IRadTypeInfo * >( m_xIOl_TypeInfo->GetAt( i ) );
+        for (unsigned int i = 0; i < m_xIOl_TypeInfo->GetSize(); i++) {
+            pIRadTypeInfo = static_cast<IRadTypeInfo *>(m_xIOl_TypeInfo->GetAt(i));
 
-            if ( pIRadTypeInfo->GetHashedName( ) == nHashedName )
-            {
+            if (pIRadTypeInfo->GetHashedName() == nHashedName) {
                 return pIRadTypeInfo;
-            }      
+            }
         }
     }
 
@@ -1233,78 +1183,70 @@ inline IRadTypeInfo * IRadTypeInfoSystem::GetTypeInfo( IRefCount * pIRefCount )
 // IRadTypeInfoSystem::GetTypeInfoMethod
 //========================================================================
 
-inline IRadTypeInfoMethod * IRadTypeInfoSystem::GetTypeInfoMethod( IRefCount * pIRefCount, const char * pMethodName )
-{
-    ref< IRadTypeInfo > xITi = GetTypeInfo( pIRefCount );
+inline IRadTypeInfoMethod *
+IRadTypeInfoSystem::GetTypeInfoMethod(IRefCount *pIRefCount, const char *pMethodName) {
+    ref <IRadTypeInfo> xITi = GetTypeInfo(pIRefCount);
 
-    if ( xITi != NULL )
-    {
-        return xITi->GetMethodByName( pMethodName );
+    if (xITi != NULL) {
+        return xITi->GetMethodByName(pMethodName);
     }
 
     return NULL;
 }
-             
+
 //========================================================================
 // IRadTypeInfoSystem::AddTypeInfo
 //========================================================================
 
-inline void IRadTypeInfoSystem::AddTypeInfo( IRadTypeInfo * pIRadTypeInfo )
-{
-    m_xIOl_TypeInfo->AddObject( static_cast< IRefCount * >( pIRadTypeInfo ) );
+inline void IRadTypeInfoSystem::AddTypeInfo(IRadTypeInfo *pIRadTypeInfo) {
+    m_xIOl_TypeInfo->AddObject(static_cast<IRefCount *>(pIRadTypeInfo));
 }
 
 //========================================================================
 // IRadTypeInfoSystem::AddEnum
 //========================================================================
 
-inline void IRadTypeInfoSystem::AddEnum( IRadTypeInfoEnum * pIRadTypeInfoEnum )
-{
-    m_xIOl_Enum->AddObject( static_cast< IRefCount * >( pIRadTypeInfoEnum ) );
+inline void IRadTypeInfoSystem::AddEnum(IRadTypeInfoEnum *pIRadTypeInfoEnum) {
+    m_xIOl_Enum->AddObject(static_cast<IRefCount *>(pIRadTypeInfoEnum));
 }
 
 //========================================================================
 // IRadTypeInfoSystem::IRadTypeInfoSystem
 //========================================================================
 
-int IRadTypeInfoSystem::GetTypeInfoCount( void )
-{
-    return m_xIOl_TypeInfo->GetSize( );
+int IRadTypeInfoSystem::GetTypeInfoCount(void) {
+    return m_xIOl_TypeInfo->GetSize();
 }
 
 //========================================================================
 // IRadTypeInfoSystem::GetTypeInfoAt
 //========================================================================
 
-inline IRadTypeInfo * IRadTypeInfoSystem::GetTypeInfoAt( unsigned int index )
-{
-    return static_cast< IRadTypeInfo * >( m_xIOl_TypeInfo->GetAt( index ) );
+inline IRadTypeInfo *IRadTypeInfoSystem::GetTypeInfoAt(unsigned int index) {
+    return static_cast<IRadTypeInfo *>(m_xIOl_TypeInfo->GetAt(index));
 }
 
 //========================================================================
 // IRadTypeInfoSystem::IRadTypeInfoSystem
 //========================================================================
 
-inline int IRadTypeInfoSystem::GetEnumCount( void )
-{
-    return m_xIOl_Enum->GetSize( );
+inline int IRadTypeInfoSystem::GetEnumCount(void) {
+    return m_xIOl_Enum->GetSize();
 }
 
 //========================================================================
 // IRadTypeInfoSystem::GetEnumAt
 //========================================================================
 
-inline IRadTypeInfoEnum * IRadTypeInfoSystem::GetEnumAt( unsigned int index )
-{
-    return static_cast< IRadTypeInfoEnum * >( m_xIOl_Enum->GetAt( index ) );
+inline IRadTypeInfoEnum *IRadTypeInfoSystem::GetEnumAt(unsigned int index) {
+    return static_cast<IRadTypeInfoEnum *>(m_xIOl_Enum->GetAt(index));
 }
 
 //========================================================================
 // IRadTypeInfoSystem::IRadTypeInfoSystem
 //========================================================================
 
-inline bool IRadTypeInfoSystem::GetLoadString( void )
-{
+inline bool IRadTypeInfoSystem::GetLoadString(void) {
     return m_bLoadString;
 }
 
@@ -1312,8 +1254,7 @@ inline bool IRadTypeInfoSystem::GetLoadString( void )
 // IRadTypeInfoSystem::SetLoadString
 //========================================================================
 
-inline void IRadTypeInfoSystem::SetLoadString( bool bLoadString )
-{
+inline void IRadTypeInfoSystem::SetLoadString(bool bLoadString) {
     m_bLoadString = bLoadString;
 }
 
@@ -1321,9 +1262,8 @@ inline void IRadTypeInfoSystem::SetLoadString( bool bLoadString )
 // IRadTypeInfoSystem::EmptyStrTbl
 //========================================================================
 
-inline void IRadTypeInfoSystem::EmptyStrTbl( )
-{
-    m_xIOt_StringTable->RemoveAll( );
+inline void IRadTypeInfoSystem::EmptyStrTbl() {
+    m_xIOt_StringTable->RemoveAll();
 }
 
 #ifdef RADSCRIPT_DEBUG
@@ -1331,17 +1271,17 @@ inline void IRadTypeInfoSystem::EmptyStrTbl( )
 // IRadTypeInfoSystem::DebugDump
 //========================================================================
 
-inline void IRadTypeInfoSystem::DebugDump( void )
+inline void IRadTypeInfoSystem::DebugDump(void)
 {
-    rDebugString( "IRadTypeInfoSystem Dump:\n" );
-    rDebugString( "--------------------\n" );
+    rDebugString("IRadTypeInfoSystem Dump:\n");
+    rDebugString("--------------------\n");
 
     IRadTypeInfo * pIRadTypeInfo;
 
-    for ( unsigned int i = 0; i < m_xIOl_TypeInfo->GetSize( ); i ++ )
+    for (unsigned int i = 0; i <m_xIOl_TypeInfo->GetSize(); i ++)
     {
-        pIRadTypeInfo = static_cast< IRadTypeInfo * >( m_xIOl_TypeInfo->GetAt( i ) );
-        pIRadTypeInfo->DebugDump( );
+        pIRadTypeInfo = static_cast<IRadTypeInfo *>(m_xIOl_TypeInfo->GetAt(i));
+        pIRadTypeInfo->DebugDump();
     }
 }
 #endif

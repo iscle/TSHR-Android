@@ -20,47 +20,43 @@ static radMemoryAllocator g_RadFactoryAllocator = RADMEMORY_ALLOC_DEFAULT;
 //============================================================================
 
 struct radFactoryNode
-    :
-    public radObject
-{
-    IMPLEMENT_BASEOBJECT( "radFactoryNode" )
+        :
+                public radObject {
+    IMPLEMENT_BASEOBJECT("radFactoryNode")
 
     radFactoryNode
-    (
-        radKey32 key,
-        radFactoryProc * pFactoryProc,
-        radFactoryOutParamProc * pFactoryProcOutParamProc,
-        radFactoryNode * pNext
-    )
-        :
-        m_RadKey( key ),
-        m_pFactoryProc( pFactoryProc ),
-        m_pFactoryOutParamProc( pFactoryProcOutParamProc ),
-        m_pNext( pNext )
-    {
-        rAssert( pFactoryProc != NULL || pFactoryProcOutParamProc != NULL );
+            (
+                    radKey32 key,
+                    radFactoryProc *pFactoryProc,
+                    radFactoryOutParamProc *pFactoryProcOutParamProc,
+                    radFactoryNode *pNext
+            )
+            :
+            m_RadKey(key),
+            m_pFactoryProc(pFactoryProc),
+            m_pFactoryOutParamProc(pFactoryProcOutParamProc),
+            m_pNext(pNext) {
+        rAssert(pFactoryProc != NULL || pFactoryProcOutParamProc != NULL);
     }
 
-    radKey32                 m_RadKey;
-    radFactoryProc *         m_pFactoryProc;
-    radFactoryOutParamProc * m_pFactoryOutParamProc;
-    
-    radFactoryNode * m_pNext;
+    radKey32 m_RadKey;
+    radFactoryProc *m_pFactoryProc;
+    radFactoryOutParamProc *m_pFactoryOutParamProc;
+
+    radFactoryNode *m_pNext;
 };
 
-static radFactoryNode * g_pScriptableHead;
+static radFactoryNode *g_pScriptableHead;
 
 //============================================================================
 // Function: ::radFactoryInitialize
 //============================================================================
 
-void radFactoryInitialize( radMemoryAllocator allocator)
-{
+void radFactoryInitialize(radMemoryAllocator allocator) {
     g_RadFactoryAllocator = allocator;
 
-    if ( g_RadFactoryInitializeCount == 0 )
-    {
-        rAssert( g_pScriptableHead == NULL );
+    if (g_RadFactoryInitializeCount == 0) {
+        rAssert(g_pScriptableHead == NULL);
     }
 
     g_RadFactoryInitializeCount++;
@@ -70,19 +66,16 @@ void radFactoryInitialize( radMemoryAllocator allocator)
 // Function: ::radFactoryTerminate
 //============================================================================
 
-void radFactoryTerminate( void )
-{
-    rAssert( g_RadFactoryInitializeCount > 0 );
+void radFactoryTerminate(void) {
+    rAssert(g_RadFactoryInitializeCount > 0);
 
     g_RadFactoryInitializeCount--;
 
-    if ( g_RadFactoryInitializeCount == 0 )
-    {
-        radFactoryNode * pSearch = g_pScriptableHead;
-        radFactoryNode * pTemp = NULL;
+    if (g_RadFactoryInitializeCount == 0) {
+        radFactoryNode *pSearch = g_pScriptableHead;
+        radFactoryNode *pTemp = NULL;
 
-        while( pSearch != NULL )
-        {
+        while (pSearch != NULL) {
             pTemp = pSearch;
             pSearch = pSearch->m_pNext;
             delete pTemp;
@@ -90,70 +83,68 @@ void radFactoryTerminate( void )
 
         g_pScriptableHead = NULL;
     }
-        
+
 }
 
 //============================================================================
 // Function: ::radFactoryRegister
 //============================================================================
 
-void radFactoryRegister( const char * pStringName, radFactoryProc * pFactory )
-{
-    rAssert( g_RadFactoryInitializeCount > 0 );
+void radFactoryRegister(const char *pStringName, radFactoryProc *pFactory) {
+    rAssert(g_RadFactoryInitializeCount > 0);
 
-    radFactoryRegister( radMakeKey32( pStringName ), pFactory );
+    radFactoryRegister(radMakeKey32(pStringName), pFactory);
 }
 
 //============================================================================
 // Function: ::radFactoryRegister
 //============================================================================
 
-void radFactoryRegister( radKey32 key, radFactoryProc * pFactory )
-{
-    rAssert( g_RadFactoryInitializeCount > 0 );
+void radFactoryRegister(radKey32 key, radFactoryProc *pFactory) {
+    rAssert(g_RadFactoryInitializeCount > 0);
 
-    radFactoryNode * pNew = new ( g_RadFactoryAllocator ) radFactoryNode( key, pFactory, NULL, g_pScriptableHead );
-    g_pScriptableHead = pNew;    
+    radFactoryNode *pNew = new(g_RadFactoryAllocator) radFactoryNode(key, pFactory, NULL,
+                                                                     g_pScriptableHead);
+    g_pScriptableHead = pNew;
 }
 
 //============================================================================
 // Function: ::radFactoryRegister
 //============================================================================
 
-void radFactoryRegister( const char * pClassName, radFactoryOutParamProc * pFactoryOutParamProc )
-{
-    rAssert( g_RadFactoryInitializeCount > 0 );
-    
-    radFactoryRegister( radMakeKey32( pClassName ), pFactoryOutParamProc );
+void radFactoryRegister(const char *pClassName, radFactoryOutParamProc *pFactoryOutParamProc) {
+    rAssert(g_RadFactoryInitializeCount > 0);
+
+    radFactoryRegister(radMakeKey32(pClassName), pFactoryOutParamProc);
 }
 
 //============================================================================
 // Function: ::radFactoryRegister
 //============================================================================
 
-void radFactoryRegister( radKey32 key, radFactoryOutParamProc * pFactoryOutParamProc )
-{
-    rAssert( g_RadFactoryInitializeCount > 0 );
+void radFactoryRegister(radKey32 key, radFactoryOutParamProc *pFactoryOutParamProc) {
+    rAssert(g_RadFactoryInitializeCount > 0);
 
-    radFactoryNode * pNew = new ( g_RadFactoryAllocator ) radFactoryNode( key, NULL, pFactoryOutParamProc, g_pScriptableHead );
-    g_pScriptableHead = pNew;  
+    radFactoryNode *pNew = new(g_RadFactoryAllocator) radFactoryNode(key, NULL,
+                                                                     pFactoryOutParamProc,
+                                                                     g_pScriptableHead);
+    g_pScriptableHead = pNew;
 }
 
 //============================================================================
 // Function: ::radFactoryCreateInstance
 //============================================================================
 
-void radFactoryCreateInstance(  const char * pStringName, IRefCount ** ppIRefCount, radMemoryAllocator allocator )
-{
-    rAssert( g_RadFactoryInitializeCount > 0 );
+void radFactoryCreateInstance(const char *pStringName, IRefCount **ppIRefCount,
+                              radMemoryAllocator allocator) {
+    rAssert(g_RadFactoryInitializeCount > 0);
 
-    radFactoryCreateInstance( radMakeKey32( pStringName ), ppIRefCount, allocator );
+    radFactoryCreateInstance(radMakeKey32(pStringName), ppIRefCount, allocator);
 
-    if ( *ppIRefCount == NULL )
-    {
-        rDebugString( "radFactory: Failed to create instance: [" );
-        rDebugString( pStringName );
-        rDebugString( "]\n" );
+    if (*ppIRefCount == NULL) {
+        rDebugString("radFactory: Failed to create instance: [");
+        rDebugString(pStringName);
+        rDebugString("]\n");
     }
 }
 
@@ -161,33 +152,26 @@ void radFactoryCreateInstance(  const char * pStringName, IRefCount ** ppIRefCou
 // Function: ::radFactoryCreateInstance
 //============================================================================
 
-void radFactoryCreateInstance( radKey32 key,IRefCount ** ppIRefCount, radMemoryAllocator allocator )
-{
-    rAssert( g_RadFactoryInitializeCount > 0 );
-    rAssert( ppIRefCount != NULL );   
+void radFactoryCreateInstance(radKey32 key, IRefCount **ppIRefCount, radMemoryAllocator allocator) {
+    rAssert(g_RadFactoryInitializeCount > 0);
+    rAssert(ppIRefCount != NULL);
 
-    radFactoryNode * pSearch = g_pScriptableHead;
+    radFactoryNode *pSearch = g_pScriptableHead;
 
-    while( pSearch != NULL )
-    {
-        if ( pSearch->m_RadKey == key )
-        {
-            if ( pSearch->m_pFactoryProc != NULL )
-            {
-                *ppIRefCount = pSearch->m_pFactoryProc( allocator );                
-               
-                if ( *ppIRefCount != NULL )
-                {
-                    (*ppIRefCount)->AddRef( );
+    while (pSearch != NULL) {
+        if (pSearch->m_RadKey == key) {
+            if (pSearch->m_pFactoryProc != NULL) {
+                *ppIRefCount = pSearch->m_pFactoryProc(allocator);
+
+                if (*ppIRefCount != NULL) {
+                    (*ppIRefCount)->AddRef();
                 }
-                
-                return;              
-                                
-            }
-            else if ( pSearch->m_pFactoryOutParamProc != NULL )
-            {
-                pSearch->m_pFactoryOutParamProc( ppIRefCount, allocator );
-                
+
+                return;
+
+            } else if (pSearch->m_pFactoryOutParamProc != NULL) {
+                pSearch->m_pFactoryOutParamProc(ppIRefCount, allocator);
+
                 return;
             }
         }
@@ -196,5 +180,5 @@ void radFactoryCreateInstance( radKey32 key,IRefCount ** ppIRefCount, radMemoryA
     }
 
     *ppIRefCount = NULL;
-    
+
 }
