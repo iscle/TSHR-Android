@@ -13,7 +13,7 @@
 //
 //=============================================================================
 
-#ifndef	RAD1394DRIVER_H
+#ifndef    RAD1394DRIVER_H
 #define RAD1394DRIVER_H
 
 //=============================================================================
@@ -27,7 +27,8 @@
 //
 // This is the GUID of our Win2K device driver. {24E72B3A-0D7F-4931-8475-F46E187B0955}
 //
-DEFINE_GUID( rad1394DriverGUID, 0x24e72b3a, 0xd7f, 0x4931, 0x84, 0x75, 0xf4, 0x6e, 0x18, 0x7b, 0x9, 0x55);
+DEFINE_GUID(rad1394DriverGUID,
+0x24e72b3a, 0xd7f, 0x4931, 0x84, 0x75, 0xf4, 0x6e, 0x18, 0x7b, 0x9, 0x55);
 
 //
 // The following defintions are found in NT DDK file "devioctl.h". To prevent
@@ -39,8 +40,8 @@ DEFINE_GUID( rad1394DriverGUID, 0x24e72b3a, 0xd7f, 0x4931, 0x84, 0x75, 0xf4, 0x6
 #define FILE_DEVICE_UNKNOWN             0x00000022
 #define METHOD_BUFFERED                 0
 #define FILE_ANY_ACCESS                 0
-#define CTL_CODE( DeviceType, Function, Method, Access ) (                 \
-                  ((DeviceType) << 16) | ((Access) << 14) | ((Function) << 2) | (Method) )
+#define CTL_CODE(DeviceType, Function, Method, Access) (\
+                  ((DeviceType) <<16) | ((Access) <<14) | ((Function) <<2) | (Method))
 #endif
 #endif
 
@@ -50,22 +51,22 @@ DEFINE_GUID( rad1394DriverGUID, 0x24e72b3a, 0xd7f, 0x4931, 0x84, 0x75, 0xf4, 0x6
 //
 #define RAD1394_IOCTL_INDEX     0x0800
 
-#define RAD1394_IOCTL_READ                              CTL_CODE( FILE_DEVICE_UNKNOWN,  \
+#define RAD1394_IOCTL_READ                              CTL_CODE(FILE_DEVICE_UNKNOWN,  \
                                                         RAD1394_IOCTL_INDEX + 0,        \
                                                         METHOD_BUFFERED,                \
                                                         FILE_ANY_ACCESS)
 
-#define RAD1394_IOCTL_WRITE                             CTL_CODE( FILE_DEVICE_UNKNOWN,  \
+#define RAD1394_IOCTL_WRITE                             CTL_CODE(FILE_DEVICE_UNKNOWN,  \
                                                         RAD1394_IOCTL_INDEX + 1,        \
                                                         METHOD_BUFFERED,                \
                                                         FILE_ANY_ACCESS)
 
-#define RAD1394_IOCTL_GET_ADDRESS_FROM_DEVICE           CTL_CODE( FILE_DEVICE_UNKNOWN,  \
+#define RAD1394_IOCTL_GET_ADDRESS_FROM_DEVICE           CTL_CODE(FILE_DEVICE_UNKNOWN,  \
                                                         RAD1394_IOCTL_INDEX + 2,        \
                                                         METHOD_BUFFERED,                \
                                                         FILE_ANY_ACCESS)
 
-#define RAD1394_IOCTL_SET_ADDRESS_RANGE_SIZE            CTL_CODE( FILE_DEVICE_UNKNOWN,  \
+#define RAD1394_IOCTL_SET_ADDRESS_RANGE_SIZE            CTL_CODE(FILE_DEVICE_UNKNOWN,  \
                                                         RAD1394_IOCTL_INDEX + 3,        \
                                                         METHOD_BUFFERED,                \
                                                         FILE_ANY_ACCESS)
@@ -74,24 +75,21 @@ DEFINE_GUID( rad1394DriverGUID, 0x24e72b3a, 0xd7f, 0x4931, 0x84, 0x75, 0xf4, 0x6
 // Structures used to pass information into the device driver.
 //
 #ifndef DRIVER
-typedef struct
-{
-    USHORT              NA_Node_Number:6;       // Bits 10-15
-    USHORT              NA_Bus_Number:10;       // Bits 0-9
+typedef struct {
+    USHORT NA_Node_Number: 6;       // Bits 10-15
+    USHORT NA_Bus_Number: 10;       // Bits 0-9
 } NODE_ADDRESS;
 
-typedef struct
-{
-    USHORT              Off_High;
-    ULONG               Off_Low;
+typedef struct {
+    USHORT Off_High;
+    ULONG Off_Low;
 } ADDRESS_OFFSET;
 
-typedef struct
-{
-    NODE_ADDRESS        IA_Destination_ID;
-    ADDRESS_OFFSET      IA_Destination_Offset;
+typedef struct {
+    NODE_ADDRESS IA_Destination_ID;
+    ADDRESS_OFFSET IA_Destination_Offset;
 }
-IO_ADDRESS;
+        IO_ADDRESS;
 
 #endif
 
@@ -103,44 +101,40 @@ IO_ADDRESS;
 //#define     RAD1394_MAX_WRITE_SIZE  512
 #define     RAD1394_MAX_READ_SIZE   512 * 4
 
-typedef struct 
-{
-    ULONG           bRawMode;
-    ULONG           bGetGeneration;
-    IO_ADDRESS      DestinationAddress;
-    ULONG           nNumberOfBytesToRead;
-    ULONG           bLocalRead;
-    ULONG           nBlockSize;
-    ULONG           fulFlags;
-    ULONG           ulGeneration;
-    UCHAR           Data[RAD1394_MAX_READ_SIZE];
-    UCHAR           Reserve[ 1 ];
+typedef struct {
+    ULONG bRawMode;
+    ULONG bGetGeneration;
+    IO_ADDRESS DestinationAddress;
+    ULONG nNumberOfBytesToRead;
+    ULONG bLocalRead;
+    ULONG nBlockSize;
+    ULONG fulFlags;
+    ULONG ulGeneration;
+    UCHAR Data[RAD1394_MAX_READ_SIZE];
+    UCHAR Reserve[1];
 } ASYNC_READ;
 
-typedef struct
-{ 
-    ULONG           bRawMode;
-    ULONG           bGetGeneration;
-    IO_ADDRESS      DestinationAddress;
-    ULONG           nNumberOfBytesToWrite;
-    ULONG           nBlockSize;
-    ULONG           fulFlags;
-    ULONG           ulGeneration;
-    UCHAR           Data[RAD1394_MAX_WRITE_SIZE];
-    UCHAR           Reserve[ 1 ];
+typedef struct {
+    ULONG bRawMode;
+    ULONG bGetGeneration;
+    IO_ADDRESS DestinationAddress;
+    ULONG nNumberOfBytesToWrite;
+    ULONG nBlockSize;
+    ULONG fulFlags;
+    ULONG ulGeneration;
+    UCHAR Data[RAD1394_MAX_WRITE_SIZE];
+    UCHAR Reserve[1];
 } ASYNC_WRITE;
 
-typedef struct
-{
-    ULONG           fulFlags;
-    NODE_ADDRESS    NodeAddress;
+typedef struct {
+    ULONG fulFlags;
+    NODE_ADDRESS NodeAddress;
 } GET_1394_ADDRESS;
 
-typedef struct
-{
-    ULONG           fulFlags;
-    ULONG           Size;
-    UCHAR           Data[ 1 ];
+typedef struct {
+    ULONG fulFlags;
+    ULONG Size;
+    UCHAR Data[1];
 } SET_1394_ADDRESS_RANGE_SIZE;
 
 

@@ -31,10 +31,9 @@
 // Factory functions
 //=============================================================================
 
-struct radObjectBTreeNode
-{
+struct radObjectBTreeNode {
     radKey32 m_key;
-    ref< IRefCount > m_xIObject;
+    ref <IRefCount> m_xIObject;
 
     short mLeftNode;
     short mRightNode;
@@ -47,53 +46,57 @@ struct radObjectBTreeNode
 //
 // This class actually implements the binary tree.
 //
-class radObjectBTree : public radRefCount
-{
+class radObjectBTree : public radRefCount {
 public:
-    
-    static void Initialize( radObjectBTreeNode* pNodePool, unsigned int maxNodex );
-    static short GetNumAllocatedNodes( void );
-    static void Terminate( void );
-    
-    radObjectBTree( );
-    virtual ~radObjectBTree( );
+
+    static void Initialize(radObjectBTreeNode *pNodePool, unsigned int maxNodex);
+
+    static short GetNumAllocatedNodes(void);
+
+    static void Terminate(void);
+
+    radObjectBTree();
+
+    virtual ~radObjectBTree();
 
     // IRefCount
-    IMPLEMENT_REFCOUNTED( "radObjectBTree" )
+    IMPLEMENT_REFCOUNTED("radObjectBTree")
 
     // IRadObjectBTree
     bool AddObject
-    (
-        const radKey32& key,
-        IRefCount* pIObject
-    );
+            (
+                    const radKey32 &key,
+                    IRefCount *pIObject
+            );
 
-    bool RemoveObject( const radKey32& key );
-    bool RemoveObject( IRefCount* pIObject );
-    void RemoveAll( void );
+    bool RemoveObject(const radKey32 &key);
 
-    IRefCount* FindObject( const radKey32& key );
+    bool RemoveObject(IRefCount *pIObject);
 
-    enum TraversalOrder
-    {
+    void RemoveAll(void);
+
+    IRefCount *FindObject(const radKey32 &key);
+
+    enum TraversalOrder {
         PreOrder,
         InOrder,
         PostOrder,
         MaxTraversalOrder
 
     };
-    
-    IRefCount* GetFirst
-    (
-        TraversalOrder traversalOrder,
-        radKey32* pKey
-    );
-    IRefCount* GetNext
-    (
-        radKey32* pKey
-    );
 
-    unsigned int GetSize( void );
+    IRefCount *GetFirst
+            (
+                    TraversalOrder traversalOrder,
+                    radKey32 *pKey
+            );
+
+    IRefCount *GetNext
+            (
+                    radKey32 *pKey
+            );
+
+    unsigned int GetSize(void);
 
 protected:
 
@@ -105,44 +108,44 @@ protected:
     (
         radObjectBTreeNode* pNode,
         int indent = 0
-    );
+);
 #endif
 
     // Find a node
     void find
-    (
-        const radKey32& key,
-        radObjectBTreeNode** ppNode,
-        radObjectBTreeNode** ppParent,
-        int* pSide
-    );
+            (
+                    const radKey32 &key,
+                    radObjectBTreeNode **ppNode,
+                    radObjectBTreeNode **ppParent,
+                    int *pSide
+            );
 
     // Copy a node
     /*TODO inline*/ void copyNode
-    (
-        radObjectBTreeNode* pSrc,
-        radObjectBTreeNode* pDest
-    );
+            (
+                    radObjectBTreeNode *pSrc,
+                    radObjectBTreeNode *pDest
+            );
 
     // Helper function for remove nodes
-    void RemoveAll_Helper( radObjectBTreeNode* pNode );
+    void RemoveAll_Helper(radObjectBTreeNode *pNode);
 
     // DATA MEMBERS ///////////////////////////////////////////////////////////
 
     //
     // A pointer to the root node
     //
-    
+
     short mRootNode;
 
-    
+
 private:
 
     // Delete a node
-    inline void deleteNode( radObjectBTreeNode* pNode );
+    inline void deleteNode(radObjectBTreeNode *pNode);
 
     // Perform the actual traversal to the next node
-    radObjectBTreeNode* GetNextNode( );
+    radObjectBTreeNode *GetNextNode();
 
     // DATA MEMBERS ///////////////////////////////////////////////////////////
 
@@ -158,7 +161,7 @@ private:
     // NULL, there is no traversal active.
     //
     TraversalOrder m_TraversalOrder;
-    radObjectBTreeNode* m_pLastTraverseNode;
+    radObjectBTreeNode *m_pLastTraverseNode;
     int m_TraversalState;
 };
 

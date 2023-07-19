@@ -35,7 +35,7 @@
 #endif
 
 #ifdef RAD_GAMECUBE
-	#include <dolphin/os.h>
+#include <dolphin/os.h>
 #endif // RAD_GAMECUBE
 
 //=============================================================================
@@ -51,15 +51,14 @@
 //
 //=============================================================================
 
-int rDebugVsnPrintf( char *buffer, size_t count, const char *format, va_list argptr )
-{
-    #if defined (RAD_WIN32) || defined (RAD_XBOX)
-        return _vsnprintf( buffer, count, format, argptr );
-    #elif defined (RAD_GAMECUBE)
-        return vsnprintf( buffer, count, format, argptr );
-    #elif defined (RAD_PS2)
-        return vsprintf( buffer, format, argptr );
-    #endif
+int rDebugVsnPrintf(char *buffer, size_t count, const char *format, va_list argptr) {
+#if defined (RAD_WIN32) || defined (RAD_XBOX)
+    return _vsnprintf(buffer, count, format, argptr);
+#elif defined (RAD_GAMECUBE)
+    return vsnprintf(buffer, count, format, argptr);
+#elif defined (RAD_PS2)
+    return vsprintf(buffer, format, argptr);
+#endif
 }
 
 //=============================================================================
@@ -71,13 +70,12 @@ int rDebugVsnPrintf( char *buffer, size_t count, const char *format, va_list arg
 //
 //=============================================================================
 
-int rDebugSnPrintf( char *buffer, size_t count, const char *format ... )
-{
-    va_list va_alist = {0}; 
-    va_start( va_alist, format ); 
-    int retval = rDebugVsnPrintf( buffer, count, format, va_alist );
-    va_end( va_alist ); 
-	return retval;
+int rDebugSnPrintf(char *buffer, size_t count, const char *format ...) {
+    va_list va_alist = {0};
+    va_start(va_alist, format);
+    int retval = rDebugVsnPrintf(buffer, count, format, va_alist);
+    va_end(va_alist);
+    return retval;
 }
 
 #ifdef RAD_WIN32
@@ -95,7 +93,7 @@ int rDebugSnPrintf( char *buffer, size_t count, const char *format ... )
 //------------------------------------------------------------------------------
 static DWORD WINAPI rAssertThreadProc(LPVOID lpParameter)
 {
-    return MessageBox( NULL, (char*)lpParameter, "Internal Error", MB_ABORTRETRYIGNORE | MB_ICONEXCLAMATION | MB_SETFOREGROUND | MB_TASKMODAL);
+    return MessageBox(NULL, (char*)lpParameter, "Internal Error", MB_ABORTRETRYIGNORE | MB_ICONEXCLAMATION | MB_SETFOREGROUND | MB_TASKMODAL);
 }
 
 //=============================================================================
@@ -147,10 +145,9 @@ static DWORD rErrorMessageBox(const char* text)
 //=============================================================================
 bool g_rDebugHaltOnAsserts = true;
 
-radDebugOutputHandler * g_pDebugHandler = rDebuggerString_Implementation;
+radDebugOutputHandler *g_pDebugHandler = rDebuggerString_Implementation;
 
-void rDebugHaltOnAsserts_Implementation( bool halt )
-{
+void rDebugHaltOnAsserts_Implementation(bool halt) {
     g_rDebugHaltOnAsserts = halt;
 }
 
@@ -170,29 +167,27 @@ void rDebugHaltOnAsserts_Implementation( bool halt )
 //------------------------------------------------------------------------------
 
 bool rDebugAssertFail_Implementation
-(
-    const char* condition,
-    const char* filename,
-    unsigned int linenum
-)
-{
+        (
+                const char *condition,
+                const char *filename,
+                unsigned int linenum
+        ) {
 
-    char text[ RAD_DEBUG_PRINT_MAX_LENGTH ];
+    char text[RAD_DEBUG_PRINT_MAX_LENGTH];
 
     rDebugSnPrintf
-    (
-        text, RAD_DEBUG_PRINT_MAX_LENGTH,
-        "ASSERT FAILED : [%s]\n"
-        "         Line : [%d] File: [%s]\n",
-        condition, linenum, filename
-    );
+            (
+                    text, RAD_DEBUG_PRINT_MAX_LENGTH,
+                    "ASSERT FAILED : [%s]\n"
+                    "         Line : [%d] File: [%s]\n",
+                    condition, linenum, filename
+            );
 
-    text[ RAD_DEBUG_PRINT_MAX_LENGTH - 1 ] = '\0';
+    text[RAD_DEBUG_PRINT_MAX_LENGTH - 1] = '\0';
 
-	rDebugString_Implementation(text);
+    rDebugString_Implementation(text);
 
-    if ( ! g_rDebugHaltOnAsserts )
-    {
+    if (!g_rDebugHaltOnAsserts) {
         return false;
     }
 
@@ -203,19 +198,19 @@ bool rDebugAssertFail_Implementation
     {
         int retval = rErrorMessageBox(text);
 
-        if( retval == IDABORT)
+        if(retval == IDABORT)
         {
             exit(-10);
             return false;
         }
-        else if( retval == IDRETRY )
+        else if(retval == IDRETRY)
         {
           return true;
         }
-        return( false );
+        return(false);
     }
 #else
-	return true;
+    return true;
 #endif // RAD_WIN32
 }
 
@@ -234,29 +229,28 @@ bool rDebugAssertFail_Implementation
 //------------------------------------------------------------------------------
 
 void rDebugWarningFail_Implementation
-(
-    const char* condition,
-    const char* filename,
-    unsigned int linenum
-)
-{
+        (
+                const char *condition,
+                const char *filename,
+                unsigned int linenum
+        ) {
     //
     // Simply display warning message.
     //
-    char text[ RAD_DEBUG_PRINT_MAX_LENGTH ];
+    char text[RAD_DEBUG_PRINT_MAX_LENGTH];
 
     rDebugSnPrintf
-    (
-        text, RAD_DEBUG_PRINT_MAX_LENGTH, 
-        "\n"
-        "WARNING : [%s]\n"
-        "   Line : [%d] File: [%s]\n",
-        condition, linenum, filename
-    );
+            (
+                    text, RAD_DEBUG_PRINT_MAX_LENGTH,
+                    "\n"
+                    "WARNING : [%s]\n"
+                    "   Line : [%d] File: [%s]\n",
+                    condition, linenum, filename
+            );
 
-    text[ RAD_DEBUG_PRINT_MAX_LENGTH - 1 ] = '\0';
+    text[RAD_DEBUG_PRINT_MAX_LENGTH - 1] = '\0';
 
-	rDebugString_Implementation(text);
+    rDebugString_Implementation(text);
 }
 
 //=============================================================================
@@ -274,39 +268,38 @@ void rDebugWarningFail_Implementation
 //------------------------------------------------------------------------------
 
 void rDebugValidFail_Implementation
-(
-    const char *condition,
-    const char *filename,
-    unsigned int linenum
-)
-{
-    char text[ RAD_DEBUG_PRINT_MAX_LENGTH ];
+        (
+                const char *condition,
+                const char *filename,
+                unsigned int linenum
+        ) {
+    char text[RAD_DEBUG_PRINT_MAX_LENGTH];
 
     rDebugSnPrintf
-    (
-        text, RAD_DEBUG_PRINT_MAX_LENGTH,
-        "\n"
-        "INVALID MEMORY ADDRESS : [%s]\n"
-        "   Line : [%d] File: [%s]\n",
-        condition, linenum, filename
-    );
+            (
+                    text, RAD_DEBUG_PRINT_MAX_LENGTH,
+                    "\n"
+                    "INVALID MEMORY ADDRESS : [%s]\n"
+                    "   Line : [%d] File: [%s]\n",
+                    condition, linenum, filename
+            );
 
-    text[ RAD_DEBUG_PRINT_MAX_LENGTH - 1 ] = '\0';
-    
+    text[RAD_DEBUG_PRINT_MAX_LENGTH - 1] = '\0';
+
     rDebugString_Implementation(text);
 
     //
     // Display message box and check for response
     //
-    #ifdef RAD_WIN32
+#ifdef RAD_WIN32
     {
         int retval = rErrorMessageBox(text);
 
-        if( retval == IDABORT)
+        if(retval == IDABORT)
         {
             exit(-10);
         }
-        else if( retval == IDRETRY )
+        else if(retval == IDRETRY)
         {
            //
            // Issue an int 3 instead of DebugBreak. MSDEV 5.0 does not
@@ -319,7 +312,7 @@ void rDebugValidFail_Implementation
          // (retval == IDIGNORE) continues.
         }
     }
-    #endif // RAD_WIN32
+#endif // RAD_WIN32
 }
 
 //=============================================================================
@@ -335,34 +328,33 @@ void rDebugValidFail_Implementation
 //------------------------------------------------------------------------------
 
 int rDebugValidPointer_Implementation
-(
-    void *p
-)
-{
-    #if defined( RAD_WIN32 ) || defined( RAD_XBOX )
+        (
+                void *p
+        ) {
+#if defined(RAD_WIN32) || defined(RAD_XBOX)
 
-	return( !( IsBadReadPtr( p, 1) || IsBadWritePtr( p,1) ) );
+    return(!(IsBadReadPtr(p, 1) || IsBadWritePtr(p,1)));
 
-    #endif
+#endif
 
-    #ifdef RAD_PS2
+#ifdef RAD_PS2
 
     // to be completed
 
-	(void) p;
+    (void) p;
 
-	return( true );
+    return(true);
 
-    #endif
+#endif
 
-	#ifdef RAD_GAMECUBE
-	
-		// to be completed
-		(void) p; 
-	
-		return( true );
-	
-	#endif // RAD_GAMECUBE
+#ifdef RAD_GAMECUBE
+
+    // to be completed
+    (void) p;
+
+    return(true);
+
+#endif // RAD_GAMECUBE
 }
 
 //=============================================================================
@@ -379,27 +371,24 @@ int rDebugValidPointer_Implementation
 //------------------------------------------------------------------------------
 
 int rDebugValidPointer32_Implementation
-(
-    void *p
-)
-{
-    if( !p )
-    {
+        (
+                void *p
+        ) {
+    if (!p) {
         //
         // Null pointer is considered invalid
         //
-        return( 0 );
+        return (0);
     }
 
-    if( (unsigned int) p & 3 )
-    {
+    if ((unsigned int) p & 3) {
         //
         // Must be 32 bit aligned
         //
-        return( 0 );
+        return (0);
     }
 
-#if defined( RAD_WIN32 ) || defined( RAD_XBOX )
+#if defined(RAD_WIN32) || defined(RAD_XBOX)
 
     return !(IsBadReadPtr(p,1) || IsBadWritePtr(p,1));
 
@@ -409,16 +398,16 @@ int rDebugValidPointer32_Implementation
 
     // to be completed
 
-    return( true );
+    return(true);
 
 #endif
 
-	#ifdef RAD_GAMECUBE
-	
-		// to be completed
-		return( true );  
-		
-	#endif // RAD_GAMECUBE
+#ifdef RAD_GAMECUBE
+
+    // to be completed
+    return(true);
+
+#endif // RAD_GAMECUBE
 
 }
 
@@ -426,18 +415,16 @@ int rDebugValidPointer32_Implementation
 // Function: rDebugInfoString_Implementation
 //=============================================================================
 
-void rDebugInfoString_Implementation( const char * pString )
-{
-    g_pDebugHandler( pString );
+void rDebugInfoString_Implementation(const char *pString) {
+    g_pDebugHandler(pString);
 }
 
 //=============================================================================
 // Function: rDebugString_Implementation
 //=============================================================================
 
-void rDebugString_Implementation( const char * pString )
-{
-    g_pDebugHandler( pString );
+void rDebugString_Implementation(const char *pString) {
+    g_pDebugHandler(pString);
 }
 
 //=============================================================================
@@ -451,98 +438,94 @@ void rDebugString_Implementation( const char * pString )
 //
 // Notes:
 //------------------------------------------------------------------------------
-#if defined( RAD_RELEASE )
+#if defined(RAD_RELEASE)
 bool g_AllowDebugOutput = false;
 #else
 bool g_AllowDebugOutput = true;
 #endif
 
-void rDebuggerString_Implementation( const char* string )
-{
-    if ( string == NULL )
-    {
+void rDebuggerString_Implementation(const char *string) {
+    if (string == NULL) {
         string = "NULL";
     }
 
-    if(!g_AllowDebugOutput)
-    {
+    if (!g_AllowDebugOutput) {
         return;
     }
 
-   #if defined( RAD_WIN32 ) || defined( RAD_XBOX )
+#if defined(RAD_WIN32) || defined(RAD_XBOX)
     {
  
         //
-        // OutputDebugString( ) seems to truncate the output if the string is
+        // OutputDebugString() seems to truncate the output if the string is
         // too long, so we'll write it in chunks of 256.
         //
 
         char buffer[ 257];
 
-        unsigned int length = strlen( string );
+        unsigned int length = strlen(string);
 
-        if ( length != 0 )
+        if (length != 0)
         {
             unsigned int fullChunks = length / 256;
             unsigned int lastChunkSize = length % 256;
 
-            for ( unsigned i = 0; i < fullChunks; i ++ )
+            for (unsigned i = 0; i <fullChunks; i ++)
             {
-                memcpy( buffer, string + ( i * 256 ), 256 );
+                memcpy(buffer, string + (i * 256), 256);
                 buffer[256] = '\0';
 
-                OutputDebugString( buffer );
+                OutputDebugString(buffer);
             }
     
-            if ( lastChunkSize != 0 )
+            if (lastChunkSize != 0)
             {
-                memcpy( buffer, string + ( i * 256 ), lastChunkSize );
+                memcpy(buffer, string + (i * 256), lastChunkSize);
                 buffer[ lastChunkSize ] = '\0';
         
-                OutputDebugString( buffer );
+                OutputDebugString(buffer);
             }
         }
     }
-    #endif
+#endif
 
-    #if defined( RAD_PS2 )
-    
+#if defined(RAD_PS2)
+
     //
     // On the PS2 we display the string on the using printf. 
     //
-    printf( "%s", string );
-    fflush( stdout );
+    printf("%s", string);
+    fflush(stdout);
 
-    #endif
-	//
-	// Display a formatted output message into 
-	// the debugger's log window
-	//
-	#ifdef RAD_GAMECUBE
-		
-		OSReport( (char*)string );
-		
-	#endif // RAD_GAMECUBE
+#endif
+    //
+    // Display a formatted output message into
+    // the debugger's log window
+    //
+#ifdef RAD_GAMECUBE
+
+    OSReport((char*)string);
+
+#endif // RAD_GAMECUBE
 }
 
 //=============================================================================
 // rReleasePrintf
 //=============================================================================
 
-void rReleasePrintf( const char *fmt, ... )
-{
-    va_list va_alist = {0}; 
-    char    printfstr[ RAD_DEBUG_PRINT_MAX_LENGTH ];
+void rReleasePrintf(const char *fmt, ...) {
+    va_list va_alist = {0};
+    char printfstr[RAD_DEBUG_PRINT_MAX_LENGTH];
 
-    va_start( va_alist, fmt ); 
+    va_start(va_alist, fmt);
 
-    rDebugVsnPrintf( printfstr, RAD_DEBUG_PRINT_MAX_LENGTH, fmt, va_alist );
+    rDebugVsnPrintf(printfstr, RAD_DEBUG_PRINT_MAX_LENGTH, fmt, va_alist);
 
-    printfstr[ RAD_DEBUG_PRINT_MAX_LENGTH - 1 ] = '\0';
+    printfstr[RAD_DEBUG_PRINT_MAX_LENGTH - 1] = '\0';
 
-    va_end( va_alist ); 
+    va_end(va_alist);
 
-    rReleaseString( printfstr );
+    rReleaseString(printfstr);
 }
 
 #if defined RAD_DEBUG || defined RAD_TUNE
@@ -550,20 +533,20 @@ void rReleasePrintf( const char *fmt, ... )
 // rTunePrintf
 //=============================================================================
 
-void rTunePrintf( const char *fmt, ... )
+void rTunePrintf(const char *fmt, ...)
 {
     va_list va_alist = {0}; 
     char    printfstr[ RAD_DEBUG_PRINT_MAX_LENGTH ];
 
-    va_start( va_alist, fmt ); 
+    va_start(va_alist, fmt);
 
-    rDebugVsnPrintf( printfstr, RAD_DEBUG_PRINT_MAX_LENGTH, fmt, va_alist );
+    rDebugVsnPrintf(printfstr, RAD_DEBUG_PRINT_MAX_LENGTH, fmt, va_alist);
 
     printfstr[ RAD_DEBUG_PRINT_MAX_LENGTH - 1 ] = '\0';
 
-    va_end( va_alist ); 
+    va_end(va_alist);
 
-    rTuneString( printfstr );
+    rTuneString(printfstr);
 }
 #endif
 
@@ -572,20 +555,20 @@ void rTunePrintf( const char *fmt, ... )
 // rDebugPrintf
 //=============================================================================
 
-void rDebugPrintf( const char *fmt, ... )
+void rDebugPrintf(const char *fmt, ...)
 {
     va_list va_alist = {0}; 
     char    printfstr[ RAD_DEBUG_PRINT_MAX_LENGTH ];
 
-    va_start( va_alist, fmt ); 
+    va_start(va_alist, fmt);
 
-    rDebugVsnPrintf( printfstr, RAD_DEBUG_PRINT_MAX_LENGTH, fmt, va_alist );
+    rDebugVsnPrintf(printfstr, RAD_DEBUG_PRINT_MAX_LENGTH, fmt, va_alist);
 
     printfstr[ RAD_DEBUG_PRINT_MAX_LENGTH - 1 ] = '\0';
 
-    va_end( va_alist ); 
+    va_end(va_alist);
 
-    rDebugString( printfstr );
+    rDebugString(printfstr);
 }
 #endif
 
@@ -594,20 +577,20 @@ void rDebugPrintf( const char *fmt, ... )
 // rDebugChannelPrintf
 //=============================================================================
 
-void rDebugChannelPrintf( const char * pChannel, const char *fmt, ... )
+void rDebugChannelPrintf(const char * pChannel, const char *fmt, ...)
 {
     va_list va_alist = {0}; 
     char    printfstr[ RAD_DEBUG_PRINT_MAX_LENGTH ];
 
-    va_start( va_alist, fmt ); 
+    va_start(va_alist, fmt);
 
-    rDebugVsnPrintf( printfstr, RAD_DEBUG_PRINT_MAX_LENGTH, fmt, va_alist );
+    rDebugVsnPrintf(printfstr, RAD_DEBUG_PRINT_MAX_LENGTH, fmt, va_alist);
 
     printfstr[ RAD_DEBUG_PRINT_MAX_LENGTH - 1 ] = '\0';
 
-    va_end( va_alist ); 
+    va_end(va_alist);
 
-    rDebugChannel( pChannel, printfstr );
+    rDebugChannel(pChannel, printfstr);
 }
 #endif
 
@@ -615,7 +598,7 @@ void rDebugChannelPrintf( const char * pChannel, const char *fmt, ... )
 // Debug Channel Globals
 //=============================================================================
 
-static ref< IRadObjectList > g_xIOl_EnabledChannels;
+static ref <IRadObjectList> g_xIOl_EnabledChannels;
 static radMemoryAllocator g_DebugChannelAllocator = RADMEMORY_ALLOC_DEFAULT;
 static unsigned int g_DebugChannelInitializeCount = 0;
 
@@ -623,15 +606,13 @@ static unsigned int g_DebugChannelInitializeCount = 0;
 // ::rDebugChannelInitializeImplementation
 //=============================================================================
 
-void rDebugChannelInitialize_Implementation( radMemoryAllocator allocator )
-{
-    if ( g_DebugChannelInitializeCount == 0 )
-    {
+void rDebugChannelInitialize_Implementation(radMemoryAllocator allocator) {
+    if (g_DebugChannelInitializeCount == 0) {
         g_DebugChannelAllocator = allocator;
 
-        ::radObjectListCreate( & g_xIOl_EnabledChannels, g_DebugChannelAllocator );
+        ::radObjectListCreate(&g_xIOl_EnabledChannels, g_DebugChannelAllocator);
 
-        rAssert( g_xIOl_EnabledChannels != NULL );
+        rAssert(g_xIOl_EnabledChannels != NULL);
     }
 
     g_DebugChannelInitializeCount++;
@@ -641,19 +622,16 @@ void rDebugChannelInitialize_Implementation( radMemoryAllocator allocator )
 // ::rDebugChannelImplementation
 //=============================================================================
 
-void rDebugChannel_Implementation( const char * pChannelName, const char * pString )
-{
-    if ( g_xIOl_EnabledChannels != NULL )
-    {
-        IRadString * pIRadString;
+void rDebugChannel_Implementation(const char *pChannelName, const char *pString) {
+    if (g_xIOl_EnabledChannels != NULL) {
+        IRadString *pIRadString;
 
-        g_xIOl_EnabledChannels->Reset( );
+        g_xIOl_EnabledChannels->Reset();
 
-        while( NULL != ( pIRadString = reinterpret_cast< IRadString * >( g_xIOl_EnabledChannels->GetNext( ) ) ) )
-        {
-            if ( pIRadString->Equals( pChannelName ) )
-            {
-                rDebugString_Implementation( pString );
+        while (NULL !=
+               (pIRadString = reinterpret_cast<IRadString *>(g_xIOl_EnabledChannels->GetNext()))) {
+            if (pIRadString->Equals(pChannelName)) {
+                rDebugString_Implementation(pString);
                 return;
             }
         }
@@ -664,19 +642,17 @@ void rDebugChannel_Implementation( const char * pChannelName, const char * pStri
 // ::rDebugChannelEnableImplementation
 //=============================================================================
 
-void rDebugChannelEnable_Implementation( const char * pChannelName )
-{
-    if ( g_xIOl_EnabledChannels != NULL )
-    {
-        IRadString * pIString;
+void rDebugChannelEnable_Implementation(const char *pChannelName) {
+    if (g_xIOl_EnabledChannels != NULL) {
+        IRadString *pIString;
 
-        ::radStringCreate( & pIString, g_DebugChannelAllocator );
+        ::radStringCreate(&pIString, g_DebugChannelAllocator);
 
-        pIString->Copy( pChannelName );
+        pIString->Copy(pChannelName);
 
-        g_xIOl_EnabledChannels->AddObject( pIString );
+        g_xIOl_EnabledChannels->AddObject(pIString);
 
-        pIString->Release( );
+        pIString->Release();
     }
 }
 
@@ -684,19 +660,16 @@ void rDebugChannelEnable_Implementation( const char * pChannelName )
 // ::rDebugChannelDisableImplementation
 //=============================================================================
 
-void rDebugChannelDisable_Implementation( const char * pChannelName )
-{
-    if ( g_xIOl_EnabledChannels != NULL )
-    {
-        IRadString * pIString;
+void rDebugChannelDisable_Implementation(const char *pChannelName) {
+    if (g_xIOl_EnabledChannels != NULL) {
+        IRadString *pIString;
 
-        g_xIOl_EnabledChannels->Reset( );
+        g_xIOl_EnabledChannels->Reset();
 
-        while ( NULL != ( pIString = reinterpret_cast< IRadString * >( g_xIOl_EnabledChannels->GetNext( ) ) ) )
-        {
-            if ( pIString->Equals( pChannelName ) )
-            {
-                g_xIOl_EnabledChannels->RemoveObject( pIString );
+        while (NULL !=
+               (pIString = reinterpret_cast<IRadString *>(g_xIOl_EnabledChannels->GetNext()))) {
+            if (pIString->Equals(pChannelName)) {
+                g_xIOl_EnabledChannels->RemoveObject(pIString);
                 return;
             }
         }
@@ -707,14 +680,12 @@ void rDebugChannelDisable_Implementation( const char * pChannelName )
 // ::rDebugChannelTerminateImplementation
 //=============================================================================
 
-void rDebugChannelTerminate_Implementaion( void )
-{
-    rAssert( g_DebugChannelInitializeCount > 0 );
+void rDebugChannelTerminate_Implementaion(void) {
+    rAssert(g_DebugChannelInitializeCount > 0);
 
     g_DebugChannelInitializeCount--;
 
-    if ( g_DebugChannelInitializeCount == 0 )
-    {
+    if (g_DebugChannelInitializeCount == 0) {
         g_xIOl_EnabledChannels = NULL;
     }
 }
@@ -723,14 +694,10 @@ void rDebugChannelTerminate_Implementaion( void )
 // Function: rDebugSetOutputHandler
 //=============================================================================
 
-void rDebugSetOutputHandler( radDebugOutputHandler * pOutputProc )
-{
-    if( pOutputProc != NULL )
-    {
+void rDebugSetOutputHandler(radDebugOutputHandler *pOutputProc) {
+    if (pOutputProc != NULL) {
         g_pDebugHandler = pOutputProc;
-    }
-    else
-    {
+    } else {
         g_pDebugHandler = rDebuggerString_Implementation;
     }
 }

@@ -37,14 +37,13 @@
 // Returns:     
 //------------------------------------------------------------------------------
 
-FileCache::FileCache( )
-    :
-    m_CacheState( FileCacheInvalid ),
-    m_CacheBuffer( NULL ),
-    m_CacheSize( 0 ),
-    m_CacheSpace( radMemorySpace_Null ),
-    m_CacheSectorSize( 0 )
-{
+FileCache::FileCache()
+        :
+        m_CacheState(FileCacheInvalid),
+        m_CacheBuffer(NULL),
+        m_CacheSize(0),
+        m_CacheSpace(radMemorySpace_Null),
+        m_CacheSectorSize(0) {
 }
 
 //=============================================================================
@@ -57,8 +56,7 @@ FileCache::FileCache( )
 // Returns:     
 //------------------------------------------------------------------------------
 
-FileCache::~FileCache( )
-{
+FileCache::~FileCache() {
 }
 
 //=============================================================================
@@ -72,8 +70,7 @@ FileCache::~FileCache( )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void FileCache::InitCache( unsigned char* buffer, unsigned int size, radMemorySpace space )
-{
+void FileCache::InitCache(unsigned char *buffer, unsigned int size, radMemorySpace space) {
     m_CacheState = FileCacheInvalid;
     m_CacheBuffer = buffer;
     m_CacheSize = size;
@@ -91,20 +88,18 @@ void FileCache::InitCache( unsigned char* buffer, unsigned int size, radMemorySp
 // Returns:     
 //------------------------------------------------------------------------------
 
-void FileCache::DoInit( unsigned int sectorSize, const char* fileName )
-{
-    if ( m_CacheBuffer == NULL )
-    {
+void FileCache::DoInit(unsigned int sectorSize, const char *fileName) {
+    if (m_CacheBuffer == NULL) {
         return;
     }
 
     //
     // If the buffer is smaller than a sector, there no point in caching.
     //
-    if ( m_CacheSize < sectorSize )
-    {
-        rDebugPrintf( "radFile: cache buffer for file [%s] must be at least size [%u].\n", fileName, sectorSize );
-        rAssert( false );
+    if (m_CacheSize < sectorSize) {
+        rDebugPrintf("radFile: cache buffer for file [%s] must be at least size [%u].\n", fileName,
+                     sectorSize);
+        rAssert(false);
 
         m_CacheBuffer = NULL;
         m_CacheSize = 0;
@@ -117,12 +112,12 @@ void FileCache::DoInit( unsigned int sectorSize, const char* fileName )
     //
     // Make the buffer a multiple of a sector.
     //
-    unsigned int alignSize = ::radMemoryRoundDown( m_CacheSize, sectorSize );
-    if ( m_CacheSize != alignSize )
-    {
-        rDebugPrintf( "radFile: WASTING MEMORY!\n" );
-        rDebugPrintf( "File cache on file [%s] wastes [%u] bytes.\n", fileName, m_CacheSize - alignSize );
-        rDebugPrintf( "Make cache buffers a multiple of the sector size [%u].\n", sectorSize );
+    unsigned int alignSize = ::radMemoryRoundDown(m_CacheSize, sectorSize);
+    if (m_CacheSize != alignSize) {
+        rDebugPrintf("radFile: WASTING MEMORY!\n");
+        rDebugPrintf("File cache on file [%s] wastes [%u] bytes.\n", fileName,
+                     m_CacheSize - alignSize);
+        rDebugPrintf("Make cache buffers a multiple of the sector size [%u].\n", sectorSize);
 
         m_CacheSize = alignSize;
     }
@@ -138,8 +133,7 @@ void FileCache::DoInit( unsigned int sectorSize, const char* fileName )
 // Returns:     
 //------------------------------------------------------------------------------
 
-radMemorySpace FileCache::GetCacheMemorySpace( void )
-{
+radMemorySpace FileCache::GetCacheMemorySpace(void) {
     return m_CacheSpace;
 }
 
@@ -153,25 +147,20 @@ radMemorySpace FileCache::GetCacheMemorySpace( void )
 // Returns:     true if it makes sense to use the cache.
 //------------------------------------------------------------------------------
 
-bool FileCache::ShouldUseCache( unsigned int position, unsigned int size )
-{
+bool FileCache::ShouldUseCache(unsigned int position, unsigned int size) {
     //
     // Can't use it if it's not there!
     //
-    if ( m_CacheBuffer == NULL )
-    {
+    if (m_CacheBuffer == NULL) {
         return false;
     }
 
     //
     // If the read is too big, then there's really no point to using the cache.
     //
-    if ( position - ::radMemoryRoundDown( position, m_CacheSectorSize ) + size > m_CacheSize )
-    {
+    if (position - ::radMemoryRoundDown(position, m_CacheSectorSize) + size > m_CacheSize) {
         return false;
-    }
-    else
-    {
+    } else {
         return true;
     }
 }
@@ -189,57 +178,54 @@ bool FileCache::ShouldUseCache( unsigned int position, unsigned int size )
 //------------------------------------------------------------------------------
 
 radDrive::CompletionStatus FileCache::Read
-( 
-    radDrive* pDrive,
-    radFileHandle handle,
-    unsigned int fileEndPosition,
-    unsigned int fileSize,
-    const char* fileName,
-    IRadFile::BufferedReadState buffState,
-    unsigned int position, 
-    void* pData, 
-    unsigned int bytesToRead, 
-    unsigned int* bytesRead, 
-    radMemorySpace pDataSpace
-)
-{
-    rAssert( m_CacheBuffer != NULL );
-    rAssert( m_CacheSpace != radMemorySpace_Null );
-    rAssert( m_CacheSize >= m_CacheSectorSize );
-    rAssert( position - ::radMemoryRoundDown( position, m_CacheSectorSize ) + bytesToRead <= m_CacheSize );
-   
+        (
+                radDrive *pDrive,
+                radFileHandle handle,
+                unsigned int fileEndPosition,
+                unsigned int fileSize,
+                const char *fileName,
+                IRadFile::BufferedReadState buffState,
+                unsigned int position,
+                void *pData,
+                unsigned int bytesToRead,
+                unsigned int *bytesRead,
+                radMemorySpace pDataSpace
+        ) {
+    rAssert(m_CacheBuffer != NULL);
+    rAssert(m_CacheSpace != radMemorySpace_Null);
+    rAssert(m_CacheSize >= m_CacheSectorSize);
+    rAssert(position - ::radMemoryRoundDown(position, m_CacheSectorSize) + bytesToRead <=
+            m_CacheSize);
+
     *bytesRead = 0;
-    unsigned char* pUserData = (unsigned char*) pData;
+    unsigned char *pUserData = (unsigned char *) pData;
 
     //
     // If our cache is valid, check to see if we already have the data loaded.
     //
-    if ( m_CacheState == FileCacheValid && position >= m_CachePosition )
-    {
-        if ( position + bytesToRead <= m_CachePosition + m_CacheSize )
-        {
+    if (m_CacheState == FileCacheValid && position >= m_CachePosition) {
+        if (position + bytesToRead <= m_CachePosition + m_CacheSize) {
             //
             // The read is in our cache! Copy it.
             //
-            IRadMemorySpaceCopyRequest* pMemCpyRequest = 
-                radMemorySpaceCopyAsync( pUserData, 
-                                         pDataSpace, 
-                                         &m_CacheBuffer[ position - m_CachePosition ],
-                                         m_CacheSpace,
-                                         bytesToRead );
+            IRadMemorySpaceCopyRequest *pMemCpyRequest =
+                    radMemorySpaceCopyAsync(pUserData,
+                                            pDataSpace,
+                                            &m_CacheBuffer[position - m_CachePosition],
+                                            m_CacheSpace,
+                                            bytesToRead);
 
-            rAssert( pMemCpyRequest != NULL );
-            pMemCpyRequest->AddRef( );
+            rAssert(pMemCpyRequest != NULL);
+            pMemCpyRequest->AddRef();
 
             //
             // Run the request
             //
-            while ( !pMemCpyRequest->IsDone( ) )
-            {
-                ::radThreadSleep( 0 );
+            while (!pMemCpyRequest->IsDone()) {
+                ::radThreadSleep(0);
             }
 
-            pMemCpyRequest->Release( );
+            pMemCpyRequest->Release();
             pMemCpyRequest = NULL;
 
             *bytesRead += bytesToRead;
@@ -248,32 +234,29 @@ radDrive::CompletionStatus FileCache::Read
             // DONE!!
             //
             return radDrive::Complete;
-        }
-        else if ( position < m_CachePosition + m_CacheSize )
-        {
+        } else if (position < m_CachePosition + m_CacheSize) {
             //
             // Overlap the right of the buffer. Copy the first bytes.
             //
             unsigned int readSize = m_CachePosition + m_CacheSize - position;
-            IRadMemorySpaceCopyRequest* pMemCpyRequest = 
-                radMemorySpaceCopyAsync( pUserData, 
-                                         pDataSpace, 
-                                         &m_CacheBuffer[ position - m_CachePosition ],
-                                         m_CacheSpace,
-                                         readSize );
+            IRadMemorySpaceCopyRequest *pMemCpyRequest =
+                    radMemorySpaceCopyAsync(pUserData,
+                                            pDataSpace,
+                                            &m_CacheBuffer[position - m_CachePosition],
+                                            m_CacheSpace,
+                                            readSize);
 
-            rAssert( pMemCpyRequest != NULL );
-            pMemCpyRequest->AddRef( );
+            rAssert(pMemCpyRequest != NULL);
+            pMemCpyRequest->AddRef();
 
             //
             // Run the request
             //
-            while ( !pMemCpyRequest->IsDone( ) )
-            {
-                ::radThreadSleep( 0 );
+            while (!pMemCpyRequest->IsDone()) {
+                ::radThreadSleep(0);
             }
 
-            pMemCpyRequest->Release( );
+            pMemCpyRequest->Release();
             pMemCpyRequest = NULL;
 
             *bytesRead += readSize;
@@ -299,26 +282,22 @@ radDrive::CompletionStatus FileCache::Read
     // We must be certain not to read past the last sector if we have a big cache.
     //
     unsigned int readSize = m_CacheSize;
-    if ( fileSize <= m_CacheSize )
-    {
+    if (fileSize <= m_CacheSize) {
         m_CachePosition = 0;
-        readSize = ::radMemoryRoundUp( fileSize, m_CacheSectorSize );
-    }
-    else
-    {
+        readSize = ::radMemoryRoundUp(fileSize, m_CacheSectorSize);
+    } else {
         //
         // Start our cache at the first sector boundary before position, and align it to be
         // sector sized.
         //
-        m_CachePosition = ::radMemoryRoundDown( position, m_CacheSectorSize );
+        m_CachePosition = ::radMemoryRoundDown(position, m_CacheSectorSize);
 
         //
         // If we are at the end of the file, move the position back so that we cache up to
         // the end of the last sector.
         //
-        if ( m_CachePosition + m_CacheSize > fileEndPosition )
-        {
-            m_CachePosition = ::radMemoryRoundUp( fileEndPosition, m_CacheSectorSize ) - m_CacheSize;
+        if (m_CachePosition + m_CacheSize > fileEndPosition) {
+            m_CachePosition = ::radMemoryRoundUp(fileEndPosition, m_CacheSectorSize) - m_CacheSize;
         }
     }
 
@@ -328,19 +307,18 @@ radDrive::CompletionStatus FileCache::Read
     unsigned int cacheBytesRead;
     radDrive::CompletionStatus status =
             pDrive->ReadFile
-            ( 
-                handle,
-                fileName,
-                buffState,
-                m_CachePosition,
-                m_CacheBuffer,
-                readSize,
-                &cacheBytesRead,
-                m_CacheSpace
-            );
+                    (
+                            handle,
+                            fileName,
+                            buffState,
+                            m_CachePosition,
+                            m_CacheBuffer,
+                            readSize,
+                            &cacheBytesRead,
+                            m_CacheSpace
+                    );
 
-    if ( status != radDrive::Complete )
-    {
+    if (status != radDrive::Complete) {
         return status;
     }
 
@@ -349,25 +327,24 @@ radDrive::CompletionStatus FileCache::Read
     //
     // Finally, copy the data over to the user.
     //
-    IRadMemorySpaceCopyRequest* pMemCpyRequest = 
-        radMemorySpaceCopyAsync( pUserData, 
-                                 pDataSpace, 
-                                 &m_CacheBuffer[ position - m_CachePosition ],
-                                 m_CacheSpace,
-                                 bytesToRead );
+    IRadMemorySpaceCopyRequest *pMemCpyRequest =
+            radMemorySpaceCopyAsync(pUserData,
+                                    pDataSpace,
+                                    &m_CacheBuffer[position - m_CachePosition],
+                                    m_CacheSpace,
+                                    bytesToRead);
 
-    rAssert( pMemCpyRequest != NULL );
-    pMemCpyRequest->AddRef( );
+    rAssert(pMemCpyRequest != NULL);
+    pMemCpyRequest->AddRef();
 
     //
     // Run the request
     //
-    while ( !pMemCpyRequest->IsDone( ) )
-    {
-        ::radThreadSleep( 0 );
+    while (!pMemCpyRequest->IsDone()) {
+        ::radThreadSleep(0);
     }
 
-    pMemCpyRequest->Release( );
+    pMemCpyRequest->Release();
     pMemCpyRequest = NULL;
 
     *bytesRead += bytesToRead;
@@ -385,22 +362,20 @@ radDrive::CompletionStatus FileCache::Read
 // Returns:     
 //------------------------------------------------------------------------------
 
-void FileCache::InvalidateCache( unsigned int position, unsigned int size )
-{
-    if ( m_CacheBuffer == NULL )
-    {
+void FileCache::InvalidateCache(unsigned int position, unsigned int size) {
+    if (m_CacheBuffer == NULL) {
         return;
     }
 
     //
     // If this range overlaps with our cache, then invalidate it.
     //
-    if ( 
-        ( position >= m_CachePosition && position < m_CachePosition + m_CacheSize ) ||
-        ( position + size > m_CachePosition && position + size <= m_CachePosition + m_CacheSize ) ||
-        ( position < m_CachePosition && position + size > m_CachePosition + m_CacheSize )
-       )
-    {
+    if (
+            (position >= m_CachePosition && position < m_CachePosition + m_CacheSize) ||
+            (position + size > m_CachePosition &&
+             position + size <= m_CachePosition + m_CacheSize) ||
+            (position < m_CachePosition && position + size > m_CachePosition + m_CacheSize)
+            ) {
         m_CacheState = FileCacheInvalid;
     }
 }

@@ -22,6 +22,7 @@
 //=============================================================================
 
 #include "pch.hpp"
+
 #ifdef RAD_WIN32
 #include <windows.h>
 #endif
@@ -68,16 +69,15 @@
 //------------------------------------------------------------------------------
 
 void radDispatchCreate
-( 
-    IRadDispatcher**   pIRadDispatcher, 
-    unsigned int       maxCallbacks,
-    radMemoryAllocator alloc
-)
-{
+        (
+                IRadDispatcher **pIRadDispatcher,
+                unsigned int maxCallbacks,
+                radMemoryAllocator alloc
+        ) {
     //
     // Simply new up a a dispatcher object.
     //
-    *pIRadDispatcher = new( alloc ) radDispatcher( maxCallbacks, alloc );
+    *pIRadDispatcher = new(alloc) radDispatcher(maxCallbacks, alloc);
 }
 
 
@@ -95,29 +95,28 @@ void radDispatchCreate
 //------------------------------------------------------------------------------
 
 radDispatcher::radDispatcher
-( 
-    unsigned int maxCallbacks,
-    radMemoryAllocator alloc    
-)
-    :
-    m_ReferenceCount( 1 ),
-    m_MaxEvents( maxCallbacks ),
-    m_EventQueueHeadIndex( 0 ),
-    m_EventQueueTailIndex( 0 ),
-    m_EventsQueued( 0 )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radDispatcher" );
+        (
+                unsigned int maxCallbacks,
+                radMemoryAllocator alloc
+        )
+        :
+        m_ReferenceCount(1),
+        m_MaxEvents(maxCallbacks),
+        m_EventQueueHeadIndex(0),
+        m_EventQueueTailIndex(0),
+        m_EventsQueued(0) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radDispatcher");
     //
     // Allocate memory to use for queing events.
     //
-    m_EventQueue = (Event*) radMemoryAlloc( alloc, sizeof(Event) * m_MaxEvents );
+    m_EventQueue = (Event *) radMemoryAlloc(alloc, sizeof(Event) * m_MaxEvents);
 
     //
     // Under windows, initialize a critical section for protection.
     //
-    #if defined ( RAD_WIN32 ) || defined( RAD_XBOX )
-    InitializeCriticalSection( &m_CriticalSection );
-    #endif
+#if defined (RAD_WIN32) || defined(RAD_XBOX)
+    InitializeCriticalSection(&m_CriticalSection);
+#endif
 }
 
 //=============================================================================
@@ -132,23 +131,22 @@ radDispatcher::radDispatcher
 // Notes:
 //------------------------------------------------------------------------------
 
-radDispatcher::~radDispatcher( void )
-{
+radDispatcher::~radDispatcher(void) {
     //
     // If this asserts the caller did not call purge.
     //
-    rAssert( m_EventsQueued == 0 );
-   
-    #if defined ( RAD_WIN32 ) || defined( RAD_XBOX )
-    
-    DeleteCriticalSection( &m_CriticalSection );
+    rAssert(m_EventsQueued == 0);
 
-    #endif
+#if defined (RAD_WIN32) || defined(RAD_XBOX)
+
+    DeleteCriticalSection(&m_CriticalSection);
+
+#endif
 
     //
     // Free up the memory
     //
-    radMemoryFree( m_EventQueue );
+    radMemoryFree(m_EventQueue);
 }
 
 //=============================================================================
@@ -164,8 +162,7 @@ radDispatcher::~radDispatcher( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void radDispatcher::AddRef( void )
-{
+void radDispatcher::AddRef(void) {
     m_ReferenceCount++;
 }
 
@@ -182,13 +179,11 @@ void radDispatcher::AddRef( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void radDispatcher::Release( void )
-{
+void radDispatcher::Release(void) {
     m_ReferenceCount--;
-    
-    if( m_ReferenceCount == 0 )
-    {
-       delete this;
+
+    if (m_ReferenceCount == 0) {
+        delete this;
     }
 }
 
@@ -207,9 +202,9 @@ void radDispatcher::Release( void )
 
 #ifdef RAD_DEBUG
 
-void radDispatcher::Dump( char * pStringBuffer, unsigned int bufferSize )
+void radDispatcher::Dump(char * pStringBuffer, unsigned int bufferSize)
 {
-    sprintf( pStringBuffer, "Object: [radDispatcher] At Memory Location:[0x%x]\n", (unsigned int) this );
+    sprintf(pStringBuffer, "Object: [radDispatcher] At Memory Location:[0x%x]\n", (unsigned int) this);
 }
 
 #endif
@@ -229,60 +224,58 @@ void radDispatcher::Dump( char * pStringBuffer, unsigned int bufferSize )
 //------------------------------------------------------------------------------
 
 void radDispatcher::QueueCallback
-( 
-    IRadDispatchCallback* pDispatchCallback,
-    void*                 userData 
-)
-{
+        (
+                IRadDispatchCallback *pDispatchCallback,
+                void *userData
+        ) {
     //
     // Update reference count on the dispatch event object since we are holding
     // a pointer to it,
     //      
-    pDispatchCallback->AddRef( );
+    pDispatchCallback->AddRef();
 
     //
     // Protect the addtion of this record the event list. Platform specif locks
     // required.
     //
-    #if defined ( RAD_WIN32 ) || defined( RAD_XBOX )
-    EnterCriticalSection( &m_CriticalSection );
-    #endif
-    #ifdef RAD_PS2
-    DI( );
-    #endif
-    #ifdef RAD_GAMECUBE
-    BOOL   oldInterruptMask = OSDisableInterrupts( ); 
-    #endif
+#if defined (RAD_WIN32) || defined(RAD_XBOX)
+    EnterCriticalSection(&m_CriticalSection);
+#endif
+#ifdef RAD_PS2
+    DI();
+#endif
+#ifdef RAD_GAMECUBE
+    BOOL   oldInterruptMask = OSDisableInterrupts();
+#endif
 
     //
     // Assert that we have not exceeded the maximum number of events in the queue.
     //
-    rAssert( m_EventsQueued != m_MaxEvents );                         
+    rAssert(m_EventsQueued != m_MaxEvents);
 
     //
     // Add it to the queue at the head.
     //
-    m_EventQueue[ m_EventQueueHeadIndex ].m_Callback = pDispatchCallback;
-    m_EventQueue[ m_EventQueueHeadIndex ].m_UserData = userData;
+    m_EventQueue[m_EventQueueHeadIndex].m_Callback = pDispatchCallback;
+    m_EventQueue[m_EventQueueHeadIndex].m_UserData = userData;
     m_EventQueueHeadIndex++;
-    if( m_EventQueueHeadIndex == m_MaxEvents )
-    {
+    if (m_EventQueueHeadIndex == m_MaxEvents) {
         m_EventQueueHeadIndex = 0;
-    }        
+    }
     m_EventsQueued++;
 
     //
     // Remove protection,
     //
-    #if defined ( RAD_WIN32 ) || defined( RAD_XBOX )
-    LeaveCriticalSection( &m_CriticalSection );
-    #endif
-    #ifdef RAD_PS2
-    EI( );
-    #endif
-    #ifdef RAD_GAMECUBE
-    OSRestoreInterrupts( oldInterruptMask );
-    #endif
+#if defined (RAD_WIN32) || defined(RAD_XBOX)
+    LeaveCriticalSection(&m_CriticalSection);
+#endif
+#ifdef RAD_PS2
+    EI();
+#endif
+#ifdef RAD_GAMECUBE
+    OSRestoreInterrupts(oldInterruptMask);
+#endif
 }
 
 
@@ -301,34 +294,33 @@ void radDispatcher::QueueCallback
 //------------------------------------------------------------------------------
 
 void radDispatcher::QueueCallbackFromInterrupt
-( 
-    IRadDispatchCallback* pDispatchCallback,
-    void*                 userData 
-)
-{
-    #if defined ( RAD_WIN32 ) || defined( RAD_XBOX )
-        
+        (
+                IRadDispatchCallback *pDispatchCallback,
+                void *userData
+        ) {
+#if defined (RAD_WIN32) || defined(RAD_XBOX)
+
     //
     // Not supported under windows or XBOX
     //
     (void) pDispatchCallback;
     (void) userData;
-    rAssert( false );
+    rAssert(false);
 
-    #endif
+#endif
 
-    #if defined( RAD_PS2 ) || defined( RAD_GAMECUBE )
+#if defined(RAD_PS2) || defined(RAD_GAMECUBE)
 
     //
     // Update reference count on the dispatch event object since we are holding
     // a pointer to it,
     //      
-    pDispatchCallback->AddRef( );
+    pDispatchCallback->AddRef();
 
     //
     // Assert that we have not exceeded the maximum number of events in the queue.
     //
-    rAssert( m_EventsQueued != m_MaxEvents );                         
+    rAssert(m_EventsQueued != m_MaxEvents);
 
     //
     // Add it to the queue at the head.
@@ -336,13 +328,13 @@ void radDispatcher::QueueCallbackFromInterrupt
     m_EventQueue[ m_EventQueueHeadIndex ].m_Callback = pDispatchCallback;
     m_EventQueue[ m_EventQueueHeadIndex ].m_UserData = userData;
     m_EventQueueHeadIndex++;
-    if( m_EventQueueHeadIndex == m_MaxEvents )
+    if(m_EventQueueHeadIndex == m_MaxEvents)
     {
         m_EventQueueHeadIndex = 0;
     }        
     m_EventsQueued++;
 
-    #endif
+#endif
 }
 
 //=============================================================================
@@ -357,8 +349,7 @@ void radDispatcher::QueueCallbackFromInterrupt
 // Notes:
 //------------------------------------------------------------------------------
 
-unsigned int radDispatcher::Service( void )
-{
+unsigned int radDispatcher::Service(void) {
     //
     // For each invocation, we remove all of the events queued.
     //
@@ -367,12 +358,12 @@ unsigned int radDispatcher::Service( void )
     //
     // On Ps2, get the callers thread prioriry.
     //
-    #ifdef RAD_PS2
+#ifdef RAD_PS2
 
     ThreadParam threadInfo;
-    ReferThreadStatus( GetThreadId( ), &threadInfo );
-        
-    #endif
+    ReferThreadStatus(GetThreadId(), &threadInfo);
+
+#endif
 
     //
     // We only dispatch as many events that were initially in the queue. Since
@@ -383,88 +374,86 @@ unsigned int radDispatcher::Service( void )
     // Protect the manilpulation of this record the event list. Platform specif locks
     // required.
     //
-    #if defined ( RAD_WIN32 ) || defined( RAD_XBOX )
-    EnterCriticalSection( &m_CriticalSection );
-    #endif
-    #ifdef RAD_PS2
-    DI( );
-    #endif
-    #ifdef RAD_GAMECUBE
-    OSDisableInterrupts( );
-    #endif
+#if defined (RAD_WIN32) || defined(RAD_XBOX)
+    EnterCriticalSection(&m_CriticalSection);
+#endif
+#ifdef RAD_PS2
+    DI();
+#endif
+#ifdef RAD_GAMECUBE
+    OSDisableInterrupts();
+#endif
 
-    while( (m_EventsQueued != 0) && (eventsToDispatch != 0) )
-    {
+    while ((m_EventsQueued != 0) && (eventsToDispatch != 0)) {
         //
         // We have an event to dispatch. Remove it from the queue and update tail index.
         //
-        Event event = m_EventQueue[ m_EventQueueTailIndex ];
+        Event event = m_EventQueue[m_EventQueueTailIndex];
         m_EventQueueTailIndex++;
-        if( m_EventQueueTailIndex == m_MaxEvents )
-        {
+        if (m_EventQueueTailIndex == m_MaxEvents) {
             m_EventQueueTailIndex = 0;
-        }        
+        }
         m_EventsQueued--;
         eventsToDispatch--;
 
         //
         // Now remove lock and invoke event handler.
         //
-        #if defined ( RAD_WIN32 ) || defined( RAD_XBOX )
-        LeaveCriticalSection( &m_CriticalSection );
-        #endif
-        #ifdef RAD_PS2
-        EI( );
-        #endif
-        #ifdef RAD_GAMECUBE
-        OSEnableInterrupts( );
-        #endif
+#if defined (RAD_WIN32) || defined(RAD_XBOX)
+        LeaveCriticalSection(&m_CriticalSection);
+#endif
+#ifdef RAD_PS2
+        EI();
+#endif
+#ifdef RAD_GAMECUBE
+        OSEnableInterrupts();
+#endif
 
-        event.m_Callback->OnDispatchCallack( event.m_UserData );
+        event.m_Callback->OnDispatchCallack(event.m_UserData);
 
         //
         // Since we are now finished with the event, we can update our reference to the object.
         //
-        event.m_Callback->Release( );   // don't call radRelease( ) to report this release to memory monitor
+        event.m_Callback->Release();   // don't call radRelease() to report this release to memory monitor
 
-        #ifdef RAD_PS2
+#ifdef RAD_PS2
         //
         // Under the PS2, we rotate the thread ready queue to allow other threads to
         // run. Rotate only those threads at the calling priority.
         //
-        RotateThreadReadyQueue( threadInfo.currentPriority );
-        #endif
-    
-        #ifdef RAD_GAMECUBE
+        RotateThreadReadyQueue(threadInfo.currentPriority);
+#endif
+
+#ifdef RAD_GAMECUBE
         //
         // On GameCube, yield to threads at same priority.
         //
-        OSYieldThread( );
-        #endif    
+        OSYieldThread();
+#endif
 
-        #if defined ( RAD_WIN32 ) || defined( RAD_XBOX )
-        EnterCriticalSection( &m_CriticalSection );
-        #endif
-        #ifdef RAD_PS2
-        DI( );
-        #endif
+#if defined (RAD_WIN32) || defined(RAD_XBOX)
+        EnterCriticalSection(&m_CriticalSection);
+#endif
+#ifdef RAD_PS2
+        DI();
+#endif
 
-        #ifdef RAD_GAMECUBE
-        OSDisableInterrupts( );
-        #endif
+#ifdef RAD_GAMECUBE
+        OSDisableInterrupts();
+#endif
     }
 
-    #if defined ( RAD_WIN32 ) || defined( RAD_XBOX )
-    LeaveCriticalSection( &m_CriticalSection );
-    #endif
-    #ifdef RAD_PS2
-    EI( );
-    #endif
-    #ifdef RAD_GAMECUBE
-    OSEnableInterrupts( );
-    #endif
+#if defined (RAD_WIN32) || defined(RAD_XBOX)
+    LeaveCriticalSection(&m_CriticalSection);
+#endif
+#ifdef RAD_PS2
+    EI();
+#endif
+#ifdef RAD_GAMECUBE
+    OSEnableInterrupts();
+#endif
 
-    return( m_EventsQueued );
-          
+    return (m_EventsQueued);
+
 }
 

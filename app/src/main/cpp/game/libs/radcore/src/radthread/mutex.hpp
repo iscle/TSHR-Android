@@ -17,7 +17,7 @@
 // Notes:       
 //=============================================================================
 
-#ifndef	MUTEX_HPP
+#ifndef    MUTEX_HPP
 #define MUTEX_HPP
 
 //=============================================================================
@@ -25,17 +25,17 @@
 //=============================================================================
 
 #ifdef RAD_WIN32
-    #include <windows.h>
+#include <windows.h>
 #endif
 #ifdef RAD_XBOX
-    #include <xtl.h>
+#include <xtl.h>
 #endif
 #ifdef RAD_PS2
-    #include <eekernel.h>
+#include <eekernel.h>
 #endif
 #ifdef RAD_GAMECUBE
-    #include <os.h>
-#endif 
+#include <os.h>
+#endif
 
 #include <radobject.hpp>
 #include <radmemory.hpp>
@@ -58,69 +58,71 @@
 // implementations.
 //
 class radThreadMutex : public IRadThreadMutex,
-                       public radObject
-{
-    public:
+                       public radObject {
+public:
 
     //
     // Constructor, destructor. Nothing interesting
     //
-    radThreadMutex( void );
-    ~radThreadMutex( void );
+    radThreadMutex(void);
+
+    ~radThreadMutex(void);
 
     //
     // Members of the IRadThreadMutex
     //
-    virtual void Lock( void );
-    virtual void Unlock( void );
+    virtual void Lock(void);
+
+    virtual void Unlock(void);
 
     //
     // Members of IRefCount
     //
-    virtual void AddRef( void );
-    virtual void Release( void );
+    virtual void AddRef(void);
+
+    virtual void Release(void);
 
     //
     // Used for tracking active objects.
     //
-    #ifdef RAD_DEBUG
-    virtual void Dump( char* pStringBuffer, unsigned int bufferSize );
-    #endif
+#ifdef RAD_DEBUG
+    virtual void Dump(char* pStringBuffer, unsigned int bufferSize);
+#endif
 
-    private:
+private:
 
     //
     // This member maintains the reference count of this object.
     //
-    unsigned int m_ReferenceCount;    
+    unsigned int m_ReferenceCount;
 
     //
     // Windows and XBOX this is implemented using the critcal section primitive.
     //
-    #if defined(RAD_WIN32) || defined(RAD_XBOX)
+#if defined(RAD_WIN32) || defined(RAD_XBOX)
     CRITICAL_SECTION    m_CriticalSection;
-    #endif
+#endif
 
     //
     // PS2 we us a semaphore. We need to use extra members since the os primitive
     // does not allow same thread to own the critical section more than once.
     //
-    #ifdef RAD_PS2
-    
+#ifdef RAD_PS2
+
     int             m_Semaphore;        
     int             m_CurrentOwner;
     unsigned int    m_OwnedCount;
 
-    #endif
+#endif
 
     //
     // On the GameCube, we use the OS primitive. It does exactly what we want.
     //
-    #ifdef RAD_GAMECUBE
+#ifdef RAD_GAMECUBE
 
     OSMutex         m_Mutex;
 
-    #endif
+#endif
 };
 
 #endif

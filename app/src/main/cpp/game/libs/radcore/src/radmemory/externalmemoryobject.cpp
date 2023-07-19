@@ -36,10 +36,9 @@
 //============================================================================
 
 /* virtual */ void ExternalMemoryObject::AddRef
-(
-	void
-)
-{
+        (
+                void
+        ) {
     m_ReferenceCount++;
 }
 
@@ -47,16 +46,12 @@
 // ExternalMemoryObject::Release
 //============================================================================
 
-/* virtual */ void ExternalMemoryObject::Release( void )
-{
-    rAssert( m_ReferenceCount > 0 );
-  
-    if ( m_ReferenceCount == 1 )
-    {                
-        m_pExternalMemoryHeap->Free( this );
-    }
-    else
-    {
+/* virtual */ void ExternalMemoryObject::Release(void) {
+    rAssert(m_ReferenceCount > 0);
+
+    if (m_ReferenceCount == 1) {
+        m_pExternalMemoryHeap->Free(this);
+    } else {
         m_ReferenceCount--;
     }
 }
@@ -65,20 +60,18 @@
 // ExternalMemoryObject::GetMemoryAddress
 //============================================================================
 
-/* virtual */ void* ExternalMemoryObject::GetMemoryAddress
-(
-	void
-)
-{
-    return (void*) m_ClientAddress;
+/* virtual */ void *ExternalMemoryObject::GetMemoryAddress
+        (
+                void
+        ) {
+    return (void *) m_ClientAddress;
 }
 
 //============================================================================
 // ExternalMemoryObject::GetMemorySize
 //============================================================================
 
-/* virtual */ unsigned int ExternalMemoryObject::GetMemorySize( void )
-{
+/* virtual */ unsigned int ExternalMemoryObject::GetMemorySize(void) {
     return m_ClientSize;
 }
 

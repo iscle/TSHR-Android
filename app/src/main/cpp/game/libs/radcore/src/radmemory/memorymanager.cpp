@@ -43,21 +43,21 @@
 #include <memory/leakdetection.h>
 
 #ifdef RAD_GAMECUBE
-    IRadMemoryHeap *vmmHeap = NULL; //This is for exterman linkage...  Shitty.
-    extern void MemoryHackCallback();
+IRadMemoryHeap *vmmHeap = NULL; //This is for exterman linkage...  Shitty.
+extern void MemoryHackCallback();
 #endif
 
 #ifdef RAD_MW
-    extern void MemoryHackCallback();
+extern void MemoryHackCallback();
 #endif
 
 #ifdef RAD_XBOX
-    extern void MemoryHackCallback();
+extern void MemoryHackCallback();
 #endif
 
 extern void do_check_malloc_state();
 
-void* gEmergencyMemory = NULL;
+void *gEmergencyMemory = NULL;
 
 #ifdef RAD_PS2
 #define    HACK_AUDIO_PERSISTENT    ((radMemoryAllocator)15)
@@ -71,24 +71,21 @@ void* gEmergencyMemory = NULL;
 void IRadMemoryAllocator::GetStatus(unsigned int *totalFreeMemory,
                                     unsigned int *largestBlock,
                                     unsigned int *numberOfObjects,
-                                    unsigned int *highWaterMark )
-{
+                                    unsigned int *highWaterMark) {
     rAssert(totalFreeMemory != NULL);
-    rAssert(largestBlock    != NULL);
+    rAssert(largestBlock != NULL);
     rAssert(numberOfObjects != NULL);
-    rAssert(highWaterMark   != NULL);
+    rAssert(highWaterMark != NULL);
 
     *totalFreeMemory = GetSize();
-    *largestBlock    = GetSize();
+    *largestBlock = GetSize();
     *numberOfObjects = 0;
-    *highWaterMark   = 0;
+    *highWaterMark = 0;
 }
 
 
-
 //----------------------------------------------------------------------------
-unsigned int IRadMemoryAllocator::GetSize( void )
-{
+unsigned int IRadMemoryAllocator::GetSize(void) {
     return 0xFFFFFFFFU;
 }
 
@@ -103,64 +100,56 @@ unsigned int IRadMemoryAllocator::GetSize( void )
 // case "Root Node" of our allocator tree, that is, all allocations ultimately
 // come from malloc() through this allocator.
 
-struct radMemoryAllocatorMalloc : public IRadMemoryAllocator
-{
+struct radMemoryAllocatorMalloc : public IRadMemoryAllocator {
     // Don't need AddRef()/Release() functions for this allocator, it is a
     // singleton that merely wraps calls to platAlloc() with no attributes.
-    radMemoryAllocatorMalloc( )
-    {
-        radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radMemoryAllocatorMalloc" );
+    radMemoryAllocatorMalloc() {
+        radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radMemoryAllocatorMalloc");
     }
 
-    virtual void AddRef( void ) { };
-    virtual void Release( void ) { };
+    virtual void AddRef(void) {};
 
-    virtual void* GetMemory( unsigned int size )
-    {
-        void * pMemory = radMemoryPlatAlloc( size );
+    virtual void Release(void) {};
 
-        radMemoryMonitorDeclareAllocation( pMemory, size );
+    virtual void *GetMemory(unsigned int size) {
+        void *pMemory = radMemoryPlatAlloc(size);
+
+        radMemoryMonitorDeclareAllocation(pMemory, size);
 
         return pMemory;
     }
 
-	virtual void FreeMemory( void* pMemory )
-    {
-        radMemoryPlatFree( pMemory );
+    virtual void FreeMemory(void *pMemory) {
+        radMemoryPlatFree(pMemory);
 
-        radMemoryMonitorRescindAllocation( pMemory );
+        radMemoryMonitorRescindAllocation(pMemory);
     }
 
-    virtual void* GetMemoryAligned( unsigned int size, unsigned int alignment )
-    {
-        void * pMemory = radMemoryPlatAllocAligned( size, alignment );
+    virtual void *GetMemoryAligned(unsigned int size, unsigned int alignment) {
+        void *pMemory = radMemoryPlatAllocAligned(size, alignment);
 
-        radMemoryMonitorDeclareAllocation( pMemory, size );
+        radMemoryMonitorDeclareAllocation(pMemory, size);
 
         return pMemory;
     }
 
-	virtual void FreeMemoryAligned( void * pMemory )
-    {
-        radMemoryPlatFreeAligned( pMemory );
+    virtual void FreeMemoryAligned(void *pMemory) {
+        radMemoryPlatFreeAligned(pMemory);
 
-        radMemoryMonitorRescindAllocation( pMemory );
+        radMemoryMonitorRescindAllocation(pMemory);
     }
 
-    virtual bool CanFreeMemory( void * pMemory )
-    {
+    virtual bool CanFreeMemory(void *pMemory) {
         return true;
     }
 
-    virtual bool CanFreeMemoryAligned( void * pMemory )
-    {
+    virtual bool CanFreeMemoryAligned(void *pMemory) {
         return true;
     }
-    
-	void * operator new( size_t size, void * pMemory )
-	{
-		return pMemory;
-	}
+
+    void *operator new(size_t size, void *pMemory) {
+        return pMemory;
+    }
 };
 
 
@@ -172,19 +161,19 @@ struct radMemoryAllocatorMalloc : public IRadMemoryAllocator
 // from which the other allocator's memory was allocated.  These libraries
 // maintain the tree--this is a node in that tree.
 
-struct radMemoryAllocatorTreeNode
-{
-    IRadMemoryAllocator        * m_pIRadMemoryAllocator; // the allocator pointer
-    radMemoryAllocatorTreeNode * m_pChildren_Head; // list of sub allocators
-    radMemoryAllocatorTreeNode * m_pSibling_Next;  // list pointer used by parent 
-    radMemoryAllocatorTreeNode * m_pParent;        // optomization                 
+struct radMemoryAllocatorTreeNode {
+    IRadMemoryAllocator *m_pIRadMemoryAllocator; // the allocator pointer
+    radMemoryAllocatorTreeNode *m_pChildren_Head; // list of sub allocators
+    radMemoryAllocatorTreeNode *m_pSibling_Next;  // list pointer used by parent
+    radMemoryAllocatorTreeNode *m_pParent;        // optomization
 };
 
 // An instance of the special case singleton malloc() allocator and
 // its coresponding root note.  They get attached in radMemoryInitialize()
 
-radMemoryAllocatorMalloc * g_pRadMemoryAllocator_Malloc = NULL;
-static unsigned int g_MemoryForMalloc[ (sizeof( radMemoryAllocatorMalloc ) / sizeof( unsigned int)) + 1 ];
+radMemoryAllocatorMalloc *g_pRadMemoryAllocator_Malloc = NULL;
+static unsigned int g_MemoryForMalloc[
+        (sizeof(radMemoryAllocatorMalloc) / sizeof(unsigned int)) + 1];
 static radMemoryAllocatorTreeNode g_AllocatorTreeNode_Root;
 
 // Fixed size array for storing our allocators, the table element of an
@@ -192,24 +181,24 @@ static radMemoryAllocatorTreeNode g_AllocatorTreeNode_Root;
 // We could make the size dynamic dow that we have a radMemoryInitizlize()
 // call.
 
-static radMemoryAllocatorTreeNode g_AllocatorTreeNodes[ ALLOCATOR_TABLE_SIZE ];
+static radMemoryAllocatorTreeNode g_AllocatorTreeNodes[ALLOCATOR_TABLE_SIZE];
 
 // The current allocator for Pure3d style per thread global allocator
 // settings. The current allocator is maintained using thread local storage.
 
-static IRadThreadLocalStorage* g_CurrentAllocator = NULL;
-static IRadThreadLocalStorage* g_CurrentAllocatorCallback = NULL;
-static IRadMemoryActivityCallback* g_MemoryActivityCallback = NULL;
+static IRadThreadLocalStorage *g_CurrentAllocator = NULL;
+static IRadThreadLocalStorage *g_CurrentAllocatorCallback = NULL;
+static IRadMemoryActivityCallback *g_MemoryActivityCallback = NULL;
 
 // Flag to indicate whether the libraries have been initialized.
 
 static bool g_Initialized = false;
 
 
-static radMemoryAllocator* g_UsableAllocators = NULL;
+static radMemoryAllocator *g_UsableAllocators = NULL;
 static unsigned int g_NumUseableAllocators = 0;
-void radMemorySetUsableAllocators( radMemoryAllocator* allocs, unsigned int numAllocs )
-{
+
+void radMemorySetUsableAllocators(radMemoryAllocator *allocs, unsigned int numAllocs) {
     g_UsableAllocators = allocs;
     g_NumUseableAllocators = numAllocs;
 }
@@ -219,23 +208,29 @@ void radMemorySetUsableAllocators( radMemoryAllocator* allocs, unsigned int numA
 // Forward Declarations
 //============================================================================
 
-IRadMemoryAllocator * radMemoryFindAllocatorRecursive( radMemoryAllocatorTreeNode * pNode, void * pMemory );
-IRadMemoryAllocator * radMemoryFindAllocatorAlignedRecursive( radMemoryAllocatorTreeNode * pNode, void * pMemory );
+IRadMemoryAllocator *
+radMemoryFindAllocatorRecursive(radMemoryAllocatorTreeNode *pNode, void *pMemory);
+
+IRadMemoryAllocator *
+radMemoryFindAllocatorAlignedRecursive(radMemoryAllocatorTreeNode *pNode, void *pMemory);
 
 // We initialize the external memory space system, don't put these functions
 // in the header file or it might confuse people.
 
 #ifdef RAD_GAMECUBE
-    extern void radMemorySpaceInitialize( unsigned int aramSizeInBytes );
-    extern void radMemorySpaceTerminate( void );
-    static bool sVMMDLHeapInitialized = false;
+extern void radMemorySpaceInitialize(unsigned int aramSizeInBytes);
+extern void radMemorySpaceTerminate(void);
+static bool sVMMDLHeapInitialized = false;
 #else
-    extern void radMemorySpaceInitialize( void );
-    extern void radMemorySpaceTerminate( void );
+
+extern void radMemorySpaceInitialize(void);
+
+extern void radMemorySpaceTerminate(void);
+
 #endif
 
 #ifdef RAD_MW
-    static bool sVMMDLHeapInitialized = false;
+static bool sVMMDLHeapInitialized = false;
 #endif
 
 //============================================================================
@@ -249,61 +244,60 @@ void gcnVMMLogStats(unsigned long realVirtualAddress,
                     unsigned long physicalAddress, 
                     unsigned long pageNumber,
                     unsigned long pageMissLatency,
-                    BOOL pageSwappedOut );
+                    BOOL pageSwappedOut);
 
 static gcnVMMStats sVMMStats;
 
-void radMemoryInitialize( unsigned int sizeVMMainMemory, unsigned int sizeVMARAM )
+void radMemoryInitialize(unsigned int sizeVMMainMemory, unsigned int sizeVMARAM)
 #else
-void radMemoryInitialize( void )
+
+void radMemoryInitialize(void)
 #endif
 {
-    if( g_Initialized )
-    {
+    if (g_Initialized) {
         return;
     }
 
 #ifdef RAD_GAMECUBE
-    ::radMemoryPlatInitialize( sizeVMMainMemory, sizeVMARAM );
+    ::radMemoryPlatInitialize(sizeVMMainMemory, sizeVMARAM);
 #else
-    ::radMemoryPlatInitialize( );
+    ::radMemoryPlatInitialize();
 #endif
 
     //This is memory reserved to really bad situations where we need to printf.
 #ifndef RAD_GAMECUBE
-    gEmergencyMemory = radMemoryPlatAlloc( 1024 * 32 );
+    gEmergencyMemory = radMemoryPlatAlloc(1024 * 32);
 #endif
 
-    rAssert( g_Initialized == false );
+    rAssert(g_Initialized == false);
     g_Initialized = true;
 
-    g_pRadMemoryAllocator_Malloc = new ( g_MemoryForMalloc ) radMemoryAllocatorMalloc( );
+    g_pRadMemoryAllocator_Malloc = new(g_MemoryForMalloc) radMemoryAllocatorMalloc();
 
     g_AllocatorTreeNode_Root.m_pIRadMemoryAllocator = g_pRadMemoryAllocator_Malloc;
     g_AllocatorTreeNode_Root.m_pChildren_Head = NULL;
     g_AllocatorTreeNode_Root.m_pSibling_Next = NULL;
     g_AllocatorTreeNode_Root.m_pParent = NULL;
 
-    for( unsigned int i = 0; i < ALLOCATOR_TABLE_SIZE; i ++ )
-    {
-        g_AllocatorTreeNodes[ i ].m_pChildren_Head = NULL;
-        g_AllocatorTreeNodes[ i ].m_pParent = NULL;
-        g_AllocatorTreeNodes[ i ].m_pSibling_Next = NULL;
-        g_AllocatorTreeNodes[ i ].m_pIRadMemoryAllocator = g_pRadMemoryAllocator_Malloc;
+    for (unsigned int i = 0; i < ALLOCATOR_TABLE_SIZE; i++) {
+        g_AllocatorTreeNodes[i].m_pChildren_Head = NULL;
+        g_AllocatorTreeNodes[i].m_pParent = NULL;
+        g_AllocatorTreeNodes[i].m_pSibling_Next = NULL;
+        g_AllocatorTreeNodes[i].m_pIRadMemoryAllocator = g_pRadMemoryAllocator_Malloc;
     }
 
 #ifdef RAD_GAMECUBE
     unsigned aramSize = (1024 * 1024 * 16) - sizeVMARAM;
-    radMemorySpaceInitialize( aramSize );
+    radMemorySpaceInitialize(aramSize);
     sVMMDLHeapInitialized = false;
 
     if ((sizeVMMainMemory != 0) && (sizeVMARAM != 0))
     {
-        bool ok = VMAlloc( 0x7E000000, sizeVMARAM );
-        rAssert( ok );
-        vmmHeap = radMemoryCreateDougLeaHeap( (void *)0x7E000000, sizeVMARAM, RADMEMORY_ALLOC_DEFAULT, "GameCube_VMM" );
+        bool ok = VMAlloc(0x7E000000, sizeVMARAM);
+        rAssert(ok);
+        vmmHeap = radMemoryCreateDougLeaHeap((void *)0x7E000000, sizeVMARAM, RADMEMORY_ALLOC_DEFAULT, "GameCube_VMM");
         rAssert(vmmHeap != NULL);
-        radMemoryRegisterAllocator( RADMEMORY_ALLOC_VMM, RADMEMORY_ALLOC_DEFAULT, vmmHeap );
+        radMemoryRegisterAllocator(RADMEMORY_ALLOC_VMM, RADMEMORY_ALLOC_DEFAULT, vmmHeap);
         sVMMDLHeapInitialized = true;
 #ifndef RAD_RELEASE
         VMSetLogStatsCallback(&gcnVMMLogStats);
@@ -311,57 +305,55 @@ void radMemoryInitialize( void )
     }
 
 #else
-    radMemorySpaceInitialize( );
+    radMemorySpaceInitialize();
 #endif
 
     //
     // Initialize static heap
     //
-    //g_StaticHeap.CreateHeap( STATIC_HEAP_SIZE );
+    //g_StaticHeap.CreateHeap(STATIC_HEAP_SIZE);
 }
 
 //============================================================================
 // ::radMemoryTerminate
 //============================================================================
 
-void radMemoryTerminate( void )
-{
-    radMemorySpaceTerminate( );
+void radMemoryTerminate(void) {
+    radMemorySpaceTerminate();
 
-    rAssert( g_Initialized == true );
+    rAssert(g_Initialized == true);
 
     //
     // Free the thread local storage object if it was allocated.
     //
-    if( g_CurrentAllocator != NULL )
-    {
-        radRelease( g_CurrentAllocator, NULL );
-    }        
+    if (g_CurrentAllocator != NULL) {
+        radRelease(g_CurrentAllocator, NULL);
+    }
 
     g_Initialized = false;
-    
-    g_pRadMemoryAllocator_Malloc->~radMemoryAllocatorMalloc( );
+
+    g_pRadMemoryAllocator_Malloc->~radMemoryAllocatorMalloc();
 
 #ifdef RAD_GAMECUBE
     if (sVMMDLHeapInitialized)
     {
-        IRadMemoryAllocator *vmmHeap = radMemoryGetAllocator( RADMEMORY_ALLOC_VMM );
+        IRadMemoryAllocator *vmmHeap = radMemoryGetAllocator(RADMEMORY_ALLOC_VMM);
         rAssert(vmmHeap != NULL);
         vmmHeap->Release();
-        radMemoryUnregisterAllocator( RADMEMORY_ALLOC_VMM );
+        radMemoryUnregisterAllocator(RADMEMORY_ALLOC_VMM);
         sVMMDLHeapInitialized = false;
 
         VMFreeAll();
     }
 #endif
 
-    ::radMemoryPlatTerminate( );
-    
+    ::radMemoryPlatTerminate();
+
     //
     // Check to make sure the game cleaned up all of its allocators
     //    
 
-    rAssert( g_AllocatorTreeNode_Root.m_pChildren_Head == NULL );
+    rAssert(g_AllocatorTreeNode_Root.m_pChildren_Head == NULL);
 }
 
 //============================================================================
@@ -371,17 +363,16 @@ void radMemoryTerminate( void )
 // allocator runs out of memory.
 //============================================================================
 
-radMemoryOutOfMemoryCallback * g_pRadMemoryOutOfMemoryCallback = NULL;
-void *                         g_pRadMemoryOutOfMemoryCallbackUserData = NULL;
+radMemoryOutOfMemoryCallback *g_pRadMemoryOutOfMemoryCallback = NULL;
+void *g_pRadMemoryOutOfMemoryCallbackUserData = NULL;
 
 void radMemorySetOutOfMemoryCallback
-(
-	radMemoryOutOfMemoryCallback * pCallback,
-	void * pUserData
-)
-{
-	g_pRadMemoryOutOfMemoryCallback         = pCallback;
-	g_pRadMemoryOutOfMemoryCallbackUserData = pUserData;
+        (
+                radMemoryOutOfMemoryCallback *pCallback,
+                void *pUserData
+        ) {
+    g_pRadMemoryOutOfMemoryCallback = pCallback;
+    g_pRadMemoryOutOfMemoryCallbackUserData = pUserData;
 }
 
 //============================================================================
@@ -392,83 +383,71 @@ void radMemorySetOutOfMemoryCallback
 // otherwise it will print out a debug message.
 //============================================================================
 inline void CheckForOutOfMemory
-(
-	void * pMemory,
-	unsigned int numberOfBytes,
-	radMemoryAllocator allocator
-)
-{
-	if(	pMemory == NULL )
-	{
-        radMemoryPlatFree( gEmergencyMemory );
+        (
+                void *pMemory,
+                unsigned int numberOfBytes,
+                radMemoryAllocator allocator
+        ) {
+    if (pMemory == NULL) {
+        radMemoryPlatFree(gEmergencyMemory);
 
-        rReleasePrintf( "OUT OF MEMORY\n" );
-        rReleasePrintf( "Out of memory in allocator: [%d]\n", allocator );
+        rReleasePrintf("OUT OF MEMORY\n");
+        rReleasePrintf("Out of memory in allocator: [%d]\n", allocator);
         ::radMemoryMonitorSuspend();
 
-        IRadMemoryAllocator* pIRadMemoryAllocator = NULL;
-        if( g_AllocatorTreeNodes != NULL )
-        {
-            pIRadMemoryAllocator = g_AllocatorTreeNodes[ allocator ].m_pIRadMemoryAllocator;
+        IRadMemoryAllocator *pIRadMemoryAllocator = NULL;
+        if (g_AllocatorTreeNodes != NULL) {
+            pIRadMemoryAllocator = g_AllocatorTreeNodes[allocator].m_pIRadMemoryAllocator;
             unsigned int totalFree, largestBlock, numberOfObjects, highWaterMark;
-            pIRadMemoryAllocator->GetStatus( &totalFree, &largestBlock, &numberOfObjects, &highWaterMark );
+            pIRadMemoryAllocator->GetStatus(&totalFree, &largestBlock, &numberOfObjects,
+                                            &highWaterMark);
 
-            rReleasePrintf( "requested:%d\n", numberOfBytes );
-            rReleasePrintf( "totalFree:%d\n", totalFree );
-            rReleasePrintf( "largestBlock:%d\n", largestBlock );
-        }
-        else
-        {
-            rReleasePrintf( "No Usable Allocators\n" );
+            rReleasePrintf("requested:%d\n", numberOfBytes);
+            rReleasePrintf("totalFree:%d\n", totalFree);
+            rReleasePrintf("largestBlock:%d\n", largestBlock);
+        } else {
+            rReleasePrintf("No Usable Allocators\n");
         }
 
-        if ( g_pRadMemoryOutOfMemoryCallback != NULL )
-		{
-			g_pRadMemoryOutOfMemoryCallback(
-                g_pRadMemoryOutOfMemoryCallbackUserData, allocator, numberOfBytes );
-		}
-	}	
+        if (g_pRadMemoryOutOfMemoryCallback != NULL) {
+            g_pRadMemoryOutOfMemoryCallback(
+                    g_pRadMemoryOutOfMemoryCallbackUserData, allocator, numberOfBytes);
+        }
+    }
 }
 
-char g_CurrentMemoryIdentification[ 256 ] = "";
-void SetMemoryIdentification( const char* id )
-{
-    strcpy( g_CurrentMemoryIdentification, id );
+char g_CurrentMemoryIdentification[256] = "";
+
+void SetMemoryIdentification(const char *id) {
+    strcpy(g_CurrentMemoryIdentification, id);
 }
 
-inline void * radMemoryAllocSearch( unsigned int numberOfBytes, unsigned int alignment )
-{
+inline void *radMemoryAllocSearch(unsigned int numberOfBytes, unsigned int alignment) {
 
-    void* pMemory = NULL;
-    if ( g_UsableAllocators != NULL )
-    {
-        IRadMemoryAllocator * pIRadMemoryAllocator = NULL;
+    void *pMemory = NULL;
+    if (g_UsableAllocators != NULL) {
+        IRadMemoryAllocator *pIRadMemoryAllocator = NULL;
 
         unsigned int i;
-        for ( i = 0; i < g_NumUseableAllocators; ++i )
-        {
-            rAssert( i < ALLOCATOR_TABLE_SIZE );
-            pIRadMemoryAllocator = g_AllocatorTreeNodes[ g_UsableAllocators[ i ] ].m_pIRadMemoryAllocator;
+        for (i = 0; i < g_NumUseableAllocators; ++i) {
+            rAssert(i < ALLOCATOR_TABLE_SIZE);
+            pIRadMemoryAllocator = g_AllocatorTreeNodes[g_UsableAllocators[i]].m_pIRadMemoryAllocator;
 
             unsigned int totalFree, largestBlock, numberOfObjects, highWaterMark;
-            pIRadMemoryAllocator->GetStatus( &totalFree, &largestBlock, &numberOfObjects, &highWaterMark );
-            if ( totalFree < numberOfBytes )
-            {
+            pIRadMemoryAllocator->GetStatus(&totalFree, &largestBlock, &numberOfObjects,
+                                            &highWaterMark);
+            if (totalFree < numberOfBytes) {
                 continue;
             }
 
-            if ( alignment != 0 )
-            {
+            if (alignment != 0) {
 
-                pMemory = pIRadMemoryAllocator->GetMemoryAligned( numberOfBytes, alignment );
-            }
-            else
-            {
-                pMemory = pIRadMemoryAllocator->GetMemory( numberOfBytes );
+                pMemory = pIRadMemoryAllocator->GetMemoryAligned(numberOfBytes, alignment);
+            } else {
+                pMemory = pIRadMemoryAllocator->GetMemory(numberOfBytes);
             }
 
-            if ( pMemory )
-            {
+            if (pMemory) {
                 break;
             }
         }
@@ -501,58 +480,52 @@ struct AllocState
 std::map<void*,AllocState> gbLeakMap;
 #endif
 
-void * radMemoryAlloc( radMemoryAllocator allocator, unsigned int numberOfBytes )
-{
+void *radMemoryAlloc(radMemoryAllocator allocator, unsigned int numberOfBytes) {
 #ifdef RAD_PS2
-    if(     (numberOfBytes<201)
+    if((numberOfBytes<201)
         && gbSmallAllocCreated 
         && (allocator != HACK_AUDIO_PERSISTENT)
         && (allocator != HACK_PERSISTENT)
         && (allocator != RADMEMORY_ALLOC_TEMP)
-        )
+)
     {
         allocator = HACK_SMALL_ALLOC;
     }
 #endif
-#if ( defined RAD_XBOX ) || ( defined RAD_GAMECUBE ) || ( defined RAD_MW )
-    if ( !g_Initialized )
+#if (defined RAD_XBOX) || (defined RAD_GAMECUBE) || (defined RAD_MW)
+    if (!g_Initialized)
     {
         MemoryHackCallback();
     }
 #endif
-    if ( numberOfBytes == 0 )
-    {
+    if (numberOfBytes == 0) {
         return NULL;
     }
 
-    rAssert( g_Initialized == true );
-    rAssert( allocator < ALLOCATOR_TABLE_SIZE || allocator == ALLOCATOR_SEARCH );
+    rAssert(g_Initialized == true);
+    rAssert(allocator < ALLOCATOR_TABLE_SIZE || allocator == ALLOCATOR_SEARCH);
 
-    #ifdef RAD_XBOX
-        //rAssert( allocator != 2 );
-    #endif
-    void * pMem;
+#ifdef RAD_XBOX
+    //rAssert(allocator != 2);
+#endif
+    void *pMem;
 
-    if ( allocator == ALLOCATOR_SEARCH )
-    {
-        pMem = radMemoryAllocSearch( numberOfBytes, 0 );
-    }
-    else
-    {
-        IRadMemoryAllocator * pIRadMemoryAllocator =
-            g_AllocatorTreeNodes[ allocator ].m_pIRadMemoryAllocator;
+    if (allocator == ALLOCATOR_SEARCH) {
+        pMem = radMemoryAllocSearch(numberOfBytes, 0);
+    } else {
+        IRadMemoryAllocator *pIRadMemoryAllocator =
+                g_AllocatorTreeNodes[allocator].m_pIRadMemoryAllocator;
 
-        pMem = pIRadMemoryAllocator->GetMemory( numberOfBytes );
-        ::radMemoryMonitorIdentifyAllocation ( pMem, g_CurrentMemoryIdentification );
+        pMem = pIRadMemoryAllocator->GetMemory(numberOfBytes);
+        ::radMemoryMonitorIdentifyAllocation(pMem, g_CurrentMemoryIdentification);
     }
 
-    if (g_MemoryActivityCallback)
-    {
-        g_MemoryActivityCallback->MemoryAllocated( allocator, pMem, numberOfBytes );
+    if (g_MemoryActivityCallback) {
+        g_MemoryActivityCallback->MemoryAllocated(allocator, pMem, numberOfBytes);
     }
 
-    CheckForOutOfMemory( pMem, numberOfBytes, allocator );
-    LEAK_DETECTION_ADD_ALLOCATION( pMem, numberOfBytes, allocator );
+    CheckForOutOfMemory(pMem, numberOfBytes, allocator);
+    LEAK_DETECTION_ADD_ALLOCATION(pMem, numberOfBytes, allocator);
     return pMem;
 }
 
@@ -560,54 +533,49 @@ void * radMemoryAlloc( radMemoryAllocator allocator, unsigned int numberOfBytes 
 // ::radMemoryAllocAligned
 //============================================================================
 
-void * radMemoryAllocAligned
-(
-    radMemoryAllocator allocator,
-    unsigned int numberOfBytes,
-    unsigned int alignment
-)
-{
-#if ( defined RAD_GAMECUBE ) || ( defined RAD_MW )
-    if ( !g_Initialized )
+void *radMemoryAllocAligned
+        (
+                radMemoryAllocator allocator,
+                unsigned int numberOfBytes,
+                unsigned int alignment
+        ) {
+#if (defined RAD_GAMECUBE) || (defined RAD_MW)
+    if (!g_Initialized)
     {
         MemoryHackCallback();
     }
 #endif
 #ifdef RAD_PS2
-    if(     (numberOfBytes<201)
+    if((numberOfBytes<201)
         && gbSmallAllocCreated 
         && (allocator != HACK_AUDIO_PERSISTENT)
         && (allocator != HACK_PERSISTENT)
         && (allocator != RADMEMORY_ALLOC_TEMP)
-        )
+)
     {
         allocator = HACK_SMALL_ALLOC;
     }
 #endif
-    rAssert( ( alignment % 4 ) == 0 );
-    rAssert( g_Initialized == true );
-    rAssert( allocator < ALLOCATOR_TABLE_SIZE || allocator == ALLOCATOR_SEARCH );
+    rAssert((alignment % 4) == 0);
+    rAssert(g_Initialized == true);
+    rAssert(allocator < ALLOCATOR_TABLE_SIZE || allocator == ALLOCATOR_SEARCH);
 
-    void * pMem;
-    if ( allocator == ALLOCATOR_SEARCH )
-    {
-        pMem = radMemoryAllocSearch( numberOfBytes, alignment );
-    }
-    else
-    {
-        IRadMemoryAllocator * pIRadMemoryAllocator =
-            g_AllocatorTreeNodes[ allocator ].m_pIRadMemoryAllocator;
+    void *pMem;
+    if (allocator == ALLOCATOR_SEARCH) {
+        pMem = radMemoryAllocSearch(numberOfBytes, alignment);
+    } else {
+        IRadMemoryAllocator *pIRadMemoryAllocator =
+                g_AllocatorTreeNodes[allocator].m_pIRadMemoryAllocator;
 
-        pMem = pIRadMemoryAllocator->GetMemoryAligned( numberOfBytes, alignment );
+        pMem = pIRadMemoryAllocator->GetMemoryAligned(numberOfBytes, alignment);
     }
 
-    if (g_MemoryActivityCallback)
-    {
-        g_MemoryActivityCallback->MemoryAllocated( allocator, pMem, numberOfBytes );
+    if (g_MemoryActivityCallback) {
+        g_MemoryActivityCallback->MemoryAllocated(allocator, pMem, numberOfBytes);
     }
 
-    CheckForOutOfMemory( pMem, numberOfBytes, allocator );
-    LEAK_DETECTION_ADD_ALLOCATION( pMem, numberOfBytes, allocator );
+    CheckForOutOfMemory(pMem, numberOfBytes, allocator);
+    LEAK_DETECTION_ADD_ALLOCATION(pMem, numberOfBytes, allocator);
     return pMem;
 }
 
@@ -618,107 +586,95 @@ void * radMemoryAllocAligned
 // a serch through the allocatior tree.
 //============================================================================
 
-void radMemoryFree( radMemoryAllocator allocator, void * pMemory )
-{
+void radMemoryFree(radMemoryAllocator allocator, void *pMemory) {
 #ifdef RAD_PS2
     return radMemoryFree(pMemory);
 #endif
-    LEAK_DETECTION_REMOVE_ALLOCATION( pMemory );
-    rAssert( g_Initialized == true );
+    LEAK_DETECTION_REMOVE_ALLOCATION(pMemory);
+    rAssert(g_Initialized == true);
 
-    IRadMemoryAllocator * pIRadMemoryAllocator = NULL;
+    IRadMemoryAllocator *pIRadMemoryAllocator = NULL;
 
-    if ( allocator >= ALLOCATOR_TABLE_SIZE )
-    {
+    if (allocator >= ALLOCATOR_TABLE_SIZE) {
         pIRadMemoryAllocator = radMemoryFindAllocatorRecursive(
-            & g_AllocatorTreeNode_Root, pMemory );
-    }
-    else
-    {
-        pIRadMemoryAllocator = g_AllocatorTreeNodes[ allocator ].m_pIRadMemoryAllocator;
+                &g_AllocatorTreeNode_Root, pMemory);
+    } else {
+        pIRadMemoryAllocator = g_AllocatorTreeNodes[allocator].m_pIRadMemoryAllocator;
     }
 
-    rAssert( pIRadMemoryAllocator != NULL );
+    rAssert(pIRadMemoryAllocator != NULL);
 
-    if (pMemory && g_MemoryActivityCallback)
-    {
-        g_MemoryActivityCallback->MemoryFreed( allocator, pMemory );
+    if (pMemory && g_MemoryActivityCallback) {
+        g_MemoryActivityCallback->MemoryFreed(allocator, pMemory);
     }
 
-    pIRadMemoryAllocator->FreeMemory( pMemory );
+    pIRadMemoryAllocator->FreeMemory(pMemory);
 }
 
 //============================================================================
 // ::radMemoryFreeAligned
 //============================================================================
 
-void radMemoryFreeAligned(  radMemoryAllocator allocator, void * pAlignedMemory )
-{
+void radMemoryFreeAligned(radMemoryAllocator allocator, void *pAlignedMemory) {
 #ifdef RAD_PS2
     return radMemoryFreeAligned(pAlignedMemory);
 #endif
-    LEAK_DETECTION_REMOVE_ALLOCATION( pAlignedMemory );
-    rAssert( g_Initialized == true );
+    LEAK_DETECTION_REMOVE_ALLOCATION(pAlignedMemory);
+    rAssert(g_Initialized == true);
 
-    IRadMemoryAllocator * pIRadMemoryAllocator = NULL;
-    if ( allocator >= ALLOCATOR_TABLE_SIZE )
-    {
+    IRadMemoryAllocator *pIRadMemoryAllocator = NULL;
+    if (allocator >= ALLOCATOR_TABLE_SIZE) {
         pIRadMemoryAllocator = radMemoryFindAllocatorAlignedRecursive(
-            & g_AllocatorTreeNode_Root, pAlignedMemory );
-    }
-    else
-    {
-        pIRadMemoryAllocator = g_AllocatorTreeNodes[ allocator ].m_pIRadMemoryAllocator;
-    }
-    
-    rAssert( pIRadMemoryAllocator != NULL );
-
-    if (pAlignedMemory && g_MemoryActivityCallback)
-    {
-        g_MemoryActivityCallback->MemoryFreed( allocator, pAlignedMemory );
+                &g_AllocatorTreeNode_Root, pAlignedMemory);
+    } else {
+        pIRadMemoryAllocator = g_AllocatorTreeNodes[allocator].m_pIRadMemoryAllocator;
     }
 
-    pIRadMemoryAllocator->FreeMemoryAligned( pAlignedMemory );
+    rAssert(pIRadMemoryAllocator != NULL);
+
+    if (pAlignedMemory && g_MemoryActivityCallback) {
+        g_MemoryActivityCallback->MemoryFreed(allocator, pAlignedMemory);
+    }
+
+    pIRadMemoryAllocator->FreeMemoryAligned(pAlignedMemory);
 }
 
-void radMemoryFreeAligned( void * pMemory )
-{
-    LEAK_DETECTION_REMOVE_ALLOCATION( pMemory );
-    rAssert( g_Initialized == true );
+void radMemoryFreeAligned(void *pMemory) {
+    LEAK_DETECTION_REMOVE_ALLOCATION(pMemory);
+    rAssert(g_Initialized == true);
 
-    IRadMemoryAllocator * pIRadMemoryAllocator = radMemoryFindAllocatorAlignedRecursive(
-        & g_AllocatorTreeNode_Root, pMemory );
+    IRadMemoryAllocator *pIRadMemoryAllocator = radMemoryFindAllocatorAlignedRecursive(
+            &g_AllocatorTreeNode_Root, pMemory);
 
-    rAssert( pIRadMemoryAllocator != NULL );
+    rAssert(pIRadMemoryAllocator != NULL);
 
-    if (pMemory && g_MemoryActivityCallback)
-    {
-        g_MemoryActivityCallback->MemoryFreed( radMemoryGetAllocatorID (pIRadMemoryAllocator), pMemory );
+    if (pMemory && g_MemoryActivityCallback) {
+        g_MemoryActivityCallback->MemoryFreed(radMemoryGetAllocatorID(pIRadMemoryAllocator),
+                                              pMemory);
     }
 
-    pIRadMemoryAllocator->FreeMemoryAligned( pMemory );
+    pIRadMemoryAllocator->FreeMemoryAligned(pMemory);
 }
 
 //============================================================================
 // ::radMemoryFree
 //============================================================================
 
-void radMemoryFree( void * pMemory )
-{
-    LEAK_DETECTION_REMOVE_ALLOCATION( pMemory );
-    rAssert( g_Initialized == true );
+void radMemoryFree(void *pMemory) {
+    LEAK_DETECTION_REMOVE_ALLOCATION(pMemory);
+    rAssert(g_Initialized == true);
 
-    IRadMemoryAllocator * pIRadMemoryAllocator = radMemoryFindAllocatorRecursive(
-        & g_AllocatorTreeNode_Root, pMemory );
+    IRadMemoryAllocator *pIRadMemoryAllocator = radMemoryFindAllocatorRecursive(
+            &g_AllocatorTreeNode_Root, pMemory);
 
-    rAssert( pIRadMemoryAllocator != NULL );
+    rAssert(pIRadMemoryAllocator != NULL);
 
-    if (pMemory && g_MemoryActivityCallback)
-    {
-        g_MemoryActivityCallback->MemoryFreed( radMemoryGetAllocatorID (pIRadMemoryAllocator), pMemory );
+    if (pMemory && g_MemoryActivityCallback) {
+        g_MemoryActivityCallback->MemoryFreed(radMemoryGetAllocatorID(pIRadMemoryAllocator),
+                                              pMemory);
     }
 
-    pIRadMemoryAllocator->FreeMemory( pMemory );
+    pIRadMemoryAllocator->FreeMemory(pMemory);
 }
 
 //============================================================================
@@ -729,29 +685,28 @@ void radMemoryFree( void * pMemory )
 // allocator parameter.
 //============================================================================
 
-void radMemoryRegisterAllocator( radMemoryAllocator allocator,
-    radMemoryAllocator parent, IRadMemoryAllocator* pIRadMemoryAllocator )
-{
-    rAssert( g_Initialized == true );
+void radMemoryRegisterAllocator(radMemoryAllocator allocator,
+                                radMemoryAllocator parent,
+                                IRadMemoryAllocator *pIRadMemoryAllocator) {
+    rAssert(g_Initialized == true);
 
-    rAssert( allocator < ALLOCATOR_TABLE_SIZE );
-    rAssert( parent < ALLOCATOR_TABLE_SIZE );
+    rAssert(allocator < ALLOCATOR_TABLE_SIZE);
+    rAssert(parent < ALLOCATOR_TABLE_SIZE);
 
-    rAssert( pIRadMemoryAllocator != NULL );
-    rAssert( g_AllocatorTreeNodes[ allocator ].m_pIRadMemoryAllocator == g_pRadMemoryAllocator_Malloc );
+    rAssert(pIRadMemoryAllocator != NULL);
+    rAssert(g_AllocatorTreeNodes[allocator].m_pIRadMemoryAllocator == g_pRadMemoryAllocator_Malloc);
 
-    radMemoryAllocatorTreeNode * pNewNode =
-        & ( g_AllocatorTreeNodes[ allocator ] );
+    radMemoryAllocatorTreeNode *pNewNode =
+            &(g_AllocatorTreeNodes[allocator]);
 
-    radMemoryAllocatorTreeNode * pParentNode =
-        & ( g_AllocatorTreeNodes[ parent ] );
+    radMemoryAllocatorTreeNode *pParentNode =
+            &(g_AllocatorTreeNodes[parent]);
 
-    if ( pParentNode->m_pParent == NULL )
-    {
-        pParentNode = & g_AllocatorTreeNode_Root;
+    if (pParentNode->m_pParent == NULL) {
+        pParentNode = &g_AllocatorTreeNode_Root;
     }
 
-    radAddRef( pIRadMemoryAllocator, NULL );
+    radAddRef(pIRadMemoryAllocator, NULL);
 
     pNewNode->m_pIRadMemoryAllocator = pIRadMemoryAllocator;
     pNewNode->m_pChildren_Head = NULL;
@@ -767,12 +722,11 @@ void radMemoryRegisterAllocator( radMemoryAllocator allocator,
 // Simply returns the currently register allocator at that array element.
 //============================================================================
 
-IRadMemoryAllocator * radMemoryGetAllocator( radMemoryAllocator allocator )
-{
-    rAssert( g_Initialized == true );
-    rAssert( allocator < ALLOCATOR_TABLE_SIZE );
+IRadMemoryAllocator *radMemoryGetAllocator(radMemoryAllocator allocator) {
+    rAssert(g_Initialized == true);
+    rAssert(allocator < ALLOCATOR_TABLE_SIZE);
 
-    IRadMemoryAllocator * pIRma = g_AllocatorTreeNodes[ allocator ].m_pIRadMemoryAllocator;
+    IRadMemoryAllocator *pIRma = g_AllocatorTreeNodes[allocator].m_pIRadMemoryAllocator;
 
     return pIRma;
 }
@@ -782,17 +736,14 @@ IRadMemoryAllocator * radMemoryGetAllocator( radMemoryAllocator allocator )
 //
 // Simply returns the currently register allocator at that array element.
 //============================================================================
-radMemoryAllocator radMemoryGetAllocatorID( IRadMemoryAllocator* allocator )
-{
-    rAssert( g_Initialized == true );
-    for (int i = 0; i < ALLOCATOR_TABLE_SIZE; i++)
-    {
-        if ( g_AllocatorTreeNodes[ i ].m_pIRadMemoryAllocator == allocator )
-        {
-            return (radMemoryAllocator)i;
+radMemoryAllocator radMemoryGetAllocatorID(IRadMemoryAllocator *allocator) {
+    rAssert(g_Initialized == true);
+    for (int i = 0; i < ALLOCATOR_TABLE_SIZE; i++) {
+        if (g_AllocatorTreeNodes[i].m_pIRadMemoryAllocator == allocator) {
+            return (radMemoryAllocator) i;
         }
     }
-    rAssert (false);
+    rAssert(false);
     return 0;
 }
 
@@ -803,48 +754,42 @@ radMemoryAllocator radMemoryGetAllocatorID( IRadMemoryAllocator* allocator )
 // been unregistered or this function will assert.
 //============================================================================
 
-void radMemoryUnregisterAllocator( radMemoryAllocator allocator )
-{
-    rAssert( g_Initialized == true );
-    rAssert( allocator < ALLOCATOR_TABLE_SIZE );
-    rAssert( g_AllocatorTreeNodes[ allocator ].m_pIRadMemoryAllocator != NULL );
+void radMemoryUnregisterAllocator(radMemoryAllocator allocator) {
+    rAssert(g_Initialized == true);
+    rAssert(allocator < ALLOCATOR_TABLE_SIZE);
+    rAssert(g_AllocatorTreeNodes[allocator].m_pIRadMemoryAllocator != NULL);
 
-    radMemoryAllocatorTreeNode * pFreeNode = & ( g_AllocatorTreeNodes[ allocator ] );
-    rAssert( pFreeNode != NULL );
+    radMemoryAllocatorTreeNode *pFreeNode = &(g_AllocatorTreeNodes[allocator]);
+    rAssert(pFreeNode != NULL);
 
     // Get the parent node, this cannot ever be null, ultimately the parent
     // must be malloc() which is never destroyed.
-     
-    radMemoryAllocatorTreeNode * pParentNode = pFreeNode->m_pParent;
-    rAssert( pParentNode != NULL );
+
+    radMemoryAllocatorTreeNode *pParentNode = pFreeNode->m_pParent;
+    rAssert(pParentNode != NULL);
 
     // Make sure there are no active children of this heap or memory corruption
     // will result.
-    rAssert( pFreeNode->m_pChildren_Head == NULL );
+    rAssert(pFreeNode->m_pChildren_Head == NULL);
 
     // Some vars for iterating.
 
-    radMemoryAllocatorTreeNode * pSearchPrev = NULL;
-    radMemoryAllocatorTreeNode * pSearch = pParentNode->m_pChildren_Head;
-    
+    radMemoryAllocatorTreeNode *pSearchPrev = NULL;
+    radMemoryAllocatorTreeNode *pSearch = pParentNode->m_pChildren_Head;
+
     // Find the entry for this allocator in the parent's list and remove it.
 
-    while ( pSearch != NULL )
-    {
-        if ( pSearch == pFreeNode )
-        {
-            if ( pSearchPrev != NULL )
-            {
+    while (pSearch != NULL) {
+        if (pSearch == pFreeNode) {
+            if (pSearchPrev != NULL) {
                 pSearchPrev->m_pSibling_Next = pFreeNode->m_pSibling_Next;
-            }
-            else
-            {
+            } else {
                 pParentNode->m_pChildren_Head = pFreeNode->m_pSibling_Next;
             }
 
             // Must release this allocator
 
-            radRelease( pFreeNode->m_pIRadMemoryAllocator, NULL );
+            radRelease(pFreeNode->m_pIRadMemoryAllocator, NULL);
 
             // Set the node back to the unused state
 
@@ -869,17 +814,14 @@ void radMemoryUnregisterAllocator( radMemoryAllocator allocator )
 // by the sub-tree represented by pNode.
 //============================================================================
 
-IRadMemoryAllocator * radMemoryFindAllocatorRecursive( radMemoryAllocatorTreeNode * pNode, void * pMemory )
-{
-    while ( pNode != NULL )
-    {
-        if ( pNode->m_pIRadMemoryAllocator->CanFreeMemory( pMemory ) )
-        {
-            IRadMemoryAllocator * pIRadMemoryAllocator = 
-                radMemoryFindAllocatorRecursive( pNode->m_pChildren_Head, pMemory );
+IRadMemoryAllocator *
+radMemoryFindAllocatorRecursive(radMemoryAllocatorTreeNode *pNode, void *pMemory) {
+    while (pNode != NULL) {
+        if (pNode->m_pIRadMemoryAllocator->CanFreeMemory(pMemory)) {
+            IRadMemoryAllocator *pIRadMemoryAllocator =
+                    radMemoryFindAllocatorRecursive(pNode->m_pChildren_Head, pMemory);
 
-            if ( pIRadMemoryAllocator == NULL )
-            {
+            if (pIRadMemoryAllocator == NULL) {
                 return pNode->m_pIRadMemoryAllocator;
             }
 
@@ -888,7 +830,7 @@ IRadMemoryAllocator * radMemoryFindAllocatorRecursive( radMemoryAllocatorTreeNod
 
         pNode = pNode->m_pSibling_Next;
     }
-    
+
     return NULL;
 }
 
@@ -900,17 +842,14 @@ IRadMemoryAllocator * radMemoryFindAllocatorRecursive( radMemoryAllocatorTreeNod
 // by the sub-tree represented by pNode.
 //============================================================================
 
-IRadMemoryAllocator * radMemoryFindAllocatorAlignedRecursive( radMemoryAllocatorTreeNode * pNode, void * pMemory )
-{
-    while ( pNode != NULL )
-    {
-        if ( pNode->m_pIRadMemoryAllocator->CanFreeMemoryAligned( pMemory ) )
-        {
-            IRadMemoryAllocator * pIRadMemoryAllocator = 
-                radMemoryFindAllocatorAlignedRecursive( pNode->m_pChildren_Head, pMemory );
+IRadMemoryAllocator *
+radMemoryFindAllocatorAlignedRecursive(radMemoryAllocatorTreeNode *pNode, void *pMemory) {
+    while (pNode != NULL) {
+        if (pNode->m_pIRadMemoryAllocator->CanFreeMemoryAligned(pMemory)) {
+            IRadMemoryAllocator *pIRadMemoryAllocator =
+                    radMemoryFindAllocatorAlignedRecursive(pNode->m_pChildren_Head, pMemory);
 
-            if ( pIRadMemoryAllocator == NULL )
-            {
+            if (pIRadMemoryAllocator == NULL) {
                 return pNode->m_pIRadMemoryAllocator;
             }
 
@@ -919,7 +858,7 @@ IRadMemoryAllocator * radMemoryFindAllocatorAlignedRecursive( radMemoryAllocator
 
         pNode = pNode->m_pSibling_Next;
     }
-    
+
     return NULL;
 }
 
@@ -927,40 +866,34 @@ IRadMemoryAllocator * radMemoryFindAllocatorAlignedRecursive( radMemoryAllocator
 // ::radMemoryFindAllocator
 //============================================================================
 
-IRadMemoryAllocator * radMemoryFindAllocator( void * pMemory )
-{
-    return radMemoryFindAllocatorRecursive( & g_AllocatorTreeNode_Root, pMemory );
+IRadMemoryAllocator *radMemoryFindAllocator(void *pMemory) {
+    return radMemoryFindAllocatorRecursive(&g_AllocatorTreeNode_Root, pMemory);
 }
 
 
 // Functions for SetCurrentAllocator callbacks
 //
-void radMemorySetAllocatorCallback( IRadMemorySetAllocatorCallback* callback )
-{
-    if ( !g_CurrentAllocatorCallback )
-    {
-        radThreadCreateLocalStorage( &g_CurrentAllocatorCallback );
-        g_CurrentAllocatorCallback->SetValue (0);
+void radMemorySetAllocatorCallback(IRadMemorySetAllocatorCallback *callback) {
+    if (!g_CurrentAllocatorCallback) {
+        radThreadCreateLocalStorage(&g_CurrentAllocatorCallback);
+        g_CurrentAllocatorCallback->SetValue(0);
     }
 
-    g_CurrentAllocatorCallback->SetValue( (void*) callback );
+    g_CurrentAllocatorCallback->SetValue((void *) callback);
 }
 
 
-IRadMemorySetAllocatorCallback* radMemoryGetAllocatorCallback ()
-{
-    if ( !g_CurrentAllocatorCallback )
-    {
-        radThreadCreateLocalStorage( &g_CurrentAllocatorCallback );
-        g_CurrentAllocatorCallback->SetValue (0);
+IRadMemorySetAllocatorCallback *radMemoryGetAllocatorCallback() {
+    if (!g_CurrentAllocatorCallback) {
+        radThreadCreateLocalStorage(&g_CurrentAllocatorCallback);
+        g_CurrentAllocatorCallback->SetValue(0);
     }
 
-    return static_cast<IRadMemorySetAllocatorCallback*>(g_CurrentAllocatorCallback->GetValue( ));
+    return static_cast<IRadMemorySetAllocatorCallback *>(g_CurrentAllocatorCallback->GetValue());
 }
 
 
-void radMemorySetActivityCallback( IRadMemoryActivityCallback* callback )
-{
+void radMemorySetActivityCallback(IRadMemoryActivityCallback *callback) {
     g_MemoryActivityCallback = callback;
 }
 
@@ -972,36 +905,33 @@ void radMemorySetActivityCallback( IRadMemoryActivityCallback* callback )
 // local storage so that each thread can have its on current allocator. Ideally
 // the thread local storage object should be allocated during the initialization
 // of the memory system. However, this would require the threading system to
-// be initialized even if no one is using threading. As a result, ( until we 
-// make our system thread safe ), the thread local storage is allocated here.
+// be initialized even if no one is using threading. As a result, (until we
+// make our system thread safe), the thread local storage is allocated here.
 // Pure3D is the user of these functions all will dictate that the threading
 // system be initilaized.
 //============================================================================
 
-radMemoryAllocator radMemoryGetCurrentAllocator( void )
-{
-    IRadMemorySetAllocatorCallback* callback = radMemoryGetAllocatorCallback ();
-    if (callback)
-    {
-        return callback->GetCurrentAllocator ();
+radMemoryAllocator radMemoryGetCurrentAllocator(void) {
+    IRadMemorySetAllocatorCallback *callback = radMemoryGetAllocatorCallback();
+    if (callback) {
+        return callback->GetCurrentAllocator();
     }
 
     //
     // See if we have obtained our thread local storage.
     //
-    if( g_CurrentAllocator == NULL )
-    {
+    if (g_CurrentAllocator == NULL) {
         //
         // Get one and initialize the value.
         //
-        radThreadCreateLocalStorage( &g_CurrentAllocator );
-        g_CurrentAllocator->SetValue( (void*) RADMEMORY_ALLOC_DEFAULT );
+        radThreadCreateLocalStorage(&g_CurrentAllocator);
+        g_CurrentAllocator->SetValue((void *) RADMEMORY_ALLOC_DEFAULT);
     }
 
     //
     // Return the current allocator.
     //
-    return( (radMemoryAllocator) g_CurrentAllocator->GetValue( ) );
+    return ((radMemoryAllocator) g_CurrentAllocator->GetValue());
 }
 
 //============================================================================
@@ -1011,51 +941,46 @@ radMemoryAllocator radMemoryGetCurrentAllocator( void )
 // previous allocator so that it may be easily stored and reset by the client
 // of the function as in:
 //
-// radMemoryAllocator old = radMemorySetCurrentAllocator( new )
+// radMemoryAllocator old = radMemorySetCurrentAllocator(new)
 // ...do some allocations
-// radMemorySetCurrentAllocator( old );
+// radMemorySetCurrentAllocator(old);
 //============================================================================
 
-radMemoryAllocator radMemorySetCurrentAllocator( radMemoryAllocator allocator )
-{
-    IRadMemorySetAllocatorCallback* callback = radMemoryGetAllocatorCallback ();
-    if (callback)
-    {
-        return callback->SetCurrentAllocator (allocator);
+radMemoryAllocator radMemorySetCurrentAllocator(radMemoryAllocator allocator) {
+    IRadMemorySetAllocatorCallback *callback = radMemoryGetAllocatorCallback();
+    if (callback) {
+        return callback->SetCurrentAllocator(allocator);
     }
 
     //
     // See if we have obtained our thread local storage.
     //
-    if( g_CurrentAllocator == NULL )
-    {
+    if (g_CurrentAllocator == NULL) {
         //
         // Get one and initialize the value.
         //
-        radThreadCreateLocalStorage( &g_CurrentAllocator );
-        g_CurrentAllocator->SetValue( (void*) RADMEMORY_ALLOC_DEFAULT );
+        radThreadCreateLocalStorage(&g_CurrentAllocator);
+        g_CurrentAllocator->SetValue((void *) RADMEMORY_ALLOC_DEFAULT);
     }
 
     //
     // Get old value and set new value.  
     //
-    radMemoryAllocator prevAllocator = (radMemoryAllocator) g_CurrentAllocator->GetValue( );
+    radMemoryAllocator prevAllocator = (radMemoryAllocator) g_CurrentAllocator->GetValue();
 
-    g_CurrentAllocator->SetValue( (void*) allocator );
+    g_CurrentAllocator->SetValue((void *) allocator);
 
     return prevAllocator;
 }
 
 
-const char * g_pAllocationName = NULL;
+const char *g_pAllocationName = NULL;
 
-void radMemorySetAllocationName( const char * pName )
-{
+void radMemorySetAllocationName(const char *pName) {
     g_pAllocationName = pName;
 }
 
-const char * radMemoryGetAllocationName( void )
-{
+const char *radMemoryGetAllocationName(void) {
     return g_pAllocationName;
 }
 
@@ -1066,7 +991,7 @@ const char * radMemoryGetAllocationName( void )
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-void radVMMClearStats( void )
+void radVMMClearStats(void)
 {
     sVMMStats.pageMisses = 0;        
     sVMMStats.pageWrites = 0;
@@ -1075,9 +1000,9 @@ void radVMMClearStats( void )
 }
 
 //-----------------------------------------------------------------------------
-void radVMMGetStats( gcnVMMStats *stats )
+void radVMMGetStats(gcnVMMStats *stats)
 {
-    rAssert (stats != NULL );
+    rAssert (stats != NULL);
     stats->pageMisses      = sVMMStats.pageMisses;
     stats->pageWrites      = sVMMStats.pageWrites;
     stats->pageMissLatency = sVMMStats.pageMissLatency;
@@ -1089,7 +1014,7 @@ void gcnVMMLogStats(unsigned long realVirtualAddress,
                     unsigned long physicalAddress, 
                     unsigned long pageNumber,
                     unsigned long pageMissLatency,
-                    BOOL pageSwappedOut )
+                    BOOL pageSwappedOut)
 {
     sVMMStats.pageMisses++;
     sVMMStats.pageWrites      += (unsigned) pageSwappedOut;

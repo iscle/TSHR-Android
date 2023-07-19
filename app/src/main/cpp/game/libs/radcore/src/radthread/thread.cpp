@@ -24,19 +24,20 @@
 //=============================================================================
 
 #include "pch.hpp"
+
 #ifdef RAD_WIN32
-    #define _WIN32_WINNT 0x400
-    #include <windows.h>
+#define _WIN32_WINNT 0x400
+#include <windows.h>
 #endif
 #ifdef RAD_XBOX
-    #include <xtl.h>
+#include <xtl.h>
 #endif
 #ifdef RAD_PS2
-    #include <eekernel.h>
+#include <eekernel.h>
 #endif
 #ifdef RAD_GAMECUBE
-    #include <os.h>
-#endif 
+#include <os.h>
+#endif
 
 #include <radthread.hpp>
 #include <radmemorymonitor.hpp>
@@ -52,45 +53,45 @@
 // functionality.
 //
 #ifdef RAD_PS2
-    //
-    // On the PS2, we can only create an alarm which runs for a maximum of 
-    // 2.275 seconds. As such, we need to accumulate multiple alarm triggers
-    // to achieve larger durations. This structure is used to hold the information
-    // need to do this.
-    //
-    struct PS2SleepInfo
-    {
-        int             m_ThreadId;         // Thread to ultimately wake up.
-        unsigned short  m_AlarmSetting;     // Value loaded into alarm;
-        unsigned int    m_AlarmCount;       // Count that must be decremented before waking thread.
-        int             m_AlarmId;          // Id of alarm.
-    };         
+//
+// On the PS2, we can only create an alarm which runs for a maximum of
+// 2.275 seconds. As such, we need to accumulate multiple alarm triggers
+// to achieve larger durations. This structure is used to hold the information
+// need to do this.
+//
+struct PS2SleepInfo
+{
+    int             m_ThreadId;         // Thread to ultimately wake up.
+    unsigned short  m_AlarmSetting;     // Value loaded into alarm;
+    unsigned int    m_AlarmCount;       // Count that must be decremented before waking thread.
+    int             m_AlarmId;          // Id of alarm.
+};
 
-    static void PS2SleepAlarm( int id, unsigned short time, PS2SleepInfo* pInfo );
+static void PS2SleepAlarm(int id, unsigned short time, PS2SleepInfo* pInfo);
 
 #endif
 
 #ifdef RAD_GAMECUBE
-    //
-    // On the GameCube, they screwed up with there alarm functions in that there
-    // is no user data. Hence I have to perform a hack by enclosing their
-    // alarm object in a container object and performing a cast.
-    //
-    struct GCNSleepInfo
-    {
-        OSAlarm         m_Alarm;            // Alarm. Not required, used to get to thread queue.
-        OSThreadQueue   m_ThreadQueue;      // Thread is sleeping on this.
-    };
+//
+// On the GameCube, they screwed up with there alarm functions in that there
+// is no user data. Hence I have to perform a hack by enclosing their
+// alarm object in a container object and performing a cast.
+//
+struct GCNSleepInfo
+{
+    OSAlarm         m_Alarm;            // Alarm. Not required, used to get to thread queue.
+    OSThreadQueue   m_ThreadQueue;      // Thread is sleeping on this.
+};
 
-    static void GCNSleepAlarm( OSAlarm *pAlarm, OSContext* pContext );   
+static void GCNSleepAlarm(OSAlarm *pAlarm, OSContext* pContext);
 
-    //
-    // This thread object is used to perform round robin scheduling.
-    //
-    static void* RescheduleThreadEntry( void* param );
-    static unsigned int  s_RescheduleSleepTime;
-    static OSThread      s_RescheduleThread;
-    static unsigned char s_RescheculeStack[ 4096 ];
+//
+// This thread object is used to perform round robin scheduling.
+//
+static void* RescheduleThreadEntry(void* param);
+static unsigned int  s_RescheduleSleepTime;
+static OSThread      s_RescheduleThread;
+static unsigned char s_RescheculeStack[ 4096 ];
 
 #endif
 
@@ -102,46 +103,46 @@
 // This memory is used for the thread object that exists. We do not want to new
 // up memory as this will require the memory system to be initialized.
 // 
-static unsigned int s_theThreadMemory[ ((sizeof( radThread)) / sizeof(unsigned int)) + 1 ];
+static unsigned int s_theThreadMemory[((sizeof(radThread)) / sizeof(unsigned int)) + 1];
 
 //
 // This table is used to manage pointers to currently created threads. Pointers
 // are no reference counted.
 //
-radThread* radThread::s_ThreadTable[ MAX_RADTHREADS ];
+radThread *radThread::s_ThreadTable[MAX_RADTHREADS];
 
 //
 // The following table are provided to map our priorities to OS specific 
 // priorities.
 //
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
-    int radThread::s_PriorityMap[ PriorityHigh + 1 ] =
-        { THREAD_PRIORITY_IDLE, THREAD_PRIORITY_LOWEST, THREAD_PRIORITY_NORMAL, 
-          THREAD_PRIORITY_HIGHEST, THREAD_PRIORITY_TIME_CRITICAL };
-#endif 
+int radThread::s_PriorityMap[ PriorityHigh + 1 ] =
+    { THREAD_PRIORITY_IDLE, THREAD_PRIORITY_LOWEST, THREAD_PRIORITY_NORMAL,
+      THREAD_PRIORITY_HIGHEST, THREAD_PRIORITY_TIME_CRITICAL };
+#endif
 #ifdef RAD_PS2
-    int radThread::s_PriorityMap[ PriorityHigh + 1 ] = { 63, 47, 31, 15, 1 };
+int radThread::s_PriorityMap[ PriorityHigh + 1 ] = { 63, 47, 31, 15, 1 };
 #endif
 #ifdef RAD_GAMECUBE
-    //  
-    // Please not that priority 0 is reserved by our internal thread used to 
-    // perform round robin scheduling.
-    //
-    OSPriority radThread::s_PriorityMap[ PriorityHigh + 1 ] = { 31, 23, 15, 7, 1 };
+//
+// Please not that priority 0 is reserved by our internal thread used to
+// perform round robin scheduling.
+//
+OSPriority radThread::s_PriorityMap[ PriorityHigh + 1 ] = { 31, 23, 15, 7, 1 };
 #endif
 
 //
 // On the PS2, we require additional stuff to manage round-robin scheduling.
 // 
 #ifdef RAD_PS2
-    //
-    // On the PS2, round robin scheduling occurs at 60Hz. May need to expose
-    // this setting to callers if this is not adequate. The time is expressed
-    // in HSYNCS
-    //
-    #define RADTHREAD_PS2_ROUNDROBINTIME 480            
+//
+// On the PS2, round robin scheduling occurs at 60Hz. May need to expose
+// this setting to callers if this is not adequate. The time is expressed
+// in HSYNCS
+//
+#define RADTHREAD_PS2_ROUNDROBINTIME 480
 
-    int radThread::s_AlarmId = -1;
+int radThread::s_AlarmId = -1;
 #endif
 
 //
@@ -149,8 +150,8 @@ radThread* radThread::s_ThreadTable[ MAX_RADTHREADS ];
 // entry is set true if the index has been consumed. This table relies on 
 // statics being initialized to zero (false) by the compiler.
 //
-bool radThreadLocalStorage::s_InUseIndexTable[ MAX_THREADLOCALSTORAGE_OBJECTS ];
- 
+bool radThreadLocalStorage::s_InUseIndexTable[MAX_THREADLOCALSTORAGE_OBJECTS];
+
 //=============================================================================
 // Public Functions
 //=============================================================================
@@ -173,17 +174,16 @@ bool radThreadLocalStorage::s_InUseIndexTable[ MAX_THREADLOCALSTORAGE_OBJECTS ];
 //------------------------------------------------------------------------------
 
 void radThreadCreateThread
-( 
-    IRadThread**            ppThread,
-    RADTHREADENTRY          pEntryFunction,
-    void*                   userData,   
-    IRadThread::Priority    priority,   
-    unsigned int            stackSize,  
-    radMemoryAllocator      allocator
-)
-{
-    *ppThread = new( allocator ) radThread( pEntryFunction, userData,
-                                            priority, stackSize );
+        (
+                IRadThread **ppThread,
+                RADTHREADENTRY pEntryFunction,
+                void *userData,
+                IRadThread::Priority priority,
+                unsigned int stackSize,
+                radMemoryAllocator allocator
+        ) {
+    *ppThread = new(allocator) radThread(pEntryFunction, userData,
+                                         priority, stackSize);
 }
 
 //=============================================================================
@@ -198,9 +198,8 @@ void radThreadCreateThread
 // Notes:
 //------------------------------------------------------------------------------
 
-IRadThread* radThreadGetActiveThread( void )
-{
-    return( radThread::GetActiveThread( ) );
+IRadThread *radThreadGetActiveThread(void) {
+    return (radThread::GetActiveThread());
 }
 
 //=============================================================================
@@ -218,15 +217,14 @@ IRadThread* radThreadGetActiveThread( void )
 //------------------------------------------------------------------------------
 
 void radThreadSleep
-( 
-    unsigned int milliseconds
-)
-{
+        (
+                unsigned int milliseconds
+        ) {
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
     //
     // Windows is very easy. Just invoke the OS sleep call.
     // 
-    Sleep( milliseconds );
+    Sleep(milliseconds);
 #endif
 
 #ifdef RAD_PS2
@@ -234,14 +232,14 @@ void radThreadSleep
     // On the PS2, check if the timeout is zero. If so, rotate threads of this 
     // priority.
     //
-    if( milliseconds == 0 )
+    if(milliseconds == 0)
     {
         //
         // Get priority of calling thread and rotate threads of this priority.       
         //
         ThreadParam threadInfo;
-        ReferThreadStatus( GetThreadId( ), &threadInfo );
-        RotateThreadReadyQueue( threadInfo.currentPriority );
+        ReferThreadStatus(GetThreadId(), &threadInfo);
+        RotateThreadReadyQueue(threadInfo.currentPriority);
     }
     else
     {
@@ -253,7 +251,7 @@ void radThreadSleep
         //
         PS2SleepInfo Info;
 
-        if( milliseconds < 4096 )
+        if(milliseconds <4096)
         {
             //
             // Here we create an alarm programmed in one shot. The alarm will issue a
@@ -269,46 +267,46 @@ void radThreadSleep
             // resolution for a value greater than 4.096 seconds. 
             //
             Info.m_AlarmCount = milliseconds / 100 ;
-            Info.m_AlarmSetting = ( 100 * 16000 ) / 1000 ;
+            Info.m_AlarmSetting = (100 * 16000) / 1000 ;
         }
 
-        Info.m_ThreadId = GetThreadId( );
-        Info.m_AlarmId = SetAlarm( Info.m_AlarmSetting, (void(*)(int,unsigned short,void*)) PS2SleepAlarm, &Info );           
+        Info.m_ThreadId = GetThreadId();
+        Info.m_AlarmId = SetAlarm(Info.m_AlarmSetting, (void(*)(int,unsigned short,void*)) PS2SleepAlarm, &Info);
     
         //
         // Sleep until the alarm wakes us up.
         //
-        SleepThread( );
+        SleepThread();
 
         //
         // Since sleep is a counted operation, make sure we did not wake up due a some 
         // other signal and leave the alarm running. This needs to be checked under
         // protection from interrupts as the alarm runs as an interrupt.
         //
-        DI( );
+        DI();
 
-        if( Info.m_AlarmId != -1 )
+        if(Info.m_AlarmId != -1)
         {
-            ReleaseAlarm( Info.m_AlarmId );
+            ReleaseAlarm(Info.m_AlarmId);
         }
         
-        EI( );
+        EI();
     }
 
 
-#endif        
+#endif
 
 #ifdef RAD_GAMECUBE
     //
     // The Game cube uses a technique similar to that of the PS2. We use
     // an alarm to wake us up.
     //
-    if( milliseconds == 0 )
+    if(milliseconds == 0)
     {
         //
         // Just allow threads at this priority to run.
         //
-        OSYieldThread( );
+        OSYieldThread();
     }
     else
     {
@@ -318,19 +316,19 @@ void radThreadSleep
         //
         GCNSleepInfo SleepInfo;
 
-        OSInitAlarm( );
+        OSInitAlarm();
     
-        OSCreateAlarm( &SleepInfo.m_Alarm );
-        OSInitThreadQueue( &SleepInfo.m_ThreadQueue );
+        OSCreateAlarm(&SleepInfo.m_Alarm);
+        OSInitThreadQueue(&SleepInfo.m_ThreadQueue);
     
-        OSSetAlarm( &SleepInfo.m_Alarm, OSMillisecondsToTicks( milliseconds ), GCNSleepAlarm );
+        OSSetAlarm(&SleepInfo.m_Alarm, OSMillisecondsToTicks(milliseconds), GCNSleepAlarm);
 
         //
         // Now sleep on the thread queue. Alarm will wake us up.
         //
-        OSSleepThread( &SleepInfo.m_ThreadQueue );
+        OSSleepThread(&SleepInfo.m_ThreadQueue);
     }
-    
+
 #endif
 
 }
@@ -352,7 +350,7 @@ void radThreadSleep
 
 #ifdef RAD_PS2
 
-void PS2SleepAlarm( int id, unsigned short time, PS2SleepInfo* pInfo )
+void PS2SleepAlarm(int id, unsigned short time, PS2SleepInfo* pInfo)
 {
     //
     // The Sony alarm has exired. Update the alarm count and check if
@@ -360,7 +358,7 @@ void PS2SleepAlarm( int id, unsigned short time, PS2SleepInfo* pInfo )
     //
     pInfo->m_AlarmCount--;
 
-    if( pInfo->m_AlarmCount == 0 )
+    if(pInfo->m_AlarmCount == 0)
     {
         //
         // We are done. Indicate no alarm needs to be terminated and wake up
@@ -368,16 +366,16 @@ void PS2SleepAlarm( int id, unsigned short time, PS2SleepInfo* pInfo )
         //
         pInfo->m_AlarmId = -1;
 
-        iWakeupThread( pInfo->m_ThreadId );
+        iWakeupThread(pInfo->m_ThreadId);
     }
     else
     {
         //
         // Reset the alarm for another count.
         //
-        pInfo->m_AlarmId = iSetAlarm( pInfo->m_AlarmSetting,
+        pInfo->m_AlarmId = iSetAlarm(pInfo->m_AlarmSetting,
                                       (void(*)(int,unsigned short,void*)) PS2SleepAlarm,
-                                      pInfo );
+                                      pInfo);
     }
 }
 
@@ -401,13 +399,13 @@ void PS2SleepAlarm( int id, unsigned short time, PS2SleepInfo* pInfo )
 
 #ifdef RAD_GAMECUBE
 
-void GCNSleepAlarm( OSAlarm *pAlarm, OSContext* pContext )
+void GCNSleepAlarm(OSAlarm *pAlarm, OSContext* pContext)
 {   
     (void) pContext;
     
     GCNSleepInfo* pSleepInfo = (GCNSleepInfo*) pAlarm;
     
-    OSWakeupThread( &pSleepInfo->m_ThreadQueue );
+    OSWakeupThread(&pSleepInfo->m_ThreadQueue);
 
 }
 #endif
@@ -427,12 +425,11 @@ void GCNSleepAlarm( OSAlarm *pAlarm, OSContext* pContext )
 //------------------------------------------------------------------------------
 
 void radThreadCreateLocalStorage
-( 
-    IRadThreadLocalStorage** pThreadLocalStorage,
-    radMemoryAllocator       allocator
-)
-{
-    *pThreadLocalStorage = new( allocator ) radThreadLocalStorage( );
+        (
+                IRadThreadLocalStorage **pThreadLocalStorage,
+                radMemoryAllocator allocator
+        ) {
+    *pThreadLocalStorage = new(allocator) radThreadLocalStorage();
 }
 
 //=============================================================================
@@ -453,17 +450,16 @@ void radThreadCreateLocalStorage
 //------------------------------------------------------------------------------
 
 void radThreadCreateFiber
-( 
-    IRadThreadFiber** ppFiber,
-    RADFIBERENTRY     pEntryFunction,
-    void*             userData,
-    unsigned int      stackSize,
-    radMemoryAllocator allocator
-)
-{
-    *ppFiber = new( allocator ) radThreadFiber( pEntryFunction,
-                                                userData,
-                                                stackSize );
+        (
+                IRadThreadFiber **ppFiber,
+                RADFIBERENTRY pEntryFunction,
+                void *userData,
+                unsigned int stackSize,
+                radMemoryAllocator allocator
+        ) {
+    *ppFiber = new(allocator) radThreadFiber(pEntryFunction,
+                                             userData,
+                                             stackSize);
 }
 
 //=============================================================================
@@ -478,9 +474,8 @@ void radThreadCreateFiber
 // Notes:
 //------------------------------------------------------------------------------
 
-IRadThreadFiber* radThreadGetActiveFiber( void )
-{
-    return( radThread::GetActiveFiber( ) );
+IRadThreadFiber *radThreadGetActiveFiber(void) {
+    return (radThread::GetActiveFiber());
 }
 
 //=============================================================================
@@ -501,88 +496,86 @@ IRadThreadFiber* radThreadGetActiveFiber( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void radThread::Initialize( unsigned int milliseconds )
-{
+void radThread::Initialize(unsigned int milliseconds) {
     //
     // First zero the thread table. Don't have to worry about thread protection
     // at this time, since no thread can be created until system is initialized.
     //
-    for( unsigned int i = 0 ; i < MAX_RADTHREADS ; i++ )
-    {
-        s_ThreadTable[ i ] = NULL;   
+    for (unsigned int i = 0; i < MAX_RADTHREADS; i++) {
+        s_ThreadTable[i] = NULL;
     }
 
     //
     // Construct the default thread object. It is 
     // statically defined since we do not want to perform memory allocations 
     // as the memory system may require the threading system be initialized.
-    // (chicken - egg problem ).
+    // (chicken - egg problem).
     //
-    new( s_theThreadMemory ) radThread( );
+    new(s_theThreadMemory) radThread();
 
-    #if defined( RAD_WIN32 ) || defined( RAD_XBOX )
+#if defined(RAD_WIN32) || defined(RAD_XBOX)
+    //
+    // On the windows and XBOX, there currently is no way to control round robin
+    // scheduling.
+    //
+    (void) milliseconds;
+
+#endif
+
+#ifdef RAD_PS2
+
+    //
+    // On the PS2, we create an alarm (whichs runs as an interrupt) to rotate
+    // threads of the same proirity. There is no built in round-robin of threads
+    // of equal priority.
+    //
+    if(milliseconds == 0)
+    {
         //
-        // On the windows and XBOX, there currently is no way to control round robin
-        // scheduling.
+        // Set alarm id to -1 indicating no round robin scheduling.
         //
-        (void) milliseconds;
-        
-    #endif
-
-    #ifdef RAD_PS2
-
+        s_AlarmId = -1;
+    }
+    else
+    {
         //
-        // On the PS2, we create an alarm (whichs runs as an interrupt) to rotate
-        // threads of the same proirity. There is no built in round-robin of threads
-        // of equal priority. 
+        // Start an alarm to periodically reschule the threads.
+        // There are 16000 horizontal retraces per second
         //
-        if( milliseconds == 0 )
-        {
-            //
-            // Set alarm id to -1 indicating no round robin scheduling.
-            //
-            s_AlarmId = -1;
-        }
-        else
-        {
-            //
-            // Start an alarm to periodically reschule the threads. 
-            // There are 16000 horizontal retraces per second
-            //
-            s_AlarmId = SetAlarm( milliseconds * 16, AlarmHandler, NULL );
-        }
+        s_AlarmId = SetAlarm(milliseconds * 16, AlarmHandler, NULL);
+    }
 
-    #endif
+#endif
 
-    #ifdef RAD_GAMECUBE
-    
-        // 
-        // On the game cube we need to do something more complex to get round
-        // robin scheduling running. We must create a very high priority thread
-        // that always sleeps for . We then use an alarm to wake it up. When is goes
-        // back to sleep, the OS will reschedule other threads. This info was
-        // obtain by directly taking to Nintendo as there stuff does not work
-        // as advertized.
+#ifdef RAD_GAMECUBE
+
+    //
+    // On the game cube we need to do something more complex to get round
+    // robin scheduling running. We must create a very high priority thread
+    // that always sleeps for . We then use an alarm to wake it up. When is goes
+    // back to sleep, the OS will reschedule other threads. This info was
+    // obtain by directly taking to Nintendo as there stuff does not work
+    // as advertized.
+    //
+    if(milliseconds == 0)
+    {
+        s_RescheduleSleepTime = 0;
+    }
+    else
+    {
         //
-        if( milliseconds == 0 )
-        {
-            s_RescheduleSleepTime = 0;
-        }
-        else
-        {
-            //
-            // Use static data so no allocations occur.
-            //
-            s_RescheduleSleepTime = milliseconds;
+        // Use static data so no allocations occur.
+        //
+        s_RescheduleSleepTime = milliseconds;
 
-            OSCreateThread( &s_RescheduleThread, RescheduleThreadEntry, NULL, 
-                            (char*) s_RescheculeStack + sizeof( s_RescheculeStack ),
-                             sizeof( s_RescheculeStack ), 0, 0 );
+        OSCreateThread(&s_RescheduleThread, RescheduleThreadEntry, NULL,
+                        (char*) s_RescheculeStack + sizeof(s_RescheculeStack),
+                         sizeof(s_RescheculeStack), 0, 0);
 
-            OSResumeThread( &s_RescheduleThread );
-        }
+        OSResumeThread(&s_RescheduleThread);
+    }
 
-    #endif
+#endif
 }
 
 //=============================================================================
@@ -603,14 +596,14 @@ void radThread::Initialize( unsigned int milliseconds )
 
 #ifdef RAD_GAMECUBE
 
-void* RescheduleThreadEntry( void* param )
+void* RescheduleThreadEntry(void* param)
 {
-    while( true )
+    while(true)
     {
-        radThreadSleep( s_RescheduleSleepTime );
+        radThreadSleep(s_RescheduleSleepTime);
     }
 
-    return( NULL );
+    return(NULL);
 }
 
 #endif
@@ -628,8 +621,7 @@ void* RescheduleThreadEntry( void* param )
 // Notes:
 //------------------------------------------------------------------------------
 
-void radThread::Terminate( void )
-{
+void radThread::Terminate(void) {
     //
     // On the PS2, release the alarm that is performing our round robin 
     // scheduling. Protect this operation as the alarm may expired while 
@@ -637,26 +629,26 @@ void radThread::Terminate( void )
     //
 #ifdef RAD_PS2
 
-    DI( );
+    DI();
     
-    if( s_AlarmId != -1 )
+    if(s_AlarmId != -1)
     {
-        ReleaseAlarm( s_AlarmId );
+        ReleaseAlarm(s_AlarmId);
     }
 
-    EI( );
+    EI();
 
 #endif
 
 #ifdef RAD_GAMECUBE
 
-    if( s_RescheduleSleepTime != 0 )
+    if(s_RescheduleSleepTime != 0)
     {
         //
         // Must cancel high priority thread which is causing round
         // robin scheduling.
         //
-        OSCancelThread( &s_RescheduleThread );
+        OSCancelThread(&s_RescheduleThread);
     }
 
 #endif
@@ -664,14 +656,13 @@ void radThread::Terminate( void )
     //
     // Exlicitly destruct our thread object that represents the main thread.
     //
-    ((radThread*)s_theThreadMemory)->~radThread( );
+    ((radThread *) s_theThreadMemory)->~radThread();
 
     //
     // Lets make sure all threads have been released. If not assert. 
     //
-    for( unsigned int i = 0 ; i < MAX_RADTHREADS ; i++ )
-    {
-        rAssert( s_ThreadTable[ i ] == NULL );
+    for (unsigned int i = 0; i < MAX_RADTHREADS; i++) {
+        rAssert(s_ThreadTable[i] == NULL);
     }
 }
 
@@ -692,22 +683,22 @@ void radThread::Terminate( void )
 
 #ifdef RAD_PS2
 
-void radThread::AlarmHandler( int id, unsigned short time, void* userData )
+void radThread::AlarmHandler(int id, unsigned short time, void* userData)
 {
     (void) id; (void) time; (void) userData;
 
     //
     // For each prioirty we support, rotate threads of that proirity.
     //
-    for( unsigned int i = 0 ; i < (sizeof( s_PriorityMap ) / sizeof( int ) ) ; i++ )
+    for(unsigned int i = 0 ; i <(sizeof(s_PriorityMap) / sizeof(int)) ; i++)
     {
-        iRotateThreadReadyQueue( s_PriorityMap[ i ] );
+        iRotateThreadReadyQueue(s_PriorityMap[ i ]);
     }
 
     //
     // Reset the alarm.
     //
-    s_AlarmId = iSetAlarm( RADTHREAD_PS2_ROUNDROBINTIME, AlarmHandler, NULL );
+    s_AlarmId = iSetAlarm(RADTHREAD_PS2_ROUNDROBINTIME, AlarmHandler, NULL);
 
 }
 
@@ -729,53 +720,51 @@ void radThread::AlarmHandler( int id, unsigned short time, void* userData )
 //              using release.
 //------------------------------------------------------------------------------
 
-radThread::radThread( void )
-    :
-    m_ReferenceCount( 1 ),
-    m_IsRunning( true ),
-    m_pActiveFiber( &m_Fiber )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radThread" );
+radThread::radThread(void)
+        :
+        m_ReferenceCount(1),
+        m_IsRunning(true),
+        m_pActiveFiber(&m_Fiber) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radThread");
     //
     // Using the various platform specific functions, get our current thread id.
     //
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
-    m_ThreadId = GetCurrentThreadId( );
-    m_ThreadHandle = GetCurrentThread( );
+    m_ThreadId = GetCurrentThreadId();
+    m_ThreadHandle = GetCurrentThread();
 
     //
     // Under windows also initialize this thread as the initial fiber.
     //
-    m_Fiber.m_Win32Fiber = ConvertThreadToFiber( NULL );
+    m_Fiber.m_Win32Fiber = ConvertThreadToFiber(NULL);
 
 #endif
 
 #ifdef RAD_PS2
-    m_ThreadId = GetThreadId( );
+    m_ThreadId = GetThreadId();
     m_SuspendCount = 0;
-#endif           
+#endif
 
 #ifdef RAD_GAMECUBE
-    m_ThreadId = OSGetCurrentThread( );
+    m_ThreadId = OSGetCurrentThread();
 #endif
 
     //
     // Add ourself as the first entry in the thread table. No protection
     // required as no other threads are running yet.
     //
-    s_ThreadTable[ 0 ] = this;  
+    s_ThreadTable[0] = this;
 
     //
     // Alter the thread proirity to ensure that things are running at the 
     // default proirity.
     //
-    SetPriority( IRadThread::PriorityNormal );
+    SetPriority(IRadThread::PriorityNormal);
 
     //
     // Set the default ThreadLocalStorage values to NULL
     //
-    for ( unsigned int i = 0; i < MAX_THREADLOCALSTORAGE_OBJECTS; i++ )
-    {
+    for (unsigned int i = 0; i < MAX_THREADLOCALSTORAGE_OBJECTS; i++) {
         m_ThreadLocalStorageValues[i] = NULL;
     }
 }
@@ -796,40 +785,37 @@ radThread::radThread( void )
 //------------------------------------------------------------------------------
 
 radThread::radThread
-(   
-    RADTHREADENTRY          pEntryFunction,
-    void*                   userData, 
-    IRadThread::Priority    priority, 
-    unsigned int            stackSize
-)
-    :
-        m_ReferenceCount( 1 ),
-        m_IsRunning( true ),
-        m_EntryFunction( pEntryFunction ),
-        m_UserData( userData ),
-        m_pActiveFiber( &m_Fiber )
-{
+        (
+                RADTHREADENTRY pEntryFunction,
+                void *userData,
+                IRadThread::Priority priority,
+                unsigned int stackSize
+        )
+        :
+        m_ReferenceCount(1),
+        m_IsRunning(true),
+        m_EntryFunction(pEntryFunction),
+        m_UserData(userData),
+        m_pActiveFiber(&m_Fiber) {
     //
     // Lets add ourself to the active thread table. Do so under protection 
     // since other threads may access this table.
     //   
-    radThreadInternalLock( );   
+    radThreadInternalLock();
 
     unsigned int i;
-    for( i = 0 ; i < MAX_RADTHREADS ; i++ )
-    {
-        if( s_ThreadTable[ i ] == NULL )
-        {
-            s_ThreadTable[ i ] = this;
+    for (i = 0; i < MAX_RADTHREADS; i++) {
+        if (s_ThreadTable[i] == NULL) {
+            s_ThreadTable[i] = this;
             break;
         }
-   
-    }   
+
+    }
 
     //
     // Make sure we did not exceed maximun number of threads.
     //
-    rAssertMsg( i != MAX_RADTHREADS, "Too many threads created\n");
+    rAssertMsg(i != MAX_RADTHREADS, "Too many threads created\n");
 
     //
     // Now create and start the thread using the OS specific implementation.
@@ -838,21 +824,21 @@ radThread::radThread
     //
     // Create thread suspended so we can set the priority. Then resume it once prioriry is set.
     //
-    m_ThreadHandle = CreateThread( NULL, stackSize, InternalThreadEntry, this, CREATE_SUSPENDED, &m_ThreadId );
+    m_ThreadHandle = CreateThread(NULL, stackSize, InternalThreadEntry, this, CREATE_SUSPENDED, &m_ThreadId);
     
-    SetPriority( priority );             
+    SetPriority(priority);
         
-    ResumeThread( m_ThreadHandle );    
+    ResumeThread(m_ThreadHandle);
 
 #endif
 
-#ifdef RAD_PS2   
+#ifdef RAD_PS2
 
     //
     // Allocate memory for stack. Make sure aligned to 16. Also require addtion 16 bytes
     // for some strange Sony reason.
     //
-    m_Stack = radMemoryAllocAligned( GetThisAllocator( ), stackSize + 16, 16 );
+    m_Stack = radMemoryAllocAligned(GetThisAllocator(), stackSize + 16, 16);
 
     ThreadParam threadParam;
     threadParam.attr = 0x02000000;                  
@@ -863,11 +849,11 @@ radThread::radThread
     threadParam.option = 0;
     threadParam.gpReg = &_gp;
 
-    m_ThreadId = CreateThread( &threadParam );
+    m_ThreadId = CreateThread(&threadParam);
 
     m_SuspendCount = 0;
 
-    StartThread( m_ThreadId,  (void*) this );
+    StartThread(m_ThreadId,  (void*) this);
 
 #endif
 
@@ -879,26 +865,25 @@ radThread::radThread
     //      
     m_ThreadId = &m_ThreadObject;
 
-    m_Stack = radMemoryAlloc( GetThisAllocator( ), stackSize );
+    m_Stack = radMemoryAlloc(GetThisAllocator(), stackSize);
 
-    OSCreateThread( &m_ThreadObject, InternalThreadEntry, this, (char*) m_Stack + stackSize, stackSize, 15, 0 );
+    OSCreateThread(&m_ThreadObject, InternalThreadEntry, this, (char*) m_Stack + stackSize, stackSize, 15, 0);
 
-    SetPriority( priority );             
+    SetPriority(priority);
 
-    OSResumeThread( m_ThreadId );
+    OSResumeThread(m_ThreadId);
 
 #endif
 
     //
     // Release our protection.
     //
-    radThreadInternalUnlock( );
+    radThreadInternalUnlock();
 
     //
     // Set the default ThreadLocalStorage values to NULL
     //
-    for ( i = 0; i < MAX_THREADLOCALSTORAGE_OBJECTS; i++ )
-    {
+    for (i = 0; i < MAX_THREADLOCALSTORAGE_OBJECTS; i++) {
         m_ThreadLocalStorageValues[i] = NULL;
     }
 }
@@ -918,8 +903,7 @@ radThread::radThread
 //              kill this one as it always runs.
 //------------------------------------------------------------------------------
 
-radThread::~radThread( void )
-{
+radThread::~radThread(void) {
     //
     // No longer any active fibers.
     //
@@ -929,145 +913,137 @@ radThread::~radThread( void )
     // Check if we are destructing the main thread object. This thread 
     // represents the main thread and was never created by this system.
     //
-    if( s_ThreadTable[ 0 ] == this )
-    {
+    if (s_ThreadTable[0] == this) {
         //
         // Just null the table entry and we are done.
         //
-        s_ThreadTable[ 0 ] = NULL;
+        s_ThreadTable[0] = NULL;
         return;
     }
 
     //
     // Protect the next series of operations.
     //
-    radThreadInternalLock( );   
+    radThreadInternalLock();
 
     //
     // First remove this thread from the active table.
     //
     unsigned int i;
-    for( i = 0 ; i < MAX_RADTHREADS ; i++ )
-    {
-        if( s_ThreadTable[ i ] == this )
-        {
-            s_ThreadTable[ i ] = NULL;
+    for (i = 0; i < MAX_RADTHREADS; i++) {
+        if (s_ThreadTable[i] == this) {
+            s_ThreadTable[i] = NULL;
             break;
         }
-    }   
-    rAssert( i != MAX_RADTHREADS );
+    }
+    rAssert(i != MAX_RADTHREADS);
 
     //
     // Here we must check if the thread is still running. This is the bad way
     // of killing a thread and should be avoided. However, we will try to deal with it.
     //
-    if( m_IsRunning )
-    {
+    if (m_IsRunning) {
         //
         // Here the thread is running. We will kill the thread. Need to deal with
         // special case where the thread we are killing is the actual running thread.
         //
-        if( IsActive( ) )
-        {
+        if (IsActive()) {
             //
             // Here we are killing ourself by releaseing the last reference.  This is
             // a very bad way of terminating the thread and will cause leaks.
             // Can release protection now.
             //
-            radThreadInternalUnlock( );   
+            radThreadInternalUnlock();
 
             //
             // We perform platform specific operations and commit suicide. Print
             // warning that memory leaks will may occur as we cannot release all
             // memory or call base class destructor.
             //
-            rWarningMsg( false, "radThread: Memory leak has occurred due to bad thread termination\n");
-   
+            rWarningMsg(false,
+                        "radThread: Memory leak has occurred due to bad thread termination\n");
+
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
             //
             // Under windows, things are not too bad. Close the thread handle. We will leak this
             // actual thread object memory.
             // 
-            CloseHandle( m_ThreadHandle );
+            CloseHandle(m_ThreadHandle);
 
-            ExitThread( 0 );
+            ExitThread(0);
 #endif
 
-#ifdef RAD_PS2 
+#ifdef RAD_PS2
             //
             // Under PS2 we leak the memory associated with the stack as well since we cannot
             // free this memory.
             //
-            ExitDeleteThread( );               
+            ExitDeleteThread();
 #endif
 
 #ifdef GAMECUBE
             //
             // On Gamecube we also leak the stack memory.
             //
-            OSExitThread( NULL );  
-#endif 
-        }
-        else
-        {
+            OSExitThread(NULL);
+#endif
+        } else {
             //
             // Here we are killing a thread that is still running but the calling thread
             // is not the active thread. Perform OS specific terminations. Note on XBOX
             // this cannot be done. 
             //
 #ifdef RAD_XBOX
-            rAssertMsg( false, "On XBOX, thread cannot be terminated by another thread\n");
+            rAssertMsg(false, "On XBOX, thread cannot be terminated by another thread\n");
 #endif
 
 #ifdef RAD_WIN32
-            TerminateThread( m_ThreadHandle, 0 );
-            CloseHandle( m_ThreadHandle );
+            TerminateThread(m_ThreadHandle, 0);
+            CloseHandle(m_ThreadHandle);
 #endif
 
 #ifdef RAD_PS2
-            TerminateThread( m_ThreadId );
-            DeleteThread( m_ThreadId );
-            radMemoryFreeAligned( GetThisAllocator( ), m_Stack );
+            TerminateThread(m_ThreadId);
+            DeleteThread(m_ThreadId);
+            radMemoryFreeAligned(GetThisAllocator(), m_Stack);
 #endif
 
 #ifdef RAD_GAMECUBE
-            OSCancelThread( m_ThreadId );
-            radMemoryFree( GetThisAllocator( ), m_Stack );
+            OSCancelThread(m_ThreadId);
+            radMemoryFree(GetThisAllocator(), m_Stack);
 #endif
-            
+
             //
             // Can release lock. Print warning that this is a bad way to terminate thread
             // as OS may not release all resources.
             //
-            radThreadInternalUnlock( );   
-                       
-            rWarningMsg( false, "radThread: Termination of thread may leak resources.\n");
+            radThreadInternalUnlock();
+
+            rWarningMsg(false, "radThread: Termination of thread may leak resources.\n");
         }
-    }
-    else
-    {
+    } else {
         //
         // Even though our internal flag indicates that the thread has terminated, we
         // want to make sure it has terminated from the OS perspective since we
         // will be freeing the stack in some cases.
         //
-        radThreadInternalUnlock( );   
+        radThreadInternalUnlock();
 
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
-        WaitForSingleObject( m_ThreadHandle, INFINITE );            
-        CloseHandle( m_ThreadHandle );
+        WaitForSingleObject(m_ThreadHandle, INFINITE);
+        CloseHandle(m_ThreadHandle);
 #endif
 
 #ifdef RAD_PS2
-        RotateThreadReadyQueue( s_PriorityMap[ m_Priority ] );
-        DeleteThread( m_ThreadId );
-        radMemoryFreeAligned( GetThisAllocator( ), m_Stack );
+        RotateThreadReadyQueue(s_PriorityMap[ m_Priority ]);
+        DeleteThread(m_ThreadId);
+        radMemoryFreeAligned(GetThisAllocator(), m_Stack);
 #endif
 
 #ifdef RAD_GAMECUBE
         void* rcode;
-        OSJoinThread( m_ThreadId, &rcode );
-        radMemoryFree( GetThisAllocator( ), m_Stack );
+        OSJoinThread(m_ThreadId, &rcode);
+        radMemoryFree(GetThisAllocator(), m_Stack);
 #endif
     }
 }
@@ -1087,47 +1063,49 @@ radThread::~radThread( void )
 //------------------------------------------------------------------------------
 
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
-    DWORD WINAPI radThread::InternalThreadEntry( void* param )
-#endif 
+DWORD WINAPI radThread::InternalThreadEntry(void* param)
+#endif
 #ifdef RAD_PS2
-    void radThread::InternalThreadEntry( void* param )
+void radThread::InternalThreadEntry(void* param)
 #endif
 #ifdef RAD_GAMECUBE
-    void* radThread::InternalThreadEntry( void* param )
+void* radThread::InternalThreadEntry(void* param)
 #endif
 {
-    //
-    // Simply invoke the true entry point. Save return code upon return
-    // from callers function.   
-    //
-    radThread* pThread = (radThread*) param;
+//
+// Simply invoke the true entry point. Save return code upon return
+// from callers function.
+//
+radThread *pThread = (radThread *) param;
 
-    //
-    // Under windows, convert this thread to a fiber.
-    //
+//
+// Under windows, convert this thread to a fiber.
+//
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
-    pThread->m_Fiber.m_Win32Fiber = ConvertThreadToFiber( NULL );
+pThread->m_Fiber.m_Win32Fiber = ConvertThreadToFiber(NULL);
 #endif
 
-    pThread->m_ReturnCode = (pThread->m_EntryFunction)(pThread->m_UserData );
+pThread->
+m_ReturnCode = (pThread->m_EntryFunction)(pThread->m_UserData);
 
-    //
-    // Here we consider the thread no longer running.
-    //
-    pThread->m_IsRunning = false;
-   
-    //
-    // Each OS has different return conventions. We don't use this stuff 
-    // so just return default values.
-    //
+//
+// Here we consider the thread no longer running.
+//
+pThread->
+m_IsRunning = false;
+
+//
+// Each OS has different return conventions. We don't use this stuff
+// so just return default values.
+//
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
-    return( 0 );
-#endif 
+return(0);
+#endif
 #ifdef RAD_PS2
-    // Nothing for the PS2
+// Nothing for the PS2
 #endif
 #ifdef RAD_GAMECUBE
-    return( NULL );
+return(NULL);
 #endif
 
 }
@@ -1144,8 +1122,7 @@ radThread::~radThread( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void radThread::SetPriority( Priority priority )
-{
+void radThread::SetPriority(Priority priority) {
     //
     // Save the priority as our current setting and invoke the various OS
     // serives to alter the priority.
@@ -1153,16 +1130,16 @@ void radThread::SetPriority( Priority priority )
     m_Priority = priority;
 
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
-    SetThreadPriority( m_ThreadHandle, s_PriorityMap[ priority ] );
+    SetThreadPriority(m_ThreadHandle, s_PriorityMap[ priority ]);
 #endif
 
 #ifdef RAD_PS2
-    int oldPriority = ChangeThreadPriority( m_ThreadId, s_PriorityMap[ priority ] );
-    rAssert( oldPriority >= 0 );
-#endif           
+    int oldPriority = ChangeThreadPriority(m_ThreadId, s_PriorityMap[ priority ]);
+    rAssert(oldPriority>= 0);
+#endif
 
 #ifdef RAD_GAMECUBE
-    OSSetThreadPriority( m_ThreadId, s_PriorityMap[ priority ] );
+    OSSetThreadPriority(m_ThreadId, s_PriorityMap[ priority ]);
 #endif
 
 }
@@ -1179,9 +1156,8 @@ void radThread::SetPriority( Priority priority )
 // Notes:
 //------------------------------------------------------------------------------
 
-IRadThread::Priority radThread::GetPriority( void )
-{
-    return( m_Priority );
+IRadThread::Priority radThread::GetPriority(void) {
+    return (m_Priority);
 }
 
 //=============================================================================
@@ -1197,13 +1173,12 @@ IRadThread::Priority radThread::GetPriority( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void radThread::Suspend( void )
-{ 
+void radThread::Suspend(void) {
     //
     // Just invoke OS specific implementation.
     //
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
-    SuspendThread( m_ThreadHandle );    
+    SuspendThread(m_ThreadHandle);
 #endif
 
 #ifdef RAD_PS2
@@ -1212,19 +1187,19 @@ void radThread::Suspend( void )
     // crappy implmentaiton. Must do this stuff under protection. The reason
     // for this stuff is that a thread cannot issue suspend on itself. 
     //
-    radThreadInternalLock( );   
+    radThreadInternalLock();
 
     //
     // Update the suspension count ourself. Check if someone has tried to resume us already.
     //
     m_SuspendCount--;
 
-    if( m_SuspendCount != -1 )
+    if(m_SuspendCount != -1)
     {
         //
         // Just return. Release protection.
         //
-        radThreadInternalUnlock( );   
+        radThreadInternalUnlock();
     }
     else
     {
@@ -1232,7 +1207,7 @@ void radThread::Suspend( void )
         // Here we are going to suspend this thread. If the calling thread is this 
         // object, then use sleep.
         //
-        if( m_ThreadId == GetThreadId( ) )
+        if(m_ThreadId == GetThreadId())
         {
             //
             // Indicate that we suspended ourself, so the resume call can use the
@@ -1243,9 +1218,9 @@ void radThread::Suspend( void )
             //
             // Release exclusion before sleeping.
             //
-            radThreadInternalUnlock( );   
+            radThreadInternalUnlock();
 
-            SleepThread( );
+            SleepThread();
         }
         else
         {
@@ -1255,17 +1230,17 @@ void radThread::Suspend( void )
             //
             m_SuspendedSelf = false;
 
-            SuspendThread( m_ThreadId );
+            SuspendThread(m_ThreadId);
 
-            radThreadInternalUnlock( );   
+            radThreadInternalUnlock();
         }
     }
 
-#endif           
+#endif
 
 #ifdef RAD_GAMECUBE
-    OSSuspendThread( m_ThreadId );
-#endif    
+    OSSuspendThread(m_ThreadId);
+#endif
 
 }
 
@@ -1282,13 +1257,12 @@ void radThread::Suspend( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void radThread::Resume( void )
-{ 
+void radThread::Resume(void) {
     //
     // Just invoke OS specific implementation.
     //
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
-    ResumeThread( m_ThreadHandle );    
+    ResumeThread(m_ThreadHandle);
 #endif
 
 #ifdef RAD_PS2
@@ -1297,43 +1271,43 @@ void radThread::Resume( void )
     // crappy implmentaiton. Must do this stuff under protection. The reason
     // for this stuff is that a thread cannot issue suspend on itself. 
     //
-    radThreadInternalLock( );   
+    radThreadInternalLock();
 
     //
     // Update the suspension count ourself. Check if we need to resume a thread.
     //
     m_SuspendCount++;
 
-    if( m_SuspendCount == 0 )
+    if(m_SuspendCount == 0)
     {
         //
         // Here we need to resume the thread. Determine how it was suspended and
         // use the appropriate sony call.
         //
-        if( m_SuspendedSelf )
+        if(m_SuspendedSelf)
         {
             //
             // Here the thread suspended itself by sleeping. Issue the wake up
             // call on this thread.
             //
-            WakeupThread( m_ThreadId );
+            WakeupThread(m_ThreadId);
         }
         else
         {
             //  
             // Use resume as thread was suspended by another thread.
             //
-            ResumeThread( m_ThreadId );
+            ResumeThread(m_ThreadId);
         }
     }
    
-    radThreadInternalUnlock( );   
+    radThreadInternalUnlock();
 
-#endif           
+#endif
 
 #ifdef RAD_GAMECUBE
-    OSResumeThread( m_ThreadId );
-#endif    
+    OSResumeThread(m_ThreadId);
+#endif
 
 }
 
@@ -1351,25 +1325,23 @@ void radThread::Resume( void )
 //------------------------------------------------------------------------------
 
 bool radThread::IsRunning
-( 
-    unsigned int* pReturnCode
-)
-{
+        (
+                unsigned int *pReturnCode
+        ) {
     //
     // Check if running. If not return the return code. Care must be taken
     // here as these variables can be altered by the actual thread.
     //
-    if( m_IsRunning )
-    {
-        return( true );
+    if (m_IsRunning) {
+        return (true);
     }
 
     //
     // Terminated. Return code is valid.
     //
     *pReturnCode = m_ReturnCode;
-    
-    return( false );
+
+    return (false);
 }
 
 //=============================================================================
@@ -1385,15 +1357,13 @@ bool radThread::IsRunning
 //              since the entry point might not return right away.
 //------------------------------------------------------------------------------
 
-unsigned int radThread::WaitForTermination( void )
-{
+unsigned int radThread::WaitForTermination(void) {
     //
     // Some day we should make this semaphore-like, not polling
     //
     unsigned int ret = 0;
-    while ( IsRunning( &ret ) )
-    {
-        radThreadSleep( 0 );
+    while (IsRunning(&ret)) {
+        radThreadSleep(0);
     }
 
     return ret;
@@ -1412,21 +1382,20 @@ unsigned int radThread::WaitForTermination( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-bool radThread::IsActive( void )
-{
+bool radThread::IsActive(void) {
     //
     // Perform platform specific checks.
     //
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
-    return( m_ThreadId == GetCurrentThreadId( ) );
+    return(m_ThreadId == GetCurrentThreadId());
 #endif
 
 #ifdef RAD_PS2
-    return( m_ThreadId == GetThreadId( ) );
-#endif           
+    return(m_ThreadId == GetThreadId());
+#endif
 
 #ifdef RAD_GAMECUBE
-    return( m_ThreadId == OSGetCurrentThread( ) );
+    return(m_ThreadId == OSGetCurrentThread());
 #endif
 
 }
@@ -1445,8 +1414,7 @@ bool radThread::IsActive( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-IRadThread* radThread::GetActiveThread( void )
-{
+IRadThread *radThread::GetActiveThread(void) {
     unsigned int i;
 
     //
@@ -1455,30 +1423,26 @@ IRadThread* radThread::GetActiveThread( void )
     // to vector into outerspace. This will not happen for the active thread
     // as this is who is calling this function.
     //
-    radThreadInternalLock( );   
-   
-    for( i = 0 ; i < MAX_RADTHREADS ; i++ )
-    {
-        if( s_ThreadTable[ i ] != NULL )
-        {
-            if( s_ThreadTable[ i ]->IsActive( ) )
-            {
+    radThreadInternalLock();
+
+    for (i = 0; i < MAX_RADTHREADS; i++) {
+        if (s_ThreadTable[i] != NULL) {
+            if (s_ThreadTable[i]->IsActive()) {
                 break;
             }
         }
     }
-    
-    radThreadInternalUnlock( );   
-                                                
+
+    radThreadInternalUnlock();
+
     //
     // Make sure not some logic problem if we failed to find a the active.
     //
-    if( MAX_RADTHREADS == i )
-    {
-        return( NULL );
+    if (MAX_RADTHREADS == i) {
+        return (NULL);
     }
 
-    return( s_ThreadTable[ i ] );
+    return (s_ThreadTable[i]);
 }
 
 //=============================================================================
@@ -1496,20 +1460,18 @@ IRadThread* radThread::GetActiveThread( void )
 //------------------------------------------------------------------------------
 
 void radThread::SetLocalStorage
-(
-     unsigned int index,
-     void* value
-)
-{
-     //
-     // Get the actively running thread. Set the value
-     //
-     radThread* thread = (radThread*) GetActiveThread( );
+        (
+                unsigned int index,
+                void *value
+        ) {
+    //
+    // Get the actively running thread. Set the value
+    //
+    radThread *thread = (radThread *) GetActiveThread();
 
-     if( thread != NULL)
-     {
-         thread->m_ThreadLocalStorageValues[ index ] = value;
-     }
+    if (thread != NULL) {
+        thread->m_ThreadLocalStorageValues[index] = value;
+    }
 }
 
 //=============================================================================
@@ -1525,20 +1487,18 @@ void radThread::SetLocalStorage
 // Notes:
 //------------------------------------------------------------------------------
 
-void* radThread::GetLocalStorage
-(
-     unsigned int index
-)
-{
-     //
-     // Get the actively running thread. Return the value
-     //
-     radThread* thread = (radThread*) GetActiveThread( );
-     if( thread != NULL )
-     {
-         return( thread->m_ThreadLocalStorageValues[ index ] );
-     }
-     return( NULL );
+void *radThread::GetLocalStorage
+        (
+                unsigned int index
+        ) {
+    //
+    // Get the actively running thread. Return the value
+    //
+    radThread *thread = (radThread *) GetActiveThread();
+    if (thread != NULL) {
+        return (thread->m_ThreadLocalStorageValues[index]);
+    }
+    return (NULL);
 }
 
 
@@ -1556,25 +1516,22 @@ void* radThread::GetLocalStorage
 // Notes:
 //------------------------------------------------------------------------------
 
-void radThread::SetDefaultLocalStorage 
-( 
-    unsigned int index 
-)
-{    //
+void radThread::SetDefaultLocalStorage
+        (
+                unsigned int index
+        ) {    //
     // Need protection in case a thread wants to terminate. Traverse all threads
     // and set the TLS back to NULL.
     //
-    radThreadInternalLock( );   
-   
-    for ( unsigned int i = 0 ; i < MAX_RADTHREADS ; i++ )
-    {
-        if ( s_ThreadTable[ i ] != NULL )
-        {
-            ( s_ThreadTable[ i ] )->m_ThreadLocalStorageValues[ index ] = NULL;
+    radThreadInternalLock();
+
+    for (unsigned int i = 0; i < MAX_RADTHREADS; i++) {
+        if (s_ThreadTable[i] != NULL) {
+            (s_ThreadTable[i])->m_ThreadLocalStorageValues[index] = NULL;
         }
     }
-    
-    radThreadInternalUnlock( );
+
+    radThreadInternalUnlock();
 }
 
 //=============================================================================
@@ -1590,20 +1547,18 @@ void radThread::SetDefaultLocalStorage
 // Notes:
 //------------------------------------------------------------------------------
 
-IRadThreadFiber* radThread::GetActiveFiber( void )
-{
+IRadThreadFiber *radThread::GetActiveFiber(void) {
     //
     // Get the actively running threads active fiber. We need to check for
     // null because during shutdown, we may not have an active thread.
     //
-    radThread* pThread = (radThread*) GetActiveThread( );
+    radThread *pThread = (radThread *) GetActiveThread();
 
-    if( pThread == NULL )
-    {
-        return( NULL );
+    if (pThread == NULL) {
+        return (NULL);
     }
 
-    return( pThread->m_pActiveFiber );
+    return (pThread->m_pActiveFiber);
 }
 
 //=============================================================================
@@ -1619,17 +1574,16 @@ IRadThreadFiber* radThread::GetActiveFiber( void )
 //------------------------------------------------------------------------------
 
 void radThread::AddRef
-(
-	void
-)
-{
+        (
+                void
+        ) {
     //
     // Protect this operation with mutex as this is not guarenteed to be thread
     // safe.
     //
-    radThreadInternalLock( );
-	m_ReferenceCount++;
-    radThreadInternalUnlock( );
+    radThreadInternalLock();
+    m_ReferenceCount++;
+    radThreadInternalUnlock();
 }
 
 //=============================================================================
@@ -1645,26 +1599,22 @@ void radThread::AddRef
 //------------------------------------------------------------------------------
 
 void radThread::Release
-(
-	void
-)
-{
+        (
+                void
+        ) {
     //
     // Protect this operation with mutex as this is not guarenteed to be thread
     // safe.
     //
-    radThreadInternalLock( );
+    radThreadInternalLock();
 
-	m_ReferenceCount--;
+    m_ReferenceCount--;
 
-	if ( m_ReferenceCount == 0 )
-	{
-        radThreadInternalUnlock( );
-		delete this;
-	}
-    else
-    {
-        radThreadInternalUnlock( );
+    if (m_ReferenceCount == 0) {
+        radThreadInternalUnlock();
+        delete this;
+    } else {
+        radThreadInternalUnlock();
     }
 }
 
@@ -1682,9 +1632,9 @@ void radThread::Release
 
 #ifdef RAD_DEBUG
 
-void radThread::Dump( char* pStringBuffer, unsigned int bufferSize )
+void radThread::Dump(char* pStringBuffer, unsigned int bufferSize)
 {
-    sprintf( pStringBuffer, "Object: [radThread] At Memory Location:[0x%x]\n", (unsigned int) this );
+    sprintf(pStringBuffer, "Object: [radThread] At Memory Location:[0x%x]\n", (unsigned int) this);
 }
 
 #endif
@@ -1701,34 +1651,32 @@ void radThread::Dump( char* pStringBuffer, unsigned int bufferSize )
 //
 //------------------------------------------------------------------------------
 
-radThreadLocalStorage::radThreadLocalStorage( void )
-    :
-    m_ReferenceCount( 1 )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radThreadLocalStorage" );
+radThreadLocalStorage::radThreadLocalStorage(void)
+        :
+        m_ReferenceCount(1) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radThreadLocalStorage");
     //
     // Protect the search for a free index.
     //
-    radThreadInternalLock( );
+    radThreadInternalLock();
 
-    for( m_Index = 0 ; m_Index < MAX_THREADLOCALSTORAGE_OBJECTS ; m_Index++ )
-    {
-        if( !s_InUseIndexTable[ m_Index ] )
-        {
+    for (m_Index = 0; m_Index < MAX_THREADLOCALSTORAGE_OBJECTS; m_Index++) {
+        if (!s_InUseIndexTable[m_Index]) {
             //
             // We have one. Set it in use and break out.
             //
-            s_InUseIndexTable[ m_Index ] = true;
+            s_InUseIndexTable[m_Index] = true;
             break;
         }
     }
 
-    radThreadInternalUnlock( );
+    radThreadInternalUnlock();
 
     //
     // Assert if limit exceeded.
     //
-    rAssertMsg( m_Index != MAX_THREADLOCALSTORAGE_OBJECTS, "Too many thread local storage objects created\n");
+    rAssertMsg(m_Index != MAX_THREADLOCALSTORAGE_OBJECTS,
+               "Too many thread local storage objects created\n");
 
     //
     // NOTE: we don't need to set a default value here since radThread initializes
@@ -1749,14 +1697,13 @@ radThreadLocalStorage::radThreadLocalStorage( void )
 //
 //------------------------------------------------------------------------------
 
-radThreadLocalStorage::~radThreadLocalStorage( void )
-{
-    radThread::SetDefaultLocalStorage ( m_Index );
+radThreadLocalStorage::~radThreadLocalStorage(void) {
+    radThread::SetDefaultLocalStorage(m_Index);
 
     //
     // Don't need to protect as assignments are automic operations.
     //
-    s_InUseIndexTable[ m_Index ] = false;
+    s_InUseIndexTable[m_Index] = false;
 }
 
 //=============================================================================
@@ -1772,9 +1719,8 @@ radThreadLocalStorage::~radThreadLocalStorage( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void* radThreadLocalStorage::GetValue( void )
-{
-    return( radThread::GetLocalStorage( m_Index ) );   
+void *radThreadLocalStorage::GetValue(void) {
+    return (radThread::GetLocalStorage(m_Index));
 }
 
 //=============================================================================
@@ -1791,12 +1737,11 @@ void* radThreadLocalStorage::GetValue( void )
 //------------------------------------------------------------------------------
 
 void radThreadLocalStorage::SetValue
-( 
-    void* value
-)
-{
+        (
+                void *value
+        ) {
 
-    radThread::SetLocalStorage( m_Index, value );   
+    radThread::SetLocalStorage(m_Index, value);
 }
 
 //=============================================================================
@@ -1812,17 +1757,16 @@ void radThreadLocalStorage::SetValue
 //------------------------------------------------------------------------------
 
 void radThreadLocalStorage::AddRef
-(
-	void
-)
-{
+        (
+                void
+        ) {
     //
     // Protect this operation with mutex as this is not guarenteed to be thread
     // safe.
     //
-    radThreadInternalLock( );
-	m_ReferenceCount++;
-    radThreadInternalUnlock( );
+    radThreadInternalLock();
+    m_ReferenceCount++;
+    radThreadInternalUnlock();
 }
 
 //=============================================================================
@@ -1838,26 +1782,22 @@ void radThreadLocalStorage::AddRef
 //------------------------------------------------------------------------------
 
 void radThreadLocalStorage::Release
-(
-	void
-)
-{
+        (
+                void
+        ) {
     //
     // Protect this operation with mutex as this is not guarenteed to be thread
     // safe.
     //
-    radThreadInternalLock( );
+    radThreadInternalLock();
 
-	m_ReferenceCount--;
+    m_ReferenceCount--;
 
-	if ( m_ReferenceCount == 0 )
-	{
-        radThreadInternalUnlock( );
-		delete this;
-	}
-    else
-    {
-        radThreadInternalUnlock( );
+    if (m_ReferenceCount == 0) {
+        radThreadInternalUnlock();
+        delete this;
+    } else {
+        radThreadInternalUnlock();
     }
 }
 
@@ -1875,9 +1815,9 @@ void radThreadLocalStorage::Release
 
 #ifdef RAD_DEBUG
 
-void radThreadLocalStorage::Dump( char* pStringBuffer, unsigned int bufferSize )
+void radThreadLocalStorage::Dump(char* pStringBuffer, unsigned int bufferSize)
 {
-    sprintf( pStringBuffer, "Object: [radThreadLocalStorage] At Memory Location:[0x%x]\n", (unsigned int) this );
+    sprintf(pStringBuffer, "Object: [radThreadLocalStorage] At Memory Location:[0x%x]\n", (unsigned int) this);
 }
 
 #endif
@@ -1894,12 +1834,11 @@ void radThreadLocalStorage::Dump( char* pStringBuffer, unsigned int bufferSize )
 //
 //------------------------------------------------------------------------------
 
-radThreadFiber::radThreadFiber( void )
-    :
-    m_ReferenceCount( 1 ),
-    m_StackSize( 0 )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radThreadFiber" );
+radThreadFiber::radThreadFiber(void)
+        :
+        m_ReferenceCount(1),
+        m_StackSize(0) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radThreadFiber");
 }
 
 //=============================================================================
@@ -1914,23 +1853,22 @@ radThreadFiber::radThreadFiber( void )
 //------------------------------------------------------------------------------
 
 radThreadFiber::radThreadFiber
-( 
-    RADFIBERENTRY   pEntryFunction,
-    void*           userData,
-    unsigned int    stackSize
-)
-    :
-    m_ReferenceCount( 1 ),
-    m_pEntryFunction( pEntryFunction ),
-    m_StackSize( stackSize ),
-    m_Value( userData )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radThreadFiber" );
-    rAssert( stackSize != 0 );   
+        (
+                RADFIBERENTRY pEntryFunction,
+                void *userData,
+                unsigned int stackSize
+        )
+        :
+        m_ReferenceCount(1),
+        m_pEntryFunction(pEntryFunction),
+        m_StackSize(stackSize),
+        m_Value(userData) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radThreadFiber");
+    rAssert(stackSize != 0);
 
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
 
-    m_Win32Fiber = CreateFiber( stackSize, FiberEntry, this );
+    m_Win32Fiber = CreateFiber(stackSize, FiberEntry, this);
 
 #endif
 
@@ -1940,9 +1878,9 @@ radThreadFiber::radThreadFiber
     // One the ps2ee, allocate a stack and set up the entry 
     // point for this fiber.
     //
-    m_Stack = radMemoryAllocAligned( GetThisAllocator( ), stackSize + 16, 16 );
+    m_Stack = radMemoryAllocAligned(GetThisAllocator(), stackSize + 16, 16);
 
-    m_CurrentStackPointer = (unsigned int) ((char*) m_Stack + stackSize );
+    m_CurrentStackPointer = (unsigned int) ((char*) m_Stack + stackSize);
     m_CurrentProgramCounter = (unsigned int) FiberEntry;
 
 #endif
@@ -1953,9 +1891,9 @@ radThreadFiber::radThreadFiber
     // One the gamecube, allocate a stack and set up the entry 
     // point for this fiber.
     //
-    m_Stack = radMemoryAllocAligned( GetThisAllocator( ), stackSize + 16, 16 );
+    m_Stack = radMemoryAllocAligned(GetThisAllocator(), stackSize + 16, 16);
 
-    m_CurrentStackPointer = (unsigned int) ((char*) m_Stack + stackSize );
+    m_CurrentStackPointer = (unsigned int) ((char*) m_Stack + stackSize);
     m_CurrentProgramCounter = (unsigned int) FiberEntry;
 
 #endif
@@ -1973,29 +1911,27 @@ radThreadFiber::radThreadFiber
 //
 //------------------------------------------------------------------------------
 
-radThreadFiber::~radThreadFiber( void )
-{
-    rAssertMsg( radThreadGetActiveFiber( ) != this, "Cannot destroy active fiber" );
-    
+radThreadFiber::~radThreadFiber(void) {
+    rAssertMsg(radThreadGetActiveFiber() != this, "Cannot destroy active fiber");
+
     //
     // If the stack size is zero, it indicates this is the object contained
     // be the parent thread. No need to cleau up.
     //
-    if( m_StackSize != 0 )
-    {
+    if (m_StackSize != 0) {
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
         //
         // Under windows, delete the fiber.
         //
-        DeleteFiber( m_Win32Fiber );
-#endif    
+        DeleteFiber(m_Win32Fiber);
+#endif
 
 #ifdef RAD_PS2
-        radMemoryFreeAligned( GetThisAllocator( ), m_Stack );
+        radMemoryFreeAligned(GetThisAllocator(), m_Stack);
 #endif
 
 #ifdef RAD_GAMECUBE
-        radMemoryFreeAligned( GetThisAllocator( ), m_Stack );
+        radMemoryFreeAligned(GetThisAllocator(), m_Stack);
 #endif
 
     }
@@ -2013,24 +1949,23 @@ radThreadFiber::~radThreadFiber( void )
 // Notes:       It is illegal to switch to the actively running fiber. 
 //------------------------------------------------------------------------------
 
-void radThreadFiber::SwitchTo( void )
-{
+void radThreadFiber::SwitchTo(void) {
     //
     // Verify not the actively running fiber.
     //
-    rAssertMsg( radThreadGetActiveFiber( ) != this, "Cannot switch to active fiber" );
+    rAssertMsg(radThreadGetActiveFiber() != this, "Cannot switch to active fiber");
 
     //
     // Perform OS specific switch.
     //
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
-    
+
     // 
     // Set this fiber as the calling threads active fiber and switch,
     //
-    ((radThread*) radThread::GetActiveThread( ))->m_pActiveFiber = this;
+    ((radThread*) radThread::GetActiveThread())->m_pActiveFiber = this;
 
-    SwitchToFiber( m_Win32Fiber );        
+    SwitchToFiber(m_Win32Fiber);
 
 #endif
 
@@ -2040,11 +1975,11 @@ void radThreadFiber::SwitchTo( void )
     // Get the active fiber. Sets its program counter and stack to where we 
     // are. Then switch to new one.
     //
-    radThreadFiber* oldFiber = (radThreadFiber*) radThreadGetActiveFiber( );
-    ((radThread*) radThread::GetActiveThread( ))->m_pActiveFiber = this;
+    radThreadFiber* oldFiber = (radThreadFiber*) radThreadGetActiveFiber();
+    ((radThread*) radThread::GetActiveThread())->m_pActiveFiber = this;
 
-    PS2SwitchToFiber( &(oldFiber->m_CurrentStackPointer), &(oldFiber->m_CurrentProgramCounter),
-                      m_CurrentStackPointer, m_CurrentProgramCounter );
+    PS2SwitchToFiber(&(oldFiber->m_CurrentStackPointer), &(oldFiber->m_CurrentProgramCounter),
+                      m_CurrentStackPointer, m_CurrentProgramCounter);
 
 #endif
 
@@ -2055,12 +1990,12 @@ void radThreadFiber::SwitchTo( void )
     // Get the active fiber. Sets its program counter and stack to where we 
     // are. Then switch to need one.
     //
-    radThreadFiber* oldFiber = (radThreadFiber*) radThreadGetActiveFiber( );
-    ((radThread*) radThread::GetActiveThread( ))->m_pActiveFiber = this;
+    radThreadFiber* oldFiber = (radThreadFiber*) radThreadGetActiveFiber();
+    ((radThread*) radThread::GetActiveThread())->m_pActiveFiber = this;
 
-    GCNSwitchToFiber( &(oldFiber->m_CurrentStackPointer), &(oldFiber->m_CurrentProgramCounter),
-                      m_CurrentStackPointer, m_CurrentProgramCounter );
-   
+    GCNSwitchToFiber(&(oldFiber->m_CurrentStackPointer), &(oldFiber->m_CurrentProgramCounter),
+                      m_CurrentStackPointer, m_CurrentProgramCounter);
+
 #endif
 
 }
@@ -2078,9 +2013,8 @@ void radThreadFiber::SwitchTo( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void* radThreadFiber::GetValue( void )
-{
-    return( m_Value );   
+void *radThreadFiber::GetValue(void) {
+    return (m_Value);
 }
 
 //=============================================================================
@@ -2097,10 +2031,9 @@ void* radThreadFiber::GetValue( void )
 //------------------------------------------------------------------------------
 
 void radThreadFiber::SetValue
-( 
-    void* value
-)
-{
+        (
+                void *value
+        ) {
     m_Value = value;
 }
 
@@ -2118,11 +2051,10 @@ void radThreadFiber::SetValue
 //------------------------------------------------------------------------------
 
 void radThreadFiber::AddRef
-(
-	void
-)
-{
-	m_ReferenceCount++;
+        (
+                void
+        ) {
+    m_ReferenceCount++;
 }
 
 //=============================================================================
@@ -2138,16 +2070,14 @@ void radThreadFiber::AddRef
 //------------------------------------------------------------------------------
 
 void radThreadFiber::Release
-(
-	void
-)
-{
-	m_ReferenceCount--;
+        (
+                void
+        ) {
+    m_ReferenceCount--;
 
-	if ( m_ReferenceCount == 0 )
-	{
-		delete this;
-	}
+    if (m_ReferenceCount == 0) {
+        delete this;
+    }
 }
 
 //=============================================================================
@@ -2164,9 +2094,9 @@ void radThreadFiber::Release
 
 #ifdef RAD_DEBUG
 
-void radThreadFiber::Dump( char* pStringBuffer, unsigned int bufferSize )
+void radThreadFiber::Dump(char* pStringBuffer, unsigned int bufferSize)
 {
-    sprintf( pStringBuffer, "Object: [radThreadFiber] At Memory Location:[0x%x]\n", (unsigned int) this );
+    sprintf(pStringBuffer, "Object: [radThreadFiber] At Memory Location:[0x%x]\n", (unsigned int) this);
 }
 
 #endif
@@ -2185,29 +2115,29 @@ void radThreadFiber::Dump( char* pStringBuffer, unsigned int bufferSize )
 //------------------------------------------------------------------------------
 
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
-void CALLBACK radThreadFiber::FiberEntry( void* param )
+void CALLBACK radThreadFiber::FiberEntry(void* param)
 {
     (void) param;
 #endif
 #ifdef RAD_GAMECUBE
-void radThreadFiber::FiberEntry( void )
+void radThreadFiber::FiberEntry(void)
 {
 #endif
 #ifdef RAD_PS2
-void radThreadFiber::FiberEntry( void )
+void radThreadFiber::FiberEntry(void)
 {
 #endif
-    //
-    // Get the active thread and invoke callers function with user data.
-    //
-    radThreadFiber* pFiber = (radThreadFiber*) radThreadGetActiveFiber( );
+//
+// Get the active thread and invoke callers function with user data.
+//
+radThreadFiber *pFiber = (radThreadFiber *) radThreadGetActiveFiber();
 
-    (pFiber->m_pEntryFunction)( pFiber->m_Value );
+(pFiber->m_pEntryFunction)(pFiber->m_Value);
 
-    //
-    // If we ever get here things are screwed up.
-    //
-    rAssertMsg( false, "Fibers are not allowed to return\n");
+//
+// If we ever get here things are screwed up.
+//
+rAssertMsg(false, "Fibers are not allowed to return\n");
 
 }
 
@@ -2228,21 +2158,21 @@ void radThreadFiber::FiberEntry( void )
 
 #ifndef RAD_MW
 
-void radThreadFiber::PS2SwitchToFiber( unsigned int* oldSp, unsigned int* oldPc, unsigned int newSp, unsigned int newPc )
+void radThreadFiber::PS2SwitchToFiber(unsigned int* oldSp, unsigned int* oldPc, unsigned int newSp, unsigned int newPc)
 {
-    asm( "addiu $29, 0xfff8" );         // Make room on stack to store frame pointer and return address
-    asm( "sw $31, 0($29)" );            // Save return address on stack
-    asm( "sw $30, 4($29)" );            // Save frame pointer on stack
-    asm( "sw $29, 0($4 )" );            // Save the current stack pointer to *oldSp 
-    asm( "la $8, returnpoint" );        // Load return address in temp register
-    asm( "sw $8, 0($5)" );              // Save temp register into *oldPc
-    asm( "add $29,$6,$0" );             // Set the stack pointer to newSP
-    asm( "jr $7 " );                    // Set PC to newCP
+    asm("addiu $29, 0xfff8");         // Make room on stack to store frame pointer and return address
+    asm("sw $31, 0($29)");            // Save return address on stack
+    asm("sw $30, 4($29)");            // Save frame pointer on stack
+    asm("sw $29, 0($4)");            // Save the current stack pointer to *oldSp
+    asm("la $8, returnpoint");        // Load return address in temp register
+    asm("sw $8, 0($5)");              // Save temp register into *oldPc
+    asm("add $29,$6,$0");             // Set the stack pointer to newSP
+    asm("jr $7 ");                    // Set PC to newCP
 
-    asm( "returnpoint: nop" );          // Were we return to
-    asm( "lw $30,4($29)" );             // Restore frame pointer
-    asm( "lw $31,0($29)" );             // Restore return address
-    asm( "addiu $29, 0x8" );            // Balance stack
+    asm("returnpoint: nop");          // Were we return to
+    asm("lw $30,4($29)");             // Restore frame pointer
+    asm("lw $31,0($29)");             // Restore return address
+    asm("addiu $29, 0x8");            // Balance stack
 }
 
 #else
@@ -2250,12 +2180,12 @@ void radThreadFiber::PS2SwitchToFiber( unsigned int* oldSp, unsigned int* oldPc,
 //
 // Metrowerks verions is a little different    
 //
-asm void radThreadFiber::PS2SwitchToFiber( unsigned int* oldSp, unsigned int* oldPc, unsigned int newSp, unsigned int newPc )
+asm void radThreadFiber::PS2SwitchToFiber(unsigned int* oldSp, unsigned int* oldPc, unsigned int newSp, unsigned int newPc)
 {
     addiu $29, -8           // Make room on stack to store frame pointer and return address
     sw $31, 0($29)              // Save return address on stack
     sw $30, 4($29)              // Save frame pointer on stack
-    sw $29, 0($4 )              // Save the current stack pointer to *oldSp 
+    sw $29, 0($4)              // Save the current stack pointer to *oldSp
     
     jal next                    // load retrun address to point to next
     nop
@@ -2293,11 +2223,11 @@ next:
 
 #ifdef RAD_GAMECUBE
 
-asm void radThreadFiber::GCNSwitchToFiber( unsigned int* oldSp, unsigned int* oldPc, unsigned int newSp, unsigned int newPc )
+asm void radThreadFiber::GCNSwitchToFiber(unsigned int* oldSp, unsigned int* oldPc, unsigned int newSp, unsigned int newPc)
 {
     nofralloc
 
-    mflr    r7          // save link reg ( return address ) in temp reg r7
+    mflr    r7          // save link reg (return address) in temp reg r7
     stwu    r1,-8(r1)   // make space on stack and save sp
     stw     r7,4(r1)    // store link register
     stw     r1,0(r3)    // save sp in oldSp

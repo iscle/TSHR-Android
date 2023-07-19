@@ -12,7 +12,7 @@
 //
 //=============================================================================
 
-#ifndef	RAD1394POWER_H
+#ifndef    RAD1394POWER_H
 #define RAD1394POWER_H
 
 //=============================================================================
@@ -27,6 +27,6 @@
 // Public Funcitons
 //=============================================================================
 
-NTSTATUS rad1394_Power( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp );
+NTSTATUS rad1394_Power(IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp);
 
 #endif

@@ -96,12 +96,11 @@ typedef long FileTime;
 //
 //=============================================================================
 
-struct radCFFileInfo
-{
+struct radCFFileInfo {
     //
     // Store the cement library name
     //
-    char m_CementLibraryIdentification[ RAD_CEMENT_LIBRARY_IDENTIFICATION_LENGTH ];
+    char m_CementLibraryIdentification[RAD_CEMENT_LIBRARY_IDENTIFICATION_LENGTH];
 
     //
     // Store the versions
@@ -146,8 +145,7 @@ struct radCFFileInfo
 //
 //=============================================================================
 
-struct radCFHeader
-{
+struct radCFHeader {
     //
     // How many files are there in total
     //
@@ -166,8 +164,7 @@ struct radCFHeader
     //
     // Define a structure for a hashed file entry
     //
-    struct HashedFileEntry
-    {
+    struct HashedFileEntry {
         //
         // What is the file name's hashed value
         //
@@ -196,7 +193,7 @@ struct radCFHeader
     //            in increasing order by there hash
     //            value.
     //
-    HashedFileEntry* m_pHashedFileEntries;
+    HashedFileEntry *m_pHashedFileEntries;
 
 
     //=========================================================================
@@ -209,9 +206,8 @@ struct radCFHeader
     // Returns:     hash value
     //
     //-------------------------------------------------------------------------
-    static inline unsigned int HashFunction( const char* string )
-    {
-        return radMakeCaseInsensitiveKey32( string );
+    static inline unsigned int HashFunction(const char *string) {
+        return radMakeCaseInsensitiveKey32(string);
     }
 
     //=========================================================================
@@ -230,12 +226,11 @@ struct radCFHeader
     //              the hashed file entries are sorted in assending order
     //              by the hash value.
     //-------------------------------------------------------------------------
-    static HashedFileEntry* FindFile
-    (
-        const radCFHeader* pHeader,
-        unsigned int hashValue
-    )
-    {
+    static HashedFileEntry *FindFile
+            (
+                    const radCFHeader *pHeader,
+                    unsigned int hashValue
+            ) {
         unsigned int low = 0;
         unsigned int mid;
         unsigned int high = pHeader->m_NumFiles;
@@ -243,50 +238,42 @@ struct radCFHeader
         //
         // Bail out with not-found result if the cement library is empty.
         //
-        if( pHeader->m_NumFiles < 1 )
-        {
+        if (pHeader->m_NumFiles < 1) {
             return NULL;
         }
 
         //
         // Search for an entry with the same hash using a binary search
         //
-        while( low <= high )
-        {
+        while (low <= high) {
             //
             // Calculate the mid point.  The actual function is:
-            //      mid = ( low + high ) / 2;
+            //      mid = (low + high) / 2;
             // We spice it up a bit to avoid overflow problems and
             // to confuse anybody who may be reading it ;)
             //
-            mid = ( low / 2 ) + ( high / 2 );
-            if( low&0x01 && high&0x01 )
-            {
+            mid = (low / 2) + (high / 2);
+            if (low & 0x01 && high & 0x01) {
                 mid++;
             }
 
             //
             // Do they match?
             //
-            if( pHeader->m_pHashedFileEntries[ mid ].m_HashValue == hashValue )
-            {
+            if (pHeader->m_pHashedFileEntries[mid].m_HashValue == hashValue) {
                 return pHeader->m_pHashedFileEntries + mid;
             }
 
             //
             // Update the search
             //
-            if( pHeader->m_pHashedFileEntries[ mid ].m_HashValue < hashValue )
-            {
+            if (pHeader->m_pHashedFileEntries[mid].m_HashValue < hashValue) {
                 low = mid + 1;
-            }
-            else
-            {
+            } else {
                 //
                 // We don't want to "underflow" unsigned int
                 //
-                if( mid == 0 )
-                {
+                if (mid == 0) {
                     break;
                 }
                 high = mid - 1;
@@ -323,8 +310,7 @@ struct radCFHeader
 //
 //=============================================================================
 
-struct radCFDetailedFileInformation
-{
+struct radCFDetailedFileInformation {
     //
     // How many files are here?
     //
@@ -333,18 +319,17 @@ struct radCFDetailedFileInformation
     //
     // Define a structure for an actual file information record
     //
-    struct DetailedFileInfoRecord
-    {
+    struct DetailedFileInfoRecord {
         //
         // How long is the file name
         // (Maximum length including NULL terminator)
         //
         unsigned int m_FileNameLength;
-        
+
         //
         // The file name (allocated to m_FileNameLength characters)
         //
-        char* m_FileName;
+        char *m_FileName;
 
         //
         // The file's last modification time (for update)
@@ -360,7 +345,7 @@ struct radCFDetailedFileInformation
     //
     // Store a group of m_NumFilesInBlock file entries
     //
-    DetailedFileInfoRecord* m_pFileInfoRecords;
+    DetailedFileInfoRecord *m_pFileInfoRecords;
 
     //=========================================================================
     // Function:    radCFDetailedFileInformation::FindFile
@@ -374,31 +359,27 @@ struct radCFDetailedFileInformation
     //              to the given name.
     //
     //-------------------------------------------------------------------------
-    static DFIR* FindFile
-    (
-        const radCFDetailedFileInformation* pDetailedFileInfo,
-        const char* fileName
-    )
-    {
+    static DFIR *FindFile
+            (
+                    const radCFDetailedFileInformation *pDetailedFileInfo,
+                    const char *fileName
+            ) {
         //
         // Store the string length
         //
-        unsigned int stringlength = strlen( fileName );
+        unsigned int stringlength = strlen(fileName);
 
         //
         // Search for the entry
         //
         unsigned int i;
-        for( i = 0; i < pDetailedFileInfo->m_NumFiles; i++ )
-        {
+        for (i = 0; i < pDetailedFileInfo->m_NumFiles; i++) {
             //
             // Do they match?
             //
-            if( stringlength == pDetailedFileInfo->m_pFileInfoRecords[ i ].m_FileNameLength )
-            {
-                if( strcmp( pDetailedFileInfo->m_pFileInfoRecords[ i ].m_FileName, fileName ) == 0 )
-                {
-                    return &pDetailedFileInfo->m_pFileInfoRecords[ i ];
+            if (stringlength == pDetailedFileInfo->m_pFileInfoRecords[i].m_FileNameLength) {
+                if (strcmp(pDetailedFileInfo->m_pFileInfoRecords[i].m_FileName, fileName) == 0) {
+                    return &pDetailedFileInfo->m_pFileInfoRecords[i];
                 }
             }
         }

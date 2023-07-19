@@ -38,11 +38,11 @@ bool                radFileSystem::s_Initialized = false;
 radMemoryAllocator  radFileSystem::s_Allocator = 0;
 unsigned int        radFileSystem::s_RemoteDriveConnectTimeout = INITIAL_REMOTE_TIMEOUT;
 unsigned int        radFileSystem::s_TotalDriveCount = 0;
-char                radFileSystem::s_DefaultDrive[ radFileDrivenameMax + 1 ];
+char                radFileSystem::s_DefaultDrive[radFileDrivenameMax + 1];
 bool                radFileSystem::s_AutoMount = true;
-IRadThreadMutex*    radFileSystem::s_pMutex = NULL;
+IRadThreadMutex *radFileSystem::s_pMutex = NULL;
 
-radFileSystem::DriveMapEntry    radFileSystem::s_DriveMap[ radFileDriveMax ];
+radFileSystem::DriveMapEntry    radFileSystem::s_DriveMap[radFileDriveMax];
 
 //=============================================================================
 // Static Functions
@@ -58,11 +58,9 @@ radFileSystem::DriveMapEntry    radFileSystem::s_DriveMap[ radFileDriveMax ];
 // Returns:     
 //------------------------------------------------------------------------------
 
-static void stringUpper( char* str )
-{
-    while( *str != '\0' )
-    {
-        *str = (char) toupper( *str );
+static void stringUpper(char *str) {
+    while (*str != '\0') {
+        *str = (char) toupper(*str);
         str++;
     }
 }
@@ -84,38 +82,36 @@ static void stringUpper( char* str )
 //------------------------------------------------------------------------------
 
 void radFileSystem::Initialize
-(
-    unsigned int maxOutstandingRequests, 
-    unsigned int maxOpenFiles,
-    radMemoryAllocator alloc 
-)
-{
-    rAssertMsg( !s_Initialized, "radFileSystem already initialized" );
+        (
+                unsigned int maxOutstandingRequests,
+                unsigned int maxOpenFiles,
+                radMemoryAllocator alloc
+        ) {
+    rAssertMsg(!s_Initialized, "radFileSystem already initialized");
 
     //
     // Set default drive
     //
-    ::PlatformDrivesGetDefaultDrive( s_DefaultDrive );
+    ::PlatformDrivesGetDefaultDrive(s_DefaultDrive);
 
     //
     // Set up pools
     //    
-    radRequestPoolInitialize( maxOutstandingRequests, alloc );
-    radDrivePoolInitialize( maxOutstandingRequests, alloc );
-    radFilePoolInitialize( maxOpenFiles, alloc );
+    radRequestPoolInitialize(maxOutstandingRequests, alloc);
+    radDrivePoolInitialize(maxOutstandingRequests, alloc);
+    radFilePoolInitialize(maxOpenFiles, alloc);
 
     //
     // Set up our mutex
     //
-    radThreadCreateMutex( &s_pMutex, alloc );
-    rAssert( s_pMutex != NULL );
+    radThreadCreateMutex(&s_pMutex, alloc);
+    rAssert(s_pMutex != NULL);
 
     //
     // Set up drive map
     //
-    for ( unsigned int i = 0; i < radFileDriveMax; i++)
-    {
-        s_DriveMap[ i ].m_pDrive = NULL;
+    for (unsigned int i = 0; i < radFileDriveMax; i++) {
+        s_DriveMap[i].m_pDrive = NULL;
     }
 
     s_Allocator = alloc;
@@ -124,7 +120,7 @@ void radFileSystem::Initialize
     //
     // Initialize the CRC system
     //
-    ::radCRCInit( );
+    ::radCRCInit();
 }
 
 //=============================================================================
@@ -138,38 +134,31 @@ void radFileSystem::Initialize
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radFileSystem::Terminate( void )
-{
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
+void radFileSystem::Terminate(void) {
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
 
-    if ( !s_AutoMount )
-    {
-        for ( unsigned int i = 0; i < radFileDriveMax; i++)
-        {
+    if (!s_AutoMount) {
+        for (unsigned int i = 0; i < radFileDriveMax; i++) {
             rAssertMsg
-            ( 
-                s_DriveMap[ i ].m_pDrive == NULL, 
-                "radFileSystem: not all drives have been unmounted." 
-            );
+                    (
+                            s_DriveMap[i].m_pDrive == NULL,
+                            "radFileSystem: not all drives have been unmounted."
+                    );
         }
-    }
-    else
-    {
-        for ( unsigned int i = 0; i < radFileDriveMax; i++ )
-        {
-            if ( s_DriveMap[ i ].m_pDrive != NULL )
-            {
-                rDebugPrintf( "radFile: auto-unmounting drive [%s]\n", s_DriveMap[ i ].m_Name );
-                DriveUnmount( s_DriveMap[ i ].m_Name );
+    } else {
+        for (unsigned int i = 0; i < radFileDriveMax; i++) {
+            if (s_DriveMap[i].m_pDrive != NULL) {
+                rDebugPrintf("radFile: auto-unmounting drive [%s]\n", s_DriveMap[i].m_Name);
+                DriveUnmount(s_DriveMap[i].m_Name);
             }
         }
     }
 
-    radFilePoolTerminate( );
-    radDrivePoolTerminate( );
-    radRequestPoolTerminate( );
+    radFilePoolTerminate();
+    radDrivePoolTerminate();
+    radRequestPoolTerminate();
 
-    radRelease( s_pMutex, NULL );
+    radRelease(s_pMutex, NULL);
     s_pMutex = NULL;
     s_Initialized = false;
 }
@@ -184,9 +173,8 @@ void radFileSystem::Terminate( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radFileSystem::Lock( )
-{
-    s_pMutex->Lock( );
+void radFileSystem::Lock() {
+    s_pMutex->Lock();
 }
 
 //=============================================================================
@@ -199,9 +187,8 @@ void radFileSystem::Lock( )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radFileSystem::Unlock( )
-{
-    s_pMutex->Unlock( );
+void radFileSystem::Unlock() {
+    s_pMutex->Unlock();
 }
 
 //=============================================================================
@@ -215,31 +202,28 @@ void radFileSystem::Unlock( )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radFileSystem::Service( void )
-{
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
+void radFileSystem::Service(void) {
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
 
     //
-    // Run the Service( ) on every drive.
+    // Run the Service() on every drive.
     //
-    Lock( );
-    for ( unsigned int i = 0; i < s_TotalDriveCount; i++ )
-    {
-        if ( s_DriveMap[ i ].m_pDrive != NULL )
-        {
+    Lock();
+    for (unsigned int i = 0; i < s_TotalDriveCount; i++) {
+        if (s_DriveMap[i].m_pDrive != NULL) {
             //
             // Grab a reference of the drive, then unlock.
             //
-            radDrive* pDrive = s_DriveMap[ i ].m_pDrive;
-            pDrive->AddRef( );
-            Unlock( );
+            radDrive *pDrive = s_DriveMap[i].m_pDrive;
+            pDrive->AddRef();
+            Unlock();
 
-            pDrive->Service( );
-            pDrive->Release( );
-            Lock( );
+            pDrive->Service();
+            pDrive->Release();
+            Lock();
         }
     }
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -257,15 +241,14 @@ void radFileSystem::Service( void )
 //------------------------------------------------------------------------------
 
 void radFileSystem::ProcessFileName
-( 
-    const char* pFileName, 
-    char* fullFilename, 
-    char* driveSpec,
-    char** pFilename,
-	bool simpleName
-)
-{
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
+        (
+                const char *pFileName,
+                char *fullFilename,
+                char *driveSpec,
+                char **pFilename,
+                bool simpleName
+        ) {
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
 
     //
     // First find the drive. If it exists, then there's a `:' in the name.
@@ -273,48 +256,43 @@ void radFileSystem::ProcessFileName
     // length should then be the length of the drive name and fname should point
     // to the beginning of the filename
     // 
-    const char* fname;
+    const char *fname;
     unsigned int length = 0;
-    char* p = strchr( pFileName, ':' );
-    if( simpleName==false && p != NULL )
-    {
+    char *p = strchr(pFileName, ':');
+    if (simpleName == false && p != NULL) {
         length = (unsigned int) p - (unsigned int) pFileName + 1;
-        strncpy( driveSpec, pFileName, length );
-        driveSpec[ length ] = '\0';
-        fname = &pFileName[ length ];
-    }
-    else
-    {
-        Lock( );
-        strcpy( driveSpec, s_DefaultDrive );
-        Unlock( );
+        strncpy(driveSpec, pFileName, length);
+        driveSpec[length] = '\0';
+        fname = &pFileName[length];
+    } else {
+        Lock();
+        strcpy(driveSpec, s_DefaultDrive);
+        Unlock();
 
-        length = strlen( driveSpec );
+        length = strlen(driveSpec);
         fname = pFileName;
     }
 
-    stringUpper( driveSpec );
+    stringUpper(driveSpec);
 
     //
     // Process the filename
     //
-    strcpy( fullFilename, driveSpec );
+    strcpy(fullFilename, driveSpec);
 
-    *pFilename = &fullFilename[ length ];
-    p = &fullFilename[ length ];
-    
+    *pFilename = &fullFilename[length];
+    p = &fullFilename[length];
+
     //
     // Copy filename over
     //
-    strcpy( p, fname );
+    strcpy(p, fname);
 
     //
     // Lets translate any / to the correct way \\.
     //
-    while( *p && simpleName==false)
-    {
-        if( *p == '/' )
-        {
+    while (*p && simpleName == false) {
+        if (*p == '/') {
             *p = '\\';
         }
         p++;
@@ -324,17 +302,15 @@ void radFileSystem::ProcessFileName
 //=============================================================================
 // Function:    radFileSystem::SetRootDirectory
 //=============================================================================
-void radFileSystem::SetRootDirectory( const char* pDrive, const char *pRootDir )
-{
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
+void radFileSystem::SetRootDirectory(const char *pDrive, const char *pRootDir) {
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
 }
 
 //=============================================================================
 // Function:    radFileSystem::GetRootDirectory
 //=============================================================================
-void radFileSystem::GetRootDirectory( const char* pDrive, char* pRootDir )
-{
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
+void radFileSystem::GetRootDirectory(const char *pDrive, char *pRootDir) {
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
 }
 
 //=============================================================================
@@ -348,64 +324,60 @@ void radFileSystem::GetRootDirectory( const char* pDrive, char* pRootDir )
 //------------------------------------------------------------------------------
 
 void radFileSystem::FileOpen
-( 
-    IRadFile**          pIRadFile, 
-    const char*         pFileName,
-    bool                writeAccess,
-    radFileOpenFlags    flags,
-    radFilePriority     priority, 
-    unsigned int        cacheSize,
-    radMemoryAllocator  alloc,
-    radMemorySpace      cacheSpace 
-)
-{
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
-	rAssert( pFileName != NULL );
-    rAssert( pIRadFile != NULL );
+        (
+                IRadFile **pIRadFile,
+                const char *pFileName,
+                bool writeAccess,
+                radFileOpenFlags flags,
+                radFilePriority priority,
+                unsigned int cacheSize,
+                radMemoryAllocator alloc,
+                radMemorySpace cacheSpace
+        ) {
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
+    rAssert(pFileName != NULL);
+    rAssert(pIRadFile != NULL);
 
     //
     // Process the filename to get the drive specification
     //
-    char fullFilename[ radFileFilenameMax + 1 ];
-    char driveSpec[ radFileDrivenameMax + 1 ];
-    char* filePart = NULL;
-    ProcessFileName( pFileName, fullFilename, driveSpec, &filePart );
+    char fullFilename[radFileFilenameMax + 1];
+    char driveSpec[radFileDrivenameMax + 1];
+    char *filePart = NULL;
+    ProcessFileName(pFileName, fullFilename, driveSpec, &filePart);
 
-    Lock( );
+    Lock();
 
     //
     // Lets try to get the drive object. If fails, cannot attempt to get the file.
     //
-    int index = GetDriveIndex( driveSpec );
+    int index = GetDriveIndex(driveSpec);
 
-    if( index == -1 || s_DriveMap[ index ].m_pDrive == NULL )
-    {
+    if (index == -1 || s_DriveMap[index].m_pDrive == NULL) {
         //
         // Auto-mount if we're allowed.
         //
         bool mounted = false;
-        if ( s_AutoMount )
-        {
-            rDebugPrintf( "radFile: auto-mounting drive [%s].\n", driveSpec );
+        if (s_AutoMount) {
+            rDebugPrintf("radFile: auto-mounting drive [%s].\n", driveSpec);
 
-            Unlock( );
-            DriveMount( driveSpec, s_Allocator );
-            Lock( );
+            Unlock();
+            DriveMount(driveSpec, s_Allocator);
+            Lock();
 
             //
             // Since we were unlocked, do a paranoia check.
             //
-            index = GetDriveIndex( driveSpec );
-            mounted = ( index > -1 && s_DriveMap[ index ].m_pDrive != NULL );
+            index = GetDriveIndex(driveSpec);
+            mounted = (index > -1 && s_DriveMap[index].m_pDrive != NULL);
         }
 
-        if ( !mounted )
-        {
+        if (!mounted) {
             *pIRadFile = NULL;
-            rDebugPrintf( "radFile: cannot open file [%s] since drive [%s] was not mounted.\n", 
-                          pFileName, driveSpec );
+            rDebugPrintf("radFile: cannot open file [%s] since drive [%s] was not mounted.\n",
+                         pFileName, driveSpec);
 
-            Unlock( );
+            Unlock();
             return;
         }
     }
@@ -414,19 +386,19 @@ void radFileSystem::FileOpen
     // Lets new up the file object.
     //
     *pIRadFile =
-        new radFile
-        (
-            s_DriveMap[ index ].m_pDrive,
-            filePart,
-            writeAccess,
-            flags,
-            priority,
-            cacheSize,
-            alloc,
-            cacheSpace
-        );
+            new radFile
+                    (
+                            s_DriveMap[index].m_pDrive,
+                            filePart,
+                            writeAccess,
+                            flags,
+                            priority,
+                            cacheSize,
+                            alloc,
+                            cacheSpace
+                    );
 
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -440,25 +412,23 @@ void radFileSystem::FileOpen
 //------------------------------------------------------------------------------
 
 void radFileSystem::FileOpenSync
-( 
-    IRadFile**          pIRadFile, 
-    const char*         pFileName,
-    bool                writeAccess,
-    radFileOpenFlags    flags,
-    radFilePriority     priority,
-    unsigned int        cacheSize,
-    radMemoryAllocator  alloc,
-    radMemorySpace      cacheSpace
-)
-{
+        (
+                IRadFile **pIRadFile,
+                const char *pFileName,
+                bool writeAccess,
+                radFileOpenFlags flags,
+                radFilePriority priority,
+                unsigned int cacheSize,
+                radMemoryAllocator alloc,
+                radMemorySpace cacheSpace
+        ) {
 #ifndef FINAL
-    rReleaseString( "\n\nFileOpenSync: WE NEED TO ELIMINATE SYNC CALLS!\n\n" );
+    rReleaseString("\n\nFileOpenSync: WE NEED TO ELIMINATE SYNC CALLS!\n\n");
 #endif
 
-    FileOpen( pIRadFile, pFileName, writeAccess, flags, priority, cacheSize, alloc, cacheSpace );
-    if ( *pIRadFile != NULL )
-    {
-        (*pIRadFile)->WaitForCompletion( );
+    FileOpen(pIRadFile, pFileName, writeAccess, flags, priority, cacheSize, alloc, cacheSpace);
+    if (*pIRadFile != NULL) {
+        (*pIRadFile)->WaitForCompletion();
     }
 }
 
@@ -473,63 +443,59 @@ void radFileSystem::FileOpenSync
 //------------------------------------------------------------------------------
 
 void radFileSystem::SaveGameOpen
-( 
-    IRadFile**        pIRadFile, 
-    const char*       pFileName,
-    bool              writeAccess,
-    radFileOpenFlags  flags,
-    radMemcardInfo*   memcardInfo,
-    unsigned int      maxSize,
-    radFilePriority   priority
-)
-{
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
-	rAssert( pFileName != NULL );
-    rAssert( pIRadFile != NULL );
+        (
+                IRadFile **pIRadFile,
+                const char *pFileName,
+                bool writeAccess,
+                radFileOpenFlags flags,
+                radMemcardInfo *memcardInfo,
+                unsigned int maxSize,
+                radFilePriority priority
+        ) {
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
+    rAssert(pFileName != NULL);
+    rAssert(pIRadFile != NULL);
 
     //
     // Process the filename to get the drive specification
     //
-    char fullFilename[ radFileFilenameMax + 1 ];
-    char driveSpec[ radFileDrivenameMax + 1 ];
-    char* filePart = NULL;
-    ProcessFileName( pFileName, fullFilename, driveSpec, &filePart );
+    char fullFilename[radFileFilenameMax + 1];
+    char driveSpec[radFileDrivenameMax + 1];
+    char *filePart = NULL;
+    ProcessFileName(pFileName, fullFilename, driveSpec, &filePart);
 
-    Lock( );
+    Lock();
 
     //
     // Lets try to get the drive object. If fails, cannot attempt to get the file.
     //
-    int index = GetDriveIndex( driveSpec );
+    int index = GetDriveIndex(driveSpec);
 
-    if( index == -1 || s_DriveMap[ index ].m_pDrive == NULL )
-    {
+    if (index == -1 || s_DriveMap[index].m_pDrive == NULL) {
         //
         // Auto-mount if we're allowed.
         //
         bool mounted = false;
-        if ( s_AutoMount )
-        {
-            rDebugPrintf( "radFile: auto-mounting drive [%s].\n", driveSpec );
+        if (s_AutoMount) {
+            rDebugPrintf("radFile: auto-mounting drive [%s].\n", driveSpec);
 
-            Unlock( );
-            DriveMount( driveSpec, s_Allocator );
-            Lock( );
+            Unlock();
+            DriveMount(driveSpec, s_Allocator);
+            Lock();
 
             //
             // Since we were unlocked, do a paranoia check.
             //
-            index = GetDriveIndex( driveSpec );
-            mounted = ( index > -1 && s_DriveMap[ index ].m_pDrive != NULL );
+            index = GetDriveIndex(driveSpec);
+            mounted = (index > -1 && s_DriveMap[index].m_pDrive != NULL);
         }
 
-        if ( !mounted )
-        {
+        if (!mounted) {
             *pIRadFile = NULL;
-            rDebugPrintf( "radFile: cannot open save game [%s] since drive [%s] was not mounted.\n", 
-                          pFileName, driveSpec );
+            rDebugPrintf("radFile: cannot open save game [%s] since drive [%s] was not mounted.\n",
+                         pFileName, driveSpec);
 
-            Unlock( );
+            Unlock();
             return;
         }
     }
@@ -538,18 +504,18 @@ void radFileSystem::SaveGameOpen
     // Lets new up the file object.
     //
     *pIRadFile =
-        new radFile
-        (
-            s_DriveMap[ index ].m_pDrive,
-            filePart,
-            writeAccess,
-            flags,
-            memcardInfo,
-            maxSize,
-            priority
-         );
+            new radFile
+                    (
+                            s_DriveMap[index].m_pDrive,
+                            filePart,
+                            writeAccess,
+                            flags,
+                            memcardInfo,
+                            maxSize,
+                            priority
+                    );
 
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -563,22 +529,20 @@ void radFileSystem::SaveGameOpen
 //------------------------------------------------------------------------------
 
 void radFileSystem::SaveGameOpenSync
-( 
-    IRadFile**        pIRadFile, 
-    const char*       pFileName,
-    bool              writeAccess,
-    radFileOpenFlags  flags,
-    radMemcardInfo*   memcardInfo,
-    unsigned int      maxSize,
-    radFilePriority   priority
-)
-{
-    rReleaseString( "\n\nSaveGameOpenSync: WE NEED TO ELIMINATE SYNC CALLS!\n\n" );
+        (
+                IRadFile **pIRadFile,
+                const char *pFileName,
+                bool writeAccess,
+                radFileOpenFlags flags,
+                radMemcardInfo *memcardInfo,
+                unsigned int maxSize,
+                radFilePriority priority
+        ) {
+    rReleaseString("\n\nSaveGameOpenSync: WE NEED TO ELIMINATE SYNC CALLS!\n\n");
 
-    SaveGameOpen( pIRadFile, pFileName, writeAccess, flags, memcardInfo, maxSize, priority );
-    if ( *pIRadFile != NULL )
-    {
-        (*pIRadFile)->WaitForCompletion( );
+    SaveGameOpen(pIRadFile, pFileName, writeAccess, flags, memcardInfo, maxSize, priority);
+    if (*pIRadFile != NULL) {
+        (*pIRadFile)->WaitForCompletion();
     }
 }
 
@@ -592,56 +556,52 @@ void radFileSystem::SaveGameOpenSync
 // Returns:     
 //------------------------------------------------------------------------------
 void radFileSystem::DriveOpen
-( 
-    IRadDrive**         pIRadDrive,
-    const char*         pDriveName,
-    radFilePriority     priority,
-    radMemoryAllocator  alloc
-)
-{
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
-    rAssert( pIRadDrive != NULL );
-    rAssert( pDriveName != NULL );
+        (
+                IRadDrive **pIRadDrive,
+                const char *pDriveName,
+                radFilePriority priority,
+                radMemoryAllocator alloc
+        ) {
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
+    rAssert(pIRadDrive != NULL);
+    rAssert(pDriveName != NULL);
 
     //
     // Convert the drive name to upper case.
     //
-    char pDriveSpec[ radFileDrivenameMax + 1 ];
-    strncpy( pDriveSpec, pDriveName, radFileDrivenameMax );
-    pDriveSpec[ radFileDrivenameMax ] = '\0';
-    stringUpper( pDriveSpec );
+    char pDriveSpec[radFileDrivenameMax + 1];
+    strncpy(pDriveSpec, pDriveName, radFileDrivenameMax);
+    pDriveSpec[radFileDrivenameMax] = '\0';
+    stringUpper(pDriveSpec);
 
-    Lock( );
+    Lock();
 
-    int index = GetDriveIndex( pDriveSpec );
+    int index = GetDriveIndex(pDriveSpec);
 
-    if( index == -1 || s_DriveMap[ index ].m_pDrive == NULL )
-    {
+    if (index == -1 || s_DriveMap[index].m_pDrive == NULL) {
         //
         // Auto-mount if we're allowed.
         //
         bool mounted = false;
-        if ( s_AutoMount )
-        {
-            rDebugPrintf( "radFile: auto-mounting drive [%s].\n", pDriveSpec );
+        if (s_AutoMount) {
+            rDebugPrintf("radFile: auto-mounting drive [%s].\n", pDriveSpec);
 
-            Unlock( );
-            DriveMount( pDriveSpec, s_Allocator );
-            Lock( );
+            Unlock();
+            DriveMount(pDriveSpec, s_Allocator);
+            Lock();
 
             //
             // Since we were unlocked, do a paranoia check.
             //
-            index = GetDriveIndex( pDriveSpec );
-            mounted = ( index > -1 && s_DriveMap[ index ].m_pDrive != NULL );
+            index = GetDriveIndex(pDriveSpec);
+            mounted = (index > -1 && s_DriveMap[index].m_pDrive != NULL);
         }
 
-        if ( !mounted )
-        {
+        if (!mounted) {
             *pIRadDrive = NULL;
-            rDebugPrintf( "radFile: cannot open drive [%s] since it was not mounted.\n", pDriveName );
+            rDebugPrintf("radFile: cannot open drive [%s] since it was not mounted.\n", pDriveName);
 
-            Unlock( );
+            Unlock();
             return;
         }
     }
@@ -649,9 +609,9 @@ void radFileSystem::DriveOpen
     //
     // Make an instance drive for the user
     //
-    *pIRadDrive = new radInstanceDrive( s_DriveMap[ index ].m_pDrive, priority );
+    *pIRadDrive = new radInstanceDrive(s_DriveMap[index].m_pDrive, priority);
 
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -665,19 +625,17 @@ void radFileSystem::DriveOpen
 //------------------------------------------------------------------------------
 
 void radFileSystem::DriveOpenSync
-(
-    IRadDrive**         pIRadDrive,
-    const char*         pDriveName,
-    radFilePriority     priority,
-    radMemoryAllocator  alloc
-)
-{
-    rReleaseString( "\n\nDriveOpenSync: WE NEED TO ELIMINATE SYNC CALLS!\n\n" );
+        (
+                IRadDrive **pIRadDrive,
+                const char *pDriveName,
+                radFilePriority priority,
+                radMemoryAllocator alloc
+        ) {
+    rReleaseString("\n\nDriveOpenSync: WE NEED TO ELIMINATE SYNC CALLS!\n\n");
 
-    DriveOpen( pIRadDrive, pDriveName, priority, alloc );
-    if ( *pIRadDrive != NULL )
-    {
-        (*pIRadDrive)->WaitForCompletion( );
+    DriveOpen(pIRadDrive, pDriveName, priority, alloc);
+    if (*pIRadDrive != NULL) {
+        (*pIRadDrive)->WaitForCompletion();
     }
 }
 
@@ -691,25 +649,21 @@ void radFileSystem::DriveOpenSync
 // Returns:     true if the drive is valid
 //------------------------------------------------------------------------------
 
-bool radFileSystem::SetDefaultDrive( const char* pDriveName )
-{
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
+bool radFileSystem::SetDefaultDrive(const char *pDriveName) {
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
 
-    char pDriveSpec[ radFileDrivenameMax + 1 ];
-    strncpy( pDriveSpec, pDriveName, radFileDrivenameMax );
-    pDriveSpec[ radFileDrivenameMax ] = '\0';
-    stringUpper( pDriveSpec );
+    char pDriveSpec[radFileDrivenameMax + 1];
+    strncpy(pDriveSpec, pDriveName, radFileDrivenameMax);
+    pDriveSpec[radFileDrivenameMax] = '\0';
+    stringUpper(pDriveSpec);
 
-    if ( ::PlatformDrivesValidateDriveName( pDriveSpec ) )
-    {
-        Lock( );
-        strncpy( s_DefaultDrive, pDriveSpec, radFileDrivenameMax );
-        s_DefaultDrive[ radFileDrivenameMax ] = '\0';
-        Unlock( );
+    if (::PlatformDrivesValidateDriveName(pDriveSpec)) {
+        Lock();
+        strncpy(s_DefaultDrive, pDriveSpec, radFileDrivenameMax);
+        s_DefaultDrive[radFileDrivenameMax] = '\0';
+        Unlock();
         return true;
-    }
-    else
-    {
+    } else {
         return false;
     }
 }
@@ -724,13 +678,12 @@ bool radFileSystem::SetDefaultDrive( const char* pDriveName )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radFileSystem::GetDefaultDrive( char* pDriveName )
-{
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
+void radFileSystem::GetDefaultDrive(char *pDriveName) {
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
 
-    Lock( );
-    strcpy( pDriveName, s_DefaultDrive );
-    Unlock( );
+    Lock();
+    strcpy(pDriveName, s_DefaultDrive);
+    Unlock();
 }
 
 //=============================================================================
@@ -738,61 +691,58 @@ void radFileSystem::GetDefaultDrive( char* pDriveName )
 //=============================================================================
 
 void radFileSystem::RegisterCementLibrary
-(
-    IRadCementLibrary** pIRadCementLibrary,
-    const char* cementLibraryFileName,
-    radCementLibraryPriority priority,
-    unsigned int cacheSize,
-    radMemoryAllocator alloc,
-    radMemorySpace cacheSpace
-)
-{
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
-    rAssert( pIRadCementLibrary != NULL );
+        (
+                IRadCementLibrary **pIRadCementLibrary,
+                const char *cementLibraryFileName,
+                radCementLibraryPriority priority,
+                unsigned int cacheSize,
+                radMemoryAllocator alloc,
+                radMemorySpace cacheSpace
+        ) {
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
+    rAssert(pIRadCementLibrary != NULL);
 
     //
     // Process the filename to get the drive specification
     //
-    char fullFilename[ radFileFilenameMax + 1 ];
-    char driveSpec[ radFileDrivenameMax + 1 ];
-    char* filePart = NULL;
-    ProcessFileName( cementLibraryFileName, fullFilename, driveSpec, &filePart );
+    char fullFilename[radFileFilenameMax + 1];
+    char driveSpec[radFileDrivenameMax + 1];
+    char *filePart = NULL;
+    ProcessFileName(cementLibraryFileName, fullFilename, driveSpec, &filePart);
 
-    Lock( );
+    Lock();
 
     //
     // Lets try to get the drive object. If fails, cannot attempt to get the file.
     //
-    int index = GetDriveIndex( driveSpec );
+    int index = GetDriveIndex(driveSpec);
 
-    if( index == -1 || s_DriveMap[ index ].m_pDrive == NULL )
-    {
+    if (index == -1 || s_DriveMap[index].m_pDrive == NULL) {
         //
         // Auto-mount if we're allowed.
         //
         bool mounted = false;
-        if ( s_AutoMount )
-        {
-            rDebugPrintf( "radFile: auto-mounting drive [%s].\n", driveSpec );
+        if (s_AutoMount) {
+            rDebugPrintf("radFile: auto-mounting drive [%s].\n", driveSpec);
 
-            Unlock( );
-            DriveMount( driveSpec, s_Allocator );
-            Lock( );
+            Unlock();
+            DriveMount(driveSpec, s_Allocator);
+            Lock();
 
             //
             // Since we were unlocked, do a paranoia check.
             //
-            index = GetDriveIndex( driveSpec );
-            mounted = ( index > -1 && s_DriveMap[ index ].m_pDrive != NULL );
+            index = GetDriveIndex(driveSpec);
+            mounted = (index > -1 && s_DriveMap[index].m_pDrive != NULL);
         }
 
-        if ( !mounted )
-        {
+        if (!mounted) {
             *pIRadCementLibrary = NULL;
-            rDebugPrintf( "radFile: cannot register cement library [%s] since drive [%s] was not mounted.\n", 
-                          cementLibraryFileName, driveSpec );
+            rDebugPrintf(
+                    "radFile: cannot register cement library [%s] since drive [%s] was not mounted.\n",
+                    cementLibraryFileName, driveSpec);
 
-            Unlock( );
+            Unlock();
             return;
         }
     }
@@ -800,46 +750,43 @@ void radFileSystem::RegisterCementLibrary
     //
     // Lets new up the cement library.
     //
-    radCementLibraryCreate( 
-        pIRadCementLibrary, 
-        s_DriveMap[ index ].m_pDrive, 
-        filePart, 
-        priority,
-        cacheSize, 
-        alloc, 
-        cacheSpace );
+    radCementLibraryCreate(
+            pIRadCementLibrary,
+            s_DriveMap[index].m_pDrive,
+            filePart,
+            priority,
+            cacheSize,
+            alloc,
+            cacheSpace);
 
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
 // Function:    radFileSystem::RegisterCementLibrarySync
 //=============================================================================
 void radFileSystem::RegisterCementLibrarySync
-(
-    IRadCementLibrary** pIRadCementLibrary,
-    const char* fileName,
-    radCementLibraryPriority priority,
-    unsigned int cacheSize,
-    radMemoryAllocator alloc,
-    radMemorySpace cacheSpace
-)
-{
-//    rReleaseAssertMsg( false, "\n\nRegisterCementLibrarySync: WE NEED TO ELIMINATE SYNC CALLS!\n\n" );
+        (
+                IRadCementLibrary **pIRadCementLibrary,
+                const char *fileName,
+                radCementLibraryPriority priority,
+                unsigned int cacheSize,
+                radMemoryAllocator alloc,
+                radMemorySpace cacheSpace
+        ) {
+//    rReleaseAssertMsg(false, "\n\nRegisterCementLibrarySync: WE NEED TO ELIMINATE SYNC CALLS!\n\n");
 
-    RegisterCementLibrary( pIRadCementLibrary, fileName, priority, cacheSize, alloc, cacheSpace );
-    if ( *pIRadCementLibrary != NULL )
-    {
-        (*pIRadCementLibrary)->WaitForCompletion( );
+    RegisterCementLibrary(pIRadCementLibrary, fileName, priority, cacheSize, alloc, cacheSpace);
+    if (*pIRadCementLibrary != NULL) {
+        (*pIRadCementLibrary)->WaitForCompletion();
     }
 }
 
 //=============================================================================
 // Function:    radFileSystem::SetConnectTimeOut
 //=============================================================================
-void radFileSystem::SetConnectTimeOut( unsigned int milliseconds )
-{
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
+void radFileSystem::SetConnectTimeOut(unsigned int milliseconds) {
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
 
     s_RemoteDriveConnectTimeout = milliseconds;
 }
@@ -847,33 +794,29 @@ void radFileSystem::SetConnectTimeOut( unsigned int milliseconds )
 //=============================================================================
 // Function:    radFileSystem::SetConnectTimeOut
 //=============================================================================
-unsigned int radFileSystem::GetConnectTimeOut( void )
-{
+unsigned int radFileSystem::GetConnectTimeOut(void) {
     return s_RemoteDriveConnectTimeout;
 }
 
 //=============================================================================
 // Function:    radFileSystem::SetCacheFileNames
 //=============================================================================
-void radFileSystem::SetCacheFileNames( const char* pCacheFileNameArray[ ] )
-{
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
+void radFileSystem::SetCacheFileNames(const char *pCacheFileNameArray[]) {
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
 }
 
 //=============================================================================
 // Function:    radFileSystem::SetCacheDirectory
 //=============================================================================
-void radFileSystem::SetCacheDirectory( const char* pCacheDirectory )
-{
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
+void radFileSystem::SetCacheDirectory(const char *pCacheDirectory) {
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
 }
 
 //=============================================================================
 // Function:    radFileSystem::SetDefaultGranularity
 //=============================================================================
-void radFileSystem::SetDefaultGranularity( unsigned int defaultGranularity )
-{
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
+void radFileSystem::SetDefaultGranularity(unsigned int defaultGranularity) {
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
 }
 
 //=============================================================================
@@ -888,38 +831,34 @@ void radFileSystem::SetDefaultGranularity( unsigned int defaultGranularity )
 // Returns:     true if the drive was mounted.
 //------------------------------------------------------------------------------
 
-bool radFileSystem::DriveMount( const char* pDriveSpec, radMemoryAllocator alloc )
-{
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
-    
-    radDrive* pDrive;
+bool radFileSystem::DriveMount(const char *pDriveSpec, radMemoryAllocator alloc) {
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
+
+    radDrive *pDrive;
     bool ret;
 
-    Lock( );
+    Lock();
 
-    char driveSpec[ radFileDrivenameMax + 1];
-    if ( pDriveSpec == NULL )
-    {
-        strcpy( driveSpec, s_DefaultDrive );
-    }
-    else
-    {
-        strncpy( driveSpec, pDriveSpec, radFileDrivenameMax );
-        driveSpec[ radFileDrivenameMax ] ='\0';
-        stringUpper( driveSpec );
+    char driveSpec[radFileDrivenameMax + 1];
+    if (pDriveSpec == NULL) {
+        strcpy(driveSpec, s_DefaultDrive);
+    } else {
+        strncpy(driveSpec, pDriveSpec, radFileDrivenameMax);
+        driveSpec[radFileDrivenameMax] = '\0';
+        stringUpper(driveSpec);
     }
 
-    ret = ConstructDrive( &pDrive, driveSpec, alloc );
-    Unlock( );
+    ret = ConstructDrive(&pDrive, driveSpec, alloc);
+    Unlock();
 
 #ifdef RAD_DEBUG
-    if ( ret == false )
+    if (ret == false)
     {
-        rDebugPrintf( "radFile: cannot mount drive [%s] since it is already mounted.\n", &driveSpec );
+        rDebugPrintf("radFile: cannot mount drive [%s] since it is already mounted.\n", &driveSpec);
     }
 #endif
 
-    return ( pDrive == NULL );
+    return (pDrive == NULL);
 }
 
 //=============================================================================
@@ -935,66 +874,59 @@ bool radFileSystem::DriveMount( const char* pDriveSpec, radMemoryAllocator alloc
 // Notes:       this will wait for its requests to finish.
 //------------------------------------------------------------------------------
 
-bool radFileSystem::DriveUnmount( const char* pDriveSpec )
-{
+bool radFileSystem::DriveUnmount(const char *pDriveSpec) {
     //
-    // If this assert is removed, put in a Lock( )
+    // If this assert is removed, put in a Lock()
     //
-    rAssertMsg( s_Initialized, "radFileSystem not initialized" );
+    rAssertMsg(s_Initialized, "radFileSystem not initialized");
 
     //
     // Get the name and index.
     //
     int index;
-    char driveSpec[ radFileDrivenameMax + 1 ];
+    char driveSpec[radFileDrivenameMax + 1];
 
-    Lock( );
+    Lock();
 
-    if ( pDriveSpec == NULL )
-    {
-        strcpy( driveSpec, s_DefaultDrive );
+    if (pDriveSpec == NULL) {
+        strcpy(driveSpec, s_DefaultDrive);
+    } else {
+        strncpy(driveSpec, pDriveSpec, radFileDrivenameMax);
+        driveSpec[radFileDrivenameMax] = '\0';
+        stringUpper(driveSpec);
     }
-    else
-    {
-        strncpy( driveSpec, pDriveSpec, radFileDrivenameMax );
-        driveSpec[ radFileDrivenameMax ] ='\0';
-        stringUpper( driveSpec );
-    }
-    
-    index = GetDriveIndex( driveSpec );
+
+    index = GetDriveIndex(driveSpec);
 
     //
     // Unmount the drive.
     //
-    if ( index == -1 )
-    {
-        Unlock( );
+    if (index == -1) {
+        Unlock();
         return false;
-    }
-    else
-    {
+    } else {
         //
         // First assert on outstanding callbacks. Then assert on files or drives 
         // referencing this physical drive.
         //
 #   ifdef RAD_DEBUG
-        bool outstandingCallbacks = s_DriveMap[ index ].m_pDrive->OutstandingCallbacks( );
-        if ( outstandingCallbacks )
+        bool outstandingCallbacks = s_DriveMap[ index ].m_pDrive->OutstandingCallbacks();
+        if (outstandingCallbacks)
         {
-            rDebugPrintf( "radFile: cannot unmount drive [%s] since there are oustanding callbacks\n", &driveSpec );
+            rDebugPrintf("radFile: cannot unmount drive [%s] since there are oustanding callbacks\n", &driveSpec);
         }
-        rAssert( !outstandingCallbacks );
+        rAssert(!outstandingCallbacks);
 
-        if ( s_DriveMap[ index ].m_pDrive->m_pNumRefFiles > 0 )
+        if (s_DriveMap[ index ].m_pDrive->m_pNumRefFiles> 0)
         {
-            rDebugPrintf( "radFile: cannot unmount drive [%s] since there are [%u] open files\n", &driveSpec, s_DriveMap[ index ].m_pDrive->m_pNumRefFiles );
+            rDebugPrintf("radFile: cannot unmount drive [%s] since there are [%u] open files\n", &driveSpec, s_DriveMap[ index ].m_pDrive->m_pNumRefFiles);
         }
-        else if ( s_DriveMap[ index ].m_pDrive->m_pNumRefDrives > 0 )
+        else if (s_DriveMap[ index ].m_pDrive->m_pNumRefDrives> 0)
         {
-            rDebugPrintf( "radFile: cannot unmount drive [%s] since there are [%u] open drives\n", &driveSpec, s_DriveMap[ index ].m_pDrive->m_pNumRefDrives );
+            rDebugPrintf("radFile: cannot unmount drive [%s] since there are [%u] open drives\n", &driveSpec, s_DriveMap[ index ].m_pDrive->m_pNumRefDrives);
         }
 
-        rAssert( s_DriveMap[ index ].m_pDrive->m_pNumRefFiles == 0 && s_DriveMap[ index ].m_pDrive->m_pNumRefDrives == 0 );
+        rAssert(s_DriveMap[ index ].m_pDrive->m_pNumRefFiles == 0 && s_DriveMap[ index ].m_pDrive->m_pNumRefDrives == 0);
 #   endif
 
         //
@@ -1002,20 +934,19 @@ bool radFileSystem::DriveUnmount( const char* pDriveSpec )
         // Since we are basically just removing it from the list, we don't bother releasing
         // it until everything's done.
         //
-        radDrive* pDrive = s_DriveMap[ index ].m_pDrive;
-        s_DriveMap[ index ].m_pDrive = NULL;
-        Unlock( );
+        radDrive *pDrive = s_DriveMap[index].m_pDrive;
+        s_DriveMap[index].m_pDrive = NULL;
+        Unlock();
 
         //
         // Wait for all outstanding requests to finish.
         //
-        while( pDrive->OutstandingRequests( ) )
-        {
-            ::radFileService( );
-            ::radThreadSleep( 0 );
+        while (pDrive->OutstandingRequests()) {
+            ::radFileService();
+            ::radThreadSleep(0);
         }
 
-        pDrive->Release( );
+        pDrive->Release();
         return true;
     }
 }
@@ -1030,11 +961,10 @@ bool radFileSystem::DriveUnmount( const char* pDriveSpec )
 // Returns:    
 //------------------------------------------------------------------------------
 
-void radFileSystem::SetAutoMount( bool autoMount )
-{
-    Lock( );
+void radFileSystem::SetAutoMount(bool autoMount) {
+    Lock();
     s_AutoMount = autoMount;
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -1054,12 +984,9 @@ void radFileSystem::SetAutoMount( bool autoMount )
 // Notes:       Not locked!
 //------------------------------------------------------------------------------
 
-int radFileSystem::GetDriveIndex( const char* pDriveName )
-{
-    for( unsigned int i = 0; i < s_TotalDriveCount; i++ )
-    {
-        if( strcmp( pDriveName, s_DriveMap[ i ].m_Name) == 0 )
-        {
+int radFileSystem::GetDriveIndex(const char *pDriveName) {
+    for (unsigned int i = 0; i < s_TotalDriveCount; i++) {
+        if (strcmp(pDriveName, s_DriveMap[i].m_Name) == 0) {
             //
             // Found a match!
             //
@@ -1073,7 +1000,7 @@ int radFileSystem::GetDriveIndex( const char* pDriveName )
 // Function:    radFileSystem::ConstructDrive
 //=============================================================================
 // Description: This routine is invoked to find and contruct the physical drive
-//              object if not already done so. Does not addRef( ) further.
+//              object if not already done so. Does not addRef() further.
 //
 // Parameters:  pDrive - drive object
 //              pDriveName - name to look for.
@@ -1085,71 +1012,63 @@ int radFileSystem::GetDriveIndex( const char* pDriveName )
 //------------------------------------------------------------------------------
 
 bool radFileSystem::ConstructDrive
-( 
-    radDrive**  ppDrive, 
-    const char* pDriveName, 
-    radMemoryAllocator alloc 
-)
-{
+        (
+                radDrive **ppDrive,
+                const char *pDriveName,
+                radMemoryAllocator alloc
+        ) {
     //
     // Here's how the drive table works. When a drive is constructed, its name is
     // stored, as well as a reference to the drive. When it is removed, the pointer
     // is removed, but the drive name and any global info remain.
     //
-    int index = GetDriveIndex( pDriveName );
+    int index = GetDriveIndex(pDriveName);
 
     *ppDrive = NULL;
-    DriveMapEntry* pDriveEntry;
+    DriveMapEntry *pDriveEntry;
 
     //
     // Return the drive if it exists, otherwise set up an entry to be constructed
     //
-    if ( index != -1 )
-    {
-        pDriveEntry = &s_DriveMap[ index ];
-        if( pDriveEntry->m_pDrive != NULL )
-        {
+    if (index != -1) {
+        pDriveEntry = &s_DriveMap[index];
+        if (pDriveEntry->m_pDrive != NULL) {
             *ppDrive = pDriveEntry->m_pDrive;
             return false;
         }
-    }
-    else
-    {
+    } else {
         //
         // Check if there's space
         //
-        if( s_TotalDriveCount >= radFileDriveMax )
-        {
-            rDebugPrintf( "radFileSystem: maximum number of drives [%d] exceeded.\n", radFileDriveMax );
+        if (s_TotalDriveCount >= radFileDriveMax) {
+            rDebugPrintf("radFileSystem: maximum number of drives [%d] exceeded.\n",
+                         radFileDriveMax);
             *ppDrive = NULL;
             return true;
         }
 
-        pDriveEntry = &s_DriveMap[ s_TotalDriveCount ];
+        pDriveEntry = &s_DriveMap[s_TotalDriveCount];
     }
 
     //
     // Construct a new drive after validating the name.
     //
-    if ( !::PlatformDrivesValidateDriveName( pDriveName ) )
-    {
-        rDebugPrintf( "radFileSystem: [%s] is an invalid drive.\n", pDriveName );
+    if (!::PlatformDrivesValidateDriveName(pDriveName)) {
+        rDebugPrintf("radFileSystem: [%s] is an invalid drive.\n", pDriveName);
         return true;
     }
-    ::PlatformDrivesFactory( ppDrive, pDriveName, alloc );
-    if( *ppDrive == NULL )
-    {
-        rDebugPrintf( "radFileSystem: Could not open drive [%s]\n", pDriveName );
+    ::PlatformDrivesFactory(ppDrive, pDriveName, alloc);
+    if (*ppDrive == NULL) {
+        rDebugPrintf("radFileSystem: Could not open drive [%s]\n", pDriveName);
         return true;
     }
 
     //
     // Set up the drive. If it's new set it up, otherwise set its global info
     //
-    if( index == -1 )
-    {
-        strncpy( pDriveEntry->m_Name, pDriveName, radFileDrivenameMax );
-        pDriveEntry->m_Name[ radFileDrivenameMax ] = '\0';
+    if (index == -1) {
+        strncpy(pDriveEntry->m_Name, pDriveName, radFileDrivenameMax);
+        pDriveEntry->m_Name[radFileDrivenameMax] = '\0';
         s_TotalDriveCount++;
     }
 

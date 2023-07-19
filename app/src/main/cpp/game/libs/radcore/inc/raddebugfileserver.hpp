@@ -19,7 +19,7 @@
 //=============================================================================
 
 #if !defined(RAD_GAMECUBE) && !defined(RAD_PS2) && !defined(RAD_XBOX) && !defined(RAD_WIN32)
-    #error 'FTech requires definition of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, or RAD_WIN32'
+#error 'FTech requires definition of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, or RAD_WIN32'
 #endif
 
 #ifdef RAD_WIN32                            // server only exists on Windows
@@ -31,7 +31,7 @@
 #include <radobject.hpp>
 #include <radmemory.hpp>
 #include <radfile.hpp>
-#include "..\src\radprotocols\fileprotocol.hpp"
+#include "../src/radprotocols/fileprotocol.hpp"
 #include <raddebugcommunication.hpp>
 
 
@@ -51,19 +51,19 @@ struct IRadDebugFileServerFileCallback;
 // Initialize the file server system. Generally this function should 
 // only be called once at program startup.
 //
-void radDebugFileServerInit( void );
+void radDebugFileServerInit(void);
 
 //
 // Create a file server object. The caller can specify the number of exceptions 
 // (alternate files to be served) that the server can handle
 //
-void radDebugFileServerCreate( IRadDebugFileServer** pIRadDebugFileServer, int pNumExceptions );
+void radDebugFileServerCreate(IRadDebugFileServer** pIRadDebugFileServer, int pNumExceptions);
 
 //
 // Shut down the file server system. The caller should still release it's references to 
 // file servers.
 // 
-void radDebugFileServerTerminate( void );
+void radDebugFileServerTerminate(void);
 
 
 //===========================================================================
@@ -119,7 +119,7 @@ struct IRadDebugFileServer : public IRefCount
     // This method configures the location of the base directory containing
     // the files to be served to targets.
     //
-    virtual void SetBasePath( char* pPath ) = 0;
+    virtual void SetBasePath(char* pPath) = 0;
 
     //
     // Set the default location of files.
@@ -128,7 +128,7 @@ struct IRadDebugFileServer : public IRefCount
     // files will be loaded from the target's own disk unless they match
     // an exception.
     //
-    virtual void SetDefaultHost( bool pLocal ) = 0;
+    virtual void SetDefaultHost(bool pLocal) = 0;
 
     //
     // Set the content to be returned when the target requests "bootload.cfg".
@@ -137,7 +137,7 @@ struct IRadDebugFileServer : public IRefCount
     // the target system. The file need not actually exist; the file server
     // fakes its contents using the string provided to this method.
     //
-    virtual void SetBootData( unsigned char* pData, int pDataLength ) = 0;
+    virtual void SetBootData(unsigned char* pData, int pDataLength) = 0;
 
     //
     // Add an exception string to the server's internal list.
@@ -147,7 +147,7 @@ struct IRadDebugFileServer : public IRefCount
     // The new exception will not be added if the internal list (table)
     // is already full. The table size is set by radDebugFileServerInit.
     //
-    virtual void AddException( char* pString ) = 0;
+    virtual void AddException(char* pString) = 0;
 
     //
     // Remove an exception string from the server's internal list.
@@ -155,13 +155,13 @@ struct IRadDebugFileServer : public IRefCount
     // room for a new one to be added. If the specified string is not
     // present, no action is taken. 
     //
-    virtual void RemoveException( char *pString ) = 0;
+    virtual void RemoveException(char *pString) = 0;
 
     //
     // Clear all existing exception strings.
     // Use this when new server configuration data is loaded.
     //
-    virtual void ClearExceptions( void ) = 0;
+    virtual void ClearExceptions(void) = 0;
 
     //
     // Enable or disable absolute path overrides.
@@ -172,7 +172,7 @@ struct IRadDebugFileServer : public IRefCount
     // WARNING: When this enabled, the target could damage important files
     // on the host computer.
     //
-    virtual void SetPathOverride( bool pEnable ) = 0;
+    virtual void SetPathOverride(bool pEnable) = 0;
 
 
     //
@@ -189,7 +189,7 @@ struct IRadDebugFileServer : public IRefCount
     // log strings - display them, save them to a file etc.
     // If NULL is passed in, logging is disabled.
     // 
-    virtual void RegisterLogCallback( IRadDebugFileServerLogCallback* pCallback ) = 0;
+    virtual void RegisterLogCallback(IRadDebugFileServerLogCallback* pCallback) = 0;
 
     //
     // Set callback for notifying the user program of file operations
@@ -201,14 +201,14 @@ struct IRadDebugFileServer : public IRefCount
     // and refresh a displayed list of open files whenever an open or close
     // operation occurs.
     //
-    virtual void RegisterFileCallback( IRadDebugFileServerFileCallback* pCallback ) = 0;
+    virtual void RegisterFileCallback(IRadDebugFileServerFileCallback* pCallback) = 0;
 
     //
     // Set callback to be invoked when the target connection status changes.
     // The callback will be called when the target connection changes from
     // connected to disconnected or from disconnected to connected.
     //
-    virtual void RegisterStatusCallback( IRadDbgComChannelStatusCallback* pCallback ) = 0;
+    virtual void RegisterStatusCallback(IRadDbgComChannelStatusCallback* pCallback) = 0;
 
 
     //
@@ -221,14 +221,14 @@ struct IRadDebugFileServer : public IRefCount
     // path, exceptions and callbacks should be configured before calling.
     // False and an error message are returned on error.
     //
-    virtual bool Attach( radDbgComTargetName pName, char* pErrorMessage ) = 0;
+    virtual bool Attach(radDbgComTargetName pName, char* pErrorMessage) = 0;
 
     //
     // Detach from target.
     // Use this method to close a target connection. It is safe to do so
     // even if there is no open connection.
     //
-    virtual void Detach( void ) = 0;
+    virtual void Detach(void) = 0;
 
 
     //
@@ -240,7 +240,7 @@ struct IRadDebugFileServer : public IRefCount
     // This will call the provided callback once per open file with a 
     // user-readable string containing info about the file.
     // 
-    virtual void EnumerateOpenFiles( void (*pEnumerationCallback)( char* pName, char* pMessage ) ) const = 0;
+    virtual void EnumerateOpenFiles(void (*pEnumerationCallback)(char* pName, char* pMessage)) const = 0;
 
     //
     // Accessor to get at the host target manipulation interface.
@@ -248,14 +248,14 @@ struct IRadDebugFileServer : public IRefCount
     // the default target, and enumerate targets. The user must call
     // Release on the object when finished with it.
     //
-    virtual void GetTargetInterface( IRadDbgComTargetTable** pTargetTable ) const = 0;
+    virtual void GetTargetInterface(IRadDbgComTargetTable** pTargetTable) const = 0;
 
     //
     // Determine whether or not we are currently attaching to a target.
     // (Note this only reflects the attached/ing states, not whether or not
     //  a real target is communicating with us.)
     //
-    virtual bool IsConnected( void ) const = 0;
+    virtual bool IsConnected(void) const = 0;
 };
 
 
@@ -268,7 +268,7 @@ struct IRadDebugFileServer : public IRefCount
 //
 struct IRadDebugFileServerLogCallback
 {
-    virtual void OnFileServerLogMessage( char* pMessage ) = 0;
+    virtual void OnFileServerLogMessage(char* pMessage) = 0;
 };
 
 
@@ -282,8 +282,8 @@ struct IRadDebugFileServerLogCallback
 //
 struct IRadDebugFileServerFileCallback
 {
-    virtual void OnTargetFileAction( char* pName, HfpCommand pCommand,
-                                     int pPosition, int pLength ) = 0;
+    virtual void OnTargetFileAction(char* pName, HfpCommand pCommand,
+                                     int pPosition, int pLength) = 0;
 };
 
 

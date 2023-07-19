@@ -22,6 +22,7 @@
 //=============================================================================
 
 #include "pch.hpp"
+
 #ifdef RAD_WIN32
 #include <windows.h>
 #endif
@@ -64,12 +65,12 @@ static unsigned int s_InitializedCount = 0;
 // The total number of days of the year which passed on the start of a month. This is
 // for a non-leap-year. Element 0 is January.
 //
-static unsigned int MonthToDay[] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
+static unsigned int MonthToDay[] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
 
 //
 // Under windows, maintain frequency of high performance counter.
 //
-#if defined ( RAD_WIN32 ) || defined ( RAD_XBOX )
+#if defined (RAD_WIN32) || defined (RAD_XBOX)
 static __int64  s_Win32CountsPerSecond = 0;
 #endif
 
@@ -97,13 +98,13 @@ static unsigned int s_Seconds;
 //=============================================================================
 
 #ifdef RAD_PS2
-static int PS2_TimerIsr( int cause );
-static unsigned long PS2_Microseconds( void );
-static unsigned char PS2BCDtoBin( unsigned char bcd );
+static int PS2_TimerIsr(int cause);
+static unsigned long PS2_Microseconds(void);
+static unsigned char PS2BCDtoBin(unsigned char bcd);
 #endif
 
-#if defined ( RAD_WIN32 ) || defined ( RAD_XBOX )
-static void QueryPerformanceCounterFix( LARGE_INTEGER* count );
+#if defined (RAD_WIN32) || defined (RAD_XBOX)
+static void QueryPerformanceCounterFix(LARGE_INTEGER* count);
 #endif
 
 //=============================================================================
@@ -121,34 +122,32 @@ static void QueryPerformanceCounterFix( LARGE_INTEGER* count );
 //
 //------------------------------------------------------------------------------
 
-void radTimeInitialize(  )
-{
+void radTimeInitialize() {
     //
     // Update initialize count. If first time, set up platform stuff.
     //
     s_InitializedCount++;
 
-    if( s_InitializedCount == 1 )
-    {
+    if (s_InitializedCount == 1) {
         //
         // Under WIN32, query the performance counter to get the frequency of the
         // high resolution timer.
         //
-        #if defined ( RAD_WIN32 ) || defined ( RAD_XBOX )
+#if defined (RAD_WIN32) || defined (RAD_XBOX)
         //
         // Get the frequency of the high performance counter.
         //
         LARGE_INTEGER   frequency;
-        QueryPerformanceFrequency( &frequency );
+        QueryPerformanceFrequency(&frequency);
         s_Win32CountsPerSecond = frequency.QuadPart;
-        
-        #endif
+
+#endif
 
         //
         // On the PS2, we install an interrupt handler to maintain a count of 
         // milliseconds.
         //
-        #ifdef RAD_PS2
+#ifdef RAD_PS2
 
         s_Milliseconds = 0;
         s_MilliCount = 0;
@@ -157,30 +156,30 @@ void radTimeInitialize(  )
         //
         // Grab a timer 0 interrupt.
         //
-        s_HandlerId = AddIntcHandler( INTC_TIM0, PS2_TimerIsr, -1 );
+        s_HandlerId = AddIntcHandler(INTC_TIM0, PS2_TimerIsr, -1);
         
         //
         // Set up the timer 0 to fire every millisecond. Count is based on a 294.912 Mhz clock divided by 2
         // divided by 16.
         //
-        DPUT_T0_COMP( 9216 );               // Set the compare to 1ms 
-        DPUT_T0_MODE( 0x05C1 );             // Start timer, divide by 16, auto reset,
+        DPUT_T0_COMP(9216);               // Set the compare to 1ms
+        DPUT_T0_MODE(0x05C1);             // Start timer, divide by 16, auto reset,
 
         //
         // Enable the timer interrupt.
         //
-        EnableIntc( INTC_TIM0 );
+        EnableIntc(INTC_TIM0);
 
-        #endif 
+#endif
 
-		//
-		// On the RAD_GAMECUBE, we get the timer from OS_TIMER_CLOCK
-		//
-		#ifdef RAD_GAMECUBE
-			s_Microseconds = 0;
-			s_Milliseconds = 0;
-			s_Seconds = 0;
-		#endif // RAD_GAMECUBE
+        //
+        // On the RAD_GAMECUBE, we get the timer from OS_TIMER_CLOCK
+        //
+#ifdef RAD_GAMECUBE
+        s_Microseconds = 0;
+        s_Milliseconds = 0;
+        s_Seconds = 0;
+#endif // RAD_GAMECUBE
     }
 }
 
@@ -195,27 +194,25 @@ void radTimeInitialize(  )
 //
 //------------------------------------------------------------------------------
 
-void radTimeTerminate(  )
-{
-    rAssert( s_InitializedCount != 0 );
+void radTimeTerminate() {
+    rAssert(s_InitializedCount != 0);
 
     //
     // Update initialize count. 
     //
     s_InitializedCount--;
 
-    if( s_InitializedCount == 0 )
-    {
+    if (s_InitializedCount == 0) {
         //
         // Under RAD_PS2, free the timer interrupt.
         //
-        #ifdef RAD_PS2
+#ifdef RAD_PS2
 
-        DisableIntc( INTC_TIM0 );
-        DPUT_T0_MODE( 0 );            
-        RemoveIntcHandler( INTC_TIM0, s_HandlerId );
-    
-        #endif
+        DisableIntc(INTC_TIM0);
+        DPUT_T0_MODE(0);
+        RemoveIntcHandler(INTC_TIM0, s_HandlerId);
+
+#endif
     }
 }
 
@@ -230,47 +227,46 @@ void radTimeTerminate(  )
 //
 //------------------------------------------------------------------------------
 
-unsigned int radTimeGetMicroseconds( void )
-{
-    rAssert( s_InitializedCount != 0 );
+unsigned int radTimeGetMicroseconds(void) {
+    rAssert(s_InitializedCount != 0);
 
     //
     // Under windows we use the high performance counter.
     //
-    #if defined ( RAD_WIN32 ) || defined ( RAD_XBOX )
+#if defined (RAD_WIN32) || defined (RAD_XBOX)
     LARGE_INTEGER   PerformanceCount;
-    QueryPerformanceCounterFix( &PerformanceCount );
+    QueryPerformanceCounterFix(&PerformanceCount);
 
-    return( (unsigned int) (( PerformanceCount.QuadPart * 1000000) / s_Win32CountsPerSecond) );
-    #endif
+    return((unsigned int) ((PerformanceCount.QuadPart * 1000000) / s_Win32CountsPerSecond));
+#endif
 
-    #ifdef RAD_PS2
+#ifdef RAD_PS2
 
     //
     // Invoke helper function to obtain value of microseond calculation. 
     //
-    return( (unsigned int) PS2_Microseconds( ) );
-   	
-    #endif
+    return((unsigned int) PS2_Microseconds());
 
-	//
-	// On the RAD_GAMECUBE, return value of timer in seconds
-	//
-	#ifdef RAD_GAMECUBE
+#endif
 
-		//
-		// Retrieves 32-bit value of lower of time base register
-		//
-		OSTime time = OSGetTime();
+    //
+    // On the RAD_GAMECUBE, return value of timer in seconds
+    //
+#ifdef RAD_GAMECUBE
 
-		//
-		// Converts ticks to microseconds
-		//
-		s_Microseconds = OSTicksToMicroseconds(time);
-		
-		return (s_Microseconds);
-	
-	#endif // RAD_GAMECUBE
+    //
+    // Retrieves 32-bit value of lower of time base register
+    //
+    OSTime time = OSGetTime();
+
+    //
+    // Converts ticks to microseconds
+    //
+    s_Microseconds = OSTicksToMicroseconds(time);
+
+    return (s_Microseconds);
+
+#endif // RAD_GAMECUBE
 }
 
 
@@ -285,45 +281,44 @@ unsigned int radTimeGetMicroseconds( void )
 //
 //------------------------------------------------------------------------------
 
-radTime64 radTimeGetMicroseconds64( void )
-{
-    rAssert( s_InitializedCount != 0 );
+radTime64 radTimeGetMicroseconds64(void) {
+    rAssert(s_InitializedCount != 0);
 
     //
     // Under windows we use the high performance counter.
     //
-    #if defined ( RAD_WIN32 ) || defined ( RAD_XBOX )
+#if defined (RAD_WIN32) || defined (RAD_XBOX)
     LARGE_INTEGER   PerformanceCount;
-    QueryPerformanceCounterFix( &PerformanceCount );
+    QueryPerformanceCounterFix(&PerformanceCount);
 
-    return( (unsigned __int64) (( ((unsigned __int64)PerformanceCount.QuadPart)) / (s_Win32CountsPerSecond / 1000000)));
-    #endif
+    return((unsigned __int64) ((((unsigned __int64)PerformanceCount.QuadPart)) / (s_Win32CountsPerSecond / 1000000)));
+#endif
 
-    #ifdef RAD_PS2
+#ifdef RAD_PS2
 
     //
     // Invoke helper function to obtain value of microseond calculation. 
     //
-    return( PS2_Microseconds( ) );
-	
-    #endif
+    return(PS2_Microseconds());
 
-	//
-	// On the RAD_GAMECUBE, return value of timer in seconds
-	//
-    #ifdef RAD_GAMECUBE
+#endif
 
-		//
-		// Retrieves 64-bit value of lower of time base register
-		//
-		OSTime time = OSGetTime();
+    //
+    // On the RAD_GAMECUBE, return value of timer in seconds
+    //
+#ifdef RAD_GAMECUBE
 
-		//
-		// Converts ticks to microseconds
-		//
-		return( OSTicksToMicroseconds(time) );
-	
-    #endif // RAD_GAMECUBE
+    //
+    // Retrieves 64-bit value of lower of time base register
+    //
+    OSTime time = OSGetTime();
+
+    //
+    // Converts ticks to microseconds
+    //
+    return(OSTicksToMicroseconds(time));
+
+#endif // RAD_GAMECUBE
 }
 
 
@@ -338,46 +333,45 @@ radTime64 radTimeGetMicroseconds64( void )
 //
 //------------------------------------------------------------------------------
 
-unsigned int radTimeGetMilliseconds( void )
-{
-    rAssert( s_InitializedCount != 0 );
+unsigned int radTimeGetMilliseconds(void) {
+    rAssert(s_InitializedCount != 0);
 
     //
     // Under windows we use the high performance counter.
     //
-    #if defined ( RAD_WIN32 ) || defined ( RAD_XBOX )
+#if defined (RAD_WIN32) || defined (RAD_XBOX)
     LARGE_INTEGER   PerformanceCount;
-    QueryPerformanceCounterFix( &PerformanceCount );
+    QueryPerformanceCounterFix(&PerformanceCount);
 
-    return( (unsigned int) (( PerformanceCount.QuadPart * 1000) / s_Win32CountsPerSecond) );
-    #endif
+    return((unsigned int) ((PerformanceCount.QuadPart * 1000) / s_Win32CountsPerSecond));
+#endif
 
     //
     // Under PS2, simmply return our count.
     //
-    #ifdef RAD_PS2
-            
-    return( (unsigned int) s_Milliseconds );
-    
-    #endif
+#ifdef RAD_PS2
 
-	//
-	// On the RAD_GAMECUBE, simply returns value of timer in seconds
-	//
-	#ifdef RAD_GAMECUBE
-		//
-		// Retrieves 32-bit value of lower  of time base register
-		//
-		OSTime time = OSGetTime();
+    return((unsigned int) s_Milliseconds);
 
-		//
-		// Converts ticks to milliseconds
-		//
-		s_Milliseconds = OSTicksToMilliseconds(time);   
+#endif
 
-		return (s_Milliseconds);
-	
-	#endif // RAD_GAMECUBE
+    //
+    // On the RAD_GAMECUBE, simply returns value of timer in seconds
+    //
+#ifdef RAD_GAMECUBE
+    //
+    // Retrieves 32-bit value of lower  of time base register
+    //
+    OSTime time = OSGetTime();
+
+    //
+    // Converts ticks to milliseconds
+    //
+    s_Milliseconds = OSTicksToMilliseconds(time);
+
+    return (s_Milliseconds);
+
+#endif // RAD_GAMECUBE
 }
 
 //=============================================================================
@@ -391,46 +385,45 @@ unsigned int radTimeGetMilliseconds( void )
 //
 //------------------------------------------------------------------------------
 
-unsigned int radTimeGetSeconds( void )
-{
-    rAssert( s_InitializedCount != 0 );
+unsigned int radTimeGetSeconds(void) {
+    rAssert(s_InitializedCount != 0);
 
     //
     // Under windows we use the high performance counter.
     //
-    #if defined ( RAD_WIN32 ) || defined ( RAD_XBOX )
+#if defined (RAD_WIN32) || defined (RAD_XBOX)
     LARGE_INTEGER   PerformanceCount;
-    QueryPerformanceCounterFix( &PerformanceCount );
+    QueryPerformanceCounterFix(&PerformanceCount);
 
-    return( (unsigned int) ( PerformanceCount.QuadPart / s_Win32CountsPerSecond) );
-    #endif
+    return((unsigned int) (PerformanceCount.QuadPart / s_Win32CountsPerSecond));
+#endif
 
     //
     // Under PS2, simmply return our count.
     //
-    #ifdef RAD_PS2
-            
-    return( (unsigned int) s_Seconds );
-    
-    #endif
+#ifdef RAD_PS2
 
-	//
-	// On the RAD_GAMECUBE, simply returns value of timer in seconds
-	//
-	#ifdef RAD_GAMECUBE
-		//
-		// Retrieves 32-bit value of lower of time base register
-		//
-		OSTime time = OSGetTime();
+    return((unsigned int) s_Seconds);
 
-		//
-		// Converts ticks to seconds
-		//	
-		s_Seconds = OSTicksToSeconds(time);   
-		
-		return (s_Seconds);
-	
-	#endif // RAD_GAMECUBE
+#endif
+
+    //
+    // On the RAD_GAMECUBE, simply returns value of timer in seconds
+    //
+#ifdef RAD_GAMECUBE
+    //
+    // Retrieves 32-bit value of lower of time base register
+    //
+    OSTime time = OSGetTime();
+
+    //
+    // Converts ticks to seconds
+    //
+    s_Seconds = OSTicksToSeconds(time);
+
+    return (s_Seconds);
+
+#endif // RAD_GAMECUBE
 }
 
 //=============================================================================
@@ -443,11 +436,10 @@ unsigned int radTimeGetSeconds( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radTimeGetDate( radDate* pDate )
-{
-#if defined ( RAD_WIN32 ) || defined ( RAD_XBOX )
+void radTimeGetDate(radDate *pDate) {
+#if defined (RAD_WIN32) || defined (RAD_XBOX)
     SYSTEMTIME time;
-    ::GetLocalTime( &time );
+    ::GetLocalTime(&time);
 
     //
     // Convert Win32 time to our structure
@@ -459,15 +451,15 @@ void radTimeGetDate( radDate* pDate )
     pDate->m_Minute = (unsigned char) time.wMinute;
     pDate->m_Second = (unsigned char) time.wSecond;
 
-#elif defined ( RAD_PS2 )
+#elif defined (RAD_PS2)
     sceCdCLOCK time;
-    if ( ::sceCdReadClock( &time ) == 0 || 
-         time.stat & (1 << 0) != 0 || 
-         time.stat & (1 << 1) != 0 ||
-         time.stat & (1 << 7) != 0 
-       )
+    if (::sceCdReadClock(&time) == 0 ||
+         time.stat & (1 <<0) != 0 ||
+         time.stat & (1 <<1) != 0 ||
+         time.stat & (1 <<7) != 0
+)
     {
-        rDebugPrintf( "radTime: getting date failed. The clock must be broken.\n" );
+        rDebugPrintf("radTime: getting date failed. The clock must be broken.\n");
         pDate->m_Year = (unsigned short) 0;
         pDate->m_Month = pDate->m_Day = pDate->m_Hour = pDate->m_Minute = pDate->m_Second = (unsigned char) 0;
     }
@@ -475,18 +467,18 @@ void radTimeGetDate( radDate* pDate )
     //
     // Convert PS2 time to our structure
     //
-    ::sceScfGetLocalTimefromRTC( &time );
-    pDate->m_Year = 2000 + (unsigned short) PS2BCDtoBin( time.year );
-    pDate->m_Month = PS2BCDtoBin( time.month );
-    pDate->m_Day = PS2BCDtoBin( time.day );
-    pDate->m_Hour = PS2BCDtoBin( time.hour );
-    pDate->m_Minute = PS2BCDtoBin( time.minute );
-    pDate->m_Second = PS2BCDtoBin( time.second );
+    ::sceScfGetLocalTimefromRTC(&time);
+    pDate->m_Year = 2000 + (unsigned short) PS2BCDtoBin(time.year);
+    pDate->m_Month = PS2BCDtoBin(time.month);
+    pDate->m_Day = PS2BCDtoBin(time.day);
+    pDate->m_Hour = PS2BCDtoBin(time.hour);
+    pDate->m_Minute = PS2BCDtoBin(time.minute);
+    pDate->m_Second = PS2BCDtoBin(time.second);
 
-#elif defined ( RAD_GAMECUBE )
-    OSTime time = ::OSGetTime( );
+#elif defined (RAD_GAMECUBE)
+    OSTime time = ::OSGetTime();
     OSCalendarTime calendar;
-    ::OSTicksToCalendarTime( time, &calendar );
+    ::OSTicksToCalendarTime(time, &calendar);
 
     //
     // Convert GCN time to our structure.
@@ -499,7 +491,7 @@ void radTimeGetDate( radDate* pDate )
     pDate->m_Second = calendar.sec;
 
 #else
-    #error 'FTech requires definition of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, or RAD_WIN32'
+#error 'FTech requires definition of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, or RAD_WIN32'
 #endif
 
 
@@ -511,36 +503,35 @@ void radTimeGetDate( radDate* pDate )
 // Description: Return the day of the week corresponding to a date.
 //------------------------------------------------------------------------------
 
-radWeekday radTimeGetWeekday( unsigned short year, unsigned char month, unsigned char day )
-{
-    rAssert( month >= 1 && month <= 12 );
-    rAssert( day >= 1 && day <= 31 );
+radWeekday radTimeGetWeekday(unsigned short year, unsigned char month, unsigned char day) {
+    rAssert(month >= 1 && month <= 12);
+    rAssert(day >= 1 && day <= 31);
 
     //
     // Check if it's a leap year.
     //
-    bool isLeapYear = ( ( year % 4 == 0 && year % 100 != 0 ) || year % 400 == 0 );
+    bool isLeapYear = ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0);
 
     //
     // Find the day of the year.
     //
-    unsigned int dayOfYear = MonthToDay[ month - 1 ] + ( day - 1 );
-    if ( isLeapYear && month > 2 ) dayOfYear++;
+    unsigned int dayOfYear = MonthToDay[month - 1] + (day - 1);
+    if (isLeapYear && month > 2) dayOfYear++;
 
     //
     // Find the weekday of Jan 1. Every year divisible by 400 starts on a Saturday, and
-    // is a leap year. So if ( year - 1 ) % 400 == 0, then it starts on a Monday. Every year
+    // is a leap year. So if (year - 1) % 400 == 0, then it starts on a Monday. Every year
     // starts one day of the week later, except the year AFTER a leap year (i.e. 
-    // ( year - 1 ) % 4 == 0 && ( year - 1 ) % 100 != 0 ). Since we only have to handle 400
+    // (year - 1) % 4 == 0 && (year - 1) % 100 != 0). Since we only have to handle 400
     // year periods, we don't need to worry about leap year every 400 years.
     //
-    unsigned int year4Hundred = ( year - 1 ) % 400;
-    unsigned int jan1Weekday = ( year4Hundred + ( year4Hundred ) / 4 - ( year4Hundred ) / 100 ) % 7;
+    unsigned int year4Hundred = (year - 1) % 400;
+    unsigned int jan1Weekday = (year4Hundred + (year4Hundred) / 4 - (year4Hundred) / 100) % 7;
 
     //
     // Now find our day of the week.
     //
-    return (radWeekday) ( ( jan1Weekday + dayOfYear ) % 7 );
+    return (radWeekday)((jan1Weekday + dayOfYear) % 7);
 }
 
 //=============================================================================
@@ -554,18 +545,18 @@ radWeekday radTimeGetWeekday( unsigned short year, unsigned char month, unsigned
 // Returns:    
 //------------------------------------------------------------------------------
 
-#if defined ( RAD_WIN32 ) || defined ( RAD_XBOX )
+#if defined (RAD_WIN32) || defined (RAD_XBOX)
 
 static LARGE_INTEGER s_LastCount = {0};
 
-void QueryPerformanceCounterFix( LARGE_INTEGER* count )
+void QueryPerformanceCounterFix(LARGE_INTEGER* count)
 {
 #ifndef RAD_XBOX
 
     //
     // If not XBOX, just use the standard performance counter.
     //
-    QueryPerformanceCounter( count );
+    QueryPerformanceCounter(count);
 
 #else
 
@@ -576,16 +567,16 @@ void QueryPerformanceCounterFix( LARGE_INTEGER* count )
     //
     LARGE_INTEGER   currentCount;
 
-    QueryPerformanceCounter( &currentCount );
+    QueryPerformanceCounter(&currentCount);
 
-    if( currentCount.QuadPart > s_LastCount.QuadPart )
+    if(currentCount.QuadPart> s_LastCount.QuadPart)
     {
         count->QuadPart = currentCount.QuadPart;
         s_LastCount.QuadPart = currentCount.QuadPart;
     }
     else
     {
-        rTuneString( "Warning: radTime has detected time going backwards\n");
+        rTuneString("Warning: radTime has detected time going backwards\n");
         count->QuadPart = s_LastCount.QuadPart;  
     }
 #endif
@@ -608,18 +599,17 @@ void QueryPerformanceCounterFix( LARGE_INTEGER* count )
 //------------------------------------------------------------------------------
 
 void radTimeCreateList
-( 
-    IRadTimerList**     ppIRadTimerList,
-    unsigned int        numberOfTimers, 
-    radMemoryAllocator  allocator
-)
-{
+        (
+                IRadTimerList **ppIRadTimerList,
+                unsigned int numberOfTimers,
+                radMemoryAllocator allocator
+        ) {
     //
     // Make sure system intialized. If so, just new up the timer list object.
     //
-    rAssert( s_InitializedCount != 0 );
+    rAssert(s_InitializedCount != 0);
 
-    *ppIRadTimerList = new( allocator ) radTimerList( numberOfTimers, allocator );
+    *ppIRadTimerList = new(allocator) radTimerList(numberOfTimers, allocator);
 }
 
 //=============================================================================
@@ -638,14 +628,14 @@ void radTimeCreateList
 
 #ifdef RAD_PS2
 
-int PS2_TimerIsr( int cause )
+int PS2_TimerIsr(int cause)
 {
     (void) cause;
 
     //
     // Restart the timer as soon as possible.
     //
-    DPUT_T0_MODE( 0x05C1 );             
+    DPUT_T0_MODE(0x05C1);
 
     //
     // Update free running counters.
@@ -653,15 +643,15 @@ int PS2_TimerIsr( int cause )
     s_Milliseconds++;
     s_MilliCount++;
 
-    if( s_MilliCount == 1000 )
+    if(s_MilliCount == 1000)
     {
         s_MilliCount = 0;
         s_Seconds++;
     }
 
-    ExitHandler( );
+    ExitHandler();
 
-    return( -1 );
+    return(-1);
 }
 
 #endif
@@ -683,32 +673,32 @@ int PS2_TimerIsr( int cause )
 
 static volatile unsigned int delay;
 
-unsigned long PS2_Microseconds( void )
+unsigned long PS2_Microseconds(void)
 {
     //
-    // Take the value of the milliseconds counter ( counts number of timer wraps ) before
+    // Take the value of the milliseconds counter (counts number of timer wraps) before
     // and after reading the free running counter.
     //
     unsigned long milliseconds1 = s_Milliseconds;    
-    unsigned short count1 = DGET_T0_COUNT( );
+    unsigned short count1 = DGET_T0_COUNT();
     
     //
     // Add delay here to ensure that if we wrap, the interrupt will be sure to fire.
     // Without the delay, a problem can occur where the counter has wrapped but the interrupt
     // has not fired.
     //
-    for( int i = 0 ; i < 10 ; i++ )
+    for(int i = 0 ; i <10 ; i++)
     {
         delay++;
     }
     unsigned long milliseconds2 = s_Milliseconds;   
-    unsigned short count2 = DGET_T0_COUNT( );
+    unsigned short count2 = DGET_T0_COUNT();
 
     //
     // Lets check if the two samples of milliseconds are the same. If so, it means that
     // the count1 is correct.
     //
-    if( milliseconds1 == milliseconds2 )
+    if(milliseconds1 == milliseconds2)
     {
         //
         // Here we base our time on count1. 
@@ -716,7 +706,7 @@ unsigned long PS2_Microseconds( void )
         // (9216) is the value programmed into the timer chip. It is the number of counts
         // required to create a millisecond.
         //
-        return( (milliseconds1 * 1000) + ( ( ( (unsigned int) count1 * 1000 ) / 9216 ) ) );
+        return((milliseconds1 * 1000) + ((((unsigned int) count1 * 1000) / 9216)));
     }
     else
     {
@@ -724,7 +714,7 @@ unsigned long PS2_Microseconds( void )
         // Here an interrupt occurred during the read of count1. Hence use count2 and
         // milliseconds2 as they reflect time better
         //
-        return( (milliseconds2 * 1000) + ( ( ( (unsigned int) count2 * 1000) / 9216 ) ) );
+        return((milliseconds2 * 1000) + ((((unsigned int) count2 * 1000) / 9216)));
     }
 }
 
@@ -741,9 +731,9 @@ unsigned long PS2_Microseconds( void )
 // Returns:     
 //------------------------------------------------------------------------------
 #ifdef RAD_PS2
-unsigned char PS2BCDtoBin( unsigned char bcd )
+unsigned char PS2BCDtoBin(unsigned char bcd)
 {
-    return ( ( bcd & 0xF ) + ( ( ( bcd >> 4 ) & 0xF ) * 10 ) );
+    return ((bcd & 0xF) + (((bcd>> 4) & 0xF) * 10));
 }
 #endif
 
@@ -763,29 +753,27 @@ unsigned char PS2BCDtoBin( unsigned char bcd )
 //
 //------------------------------------------------------------------------------
 
-radTimerList::radTimerList( unsigned int numberOfTimers, radMemoryAllocator allocator )
-    :
-    m_ReferenceCount( 1 ),
-    m_Started( false ),
-    m_NumberOfTimers( numberOfTimers )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radTimerList" );
+radTimerList::radTimerList(unsigned int numberOfTimers, radMemoryAllocator allocator)
+        :
+        m_ReferenceCount(1),
+        m_Started(false),
+        m_NumberOfTimers(numberOfTimers) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radTimerList");
     //
     // Lets create a pool to manage timer objects.
     //
-    radMemoryCreatePool( &m_TimerPool,  sizeof( radTimer ), numberOfTimers, 0 /* grow by */,
-                         false, None, allocator, "radTimerList" );
+    radMemoryCreatePool(&m_TimerPool, sizeof(radTimer), numberOfTimers, 0 /* grow by */,
+                        false, None, allocator, "radTimerList");
 
-    radMemoryMonitorReportAddRef( m_TimerPool, this );
+    radMemoryMonitorReportAddRef(m_TimerPool, this);
 
     //
     // Lets also create an array which holds weak references to any running timers.
     //
-    m_ActiveTimers = (radTimer**) radMemoryAlloc( allocator, numberOfTimers * sizeof(radTimer**) );
-    
-    for( unsigned int i = 0; i < numberOfTimers ; i++ )
-    {
-        m_ActiveTimers[ i ] = NULL;
+    m_ActiveTimers = (radTimer **) radMemoryAlloc(allocator, numberOfTimers * sizeof(radTimer **));
+
+    for (unsigned int i = 0; i < numberOfTimers; i++) {
+        m_ActiveTimers[i] = NULL;
     }
 }
 
@@ -801,13 +789,12 @@ radTimerList::radTimerList( unsigned int numberOfTimers, radMemoryAllocator allo
 // Notes:       
 //------------------------------------------------------------------------------
 
-radTimerList::~radTimerList( void )
-{ 
+radTimerList::~radTimerList(void) {
     //
     // Free up memory allocated
     //
-    radMemoryFree( m_ActiveTimers );
-    radRelease( m_TimerPool, this );
+    radMemoryFree(m_ActiveTimers);
+    radRelease(m_TimerPool, this);
 }
 
 //=============================================================================
@@ -821,9 +808,8 @@ radTimerList::~radTimerList( void )
 //
 // Notes:
 //------------------------------------------------------------------------------
-    
-void radTimerList::AddRef( void )
-{
+
+void radTimerList::AddRef(void) {
     m_ReferenceCount++;
 }
 
@@ -838,13 +824,11 @@ void radTimerList::AddRef( void )
 //
 // Notes:
 //------------------------------------------------------------------------------
-    
-void radTimerList::Release( void )
-{
+
+void radTimerList::Release(void) {
     m_ReferenceCount--;
 
-    if( m_ReferenceCount == 0 )
-    {
+    if (m_ReferenceCount == 0) {
         delete this;
     }
 }
@@ -864,9 +848,9 @@ void radTimerList::Release( void )
 
 #ifdef RAD_DEBUG
 
-void radTimerList::Dump( char * pStringBuffer, unsigned int bufferSize )
+void radTimerList::Dump(char * pStringBuffer, unsigned int bufferSize)
 {
-    sprintf( pStringBuffer, "Object: [radTimerList] At Memory Location:[0x%x]\n", (unsigned int) this );
+    sprintf(pStringBuffer, "Object: [radTimerList] At Memory Location:[0x%x]\n", (unsigned int) this);
 }
 
 #endif
@@ -877,7 +861,7 @@ void radTimerList::Dump( char * pStringBuffer, unsigned int bufferSize )
 // Description: This member is used to create a timer. We basically allocate
 //              the object and set it up based on the callers options.
 //
-// Parameters:  timeout     - in milliseconds ( minimum value of 1 )
+// Parameters:  timeout     - in milliseconds (minimum value of 1)
 //              handler     - optional routine to invoke on expiration.
 //              user data   -
 //              start       - flag indicating if timer should be start on creation.
@@ -889,20 +873,19 @@ void radTimerList::Dump( char * pStringBuffer, unsigned int bufferSize )
 //------------------------------------------------------------------------------
 
 void radTimerList::CreateTimer
-( 
-    IRadTimer**           ppTimer,
-    unsigned int          timeout,		
-    IRadTimerCallback*    callback, 
-    void*                 pUserData,
-    bool                  start,                
-    IRadTimer::ResetMode  resetMode
-)
-{
+        (
+                IRadTimer **ppTimer,
+                unsigned int timeout,
+                IRadTimerCallback *callback,
+                void *pUserData,
+                bool start,
+                IRadTimer::ResetMode resetMode
+        ) {
     //
     // Simply new up the timer. The timer manager manages the memory, hence the need to
     // pass this to the new operator. 
     //
-	*ppTimer = new( this ) radTimer( this, timeout, callback, pUserData, start, resetMode );
+    *ppTimer = new(this) radTimer(this, timeout, callback, pUserData, start, resetMode);
 }
 
 //=============================================================================
@@ -918,21 +901,18 @@ void radTimerList::CreateTimer
 // Notes:       
 //------------------------------------------------------------------------------
 
-void radTimerList::Service( void )
-{
+void radTimerList::Service(void) {
     //
     // Invoke the other one with the system time.
     //
-    Service( radTimeGetMilliseconds( ) );
+    Service(radTimeGetMilliseconds());
 }
 
-void radTimerList::Service( unsigned int currentTime )
-{
+void radTimerList::Service(unsigned int currentTime) {
     //
     // If first invocation, save the current time as the last time and return.
     //
-    if( !m_Started )
-    {
+    if (!m_Started) {
         m_PreviousTime = currentTime;
         m_Started = true;
         return;
@@ -948,32 +928,28 @@ void radTimerList::Service( unsigned int currentTime )
     // Now process timers. We simply walk the active array, checking for non-null
     // entries.  
     //
-    for( unsigned int i = 0 ; i <  m_NumberOfTimers ; i++ )
-    {
-        if( m_ActiveTimers[ i ] == NULL )
-        {
+    for (unsigned int i = 0; i < m_NumberOfTimers; i++) {
+        if (m_ActiveTimers[i] == NULL) {
             continue;
         }
 
-        radTimer* currentTimer = m_ActiveTimers[ i ];
+        radTimer *currentTimer = m_ActiveTimers[i];
 
         //
         // Here we have a timer. Start by updating the accumulator.
         //
         currentTimer->m_TimeAccumulation += deltaTime;
-        
+
         //
         // Check if timer expired. If not move onto next.
         //
-        if( currentTimer->m_TimeAccumulation >= currentTimer->m_TimePeriod )
-        {
+        if (currentTimer->m_TimeAccumulation >= currentTimer->m_TimePeriod) {
             //
             // Current time has expired. Check if timer is one shot or
             // periodic. If one shot, stop the timer.
             //
-            if( currentTimer->m_ResetMode == IRadTimer::ResetModeOneShot )
-            {
-                currentTimer->Stop( );
+            if (currentTimer->m_ResetMode == IRadTimer::ResetModeOneShot) {
+                currentTimer->Stop();
             }
 
             //
@@ -985,9 +961,8 @@ void radTimerList::Service( unsigned int currentTime )
             //
             // Check if callback exists for this timer. If so, invoke the callback.
             //
-            if( currentTimer->m_Handler != NULL )                        
-            {
-                currentTimer->m_Handler->OnTimerDone( elapsedTime, currentTimer->m_UserData );
+            if (currentTimer->m_Handler != NULL) {
+                currentTimer->m_Handler->OnTimerDone(elapsedTime, currentTimer->m_UserData);
             }
         }
     }
@@ -1006,9 +981,8 @@ void radTimerList::Service( unsigned int currentTime )
 // Notes:       
 //------------------------------------------------------------------------------
 
-void* radTimerList::AllocateTimerMemory( void )
-{
-    return( m_TimerPool->GetMemory( ) );
+void *radTimerList::AllocateTimerMemory(void) {
+    return (m_TimerPool->GetMemory());
 }
 
 //=============================================================================
@@ -1023,9 +997,8 @@ void* radTimerList::AllocateTimerMemory( void )
 // Notes:       
 //------------------------------------------------------------------------------
 
-void radTimerList::FreeTimerMemory( void* p )
-{
-    m_TimerPool->FreeMemory( p );
+void radTimerList::FreeTimerMemory(void *p) {
+    m_TimerPool->FreeMemory(p);
 }
 
 //=============================================================================
@@ -1047,41 +1020,39 @@ void radTimerList::FreeTimerMemory( void* p )
 //------------------------------------------------------------------------------
 
 radTimer::radTimer
-( 
-    radTimerList*           pTimerList,
-    unsigned int            timeout,
-    IRadTimerCallback*      handler,
-    void*                   userData,
-    bool                    start,
-    IRadTimer::ResetMode    resetMode
-)
-    :
-        m_ReferenceCount( 1 ),
-        m_ResetMode( resetMode ),  
-        m_TimePeriod( timeout ), 
-        m_IsStarted( false ),
-        m_Handler( handler ),
-        m_UserData( userData ),
-        m_pRadTimerList( pTimerList )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radTimer" );
+        (
+                radTimerList *pTimerList,
+                unsigned int timeout,
+                IRadTimerCallback *handler,
+                void *userData,
+                bool start,
+                IRadTimer::ResetMode resetMode
+        )
+        :
+        m_ReferenceCount(1),
+        m_ResetMode(resetMode),
+        m_TimePeriod(timeout),
+        m_IsStarted(false),
+        m_Handler(handler),
+        m_UserData(userData),
+        m_pRadTimerList(pTimerList) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radTimer");
 
     //
     // Assert that the timeout value is valid.
     //
-    rAssert( timeout != 0 );
+    rAssert(timeout != 0);
 
     //
     // Add a refernce to the timer manager.
     //
-    radAddRef( pTimerList, NULL );
+    radAddRef(pTimerList, NULL);
 
     //
     // Check if timer needs to be started. If so, lets do it.
     //    
-    if( start )
-    {
-        Start( );
+    if (start) {
+        Start();
     }
 }
 
@@ -1098,11 +1069,9 @@ radTimer::radTimer
 // Notes:
 //------------------------------------------------------------------------------
 
-radTimer::~radTimer( void )
-{
-    if( m_IsStarted )
-    {
-        Stop( );
+radTimer::~radTimer(void) {
+    if (m_IsStarted) {
+        Stop();
     }
 }
 
@@ -1121,13 +1090,12 @@ radTimer::~radTimer( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void* radTimer::operator new(size_t size, radTimerList* pTimerList)
-{
-	(void) size;
-    void* p = pTimerList->AllocateTimerMemory( );
-    rAssertMsg( p != NULL, "RadTimer: Increase number of timers" );
-    return( p );
-} 
+void *radTimer::operator new(size_t size, radTimerList *pTimerList) {
+    (void) size;
+    void *p = pTimerList->AllocateTimerMemory();
+    rAssertMsg(p != NULL, "RadTimer: Increase number of timers");
+    return (p);
+}
 
 //=============================================================================
 // Function:    radTimer::AddRef
@@ -1142,10 +1110,9 @@ void* radTimer::operator new(size_t size, radTimerList* pTimerList)
 //------------------------------------------------------------------------------
 
 void radTimer::AddRef
-( 
-    void
-)
-{
+        (
+                void
+        ) {
     m_ReferenceCount++;
 }
 
@@ -1163,23 +1130,21 @@ void radTimer::AddRef
 //------------------------------------------------------------------------------
 
 void radTimer::Release
-( 
-    void
-)
-{
+        (
+                void
+        ) {
     m_ReferenceCount--;
-    if( m_ReferenceCount == 0 )
-    {
-        radTimerList* pTimerList = m_pRadTimerList;
-        
+    if (m_ReferenceCount == 0) {
+        radTimerList *pTimerList = m_pRadTimerList;
+
         //
         // Simply delete timer calling destructor directly. Then free memory and
         // reference to the timer manager.
         //
-        this->~radTimer( );
+        this->~radTimer();
 
-        pTimerList->FreeTimerMemory( this );
-        radRelease( pTimerList, this );
+        pTimerList->FreeTimerMemory(this);
+        radRelease(pTimerList, this);
     }
 }
 
@@ -1196,10 +1161,8 @@ void radTimer::Release
 // Notes:
 //------------------------------------------------------------------------------
 
-void radTimer::Start( void )
-{
-    if( !m_IsStarted )
-    {
+void radTimer::Start(void) {
+    if (!m_IsStarted) {
         //
         // Zero the time accumulator. 
         //
@@ -1214,13 +1177,11 @@ void radTimer::Start( void )
         // Find a free entry in the active table and add a weak reference to 
         // this timer.
         //
-        for( unsigned int i = 0 ; i <  m_pRadTimerList->m_NumberOfTimers ; i++ )
-        {
-            if( m_pRadTimerList->m_ActiveTimers[ i ] == NULL )
-            {
-                m_pRadTimerList->m_ActiveTimers[ i ] = this;
+        for (unsigned int i = 0; i < m_pRadTimerList->m_NumberOfTimers; i++) {
+            if (m_pRadTimerList->m_ActiveTimers[i] == NULL) {
+                m_pRadTimerList->m_ActiveTimers[i] = this;
                 break;
-            }       
+            }
         }
     }
 }
@@ -1237,10 +1198,8 @@ void radTimer::Start( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void radTimer::Stop( void )
-{
-    if ( m_IsStarted )
-    {
+void radTimer::Stop(void) {
+    if (m_IsStarted) {
         //
         // Clear started flag.
         //
@@ -1249,13 +1208,11 @@ void radTimer::Stop( void )
         //
         // Find the entry in the active table and remove it.
         //
-        for( unsigned int i = 0 ; i <  m_pRadTimerList->m_NumberOfTimers ; i++ )
-        {
-            if( m_pRadTimerList->m_ActiveTimers[ i ] == this )
-            {
-                m_pRadTimerList->m_ActiveTimers[ i ] = NULL;
+        for (unsigned int i = 0; i < m_pRadTimerList->m_NumberOfTimers; i++) {
+            if (m_pRadTimerList->m_ActiveTimers[i] == this) {
+                m_pRadTimerList->m_ActiveTimers[i] = NULL;
                 break;
-            }       
+            }
         }
     }
 }
@@ -1272,9 +1229,8 @@ void radTimer::Stop( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void radTimer::RegisterCallback( IRadTimerCallback* handler, void* pUserData )
-{
-    rAssert( m_Handler == NULL );
+void radTimer::RegisterCallback(IRadTimerCallback *handler, void *pUserData) {
+    rAssert(m_Handler == NULL);
     m_Handler = handler;
     m_UserData = pUserData;
 }
@@ -1291,9 +1247,8 @@ void radTimer::RegisterCallback( IRadTimerCallback* handler, void* pUserData )
 // Notes:
 //------------------------------------------------------------------------------
 
-void radTimer::UnregisterCallback( IRadTimerCallback* handler )
-{
-    rAssert( m_Handler == handler );
+void radTimer::UnregisterCallback(IRadTimerCallback *handler) {
+    rAssert(m_Handler == handler);
     m_Handler = NULL;
 }
 
@@ -1310,9 +1265,8 @@ void radTimer::UnregisterCallback( IRadTimerCallback* handler )
 // Notes:
 //------------------------------------------------------------------------------
 
-unsigned int radTimer::GetTimeout( void )
-{
-    return( m_TimePeriod );
+unsigned int radTimer::GetTimeout(void) {
+    return (m_TimePeriod);
 }
 
 //=============================================================================
@@ -1327,22 +1281,18 @@ unsigned int radTimer::GetTimeout( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void radTimer::SetTimeout( unsigned int timeout )
-{
+void radTimer::SetTimeout(unsigned int timeout) {
     //
     // If timer started, stop it, set value and start it.
     // If not start, simple save the value.  
     //
-    if( m_IsStarted )
-    {
-        Stop( );
+    if (m_IsStarted) {
+        Stop();
         m_TimePeriod = timeout;
-        Start( );
+        Start();
+    } else {
+        m_TimePeriod = timeout;
     }
-    else
-    {
-        m_TimePeriod = timeout;
-    }        
 }
 
 //=============================================================================
@@ -1357,9 +1307,8 @@ void radTimer::SetTimeout( unsigned int timeout )
 // Notes:
 //------------------------------------------------------------------------------
 
-IRadTimer::ResetMode radTimer::GetResetMode( void )
-{
-    return( m_ResetMode );
+IRadTimer::ResetMode radTimer::GetResetMode(void) {
+    return (m_ResetMode);
 }
 
 //=============================================================================
@@ -1375,9 +1324,8 @@ IRadTimer::ResetMode radTimer::GetResetMode( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void radTimer::SetResetMode( IRadTimer::ResetMode resetMode )
-{
-    m_ResetMode = resetMode;      
+void radTimer::SetResetMode(IRadTimer::ResetMode resetMode) {
+    m_ResetMode = resetMode;
 }
 
 //=============================================================================
@@ -1393,8 +1341,7 @@ void radTimer::SetResetMode( IRadTimer::ResetMode resetMode )
 // Notes:
 //------------------------------------------------------------------------------
 
-bool radTimer::HasTimerExpired( void )
-{
-    rAssert( m_ResetMode == IRadTimer::ResetModeOneShot );
-    return( !m_IsStarted );
+bool radTimer::HasTimerExpired(void) {
+    rAssert(m_ResetMode == IRadTimer::ResetModeOneShot);
+    return (!m_IsStarted);
 }

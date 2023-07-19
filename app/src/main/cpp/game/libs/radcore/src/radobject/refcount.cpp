@@ -30,27 +30,23 @@
 radMemoryAllocator radRefCount::s_allocator = -1;
 
 radRefCount::radRefCount(unsigned int count)
-:
-m_allocator(s_allocator),
-m_refCount(count)
-{
+        :
+        m_allocator(s_allocator),
+        m_refCount(count) {
 }
 
-radRefCount::~radRefCount()
-{
+radRefCount::~radRefCount() {
     s_allocator = m_allocator;
 }
 
-void radRefCount::AddRef(void)
-{
+void radRefCount::AddRef(void) {
     m_refCount++;
 }
 
-void radRefCount::Release(void)
-{
-    rAssertMsg(m_refCount != 0, "Trying to release an object with no references.  Missing AddRef()\n");
-    if(m_refCount < 2)
-    {
+void radRefCount::Release(void) {
+    rAssertMsg(m_refCount != 0,
+               "Trying to release an object with no references.  Missing AddRef()\n");
+    if (m_refCount < 2) {
         m_refCount = 0x0000FFFF;
         delete this;
         return;
@@ -58,48 +54,41 @@ void radRefCount::Release(void)
     m_refCount--;
 }
 
-template <class T> void radRefCount::Assign(T*& oldRef, T* newRef)
-{
-    if(newRef)
-    {
+template<class T>
+void radRefCount::Assign(T *&oldRef, T *newRef) {
+    if (newRef) {
         newRef->AddRef();
     }
-    if(oldRef)
-    {
+    if (oldRef) {
         oldRef->Release();
     }
     oldRef = newRef;
 }
 
-template <class T> void radRefCount::Release(T*& obj)
-{
-    if(obj)
-    {
+template<class T>
+void radRefCount::Release(T *&obj) {
+    if (obj) {
         obj->Release();
         obj = NULL;
     }
 }
 
-void* radRefCount::operator new(size_t size, radMemoryAllocator alloc)
-{
-    void* rValue = radMemoryAlloc(alloc, size);
+void *radRefCount::operator new(size_t size, radMemoryAllocator alloc) {
+    void *rValue = radMemoryAlloc(alloc, size);
     s_allocator = alloc;
     return rValue;
 }
 
-void* radRefCount::operator new[](size_t size, radMemoryAllocator alloc)
-{
-    void* rValue = radMemoryAlloc(alloc, size);
+void *radRefCount::operator new[](size_t size, radMemoryAllocator alloc) {
+    void *rValue = radMemoryAlloc(alloc, size);
     s_allocator = alloc;
     return rValue;
 }
 
-void radRefCount::operator delete(void* ptr)
-{
+void radRefCount::operator delete(void *ptr) {
     radMemoryFree(s_allocator, ptr);
 }
 
-void radRefCount::operator delete[](void* ptr)
-{
+void radRefCount::operator delete[](void *ptr) {
     radMemoryFree(s_allocator, ptr);
 }

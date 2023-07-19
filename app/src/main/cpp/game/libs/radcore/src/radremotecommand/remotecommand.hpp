@@ -18,7 +18,7 @@
 //
 //=============================================================================
 
-#ifndef	REMOTECOMMAND_HPP
+#ifndef    REMOTECOMMAND_HPP
 #define REMOTECOMMAND_HPP
 
 //=============================================================================
@@ -36,7 +36,9 @@
 //=============================================================================
 
 class Functionlist;
+
 class RemoteCommandServer;
+
 class RemoteCommandTarget;
 
 //=============================================================================
@@ -49,36 +51,42 @@ class RemoteCommandTarget;
 // few member functions
 //
 class FunctionList
-	:
-	public radRefCount
-{
-	public:
-		IMPLEMENT_REFCOUNTED( "FunctionList" )
-	
-		FunctionList( radMemoryAllocator alloc );
-		~FunctionList( void );
-		void Add( char* functionName, RemoteFunction rfptr, void* userData );
-		bool Remove( char* functionName );
-		void Get( char* functionName, RemoteFunction* prfptr, void** userData );
-    	char* GetNextName( void );
-		void ResetNextName( void );
-		void Kill( void );
-		unsigned int NumFunctions( void );
+        :
+                public radRefCount {
+public:
+    IMPLEMENT_REFCOUNTED("FunctionList")
 
-	private:
+    FunctionList(radMemoryAllocator alloc);
 
-		struct FunctionNode
-		{
-			char			m_FunctionName[256];
-			RemoteFunction	m_Function;
-			void*			m_userData;
-			FunctionNode*	m_Next;
-		};
+    ~FunctionList(void);
 
-		FunctionNode* m_Head;
-		unsigned int m_FunctionCount;
-		FunctionNode* m_Current;
-        radMemoryAllocator   m_Allocator;
+    void Add(char *functionName, RemoteFunction rfptr, void *userData);
+
+    bool Remove(char *functionName);
+
+    void Get(char *functionName, RemoteFunction *prfptr, void **userData);
+
+    char *GetNextName(void);
+
+    void ResetNextName(void);
+
+    void Kill(void);
+
+    unsigned int NumFunctions(void);
+
+private:
+
+    struct FunctionNode {
+        char m_FunctionName[256];
+        RemoteFunction m_Function;
+        void *m_userData;
+        FunctionNode *m_Next;
+    };
+
+    FunctionNode *m_Head;
+    unsigned int m_FunctionCount;
+    FunctionNode *m_Current;
+    radMemoryAllocator m_Allocator;
 };
 
 
@@ -89,58 +97,60 @@ class FunctionList
 // It contains references to a FunctionList object and a RemoteCommandTarget
 // object
 //
-class RemoteCommandServer 
-	: 
-	public IRadRemoteCommand,
-	public radRefCount
-{
-    public:
-		IMPLEMENT_REFCOUNTED( "RemoteCommandServer" )
+class RemoteCommandServer
+        :
+                public IRadRemoteCommand,
+                public radRefCount {
+public:
+    IMPLEMENT_REFCOUNTED("RemoteCommandServer")
 
-		//
-		// Constructor. Nothing too interesting.
-		//
-		RemoteCommandServer( radMemoryAllocator alloc );
-		//
-		// Destruction done through release.
-		//
-		~RemoteCommandServer( void );
+    //
+    // Constructor. Nothing too interesting.
+    //
+    RemoteCommandServer(radMemoryAllocator alloc);
 
-		//
-		// bIRemoteCommandServer Functions
-		//
-		virtual void RegisterRemoteFunction( char* functionName, RemoteFunction rfptr, void* userData );
-		virtual void UnRegisterRemoteFunction( char* functionName );
+    //
+    // Destruction done through release.
+    //
+    ~RemoteCommandServer(void);
 
-		void Initialize( void );
-		void Terminate( void );
-		
-		//
-		// Used by the RemoteCommandTarget class to call
-		// a registered remote function
-		//
-		void CallFunction( char* fname, int argc, char* argv );
-		
-		//
-		// Used by the RemoteCommandTarget class to list
-		// all registered functions
-		//
-		void ListFunctions( void );
+    //
+    // bIRemoteCommandServer Functions
+    //
+    virtual void RegisterRemoteFunction(char *functionName, RemoteFunction rfptr, void *userData);
 
-    private:
-    
-		//
-		// The linked list of Function Pointers and related data.
-		// The list will consist of FunctionNodes
-		//
-		ref< FunctionList > m_FunctionList;
+    virtual void UnRegisterRemoteFunction(char *functionName);
 
-		//
-		// We need a RemoteCommandTarget for communication purposes
-		//
-		ref< RemoteCommandTarget > m_RemoteCommandTarget;
+    void Initialize(void);
 
-        radMemoryAllocator         m_Allocator;
+    void Terminate(void);
+
+    //
+    // Used by the RemoteCommandTarget class to call
+    // a registered remote function
+    //
+    void CallFunction(char *fname, int argc, char *argv);
+
+    //
+    // Used by the RemoteCommandTarget class to list
+    // all registered functions
+    //
+    void ListFunctions(void);
+
+private:
+
+    //
+    // The linked list of Function Pointers and related data.
+    // The list will consist of FunctionNodes
+    //
+    ref <FunctionList> m_FunctionList;
+
+    //
+    // We need a RemoteCommandTarget for communication purposes
+    //
+    ref <RemoteCommandTarget> m_RemoteCommandTarget;
+
+    radMemoryAllocator m_Allocator;
 };
 
 
@@ -149,105 +159,110 @@ class RemoteCommandServer
 // It handles all of the DebugComTarget stuff
 //
 class RemoteCommandTarget : public IRadDbgComChannelStatusCallback,
-							public IRadDbgComChannelReceiveCallback,
-							public IRadDbgComChannelSendCallback,
-							public radRefCount  
-{
-    public:
-  
-		IMPLEMENT_REFCOUNTED( "RemoteCommandTarget" )
+                            public IRadDbgComChannelReceiveCallback,
+                            public IRadDbgComChannelSendCallback,
+                            public radRefCount {
+public:
 
-		//
-		// Constructor. Nothing too interesting.
-		//
-		RemoteCommandTarget( radMemoryAllocator alloc );
-		virtual ~RemoteCommandTarget( void );
-		
-		//
-		// Status callback
-		//
-		virtual void OnStatusChange( IRadDbgComChannel::ConnectionState connectionState, const char* Message );
-		virtual void OnReceiveComplete( bool successful, unsigned int bytesReceived );
-		virtual void OnSendComplete( bool successful );
+    IMPLEMENT_REFCOUNTED("RemoteCommandTarget")
 
-		//  
-		// Thee next four members are all to be called by the RemoteCommandServer class
-		//
-		
-		// Upon receive a list command from the host. We must reply with SendListReply
-		// and state how many functions are registered.  Then, we must send each
-		// function name individually. 
-		void SendListReply( unsigned int numItems );
-		void SendListItemCommand( char* name );
+    //
+    // Constructor. Nothing too interesting.
+    //
+    RemoteCommandTarget(radMemoryAllocator alloc);
 
-		//
-		// Upon receiving a RemoteFunction call from the host, we must report back 
-		// the result of that operation
-		//
-		void SendRemoteFunctionReply( HrcsResultCode result );
+    virtual ~RemoteCommandTarget(void);
 
-		//
-		// This gives a reference to the parent server class
-		//
-		void SetRemoteCommandServer( RemoteCommandServer* rcs );
-		void UnSetRemoteCommandServer( void );
+    //
+    // Status callback
+    //
+    virtual void
+    OnStatusChange(IRadDbgComChannel::ConnectionState connectionState, const char *Message);
 
-    private:
-    
-		//
-		// Private used to kick start transmission,
-		//
-		void InitiateTransmission( void );
+    virtual void OnReceiveComplete(bool successful, unsigned int bytesReceived);
 
-		//
-		// Channel used for communication.
-		//
-		ref< IRadDbgComChannel >    m_Channel;
+    virtual void OnSendComplete(bool successful);
 
-		//
-		// Pointer to the Server
-		//
-		RemoteCommandServer* m_RemoteCommandServer;
-		//
-		// Boolean indicating that we are attached.
-		//
-		bool    m_Attached;
-    
-		//
-		// Buffer used to receive messages from the target.
-		//
-		unsigned char m_RxBuffer[ RCS_BUFFER_SIZE ];
+    //
+    // Thee next four members are all to be called by the RemoteCommandServer class
+    //
 
-		//
-		// Buffer used for transmitting data. Double buffered so we can
-		// queue information to send.
-		//
-		unsigned char m_TxBuffer1[ RCS_BUFFER_SIZE ];
-		unsigned char m_TxBuffer2[ RCS_BUFFER_SIZE ];
+    // Upon receive a list command from the host. We must reply with SendListReply
+    // and state how many functions are registered.  Then, we must send each
+    // function name individually.
+    void SendListReply(unsigned int numItems);
 
-		//
-		// Used to control transmit state machine.    
-		//
-		bool            m_TxOutstanding;
-		unsigned int    m_TxBytesQueued;
-		unsigned char*  m_CurrentTxAddress;
-		bool            m_Buffer1Active;
+    void SendListItemCommand(char *name);
 
-		//
-		// Prevents the display of too many error messages.
-		//
-		bool            m_OverflowReported;
+    //
+    // Upon receiving a RemoteFunction call from the host, we must report back
+    // the result of that operation
+    //
+    void SendRemoteFunctionReply(HrcsResultCode result);
 
-		//
-		// Indicates we want to detached when send completes.
-		//
-		bool            m_PendingDetach;
+    //
+    // This gives a reference to the parent server class
+    //
+    void SetRemoteCommandServer(RemoteCommandServer *rcs);
 
-        radMemoryAllocator   m_Allocator;
-       
+    void UnSetRemoteCommandServer(void);
+
+private:
+
+    //
+    // Private used to kick start transmission,
+    //
+    void InitiateTransmission(void);
+
+    //
+    // Channel used for communication.
+    //
+    ref <IRadDbgComChannel> m_Channel;
+
+    //
+    // Pointer to the Server
+    //
+    RemoteCommandServer *m_RemoteCommandServer;
+    //
+    // Boolean indicating that we are attached.
+    //
+    bool m_Attached;
+
+    //
+    // Buffer used to receive messages from the target.
+    //
+    unsigned char m_RxBuffer[RCS_BUFFER_SIZE];
+
+    //
+    // Buffer used for transmitting data. Double buffered so we can
+    // queue information to send.
+    //
+    unsigned char m_TxBuffer1[RCS_BUFFER_SIZE];
+    unsigned char m_TxBuffer2[RCS_BUFFER_SIZE];
+
+    //
+    // Used to control transmit state machine.
+    //
+    bool m_TxOutstanding;
+    unsigned int m_TxBytesQueued;
+    unsigned char *m_CurrentTxAddress;
+    bool m_Buffer1Active;
+
+    //
+    // Prevents the display of too many error messages.
+    //
+    bool m_OverflowReported;
+
+    //
+    // Indicates we want to detached when send completes.
+    //
+    bool m_PendingDetach;
+
+    radMemoryAllocator m_Allocator;
+
 };
 
-		
+
 #endif // REMOTECOMMAND_HPP
 
 

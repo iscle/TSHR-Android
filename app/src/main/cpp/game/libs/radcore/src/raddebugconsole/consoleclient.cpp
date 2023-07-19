@@ -37,7 +37,7 @@
 // Static Data Defintions
 //=============================================================================
 
-static ConsoleClient*  s_theConsoleClient = NULL;
+static ConsoleClient *s_theConsoleClient = NULL;
 
 //=============================================================================
 // Function:    radDebugConsoleCreate
@@ -53,16 +53,15 @@ static ConsoleClient*  s_theConsoleClient = NULL;
 //------------------------------------------------------------------------------
 
 void radDebugConsoleCreate
-( 
-    IRadDebugConsole** ppConsole, 
-    radMemoryAllocator alloc,
-    bool bSyncMode
-)
-{
+        (
+                IRadDebugConsole **ppConsole,
+                radMemoryAllocator alloc,
+                bool bSyncMode
+        ) {
     //
     // Simply construct the console. Pass the allocator to the object.
     //
-    *ppConsole = new( alloc ) DebugConsole( alloc, bSyncMode );
+    *ppConsole = new(alloc) DebugConsole(alloc, bSyncMode);
 }
 
 //=============================================================================
@@ -78,11 +77,9 @@ void radDebugConsoleCreate
 // Notes:
 //------------------------------------------------------------------------------
 
-void radDebugConsoleService( void )
-{
-    if( s_theConsoleClient != NULL )
-    {
-        s_theConsoleClient->Service( );
+void radDebugConsoleService(void) {
+    if (s_theConsoleClient != NULL) {
+        s_theConsoleClient->Service();
     }
 }
 
@@ -103,32 +100,31 @@ void radDebugConsoleService( void )
 //------------------------------------------------------------------------------
 
 DebugConsole::DebugConsole
-(
-	radMemoryAllocator alloc,
-    bool bSyncMode
-)
-	:
-	m_ReferenceCount( 1 ),
-	m_PointerInputCallback( NULL ),
-	m_KeyboardInputCallback( NULL ),
-    m_bSyncMode( bSyncMode ),
-    m_InputBufferHeadIndex( 0 ),
-    m_InputBufferTailIndex( 0 )
-{
-    m_szConsoleTitle[ 0 ] = '\0';
+        (
+                radMemoryAllocator alloc,
+                bool bSyncMode
+        )
+        :
+        m_ReferenceCount(1),
+        m_PointerInputCallback(NULL),
+        m_KeyboardInputCallback(NULL),
+        m_bSyncMode(bSyncMode),
+        m_InputBufferHeadIndex(0),
+        m_InputBufferTailIndex(0) {
+    m_szConsoleTitle[0] = '\0';
 
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "DebugConsole" );
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "DebugConsole");
     //
     // Get reference to the client object.
     //
-    ConsoleClient::GetClient( &m_pClient, alloc, m_bSyncMode );
+    ConsoleClient::GetClient(&m_pClient, alloc, m_bSyncMode);
 
     //
     // Add ourself. This is a weak reference.
     //
-    m_pClient->AddConsole( this );
+    m_pClient->AddConsole(this);
 
-    m_pClient->SendCreate( this );
+    m_pClient->SendCreate(this);
 }
 
 //=============================================================================
@@ -144,21 +140,20 @@ DebugConsole::DebugConsole
 //------------------------------------------------------------------------------
 
 DebugConsole::~DebugConsole
-(
-	void
-)
-{
+        (
+                void
+        ) {
     //
     // Send the destroy message.
     //
-    m_pClient->SendDestroy( this );
-    
+    m_pClient->SendDestroy(this);
+
     //
     // Remove our weak reference
     //
-    m_pClient->DeleteConsole( this );
+    m_pClient->DeleteConsole(this);
 
-    radRelease( static_cast< IRadDbgComChannelSendCallback* >( m_pClient ), s_theConsoleClient );
+    radRelease(static_cast<IRadDbgComChannelSendCallback *>(m_pClient), s_theConsoleClient);
 }
 
 //=============================================================================
@@ -174,11 +169,10 @@ DebugConsole::~DebugConsole
 //------------------------------------------------------------------------------
 
 void DebugConsole::AddRef
-(
-	void
-)
-{
-	m_ReferenceCount++;
+        (
+                void
+        ) {
+    m_ReferenceCount++;
 }
 
 //=============================================================================
@@ -194,16 +188,14 @@ void DebugConsole::AddRef
 //------------------------------------------------------------------------------
 
 void DebugConsole::Release
-(
-	void
-)
-{
-	m_ReferenceCount--;
+        (
+                void
+        ) {
+    m_ReferenceCount--;
 
-	if ( m_ReferenceCount == 0 )
-	{
-		delete this;
-	}
+    if (m_ReferenceCount == 0) {
+        delete this;
+    }
 }
 
 //=============================================================================
@@ -219,13 +211,12 @@ void DebugConsole::Release
 //------------------------------------------------------------------------------
 
 void DebugConsole::SetTitle
-( 
-	const char* pConsoleTitle 
-) 
-{ 
-    m_pClient->SendTitle( this, pConsoleTitle );
-    strncpy( m_szConsoleTitle, pConsoleTitle, sizeof( m_szConsoleTitle ) / sizeof( unsigned char ) );
-    m_szConsoleTitle[ sizeof( m_szConsoleTitle ) - 1 ] = '\0';
+        (
+                const char *pConsoleTitle
+        ) {
+    m_pClient->SendTitle(this, pConsoleTitle);
+    strncpy(m_szConsoleTitle, pConsoleTitle, sizeof(m_szConsoleTitle) / sizeof(unsigned char));
+    m_szConsoleTitle[sizeof(m_szConsoleTitle) - 1] = '\0';
 }
 
 //=============================================================================
@@ -241,11 +232,10 @@ void DebugConsole::SetTitle
 //------------------------------------------------------------------------------
 
 void DebugConsole::SetBackgroundColor
-( 
-	unsigned int textColor 
-) 
-{ 
-    m_pClient->SendBackgroundColor( this, textColor );
+        (
+                unsigned int textColor
+        ) {
+    m_pClient->SendBackgroundColor(this, textColor);
     m_uBkGndColour = textColor;
 }
 
@@ -262,11 +252,10 @@ void DebugConsole::SetBackgroundColor
 //------------------------------------------------------------------------------
 
 void DebugConsole::Clear
-( 
-	void 
-)
-{ 
-    m_pClient->SendClear( this );
+        (
+                void
+        ) {
+    m_pClient->SendClear(this);
 }
 
 //=============================================================================
@@ -283,12 +272,11 @@ void DebugConsole::Clear
 //------------------------------------------------------------------------------
 
 void DebugConsole::SetCursorPosition
-(
-	unsigned int x, 
-	unsigned int y 
-)
-{ 
-    m_pClient->SendCursorPosition( this, x, y );
+        (
+                unsigned int x,
+                unsigned int y
+        ) {
+    m_pClient->SendCursorPosition(this, x, y);
 }
 
 //=============================================================================
@@ -304,11 +292,10 @@ void DebugConsole::SetCursorPosition
 //------------------------------------------------------------------------------
 
 void DebugConsole::SetTextColor
-( 
-	unsigned int textColor 
-) 
-{
-    m_pClient->SendTextColor( this, textColor );
+        (
+                unsigned int textColor
+        ) {
+    m_pClient->SendTextColor(this, textColor);
     m_uTextColour = textColor;
 }
 
@@ -327,13 +314,12 @@ void DebugConsole::SetTextColor
 //------------------------------------------------------------------------------
 
 void DebugConsole::TextOutAt
-( 
-	const char * pText, 
-	int    x, 
-	int    y 
-)
-{ 
-    m_pClient->SendTextOutAt( this, pText, x, y );
+        (
+                const char *pText,
+                int x,
+                int y
+        ) {
+    m_pClient->SendTextOutAt(this, pText, x, y);
 }
 
 //=============================================================================
@@ -349,11 +335,10 @@ void DebugConsole::TextOutAt
 //------------------------------------------------------------------------------
 
 void DebugConsole::TextOut
-(
-	const char * pText 
-)
-{
-    m_pClient->SendTextOut( this, pText );
+        (
+                const char *pText
+        ) {
+    m_pClient->SendTextOut(this, pText);
 }
 
 
@@ -370,10 +355,9 @@ void DebugConsole::TextOut
 //------------------------------------------------------------------------------
 
 void DebugConsole::SetKeyboardInputCallback
-( 
-	IRadDebugConsoleKeyboardInputCallback * pCallback 
-)
-{ 
+        (
+                IRadDebugConsoleKeyboardInputCallback *pCallback
+        ) {
     //
     // Simply save the pointer.
     //
@@ -393,10 +377,9 @@ void DebugConsole::SetKeyboardInputCallback
 //------------------------------------------------------------------------------
 
 void DebugConsole::SetPointerInputCallback
-( 
-	IRadDebugConsolePointerInputCallback * pCallback 
-)
-{
+        (
+                IRadDebugConsolePointerInputCallback *pCallback
+        ) {
     //
     // Simply save the pointer.
     //
@@ -416,19 +399,17 @@ void DebugConsole::SetPointerInputCallback
 // Notes:
 //------------------------------------------------------------------------------
 
-void DebugConsole::OnKeyPress( int character )
-{
+void DebugConsole::OnKeyPress(int character) {
     //
     // Check if we have callback. If not, just ignore.
     //
-    if( m_KeyboardInputCallback != NULL )
-    {
+    if (m_KeyboardInputCallback != NULL) {
         InputBufferEntry entry;
         entry.InputType = InputBufferEntry::IBT_KeyPress;
         entry.InputData.KeyPress = character;
 
-        rDebugPrintf( "%c", character );
-        AddInputBuffer( entry );
+        rDebugPrintf("%c", character);
+        AddInputBuffer(entry);
     }
 }
 
@@ -447,13 +428,11 @@ void DebugConsole::OnKeyPress( int character )
 // Notes:
 //------------------------------------------------------------------------------
 
-void DebugConsole::OnVirtualKeyPress( int vkey, bool ctrl, bool shift, bool alt )
-{
+void DebugConsole::OnVirtualKeyPress(int vkey, bool ctrl, bool shift, bool alt) {
     //
     // Check if we have callback. If not, just ignore.
     //
-    if( m_KeyboardInputCallback != NULL )
-    {
+    if (m_KeyboardInputCallback != NULL) {
         InputBufferEntry entry;
         entry.InputType = InputBufferEntry::IBT_VirtualKeyPress;
         entry.InputData.VirtualKeyPress.vkey = vkey;
@@ -461,7 +440,7 @@ void DebugConsole::OnVirtualKeyPress( int vkey, bool ctrl, bool shift, bool alt 
         entry.InputData.VirtualKeyPress.shift = shift;
         entry.InputData.VirtualKeyPress.alt = alt;
 
-        AddInputBuffer( entry );
+        AddInputBuffer(entry);
     }
 }
 
@@ -477,26 +456,26 @@ void DebugConsole::OnVirtualKeyPress( int vkey, bool ctrl, bool shift, bool alt 
 // Notes:
 //------------------------------------------------------------------------------
 
-void DebugConsole::OnMouseEvent( int textx, int texty, int screenx, int screeny, char type, char ctrl, char shift, char alt, char lbutton )
-{
+void
+DebugConsole::OnMouseEvent(int textx, int texty, int screenx, int screeny, char type, char ctrl,
+                           char shift, char alt, char lbutton) {
     //
     // Check if we have callback. If not, just ignore.
     //
-    if( m_PointerInputCallback != NULL )
-    {
+    if (m_PointerInputCallback != NULL) {
         InputBufferEntry entry;
         entry.InputType = InputBufferEntry::IBT_MouseClick;
         entry.InputData.MouseClick.textx = textx;
         entry.InputData.MouseClick.texty = texty;
         entry.InputData.MouseClick.screenx = screenx;
         entry.InputData.MouseClick.screeny = screeny;
-        entry.InputData.MouseClick.type = (HdcpInputMouseEventType)type;
+        entry.InputData.MouseClick.type = (HdcpInputMouseEventType) type;
         entry.InputData.MouseClick.ctrl = ctrl;
         entry.InputData.MouseClick.shift = shift;
         entry.InputData.MouseClick.alt = alt;
         entry.InputData.MouseClick.lbutton = lbutton;
 
-        AddInputBuffer( entry );
+        AddInputBuffer(entry);
     }
 }
 
@@ -512,118 +491,112 @@ void DebugConsole::OnMouseEvent( int textx, int texty, int screenx, int screeny,
 // Notes:
 //------------------------------------------------------------------------------
 
-void DebugConsole::ProcessInputBuffer( void )
-{
+void DebugConsole::ProcessInputBuffer(void) {
     // Precondition check for member data
-    rAssert( m_InputBufferHeadIndex < InputBufferSize );
-    rAssert( m_InputBufferTailIndex < InputBufferSize );
+    rAssert(m_InputBufferHeadIndex < InputBufferSize);
+    rAssert(m_InputBufferTailIndex < InputBufferSize);
 
     //
     // Loop until all input data is processed
     //
-    while ( m_InputBufferHeadIndex != m_InputBufferTailIndex )
-    {
+    while (m_InputBufferHeadIndex != m_InputBufferTailIndex) {
         //
         // read last entry in the circular buffer.
         //
-        InputBufferEntry * pInputData = & m_InputBuffer[ m_InputBufferTailIndex ];
+        InputBufferEntry *pInputData = &m_InputBuffer[m_InputBufferTailIndex];
 
         //
         // increment tail index, wrap if neccessary.
         //
-        m_InputBufferTailIndex ++;
+        m_InputBufferTailIndex++;
         m_InputBufferTailIndex = m_InputBufferTailIndex % InputBufferSize;
 
         //
         // Now Process the user input data from the buffer to do the callback
         //
-        switch( pInputData->InputType )
-        {
-            case InputBufferEntry::IBT_KeyPress :
-            {
-                if ( m_KeyboardInputCallback )
-                {
-                    m_KeyboardInputCallback->OnChar( pInputData->InputData.KeyPress );
+        switch (pInputData->InputType) {
+            case InputBufferEntry::IBT_KeyPress : {
+                if (m_KeyboardInputCallback) {
+                    m_KeyboardInputCallback->OnChar(pInputData->InputData.KeyPress);
                 }
             }
-            break;
+                break;
 
-            case InputBufferEntry::IBT_VirtualKeyPress: 
-            {
-                if ( m_KeyboardInputCallback )
-                {
-                    m_KeyboardInputCallback->OnVKey( pInputData->InputData.VirtualKeyPress.vkey,
-                                                     pInputData->InputData.VirtualKeyPress.ctrl != 0,
-                                                     pInputData->InputData.VirtualKeyPress.shift != 0,
-                                                     pInputData->InputData.VirtualKeyPress.alt != 0 );
+            case InputBufferEntry::IBT_VirtualKeyPress: {
+                if (m_KeyboardInputCallback) {
+                    m_KeyboardInputCallback->OnVKey(pInputData->InputData.VirtualKeyPress.vkey,
+                                                    pInputData->InputData.VirtualKeyPress.ctrl != 0,
+                                                    pInputData->InputData.VirtualKeyPress.shift !=
+                                                    0,
+                                                    pInputData->InputData.VirtualKeyPress.alt != 0);
                 }
             }
-            break;
+                break;
 
-            case InputBufferEntry::IBT_MouseClick:
-            {
-                if ( m_PointerInputCallback )
-                {
-                    switch( pInputData->InputData.MouseClick.type )
-                    {
+            case InputBufferEntry::IBT_MouseClick: {
+                if (m_PointerInputCallback) {
+                    switch (pInputData->InputData.MouseClick.type) {
                         case HdcpMouseMove :    // MouseMove
                         {
-                            m_PointerInputCallback->OnButtonMove( pInputData->InputData.MouseClick.textx,
-                                                                  pInputData->InputData.MouseClick.texty,
-                                                                  pInputData->InputData.MouseClick.screenx,
-                                                                  pInputData->InputData.MouseClick.screeny,
-                                                                  pInputData->InputData.MouseClick.ctrl != 0,
-                                                                  pInputData->InputData.MouseClick.shift != 0,
-                                                                  pInputData->InputData.MouseClick.alt != 0,
-                                                                  pInputData->InputData.MouseClick.lbutton != 0 );
+                            m_PointerInputCallback->OnButtonMove(
+                                    pInputData->InputData.MouseClick.textx,
+                                    pInputData->InputData.MouseClick.texty,
+                                    pInputData->InputData.MouseClick.screenx,
+                                    pInputData->InputData.MouseClick.screeny,
+                                    pInputData->InputData.MouseClick.ctrl != 0,
+                                    pInputData->InputData.MouseClick.shift != 0,
+                                    pInputData->InputData.MouseClick.alt != 0,
+                                    pInputData->InputData.MouseClick.lbutton != 0);
                         }
-                        break;
+                            break;
 
                         case HdcpMouseLeftButtonDown :    // left button down
                         {
-                            m_PointerInputCallback->OnButtonDown( pInputData->InputData.MouseClick.textx,
-                                                                  pInputData->InputData.MouseClick.texty,
-                                                                  pInputData->InputData.MouseClick.screenx,
-                                                                  pInputData->InputData.MouseClick.screeny,
-                                                                  pInputData->InputData.MouseClick.ctrl != 0,
-                                                                  pInputData->InputData.MouseClick.shift != 0,
-                                                                  pInputData->InputData.MouseClick.alt != 0 );
+                            m_PointerInputCallback->OnButtonDown(
+                                    pInputData->InputData.MouseClick.textx,
+                                    pInputData->InputData.MouseClick.texty,
+                                    pInputData->InputData.MouseClick.screenx,
+                                    pInputData->InputData.MouseClick.screeny,
+                                    pInputData->InputData.MouseClick.ctrl != 0,
+                                    pInputData->InputData.MouseClick.shift != 0,
+                                    pInputData->InputData.MouseClick.alt != 0);
                         }
-                        break;
+                            break;
 
                         case HdcpMouseLeftButtonUp :    // left button up
                         {
-                            m_PointerInputCallback->OnButtonUp( pInputData->InputData.MouseClick.textx,
-                                                                pInputData->InputData.MouseClick.texty,
-                                                                pInputData->InputData.MouseClick.screenx,
-                                                                pInputData->InputData.MouseClick.screeny,
-                                                                pInputData->InputData.MouseClick.ctrl != 0,
-                                                                pInputData->InputData.MouseClick.shift != 0,
-                                                                pInputData->InputData.MouseClick.alt != 0 );
+                            m_PointerInputCallback->OnButtonUp(
+                                    pInputData->InputData.MouseClick.textx,
+                                    pInputData->InputData.MouseClick.texty,
+                                    pInputData->InputData.MouseClick.screenx,
+                                    pInputData->InputData.MouseClick.screeny,
+                                    pInputData->InputData.MouseClick.ctrl != 0,
+                                    pInputData->InputData.MouseClick.shift != 0,
+                                    pInputData->InputData.MouseClick.alt != 0);
                         }
-                        break;
+                            break;
 
                         case HdcpMouseLeftButtonClick :    // left button click
                         {
-                            m_PointerInputCallback->OnButtonClick( pInputData->InputData.MouseClick.textx,
-                                                                   pInputData->InputData.MouseClick.texty,
-                                                                   pInputData->InputData.MouseClick.screenx,
-                                                                   pInputData->InputData.MouseClick.screeny,
-                                                                   pInputData->InputData.MouseClick.ctrl != 0,
-                                                                   pInputData->InputData.MouseClick.shift != 0,
-                                                                   pInputData->InputData.MouseClick.alt != 0 );
+                            m_PointerInputCallback->OnButtonClick(
+                                    pInputData->InputData.MouseClick.textx,
+                                    pInputData->InputData.MouseClick.texty,
+                                    pInputData->InputData.MouseClick.screenx,
+                                    pInputData->InputData.MouseClick.screeny,
+                                    pInputData->InputData.MouseClick.ctrl != 0,
+                                    pInputData->InputData.MouseClick.shift != 0,
+                                    pInputData->InputData.MouseClick.alt != 0);
                         }
-                        break;
+                            break;
 
-                        default:
-                        {
-                            rAssertMsg( 0, "Cannot determine DebugConsole Mouse Input Event type." );
+                        default: {
+                            rAssertMsg(0, "Cannot determine DebugConsole Mouse Input Event type.");
                         }
-                        break;
+                            break;
                     }
                 }
             }
-            break;
+                break;
         }
     }
 }
@@ -640,24 +613,20 @@ void DebugConsole::ProcessInputBuffer( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void DebugConsole::AddInputBuffer( const InputBufferEntry & entry )
-{
+void DebugConsole::AddInputBuffer(const InputBufferEntry &entry) {
     // Precondition check for member data.
-    rAssert( m_InputBufferHeadIndex < InputBufferSize );
-    rAssert( m_InputBufferTailIndex < InputBufferSize );
+    rAssert(m_InputBufferHeadIndex < InputBufferSize);
+    rAssert(m_InputBufferTailIndex < InputBufferSize);
 
     //
     // if buffer is full, don't add.
     //
-    if ( ! IsBufferFull( ) )
-    {
-        m_InputBuffer[ m_InputBufferHeadIndex ] = entry;
-        m_InputBufferHeadIndex ++;
+    if (!IsBufferFull()) {
+        m_InputBuffer[m_InputBufferHeadIndex] = entry;
+        m_InputBufferHeadIndex++;
         m_InputBufferHeadIndex = m_InputBufferHeadIndex % InputBufferSize;
-    }
-    else
-    {
-        rDebugPrintf( "DebugConsole : Keyboard/Mouse Input buffer overrun.\n" );
+    } else {
+        rDebugPrintf("DebugConsole : Keyboard/Mouse Input buffer overrun.\n");
     }
 }
 
@@ -673,31 +642,21 @@ void DebugConsole::AddInputBuffer( const InputBufferEntry & entry )
 // Notes:
 //------------------------------------------------------------------------------
 
-bool DebugConsole::IsBufferFull( )
-{
+bool DebugConsole::IsBufferFull() {
     // Precondition check for member data.
-    rAssert( m_InputBufferHeadIndex < InputBufferSize );
-    rAssert( m_InputBufferTailIndex < InputBufferSize );
+    rAssert(m_InputBufferHeadIndex < InputBufferSize);
+    rAssert(m_InputBufferTailIndex < InputBufferSize);
 
-    if ( m_InputBufferHeadIndex != ( InputBufferSize - 1 ) )
-    {
-        if ( ( m_InputBufferTailIndex - m_InputBufferHeadIndex ) == 1 )
-        {
+    if (m_InputBufferHeadIndex != (InputBufferSize - 1)) {
+        if ((m_InputBufferTailIndex - m_InputBufferHeadIndex) == 1) {
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
-    }
-    else
-    {
-        if ( m_InputBufferTailIndex == 0 )
-        {
+    } else {
+        if (m_InputBufferTailIndex == 0) {
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -717,9 +676,9 @@ bool DebugConsole::IsBufferFull( )
 
 #ifdef RAD_DEBUG
 
-void DebugConsole::Dump( char* pStringBuffer, unsigned int bufferSize )
+void DebugConsole::Dump(char* pStringBuffer, unsigned int bufferSize)
 {
-    sprintf( pStringBuffer, "Object: [DebugConsole] At Memory Location:[0x%x]\n", (unsigned int) this );
+    sprintf(pStringBuffer, "Object: [DebugConsole] At Memory Location:[0x%x]\n", (unsigned int) this);
 }
 
 #endif
@@ -735,34 +694,32 @@ void DebugConsole::Dump( char* pStringBuffer, unsigned int bufferSize )
 // Notes:
 //------------------------------------------------------------------------------
 
-ConsoleClient::ConsoleClient( radMemoryAllocator alloc, bool bSyncMode )
-    :
-    m_ReferenceCount( 1 ),
-    m_Channel( NULL ),
-    m_Attached( false ),
-    m_TxOutstanding( false ),
-    m_TxBytesQueued( 0 ),
-    m_CurrentTxAddress( m_TxBuffer1 ),
-    m_Buffer1Active( true ),
-    m_ConsoleListHead( NULL ),
-    m_OverflowReported( false ),
-    m_PendingDetach( false ),
-    m_bSyncMode( bSyncMode )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "ConsoleClient" );
+ConsoleClient::ConsoleClient(radMemoryAllocator alloc, bool bSyncMode)
+        :
+        m_ReferenceCount(1),
+        m_Channel(NULL),
+        m_Attached(false),
+        m_TxOutstanding(false),
+        m_TxBytesQueued(0),
+        m_CurrentTxAddress(m_TxBuffer1),
+        m_Buffer1Active(true),
+        m_ConsoleListHead(NULL),
+        m_OverflowReported(false),
+        m_PendingDetach(false),
+        m_bSyncMode(bSyncMode) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "ConsoleClient");
     //
     // Just get a reference to the channel. Do not initiate connection until 
     // console added.
     //
-    radDbgComTargetCreateChannel( HOST_DEBUG_CONSOLE_PROTOCOL, 
-                                  &m_Channel, alloc );
-    if( m_Channel == NULL )
-    {        
-        rDebugString( "Debug Console Failed: Make sure debug communication system initialized\n");
+    radDbgComTargetCreateChannel(HOST_DEBUG_CONSOLE_PROTOCOL,
+                                 &m_Channel, alloc);
+    if (m_Channel == NULL) {
+        rDebugString("Debug Console Failed: Make sure debug communication system initialized\n");
         return;
     }
 
-    m_Channel->RegisterStatusCallback( this );
+    m_Channel->RegisterStatusCallback(this);
 }
 
 //=============================================================================
@@ -775,16 +732,14 @@ ConsoleClient::ConsoleClient( radMemoryAllocator alloc, bool bSyncMode )
 // Notes:
 //------------------------------------------------------------------------------
 
-ConsoleClient::~ConsoleClient( void )
-{
-    if( m_Channel != NULL )
-    {
-        m_Channel->RegisterStatusCallback( NULL );
+ConsoleClient::~ConsoleClient(void) {
+    if (m_Channel != NULL) {
+        m_Channel->RegisterStatusCallback(NULL);
 
-        radRelease( m_Channel, this );
+        radRelease(m_Channel, this);
     }
     s_theConsoleClient = NULL;
-}            
+}
 
 //=============================================================================
 // Function:    ConsoleClient::GetClient
@@ -796,19 +751,15 @@ ConsoleClient::~ConsoleClient( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void ConsoleClient::GetClient( ConsoleClient** pClient, radMemoryAllocator alloc, bool bSyncMode )
-{
-    if( s_theConsoleClient == NULL )
-    {
-        s_theConsoleClient = new(alloc) ConsoleClient( alloc, bSyncMode );
-    }
-    else
-    {
-        radAddRef( static_cast< IRadDbgComChannelReceiveCallback* >( s_theConsoleClient ), NULL );
+void ConsoleClient::GetClient(ConsoleClient **pClient, radMemoryAllocator alloc, bool bSyncMode) {
+    if (s_theConsoleClient == NULL) {
+        s_theConsoleClient = new(alloc) ConsoleClient(alloc, bSyncMode);
+    } else {
+        radAddRef(static_cast<IRadDbgComChannelReceiveCallback *>(s_theConsoleClient), NULL);
     }
 
     *pClient = s_theConsoleClient;
-}            
+}
 
 //=============================================================================
 // Function:    ConsoleClient::AddConsole
@@ -824,16 +775,14 @@ void ConsoleClient::GetClient( ConsoleClient** pClient, radMemoryAllocator alloc
 //------------------------------------------------------------------------------
 
 void ConsoleClient::AddConsole
-(
-    DebugConsole*   pConsole 
-)
-{
+        (
+                DebugConsole *pConsole
+        ) {
     pConsole->m_Next = m_ConsoleListHead;
     m_ConsoleListHead = pConsole;
 
-    if( m_Channel != NULL )
-    {
-        m_Channel->Attach( );
+    if (m_Channel != NULL) {
+        m_Channel->Attach();
     }
 }
 
@@ -852,48 +801,40 @@ void ConsoleClient::AddConsole
 //------------------------------------------------------------------------------
 
 void ConsoleClient::DeleteConsole
-(
-    DebugConsole*   pConsole 
-)
-{
+        (
+                DebugConsole *pConsole
+        ) {
     //
     // Remove ourself from the list.
     //
-    DebugConsole** ppPrevious = &m_ConsoleListHead;
-    
-    while( *ppPrevious != NULL )
-    {
-        if( *ppPrevious == pConsole )
-        {
+    DebugConsole **ppPrevious = &m_ConsoleListHead;
+
+    while (*ppPrevious != NULL) {
+        if (*ppPrevious == pConsole) {
             *ppPrevious = (*ppPrevious)->m_Next;
-            break;        
+            break;
         }
         ppPrevious = &((*ppPrevious)->m_Next);
     }
-    
+
     //
     // Check if we should detach.
     //
-    if( m_ConsoleListHead == NULL )
-    {
-        
+    if (m_ConsoleListHead == NULL) {
+
         //
         // If outstanding transmit, wait for it to complete before detaching.
         //
-        if( !m_TxOutstanding )
-        {
-            if( m_Channel != NULL )
-            {
+        if (!m_TxOutstanding) {
+            if (m_Channel != NULL) {
                 m_Attached = false;
-                m_Channel->Detach( );
-            }                
-        }
-        else
-        {
+                m_Channel->Detach();
+            }
+        } else {
             m_PendingDetach = true;
         }
     }
-}        
+}
 
 //=============================================================================
 // Function:    Console::OnStatusChange
@@ -908,43 +849,38 @@ void ConsoleClient::DeleteConsole
 //------------------------------------------------------------------------------
 
 void ConsoleClient::OnStatusChange
-( 
-    IRadDbgComChannel::ConnectionState connectionState,
-    const char* Message 
-)
-{
+        (
+                IRadDbgComChannel::ConnectionState connectionState,
+                const char *Message
+        ) {
     //
     // Switch on status message.
     //  
-    switch( connectionState )
-    {
-        case IRadDbgComChannel::Attached :
-        {   
+    switch (connectionState) {
+        case IRadDbgComChannel::Attached : {
             //
             // Simply issue a receive to wait for data.
             //
-            m_Channel->ReceiveAsync( m_RxBuffer, sizeof( m_RxBuffer ), this );
+            m_Channel->ReceiveAsync(m_RxBuffer, sizeof(m_RxBuffer), this);
 
             m_Attached = true;
 
-            DebugConsole * pDebugConsole = m_ConsoleListHead;
+            DebugConsole *pDebugConsole = m_ConsoleListHead;
 
-            while( pDebugConsole )
-            {
-                SendCreate( pDebugConsole );
-                SendTitle( pDebugConsole, pDebugConsole->m_szConsoleTitle );
-                SendBackgroundColor( pDebugConsole, pDebugConsole->m_uBkGndColour );
-                SendTextColor( pDebugConsole, pDebugConsole->m_uTextColour );    
+            while (pDebugConsole) {
+                SendCreate(pDebugConsole);
+                SendTitle(pDebugConsole, pDebugConsole->m_szConsoleTitle);
+                SendBackgroundColor(pDebugConsole, pDebugConsole->m_uBkGndColour);
+                SendTextColor(pDebugConsole, pDebugConsole->m_uTextColour);
                 pDebugConsole = pDebugConsole->m_Next;
             }
 
-            InitiateTransmission( );
+            InitiateTransmission();
 
             break;
         }
 
-        case IRadDbgComChannel::Detached :
-        {   
+        case IRadDbgComChannel::Detached : {
             //
             // Set flag inidicating not attached and clear the list of consoles.
             //
@@ -957,14 +893,12 @@ void ConsoleClient::OnStatusChange
 
             break;
         }
-    
-        case IRadDbgComChannel::Attaching :
-        {
+
+        case IRadDbgComChannel::Attaching : {
             //
             // If we are attached, clear consoles. Print message that we lost communication.
             //
-            if( m_Attached )
-            {
+            if (m_Attached) {
                 m_Attached = false;
 
                 m_TxBytesQueued = 0;
@@ -972,14 +906,13 @@ void ConsoleClient::OnStatusChange
                 m_Buffer1Active = true;
                 m_TxOutstanding = false;
 
-                rDebugString( "Warning: Existing console output will be lost\n");
+                rDebugString("Warning: Existing console output will be lost\n");
             }
 
             break;
         }
 
-        default:
-        {
+        default: {
             break;
         }
     }
@@ -998,127 +931,116 @@ void ConsoleClient::OnStatusChange
 //------------------------------------------------------------------------------
 
 void ConsoleClient::OnReceiveComplete
-( 
-    bool            successful, 
-    unsigned int    bytesReceived
-)
-{
+        (
+                bool successful,
+                unsigned int bytesReceived
+        ) {
     static int bytesLeftOver = 0;
 
-    if( successful )
-    {
+    if (successful) {
         //
         // Here we have received a buffer. Process the data. Simply process each packet
         // of data in the buffer. 
         //
-        unsigned char* pRxAddress = m_RxBuffer;
+        unsigned char *pRxAddress = m_RxBuffer;
 
-        while( IsCompletePacket( bytesReceived, pRxAddress ) )
-        {
+        while (IsCompletePacket(bytesReceived, pRxAddress)) {
             //
             // Switch on the command code of the buffer.
             // 
-            switch( radPlatformEndian32( *((HdcpCommand*) pRxAddress) ) )
-            {
-                case HdcsKeyboardInput :
-                {
-                    HdcpKeyboardInputCmd* pCommand = (HdcpKeyboardInputCmd*) pRxAddress;
+            switch (radPlatformEndian32(*((HdcpCommand *) pRxAddress))) {
+                case HdcsKeyboardInput : {
+                    HdcpKeyboardInputCmd *pCommand = (HdcpKeyboardInputCmd *) pRxAddress;
 
                     //
                     // Attempt to verify that the id is still valid.
                     //
-                    DebugConsole* pConsole = (DebugConsole*) pCommand->m_ConsoleId;
-                    if( IsValidConsole( pConsole ) )
-                    {
-                        pConsole->OnKeyPress( radPlatformEndian32( pCommand->m_AsciiKey ) );
+                    DebugConsole *pConsole = (DebugConsole *) pCommand->m_ConsoleId;
+                    if (IsValidConsole(pConsole)) {
+                        pConsole->OnKeyPress(radPlatformEndian32(pCommand->m_AsciiKey));
                     }
 
                     //
                     // Update receive pointer and bytes to process.
                     //
-                    bytesReceived -= sizeof( HdcpKeyboardInputCmd );
-                    pRxAddress += sizeof( HdcpKeyboardInputCmd );
+                    bytesReceived -= sizeof(HdcpKeyboardInputCmd);
+                    pRxAddress += sizeof(HdcpKeyboardInputCmd);
 
                     break;
                 }
 
-                case HdcsVirtualKeyInput :
-                {
-                    HdcpVirtualKeyInputCmd* pCommand = (HdcpVirtualKeyInputCmd*) pRxAddress;
-                    
+                case HdcsVirtualKeyInput : {
+                    HdcpVirtualKeyInputCmd *pCommand = (HdcpVirtualKeyInputCmd *) pRxAddress;
+
                     //
                     // Attempt to verify that the id is still valid.
                     //
-                    DebugConsole* pConsole = (DebugConsole*) pCommand->m_ConsoleId;
-                    if( IsValidConsole( pConsole ) )
-                    {
-                        pConsole->OnVirtualKeyPress( radPlatformEndian32( pCommand->m_VirtualKey ), 
-                                                     radPlatformEndian32( pCommand->m_Ctrl ) != 0,
-                                                     radPlatformEndian32( pCommand->m_Shift ) != 0,
-                                                     radPlatformEndian32( pCommand->m_Alt ) != 0 );
+                    DebugConsole *pConsole = (DebugConsole *) pCommand->m_ConsoleId;
+                    if (IsValidConsole(pConsole)) {
+                        pConsole->OnVirtualKeyPress(radPlatformEndian32(pCommand->m_VirtualKey),
+                                                    radPlatformEndian32(pCommand->m_Ctrl) != 0,
+                                                    radPlatformEndian32(pCommand->m_Shift) != 0,
+                                                    radPlatformEndian32(pCommand->m_Alt) != 0);
                     }
                     //
                     // Update receive pointer and bytes to process.
                     //
-                    bytesReceived -= sizeof( HdcpVirtualKeyInputCmd );
-                    pRxAddress += sizeof( HdcpVirtualKeyInputCmd );
+                    bytesReceived -= sizeof(HdcpVirtualKeyInputCmd);
+                    pRxAddress += sizeof(HdcpVirtualKeyInputCmd);
 
                     break;
                 }
 
-                case HdcsPointerInput :
-                {
-                    HdcpPointerInputCmd* pCommand = (HdcpPointerInputCmd*) pRxAddress;
+                case HdcsPointerInput : {
+                    HdcpPointerInputCmd *pCommand = (HdcpPointerInputCmd *) pRxAddress;
 
                     //
                     // Attempt to verify that the id is still valid.
                     //
-                    DebugConsole* pConsole = (DebugConsole*) pCommand->m_ConsoleId;
-                    if( IsValidConsole( pConsole ) )
-                    {
-                        pConsole->OnMouseEvent( radPlatformEndian32( pCommand->m_XTextPixels ),
-                                                radPlatformEndian32( pCommand->m_YTextPixels ),
-                                                radPlatformEndian32( pCommand->m_XScreenPixels ),
-                                                radPlatformEndian32( pCommand->m_YScreenPixels ),
-                                                radPlatformEndian32( pCommand->m_Type ),
-                                                radPlatformEndian32( pCommand->m_Ctrl ),
-                                                radPlatformEndian32( pCommand->m_Shift ),
-                                                radPlatformEndian32( pCommand->m_Alt ),
-                                                radPlatformEndian32( pCommand->m_LButton ) );
+                    DebugConsole *pConsole = (DebugConsole *) pCommand->m_ConsoleId;
+                    if (IsValidConsole(pConsole)) {
+                        pConsole->OnMouseEvent(radPlatformEndian32(pCommand->m_XTextPixels),
+                                               radPlatformEndian32(pCommand->m_YTextPixels),
+                                               radPlatformEndian32(pCommand->m_XScreenPixels),
+                                               radPlatformEndian32(pCommand->m_YScreenPixels),
+                                               radPlatformEndian32(pCommand->m_Type),
+                                               radPlatformEndian32(pCommand->m_Ctrl),
+                                               radPlatformEndian32(pCommand->m_Shift),
+                                               radPlatformEndian32(pCommand->m_Alt),
+                                               radPlatformEndian32(pCommand->m_LButton));
                     }
 
                     //
                     // Update receive pointer and bytes to process.
                     //
-                    bytesReceived -= sizeof( HdcpPointerInputCmd );
-                    pRxAddress += sizeof( HdcpPointerInputCmd );
+                    bytesReceived -= sizeof(HdcpPointerInputCmd);
+                    pRxAddress += sizeof(HdcpPointerInputCmd);
 
                     break;
                 }
 
-                default:
-                {
-                    rAssertMsg( false, "Bad packet received from target");
+                default: {
+                    rAssertMsg(false, "Bad packet received from target");
                 }
-       
+
             }
         }
 
-        SendClientRecvReadyCommand( );
+        SendClientRecvReadyCommand();
 
         //
         // Re-issue the receive buffer. Move any bytes remaining to the front of the buffer.
         //
-        if( bytesReceived != 0 )
-        {
+        if (bytesReceived != 0) {
             bytesLeftOver = bytesReceived;
-            memmove( m_RxBuffer, pRxAddress, bytesLeftOver );
-        }  
+            memmove(m_RxBuffer, pRxAddress, bytesLeftOver);
+        }
 
         //
         // Re-issue the receive buffer.
         //
-        m_Channel->ReceiveAsync( m_RxBuffer + bytesLeftOver, sizeof( m_RxBuffer ) - bytesLeftOver, this );
+        m_Channel->ReceiveAsync(m_RxBuffer + bytesLeftOver, sizeof(m_RxBuffer) - bytesLeftOver,
+                                this);
     }
 }
 
@@ -1136,27 +1058,24 @@ void ConsoleClient::OnReceiveComplete
 //------------------------------------------------------------------------------
 
 void ConsoleClient::OnSendComplete
-( 
-    bool successful
-)
-{
+        (
+                bool successful
+        ) {
     m_TxOutstanding = false;
 
-    if( successful )
-    {
+    if (successful) {
         //
         // Initiate send possible,
         //
-        InitiateTransmission( );
-    }      
+        InitiateTransmission();
+    }
 
-    if( m_PendingDetach && !m_TxOutstanding )
-    {
+    if (m_PendingDetach && !m_TxOutstanding) {
         //
         // Attached false.
         //
         m_Attached = false;
-        m_Channel->Detach( );
+        m_Channel->Detach();
     }
 
 }
@@ -1174,34 +1093,29 @@ void ConsoleClient::OnSendComplete
 // Notes:
 //------------------------------------------------------------------------------
 
-void ConsoleClient::SendClientRecvReadyCommand( void )
-{
+void ConsoleClient::SendClientRecvReadyCommand(void) {
     //
     // if sync mode spin until data is sent over
     //
-    if ( m_bSyncMode )
-    {
-        while( m_TxBytesQueued + sizeof( HdcpClientRecvReadyCmd ) > DBGCNSL_BUFFER_SIZE && m_Attached )
-        {
-            ::radDbgComService( );
+    if (m_bSyncMode) {
+        while (m_TxBytesQueued + sizeof(HdcpClientRecvReadyCmd) > DBGCNSL_BUFFER_SIZE &&
+               m_Attached) {
+            ::radDbgComService();
         }
     }
 
-    if( ( m_TxBytesQueued + sizeof( HdcpClientRecvReadyCmd ) ) <= DBGCNSL_BUFFER_SIZE )
-    {
+    if ((m_TxBytesQueued + sizeof(HdcpClientRecvReadyCmd)) <= DBGCNSL_BUFFER_SIZE) {
         //
         // We have room. Add the data,
         //
-        HdcpClientRecvReadyCmd* pCommand = (HdcpClientRecvReadyCmd*) m_CurrentTxAddress;
-        pCommand->m_Command = (HdcpCommand)radPlatformEndian32( HdcsClientRecvReady );
+        HdcpClientRecvReadyCmd *pCommand = (HdcpClientRecvReadyCmd *) m_CurrentTxAddress;
+        pCommand->m_Command = (HdcpCommand) radPlatformEndian32(HdcsClientRecvReady);
 
-        m_CurrentTxAddress += sizeof( HdcpClientRecvReadyCmd );
-        m_TxBytesQueued += sizeof( HdcpClientRecvReadyCmd );
+        m_CurrentTxAddress += sizeof(HdcpClientRecvReadyCmd);
+        m_TxBytesQueued += sizeof(HdcpClientRecvReadyCmd);
 
-        InitiateTransmission( );
-    }
-    else if( !m_OverflowReported )
-    {
+        InitiateTransmission();
+    } else if (!m_OverflowReported) {
         //
         // Here we don't have room. Print warning message and return.
         //
@@ -1222,104 +1136,86 @@ void ConsoleClient::SendClientRecvReadyCommand( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-bool ConsoleClient::IsCompletePacket( unsigned int bytesRemaining, unsigned char* pRxBuffer )
-{
-    if ( bytesRemaining < sizeof( HdcpCommand ) )
-    {
+bool ConsoleClient::IsCompletePacket(unsigned int bytesRemaining, unsigned char *pRxBuffer) {
+    if (bytesRemaining < sizeof(HdcpCommand)) {
         return false;
     }
 
-    switch( radPlatformEndian32( *( ( HdcpCommand * )( pRxBuffer ) ) ) )
-    {
-        case HdcsCreate :
-        {
-            return bytesRemaining >= sizeof( HdcpCreateCmd );
+    switch (radPlatformEndian32(*((HdcpCommand *) (pRxBuffer)))) {
+        case HdcsCreate : {
+            return bytesRemaining >= sizeof(HdcpCreateCmd);
         }
-        break;
+            break;
 
-        case HdcsTitle :
-        {
-            return bytesRemaining >= sizeof( HdcpTitleCmd );
+        case HdcsTitle : {
+            return bytesRemaining >= sizeof(HdcpTitleCmd);
         }
-        break;
+            break;
 
-        case HdcsBackgroundColor :
-        {
-            return bytesRemaining >= sizeof( HdcpBackgroundColorCmd );
+        case HdcsBackgroundColor : {
+            return bytesRemaining >= sizeof(HdcpBackgroundColorCmd);
         }
-        break;
+            break;
 
-        case HdcsClear :
-        {
-            return bytesRemaining >= sizeof( HdcpClearCmd );
+        case HdcsClear : {
+            return bytesRemaining >= sizeof(HdcpClearCmd);
         }
-        break;
+            break;
 
-        case HdcsCursorPosition :
-        {
-            return bytesRemaining >= sizeof( HdcpCursorPositionCmd );
+        case HdcsCursorPosition : {
+            return bytesRemaining >= sizeof(HdcpCursorPositionCmd);
         }
-        break;
+            break;
 
-        case HdcsTextColor :
-        {
-            return bytesRemaining >= sizeof( HdcpTextColorCmd );
+        case HdcsTextColor : {
+            return bytesRemaining >= sizeof(HdcpTextColorCmd);
         }
-        break;
+            break;
 
-        case HdcsTextOutAt :
-        {
-            return bytesRemaining >= sizeof( HdcpTextOutAtCmd );
+        case HdcsTextOutAt : {
+            return bytesRemaining >= sizeof(HdcpTextOutAtCmd);
         }
-        break;
+            break;
 
-        case HdcsTextOut :
-        {
-            return bytesRemaining >= sizeof( HdcpTextOutCmd );
+        case HdcsTextOut : {
+            return bytesRemaining >= sizeof(HdcpTextOutCmd);
         }
-        break;
+            break;
 
-        case HdcsClose :
-        {
-            return bytesRemaining >= sizeof( HdcpCloseCmd );
+        case HdcsClose : {
+            return bytesRemaining >= sizeof(HdcpCloseCmd);
         }
-        break;
+            break;
 
-        case HdcsKeyboardInput :
-        {
-            return bytesRemaining >= sizeof( HdcpKeyboardInputCmd );
+        case HdcsKeyboardInput : {
+            return bytesRemaining >= sizeof(HdcpKeyboardInputCmd);
         }
-        break;
+            break;
 
-        case HdcsVirtualKeyInput :
-        {
-            return bytesRemaining >= sizeof( HdcpVirtualKeyInputCmd );
+        case HdcsVirtualKeyInput : {
+            return bytesRemaining >= sizeof(HdcpVirtualKeyInputCmd);
         }
-        break;
+            break;
 
-        case HdcsPointerInput :
-        {
-            return bytesRemaining >= sizeof( HdcpPointerInputCmd );
+        case HdcsPointerInput : {
+            return bytesRemaining >= sizeof(HdcpPointerInputCmd);
         }
-        break;
+            break;
 
-        case HdcsClientRecvReady :
-        {
-            return bytesRemaining >= sizeof( HdcpClientRecvReadyCmd );
+        case HdcsClientRecvReady : {
+            return bytesRemaining >= sizeof(HdcpClientRecvReadyCmd);
         }
-        break;
+            break;
 
-        case HdcsHostRecvReady :
-        {
-            return bytesRemaining >= sizeof( HdcpHostRecvReadyCmd );
+        case HdcsHostRecvReady : {
+            return bytesRemaining >= sizeof(HdcpHostRecvReadyCmd);
         }
-        break;
+            break;
 
-        default:
-        {
-            rAssert( false );
+        default: {
+            rAssert(false);
         }
-        break;
+            break;
     }
 
     return false;
@@ -1337,38 +1233,32 @@ bool ConsoleClient::IsCompletePacket( unsigned int bytesRemaining, unsigned char
 // Notes:
 //------------------------------------------------------------------------------
 
-void ConsoleClient::SendCreate( DebugConsole *pConsole )
-{
+void ConsoleClient::SendCreate(DebugConsole *pConsole) {
     //
     // if sync mode spin until data is sent over
     //
-    if ( m_bSyncMode )
-    {
-        while( m_TxBytesQueued + sizeof( HdcpCreateCmd ) > DBGCNSL_BUFFER_SIZE && m_Attached )
-        {
-            ::radDbgComService( );
+    if (m_bSyncMode) {
+        while (m_TxBytesQueued + sizeof(HdcpCreateCmd) > DBGCNSL_BUFFER_SIZE && m_Attached) {
+            ::radDbgComService();
         }
     }
 
     //
     // Check if room in the active buffer to add 
     //
-    if( m_TxBytesQueued + sizeof( HdcpCreateCmd ) <= DBGCNSL_BUFFER_SIZE )
-    {
+    if (m_TxBytesQueued + sizeof(HdcpCreateCmd) <= DBGCNSL_BUFFER_SIZE) {
         //
         // We have room. Add the data,
         //
-        HdcpCreateCmd* pCommand = (HdcpCreateCmd*) m_CurrentTxAddress;
-        pCommand->m_Command = (HdcpCommand) radPlatformEndian32( HdcsCreate );
-        pCommand->m_ConsoleId = (unsigned int )pConsole;
+        HdcpCreateCmd *pCommand = (HdcpCreateCmd *) m_CurrentTxAddress;
+        pCommand->m_Command = (HdcpCommand) radPlatformEndian32(HdcsCreate);
+        pCommand->m_ConsoleId = (unsigned int) pConsole;
 
-        m_CurrentTxAddress += sizeof( HdcpCreateCmd );
-        m_TxBytesQueued += sizeof( HdcpCreateCmd );
+        m_CurrentTxAddress += sizeof(HdcpCreateCmd);
+        m_TxBytesQueued += sizeof(HdcpCreateCmd);
 
-        InitiateTransmission( );
-    }
-    else if( !m_OverflowReported )
-    {
+        InitiateTransmission();
+    } else if (!m_OverflowReported) {
         //
         // Here we don't have room. Print warning message and return.
         //
@@ -1390,38 +1280,32 @@ void ConsoleClient::SendCreate( DebugConsole *pConsole )
 // Notes:
 //------------------------------------------------------------------------------
 
-void ConsoleClient::SendDestroy( DebugConsole *pConsole )
-{
+void ConsoleClient::SendDestroy(DebugConsole *pConsole) {
     //
     // if sync mode spin until data is sent over
     //
-    if ( m_bSyncMode )
-    {
-        while( m_TxBytesQueued + sizeof( HdcpCloseCmd ) > DBGCNSL_BUFFER_SIZE && m_Attached )
-        {
-            ::radDbgComService( );
+    if (m_bSyncMode) {
+        while (m_TxBytesQueued + sizeof(HdcpCloseCmd) > DBGCNSL_BUFFER_SIZE && m_Attached) {
+            ::radDbgComService();
         }
     }
 
     //
     // Check if room in the active buffer to add 
     //
-    if( m_TxBytesQueued + sizeof( HdcpCloseCmd ) <= DBGCNSL_BUFFER_SIZE )
-    {
+    if (m_TxBytesQueued + sizeof(HdcpCloseCmd) <= DBGCNSL_BUFFER_SIZE) {
         //
         // We have room. Add the data,
         //
-        HdcpCloseCmd* pCommand = (HdcpCloseCmd*) m_CurrentTxAddress;
-        pCommand->m_Command = (HdcpCommand) radPlatformEndian32( HdcsClose );
-        pCommand->m_ConsoleId = (unsigned int )pConsole;
+        HdcpCloseCmd *pCommand = (HdcpCloseCmd *) m_CurrentTxAddress;
+        pCommand->m_Command = (HdcpCommand) radPlatformEndian32(HdcsClose);
+        pCommand->m_ConsoleId = (unsigned int) pConsole;
 
-        m_CurrentTxAddress += sizeof( HdcpCloseCmd );
-        m_TxBytesQueued += sizeof( HdcpCloseCmd );
+        m_CurrentTxAddress += sizeof(HdcpCloseCmd);
+        m_TxBytesQueued += sizeof(HdcpCloseCmd);
 
-        InitiateTransmission( );
-    }
-    else if( !m_OverflowReported )
-    {
+        InitiateTransmission();
+    } else if (!m_OverflowReported) {
         //
         // Here we don't have room. Print warning message and return.
         //
@@ -1443,41 +1327,35 @@ void ConsoleClient::SendDestroy( DebugConsole *pConsole )
 // Notes:
 //------------------------------------------------------------------------------
 
-void ConsoleClient::SendTitle( DebugConsole *pConsole, const char* title )
-{
+void ConsoleClient::SendTitle(DebugConsole *pConsole, const char *title) {
     //
     // if sync mode spin until data is sent over
     //
-    if ( m_bSyncMode )
-    {
-        while( m_TxBytesQueued + sizeof( HdcpTitleCmd ) > DBGCNSL_BUFFER_SIZE && m_Attached )
-        {
-            ::radDbgComService( );
+    if (m_bSyncMode) {
+        while (m_TxBytesQueued + sizeof(HdcpTitleCmd) > DBGCNSL_BUFFER_SIZE && m_Attached) {
+            ::radDbgComService();
         }
     }
 
     //
     // Check if room in the active buffer to add 
     //
-    if( m_TxBytesQueued + sizeof( HdcpTitleCmd ) <= DBGCNSL_BUFFER_SIZE )
-    {
+    if (m_TxBytesQueued + sizeof(HdcpTitleCmd) <= DBGCNSL_BUFFER_SIZE) {
         //
         // We have room. Add the data,
         //
-        HdcpTitleCmd* pCommand = (HdcpTitleCmd*) m_CurrentTxAddress;
-        pCommand->m_Command = (HdcpCommand) radPlatformEndian32( HdcsTitle );
-        pCommand->m_ConsoleId = (unsigned int )pConsole;
+        HdcpTitleCmd *pCommand = (HdcpTitleCmd *) m_CurrentTxAddress;
+        pCommand->m_Command = (HdcpCommand) radPlatformEndian32(HdcsTitle);
+        pCommand->m_ConsoleId = (unsigned int) pConsole;
 
-        strncpy( pCommand->m_Title, title, sizeof( pCommand->m_Title ) );
-        pCommand->m_Title[ sizeof( pCommand->m_Title ) - 1 ] = '\0';
+        strncpy(pCommand->m_Title, title, sizeof(pCommand->m_Title));
+        pCommand->m_Title[sizeof(pCommand->m_Title) - 1] = '\0';
 
-        m_CurrentTxAddress += sizeof( HdcpTitleCmd );
-        m_TxBytesQueued += sizeof( HdcpTitleCmd );
+        m_CurrentTxAddress += sizeof(HdcpTitleCmd);
+        m_TxBytesQueued += sizeof(HdcpTitleCmd);
 
-        InitiateTransmission( );
-    }
-    else if( !m_OverflowReported )
-    {
+        InitiateTransmission();
+    } else if (!m_OverflowReported) {
         //
         // Here we don't have room. Print warning message and return.
         //
@@ -1499,39 +1377,34 @@ void ConsoleClient::SendTitle( DebugConsole *pConsole, const char* title )
 // Notes:
 //------------------------------------------------------------------------------
 
-void ConsoleClient::SendBackgroundColor( DebugConsole *pConsole, unsigned int color )
-{
+void ConsoleClient::SendBackgroundColor(DebugConsole *pConsole, unsigned int color) {
     //
     // if sync mode spin until data is sent over
     //
-    if ( m_bSyncMode )
-    {
-        while( m_TxBytesQueued + sizeof( HdcpBackgroundColorCmd ) > DBGCNSL_BUFFER_SIZE && m_Attached )
-        {
-            ::radDbgComService( );
+    if (m_bSyncMode) {
+        while (m_TxBytesQueued + sizeof(HdcpBackgroundColorCmd) > DBGCNSL_BUFFER_SIZE &&
+               m_Attached) {
+            ::radDbgComService();
         }
     }
 
     //
     // Check if room in the active buffer to add 
     //
-    if( m_TxBytesQueued + sizeof( HdcpBackgroundColorCmd ) <= DBGCNSL_BUFFER_SIZE )
-    {
+    if (m_TxBytesQueued + sizeof(HdcpBackgroundColorCmd) <= DBGCNSL_BUFFER_SIZE) {
         //
         // We have room. Add the data,
         //
-        HdcpBackgroundColorCmd* pCommand = (HdcpBackgroundColorCmd*) m_CurrentTxAddress;
-        pCommand->m_Command = (HdcpCommand) radPlatformEndian32( HdcsBackgroundColor );
-        pCommand->m_ConsoleId = (unsigned int )pConsole;
-        pCommand->m_BackgroundColor = radPlatformEndian32( color );
+        HdcpBackgroundColorCmd *pCommand = (HdcpBackgroundColorCmd *) m_CurrentTxAddress;
+        pCommand->m_Command = (HdcpCommand) radPlatformEndian32(HdcsBackgroundColor);
+        pCommand->m_ConsoleId = (unsigned int) pConsole;
+        pCommand->m_BackgroundColor = radPlatformEndian32(color);
 
-        m_CurrentTxAddress += sizeof( HdcpBackgroundColorCmd );
-        m_TxBytesQueued += sizeof( HdcpBackgroundColorCmd );
+        m_CurrentTxAddress += sizeof(HdcpBackgroundColorCmd);
+        m_TxBytesQueued += sizeof(HdcpBackgroundColorCmd);
 
-        InitiateTransmission( );
-    }
-    else if( !m_OverflowReported )
-    {
+        InitiateTransmission();
+    } else if (!m_OverflowReported) {
         //
         // Here we don't have room. Print warning message and return.
         //
@@ -1552,38 +1425,32 @@ void ConsoleClient::SendBackgroundColor( DebugConsole *pConsole, unsigned int co
 // Notes:
 //------------------------------------------------------------------------------
 
-void ConsoleClient::SendClear( DebugConsole *pConsole )
-{
+void ConsoleClient::SendClear(DebugConsole *pConsole) {
     //
     // if sync mode spin until data is sent over
     //
-    if ( m_bSyncMode )
-    {
-        while( m_TxBytesQueued + sizeof( HdcpClearCmd ) > DBGCNSL_BUFFER_SIZE && m_Attached )
-        {
-            ::radDbgComService( );
+    if (m_bSyncMode) {
+        while (m_TxBytesQueued + sizeof(HdcpClearCmd) > DBGCNSL_BUFFER_SIZE && m_Attached) {
+            ::radDbgComService();
         }
     }
 
     //
     // Check if room in the active buffer to add 
     //
-    if( m_TxBytesQueued + sizeof( HdcpClearCmd ) <= DBGCNSL_BUFFER_SIZE )
-    {
+    if (m_TxBytesQueued + sizeof(HdcpClearCmd) <= DBGCNSL_BUFFER_SIZE) {
         //
         // We have room. Add the data,
         //
-        HdcpClearCmd* pCommand = (HdcpClearCmd*) m_CurrentTxAddress;
-        pCommand->m_Command = (HdcpCommand) radPlatformEndian32( HdcsClear );
-        pCommand->m_ConsoleId = (unsigned int )pConsole;
+        HdcpClearCmd *pCommand = (HdcpClearCmd *) m_CurrentTxAddress;
+        pCommand->m_Command = (HdcpCommand) radPlatformEndian32(HdcsClear);
+        pCommand->m_ConsoleId = (unsigned int) pConsole;
 
-        m_CurrentTxAddress += sizeof( HdcpClearCmd );
-        m_TxBytesQueued += sizeof( HdcpClearCmd );
+        m_CurrentTxAddress += sizeof(HdcpClearCmd);
+        m_TxBytesQueued += sizeof(HdcpClearCmd);
 
-        InitiateTransmission( );
-    }
-    else if( !m_OverflowReported )
-    {
+        InitiateTransmission();
+    } else if (!m_OverflowReported) {
         //
         // Here we don't have room. Print warning message and return.
         //
@@ -1604,40 +1471,35 @@ void ConsoleClient::SendClear( DebugConsole *pConsole )
 // Notes:
 //------------------------------------------------------------------------------
 
-void ConsoleClient::SendCursorPosition( DebugConsole *pConsole, unsigned int x, unsigned int y )
-{
+void ConsoleClient::SendCursorPosition(DebugConsole *pConsole, unsigned int x, unsigned int y) {
     //
     // if sync mode spin until data is sent over
     //
-    if ( m_bSyncMode )
-    {
-        while( m_TxBytesQueued + sizeof( HdcpCursorPositionCmd ) > DBGCNSL_BUFFER_SIZE && m_Attached )
-        {
-            ::radDbgComService( );
+    if (m_bSyncMode) {
+        while (m_TxBytesQueued + sizeof(HdcpCursorPositionCmd) > DBGCNSL_BUFFER_SIZE &&
+               m_Attached) {
+            ::radDbgComService();
         }
     }
 
     //
     // Check if room in the active buffer to add 
     //
-    if( m_TxBytesQueued + sizeof( HdcpCursorPositionCmd ) <= DBGCNSL_BUFFER_SIZE )
-    {
+    if (m_TxBytesQueued + sizeof(HdcpCursorPositionCmd) <= DBGCNSL_BUFFER_SIZE) {
         //
         // We have room. Add the data,
         //
-        HdcpCursorPositionCmd* pCommand = (HdcpCursorPositionCmd*) m_CurrentTxAddress;
-        pCommand->m_Command = (HdcpCommand) radPlatformEndian32( HdcsCursorPosition );
-        pCommand->m_ConsoleId = (unsigned int )pConsole;
-        pCommand->m_XPosition = radPlatformEndian32( x );
-        pCommand->m_YPosition = radPlatformEndian32( y );
-    
-        m_CurrentTxAddress += sizeof( HdcpCursorPositionCmd );
-        m_TxBytesQueued += sizeof( HdcpCursorPositionCmd );
+        HdcpCursorPositionCmd *pCommand = (HdcpCursorPositionCmd *) m_CurrentTxAddress;
+        pCommand->m_Command = (HdcpCommand) radPlatformEndian32(HdcsCursorPosition);
+        pCommand->m_ConsoleId = (unsigned int) pConsole;
+        pCommand->m_XPosition = radPlatformEndian32(x);
+        pCommand->m_YPosition = radPlatformEndian32(y);
 
-        InitiateTransmission( );
-    }
-    else if( !m_OverflowReported )
-    {
+        m_CurrentTxAddress += sizeof(HdcpCursorPositionCmd);
+        m_TxBytesQueued += sizeof(HdcpCursorPositionCmd);
+
+        InitiateTransmission();
+    } else if (!m_OverflowReported) {
         //
         // Here we don't have room. Print warning message and return.
         //
@@ -1658,39 +1520,33 @@ void ConsoleClient::SendCursorPosition( DebugConsole *pConsole, unsigned int x, 
 // Notes:
 //------------------------------------------------------------------------------
 
-void ConsoleClient::SendTextColor( DebugConsole *pConsole, unsigned int color )
-{
+void ConsoleClient::SendTextColor(DebugConsole *pConsole, unsigned int color) {
     //
     // if sync mode spin until data is sent over
     //
-    if ( m_bSyncMode )
-    {
-        while( m_TxBytesQueued + sizeof( HdcpTextColorCmd ) > DBGCNSL_BUFFER_SIZE && m_Attached )
-        {
-            ::radDbgComService( );
+    if (m_bSyncMode) {
+        while (m_TxBytesQueued + sizeof(HdcpTextColorCmd) > DBGCNSL_BUFFER_SIZE && m_Attached) {
+            ::radDbgComService();
         }
     }
 
     //
     // Check if room in the active buffer to add 
     //
-    if( m_TxBytesQueued + sizeof( HdcpTextColorCmd ) <= DBGCNSL_BUFFER_SIZE )
-    {
+    if (m_TxBytesQueued + sizeof(HdcpTextColorCmd) <= DBGCNSL_BUFFER_SIZE) {
         //
         // We have room. Add the data,
         //
-        HdcpTextColorCmd* pCommand = (HdcpTextColorCmd*) m_CurrentTxAddress;
-        pCommand->m_Command = (HdcpCommand) radPlatformEndian32( HdcsTextColor );
-        pCommand->m_ConsoleId = (unsigned int )pConsole;
-        pCommand->m_TextColor = radPlatformEndian32( color );
+        HdcpTextColorCmd *pCommand = (HdcpTextColorCmd *) m_CurrentTxAddress;
+        pCommand->m_Command = (HdcpCommand) radPlatformEndian32(HdcsTextColor);
+        pCommand->m_ConsoleId = (unsigned int) pConsole;
+        pCommand->m_TextColor = radPlatformEndian32(color);
 
-        m_CurrentTxAddress += sizeof( HdcpTextColorCmd );
-        m_TxBytesQueued += sizeof( HdcpTextColorCmd );
+        m_CurrentTxAddress += sizeof(HdcpTextColorCmd);
+        m_TxBytesQueued += sizeof(HdcpTextColorCmd);
 
-        InitiateTransmission( );
-    }
-    else if( !m_OverflowReported )
-    {
+        InitiateTransmission();
+    } else if (!m_OverflowReported) {
         //
         // Here we don't have room. Print warning message and return.
         //
@@ -1711,45 +1567,39 @@ void ConsoleClient::SendTextColor( DebugConsole *pConsole, unsigned int color )
 // Notes:
 //------------------------------------------------------------------------------
 
-void ConsoleClient::SendTextOutAt( DebugConsole *pConsole, const char* title, int x, int y )
-{
+void ConsoleClient::SendTextOutAt(DebugConsole *pConsole, const char *title, int x, int y) {
     //
     // if sync mode spin until data is sent over
     //
-    if ( m_bSyncMode )
-    {
-        while( ( m_TxBytesQueued + sizeof( HdcpTextOutAtCmd ) ) > DBGCNSL_BUFFER_SIZE && m_Attached )
-        {
-            ::radDbgComService( );
+    if (m_bSyncMode) {
+        while ((m_TxBytesQueued + sizeof(HdcpTextOutAtCmd)) > DBGCNSL_BUFFER_SIZE && m_Attached) {
+            ::radDbgComService();
         }
     }
 
     //
     // Check if room in the active buffer to add 
     //
-    if( m_TxBytesQueued + sizeof( HdcpTextOutAtCmd ) <= DBGCNSL_BUFFER_SIZE )
-    {
+    if (m_TxBytesQueued + sizeof(HdcpTextOutAtCmd) <= DBGCNSL_BUFFER_SIZE) {
         //
         // We have room. Add the data,
         //
-        HdcpTextOutAtCmd* pCommand = (HdcpTextOutAtCmd*) m_CurrentTxAddress;
-        pCommand->m_Command = (HdcpCommand) radPlatformEndian32( HdcsTextOutAt );
-        pCommand->m_ConsoleId = (unsigned int )pConsole;
-        pCommand->m_XPosition = radPlatformEndian32( x );
-        pCommand->m_YPosition = radPlatformEndian32( y );
+        HdcpTextOutAtCmd *pCommand = (HdcpTextOutAtCmd *) m_CurrentTxAddress;
+        pCommand->m_Command = (HdcpCommand) radPlatformEndian32(HdcsTextOutAt);
+        pCommand->m_ConsoleId = (unsigned int) pConsole;
+        pCommand->m_XPosition = radPlatformEndian32(x);
+        pCommand->m_YPosition = radPlatformEndian32(y);
 
-        rWarningMsg( strlen( title ) < sizeof( pCommand->m_Text ), "String too long\n"); 
+        rWarningMsg(strlen(title) < sizeof(pCommand->m_Text), "String too long\n");
 
-        strncpy( pCommand->m_Text, title, sizeof( pCommand->m_Text ) );
-        pCommand->m_Text[ sizeof( pCommand->m_Text ) - 1 ] = '\0';
+        strncpy(pCommand->m_Text, title, sizeof(pCommand->m_Text));
+        pCommand->m_Text[sizeof(pCommand->m_Text) - 1] = '\0';
 
-        m_CurrentTxAddress += sizeof( HdcpTextOutAtCmd );
-        m_TxBytesQueued += sizeof( HdcpTextOutAtCmd );
+        m_CurrentTxAddress += sizeof(HdcpTextOutAtCmd);
+        m_TxBytesQueued += sizeof(HdcpTextOutAtCmd);
 
-        InitiateTransmission( );
-    }
-    else if( !m_OverflowReported )
-    {
+        InitiateTransmission();
+    } else if (!m_OverflowReported) {
         //
         // Here we don't have room. Print warning message and return.
         //
@@ -1771,43 +1621,37 @@ void ConsoleClient::SendTextOutAt( DebugConsole *pConsole, const char* title, in
 // Notes:
 //------------------------------------------------------------------------------
 
-void ConsoleClient::SendTextOut( DebugConsole *pConsole, const char* title )
-{
+void ConsoleClient::SendTextOut(DebugConsole *pConsole, const char *title) {
     //
     // if sync mode spin until data is sent over
     //
-    if ( m_bSyncMode )
-    {
-        while( m_TxBytesQueued + sizeof( HdcpTextOutCmd ) > DBGCNSL_BUFFER_SIZE && m_Attached )
-        {
-            ::radDbgComService( );
+    if (m_bSyncMode) {
+        while (m_TxBytesQueued + sizeof(HdcpTextOutCmd) > DBGCNSL_BUFFER_SIZE && m_Attached) {
+            ::radDbgComService();
         }
     }
 
     //
     // Check if room in the active buffer to add 
     //
-    if( m_TxBytesQueued + sizeof( HdcpTextOutCmd ) <= DBGCNSL_BUFFER_SIZE )
-    {
+    if (m_TxBytesQueued + sizeof(HdcpTextOutCmd) <= DBGCNSL_BUFFER_SIZE) {
         //
         // We have room. Add the data,
         //
-        HdcpTextOutCmd* pCommand = (HdcpTextOutCmd*) m_CurrentTxAddress;
-        pCommand->m_Command = (HdcpCommand) radPlatformEndian32( HdcsTextOut );
-        pCommand->m_ConsoleId = (unsigned int )pConsole;
+        HdcpTextOutCmd *pCommand = (HdcpTextOutCmd *) m_CurrentTxAddress;
+        pCommand->m_Command = (HdcpCommand) radPlatformEndian32(HdcsTextOut);
+        pCommand->m_ConsoleId = (unsigned int) pConsole;
 
-        rWarningMsg( strlen( title ) < sizeof( pCommand->m_Text ), "String too long\n "); 
+        rWarningMsg(strlen(title) < sizeof(pCommand->m_Text), "String too long\n ");
 
-        strncpy( pCommand->m_Text, title, sizeof( pCommand->m_Text ) );
-        pCommand->m_Text[ sizeof( pCommand->m_Text ) - 1 ] = '\0';
+        strncpy(pCommand->m_Text, title, sizeof(pCommand->m_Text));
+        pCommand->m_Text[sizeof(pCommand->m_Text) - 1] = '\0';
 
-        m_CurrentTxAddress += sizeof( HdcpTextOutCmd );
-        m_TxBytesQueued += sizeof( HdcpTextOutCmd );
+        m_CurrentTxAddress += sizeof(HdcpTextOutCmd);
+        m_TxBytesQueued += sizeof(HdcpTextOutCmd);
 
-        InitiateTransmission( );
-    }
-    else if( !m_OverflowReported )
-    {
+        InitiateTransmission();
+    } else if (!m_OverflowReported) {
         //
         // Here we don't have room. Print warning message and return.
         //
@@ -1829,28 +1673,23 @@ void ConsoleClient::SendTextOut( DebugConsole *pConsole, const char* title )
 // Notes:
 //------------------------------------------------------------------------------
 
-void ConsoleClient::InitiateTransmission( void )
-{
+void ConsoleClient::InitiateTransmission(void) {
     //
     // Check if attached, and no transmit outstanding and that we have data to send.,
     //
-    if( m_Attached && !m_TxOutstanding && (m_TxBytesQueued != 0) )
-    {
-        if( m_Buffer1Active )
-        {
+    if (m_Attached && !m_TxOutstanding && (m_TxBytesQueued != 0)) {
+        if (m_Buffer1Active) {
             //
             // We will send buffer1 and reset things for buffer 2
             //
-            m_Channel->SendAsync( m_TxBuffer1, m_TxBytesQueued, this );
+            m_Channel->SendAsync(m_TxBuffer1, m_TxBytesQueued, this);
             m_CurrentTxAddress = m_TxBuffer2;
-        }
-        else
-        {
+        } else {
             //
             // We will send buffer2 and reset things for buffer 1
             //
-            m_Channel->SendAsync( m_TxBuffer2, m_TxBytesQueued, this );
-            m_CurrentTxAddress = m_TxBuffer1;                
+            m_Channel->SendAsync(m_TxBuffer2, m_TxBytesQueued, this);
+            m_CurrentTxAddress = m_TxBuffer1;
         }
         m_Buffer1Active = !m_Buffer1Active;
         m_TxBytesQueued = 0;
@@ -1871,22 +1710,19 @@ void ConsoleClient::InitiateTransmission( void )
 //------------------------------------------------------------------------------
 
 bool ConsoleClient::IsValidConsole
-( 
-    DebugConsole* pConsole
-)
-{
-    DebugConsole* pC = m_ConsoleListHead;
-    
-    while( pC != NULL )
-    {
-        if( pC == pConsole )
-        {
-            return( true );
+        (
+                DebugConsole *pConsole
+        ) {
+    DebugConsole *pC = m_ConsoleListHead;
+
+    while (pC != NULL) {
+        if (pC == pConsole) {
+            return (true);
         }
         pC = pC->m_Next;
     }
-    
-    return( false );
+
+    return (false);
 
 }
 
@@ -1901,9 +1737,8 @@ bool ConsoleClient::IsValidConsole
 //
 // Notes:
 //------------------------------------------------------------------------------
-    
-void ConsoleClient::AddRef( void )
-{
+
+void ConsoleClient::AddRef(void) {
     m_ReferenceCount++;
 }
 
@@ -1919,13 +1754,11 @@ void ConsoleClient::AddRef( void )
 //
 // Notes:
 //------------------------------------------------------------------------------
-    
-void ConsoleClient::Service( void )
-{
-    DebugConsole * pListEntry = m_ConsoleListHead;
-    while ( pListEntry != NULL )
-    {
-        pListEntry->ProcessInputBuffer( );
+
+void ConsoleClient::Service(void) {
+    DebugConsole *pListEntry = m_ConsoleListHead;
+    while (pListEntry != NULL) {
+        pListEntry->ProcessInputBuffer();
         pListEntry = pListEntry->m_Next;
     }
 }
@@ -1941,14 +1774,12 @@ void ConsoleClient::Service( void )
 //
 // Notes:
 //------------------------------------------------------------------------------
-    
-void ConsoleClient::Release( void )
-{
+
+void ConsoleClient::Release(void) {
     m_ReferenceCount--;
-    if( m_ReferenceCount == 0 )
-    {
+    if (m_ReferenceCount == 0) {
         delete this;
-    }   
+    }
 }
 
 //=============================================================================
@@ -1965,9 +1796,9 @@ void ConsoleClient::Release( void )
 
 #ifdef RAD_DEBUG
 
-void ConsoleClient::Dump( char* pStringBuffer, unsigned int bufferSize )
+void ConsoleClient::Dump(char* pStringBuffer, unsigned int bufferSize)
 {
-    sprintf( pStringBuffer, "Object: [ConsoleClient] At Memory Location:[0x%x]\n", (unsigned int) this );
+    sprintf(pStringBuffer, "Object: [ConsoleClient] At Memory Location:[0x%x]\n", (unsigned int) this);
 }
 
 #endif

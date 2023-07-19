@@ -18,7 +18,7 @@
 //
 //=============================================================================
 
-#ifndef	PLATFORMDRIVES_HPP
+#ifndef    PLATFORMDRIVES_HPP
 #define PLATFORMDRIVES_HPP
 
 #include <raddebug.hpp>
@@ -31,7 +31,7 @@ class radDrive;
 // Typedefs
 //=============================================================================
 
-#if defined( RAD_WIN32 ) || defined( RAD_XBOX )
+#if defined(RAD_WIN32) || defined(RAD_XBOX)
 typedef void* radFileHandle;
 typedef void* radFileDirHandle;
 #endif
@@ -85,16 +85,17 @@ struct radFileDirHandle
 //
 // Default default drive
 //
-void PlatformDrivesGetDefaultDrive( char* driveSpec );
+void PlatformDrivesGetDefaultDrive(char *driveSpec);
 
 //
 // Indicate whether we have a valid drive
 //
-bool PlatformDrivesValidateDriveName( const char* driveSpec );
+bool PlatformDrivesValidateDriveName(const char *driveSpec);
 
 //
 // Get the drive object, name should be validated.
 //
-void PlatformDrivesFactory( class radDrive** ppDrive, const char* driveSpec, radMemoryAllocator alloc );
+void
+PlatformDrivesFactory(class radDrive **ppDrive, const char *driveSpec, radMemoryAllocator alloc);
 
 #endif // PLATFORMDRIVES_HPP

@@ -43,30 +43,34 @@ class radControllerSystemDirectInput;
 // Statics
 //============================================================================
 
-static radControllerSystemDirectInput* s_pTheDirectInputControllerSystem = NULL;
+static radControllerSystemDirectInput *s_pTheDirectInputControllerSystem = NULL;
 
 static radMemoryAllocator g_ControllerSystemAllocator = RADMEMORY_ALLOC_DEFAULT;
 
 // set to true before enumerating the keyboard
 static bool s_EnumKeyboard = false;
 
-static int s_VirtualKeyToIndex[ 256 ];
-const int* VirtualKeyToIndex = &s_VirtualKeyToIndex[ -1 ]; // DIK_* starts at 1 not 0
-const int* VirtualJoyKeyToIndex = &s_VirtualKeyToIndex[ -48 ]; // DIK_* starts at 1 not 0
+static int s_VirtualKeyToIndex[256];
+const int *VirtualKeyToIndex = &s_VirtualKeyToIndex[-1]; // DIK_* starts at 1 not 0
+const int *VirtualJoyKeyToIndex = &s_VirtualKeyToIndex[-48]; // DIK_* starts at 1 not 0
 
 //============================================================================
 // Interface: IRadControllerInputPointDirectInput
 //============================================================================
 
 struct IRadControllerInputPointDirectInput
-    :
-    public IRadControllerInputPoint
-{
-    virtual unsigned int iGetDirectInput8Type( void ) = 0;
-	virtual void		 iInitialize( unsigned int offset, unsigned int value ) = 0;
-    virtual bool         iHandleEvent( unsigned int offset, unsigned int value, unsigned int virtualTime ) = 0;
-    virtual void         iVirtualTimeChanged( unsigned int virtualTime ) = 0;
-    virtual void         iVirtualTimeReMapped( unsigned int virtualTime ) = 0;
+        :
+                public IRadControllerInputPoint {
+    virtual unsigned int iGetDirectInput8Type(void) = 0;
+
+    virtual void iInitialize(unsigned int offset, unsigned int value) = 0;
+
+    virtual bool
+    iHandleEvent(unsigned int offset, unsigned int value, unsigned int virtualTime) = 0;
+
+    virtual void iVirtualTimeChanged(unsigned int virtualTime) = 0;
+
+    virtual void iVirtualTimeReMapped(unsigned int virtualTime) = 0;
 };
 
 //============================================================================
@@ -74,207 +78,175 @@ struct IRadControllerInputPointDirectInput
 //============================================================================
 
 struct IRadControllerDirectInput
-    :
-    public IRadController
-{
-    virtual void iSetBufferTime( unsigned int milliseconds, unsigned int pollingRate ) = 0;
-    virtual void iVirtualTimeChanged( unsigned int virtualTime, unsigned int virtualTimAdjust ) = 0;
-    virtual void iVirtualTimeReMapped( unsigned int virtualTime ) = 0;
-    virtual void iPoll( void ) = 0;
+        :
+                public IRadController {
+    virtual void iSetBufferTime(unsigned int milliseconds, unsigned int pollingRate) = 0;
+
+    virtual void iVirtualTimeChanged(unsigned int virtualTime, unsigned int virtualTimAdjust) = 0;
+
+    virtual void iVirtualTimeReMapped(unsigned int virtualTime) = 0;
+
+    virtual void iPoll(void) = 0;
 };
 
 //============================================================================
 // Component: ControllerOutputPointDirectInput
 //============================================================================
-ControllerOutputPointDirectInput::ControllerOutputPointDirectInput( LPCDIEFFECTINFO pdei, DWORD dataOffset )
-:   m_pDIDevice(NULL), 
-    m_fGain(0.0f),
-    m_iForceNumber(0),
-    m_diActuator( dataOffset )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "ControllerOutputPointDirectInput" );
-    memcpy( &m_diEffectInfo, pdei, sizeof( m_diEffectInfo ) );
+ControllerOutputPointDirectInput::ControllerOutputPointDirectInput(LPCDIEFFECTINFO pdei,
+                                                                   DWORD dataOffset)
+        : m_pDIDevice(NULL),
+          m_fGain(0.0f),
+          m_iForceNumber(0),
+          m_diActuator(dataOffset) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "ControllerOutputPointDirectInput");
+    memcpy(&m_diEffectInfo, pdei, sizeof(m_diEffectInfo));
     m_diEffectInfo.dwSize = sizeof(DIEFFECTINFO);
-    //memcpy( m_diEffectInfo.tszName, "Unknown", sizeof(m_diEffectInfo.tszName) );
+    //memcpy(m_diEffectInfo.tszName, "Unknown", sizeof(m_diEffectInfo.tszName));
 
-    for( int i = 0; i < MAX_FORCES; i++ )
-    {
+    for (int i = 0; i < MAX_FORCES; i++) {
         m_pEffectID[i] = NULL;
         m_bEffectPlaying[i] = false;
     }
 }
 
-ControllerOutputPointDirectInput::~ControllerOutputPointDirectInput()
-{
+ControllerOutputPointDirectInput::~ControllerOutputPointDirectInput() {
     ReleaseEffect();
 }
 
-const char * ControllerOutputPointDirectInput::GetName( void )
-{
+const char *ControllerOutputPointDirectInput::GetName(void) {
     return m_diEffectInfo.tszName;
 }
 
-const char * ControllerOutputPointDirectInput::GetType( void )
-{
+const char *ControllerOutputPointDirectInput::GetType(void) {
     return "Analog";
 }
 
-float ControllerOutputPointDirectInput::GetGain( void )
-{
+float ControllerOutputPointDirectInput::GetGain(void) {
     return m_fGain;
 }
 
-void ControllerOutputPointDirectInput::SetGain( float value )
-{
-    if ( value < 0.0f )
-    {
+void ControllerOutputPointDirectInput::SetGain(float value) {
+    if (value < 0.0f) {
         value = 0.0f;
-    }
-    else if ( value > 1.0f )
-    {
+    } else if (value > 1.0f) {
         value = 1.0f;
     }
 
     m_fGain = value;
 }
 
-void ControllerOutputPointDirectInput::CreateEffect( GUID guidEffect, 
-                                                     LPCDIEFFECT pEffect,
-                                                     int forceNumber )
-{
+void ControllerOutputPointDirectInput::CreateEffect(GUID guidEffect,
+                                                    LPCDIEFFECT pEffect,
+                                                    int forceNumber) {
     HRESULT hResult = S_OK;
 
     // unload any effects still in memory.
-    if( m_pEffectID[forceNumber] != NULL )
-    {
+    if (m_pEffectID[forceNumber] != NULL) {
         UnloadEffect(forceNumber);
     }
 
-    hResult = m_pDIDevice->CreateEffect( guidEffect, pEffect, &m_pEffectID[forceNumber], NULL );
+    hResult = m_pDIDevice->CreateEffect(guidEffect, pEffect, &m_pEffectID[forceNumber], NULL);
     m_diEffectInfo.guid = guidEffect;
     m_iForceNumber = forceNumber;
-    rAssertMsg( hResult == S_OK, "Failed to create Effect!" );
+    rAssertMsg(hResult == S_OK, "Failed to create Effect!");
 }
 
-void ControllerOutputPointDirectInput::UpdateEffect( LPCDIEFFECT pEffect )
-{
-    if( m_pEffectID[m_iForceNumber] == NULL )
-    {
-        CreateEffect( m_diEffectInfo.guid, pEffect, m_iForceNumber );
-    }
-    else
-    {
-        SetParams( pEffect, m_iForceNumber );
+void ControllerOutputPointDirectInput::UpdateEffect(LPCDIEFFECT pEffect) {
+    if (m_pEffectID[m_iForceNumber] == NULL) {
+        CreateEffect(m_diEffectInfo.guid, pEffect, m_iForceNumber);
+    } else {
+        SetParams(pEffect, m_iForceNumber);
     }
 }
 
-void ControllerOutputPointDirectInput::SetParams( LPCDIEFFECT pEffect,
-                                                  int forceNumber)
-{
-    if( m_bEffectPlaying[forceNumber] )
-    {
+void ControllerOutputPointDirectInput::SetParams(LPCDIEFFECT pEffect,
+                                                 int forceNumber) {
+    if (m_bEffectPlaying[forceNumber]) {
         HRESULT hResult = S_OK;
-        rAssertMsg( m_pEffectID[forceNumber] != NULL, "Attempt to set an uncreated force effect." );
+        rAssertMsg(m_pEffectID[forceNumber] != NULL, "Attempt to set an uncreated force effect.");
 
-        hResult = m_pEffectID[forceNumber]->SetParameters( pEffect, 
-                                                           DIEP_DIRECTION |
-                                                           DIEP_TYPESPECIFICPARAMS );
+        hResult = m_pEffectID[forceNumber]->SetParameters(pEffect,
+                                                          DIEP_DIRECTION |
+                                                          DIEP_TYPESPECIFICPARAMS);
         m_iForceNumber = forceNumber;
     }
-//    rAssertMsg( hResult == S_OK, "Failed to set Effect!" );
+//    rAssertMsg(hResult == S_OK, "Failed to set Effect!");
 }
 
-void ControllerOutputPointDirectInput::Start( void )
-{
+void ControllerOutputPointDirectInput::Start(void) {
     HRESULT hResult = S_OK;
 
-    rAssertMsg( m_pEffectID[m_iForceNumber] != NULL, "Attempt to start an uncreated force effect." );
-    if (m_pEffectID[m_iForceNumber] != NULL)
-    {
+    rAssertMsg(m_pEffectID[m_iForceNumber] != NULL, "Attempt to start an uncreated force effect.");
+    if (m_pEffectID[m_iForceNumber] != NULL) {
         // Make sure the device is acquired, if we are gaining focus.
         m_pDIDevice->Acquire();
 
-        hResult = m_pEffectID[m_iForceNumber]->Start( 1, 0 ); // Start the effect
+        hResult = m_pEffectID[m_iForceNumber]->Start(1, 0); // Start the effect
 
-        if( SUCCEEDED(hResult) )
-        {
+        if (SUCCEEDED(hResult)) {
             m_bEffectPlaying[m_iForceNumber] = true;
             rDebugPrintf("SUCCESS: Started force effect number %d\n", m_iForceNumber);
-        }
-        else if(FAILED(hResult))
-        {
+        } else if (FAILED(hResult)) {
             rDebugPrintf("ERROR: Failed to start force effect number %d\n", m_iForceNumber);
         }
     }
 }
 
-void ControllerOutputPointDirectInput::Stop( void )
-{
+void ControllerOutputPointDirectInput::Stop(void) {
     HRESULT hResult = S_OK;
 
-    if (m_pEffectID[m_iForceNumber] != NULL)
-    {
+    if (m_pEffectID[m_iForceNumber] != NULL) {
         // Make sure the device is acquired, if we are gaining focus.
         //m_pDIDevice->Unacquire();
         m_pDIDevice->Acquire();
 
         hResult = m_pEffectID[m_iForceNumber]->Stop(); // Stop the effect
 
-        if( SUCCEEDED(hResult) )
-        {
+        if (SUCCEEDED(hResult)) {
             m_bEffectPlaying[m_iForceNumber] = false;
             rDebugPrintf("SUCCESS: Stopped force effect number %d\n", m_iForceNumber);
-        }
-        else if(FAILED(hResult))
-        {
+        } else if (FAILED(hResult)) {
             rDebugPrintf("ERROR: Failed to stop force effect number %d\n", m_iForceNumber);
         }
     }
 }
 
-void ControllerOutputPointDirectInput::Init( IDirectInputDevice8* pDevice )
-{
-    rAssertMsg( pDevice != NULL, "ControllerOutputPointDirectInput::Initializing the DI device with a NULL pointer!" );
+void ControllerOutputPointDirectInput::Init(IDirectInputDevice8 *pDevice) {
+    rAssertMsg(pDevice != NULL,
+               "ControllerOutputPointDirectInput::Initializing the DI device with a NULL pointer!");
     m_pDIDevice = pDevice;
 }
 
-void ControllerOutputPointDirectInput::ReleaseEffect( void )
-{
-    for (int forceNumber = 0; forceNumber < MAX_FORCES; forceNumber++)
-    {
-        if (m_pEffectID[forceNumber])
-        {
+void ControllerOutputPointDirectInput::ReleaseEffect(void) {
+    for (int forceNumber = 0; forceNumber < MAX_FORCES; forceNumber++) {
+        if (m_pEffectID[forceNumber]) {
             m_pEffectID[forceNumber]->Release();
             m_pEffectID[forceNumber] = NULL;
         }
     }
 }
 
-void ControllerOutputPointDirectInput::SendOutput( void )
-{
+void ControllerOutputPointDirectInput::SendOutput(void) {
 
 }
 
 //=====================================================
 // PRIVATE METHODS
 //=====================================================
-HRESULT ControllerOutputPointDirectInput::UnloadEffect( int forceNumber )
-{
+HRESULT ControllerOutputPointDirectInput::UnloadEffect(int forceNumber) {
     HRESULT hResult = S_OK;
 
-    if (m_pEffectID[forceNumber] != NULL)
-    {
+    if (m_pEffectID[forceNumber] != NULL) {
         // Make sure the device is acquired, if we are gaining focus.
         m_pDIDevice->Acquire();
 
         hResult = m_pEffectID[forceNumber]->Unload(); // Unload the effect
 
-        if( SUCCEEDED(hResult) )
-        {
+        if (SUCCEEDED(hResult)) {
             m_bEffectPlaying[forceNumber] = false;
             m_pEffectID[forceNumber] = NULL;
         }
-    } 
+    }
     return hResult;
 }
 
@@ -285,41 +257,41 @@ HRESULT ControllerOutputPointDirectInput::UnloadEffect( int forceNumber )
 {
 public:
 
-    IMPLEMENT_REFCOUNTED( "ControllerOutputPointDirectInput" )
+    IMPLEMENT_REFCOUNTED("ControllerOutputPointDirectInput")
 
     //========================================================================
     // ControllerOutputPointDirectInput::ControllerOutputPointDirectInput
     //========================================================================
 
-    ControllerOutputPointDirectInput( LPCDIEFFECTINFO pdei, DWORD dataOffset )
+    ControllerOutputPointDirectInput(LPCDIEFFECTINFO pdei, DWORD dataOffset)
         :
-        radRefCount( 0 ),
-        m_DirectInputEffect( NULL ),
-        m_Actuator( dataOffset ),
-        m_Gain( 0.0f ),
-        m_LastGain( 0.0f )
+        radRefCount(0),
+        m_DirectInputEffect(NULL),
+        m_Actuator(dataOffset),
+        m_Gain(0.0f),
+        m_LastGain(0.0f)
     {
-        radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "ControllerOutputPointDirectInput" );
+        radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "ControllerOutputPointDirectInput");
 
         // clean up and store the force
-        if( pdei->dwEffType & DIEFT_CONDITION )
+        if(pdei->dwEffType & DIEFT_CONDITION)
         {
             m_ForceType = DIEFT_CONDITION;
         }
-        else if( pdei->dwEffType & DIEFT_CONSTANTFORCE )
+        else if(pdei->dwEffType & DIEFT_CONSTANTFORCE)
         {
             m_ForceType = DIEFT_CONSTANTFORCE;
         }
-        else if( pdei->dwEffType & DIEFT_PERIODIC )
+        else if(pdei->dwEffType & DIEFT_PERIODIC)
         {
             m_ForceType = DIEFT_PERIODIC;
         }
-        else if( pdei->dwEffType & DIEFT_RAMPFORCE )
+        else if(pdei->dwEffType & DIEFT_RAMPFORCE)
         {
             m_ForceType = DIEFT_RAMPFORCE;
         }
 
-        ZeroMemory( &m_Effect, sizeof(m_Effect) );
+        ZeroMemory(&m_Effect, sizeof(m_Effect));
         m_Effect.dwSize                  = sizeof(DIEFFECT);
         m_Effect.dwFlags                 = DIEFF_CARTESIAN | DIEFF_OBJECTOFFSETS;
         m_Effect.dwDuration              = INFINITE;
@@ -334,7 +306,7 @@ public:
     // ControllerOutputPointDirectInput::~ControllerOutputPointDirectInput
     //========================================================================
 
-    ~ControllerOutputPointDirectInput( void )
+    ~ControllerOutputPointDirectInput(void)
     {
         m_DirectInputEffect = NULL;
     }
@@ -343,9 +315,9 @@ public:
     // ControllerOutputPointDirectInput::GetName
     //========================================================================
 
-    virtual const char * GetName( void )
+    virtual const char * GetName(void)
     {
-        switch( m_ForceType )
+        switch(m_ForceType)
         {
             case DIEFT_CONDITION:
                 return "Condition";
@@ -364,7 +336,7 @@ public:
     // ControllerOutputPointDirectInput::GetType
     //========================================================================
 
-    virtual const char * GetType( void )
+    virtual const char * GetType(void)
     {
         return "Analog";
     }
@@ -373,7 +345,7 @@ public:
     // ControllerOutputPointDirectInput::GetGain
     //========================================================================
 
-    virtual float GetGain( void )
+    virtual float GetGain(void)
     {
         return m_Gain;
     }
@@ -382,13 +354,13 @@ public:
     // ControllerOutputPointDirectInput::SetGain
     //========================================================================
 
-    virtual void SetGain( float value )
+    virtual void SetGain(float value)
     {
-        if ( value < 0.0f )
+        if (value <0.0f)
         {
             value = 0.0f;
         }
-        else if ( value > 1.0f )
+        else if (value> 1.0f)
         {
             value = 1.0f;
         }
@@ -396,79 +368,79 @@ public:
         m_Gain = value;
     }
 
-    virtual HRESULT CreateEffect( const DIEFFECT* pEffect )
+    virtual HRESULT CreateEffect(const DIEFFECT* pEffect)
     {
         HRESULT hResult = S_OK;
-        if( m_DirectInputEffect != NULL )
+        if(m_DirectInputEffect != NULL)
         {
-            hResult = m_pDevice->CreateEffect( GUID_ConstantForce, pEffect, &m_DirectInputEffect, NULL );
+            hResult = m_pDevice->CreateEffect(GUID_ConstantForce, pEffect, &m_DirectInputEffect, NULL);
         }
         return hResult;
     }
 
-    virtual HRESULT SetParams( const DIEFFECT* pEffect )
+    virtual HRESULT SetParams(const DIEFFECT* pEffect)
     {
         HRESULT hResult = S_OK;
-        if( m_DirectInputEffect != NULL )
+        if(m_DirectInputEffect != NULL)
         {
-            hResult = m_DirectInputEffect->SetParameters( pEffect, DIEP_DIRECTION | DIEP_TYPESPECIFICPARAMS );
+            hResult = m_DirectInputEffect->SetParameters(pEffect, DIEP_DIRECTION | DIEP_TYPESPECIFICPARAMS);
         }
         return hResult;
     }
 
-    virtual void UpdateEffect( const DIEFFECT* effect )
+    virtual void UpdateEffect(const DIEFFECT* effect)
     {
         HRESULT hr;
 
-        if( m_DirectInputEffect == NULL )
+        if(m_DirectInputEffect == NULL)
         {
-            hr = pDevice->CreateEffect( GUID_ConstantForce, &m_Effect, &m_DirectInputEffect, NULL );
+            hr = pDevice->CreateEffect(GUID_ConstantForce, &m_Effect, &m_DirectInputEffect, NULL);
         }
         else
         {
-            hr = m_DirectInputEffect->SetParameters( &m_Effect, DIEP_DIRECTION | DIEP_TYPESPECIFICPARAMS );
+            hr = m_DirectInputEffect->SetParameters(&m_Effect, DIEP_DIRECTION | DIEP_TYPESPECIFICPARAMS);
         }
 
-        rAssert( SUCCEEDED( hr ) );
-        rAssert( m_DirectInputEffect != NULL );
+        rAssert(SUCCEEDED(hr));
+        rAssert(m_DirectInputEffect != NULL);
     }
 
-    virtual void Start( void )
+    virtual void Start(void)
     {
-        rAssertMsg( m_DirectInputEffect != NULL, "Attempt to start an uncreated force effect." );
+        rAssertMsg(m_DirectInputEffect != NULL, "Attempt to start an uncreated force effect.");
 
-        HRESULT hr = m_DirectInputEffect->Start( 1, 0 );
+        HRESULT hr = m_DirectInputEffect->Start(1, 0);
 
-        rAssert( SUCCEEDED( hr ) );
+        rAssert(SUCCEEDED(hr));
     }
 
-    virtual void Stop( void )
+    virtual void Stop(void)
     {
-        rAssertMsg( m_DirectInputEffect != NULL, "Attempt to start an uncreated force effect." );
+        rAssertMsg(m_DirectInputEffect != NULL, "Attempt to start an uncreated force effect.");
 
         HRESULT hr = m_DirectInputEffect->Stop();
 
-        rAssert( SUCCEEDED( hr ) );
+        rAssert(SUCCEEDED(hr));
     }
 
-    virtual void SendOutput( void )
+    virtual void SendOutput(void)
     {
-        if( m_ForceType == DIEFT_CONSTANTFORCE )
+        if(m_ForceType == DIEFT_CONSTANTFORCE)
         {
-            if ( m_Gain != m_LastGain )
+            if (m_Gain != m_LastGain)
             {
-                if ( m_Gain < 0.00001f )
+                if (m_Gain <0.00001f)
                 {
-                    m_DirectInputEffect->Stop( );
+                    m_DirectInputEffect->Stop();
                 }
                 else
                 {
                     DICONSTANTFORCE force;
-                    force.lMagnitude = (LONG) ( m_Gain * DI_FFNOMINALMAX );
+                    force.lMagnitude = (LONG) (m_Gain * DI_FFNOMINALMAX);
                     m_Effect.
-                    HRESULT hr = m_DirectInputEffect->SetParameters( &m_Effect, DIEP_TYPESPECIFICPARAMS | DIEP_START );
+                    HRESULT hr = m_DirectInputEffect->SetParameters(&m_Effect, DIEP_TYPESPECIFICPARAMS | DIEP_START);
 
-                    rAssert( SUCCEEDED( hr ) );
+                    rAssert(SUCCEEDED(hr));
                 }
                 m_LastGain = m_Gain;
             }
@@ -480,7 +452,7 @@ public:
     //========================================================================
 
     DIDEVICEOBJECTINSTANCE m_DirectInputDeviceObjectInstance;
-    ref< IDirectInputEffect > m_DirectInputEffect;
+    ref<IDirectInputEffect> m_DirectInputEffect;
     DIEFFECT m_Effect;
     DWORD m_Actuator;
     DWORD m_ForceType;
@@ -499,20 +471,18 @@ public:
 //============================================================================
 
 class radControllerInputPointDirectInput
-    :
-    public IRadControllerInputPointDirectInput,
-    public radRefCount
-{
-    public:
+        :
+                public IRadControllerInputPointDirectInput,
+                public radRefCount {
+public:
 
-    IMPLEMENT_REFCOUNTED( "radControllerInputPointDirectInput" )
+    IMPLEMENT_REFCOUNTED("radControllerInputPointDirectInput")
 
     //========================================================================
     // radControllerInputPointDirectInput::SetRange
     //========================================================================
 
-    virtual void  SetRange( float min, float max )
-    {
+    virtual void SetRange(float min, float max) {
         m_MinRange = min;
         m_MaxRange = max;
     }
@@ -521,21 +491,18 @@ class radControllerInputPointDirectInput
     // radControllerInputPointDirectInput::SetRange
     //========================================================================
 
-    virtual void GetRange( float * pMin, float * pMax )
-    {
+    virtual void GetRange(float *pMin, float *pMax) {
         //
         // Either parameter can be null, but not both.
         //
 
-        rAssert( pMax != NULL || pMin != NULL );
+        rAssert(pMax != NULL || pMin != NULL);
 
-        if ( pMin != NULL )
-        {
+        if (pMin != NULL) {
             *pMin = m_MinRange;
         }
 
-        if ( pMax != NULL )
-        {
+        if (pMax != NULL) {
             *pMax = m_MaxRange;
         }
     }
@@ -544,16 +511,12 @@ class radControllerInputPointDirectInput
     // radControllerInputPointDirectInput::SetTolerance
     //========================================================================
 
-    virtual void SetTolerance( float percentage )
-    {
-        rAssert( percentage >= 0.0f && percentage <= 1.0f );
+    virtual void SetTolerance(float percentage) {
+        rAssert(percentage >= 0.0f && percentage <= 1.0f);
 
-        if ( percentage < 0.0f )
-        {
+        if (percentage < 0.0f) {
             percentage = 0.0f;
-        }
-        else if ( percentage > 1.0f )
-        {
+        } else if (percentage > 1.0f) {
             percentage = 1.0f;
         }
 
@@ -564,8 +527,7 @@ class radControllerInputPointDirectInput
     // radControllerInputPointDirectInput::GetTolerance
     //========================================================================
 
-    virtual float GetTolerance( void )
-    {
+    virtual float GetTolerance(void) {
         return m_Tolerance;
     }
 
@@ -573,106 +535,91 @@ class radControllerInputPointDirectInput
     // radControllerInputPointDirectInput::CalculateNewValue
     //========================================================================
 
-	float CalculateNewValue( float oldValue, unsigned int value )
-	{
-		//
-		// The new value depends on the type of input point
-		//
+    float CalculateNewValue(float oldValue, unsigned int value) {
+        //
+        // The new value depends on the type of input point
+        //
 
-		float newValue;
+        float newValue;
 
-		switch( DIDFT_GETTYPE(m_DirectInputDeviceObjectInstance.dwType) )
-		{
-			// Longs Axis / Slider
+        switch (DIDFT_GETTYPE(m_DirectInputDeviceObjectInstance.dwType)) {
+            // Longs Axis / Slider
 
-			case DIDFT_RELAXIS :
-			{
-				// cast to an int because the value can be negative.
+            case DIDFT_RELAXIS : {
+                // cast to an int because the value can be negative.
 
-				newValue = oldValue + (float)((int)( value ));
-				break;
-			}
-			case DIDFT_ABSAXIS :
-			{
-				newValue = float( value ) / 65535.0f;
+                newValue = oldValue + (float) ((int) (value));
+                break;
+            }
+            case DIDFT_ABSAXIS : {
+                newValue = float(value) / 65535.0f;
 
-				if ( m_DirectInputDeviceObjectInstance.guidType == GUID_YAxis )
-				{
-					newValue = 1.0f - newValue;
-				}
+                if (m_DirectInputDeviceObjectInstance.guidType == GUID_YAxis) {
+                    newValue = 1.0f - newValue;
+                }
 
-				break;
-			}
+                break;
+            }
 
-			case DIDFT_BUTTON: 
-			case DIDFT_PSHBUTTON : 
-			case DIDFT_TGLBUTTON : 
-			{
-				newValue = ( value & 0x80 ) ? 1.0f : 0.0f;
+            case DIDFT_BUTTON:
+            case DIDFT_PSHBUTTON :
+            case DIDFT_TGLBUTTON : {
+                newValue = (value & 0x80) ? 1.0f : 0.0f;
 
-				break; 
-			}
-			case DIDFT_POV:
-			{
-				//
-				// The position is indicated in hundredths of a degree
-				// clockwise from north (away from the user).
-				// The center position is normally reported as -1
-				// For indicators that have only five positions,
-				// the value for a controller is -1, 0, 9,000, 18,000, or 27,000.
-				//
-            
-				//
-				// Map to degrees, or 1.0 if centered.
-				//
+                break;
+            }
+            case DIDFT_POV: {
+                //
+                // The position is indicated in hundredths of a degree
+                // clockwise from north (away from the user).
+                // The center position is normally reported as -1
+                // For indicators that have only five positions,
+                // the value for a controller is -1, 0, 9,000, 18,000, or 27,000.
+                //
 
-				if ( (int) value == -1 )
-				{
-					newValue = 1.0f;
-				}
-				else
-				{
-					newValue = value / 36000.0f;
-				}
+                //
+                // Map to degrees, or 1.0 if centered.
+                //
 
-				break;
-			}
+                if ((int) value == -1) {
+                    newValue = 1.0f;
+                } else {
+                    newValue = value / 36000.0f;
+                }
 
-			case DIDFT_VENDORDEFINED:
-			default:
-			{
-				newValue = 0.0f;
-			}
-		}
+                break;
+            }
 
-		return newValue;
-	}
+            case DIDFT_VENDORDEFINED:
+            default: {
+                newValue = 0.0f;
+            }
+        }
+
+        return newValue;
+    }
 
     //========================================================================
     // radControllerInputPointDirectInput::iHandleEvent
     //========================================================================
 
-    virtual bool iHandleEvent( unsigned int offset, unsigned int value, unsigned int virtualTime )
-    {
-        if ( offset == m_Offset )
-        {
-			// Translate the value into a new input point value
+    virtual bool iHandleEvent(unsigned int offset, unsigned int value, unsigned int virtualTime) {
+        if (offset == m_Offset) {
+            // Translate the value into a new input point value
 
-			float newValue = CalculateNewValue( m_Value, value );
-        
+            float newValue = CalculateNewValue(m_Value, value);
+
             //
             // Map our value between 0.0 and 1.0 to their range.
             //
-      
-            if ( newValue != m_Value )
-            {
-            
+
+            if (newValue != m_Value) {
+
                 //
                 // Is the tollerance enough to call out
                 //
 
-                if ( fabsf( newValue - m_Value ) >= m_Tolerance )
-                {
+                if (fabsf(newValue - m_Value) >= m_Tolerance) {
                     //
                     // Set our new value
                     //
@@ -686,33 +633,32 @@ class radControllerInputPointDirectInput
 
                     m_TimeInState = 0;
                     m_TimeOfStateChange = virtualTime;
-            
+
                     //
                     // Callback Clients
                     //
-                    
-                    if ( m_xIOl_Callbacks != NULL )
-                    {
-                        AddRef( ); // We are calling out
 
-                        IRadWeakCallbackWrapper * pIRwcw;
+                    if (m_xIOl_Callbacks != NULL) {
+                        AddRef(); // We are calling out
 
-                        m_xIOl_Callbacks->Reset( );
+                        IRadWeakCallbackWrapper *pIRwcw;
 
-                        while( pIRwcw = reinterpret_cast< IRadWeakCallbackWrapper * >( m_xIOl_Callbacks->GetNext( ) ) )
-                        {
-                            IRadControllerInputPointCallback* pCallback = (IRadControllerInputPointCallback *) pIRwcw->GetWeakInterface( );
-                            
-                            pCallback->OnControllerInputPointChange( (unsigned int) pIRwcw->GetUserData( ), m_Value ); 
+                        m_xIOl_Callbacks->Reset();
+
+                        while (pIRwcw = reinterpret_cast<IRadWeakCallbackWrapper *>(m_xIOl_Callbacks->GetNext())) {
+                            IRadControllerInputPointCallback *pCallback = (IRadControllerInputPointCallback *) pIRwcw->GetWeakInterface();
+
+                            pCallback->OnControllerInputPointChange(
+                                    (unsigned int) pIRwcw->GetUserData(), m_Value);
                         }
 
-                        Release( );
+                        Release();
                     }
                 }
             }
-            
+
             return true; // we handled the event
-        }       
+        }
 
         return false;
     }
@@ -721,8 +667,7 @@ class radControllerInputPointDirectInput
     // radControllerInputPointDirectInput::iVirtualTimeChanged
     //========================================================================
 
-    virtual void iVirtualTimeChanged( unsigned int virtualTime )
-    {
+    virtual void iVirtualTimeChanged(unsigned int virtualTime) {
         //
         // Time has passed, update the amount of time we have been in this
         // state.
@@ -735,8 +680,7 @@ class radControllerInputPointDirectInput
     // radControllerInputPointDirectInput::iVirtualTimeReMapped
     //========================================================================
 
-    virtual void iVirtualTimeReMapped( unsigned int virtualTime )
-    {   
+    virtual void iVirtualTimeReMapped(unsigned int virtualTime) {
         //
         // If time has been remapped, we no longer have a reference point
         // for time in state, all we can do is set it to zero, having changed
@@ -752,32 +696,29 @@ class radControllerInputPointDirectInput
     //========================================================================
 
     virtual void RegisterControllerInputPointCallback
-    (
-        IRadControllerInputPointCallback * pCallback,
-        unsigned int userData
-    )
-    {
+            (
+                    IRadControllerInputPointCallback *pCallback,
+                    unsigned int userData
+            ) {
         //
         // Wrap the weak interface with a callback wrapper so it can be
         // stored in our callback list
         //
 
-        rAssert( pCallback != NULL );
+        rAssert(pCallback != NULL);
 
-        if ( pCallback != NULL && m_xIOl_Callbacks != NULL )
-        {
-            ref< IRadWeakCallbackWrapper > xIWcr;
+        if (pCallback != NULL && m_xIOl_Callbacks != NULL) {
+            ref <IRadWeakCallbackWrapper> xIWcr;
 
-            ::radWeakCallbackWrapperCreate( & xIWcr, g_ControllerSystemAllocator );
+            ::radWeakCallbackWrapperCreate(&xIWcr, g_ControllerSystemAllocator);
 
-            rAssert( xIWcr != NULL );
+            rAssert(xIWcr != NULL);
 
-            if ( xIWcr != NULL )
-            {
-                xIWcr->SetWeakInterface( pCallback );
-                xIWcr->SetUserData( (void*) userData );
+            if (xIWcr != NULL) {
+                xIWcr->SetWeakInterface(pCallback);
+                xIWcr->SetUserData((void *) userData);
 
-                m_xIOl_Callbacks->AddObject( xIWcr );
+                m_xIOl_Callbacks->AddObject(xIWcr);
             }
         }
     }
@@ -787,117 +728,92 @@ class radControllerInputPointDirectInput
     //========================================================================
 
     virtual void UnRegisterControllerInputPointCallback
-    (
-        IRadControllerInputPointCallback * pCallback
-    )
-    {
+            (
+                    IRadControllerInputPointCallback *pCallback
+            ) {
         //
         // Find all the callbacks in the last and remove them.
         //
 
-        rAssert( pCallback != NULL );
+        rAssert(pCallback != NULL);
 
         bool found = false;
 
-        if ( pCallback != NULL && m_xIOl_Callbacks != NULL )
-        {
-            IRadWeakCallbackWrapper * pIRwcw;
+        if (pCallback != NULL && m_xIOl_Callbacks != NULL) {
+            IRadWeakCallbackWrapper *pIRwcw;
 
-            m_xIOl_Callbacks->Reset( );
+            m_xIOl_Callbacks->Reset();
 
-            while ( pIRwcw = reinterpret_cast< IRadWeakCallbackWrapper * >( m_xIOl_Callbacks->GetNext( ) ) )
-            {
-                if ( pIRwcw->GetWeakInterface() == pCallback )
-                {
-                    m_xIOl_Callbacks->RemoveObject( pIRwcw );
+            while (pIRwcw = reinterpret_cast<IRadWeakCallbackWrapper *>(m_xIOl_Callbacks->GetNext())) {
+                if (pIRwcw->GetWeakInterface() == pCallback) {
+                    m_xIOl_Callbacks->RemoveObject(pIRwcw);
                     found = true;
                 }
             }
         }
 
-        rAssertMsg( found, "Controller input point callback not registered." );
-    }            
+        rAssertMsg(found, "Controller input point callback not registered.");
+    }
 
     //========================================================================
     // radControllerInputPointDirectInput::GetCurrentValue
     //========================================================================
-    
-    virtual float GetCurrentValue( unsigned int * pTime = NULL )
-    {
+
+    virtual float GetCurrentValue(unsigned int *pTime = NULL) {
         //
         // Report how long the point has been in this state, if the client
         // asked for it.
         //
 
-        if ( pTime != NULL )
-        {
+        if (pTime != NULL) {
             *pTime = m_TimeInState;
-        }                
-        
+        }
+
         //
         // we map it to the client's range here, this solves a bunch of
         // problems with the client remapping in mid-game.
         //
 
-        return (( m_MaxRange - m_MinRange ) * m_Value ) + m_MinRange;
+        return ((m_MaxRange - m_MinRange) * m_Value) + m_MinRange;
     }
 
     //========================================================================
     // radControllerInputPointDirectInput::GetName
     //========================================================================
 
-    virtual const char * GetName( void )
-    {
+    virtual const char *GetName(void) {
         //
         // Return the underlying driver's name for the input point.
         //
 
         return m_DirectInputDeviceObjectInstance.tszName;
-    }     
+    }
 
     //========================================================================
     // rDirectIntputControllerPoint2::GetType
     //========================================================================
 
-    virtual const char * GetType( void )
-    {
-        GUID & type = m_DirectInputDeviceObjectInstance.guidType;
-        bool relative = ( DIDFT_GETTYPE(m_DirectInputDeviceObjectInstance.dwType) == DIDFT_RELAXIS );
+    virtual const char *GetType(void) {
+        GUID &type = m_DirectInputDeviceObjectInstance.guidType;
+        bool relative = (DIDFT_GETTYPE(m_DirectInputDeviceObjectInstance.dwType) == DIDFT_RELAXIS);
 
-        if ( type == GUID_XAxis )
-        {
+        if (type == GUID_XAxis) {
             return relative ? "RelXAxis" : "XAxis";
-        }
-        else if ( type == GUID_YAxis )
-        {
+        } else if (type == GUID_YAxis) {
             return relative ? "RelYAxis" : "YAxis";
-        }
-        else if ( type == GUID_ZAxis )
-        {
+        } else if (type == GUID_ZAxis) {
             return relative ? "RelZAxis" : "ZAxis";
-        }
-        else if ( type == GUID_RxAxis )
-        {
+        } else if (type == GUID_RxAxis) {
             return relative ? "RelRxAxis" : "RxAxis";
-        }
-        else if ( type == GUID_RyAxis )
-        {
+        } else if (type == GUID_RyAxis) {
             return relative ? "RelRyAxis" : "RyAxis";
-        }
-        else if ( type == GUID_RzAxis )
-        {
+        } else if (type == GUID_RzAxis) {
             return relative ? "RelRzAxis" : "RzAxis";
-        }
-        else if ( type == GUID_Slider )
-        {
+        } else if (type == GUID_Slider) {
             return relative ? "RelSlider" : "Slider";
-        }
-        else if ( ( type == GUID_Button ) || ( type == GUID_Key ) )
-        {
+        } else if ((type == GUID_Button) || (type == GUID_Key)) {
             return "Button";
-        }
-        else if ( type == GUID_POV )
-        {
+        } else if (type == GUID_POV) {
             return "POV";
         }
 
@@ -908,8 +824,7 @@ class radControllerInputPointDirectInput
     // radControllerInputPointDirectInput::iGetDirectInput8Type
     //========================================================================
 
-    virtual unsigned int iGetDirectInput8Type( void )
-    {
+    virtual unsigned int iGetDirectInput8Type(void) {
         //
         // Called by the controller when setting up the data structure.
         //
@@ -921,51 +836,48 @@ class radControllerInputPointDirectInput
     // radControllerInputPointDirectInput::iInitialization
     //========================================================================
 
-	virtual void iInitialize( unsigned int offset, unsigned int value )
-	{
-		// Accept the new offset and value 
-		
-		m_Offset = offset;
-		m_Value = CalculateNewValue( 0.0f, value );
-	}
+    virtual void iInitialize(unsigned int offset, unsigned int value) {
+        // Accept the new offset and value
+
+        m_Offset = offset;
+        m_Value = CalculateNewValue(0.0f, value);
+    }
 
     //========================================================================
     // radControllerInputPointDirectInput::radControllerInputPointDirectInput
     //========================================================================
 
     radControllerInputPointDirectInput
-    (
-        class radControllerDirectInput* pIObject_Controller,
-        const LPCDIDEVICEOBJECTINSTANCE pDoi,
-        unsigned int offset
-    )
-        :
-        radRefCount( 0 ),
-        m_Offset( offset ),
-        m_Value( 0.0 ),
-        m_TimeInState( 0 ),
-        m_TimeOfStateChange( 0 ),
-        m_Tolerance( 0.0f ),
-        m_MinRange( 0.0f ),
-        m_MaxRange( 1.0f )
-    {
-       radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radControllerInputPointDirectInput" );
+            (
+                    class radControllerDirectInput *pIObject_Controller,
+                    const LPCDIDEVICEOBJECTINSTANCE pDoi,
+                    unsigned int offset
+            )
+            :
+            radRefCount(0),
+            m_Offset(offset),
+            m_Value(0.0),
+            m_TimeInState(0),
+            m_TimeOfStateChange(0),
+            m_Tolerance(0.0f),
+            m_MinRange(0.0f),
+            m_MaxRange(1.0f) {
+        radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radControllerInputPointDirectInput");
         m_DirectInputDeviceObjectInstance = *pDoi;
 
-        ::radObjectListCreate( & m_xIOl_Callbacks, g_ControllerSystemAllocator );
+        ::radObjectListCreate(&m_xIOl_Callbacks, g_ControllerSystemAllocator);
 
-        rAssert( m_xIOl_Callbacks != NULL );
+        rAssert(m_xIOl_Callbacks != NULL);
     }
 
     //========================================================================
     // radControllerInputPointDirectInput::~radControllerInputPointDirectInput
     //========================================================================
 
-    ~radControllerInputPointDirectInput( void )
-    {
-        if ( m_xIOl_Callbacks != NULL )
-        {
-            rAssertMsg( m_xIOl_Callbacks->GetSize() == 0, "Somebody forgot to unregister a controller input point callback" );
+    ~radControllerInputPointDirectInput(void) {
+        if (m_xIOl_Callbacks != NULL) {
+            rAssertMsg(m_xIOl_Callbacks->GetSize() == 0,
+                       "Somebody forgot to unregister a controller input point callback");
         }
     }
 
@@ -985,7 +897,7 @@ class radControllerInputPointDirectInput
     DIDEVICEOBJECTINSTANCE m_DirectInputDeviceObjectInstance;
     unsigned int m_ActualOffset;
 
-    ref< IRadObjectList > m_xIOl_Callbacks;
+    ref <IRadObjectList> m_xIOl_Callbacks;
 };
 
 
@@ -994,46 +906,42 @@ class radControllerInputPointDirectInput
 //============================================================================
 
 class radControllerDirectInput
-    :
-    public IRadControllerDirectInput,
-    public radRefCount
-{
-    public:
+        :
+                public IRadControllerDirectInput,
+                public radRefCount {
+public:
 
-    IMPLEMENT_REFCOUNTED( "radControllerDirectInput" )
+    IMPLEMENT_REFCOUNTED("radControllerDirectInput")
 
     //========================================================================
     // radControllerDirectInput::IsConnected
     //========================================================================
 
-    virtual bool IsConnected( void )
-    {
+    virtual bool IsConnected(void) {
         //
         // Just forward the call to the underlying hardware system's similar
         // call
         //
 
         HRESULT hr = m_xIDirectInput8->GetDeviceStatus
-        (
-            m_DirectInputDeviceInstance.guidInstance
-        );
+                (
+                        m_DirectInputDeviceInstance.guidInstance
+                );
 
-        rAssertMsg( SUCCEEDED( hr ), "IDirectInput8::GetDeviceStatus failed." );
+        rAssertMsg(SUCCEEDED(hr), "IDirectInput8::GetDeviceStatus failed.");
 
-        if ( hr == DI_OK )
-        {
+        if (hr == DI_OK) {
             return true;
         }
 
-        return false;      
+        return false;
     }
 
     //========================================================================
     // radControllerDirectInput::GetName
     //========================================================================
 
-    virtual const char * GetType( void )
-    {
+    virtual const char *GetType(void) {
         //
         // Return the underlying direct input product name.
         //
@@ -1045,34 +953,27 @@ class radControllerDirectInput
     // radControllerDirectInput::GetType
     //========================================================================
 
-    virtual const char * GetClassification( void )
-    {
-        switch( m_DirectInputDeviceInstance.dwDevType & 0xFF )
-        {
-            case DI8DEVTYPE_MOUSE:
-            {
+    virtual const char *GetClassification(void) {
+        switch (m_DirectInputDeviceInstance.dwDevType & 0xFF) {
+            case DI8DEVTYPE_MOUSE: {
                 return "Mouse";
             }
             case DI8DEVTYPE_JOYSTICK:
             case DI8DEVTYPE_FLIGHT:
             case DI8DEVTYPE_1STPERSON:
-            case DI8DEVTYPE_GAMEPAD:
-            {
-                return "Joystick";                      
+            case DI8DEVTYPE_GAMEPAD: {
+                return "Joystick";
             }
-            case DI8DEVTYPE_KEYBOARD:
-            {
+            case DI8DEVTYPE_KEYBOARD: {
                 return "Keyboard";
             }
-            case DI8DEVTYPE_DRIVING:
-            {
+            case DI8DEVTYPE_DRIVING: {
                 return "SteeringWheel";
             }
             case DI8DEVTYPE_DEVICE:
-            default:
-            {
+            default: {
                 break;
-            }                
+            }
         }
 
         return "Unknown";
@@ -1082,27 +983,23 @@ class radControllerDirectInput
     // radControllerDirectInput::GetNumberOfInputPointsOfType
     //========================================================================
 
-    virtual unsigned int GetNumberOfInputPointsOfType( const char * pType )
-    {
+    virtual unsigned int GetNumberOfInputPointsOfType(const char *pType) {
         //
         // Just count up all of the input points in the list who's type
         // matches the requested type.
         //
 
-        rAssert( pType != NULL );
+        rAssert(pType != NULL);
 
         unsigned int count = 0;
 
-        if ( m_xIOl_InputPoints != NULL && pType != NULL )
-        {
-            m_xIOl_InputPoints->Reset( );
+        if (m_xIOl_InputPoints != NULL && pType != NULL) {
+            m_xIOl_InputPoints->Reset();
 
-            IRadControllerInputPoint * pIRadControllerInputPoint;
+            IRadControllerInputPoint *pIRadControllerInputPoint;
 
-            while ( pIRadControllerInputPoint = reinterpret_cast< IRadControllerInputPoint * >( m_xIOl_InputPoints->GetNext( )  ))
-            {
-                if ( strcmp( pType, pIRadControllerInputPoint->GetType( ) ) == 0 )
-                {
+            while (pIRadControllerInputPoint = reinterpret_cast<IRadControllerInputPoint *>(m_xIOl_InputPoints->GetNext())) {
+                if (strcmp(pType, pIRadControllerInputPoint->GetType()) == 0) {
                     count++;
                 }
             }
@@ -1115,88 +1012,76 @@ class radControllerDirectInput
     // radControllerDirectInput::GetNumberOfOutputPointsOfType
     //========================================================================
 
-    unsigned int GetNumberOfOutputPointsOfType( const char * pType ) 
-    {
+    unsigned int GetNumberOfOutputPointsOfType(const char *pType) {
         //
         // Count up the number of Output points of this time in the Output
         // point list
         //
 
-        rAssert( pType != NULL );
+        rAssert(pType != NULL);
 
         unsigned int count = 0;
 
-        if ( m_xIOl_OutputPoints != NULL && pType != NULL )
-        {
-            m_xIOl_OutputPoints->Reset( );
+        if (m_xIOl_OutputPoints != NULL && pType != NULL) {
+            m_xIOl_OutputPoints->Reset();
 
-            IRadControllerOutputPoint * pIRadControllerOutputPoint;
+            IRadControllerOutputPoint *pIRadControllerOutputPoint;
 
-            while ( pIRadControllerOutputPoint = reinterpret_cast< IRadControllerOutputPoint * >( m_xIOl_OutputPoints->GetNext( ) ) )
-            {
-                if ( strcmp( pIRadControllerOutputPoint->GetType( ), pType ) == 0 )
-                {
+            while (pIRadControllerOutputPoint = reinterpret_cast<IRadControllerOutputPoint *>(m_xIOl_OutputPoints->GetNext())) {
+                if (strcmp(pIRadControllerOutputPoint->GetType(), pType) == 0) {
                     count++;
-                }        
+                }
             }
         }
         return count;
     }
-    
+
     //========================================================================
     // radControllerDirectInput::GetInputPointByName
     //========================================================================
 
-    virtual IRadControllerInputPoint * GetInputPointByName( const char * pName )
-    {
+    virtual IRadControllerInputPoint *GetInputPointByName(const char *pName) {
         //
         // Just look for an input point that matches the name and return
         // the interface.
         //
-        rAssert( pName != NULL );
+        rAssert(pName != NULL);
 
-        if ( m_xIOl_InputPoints != NULL  )
-        {
-            m_xIOl_InputPoints->Reset( );
+        if (m_xIOl_InputPoints != NULL) {
+            m_xIOl_InputPoints->Reset();
 
-            IRadControllerInputPoint * pIRadControllerInputPoint;
+            IRadControllerInputPoint *pIRadControllerInputPoint;
 
-            while ( pIRadControllerInputPoint = reinterpret_cast< IRadControllerInputPoint * >( m_xIOl_InputPoints->GetNext( ) ) )
-            {
-                if ( strcmp( pIRadControllerInputPoint->GetName(), pName ) == 0 )
-                {
+            while (pIRadControllerInputPoint = reinterpret_cast<IRadControllerInputPoint *>(m_xIOl_InputPoints->GetNext())) {
+                if (strcmp(pIRadControllerInputPoint->GetName(), pName) == 0) {
                     return pIRadControllerInputPoint;
                 }
-            }          
+            }
         }
 
-        return NULL;  
+        return NULL;
     }
 
     //========================================================================
     // radControllerDirectInput::GetOutputPointByName
     //========================================================================
-    
-    IRadControllerOutputPoint * GetOutputPointByName
-    (
-        const char * pName
-    )
-    {
+
+    IRadControllerOutputPoint *GetOutputPointByName
+            (
+                    const char *pName
+            ) {
         // Just loop through all of the Output points comparing each ones
         // name to the name passed in.
         //
-        rAssert( pName != NULL );
+        rAssert(pName != NULL);
 
-        if ( m_xIOl_OutputPoints != NULL  )
-        {
-            m_xIOl_OutputPoints->Reset( );
+        if (m_xIOl_OutputPoints != NULL) {
+            m_xIOl_OutputPoints->Reset();
 
-            IRadControllerOutputPoint * pIRadControllerOutputPoint;
+            IRadControllerOutputPoint *pIRadControllerOutputPoint;
 
-            while ( pIRadControllerOutputPoint = reinterpret_cast< IRadControllerOutputPoint * >( m_xIOl_OutputPoints->GetNext( ) ) )
-            {
-                if ( strcmp( pName, pIRadControllerOutputPoint->GetName( ) ) == 0 )
-                {
+            while (pIRadControllerOutputPoint = reinterpret_cast<IRadControllerOutputPoint *>(m_xIOl_OutputPoints->GetNext())) {
+                if (strcmp(pName, pIRadControllerOutputPoint->GetName()) == 0) {
                     return pIRadControllerOutputPoint;
                 }
             }
@@ -1208,32 +1093,27 @@ class radControllerDirectInput
     // radControllerDirectInput::GetInputPointByTypeAndIndex
     //========================================================================
 
-    virtual IRadControllerInputPoint * GetInputPointByTypeAndIndex
-    (
-        const char * pType,
-        unsigned int index
-    )
-    {
+    virtual IRadControllerInputPoint *GetInputPointByTypeAndIndex
+            (
+                    const char *pType,
+                    unsigned int index
+            ) {
         //
         // Loop through the input point list counting each matching type.
         //
 
-        rAssert( pType != NULL );
+        rAssert(pType != NULL);
 
-        if ( pType != NULL )
-        {
+        if (pType != NULL) {
             unsigned int count = 0;
 
-            IRadControllerInputPoint * pIRadControllerInputPoint;
+            IRadControllerInputPoint *pIRadControllerInputPoint;
 
-            m_xIOl_InputPoints->Reset( );
+            m_xIOl_InputPoints->Reset();
 
-            while ( pIRadControllerInputPoint = reinterpret_cast< IRadControllerInputPoint * >( m_xIOl_InputPoints->GetNext( ) ) )
-            {
-                if ( strcmp( pIRadControllerInputPoint->GetType( ), pType ) == 0 )
-                {
-                    if ( count == index )
-                    {
+            while (pIRadControllerInputPoint = reinterpret_cast<IRadControllerInputPoint *>(m_xIOl_InputPoints->GetNext())) {
+                if (strcmp(pIRadControllerInputPoint->GetType(), pType) == 0) {
+                    if (count == index) {
                         return pIRadControllerInputPoint;
                     }
 
@@ -1248,34 +1128,29 @@ class radControllerDirectInput
     //========================================================================
     // radControllerDirectInput::GetOutputPointByTypeAndIndex
     //========================================================================
-    
-    IRadControllerOutputPoint *  GetOutputPointByTypeAndIndex
-    (
-        const char * pType,
-        unsigned int index
-    )
-    {
+
+    IRadControllerOutputPoint *GetOutputPointByTypeAndIndex
+            (
+                    const char *pType,
+                    unsigned int index
+            ) {
         //
         // Just loop through all of the Output points counting each one of
         // that time
         //
 
-        rAssert( pType != NULL );
+        rAssert(pType != NULL);
 
-        if ( pType != NULL )
-        {
+        if (pType != NULL) {
             unsigned int count = 0;
 
-            m_xIOl_OutputPoints->Reset( );
+            m_xIOl_OutputPoints->Reset();
 
-            IRadControllerOutputPoint * pIRadControllerOutputPoint;
+            IRadControllerOutputPoint *pIRadControllerOutputPoint;
 
-            while ( pIRadControllerOutputPoint = reinterpret_cast< IRadControllerOutputPoint * >( m_xIOl_OutputPoints->GetNext( ) ) )
-            {
-                if ( strcmp( pIRadControllerOutputPoint->GetType( ), pType ) == 0 )
-                {
-                    if ( count == index )
-                    {
+            while (pIRadControllerOutputPoint = reinterpret_cast<IRadControllerOutputPoint *>(m_xIOl_OutputPoints->GetNext())) {
+                if (strcmp(pIRadControllerOutputPoint->GetType(), pType) == 0) {
+                    if (count == index) {
                         return pIRadControllerOutputPoint;
                     }
 
@@ -1290,15 +1165,13 @@ class radControllerDirectInput
     // radControllerDirectInput::GetLocation
     //========================================================================
 
-    virtual const char * GetLocation( void )
-    {
+    virtual const char *GetLocation(void) {
         //
         // Just return our location string
         // 
 
-        if ( m_xIString_Location != NULL )
-        {
-            return m_xIString_Location->GetChars( );
+        if (m_xIString_Location != NULL) {
+            return m_xIString_Location->GetChars();
         }
 
         return "Unknown Location";
@@ -1308,20 +1181,18 @@ class radControllerDirectInput
     // radControllerDirectInput::iSetBufferTime
     //========================================================================
 
-    virtual void iSetBufferTime( unsigned int milliseconds, unsigned int pollingRate )
-    {
+    virtual void iSetBufferTime(unsigned int milliseconds, unsigned int pollingRate) {
         //
         // Here the controller system is asking us to set our event buffer
         // size.
         //
 
-        if ( m_xIOl_InputPoints != NULL && m_xIDirectInputDevice8 != NULL )
-        {
+        if (m_xIOl_InputPoints != NULL && m_xIDirectInputDevice8 != NULL) {
             //
             // Can't set this unless the device is unaquired.
             //
 
-            m_xIDirectInputDevice8->Unacquire( );
+            m_xIDirectInputDevice8->Unacquire();
 
             //
             // Set to buffered mode.
@@ -1329,19 +1200,19 @@ class radControllerDirectInput
 
             DIPROPDWORD dipdw;
 
-            dipdw.diph.dwSize       = sizeof(DIPROPDWORD);
+            dipdw.diph.dwSize = sizeof(DIPROPDWORD);
             dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-            dipdw.diph.dwObj        = 0;
-            dipdw.diph.dwHow        = DIPH_DEVICE;
+            dipdw.diph.dwObj = 0;
+            dipdw.diph.dwHow = DIPH_DEVICE;
 
             // we've made this big (the maximum) so that moving the mouse or
             // gamepad sticks around lots between polling events doesn't
             // overflow the buffer
             dipdw.dwData = 1023;
 
-            HRESULT hr = m_xIDirectInputDevice8->SetProperty( DIPROP_BUFFERSIZE, &dipdw.diph );
+            HRESULT hr = m_xIDirectInputDevice8->SetProperty(DIPROP_BUFFERSIZE, &dipdw.diph);
 
-            rAssertMsg( SUCCEEDED( hr ), "IDirectInputDevice8::SetProperty (buffer size) failed" );
+            rAssertMsg(SUCCEEDED(hr), "IDirectInputDevice8::SetProperty (buffer size) failed");
         }
     }
 
@@ -1349,50 +1220,45 @@ class radControllerDirectInput
     // radControllerDirectInput::iPoll
     //========================================================================
 
-    virtual void iPoll( void )
-    {
+    virtual void iPoll(void) {
         //
-        // Only do processing if sobody ( besides the controller manager is )
+        // Only do processing if sobody (besides the controller manager is)
         // holding on to us.
         //
 
-        if ( GetRefCount( ) > 1 )
-        {
+        if (GetRefCount() > 1) {
             //
             // Here the controller system is asking us to buffer another packet.
             // The buffering is internall to DirectInput, so we just pass
             // the poll call along.  Note that some devices don't require polling
-            // but calling Poll( ) won't cause any ill side affects.
+            // but calling Poll() won't cause any ill side affects.
             //
 
-            if ( m_xIDirectInputDevice8 != NULL )
-            {
+            if (m_xIDirectInputDevice8 != NULL) {
                 //
                 // We make sure the device is acquired every poll, this is an
                 // extremely lightweight call if we are already aquired.
                 //
 
-                HRESULT hr = m_xIDirectInputDevice8->Acquire( );
+                HRESULT hr = m_xIDirectInputDevice8->Acquire();
 
                 //
                 // S_FALSE means we have aquired the device already, but this is
                 // a successfull return value
                 //
-    
-                if ( SUCCEEDED( hr ) )
-                {
-                    m_xIDirectInputDevice8->Poll( );
+
+                if (SUCCEEDED(hr)) {
+                    m_xIDirectInputDevice8->Poll();
                 }
             }
 
             //
             // Send over out rumble effect.
             //
-            m_xIOl_OutputPoints->Reset( );
-            IRadControllerOutputPointDirectInput* pIRadControllerOutputPoint;
-            while ( pIRadControllerOutputPoint = reinterpret_cast< IRadControllerOutputPointDirectInput * >( m_xIOl_OutputPoints->GetNext( ) ) )
-            {
-                pIRadControllerOutputPoint->SendOutput( );
+            m_xIOl_OutputPoints->Reset();
+            IRadControllerOutputPointDirectInput *pIRadControllerOutputPoint;
+            while (pIRadControllerOutputPoint = reinterpret_cast<IRadControllerOutputPointDirectInput *>(m_xIOl_OutputPoints->GetNext())) {
+                pIRadControllerOutputPoint->SendOutput();
             }
         }
     }
@@ -1402,18 +1268,16 @@ class radControllerDirectInput
     //========================================================================
 
     virtual void iVirtualTimeChanged
-    (
-        unsigned int virtualTime,
-        unsigned int virtualTimeAdjust
-    )
-    {
+            (
+                    unsigned int virtualTime,
+                    unsigned int virtualTimeAdjust
+            ) {
         //
-        // Only do processing if sobody ( besides the controller manager is )
+        // Only do processing if sobody (besides the controller manager is)
         // holding on to us.
         //
 
-        if ( GetRefCount( ) > 1 )
-        {
+        if (GetRefCount() > 1) {
             //
             // Here virtual time has changed, we must pull out all of the events
             // that happend before the new virtual time and broadcast all of
@@ -1421,11 +1285,10 @@ class radControllerDirectInput
             //
 
             if
-            (
-                m_xIDirectInputDevice8 != NULL && 
-                m_xIOl_InputPoints != NULL
-            )
-            {
+                    (
+                    m_xIDirectInputDevice8 != NULL &&
+                    m_xIOl_InputPoints != NULL
+                    ) {
                 DIDEVICEOBJECTDATA didod;
 
                 DWORD size = 1;
@@ -1436,8 +1299,7 @@ class radControllerDirectInput
                 // stap happened in the future we break the loop.
                 //
 
-                while ( size == 1 )
-                {
+                while (size == 1) {
                     //
                     // See if there is a packet that corresponds to the time
                     // period that we are running.
@@ -1457,23 +1319,21 @@ class radControllerDirectInput
                     // see if it is aquired by calling GetDeviceData()
                     //
 
-                    HRESULT hr = m_xIDirectInputDevice8->Acquire( );
+                    HRESULT hr = m_xIDirectInputDevice8->Acquire();
 
-                    if ( FAILED( hr ) )
-                    {
+                    if (FAILED(hr)) {
                         break;
                     }
-                    
-                    hr = m_xIDirectInputDevice8->GetDeviceData
-                    (
-                        sizeof( DIDEVICEOBJECTDATA ),
-                        & didod,
-                        & size,     // in/out
-                        DIGDD_PEEK
-                    );
 
-                    if ( FAILED( hr ) || size == 0)
-                    {
+                    hr = m_xIDirectInputDevice8->GetDeviceData
+                            (
+                                    sizeof(DIDEVICEOBJECTDATA),
+                                    &didod,
+                                    &size,     // in/out
+                                    DIGDD_PEEK
+                            );
+
+                    if (FAILED(hr) || size == 0) {
                         break;
                     }
 
@@ -1494,8 +1354,7 @@ class radControllerDirectInput
                     // int last 25 virtual days.
                     //
 
-                    if ( true )
-                    {
+                    if (true) {
                         //
                         // Yes, the event corresponds to the virtual time period that
                         // we are running.
@@ -1504,54 +1363,48 @@ class radControllerDirectInput
                         size = 1;
 
                         hr = m_xIDirectInputDevice8->GetDeviceData
-                        (
-                            sizeof( DIDEVICEOBJECTDATA ),
-                            & didod,
-                            & size,
-                            0 // dont' peek
-                        );
+                                (
+                                        sizeof(DIDEVICEOBJECTDATA),
+                                        &didod,
+                                        &size,
+                                        0 // dont' peek
+                                );
 
-                        if ( FAILED( hr ) || size == 0 )
-                        {
+                        if (FAILED(hr) || size == 0) {
                             break;
                         }
-        
+
                         //
                         // Go through our input point list asking each input
                         // point to handle the event.  If the event is handled,
                         // break this while loop
                         //
 
-                        if ( m_xIOl_InputPoints != NULL )
-                        {
-                            m_xIOl_InputPoints->Reset( );
+                        if (m_xIOl_InputPoints != NULL) {
+                            m_xIOl_InputPoints->Reset();
 
-                            IRadControllerInputPointDirectInput * pIDicip2;
+                            IRadControllerInputPointDirectInput *pIDicip2;
 
-                            while ( pIDicip2 = reinterpret_cast< IRadControllerInputPointDirectInput * >( m_xIOl_InputPoints->GetNext( ) ) )
-                            {
+                            while (pIDicip2 = reinterpret_cast<IRadControllerInputPointDirectInput *>(m_xIOl_InputPoints->GetNext())) {
                                 if
-                                (
-                                    pIDicip2->iHandleEvent
-                                    (
-                                        didod.dwOfs,
-                                        didod.dwData,
-                                        packetVirtualTime
-                                    )
-                                )
-                                {
+                                        (
+                                        pIDicip2->iHandleEvent
+                                                (
+                                                        didod.dwOfs,
+                                                        didod.dwData,
+                                                        packetVirtualTime
+                                                )
+                                        ) {
                                     break;
                                 }
                             }
                         }
-                    }
-                    else
-                    {
+                    } else {
                         //
                         // Event hasn't happened in virtual time
                         //
 
-                        break; 
+                        break;
                     }
                 }
             }
@@ -1561,15 +1414,13 @@ class radControllerDirectInput
             // points that time has passed
             //
 
-            if ( m_xIOl_InputPoints != NULL )
-            {
-                m_xIOl_InputPoints->Reset( );
+            if (m_xIOl_InputPoints != NULL) {
+                m_xIOl_InputPoints->Reset();
 
-                IRadControllerInputPointDirectInput * pIDicip2;
+                IRadControllerInputPointDirectInput *pIDicip2;
 
-                while ( pIDicip2 = reinterpret_cast< IRadControllerInputPointDirectInput * >( m_xIOl_InputPoints->GetNext( ) ) )
-                {
-                    pIDicip2->iVirtualTimeChanged( virtualTime );                           
+                while (pIDicip2 = reinterpret_cast<IRadControllerInputPointDirectInput *>(m_xIOl_InputPoints->GetNext())) {
+                    pIDicip2->iVirtualTimeChanged(virtualTime);
                 }
             }
         }
@@ -1579,33 +1430,30 @@ class radControllerDirectInput
     // radControllerDirectInput::iVirtualTimeReMapped
     //========================================================================
 
-    virtual void iVirtualTimeReMapped( unsigned int virtualTime )
-    {
+    virtual void iVirtualTimeReMapped(unsigned int virtualTime) {
         //
         // Here the controller system is telling us that virtual time
         // no relates to real time in a different way, we must flush
         // the event buffer, becuase previous events are meaningless.
         //
 
-        if ( m_xIDirectInputDevice8 != NULL )
-        {
+        if (m_xIDirectInputDevice8 != NULL) {
             //
             // Flush the hardware device buffer
             //
 
             unsigned long dwItems = INFINITE;
-         
-            HRESULT hr = m_xIDirectInputDevice8->Acquire( );
 
-            if ( SUCCEEDED( hr ) )
-            {
+            HRESULT hr = m_xIDirectInputDevice8->Acquire();
+
+            if (SUCCEEDED(hr)) {
                 hr = m_xIDirectInputDevice8->GetDeviceData
-                ( 
-                    sizeof(DIDEVICEOBJECTDATA), 
-                    NULL, 
-                    & dwItems, 
-                    0
-                );
+                        (
+                                sizeof(DIDEVICEOBJECTDATA),
+                                NULL,
+                                &dwItems,
+                                0
+                        );
             }
         }
 
@@ -1615,15 +1463,13 @@ class radControllerDirectInput
         // they must be reset to zero.
         //
 
-        if ( m_xIOl_InputPoints != NULL )
-        {
-            IRadControllerInputPointDirectInput * pIDicpip;
+        if (m_xIOl_InputPoints != NULL) {
+            IRadControllerInputPointDirectInput *pIDicpip;
 
-            m_xIOl_InputPoints->Reset( );
+            m_xIOl_InputPoints->Reset();
 
-            while( pIDicpip = reinterpret_cast< IRadControllerInputPointDirectInput * >( m_xIOl_InputPoints->GetNext( ) ) )
-            {
-                pIDicpip->iVirtualTimeReMapped( virtualTime );
+            while (pIDicpip = reinterpret_cast<IRadControllerInputPointDirectInput *>(m_xIOl_InputPoints->GetNext())) {
+                pIDicpip->iVirtualTimeReMapped(virtualTime);
             }
         }
     }
@@ -1632,36 +1478,32 @@ class radControllerDirectInput
     // radControllerDirectInput::GetNumberOfInputPoints
     //========================================================================
 
-    virtual unsigned int GetNumberOfInputPoints( void )
-    {
-        return m_xIOl_InputPoints->GetSize( );
+    virtual unsigned int GetNumberOfInputPoints(void) {
+        return m_xIOl_InputPoints->GetSize();
     }
 
     //========================================================================
     // radControllerDirectInput::GetInputPointByIndex
     //========================================================================
 
-    virtual IRadControllerInputPoint * GetInputPointByIndex( unsigned int myindex)
-    {
-        return reinterpret_cast< IRadControllerInputPoint * >( m_xIOl_InputPoints->GetAt( myindex ) );
+    virtual IRadControllerInputPoint *GetInputPointByIndex(unsigned int myindex) {
+        return reinterpret_cast<IRadControllerInputPoint *>(m_xIOl_InputPoints->GetAt(myindex));
     }
 
     //========================================================================
     // rDirectOutputController2::GetNumberOfOutputPoints
     //========================================================================
 
-    virtual unsigned int GetNumberOfOutputPoints( void )
-    {
-        return m_xIOl_OutputPoints->GetSize( );
+    virtual unsigned int GetNumberOfOutputPoints(void) {
+        return m_xIOl_OutputPoints->GetSize();
     }
 
     //========================================================================
     // rDirectOutputController2::GetOutputPointByIndex
     //========================================================================
 
-    virtual IRadControllerOutputPoint * GetOutputPointByIndex( unsigned int index)
-    {
-        return reinterpret_cast< IRadControllerOutputPoint * >( m_xIOl_OutputPoints->GetAt( index ) );
+    virtual IRadControllerOutputPoint *GetOutputPointByIndex(unsigned int index) {
+        return reinterpret_cast<IRadControllerOutputPoint *>(m_xIOl_OutputPoints->GetAt(index));
     }
 
     //========================================================================
@@ -1669,44 +1511,42 @@ class radControllerDirectInput
     //========================================================================
 
     static BOOL __stdcall EnumObjectsCallback
-    (
-          LPCDIDEVICEOBJECTINSTANCE lpddoi,
-          LPVOID pVoidThis
-    )
-    {
+            (
+                    LPCDIDEVICEOBJECTINSTANCE lpddoi,
+                    LPVOID pVoidThis
+            ) {
         //
         // For each input point, create an object to represent it.
         //
-        rAssert( pVoidThis != NULL );
-        rAssert( lpddoi != NULL );
+        rAssert(pVoidThis != NULL);
+        rAssert(lpddoi != NULL);
 
-        if ( pVoidThis != NULL )
-        {
-            radControllerDirectInput * pThis = (radControllerDirectInput*) pVoidThis;
+        if (pVoidThis != NULL) {
+            radControllerDirectInput *pThis = (radControllerDirectInput *) pVoidThis;
 
-            if ( lpddoi->guidType != GUID_Unknown )
-            {
-                IRefCount * pObject = static_cast< IRefCount * >(
-                    new( g_ControllerSystemAllocator ) radControllerInputPointDirectInput( pThis, lpddoi, 0 )
-                                                                );
+            if (lpddoi->guidType != GUID_Unknown) {
+                IRefCount *pObject = static_cast<IRefCount *>(new(
+                        g_ControllerSystemAllocator) radControllerInputPointDirectInput(pThis,
+                                                                                        lpddoi,
+                                                                                        0)
+                );
                 //
                 // Add this key to the virtual key table.
                 //
-                if ( s_EnumKeyboard )
-                {
-                    s_VirtualKeyToIndex[ lpddoi->dwOfs - 1 ] = pThis->m_xIOl_InputPoints->GetSize( );
+                if (s_EnumKeyboard) {
+                    s_VirtualKeyToIndex[lpddoi->dwOfs - 1] = pThis->m_xIOl_InputPoints->GetSize();
                 }
 
-                pThis->m_xIOl_InputPoints->AddObject( pObject );
+                pThis->m_xIOl_InputPoints->AddObject(pObject);
 
                 //
                 // If there is a motor associated with this object, add output
                 // points for it.
                 //
-                if ( lpddoi->dwFlags & DIDOI_FFACTUATOR )
-                {
-                    HRESULT hr = pThis->m_xIDirectInputDevice8->EnumEffects( EnumEffectsCallback, pThis, DIEFT_ALL );
-                    rAssertMsg( SUCCEEDED( hr ), "IDirectInputDevice8::EnumEffects Failed!" );
+                if (lpddoi->dwFlags & DIDOI_FFACTUATOR) {
+                    HRESULT hr = pThis->m_xIDirectInputDevice8->EnumEffects(EnumEffectsCallback,
+                                                                            pThis, DIEFT_ALL);
+                    rAssertMsg(SUCCEEDED(hr), "IDirectInputDevice8::EnumEffects Failed!");
                 }
             }
         }
@@ -1719,26 +1559,26 @@ class radControllerDirectInput
     //========================================================================
 
     static BOOL __stdcall EnumEffectsCallback
-    (
-        LPCDIEFFECTINFO pdei,
-        LPVOID pVoidThis
-    )
-    {
+            (
+                    LPCDIEFFECTINFO pdei,
+                    LPVOID pVoidThis
+            ) {
         //
         // For each type of effect, create an output point to access it
         //
-        rAssert( pVoidThis != NULL );
-        rAssert( pdei != NULL );
+        rAssert(pVoidThis != NULL);
+        rAssert(pdei != NULL);
 
-        if ( pVoidThis != NULL )
-        {
-            radControllerDirectInput * pThis = (radControllerDirectInput*) pVoidThis;
-            unsigned int objectIndex = pThis->m_xIOl_InputPoints->GetSize( ) - 1;
+        if (pVoidThis != NULL) {
+            radControllerDirectInput *pThis = (radControllerDirectInput *) pVoidThis;
+            unsigned int objectIndex = pThis->m_xIOl_InputPoints->GetSize() - 1;
 
-            IRefCount * pObject = static_cast< IRefCount * >(
-                new( g_ControllerSystemAllocator ) ControllerOutputPointDirectInput( pdei, objectIndex * 4 ) 
-                );
-            pThis->m_xIOl_OutputPoints->AddObject( pObject );
+            IRefCount *pObject = static_cast<IRefCount *>(new(
+                    g_ControllerSystemAllocator) ControllerOutputPointDirectInput(pdei,
+                                                                                  objectIndex *
+                                                                                  4)
+            );
+            pThis->m_xIOl_OutputPoints->AddObject(pObject);
         }
 
         return DIENUM_CONTINUE;
@@ -1748,20 +1588,18 @@ class radControllerDirectInput
     // radControllerDirectInput::radControllerDirectInput
     //========================================================================
 
-    radControllerDirectInput( LPCDIDEVICEINSTANCE pDidi, ref< IDirectInput8 > xIDirectInput8 )
-        :
-        radRefCount( 0 ),
-        m_InputBufferSize( 0 ),
-        m_pInputBuffer( NULL ),
-        m_xIDirectInput8( xIDirectInput8 )
-    {
-        ::ZeroMemory( & m_DirectInputDeviceInstance, sizeof( m_DirectInputDeviceInstance ) );
+    radControllerDirectInput(LPCDIDEVICEINSTANCE pDidi, ref <IDirectInput8> xIDirectInput8)
+            :
+            radRefCount(0),
+            m_InputBufferSize(0),
+            m_pInputBuffer(NULL),
+            m_xIDirectInput8(xIDirectInput8) {
+        ::ZeroMemory(&m_DirectInputDeviceInstance, sizeof(m_DirectInputDeviceInstance));
 
-        rAssert( pDidi != NULL );
-        rAssert( m_xIDirectInput8 != NULL );
+        rAssert(pDidi != NULL);
+        rAssert(m_xIDirectInput8 != NULL);
 
-        if ( m_xIDirectInput8 != NULL && pDidi != NULL )
-        {
+        if (m_xIDirectInput8 != NULL && pDidi != NULL) {
             m_DirectInputDeviceInstance = *pDidi;
 
             //
@@ -1769,80 +1607,79 @@ class radControllerDirectInput
             // can get one ok...
             //
 
-            ::radObjectListCreate( & m_xIOl_InputPoints, g_ControllerSystemAllocator );
-            ::radObjectListCreate( & m_xIOl_OutputPoints, g_ControllerSystemAllocator );
+            ::radObjectListCreate(&m_xIOl_InputPoints, g_ControllerSystemAllocator);
+            ::radObjectListCreate(&m_xIOl_OutputPoints, g_ControllerSystemAllocator);
 
-            rAssert( m_xIOl_InputPoints != NULL );
-            rAssert( m_xIOl_OutputPoints != NULL );
+            rAssert(m_xIOl_InputPoints != NULL);
+            rAssert(m_xIOl_OutputPoints != NULL);
 
-            if ( m_xIOl_InputPoints != NULL )
-            {
+            if (m_xIOl_InputPoints != NULL) {
                 //
                 // Create the underlying DirectInput8 device.
                 //
 
                 HRESULT hr = m_xIDirectInput8->CreateDevice
-                (
-                    pDidi->guidInstance,
-                    & m_xIDirectInputDevice8,
-                    NULL
-                );
-            
-                rAssertMsg( SUCCEEDED( hr ), "IDirectInput8::CreateDeviceEx Failed" );
-            
-                if ( m_xIDirectInputDevice8 != NULL )
-                {
+                        (
+                                pDidi->guidInstance,
+                                &m_xIDirectInputDevice8,
+                                NULL
+                        );
+
+                rAssertMsg(SUCCEEDED(hr), "IDirectInput8::CreateDeviceEx Failed");
+
+                if (m_xIDirectInputDevice8 != NULL) {
                     //
                     // Ok we've got the device, enumerate all the input points
                     // that is has.
                     //
-                    s_EnumKeyboard = strcmp( GetClassification(), "Keyboard" ) == 0;
+                    s_EnumKeyboard = strcmp(GetClassification(), "Keyboard") == 0;
                     hr = m_xIDirectInputDevice8->EnumObjects
-                    (
-                        EnumObjectsCallback,
-                        this,
-                        DIDFT_ALL
-                    );
+                            (
+                                    EnumObjectsCallback,
+                                    this,
+                                    DIDFT_ALL
+                            );
                     s_EnumKeyboard = false;
 
-                    rAssertMsg( SUCCEEDED( hr ), "IDirectInputDevice8::EnumObjects Failed!" );
+                    rAssertMsg(SUCCEEDED(hr), "IDirectInputDevice8::EnumObjects Failed!");
 
-                    if ( SUCCEEDED( hr ) )
-                    {
+                    if (SUCCEEDED(hr)) {
                         //
                         // Build the data format, creating the array based on our
                         // enumerated input points
                         //
-                    
+
                         DIDATAFORMAT didf;
-                        ::ZeroMemory( & didf, sizeof( didf ) );
-                        didf.dwSize     = sizeof( didf );
-                        didf.dwObjSize  = sizeof( DIOBJECTDATAFORMAT );
-                        didf.dwFlags    = strcmp( GetClassification(), "Mouse" ) == 0 ? DIDF_RELAXIS : DIDF_ABSAXIS;
-                        didf.dwDataSize = m_xIOl_InputPoints->GetSize( ) * 4;
-                        didf.dwNumObjs  = m_xIOl_InputPoints->GetSize( );
-                        didf.rgodf      = (LPDIOBJECTDATAFORMAT) radMemoryAlloc( RADMEMORY_ALLOC_TEMP, didf.dwNumObjs * sizeof( DIOBJECTDATAFORMAT ) );
+                        ::ZeroMemory(&didf, sizeof(didf));
+                        didf.dwSize = sizeof(didf);
+                        didf.dwObjSize = sizeof(DIOBJECTDATAFORMAT);
+                        didf.dwFlags = strcmp(GetClassification(), "Mouse") == 0 ? DIDF_RELAXIS
+                                                                                 : DIDF_ABSAXIS;
+                        didf.dwDataSize = m_xIOl_InputPoints->GetSize() * 4;
+                        didf.dwNumObjs = m_xIOl_InputPoints->GetSize();
+                        didf.rgodf = (LPDIOBJECTDATAFORMAT) radMemoryAlloc(RADMEMORY_ALLOC_TEMP,
+                                                                           didf.dwNumObjs *
+                                                                           sizeof(DIOBJECTDATAFORMAT));
 
                         //
                         // For each input object enumerated in the list, create the
                         // input point array descriptor for that point.
                         //
 
-                        m_xIOl_InputPoints->Reset( );
+                        m_xIOl_InputPoints->Reset();
 
-                        IRadControllerInputPointDirectInput * pIDicip2;
+                        IRadControllerInputPointDirectInput *pIDicip2;
 
                         unsigned int count = 0;
 
-                        while ( pIDicip2 = reinterpret_cast< IRadControllerInputPointDirectInput * >(  m_xIOl_InputPoints->GetNext( ) ) )
-                        {
-                            rAssert( pIDicip2 != NULL );
+                        while (pIDicip2 = reinterpret_cast<IRadControllerInputPointDirectInput *>(m_xIOl_InputPoints->GetNext())) {
+                            rAssert(pIDicip2 != NULL);
 
-                            didf.rgodf[ count ].pguid = NULL;
-                            didf.rgodf[ count ].dwOfs = count * 4;
-                            didf.rgodf[ count ].dwFlags = 0;
-                            didf.rgodf[ count ].dwType = 0;
-                            didf.rgodf[ count ].dwType = pIDicip2->iGetDirectInput8Type( );
+                            didf.rgodf[count].pguid = NULL;
+                            didf.rgodf[count].dwOfs = count * 4;
+                            didf.rgodf[count].dwFlags = 0;
+                            didf.rgodf[count].dwType = 0;
+                            didf.rgodf[count].dwType = pIDicip2->iGetDirectInput8Type();
 
                             count++;
                         }
@@ -1851,27 +1688,27 @@ class radControllerDirectInput
                         // Set this data format on the device.
                         //
 
-                        hr = m_xIDirectInputDevice8->SetDataFormat( & didf );
+                        hr = m_xIDirectInputDevice8->SetDataFormat(&didf);
 
-                        rAssertMsg( SUCCEEDED( hr ), "DirectInputDevice8::SetDataFormat Failed" );
+                        rAssertMsg(SUCCEEDED(hr), "DirectInputDevice8::SetDataFormat Failed");
 
                         //
                         // Create an input buffer based on the size that we specified
                         // the data format.
                         //
 
-                        if ( SUCCEEDED( hr ) )
-                        {
-                            m_pInputBuffer = (char*) radMemoryAlloc( g_ControllerSystemAllocator, didf.dwDataSize );
+                        if (SUCCEEDED(hr)) {
+                            m_pInputBuffer = (char *) radMemoryAlloc(g_ControllerSystemAllocator,
+                                                                     didf.dwDataSize);
                             m_InputBufferSize = didf.dwDataSize;
-                        }                     
+                        }
 
-		                //
+                        //
                         // Hopefully DirectInput8 makes a copy of this structure, or
                         // else we will blow up later because of this line!
                         //
 
-                        radMemoryFree( RADMEMORY_ALLOC_TEMP, didf.rgodf );
+                        radMemoryFree(RADMEMORY_ALLOC_TEMP, didf.rgodf);
 
                         //
                         // Set the cooperative level, we get the main window
@@ -1879,58 +1716,57 @@ class radControllerDirectInput
                         // when it starts up.
                         //
 
-                        ref< IRadPlatform > xIWin32Platform;
-                        xIWin32Platform = radPlatformGet(  );
-                        rAssert( xIWin32Platform != NULL );
+                        ref <IRadPlatform> xIWin32Platform;
+                        xIWin32Platform = radPlatformGet();
+                        rAssert(xIWin32Platform != NULL);
 
-                        if ( xIWin32Platform != NULL )
-                        {
+                        if (xIWin32Platform != NULL) {
                             //
                             // If we have rumble, we need to be in exclusive mode.
                             //
                             bool exclusive = false;
-                            if ( m_xIOl_OutputPoints->GetSize( ) > 0 ) exclusive = true;
+                            if (m_xIOl_OutputPoints->GetSize() > 0) exclusive = true;
 
-                            if ( !exclusive )
-                            {
+                            if (!exclusive) {
                                 hr = m_xIDirectInputDevice8->SetCooperativeLevel
-                                (
-                                    xIWin32Platform->GetMainWindowHandle( ),
-                                    DISCL_NONEXCLUSIVE | DISCL_FOREGROUND
-                                );
+                                        (
+                                                xIWin32Platform->GetMainWindowHandle(),
+                                                DISCL_NONEXCLUSIVE | DISCL_FOREGROUND
+                                        );
 
-                                rWarningMsg( SUCCEEDED( hr ), "IDirectInputDevice8::SetCooperativeLevel NONEXLUSIVE Failed, trying EXCLUSIVE" );
-                                
-                                if ( FAILED( hr ) ) exclusive = true;
+                                rWarningMsg(SUCCEEDED(hr),
+                                            "IDirectInputDevice8::SetCooperativeLevel NONEXLUSIVE Failed, trying EXCLUSIVE");
+
+                                if (FAILED(hr)) exclusive = true;
                             }
 
-                            if ( exclusive )
-                            {
+                            if (exclusive) {
                                 hr = m_xIDirectInputDevice8->SetCooperativeLevel
-                                (
-                                    xIWin32Platform->GetMainWindowHandle( ),
-                                    DISCL_EXCLUSIVE | DISCL_FOREGROUND
-                                );
+                                        (
+                                                xIWin32Platform->GetMainWindowHandle(),
+                                                DISCL_EXCLUSIVE | DISCL_FOREGROUND
+                                        );
 
-                                rAssertMsg( SUCCEEDED( hr ), "IDirectInputDevice8::SetCooperativeLevel EXCLUSIVE failed too." );
-                            }                            
+                                rAssertMsg(SUCCEEDED(hr),
+                                           "IDirectInputDevice8::SetCooperativeLevel EXCLUSIVE failed too.");
+                            }
 
-                            if ( SUCCEEDED( hr ) )
-                            {
+                            if (SUCCEEDED(hr)) {
                                 //
                                 // Turn off auto-center for force-feedback devices.
                                 //
-                                if ( m_xIOl_OutputPoints->GetSize( ) > 0 )
-                                {
+                                if (m_xIOl_OutputPoints->GetSize() > 0) {
                                     DIPROPDWORD dipdw;
-                                    dipdw.diph.dwSize       = sizeof(DIPROPDWORD);
+                                    dipdw.diph.dwSize = sizeof(DIPROPDWORD);
                                     dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-                                    dipdw.diph.dwObj        = 0;
-                                    dipdw.diph.dwHow        = DIPH_DEVICE;
-                                    dipdw.dwData            = FALSE;
+                                    dipdw.diph.dwObj = 0;
+                                    dipdw.diph.dwHow = DIPH_DEVICE;
+                                    dipdw.dwData = FALSE;
 
-                                    HRESULT hr = m_xIDirectInputDevice8->SetProperty( DIPROP_AUTOCENTER, &dipdw.diph );
-                                    rAssertMsg( SUCCEEDED( hr ), "IDirectInputDevice8::SetProperty Failed" );
+                                    HRESULT hr = m_xIDirectInputDevice8->SetProperty(
+                                            DIPROP_AUTOCENTER, &dipdw.diph);
+                                    rAssertMsg(SUCCEEDED(hr),
+                                               "IDirectInputDevice8::SetProperty Failed");
                                 }
 
                                 //
@@ -1941,56 +1777,45 @@ class radControllerDirectInput
                                 // There is probably a better way to do this, but
                                 // on the pc its hard to enumerate the locations.
 
-                                ::radStringCreate( & m_xIString_Location, g_ControllerSystemAllocator );                            
-                                rAssert( m_xIString_Location != NULL );
-                                
-                                if ( m_xIString_Location != NULL )
-                                {
+                                ::radStringCreate(&m_xIString_Location,
+                                                  g_ControllerSystemAllocator);
+                                rAssert(m_xIString_Location != NULL);
 
-                                    if ( strcmp( GetClassification(), "Joystick" ) == 0 )
-                                    {
+                                if (m_xIString_Location != NULL) {
+
+                                    if (strcmp(GetClassification(), "Joystick") == 0) {
                                         DIPROPDWORD dipw;
-                                        dipw.diph.dwSize = sizeof( DIPROPDWORD );
-                                        dipw.diph.dwHeaderSize = sizeof( DIPROPHEADER );
+                                        dipw.diph.dwSize = sizeof(DIPROPDWORD);
+                                        dipw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
                                         dipw.diph.dwObj = 0; // DEVICE
                                         dipw.diph.dwHow = DIPH_DEVICE;
                                         dipw.dwData;
 
                                         HRESULT hr = m_xIDirectInputDevice8->GetProperty
-                                        (
-                                            DIPROP_JOYSTICKID,
-                                            & (dipw.diph) // what utter crap this is!
-                                        );
-        
-                                        rAssertMsg( SUCCEEDED( hr ), "IDirectInputDevice8::GetProperty (JoystickId) Failed" );
+                                                (
+                                                        DIPROP_JOYSTICKID,
+                                                        &(dipw.diph) // what utter crap this is!
+                                                );
 
-                                        m_xIString_Location->Append( "Joystick" );
+                                        rAssertMsg(SUCCEEDED(hr),
+                                                   "IDirectInputDevice8::GetProperty (JoystickId) Failed");
 
-                                        if ( SUCCEEDED( hr ) )
-                                        {
-                                            m_xIString_Location->Append( (int) dipw.dwData );
+                                        m_xIString_Location->Append("Joystick");
+
+                                        if (SUCCEEDED(hr)) {
+                                            m_xIString_Location->Append((int) dipw.dwData);
+                                        } else {
+                                            m_xIString_Location->Append("?");
                                         }
-                                        else
-                                        {
-                                            m_xIString_Location->Append( "?" );
-                                        }
+                                    } else if (strcmp(GetClassification(), "Mouse") == 0) {
+                                        m_xIString_Location->Append("Mouse0");
+                                    } else if (strcmp(GetClassification(), "Keyboard") == 0) {
+                                        m_xIString_Location->Append("Keyboard0");
+                                    } else if (strcmp(GetClassification(), "SteeringWheel") == 0) {
+                                        m_xIString_Location->Append("SteeringWheel0");
+                                    } else {
+                                        m_xIString_Location->Append("Unknown Location");
                                     }
-                                    else if ( strcmp( GetClassification(), "Mouse" ) == 0 )
-                                    {
-                                        m_xIString_Location->Append( "Mouse0" );
-                                    }
-                                    else if ( strcmp( GetClassification(), "Keyboard" ) == 0 )
-                                    {
-                                        m_xIString_Location->Append( "Keyboard0" );
-                                    }
-                                    else if ( strcmp( GetClassification(), "SteeringWheel" ) == 0 )
-                                    {
-                                        m_xIString_Location->Append( "SteeringWheel0" );
-                                    }
-									else
-									{
-										m_xIString_Location->Append( "Unknown Location" );
-									}
                                 }
 
                                 //
@@ -1999,72 +1824,72 @@ class radControllerDirectInput
                                 //
 
                                 iSetBufferTime
-                                (
-                                    32,
-                                    16
-                                ); 
+                                        (
+                                                32,
+                                                16
+                                        );
 
                             }
-                        }            
-						
+                        }
 
-						//
-						// Now that the data format and cooperative level
-						// have been set.  We can acquire the device...
-						//
 
-                        do
-                        {
-    						hr = m_xIDirectInputDevice8->Acquire( );
-                        }while (DIERR_OTHERAPPHASPRIO == hr);
+                        //
+                        // Now that the data format and cooperative level
+                        // have been set.  We can acquire the device...
+                        //
 
-                        rWarningMsg( SUCCEEDED( hr ), "radControllerDirectInput: Could not acquire device" );
+                        do {
+                            hr = m_xIDirectInputDevice8->Acquire();
+                        } while (DIERR_OTHERAPPHASPRIO == hr);
 
-						//
-						// ... and grab its initial values.
-						//
-									                    
-						m_xIOl_InputPoints->Reset( );
+                        rWarningMsg(SUCCEEDED(hr),
+                                    "radControllerDirectInput: Could not acquire device");
 
-						unsigned int * pCurrentValues = ( unsigned int * ) radMemoryAlloc( 
-							RADMEMORY_ALLOC_TEMP, m_xIOl_InputPoints->GetSize( ) * sizeof( unsigned int ) );
+                        //
+                        // ... and grab its initial values.
+                        //
 
-						// Current values are grabbed here
+                        m_xIOl_InputPoints->Reset();
 
-						hr = m_xIDirectInputDevice8->GetDeviceState( 
-							m_xIOl_InputPoints->GetSize( ) * 4, pCurrentValues );
-						
-						rWarningMsg( SUCCEEDED( hr ), "radControllerDirectInput: Could not access controller to read initial values" );
+                        unsigned int *pCurrentValues = (unsigned int *) radMemoryAlloc(
+                                RADMEMORY_ALLOC_TEMP,
+                                m_xIOl_InputPoints->GetSize() * sizeof(unsigned int));
 
-						if( SUCCEEDED( hr ) )
-						{
-							//
-							// Initialize each input point with a value and an offset
-							//
+                        // Current values are grabbed here
 
-							unsigned int count = 0;
+                        hr = m_xIDirectInputDevice8->GetDeviceState(
+                                m_xIOl_InputPoints->GetSize() * 4, pCurrentValues);
 
-							while ( pIDicip2 = reinterpret_cast< IRadControllerInputPointDirectInput * >(  m_xIOl_InputPoints->GetNext( ) ) )
-							{
-								rAssert( pIDicip2 != NULL );
+                        rWarningMsg(SUCCEEDED(hr),
+                                    "radControllerDirectInput: Could not access controller to read initial values");
 
-								pIDicip2->iInitialize( count * sizeof( unsigned int ), pCurrentValues[ count ] );
+                        if (SUCCEEDED(hr)) {
+                            //
+                            // Initialize each input point with a value and an offset
+                            //
 
-								count++;
- 							}
+                            unsigned int count = 0;
+
+                            while (pIDicip2 = reinterpret_cast<IRadControllerInputPointDirectInput *>(m_xIOl_InputPoints->GetNext())) {
+                                rAssert(pIDicip2 != NULL);
+
+                                pIDicip2->iInitialize(count * sizeof(unsigned int),
+                                                      pCurrentValues[count]);
+
+                                count++;
+                            }
                         }
 
                         //
                         // Initialize all output points.
                         //
-                        m_xIOl_OutputPoints->Reset( );
-                        IRadControllerOutputPointDirectInput* pIRadControllerOutputPoint;
-                        while ( pIRadControllerOutputPoint = reinterpret_cast< IRadControllerOutputPointDirectInput * >( m_xIOl_OutputPoints->GetNext( ) ) )
-                        {
-                            pIRadControllerOutputPoint->Init( m_xIDirectInputDevice8 );
+                        m_xIOl_OutputPoints->Reset();
+                        IRadControllerOutputPointDirectInput *pIRadControllerOutputPoint;
+                        while (pIRadControllerOutputPoint = reinterpret_cast<IRadControllerOutputPointDirectInput *>(m_xIOl_OutputPoints->GetNext())) {
+                            pIRadControllerOutputPoint->Init(m_xIDirectInputDevice8);
                         }
-						
-						::radMemoryFree( RADMEMORY_ALLOC_TEMP, pCurrentValues );
+
+                        ::radMemoryFree(RADMEMORY_ALLOC_TEMP, pCurrentValues);
                     }
                 }
             }
@@ -2075,20 +1900,17 @@ class radControllerDirectInput
     // radControllerDirectInput::~radControllerDirectInput
     //========================================================================
 
-    ~radControllerDirectInput( void )
-    {
+    ~radControllerDirectInput(void) {
         //
         // Free the dynamically allocated intput buffer.
         //
-    
-        if ( m_xIDirectInputDevice8 != NULL )
-        {
-            HRESULT hr = m_xIDirectInputDevice8->Unacquire( );
+
+        if (m_xIDirectInputDevice8 != NULL) {
+            HRESULT hr = m_xIDirectInputDevice8->Unacquire();
         }
 
-        if ( m_pInputBuffer != NULL )
-        {
-            radMemoryFree( g_ControllerSystemAllocator, m_pInputBuffer );
+        if (m_pInputBuffer != NULL) {
+            radMemoryFree(g_ControllerSystemAllocator, m_pInputBuffer);
             m_pInputBuffer = NULL;
         }
     }
@@ -2096,36 +1918,34 @@ class radControllerDirectInput
     //========================================================================
     // Data Members
     //========================================================================
-   
+
     unsigned int m_InputBufferSize;
-    char * m_pInputBuffer;
+    char *m_pInputBuffer;
 
     DIDEVICEINSTANCE m_DirectInputDeviceInstance;
 
-    ref< IDirectInput8 >       m_xIDirectInput8;
-    ref< IDirectInputDevice8 > m_xIDirectInputDevice8;
-    ref< IRadObjectList >        m_xIOl_InputPoints;
-    ref< IRadObjectList >        m_xIOl_OutputPoints;
-    ref< IRadString >            m_xIString_Location;
+    ref <IDirectInput8> m_xIDirectInput8;
+    ref <IDirectInputDevice8> m_xIDirectInputDevice8;
+    ref <IRadObjectList> m_xIOl_InputPoints;
+    ref <IRadObjectList> m_xIOl_OutputPoints;
+    ref <IRadString> m_xIString_Location;
 };
 
 class radControllerSystemDirectInput
-    :
-    public IRadControllerSystem,
-    public IRadTimerCallback,
-    public radRefCount
-{
-    public:
+        :
+                public IRadControllerSystem,
+                public IRadTimerCallback,
+                public radRefCount {
+public:
 
-    IMPLEMENT_REFCOUNTED( "radControllerDirectInput" )
+    IMPLEMENT_REFCOUNTED("radControllerDirectInput")
 
     //========================================================================
     // radControllerDirectInput::Service
     //========================================================================
 
-    void Service( void )
-    {
-        m_xITimerList->Service(  );   
+    void Service(void) {
+        m_xITimerList->Service();
     }
 
     //========================================================================
@@ -2133,11 +1953,10 @@ class radControllerSystemDirectInput
     //========================================================================
 
     virtual void OnTimerDone
-    (
-        unsigned int elapsedtime,
-        void*        userData
-    )
-    {
+            (
+                    unsigned int elapsedtime,
+                    void *userData
+            ) {
         //
         // This timer "thread" drives the system to buffer controller states.
         // If the client is not using the virtual time system, we also
@@ -2148,15 +1967,13 @@ class radControllerSystemDirectInput
         // For each controller, tell it to buffer new state.
         //
 
-        if ( m_xIOl_Controllers != NULL )
-        {
-            m_xIOl_Controllers->Reset( );
+        if (m_xIOl_Controllers != NULL) {
+            m_xIOl_Controllers->Reset();
 
-            IRadControllerDirectInput * pIDic;
+            IRadControllerDirectInput *pIDic;
 
-            while ( pIDic = reinterpret_cast< IRadControllerDirectInput * >( m_xIOl_Controllers->GetNext( ) ) )
-            {
-                pIDic->iPoll( );
+            while (pIDic = reinterpret_cast<IRadControllerDirectInput *>(m_xIOl_Controllers->GetNext())) {
+                pIDic->iPoll();
             }
         }
 
@@ -2167,9 +1984,8 @@ class radControllerSystemDirectInput
         // milliseconds
         //
 
-        if( m_UsingVirtualTime == false )
-        {
-            SetVirtualTime( radTimeGetMilliseconds( ) );
+        if (m_UsingVirtualTime == false) {
+            SetVirtualTime(radTimeGetMilliseconds());
         }
     }
 
@@ -2178,10 +1994,9 @@ class radControllerSystemDirectInput
     //========================================================================
 
     virtual void RegisterConnectionChangeCallback
-    (
-        IRadControllerConnectionChangeCallback * pCallback
-    )
-    {
+            (
+                    IRadControllerConnectionChangeCallback *pCallback
+            ) {
         //
         // We will pretend we support the behavior but we don't because
         // querying the device state is a blocking call, as has been reported
@@ -2189,7 +2004,7 @@ class radControllerSystemDirectInput
         // this.
         //
 
-        rWarningMsg( 0, "Controller Connection Change Callback Not Supported on PC" );
+        rWarningMsg(0, "Controller Connection Change Callback Not Supported on PC");
 
         //
         // Add the connection change callback to the list of connection
@@ -2198,19 +2013,17 @@ class radControllerSystemDirectInput
         // interface.
         //
 
-        if ( m_xIOl_Callbacks != NULL )
-        {
-            ref< IRadWeakInterfaceWrapper > xIWir;
+        if (m_xIOl_Callbacks != NULL) {
+            ref <IRadWeakInterfaceWrapper> xIWir;
 
-            ::radWeakInterfaceWrapperCreate( & xIWir, g_ControllerSystemAllocator );
+            ::radWeakInterfaceWrapperCreate(&xIWir, g_ControllerSystemAllocator);
 
-            rAssert( xIWir != NULL );
+            rAssert(xIWir != NULL);
 
-            if ( xIWir != NULL )
-            {
-                xIWir->SetWeakInterface( pCallback );
+            if (xIWir != NULL) {
+                xIWir->SetWeakInterface(pCallback);
 
-                m_xIOl_Callbacks->AddObject( xIWir );
+                m_xIOl_Callbacks->AddObject(xIWir);
             }
         }
     }
@@ -2220,26 +2033,22 @@ class radControllerSystemDirectInput
     //========================================================================
 
     virtual void UnRegisterConnectionChangeCallback
-    (
-        IRadControllerConnectionChangeCallback * pCallback
-    )
-    {
+            (
+                    IRadControllerConnectionChangeCallback *pCallback
+            ) {
         //
         // Search for the callback in the list and remove it when/if it is
         // found
         // 
 
-        if ( m_xIOl_Callbacks != NULL )
-        {
-            IRadWeakInterfaceWrapper * pIRwiw;
+        if (m_xIOl_Callbacks != NULL) {
+            IRadWeakInterfaceWrapper *pIRwiw;
 
-            m_xIOl_Callbacks->Reset( );
+            m_xIOl_Callbacks->Reset();
 
-            while ( pIRwiw = reinterpret_cast< IRadWeakInterfaceWrapper * >( m_xIOl_Callbacks->GetNext( ) ) )
-            {
-                if( pIRwiw->GetWeakInterface( ) == pCallback )
-                {
-                    m_xIOl_Callbacks->RemoveObject( pIRwiw );
+            while (pIRwiw = reinterpret_cast<IRadWeakInterfaceWrapper *>(m_xIOl_Callbacks->GetNext())) {
+                if (pIRwiw->GetWeakInterface() == pCallback) {
+                    m_xIOl_Callbacks->RemoveObject(pIRwiw);
                     return;
                 }
             }
@@ -2250,37 +2059,32 @@ class radControllerSystemDirectInput
         // to remove
         //
 
-        rAssertMsg( false, "Controller connection change callback no registered." );
+        rAssertMsg(false, "Controller connection change callback no registered.");
     }
 
     //========================================================================
     // radControllerDirectInput::GetControllerAtLocation
     //========================================================================
 
-    virtual IRadController * GetControllerAtLocation
-    (
-        const char * pLocation
-    )
-    {
+    virtual IRadController *GetControllerAtLocation
+            (
+                    const char *pLocation
+            ) {
         //
         // Just loop through each controller asking it for its location string
         // if we find a mach, return it.
         //
 
-        rAssert( pLocation != NULL );
+        rAssert(pLocation != NULL);
 
-        if ( pLocation != NULL  )
-        {
-            if ( m_xIOl_Controllers != NULL )
-            {
-                m_xIOl_Controllers->Reset( );
+        if (pLocation != NULL) {
+            if (m_xIOl_Controllers != NULL) {
+                m_xIOl_Controllers->Reset();
 
-                IRadController * pIRadController;
+                IRadController *pIRadController;
 
-                while ( pIRadController = reinterpret_cast< IRadController * >( m_xIOl_Controllers->GetNext( ) ) )
-                {
-                    if ( strcmp( pIRadController->GetLocation( ), pLocation ) == 0 )
-                    {
+                while (pIRadController = reinterpret_cast<IRadController *>(m_xIOl_Controllers->GetNext())) {
+                    if (strcmp(pIRadController->GetLocation(), pLocation) == 0) {
                         return pIRadController;
                     }
                 }
@@ -2294,8 +2098,7 @@ class radControllerSystemDirectInput
     // radControllerDirectInput::GetControllerEnumerator2
     //========================================================================
 
-    virtual void SetBufferTime( unsigned int milliseconds )
-    {
+    virtual void SetBufferTime(unsigned int milliseconds) {
         //
         // Here the client is setting the size of the buffer for each
         // controller.  If the event buffer size is zero, we are just
@@ -2303,8 +2106,7 @@ class radControllerSystemDirectInput
         // buffer the current state.
         //
 
-        if ( milliseconds == 0 )
-        {
+        if (milliseconds == 0) {
             //
             // We are always buffering behind the scenes, so we set the
             // buffering time to one 60Hz frame even if the client thinks
@@ -2314,12 +2116,10 @@ class radControllerSystemDirectInput
 
             m_UsingVirtualTime = false;
 
-            MapVirtualTime( 0, 0 );
+            MapVirtualTime(0, 0);
 
             milliseconds = 16;
-        }
-        else
-        {
+        } else {
             m_UsingVirtualTime = true;
         }
 
@@ -2331,9 +2131,8 @@ class radControllerSystemDirectInput
         //
         unsigned int pollingRate = 16;
 
-        if ( m_xITimer != NULL )
-        {
-            pollingRate = m_xITimer->GetTimeout( );
+        if (m_xITimer != NULL) {
+            pollingRate = m_xITimer->GetTimeout();
         }
 
         //
@@ -2341,15 +2140,13 @@ class radControllerSystemDirectInput
         // the controller can re-calculate its actual buffers size.
         //
 
-        if ( m_xIOl_Controllers != NULL )
-        {
-            m_xIOl_Controllers->Reset( );
+        if (m_xIOl_Controllers != NULL) {
+            m_xIOl_Controllers->Reset();
 
-            IRadControllerDirectInput * pIDipc2;
+            IRadControllerDirectInput *pIDipc2;
 
-            while ( pIDipc2 = reinterpret_cast< IRadControllerDirectInput * >( m_xIOl_Controllers->GetNext( ) ) )
-            {
-                pIDipc2->iSetBufferTime( m_EventBufferSize, pollingRate );
+            while (pIDipc2 = reinterpret_cast<IRadControllerDirectInput *>(m_xIOl_Controllers->GetNext())) {
+                pIDipc2->iSetBufferTime(m_EventBufferSize, pollingRate);
             }
         }
     }
@@ -2359,11 +2156,10 @@ class radControllerSystemDirectInput
     //========================================================================
 
     virtual void MapVirtualTime
-    (
-        unsigned int timerManagerTicks,
-        unsigned int virtualTicks
-    )
-    {
+            (
+                    unsigned int timerManagerTicks,
+                    unsigned int virtualTicks
+            ) {
         //
         // Here the client is telling us how timer manager ticks map to their
         // game ticks.  The function causes a re-sync (buffer flush)
@@ -2379,7 +2175,7 @@ class radControllerSystemDirectInput
         // How do we adjust the tick count to get timer manager ticks
         //
 
-        unsigned int timerManagerAdjust = radTimeGetMilliseconds() - ::GetTickCount( );
+        unsigned int timerManagerAdjust = radTimeGetMilliseconds() - ::GetTickCount();
 
         //
         // Combine the two to adjust::GetTickCount() ticks to game time.
@@ -2387,45 +2183,40 @@ class radControllerSystemDirectInput
 
         m_VirtualTimeAdjust = gameAdjust + timerManagerAdjust;
 
-        if ( m_xIOl_Controllers != NULL )
-        {
+        if (m_xIOl_Controllers != NULL) {
             //
             // Loop through the controllers, telling each one that time has
             // been re-mapped, pass in the new virtual time.
             //
 
-            IRadControllerDirectInput * pIDic2;
+            IRadControllerDirectInput *pIDic2;
 
-            m_xIOl_Controllers->Reset( );
+            m_xIOl_Controllers->Reset();
 
-            while ( pIDic2 = reinterpret_cast< IRadControllerDirectInput * >( m_xIOl_Controllers->GetNext( ) ) )
-            {
-                pIDic2->iVirtualTimeReMapped( ::GetTickCount() + m_VirtualTimeAdjust );
+            while (pIDic2 = reinterpret_cast<IRadControllerDirectInput *>(m_xIOl_Controllers->GetNext())) {
+                pIDic2->iVirtualTimeReMapped(::GetTickCount() + m_VirtualTimeAdjust);
             }
         }
     }
-    
+
     //========================================================================
     // radControllerDirectInput::SetVirtualTime
     //========================================================================
 
-    virtual void SetVirtualTime( unsigned int virtualTime )
-    {
+    virtual void SetVirtualTime(unsigned int virtualTime) {
         //
         // Setting virtual time drives the system forward.  This could be
         // called internally if the clients buffers size is 0, or from
-        // the outside world if the buffer size is > 0.
+        // the outside world if the buffer size is> 0.
         //
 
-        if ( m_xIOl_Controllers != NULL )
-        {
-            m_xIOl_Controllers->Reset( );
+        if (m_xIOl_Controllers != NULL) {
+            m_xIOl_Controllers->Reset();
 
-            IRadControllerDirectInput * pIDipc2;
+            IRadControllerDirectInput *pIDipc2;
 
-            while ( pIDipc2 = reinterpret_cast< IRadControllerDirectInput * >( m_xIOl_Controllers->GetNext( ) ) )
-            {
-                pIDipc2->iVirtualTimeChanged( virtualTime, m_VirtualTimeAdjust );
+            while (pIDipc2 = reinterpret_cast<IRadControllerDirectInput *>(m_xIOl_Controllers->GetNext())) {
+                pIDipc2->iVirtualTimeChanged(virtualTime, m_VirtualTimeAdjust);
             }
         }
     }
@@ -2434,16 +2225,14 @@ class radControllerSystemDirectInput
     // radControllerDirectInput::SetCaptureRate
     //========================================================================
 
-    virtual void SetCaptureRate( unsigned int ms )
-    {
+    virtual void SetCaptureRate(unsigned int ms) {
         //
         // Simply set the timer to poll faster, this is bound by the frame
         // rate of the game, but hey, keep the frame rate up ...
         //
 
-        if ( m_xITimer != NULL )
-        {
-            m_xITimer->SetTimeout( ms );
+        if (m_xITimer != NULL) {
+            m_xITimer->SetTimeout(ms);
         }
 
         //
@@ -2452,9 +2241,8 @@ class radControllerSystemDirectInput
         // a re-calculation using the above time
         //
 
-        if ( m_UsingVirtualTime )
-        {
-            SetBufferTime( m_EventBufferSize );
+        if (m_UsingVirtualTime) {
+            SetBufferTime(m_EventBufferSize);
         }
     }
 
@@ -2462,48 +2250,44 @@ class radControllerSystemDirectInput
     // radControllerDirectInput::GetNumberOfControllers
     //========================================================================
 
-    virtual unsigned int GetNumberOfControllers( void )
-    {
-        return m_xIOl_Controllers->GetSize( );
+    virtual unsigned int GetNumberOfControllers(void) {
+        return m_xIOl_Controllers->GetSize();
     }
 
     //========================================================================
     // radControllerDirectInput::GetNumberOfControllers
     //========================================================================
 
-    virtual IRadController * GetControllerByIndex( unsigned int index )
-    {
-        return reinterpret_cast< IRadController * >( m_xIOl_Controllers->GetAt( index ) );
-    }  
+    virtual IRadController *GetControllerByIndex(unsigned int index) {
+        return reinterpret_cast<IRadController *>(m_xIOl_Controllers->GetAt(index));
+    }
 
     //========================================================================
     // radControllerDirectInput::CreateControllers
     //========================================================================
 
     static BOOL __stdcall EnumCreateControllers
-    (
-        LPCDIDEVICEINSTANCE pDidi, 
-        VOID * pVoidThis
-    ) 
-    {
+            (
+                    LPCDIDEVICEINSTANCE pDidi,
+                    VOID *pVoidThis
+            ) {
         //
         // Create a controller class to represent each controller
         // installed on the system.
         //
 
-        rAssert( pDidi != NULL );
-        rAssert( pVoidThis != NULL );
+        rAssert(pDidi != NULL);
+        rAssert(pVoidThis != NULL);
 
-        if ( ( pDidi != NULL ) && ( pVoidThis != NULL ) )        
-        {
-            radControllerSystemDirectInput * pThis = (radControllerSystemDirectInput*) pVoidThis;
+        if ((pDidi != NULL) && (pVoidThis != NULL)) {
+            radControllerSystemDirectInput *pThis = (radControllerSystemDirectInput *) pVoidThis;
 
-            if (pThis->m_xIOl_Controllers != NULL )
-            {                
-                IRefCount * pObject = static_cast< IRefCount * >(
-                                new( g_ControllerSystemAllocator )radControllerDirectInput( pDidi, pThis->m_xIDirectInput8 )
-                                                                );
-                pThis->m_xIOl_Controllers->AddObject( pObject );
+            if (pThis->m_xIOl_Controllers != NULL) {
+                IRefCount *pObject = static_cast<IRefCount *>(new(
+                        g_ControllerSystemAllocator)radControllerDirectInput(pDidi,
+                                                                             pThis->m_xIDirectInput8)
+                );
+                pThis->m_xIOl_Controllers->AddObject(pObject);
             }
 
             return DIENUM_CONTINUE;
@@ -2521,132 +2305,126 @@ class radControllerSystemDirectInput
     //========================================================================
 
     radControllerSystemDirectInput
-    (
-        IRadControllerConnectionChangeCallback* pConnectionChangeCallback,
-        radMemoryAllocator allocator
-    )
-        :
-        m_UsingVirtualTime( false ),
-        m_VirtualTimeAdjust( 0 ),
-        m_EventBufferSize( 16 ),
-        m_DefaultConnectionChangeCallback( NULL ),
-        m_pWIControllerConnectionChangeCallback2( NULL )
-    {
- 
-        radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radControllerSystemDirectInput" );
+            (
+                    IRadControllerConnectionChangeCallback *pConnectionChangeCallback,
+                    radMemoryAllocator allocator
+            )
+            :
+            m_UsingVirtualTime(false),
+            m_VirtualTimeAdjust(0),
+            m_EventBufferSize(16),
+            m_DefaultConnectionChangeCallback(NULL),
+            m_pWIControllerConnectionChangeCallback2(NULL) {
+
+        radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radControllerSystemDirectInput");
         //
         // Initialize Microsoft's COM, we might be the first system created
         // that uses it.
         //
 
-        ::CoInitialize( NULL );
+        ::CoInitialize(NULL);
 
         //
         // Set the singleton to this one instance
         //
-        rAssert( s_pTheDirectInputControllerSystem == NULL );
+        rAssert(s_pTheDirectInputControllerSystem == NULL);
         s_pTheDirectInputControllerSystem = this;
 
         g_ControllerSystemAllocator = allocator;
-   
-        radTimeCreateList( &m_xITimerList, 1, g_ControllerSystemAllocator );
+
+        radTimeCreateList(&m_xITimerList, 1, g_ControllerSystemAllocator);
 
         //
         // We need the instance and main window handle from the platform
         //
-        ref< IRadPlatform > xIWin32Platform;
-        xIWin32Platform = radPlatformGet(  );
+        ref <IRadPlatform> xIWin32Platform;
+        xIWin32Platform = radPlatformGet();
 
 
         //
         // Our controller list
         //
-        ::radObjectListCreate( & m_xIOl_Controllers, g_ControllerSystemAllocator );
-        rAssert( m_xIOl_Controllers != NULL );
+        ::radObjectListCreate(&m_xIOl_Controllers, g_ControllerSystemAllocator);
+        rAssert(m_xIOl_Controllers != NULL);
 
         //
         // Our callback list
         //
-        ::radObjectListCreate( & m_xIOl_Callbacks, g_ControllerSystemAllocator );
-        rAssert( m_xIOl_Callbacks != NULL );
+        ::radObjectListCreate(&m_xIOl_Callbacks, g_ControllerSystemAllocator);
+        rAssert(m_xIOl_Callbacks != NULL);
 
-        if ( xIWin32Platform != NULL )
-        {
+        if (xIWin32Platform != NULL) {
             //
             // Don't want to implicitly link
             //
 
             HRESULT hr = ::CoCreateInstance
-            (
-                CLSID_DirectInput8,
-                NULL,
-                CLSCTX_INPROC_SERVER,
-                IID_IDirectInput8,
-                (void**) & m_xIDirectInput8
-            );
+                    (
+                            CLSID_DirectInput8,
+                            NULL,
+                            CLSCTX_INPROC_SERVER,
+                            IID_IDirectInput8,
+                            (void **) &m_xIDirectInput8
+                    );
 
-            if ( SUCCEEDED( hr ) )
-            {
+            if (SUCCEEDED(hr)) {
                 hr = m_xIDirectInput8->Initialize
-                (
-                    xIWin32Platform->GetInstanceHandle( ),
-                    DIRECTINPUT_VERSION
-                );
+                        (
+                                xIWin32Platform->GetInstanceHandle(),
+                                DIRECTINPUT_VERSION
+                        );
             }
-        
-            rAssertMsg( SUCCEEDED( hr ), "Couldn't Create Direct Input Object, this could be because of an invalid main window handle\n" );
 
-            if ( m_xIDirectInput8 != NULL )
-            {
+            rAssertMsg(SUCCEEDED(hr),
+                       "Couldn't Create Direct Input Object, this could be because of an invalid main window handle\n");
+
+            if (m_xIDirectInput8 != NULL) {
                 hr = m_xIDirectInput8->EnumDevices
-                (
-                    DI8DEVCLASS_ALL,
-                    EnumCreateControllers,
-                    this,
-                    DIEDFL_ATTACHEDONLY 
-                );
+                        (
+                                DI8DEVCLASS_ALL,
+                                EnumCreateControllers,
+                                this,
+                                DIEDFL_ATTACHEDONLY
+                        );
 
-                rAssertMsg( SUCCEEDED( hr ), "IDirectInput8::EnumDevices failed." );
+                rAssertMsg(SUCCEEDED(hr), "IDirectInput8::EnumDevices failed.");
             }
 
             //
             // Start a timer to poll, and start it now, phew! nasty.
             //
-            m_xITimerList->CreateTimer( &m_xITimer, 1, this );
+            m_xITimerList->CreateTimer(&m_xITimer, 1, this);
 
-            rAssert( m_xITimer != NULL );
-            
+            rAssert(m_xITimer != NULL);
+
             //
             // Register the default connection state callback
             //
             m_DefaultConnectionChangeCallback = pConnectionChangeCallback;
-            if( pConnectionChangeCallback )
-            {
+            if (pConnectionChangeCallback) {
                 m_DefaultConnectionChangeCallback = pConnectionChangeCallback;
-                RegisterConnectionChangeCallback( pConnectionChangeCallback );
+                RegisterConnectionChangeCallback(pConnectionChangeCallback);
             }
-            
+
             //
             // Make sure everything gets initialized with know states/times
             //
-            MapVirtualTime( 0, 0 );
-            SetBufferTime( 0 );
-            SetCaptureRate( 10 );
+            MapVirtualTime(0, 0);
+            SetBufferTime(0);
+            SetCaptureRate(10);
 
             //
             // To keep with the current standard, the connection callback should be
             // activated when the controllers are first detected.  Since the controller
             // must already exists in WIN32, we must call the callback manually.
             //
-            if( pConnectionChangeCallback && m_xIOl_Controllers != NULL)
-            {
-                m_xIOl_Controllers->Reset( );
+            if (pConnectionChangeCallback && m_xIOl_Controllers != NULL) {
+                m_xIOl_Controllers->Reset();
 
-                IRadController * pIRadController;
+                IRadController *pIRadController;
 
-                while ( pIRadController = reinterpret_cast< IRadController * >( m_xIOl_Controllers->GetNext( ) ) )
-                {
-                    pConnectionChangeCallback->OnControllerConnectionStatusChange( pIRadController );
+                while (pIRadController = reinterpret_cast<IRadController *>(m_xIOl_Controllers->GetNext())) {
+                    pConnectionChangeCallback->OnControllerConnectionStatusChange(pIRadController);
                 }
             }
         }
@@ -2656,15 +2434,13 @@ class radControllerSystemDirectInput
     // radControllerDirectInput::~radControllerDirectInput
     //========================================================================
 
-    ~radControllerSystemDirectInput( void )
-    {
+    ~radControllerSystemDirectInput(void) {
 
         //
         // Unregister the default connection change callback
         //
-        if( m_DefaultConnectionChangeCallback != NULL )
-        {
-            UnRegisterConnectionChangeCallback( m_DefaultConnectionChangeCallback );
+        if (m_DefaultConnectionChangeCallback != NULL) {
+            UnRegisterConnectionChangeCallback(m_DefaultConnectionChangeCallback);
             m_DefaultConnectionChangeCallback = NULL;
         }
 
@@ -2672,9 +2448,9 @@ class radControllerSystemDirectInput
         // Make sure the client unregistered all of their callbacks
         //
 
-        if ( m_xIOl_Callbacks != NULL )
-        {            
-            rAssertMsg( m_xIOl_Callbacks->GetSize() == 0, "Sombody forgot to unregister a controller connection change callback before the controller system was destroyed." );
+        if (m_xIOl_Callbacks != NULL) {
+            rAssertMsg(m_xIOl_Callbacks->GetSize() == 0,
+                       "Sombody forgot to unregister a controller connection change callback before the controller system was destroyed.");
         }
 
         //
@@ -2686,10 +2462,10 @@ class radControllerSystemDirectInput
         m_xIOl_Controllers = NULL;
         m_xITimerList = NULL;
 
-        ::CoUninitialize( );
+        ::CoUninitialize();
 
         g_ControllerSystemAllocator = RADMEMORY_ALLOC_DEFAULT;
-        rAssert( s_pTheDirectInputControllerSystem == this );
+        rAssert(s_pTheDirectInputControllerSystem == this);
         s_pTheDirectInputControllerSystem = NULL;
     }
 
@@ -2699,18 +2475,18 @@ class radControllerSystemDirectInput
 
     unsigned int m_RefCount;
 
-    bool         m_UsingVirtualTime;
+    bool m_UsingVirtualTime;
     unsigned int m_VirtualTimeAdjust;
     unsigned int m_EventBufferSize;
 
-    IRadControllerConnectionChangeCallback* m_pWIControllerConnectionChangeCallback2;
-    IRadControllerConnectionChangeCallback* m_DefaultConnectionChangeCallback;
+    IRadControllerConnectionChangeCallback *m_pWIControllerConnectionChangeCallback2;
+    IRadControllerConnectionChangeCallback *m_DefaultConnectionChangeCallback;
 
-    ref< IDirectInput8 >    m_xIDirectInput8;
-    ref< IRadObjectList >   m_xIOl_Controllers;
-    ref< IRadObjectList >   m_xIOl_Callbacks;
-    ref< IRadTimer >        m_xITimer;
-    ref< IRadTimerList >    m_xITimerList;
+    ref <IDirectInput8> m_xIDirectInput8;
+    ref <IRadObjectList> m_xIOl_Controllers;
+    ref <IRadObjectList> m_xIOl_Callbacks;
+    ref <IRadTimer> m_xITimer;
+    ref <IRadTimerList> m_xITimerList;
 };
 
 
@@ -2719,27 +2495,24 @@ class radControllerSystemDirectInput
 //============================================================================
 
 void radControllerInitialize
-(
-    IRadControllerConnectionChangeCallback* pConnectionChangeCallback,
-    radMemoryAllocator alloc
-)
-{
-    rAssert( s_pTheDirectInputControllerSystem == NULL );
+        (
+                IRadControllerConnectionChangeCallback *pConnectionChangeCallback,
+                radMemoryAllocator alloc
+        ) {
+    rAssert(s_pTheDirectInputControllerSystem == NULL);
 
     //
     // Start-up the virtual table.
     //
-    for ( unsigned int i = 0; i < 256; i++ )
-    {
-        s_VirtualKeyToIndex[ i ] = -1;
+    for (unsigned int i = 0; i < 256; i++) {
+        s_VirtualKeyToIndex[i] = -1;
     }
 
-    new ( alloc ) radControllerSystemDirectInput( pConnectionChangeCallback, alloc );
+    new(alloc) radControllerSystemDirectInput(pConnectionChangeCallback, alloc);
 }
 
-void radControllerTerminate( void )
-{
-    radRelease( s_pTheDirectInputControllerSystem, NULL );
+void radControllerTerminate(void) {
+    radRelease(s_pTheDirectInputControllerSystem, NULL);
 }
 
 //============================================================================
@@ -2749,11 +2522,10 @@ void radControllerTerminate( void )
 // Use this function to obtain an interface to the controller system object.
 //
 
-IRadControllerSystem* radControllerSystemGet( void )
-{
-    rAssert( s_pTheDirectInputControllerSystem != NULL );
+IRadControllerSystem *radControllerSystemGet(void) {
+    rAssert(s_pTheDirectInputControllerSystem != NULL);
 
-    return( s_pTheDirectInputControllerSystem );
+    return (s_pTheDirectInputControllerSystem);
 
 }
 
@@ -2763,10 +2535,8 @@ IRadControllerSystem* radControllerSystemGet( void )
 //
 // Use this function to drive the processing of the controller system
 //
-void radControllerSystemService( void )
-{
-    if( s_pTheDirectInputControllerSystem != NULL )
-    {
-        s_pTheDirectInputControllerSystem->Service( );
+void radControllerSystemService(void) {
+    if (s_pTheDirectInputControllerSystem != NULL) {
+        s_pTheDirectInputControllerSystem->Service();
     }
 }

@@ -20,15 +20,15 @@
 //
 //=============================================================================
 
-#ifndef	RADCONTROLLER_HPP
+#ifndef    RADCONTROLLER_HPP
 #define RADCONTROLLER_HPP
 
 //=============================================================================
 // Include Files
 //=============================================================================
 
-#include <radobject.hpp>                     
-#include <radmemory.hpp>                     
+#include <radobject.hpp>
+#include <radmemory.hpp>
 
 //=============================================================================
 // Forward Declarations
@@ -61,20 +61,23 @@ struct DIEFFECT;
 // Use these functions to initialize and terminate the controller system.
 // Must frame all other calls.
 //
-void radControllerInitialize( IRadControllerConnectionChangeCallback* pConnectionChangeCallback = NULL, radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT ); 
-void radControllerTerminate( void );
+void
+radControllerInitialize(IRadControllerConnectionChangeCallback *pConnectionChangeCallback = NULL,
+                        radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT);
+
+void radControllerTerminate(void);
 
 //
 // Use this function to obtain an interface to the controller system object. Remeber
 // to add ref if you hold onto the interface.
 //
-IRadControllerSystem* radControllerSystemGet( void );
+IRadControllerSystem *radControllerSystemGet(void);
 
 //
 // In order for the controller system to operate, this function must be periodically
 // invoked by the games main loop.
 //
-void radControllerSystemService( void );
+void radControllerSystemService(void);
 
 //=============================================================================
 // Interface: IRadControllerSystem
@@ -96,15 +99,15 @@ void radControllerSystemService( void );
 //=============================================================================
 
 struct IRadControllerSystem
-    :
-    public IRefCount
-{
+        :
+                public IRefCount {
     //
     // Enumerate through the attached controllers
     //
 
-    virtual unsigned int GetNumberOfControllers( void ) = 0;
-    virtual IRadController * GetControllerByIndex( unsigned int indx) = 0;
+    virtual unsigned int GetNumberOfControllers(void) = 0;
+
+    virtual IRadController *GetControllerByIndex(unsigned int indx) = 0;
 
 
     //
@@ -117,7 +120,7 @@ struct IRadControllerSystem
     // PC  : "Joystick0"    --> "Joystick[n]" | "Mouse0" | "Keyboard0"
     //
 
-    virtual IRadController * GetControllerAtLocation( const char * pLocation ) = 0;
+    virtual IRadController *GetControllerAtLocation(const char *pLocation) = 0;
 
     //
     // You can use buffered input, in which case the controller system will
@@ -133,14 +136,14 @@ struct IRadControllerSystem
     // any states currently stored.
     //
 
-    virtual void SetBufferTime( unsigned int milliseconds ) = 0;
+    virtual void SetBufferTime(unsigned int milliseconds) = 0;
 
     //
     // Use this function to map the timer manager ticks to your own
     // virtual measure.
     //
 
-    virtual void MapVirtualTime( unsigned int timerManagerMs, unsigned int virtualTicks  ) = 0;
+    virtual void MapVirtualTime(unsigned int timerManagerMs, unsigned int virtualTicks) = 0;
 
     // 
     // Calling this function will cause the controller system to report its
@@ -151,13 +154,13 @@ struct IRadControllerSystem
     // caught up to real time.
     //
 
-    virtual void SetVirtualTime( unsigned int virtualTicks ) = 0;
+    virtual void SetVirtualTime(unsigned int virtualTicks) = 0;
 
     //
     // Set the capture rate in milliseconds
     //
-    
-    virtual void SetCaptureRate( unsigned int ms ) = 0;
+
+    virtual void SetCaptureRate(unsigned int ms) = 0;
 
     //
     // Register to be notified when a controller is connected or
@@ -165,18 +168,18 @@ struct IRadControllerSystem
     //
 
     virtual void RegisterConnectionChangeCallback
-    (
-        IRadControllerConnectionChangeCallback * pCallback
-    ) = 0;
+            (
+                    IRadControllerConnectionChangeCallback *pCallback
+            ) = 0;
 
     //
     // UnRegister the notification made in the above call.
     //
 
     virtual void UnRegisterConnectionChangeCallback
-    (
-        IRadControllerConnectionChangeCallback * pCallback
-    ) = 0;
+            (
+                    IRadControllerConnectionChangeCallback *pCallback
+            ) = 0;
 };
 
 //=============================================================================
@@ -189,23 +192,22 @@ struct IRadControllerSystem
 //
 //=============================================================================
 
-struct IRadControllerConnectionChangeCallback
-{
+struct IRadControllerConnectionChangeCallback {
     //
     // Implement this interface to be called back when a controller is
     // connected or disconnected from the system.  Call functions on the
     // controller to dermine a course of action.  For example the following
     // is an example something you might do as a result of this callback.
     //
-    // if ( ( pIController == pIPlayer1Controller ) && 
-    //      ( pIController->IsConnected( ) == false )
+    // if ((pIController == pIPlayer1Controller) &&
+    //      (pIController->IsConnected() == false)
     // {
-    //      Display( "Please plug controller back into: %s\n", 
-    //               pIController->GetLocation() );
+    //      Display("Please plug controller back into: %s\n",
+    //               pIController->GetLocation());
     // }
     //
 
-    virtual void OnControllerConnectionStatusChange( IRadController * pIController ) = 0;
+    virtual void OnControllerConnectionStatusChange(IRadController *pIController) = 0;
 };
 
 
@@ -225,26 +227,25 @@ struct IRadControllerConnectionChangeCallback
 //=============================================================================
 
 struct IRadController
-    :
-    public IRefCount
-{
+        :
+                public IRefCount {
     //
     // Is this controller currently connected to the system.
     //
 
-    virtual bool IsConnected( void ) = 0;
+    virtual bool IsConnected(void) = 0;
 
     //
     // See table (below) for known controller types on various platforms.
     //
 
-    virtual const char * GetType( void ) = 0;       
-    
+    virtual const char *GetType(void) = 0;
+
     // 
     // See table (below) for known classifications.
     //
 
-    virtual const char * GetClassification( void ) = 0;
+    virtual const char *GetClassification(void) = 0;
 
     //
     // These functions determine the capability of the controller device,
@@ -253,67 +254,69 @@ struct IRadController
     // options to the user.
     //
 
-    virtual unsigned int GetNumberOfInputPointsOfType( const char * pType ) = 0;
+    virtual unsigned int GetNumberOfInputPointsOfType(const char *pType) = 0;
 
     //
     // Using the above function call you know that there are say, 5 "Analog
     // Button"s on the controller.  So call this function to get the input
     // point of that index.  This alows you to treat controllers in a generic
     // way.  For example, if you just whant the defualt X axis no matter what
-    // device is in use you can call GetInputPointByIndex( "X-Axis", 0,
-    // & pIControllerInputPoint2 )...
+    // device is in use you can call GetInputPointByIndex("X-Axis", 0,
+    // & pIControllerInputPoint2)...
     //
 
-    virtual unsigned int GetNumberOfOutputPointsOfType( const char * pType ) = 0;
+    virtual unsigned int GetNumberOfOutputPointsOfType(const char *pType) = 0;
 
 
-    virtual IRadControllerInputPoint * GetInputPointByTypeAndIndex
-    (
-        const char * pType,
-        unsigned int indx
-    ) = 0;
+    virtual IRadControllerInputPoint *GetInputPointByTypeAndIndex
+            (
+                    const char *pType,
+                    unsigned int indx
+            ) = 0;
 
-    virtual IRadControllerOutputPoint * GetOutputPointByTypeAndIndex
-    (
-        const char * pType,
-        unsigned int indx
-    ) = 0;
+    virtual IRadControllerOutputPoint *GetOutputPointByTypeAndIndex
+            (
+                    const char *pType,
+                    unsigned int indx
+            ) = 0;
 
     //
     // If you know exactly what you are looking for: "Button1", "Triangle",
     // "R1", etc. You can get the point directly, without enumerating.  This
-    // is the same name returned by InputPoint::GetName( ) or 
-    // OutputPoint::GetName( ).  This is useful for higher level logical systems 
+    // is the same name returned by InputPoint::GetName() or
+    // OutputPoint::GetName().  This is useful for higher level logical systems
     // that will have controller templates and event mapping.
     //
 
-    virtual IRadControllerInputPoint * GetInputPointByName
-    (
-        const char * pName
-    ) = 0;
+    virtual IRadControllerInputPoint *GetInputPointByName
+            (
+                    const char *pName
+            ) = 0;
 
-    virtual IRadControllerOutputPoint * GetOutputPointByName
-    (
-        const char * pName
-    ) = 0;
+    virtual IRadControllerOutputPoint *GetOutputPointByName
+            (
+                    const char *pName
+            ) = 0;
 
     //
     // Call this function to get the pysical location to which this controller
     // is connected. See below for valid location names of the different platforms.
     //
 
-    virtual const char * GetLocation( void ) = 0;
+    virtual const char *GetLocation(void) = 0;
 
     //
     // If you want a complete picture of everything on the device.
     // This is useful for displaying mapping options to the user.
     //
 
-    virtual unsigned int GetNumberOfInputPoints( void ) = 0;
-    virtual IRadControllerInputPoint * GetInputPointByIndex( unsigned int indx ) = 0;
+    virtual unsigned int GetNumberOfInputPoints(void) = 0;
 
-    virtual unsigned int GetNumberOfOutputPoints( void ) = 0;
-    virtual IRadControllerOutputPoint * GetOutputPointByIndex( unsigned int indx ) = 0;
+    virtual IRadControllerInputPoint *GetInputPointByIndex(unsigned int indx) = 0;
+
+    virtual unsigned int GetNumberOfOutputPoints(void) = 0;
+
+    virtual IRadControllerOutputPoint *GetOutputPointByIndex(unsigned int indx) = 0;
 };
 
 //=============================================================================
@@ -321,51 +324,50 @@ struct IRadController
 //=============================================================================
 
 struct IRadControllerOutputPoint
-    :
-    public IRefCount
-{
+        :
+                public IRefCount {
     //
     // This is the name of the input point, this is controller specific.
     //
-    virtual const char * GetName( void ) = 0;
+    virtual const char *GetName(void) = 0;
 
     //
     // See table (below) for a list of valid output point types.
     //
-    virtual const char * GetType( void ) = 0;
+    virtual const char *GetType(void) = 0;
 
     //
     // Gets the the current output value.
     //
-    virtual float GetGain( void ) = 0;
+    virtual float GetGain(void) = 0;
 
     //
     // Sets the percentage of output. For analog output points, this value should 
     // be between 0.0 and 1.0.  For digital output points, this value is either 
     // 0.0 or 1.0.
     //
-    virtual void SetGain( float value ) = 0;
+    virtual void SetGain(float value) = 0;
 
     //
     // Force feedback effects for ps2 and gc
     //
 #if defined(RAD_GAMECUBE) || defined(RAD_PS2)
     virtual const LGForceEffect* GetEffect() const { return NULL; };
-    virtual void UpdateEffect( const LGForceEffect* effect ) {};
+    virtual void UpdateEffect(const LGForceEffect* effect) {};
     virtual void Start() {};
     virtual void Stop() {};
-    virtual void Update( unsigned int device ) {};
+    virtual void Update(unsigned int device) {};
 #endif
 
     //
     // Force feedback effects for win32
     //
-#if defined( RAD_WIN32 )
-    virtual long GetOffset( void ) const = 0;
-    virtual void UpdateEffect( const DIEFFECT* effect ) = 0;
-    virtual void Start( void ) = 0;
-    virtual void Stop( void ) = 0;
-    virtual void ReleaseEffect( void ) = 0;
+#if defined(RAD_WIN32)
+    virtual long GetOffset(void) const = 0;
+    virtual void UpdateEffect(const DIEFFECT* effect) = 0;
+    virtual void Start(void) = 0;
+    virtual void Stop(void) = 0;
+    virtual void ReleaseEffect(void) = 0;
 #endif
 };
 
@@ -382,44 +384,43 @@ struct IRadControllerOutputPoint
 //=============================================================================
 
 struct IRadControllerInputPoint
-    :
-    public IRefCount
-{
+        :
+                public IRefCount {
     //
     // This is the name of the input point, this is controller specific.
     //
 
-    virtual const char * GetName( void ) = 0;
-    
+    virtual const char *GetName(void) = 0;
+
     //
     // See table (below) for a list of valid input point types.
     //
- 
-    virtual const char * GetType( void ) = 0;
+
+    virtual const char *GetType(void) = 0;
 
     //
     // Allows you to set what percentage of the input point's total range
     // is considered enough of a change to warrant calling back.
     //
 
-    virtual void  SetTolerance( float percentage ) = 0; // 0.0 --> 1.0
-    virtual float /* percentage */ GetTolerance( void ) = 0;
+    virtual void SetTolerance(float percentage) = 0; // 0.0 --> 1.0
+    virtual float /* percentage */ GetTolerance(void) = 0;
 
     //
     // Register a notification callback to receive notification that
     // the input point value has changed.
     // 
-           
+
     virtual void RegisterControllerInputPointCallback
-    (
-        IRadControllerInputPointCallback * pCallback,
-        unsigned int userData = 0
-    ) = 0;
+            (
+                    IRadControllerInputPointCallback *pCallback,
+                    unsigned int userData = 0
+            ) = 0;
 
     virtual void UnRegisterControllerInputPointCallback
-    (
-        IRadControllerInputPointCallback * pCallback
-    ) = 0;
+            (
+                    IRadControllerInputPointCallback *pCallback
+            ) = 0;
 
     //
     // The current value of the input point.  This depends, somewhat
@@ -431,15 +432,16 @@ struct IRadControllerInputPoint
     // been in this state, int can be null if you do not need this
     // value
 
-    virtual float GetCurrentValue( unsigned int * pTime = NULL ) = 0;
+    virtual float GetCurrentValue(unsigned int *pTime = NULL) = 0;
 
     //
     // This allows you to re-map the range of the device to a more
     // convenient range for game calculations.
     //
 
-    virtual void  SetRange( float min, float max ) = 0;
-    virtual void  GetRange( float * pMin, float * pMax ) = 0;
+    virtual void SetRange(float min, float max) = 0;
+
+    virtual void GetRange(float *pMin, float *pMax) = 0;
 };
 
 //=============================================================================
@@ -447,19 +449,18 @@ struct IRadControllerInputPoint
 //=============================================================================
 //
 // Description: This callback is used with by Controller Input Point to notify
-//              when an input point has changed its value ( ie when a button is 
-//              pressed down ).
+//              when an input point has changed its value (ie when a button is
+//              pressed down).
 //
 //=============================================================================
 
-struct IRadControllerInputPointCallback
-{
+struct IRadControllerInputPointCallback {
     //
     // This will call you back when the input point for which you
     // registered this callback has changed value.
     //
 
-    virtual void OnControllerInputPointChange( unsigned int userData, float newValue ) = 0;
+    virtual void OnControllerInputPointChange(unsigned int userData, float newValue) = 0;
 };
 
 #ifdef RAD_WIN32

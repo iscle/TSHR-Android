@@ -18,7 +18,7 @@
 //
 //=============================================================================
 
-#ifndef	HOSTCHANNEL_HPP
+#ifndef    HOSTCHANNEL_HPP
 #define HOSTCHANNEL_HPP
 #ifdef RAD_WIN32
 
@@ -56,35 +56,35 @@ class rDbgComHostChannel : public IRadDbgComChannel
     //
     // Contructor. Receives pointer to parent host object.
     //
-    rDbgComHostChannel( rDbgComHost* pHost, unsigned int targetIndex, unsigned short protocol );
+    rDbgComHostChannel(rDbgComHost* pHost, unsigned int targetIndex, unsigned short protocol);
 
     //
     // Mmeber functions as a result of the bIDebugHostChannel interface.
     //
-    virtual void RegisterStatusCallback( IRadDbgComChannelStatusCallback* pCallback );
-    virtual void Attach( void );
-    virtual void Detach( void );
-    virtual void GetStatus( ConnectionState* pConnectionState, char* pMessage );
-    virtual void SendAsync( void* pBuffer, unsigned int numBytes, IRadDbgComChannelSendCallback* callback );
-    virtual void ReceiveAsync( void* pBuffer, unsigned int numBytes, IRadDbgComChannelReceiveCallback* callback );
+    virtual void RegisterStatusCallback(IRadDbgComChannelStatusCallback* pCallback);
+    virtual void Attach(void);
+    virtual void Detach(void);
+    virtual void GetStatus(ConnectionState* pConnectionState, char* pMessage);
+    virtual void SendAsync(void* pBuffer, unsigned int numBytes, IRadDbgComChannelSendCallback* callback);
+    virtual void ReceiveAsync(void* pBuffer, unsigned int numBytes, IRadDbgComChannelReceiveCallback* callback);
 
     //
     // Member functions implemented for IRefCound
     //
-    virtual void AddRef( void );
-    virtual void Release( void );
+    virtual void AddRef(void);
+    virtual void Release(void);
 
     //
     // Member used to field windows messages sent to this channel
     //
-    LRESULT OnWindowMessage( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+    LRESULT OnWindowMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     private:
     
     //
     // Destruction done through release.
     //
-    ~rDbgComHostChannel( void );
+    ~rDbgComHostChannel(void);
  
     //
     // Helper to set the state and invoke state change callback if it exists.
@@ -100,37 +100,37 @@ class rDbgComHostChannel : public IRadDbgComChannel
         Ready                           // Life is good. We can send and receive.
     };
 
-    void SetState( ConnectionState state, InternalState internalState, const char* msg );
+    void SetState(ConnectionState state, InternalState internalState, const char* msg);
 
     //
     // Internal handlers for the various windows messages.
     //
-    void OnDNSNameLoopUp( HANDLE dnsLookUpHandle, unsigned int result );
-    void OnReadyToRead( unsigned int result );
-    void OnReadyToWrite( unsigned int result );
-    void OnConnectComplete( unsigned int result );
-    void OnClose( unsigned int result );
-    void OnTimerExpired( void );
-    void OnSendComplete( void );
+    void OnDNSNameLoopUp(HANDLE dnsLookUpHandle, unsigned int result);
+    void OnReadyToRead(unsigned int result);
+    void OnReadyToWrite(unsigned int result);
+    void OnConnectComplete(unsigned int result);
+    void OnClose(unsigned int result);
+    void OnTimerExpired(void);
+    void OnSendComplete(void);
 
     //
     // Internal helper functions to build packets.
     //
-    unsigned int MakeNETMPConnectPacket( unsigned char* buffer, unsigned int buffersize, unsigned int protocol );       
-    unsigned int MakeNETMPMessagePacket( unsigned char* buffer, unsigned int buffersize );       
-    unsigned int MakeNETMPStatusPacket( unsigned char* buffer, unsigned int buffersize );       
-    unsigned int MakeNETMPKillPacket( unsigned char* buffer, unsigned int buffersize, unsigned int protocol );       
-    unsigned int MakeDataPacket( unsigned char* buffer, unsigned int buffersize, unsigned int m_Protocol,
-                                 unsigned int bytesToSend, unsigned char* pData );
-    unsigned int MakeInternalConnectReplyPacket( unsigned char* buffer, unsigned int buffersize, unsigned int protocol );
-    unsigned int MakeInternalReconnectPacket( unsigned char* buffer, unsigned int buffersize, unsigned int protocol );
+    unsigned int MakeNETMPConnectPacket(unsigned char* buffer, unsigned int buffersize, unsigned int protocol);
+    unsigned int MakeNETMPMessagePacket(unsigned char* buffer, unsigned int buffersize);
+    unsigned int MakeNETMPStatusPacket(unsigned char* buffer, unsigned int buffersize);
+    unsigned int MakeNETMPKillPacket(unsigned char* buffer, unsigned int buffersize, unsigned int protocol);
+    unsigned int MakeDataPacket(unsigned char* buffer, unsigned int buffersize, unsigned int m_Protocol,
+                                 unsigned int bytesToSend, unsigned char* pData);
+    unsigned int MakeInternalConnectReplyPacket(unsigned char* buffer, unsigned int buffersize, unsigned int protocol);
+    unsigned int MakeInternalReconnectPacket(unsigned char* buffer, unsigned int buffersize, unsigned int protocol);
 
     //
     // Helper function to send data synchronously. Needed because there was an oversight in the
     // code and this was a quick fix. Not a problem as only used for small packets and only runs
     // on the host side.
     //
-    int SendHelper( int socket, const char* buf, int len, int flags);
+    int SendHelper(int socket, const char* buf, int len, int flags);
  
     //
     // This member maintains the reference count of this object.
@@ -138,7 +138,7 @@ class rDbgComHostChannel : public IRadDbgComChannel
     unsigned int m_ReferenceCount;    
 
     //
-    // Maintain protocol and target index ( used to obtain ip address and port )
+    // Maintain protocol and target index (used to obtain ip address and port)
     //
     unsigned int m_TargetIndex;
     unsigned short m_Protocol;
@@ -197,7 +197,7 @@ class rDbgComHostChannel : public IRadDbgComChannel
     // This is used when we are try to connect. It holds the address and port
     // of the target.
     //
-	SOCKADDR_IN m_SockAddr;
+    SOCKADDR_IN m_SockAddr;
 
     //
     // These variables are used to receive data.

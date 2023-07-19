@@ -39,22 +39,21 @@
 // Returns:   
 //
 //------------------------------------------------------------------------------
-void PlatformDrivesGetDefaultDrive( char* driveSpec )
-{
+void PlatformDrivesGetDefaultDrive(char *driveSpec) {
 #ifdef RAD_PS2
 #   ifndef RAD_DEBUG
-        strcpy( driveSpec, s_PS2CDDriveName );
+    strcpy(driveSpec, s_PS2CDDriveName);
 #   else
-        strcpy( driveSpec, s_PS2HostDriveName );
+    strcpy(driveSpec, s_PS2HostDriveName);
 #   endif
 #endif // RAD_PS2
 
 #ifdef RAD_GAMECUBE
-    strcpy( driveSpec, s_GCNDVDDriveName );
+    strcpy(driveSpec, s_GCNDVDDriveName);
 #endif // RAD_GAMECUBE
 
 #ifdef RAD_XBOX
-    strcpy( driveSpec, "D:");
+    strcpy(driveSpec, "D:");
 #endif // RAD_XBOX
 
 //
@@ -62,10 +61,10 @@ void PlatformDrivesGetDefaultDrive( char* driveSpec )
 //
 #ifdef RAD_WIN32
     char bigDir[ radFileFilenameMax + 1 ];
-    ::GetCurrentDirectory( radFileFilenameMax, bigDir );
-    strncpy( driveSpec, bigDir, 2 );
+    ::GetCurrentDirectory(radFileFilenameMax, bigDir);
+    strncpy(driveSpec, bigDir, 2);
     driveSpec[ 2 ] = '\0';
-    strupr( driveSpec );
+    strupr(driveSpec);
 #endif // RAD_WIN32
 }
 
@@ -73,20 +72,18 @@ void PlatformDrivesGetDefaultDrive( char* driveSpec )
 // Function:    PlatformDrivesValidateDriveName
 //=============================================================================
 
-bool PlatformDrivesValidateDriveName( const char* driveSpec )
-{
-    if ( strcmp( driveSpec, s_RemoteDriveName ) == 0 )
-    {
+bool PlatformDrivesValidateDriveName(const char *driveSpec) {
+    if (strcmp(driveSpec, s_RemoteDriveName) == 0) {
         return true;
     }
 
 #ifdef RAD_WIN32
-    if( (strlen( driveSpec ) == 2) && (*driveSpec >= 'A') && (*driveSpec <= 'Z') )
+    if((strlen(driveSpec) == 2) && (*driveSpec>= 'A') && (*driveSpec <= 'Z'))
     {
         unsigned int index = *driveSpec - 'A';
-        DWORD drives = GetLogicalDrives( );
-        drives >>= index;
-        return ( drives & 1 );
+        DWORD drives = GetLogicalDrives();
+        drives>>= index;
+        return (drives & 1);
     }
     else
     {
@@ -96,20 +93,20 @@ bool PlatformDrivesValidateDriveName( const char* driveSpec )
 #endif // RAD_WIN32
 
 #ifdef RAD_XBOX
-    if ( strcmp( driveSpec, "D:" ) == 0 || strcmp( driveSpec, "T:" ) == 0 ||
-         strcmp( driveSpec, "Z:" ) == 0 || strcmp( driveSpec, "W:" ) == 0 )
+    if (strcmp(driveSpec, "D:") == 0 || strcmp(driveSpec, "T:") == 0 ||
+         strcmp(driveSpec, "Z:") == 0 || strcmp(driveSpec, "W:") == 0)
     {
         return true;
     }
-    else if( strcmp( driveSpec, "U:" ) == 0 )
+    else if(strcmp(driveSpec, "U:") == 0)
     {
         return true;
     }
-    else if ( radStringMatchesWildCardPattern( driveSpec, s_XBOXMemcardDrive ) )
+    else if (radStringMatchesWildCardPattern(driveSpec, s_XBOXMemcardDrive))
     {
-        int port = ( int )( driveSpec[ XBOXMEMCARDDRIVE_PORT_LOC ] - '1' ); 
-        int slot = ( int )( driveSpec[ XBOXMEMCARDDRIVE_SLOT_LOC ] - 'A' );
-        if ( port < 0 || port > 3 || slot < 0 || slot > 1 )
+        int port = (int)(driveSpec[ XBOXMEMCARDDRIVE_PORT_LOC ] - '1');
+        int slot = (int)(driveSpec[ XBOXMEMCARDDRIVE_SLOT_LOC ] - 'A');
+        if (port <0 || port> 3 || slot <0 || slot> 1)
         {
             return false;
         }
@@ -125,20 +122,20 @@ bool PlatformDrivesValidateDriveName( const char* driveSpec )
 #endif // RAD_XBOX
 
 #ifdef RAD_PS2
-    
-    if ( strcmp( driveSpec, s_PS2CDDriveName ) == 0 )
+
+    if (strcmp(driveSpec, s_PS2CDDriveName) == 0)
     {
         return true;
     }
-    else if ( strcmp( driveSpec, s_PS2HostDriveName ) == 0 )
+    else if (strcmp(driveSpec, s_PS2HostDriveName) == 0)
     {
         return true;
     }
-    else if ( radStringMatchesWildCardPattern( driveSpec, s_PS2MemcardDrive ) )
+    else if (radStringMatchesWildCardPattern(driveSpec, s_PS2MemcardDrive))
     {
-        int port = ( int )( driveSpec[ PS2MEMCARDDRIVE_PORT_LOC ] - '1' ); 
-        int slot = ( int )( driveSpec[ PS2MEMCARDDRIVE_SLOT_LOC ] - 'A' );
-        if ( port < 0 || port > 1 || slot < 0 || slot > 3 )
+        int port = (int)(driveSpec[ PS2MEMCARDDRIVE_PORT_LOC ] - '1');
+        int slot = (int)(driveSpec[ PS2MEMCARDDRIVE_SLOT_LOC ] - 'A');
+        if (port <0 || port> 1 || slot <0 || slot> 3)
         {
             return false;
         }
@@ -155,14 +152,14 @@ bool PlatformDrivesValidateDriveName( const char* driveSpec )
 #endif // RAD_PS2
 
 #ifdef RAD_GAMECUBE
-    if ( strcmp( driveSpec, s_GCNDVDDriveName ) == 0 )
+    if (strcmp(driveSpec, s_GCNDVDDriveName) == 0)
     {
         return true;
     }
-    else if ( radStringMatchesWildCardPattern( driveSpec, s_GCNMemcardDrive ) )
+    else if (radStringMatchesWildCardPattern(driveSpec, s_GCNMemcardDrive))
     {
-        int chan = ( int )( driveSpec[ GCNMEMCARDDRIVE_PORT_LOC ] - 'A' );
-        if ( chan < 0 || chan > 1 )
+        int chan = (int)(driveSpec[ GCNMEMCARDDRIVE_PORT_LOC ] - 'A');
+        if (chan <0 || chan> 1)
         {
             return false;
         }
@@ -182,56 +179,54 @@ bool PlatformDrivesValidateDriveName( const char* driveSpec )
 // Function:    PlatformDrivesFactory
 //=============================================================================
 
-void PlatformDrivesFactory( radDrive** ppDrive, const char* driveSpec, radMemoryAllocator alloc )
-{
-    rAssert( ppDrive != NULL );
-    rAssert( driveSpec != NULL );
+void PlatformDrivesFactory(radDrive **ppDrive, const char *driveSpec, radMemoryAllocator alloc) {
+    rAssert(ppDrive != NULL);
+    rAssert(driveSpec != NULL);
 
-    if ( strcmp( driveSpec, s_RemoteDriveName ) == 0 )
-    {
-        radRemoteDriveFactory( ppDrive, driveSpec, alloc );
+    if (strcmp(driveSpec, s_RemoteDriveName) == 0) {
+        radRemoteDriveFactory(ppDrive, driveSpec, alloc);
         return;
     }
 
-#ifdef RAD_WIN32 
-    radWin32DriveFactory( ppDrive, driveSpec, alloc );
+#ifdef RAD_WIN32
+    radWin32DriveFactory(ppDrive, driveSpec, alloc);
 #endif
 
-#ifdef RAD_XBOX 
-    if ( strcmp( driveSpec, "D:" ) == 0 || strcmp( driveSpec, "T:" ) == 0 ||
-         strcmp( driveSpec, "Z:" ) == 0  || strcmp( driveSpec, "W:" ) == 0 )
+#ifdef RAD_XBOX
+    if (strcmp(driveSpec, "D:") == 0 || strcmp(driveSpec, "T:") == 0 ||
+         strcmp(driveSpec, "Z:") == 0  || strcmp(driveSpec, "W:") == 0)
     {
-        radXboxDriveFactory( ppDrive, driveSpec, alloc );
+        radXboxDriveFactory(ppDrive, driveSpec, alloc);
     }
     else
     {
-        radXboxSaveDriveFactory( ppDrive, driveSpec, alloc );
+        radXboxSaveDriveFactory(ppDrive, driveSpec, alloc);
     }
 #endif
 
 #ifdef RAD_PS2
-    if ( strcmp( driveSpec, s_PS2CDDriveName ) == 0 )
+    if (strcmp(driveSpec, s_PS2CDDriveName) == 0)
     {
-        radPs2CdDriveFactory( ppDrive, driveSpec, alloc );
+        radPs2CdDriveFactory(ppDrive, driveSpec, alloc);
     }
-    else if ( strcmp( driveSpec, s_PS2HostDriveName ) == 0 )
+    else if (strcmp(driveSpec, s_PS2HostDriveName) == 0)
     {
-        radPs2HostDriveFactory( ppDrive, driveSpec, alloc );
+        radPs2HostDriveFactory(ppDrive, driveSpec, alloc);
     }
     else
     {
-        radPs2MemcardDriveFactory( ppDrive, driveSpec, alloc );
+        radPs2MemcardDriveFactory(ppDrive, driveSpec, alloc);
     }
 #endif // RAD_PS2
 
 #ifdef RAD_GAMECUBE
-    if ( strcmp( driveSpec, s_GCNDVDDriveName ) == 0 )
+    if (strcmp(driveSpec, s_GCNDVDDriveName) == 0)
     {
-        radGcnDVDDriveFactory( ppDrive, driveSpec, alloc );
+        radGcnDVDDriveFactory(ppDrive, driveSpec, alloc);
     }
     else
     {
-        radGcnMemcardDriveFactory( ppDrive, driveSpec, alloc );
+        radGcnMemcardDriveFactory(ppDrive, driveSpec, alloc);
     }
 #endif // RAD_GAMECUBE
 

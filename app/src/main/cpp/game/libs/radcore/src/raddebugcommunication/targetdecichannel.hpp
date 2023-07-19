@@ -18,7 +18,7 @@
 //
 //=============================================================================
 
-#ifndef	TARGETDECICHANNEL_HPP
+#ifndef    TARGETDECICHANNEL_HPP
 #define TARGETDECICHANNEL_HPP
 #ifdef RAD_PS2
 
@@ -61,89 +61,89 @@ class rDbgComDECITargetChannel : public IRadDbgComChannel,
     //
     // Contructor. Receives pointer to parent host object.
     //
-    rDbgComDECITargetChannel( rDbgComTarget* pTarget, unsigned short protocol );
+    rDbgComDECITargetChannel(rDbgComTarget* pTarget, unsigned short protocol);
 
     //
     // Destruction done through release.
     //
-    ~rDbgComDECITargetChannel( void );
+    ~rDbgComDECITargetChannel(void);
   
 
     //
     // Mmeber functions as a result of the bIDebugChannel interface.
     //
-    virtual void RegisterStatusCallback( IRadDbgComChannelStatusCallback* pCallback );
-    virtual void Attach( void );
-    virtual void Detach( void );
-    virtual void GetStatus( ConnectionState* pConnectionState, char* pMessage );
-    virtual void SendAsync( void* pBuffer, unsigned int numBytes, IRadDbgComChannelSendCallback* callback );
-    virtual void ReceiveAsync( void* pBuffer, unsigned int numBytes, IRadDbgComChannelReceiveCallback* callback );
+    virtual void RegisterStatusCallback(IRadDbgComChannelStatusCallback* pCallback);
+    virtual void Attach(void);
+    virtual void Detach(void);
+    virtual void GetStatus(ConnectionState* pConnectionState, char* pMessage);
+    virtual void SendAsync(void* pBuffer, unsigned int numBytes, IRadDbgComChannelSendCallback* callback);
+    virtual void ReceiveAsync(void* pBuffer, unsigned int numBytes, IRadDbgComChannelReceiveCallback* callback);
 
     //
     // Members implemented for the timer event handler
     //
-    virtual void OnTimerDone( unsigned int elapsedTime, void * pUserData );
+    virtual void OnTimerDone(unsigned int elapsedTime, void * pUserData);
 
     //
     // Member implemented for the dispatch event handler
     //
-    virtual void OnDispatchCallack( void* userData );
+    virtual void OnDispatchCallack(void* userData);
 
     //
     // Member functions implemented for bIObject
     //
-    virtual void AddRef( void );
-    virtual void Release( void );
+    virtual void AddRef(void);
+    virtual void Release(void);
 
-    #ifdef RAD_DEBUG
-    virtual void Dump( char* pStringBuffer, unsigned int bufferSize );
-    #endif
+#ifdef RAD_DEBUG
+    virtual void Dump(char* pStringBuffer, unsigned int bufferSize);
+#endif
 
     private:
-    
+
     //
     // Helper to set the state and invoke state change callback if it exists.
     //
     enum InternalState
     {
-        Idle,                           // Not connected, 
+        Idle,                           // Not connected,
         WaitingForConnectResponse,      // Waiting for our connect response
         Connected,                      // OK. Can send and receive
-        WaitToSendDisconnectMessage     // Waiting for disconnect to be sent.    
+        WaitToSendDisconnectMessage     // Waiting for disconnect to be sent.
     };
 
-    void SetState( ConnectionState state, InternalState internalState, const char* msg );
+    void SetState(ConnectionState state, InternalState internalState, const char* msg);
 
     //
     // Static used to field DECI events.
     //
-    static void DeciEventHandler( int event, int param, void* Object );
+    static void DeciEventHandler(int event, int param, void* Object);
 
     //
-    // These constants are used to signal events from the interrupt handler into 
+    // These constants are used to signal events from the interrupt handler into
     // the context of the main loop,
     //
-    #define EventTxComplete     0x0001      // Send completed.
-    #define EventRxConnectReply 0x0002      // Receive connect reply 
-    #define EventRxPacket       0x0004      // Receive client data packet
-    #define EventError          0x0008      // Error occurred.
+#define EventTxComplete     0x0001      // Send completed.
+#define EventRxConnectReply 0x0002      // Receive connect reply
+#define EventRxPacket       0x0004      // Receive client data packet
+#define EventError          0x0008      // Error occurred.
 
     //
     // This member is used to signal an event occured.
     //
-    void SignalEvent( unsigned int event );
+    void SignalEvent(unsigned int event);
 
     //
     // Member to clear the event mask in interrupt safe manner.
     //
-    void ClearMask( unsigned int );
+    void ClearMask(unsigned int);
     
     //
     // Helpers to build up packets.
     //
-    unsigned int MakeInternalConnectPacket( void );
-    unsigned int MakeDataPacket( unsigned int bytesToSend, unsigned char* pData );
-    unsigned int MakeInternalDisconnectPacket( void );
+    unsigned int MakeInternalConnectPacket(void);
+    unsigned int MakeDataPacket(unsigned int bytesToSend, unsigned char* pData);
+    unsigned int MakeInternalDisconnectPacket(void);
 
     //
     // This member maintains the reference count of this object.

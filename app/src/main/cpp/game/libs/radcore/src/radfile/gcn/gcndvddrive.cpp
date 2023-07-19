@@ -47,48 +47,46 @@ extern void CheckForGCNReset();
 //------------------------------------------------------------------------------
 
 void radGcnDVDDriveFactory
-( 
-    radDrive**         ppDrive, 
-    const char*        pDriveName,
-    radMemoryAllocator alloc
-)
-{
+        (
+                radDrive **ppDrive,
+                const char *pDriveName,
+                radMemoryAllocator alloc
+        ) {
     //
     // Simply constuct the drive object.
     //
-    *ppDrive = new( alloc ) radGcnDVDDrive( alloc );
-    rAssert( *ppDrive != NULL );
+    *ppDrive = new(alloc) radGcnDVDDrive(alloc);
+    rAssert(*ppDrive != NULL);
 }
 
 //=============================================================================
 // Public Member Functions
 //=============================================================================
 
-radGcnDVDDrive::radGcnDVDDrive( radMemoryAllocator alloc )
-    : 
-    radDrive( ),
-    m_OpenFiles( 0 ),
-    m_pCB( NULL ),
-    m_pMutex( NULL ),
-    m_pPollFileInfo( NULL ),
-    m_PollResult( DVD_STATE_END )
-{
+radGcnDVDDrive::radGcnDVDDrive(radMemoryAllocator alloc)
+        :
+        radDrive(),
+        m_OpenFiles(0),
+        m_pCB(NULL),
+        m_pMutex(NULL),
+        m_pPollFileInfo(NULL),
+        m_PollResult(DVD_STATE_END) {
     //
     // Initialize the DVD system.
     //
-    ::DVDInit( );
-    
+    ::DVDInit();
+
     //
     // Create a mutex for lock/unlock
     //
-    radThreadCreateMutex( &m_pMutex, alloc );
-    rAssert( m_pMutex != NULL );
+    radThreadCreateMutex(&m_pMutex, alloc);
+    rAssert(m_pMutex != NULL);
 
     //
     // Create the drive thread.
     //
-    m_pDriveThread = new( alloc ) radDriveThread( m_pMutex, alloc );
-    rAssert( m_pDriveThread != NULL );
+    m_pDriveThread = new(alloc) radDriveThread(m_pMutex, alloc);
+    rAssert(m_pDriveThread != NULL);
 
     //
     // Media info: these variables never change
@@ -100,28 +98,27 @@ radGcnDVDDrive::radGcnDVDDrive( radMemoryAllocator alloc )
     //
     // Initially we have no disk.
     //
-    m_VolumeName[ 0 ] = '\0';
+    m_VolumeName[0] = '\0';
 
     //
     // Set up our aligned buffer. Check that GCN_DVD_ALIGNMENT is okay.
     //
-    rAssert( radMemorySpace_OptimalAlignment <= GCN_DVD_ALIGNMENT );
-    rAssert( radFileOptimalMemoryAlignment <= GCN_DVD_ALIGNMENT );
-    m_SectorBuffer = (unsigned char*) ::radMemoryRoundUp( (unsigned int) m_SectorBufferSpace, GCN_DVD_ALIGNMENT );
+    rAssert(radMemorySpace_OptimalAlignment <= GCN_DVD_ALIGNMENT);
+    rAssert(radFileOptimalMemoryAlignment <= GCN_DVD_ALIGNMENT);
+    m_SectorBuffer = (unsigned char *) ::radMemoryRoundUp((unsigned int) m_SectorBufferSpace,
+                                                          GCN_DVD_ALIGNMENT);
 
     //
     // Initialize the handle pool
     //
-    for ( unsigned int i = 0; i < GCN_MAX_DVD_HANDLES; i++ )
-    {
-        m_HandlePool[ i ].m_fileNo = -1;
+    for (unsigned int i = 0; i < GCN_MAX_DVD_HANDLES; i++) {
+        m_HandlePool[i].m_fileNo = -1;
     }
 }
 
-radGcnDVDDrive::~radGcnDVDDrive( void )
-{
-    m_pMutex->Release( );
-    m_pDriveThread->Release( );
+radGcnDVDDrive::~radGcnDVDDrive(void) {
+    m_pMutex->Release();
+    m_pDriveThread->Release();
 }
 
 //=============================================================================
@@ -134,9 +131,8 @@ radGcnDVDDrive::~radGcnDVDDrive( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radGcnDVDDrive::Lock( void )
-{
-    m_pMutex->Lock( );
+void radGcnDVDDrive::Lock(void) {
+    m_pMutex->Lock();
 }
 
 //=============================================================================
@@ -149,26 +145,23 @@ void radGcnDVDDrive::Lock( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radGcnDVDDrive::Unlock( void )
-{
-    m_pMutex->Unlock( );
+void radGcnDVDDrive::Unlock(void) {
+    m_pMutex->Unlock();
 }
 
 //=============================================================================
 // Function:    radGcnDVDDrive::GetCapabilities
 //=============================================================================
 
-unsigned int radGcnDVDDrive::GetCapabilities( void )
-{
-    return ( radDriveRemovable | radDriveEnumerable | radDriveFile );
+unsigned int radGcnDVDDrive::GetCapabilities(void) {
+    return (radDriveRemovable | radDriveEnumerable | radDriveFile);
 }
 
 //=============================================================================
 // Function:    radGcnDVDDrive::GetDriveName
 //=============================================================================
 
-const char* radGcnDVDDrive::GetDriveName( void )
-{
+const char *radGcnDVDDrive::GetDriveName(void) {
     return s_GCNDVDDriveName;
 }
 
@@ -176,8 +169,7 @@ const char* radGcnDVDDrive::GetDriveName( void )
 // Function:    radGcnDVDDrive::GetReadBufferSectors
 //=============================================================================
 
-unsigned int radGcnDVDDrive::GetReadBufferSectors( void )
-{
+unsigned int radGcnDVDDrive::GetReadBufferSectors(void) {
     return GCN_DVD_TRANSFER_BUFFER_SECTORS;
 }
 
@@ -185,36 +177,29 @@ unsigned int radGcnDVDDrive::GetReadBufferSectors( void )
 // Function:    radGcnDVDDrive::Initialize
 //=============================================================================
 
-radDrive::CompletionStatus radGcnDVDDrive::Initialize( void )
-{
-    if ( m_OpenFiles != 0 )
-    {
+radDrive::CompletionStatus radGcnDVDDrive::Initialize(void) {
+    if (m_OpenFiles != 0) {
         //
         // Check if there was a media change
         //
-        if ( !SetMediaInfo( ) )
-        {
+        if (!SetMediaInfo()) {
             return Error;
         }
 
-        if ( strcmp( m_VolumeName, m_MediaInfo.m_VolumeName ) != 0 )
-        {
+        if (strcmp(m_VolumeName, m_MediaInfo.m_VolumeName) != 0) {
             m_LastError = WrongMedia;
             return Error;
         }
-    }
-    else
-    {
-        SetMediaInfo( );
-        strcpy( m_VolumeName, m_MediaInfo.m_VolumeName );
+    } else {
+        SetMediaInfo();
+        strcpy(m_VolumeName, m_MediaInfo.m_VolumeName);
     }
 
     //
     // Success, so cancel whatever operation caused an error.
     //
-    if ( m_pCB )
-    {
-        ::DVDCancel( m_pCB );
+    if (m_pCB) {
+        ::DVDCancel(m_pCB);
         m_pCB = NULL;
     }
 
@@ -227,37 +212,32 @@ radDrive::CompletionStatus radGcnDVDDrive::Initialize( void )
 //=============================================================================
 
 radDrive::CompletionStatus radGcnDVDDrive::OpenFile
-( 
-    const char*        fileName, 
-    radFileOpenFlags   flags, 
-    bool               writeAccess, 
-    radFileHandle*     pHandle, 
-    unsigned int*      pSize 
-)
-{
-    rAssert( writeAccess == false );
-    rAssert( flags == OpenExisting );
+        (
+                const char *fileName,
+                radFileOpenFlags flags,
+                bool writeAccess,
+                radFileHandle *pHandle,
+                unsigned int *pSize
+        ) {
+    rAssert(writeAccess == false);
+    rAssert(flags == OpenExisting);
 
     //
     // Build the full filename
     //
-    char fullName[ radFileFilenameMax + 1 ];
-    char* pName;
-    BuildFileSpec( fileName, fullName, radFileFilenameMax + 1, &pName );
+    char fullName[radFileFilenameMax + 1];
+    char *pName;
+    BuildFileSpec(fileName, fullName, radFileFilenameMax + 1, &pName);
 
     //
     // Get the GCN handle for this name
     //
-    int GCNhandle = ::DVDConvertPathToEntrynum( pName );
-    if ( GCNhandle < 0 )
-    {
-        radFileError error = TranslateError( ::DVDGetDriveStatus( ) );
-        if ( error == Success )
-        {
+    int GCNhandle = ::DVDConvertPathToEntrynum(pName);
+    if (GCNhandle < 0) {
+        radFileError error = TranslateError(::DVDGetDriveStatus());
+        if (error == Success) {
             m_LastError = FileNotFound;
-        }
-        else
-        {
+        } else {
             m_LastError = error;
         }
         return Error;
@@ -267,29 +247,26 @@ radDrive::CompletionStatus radGcnDVDDrive::OpenFile
     // Find a free spot in our table, or check if it already exists
     //
     int handle = -1;
-    for ( int i = 0; i < GCN_MAX_DVD_HANDLES; i++ )
-    {
-        if ( m_HandlePool[ i ].m_fileNo < 0 )
-        {
+    for (int i = 0; i < GCN_MAX_DVD_HANDLES; i++) {
+        if (m_HandlePool[i].m_fileNo < 0) {
             //
             // Empty entry
             //
             handle = i;
-            if ( !::DVDFastOpen( GCNhandle, &m_HandlePool[ i ].m_fileInfo ) )
-            {
-                m_LastError = TranslateError( ::DVDGetDriveStatus( ) );
-                rAssert( m_LastError != Success );
+            if (!::DVDFastOpen(GCNhandle, &m_HandlePool[i].m_fileInfo)) {
+                m_LastError = TranslateError(::DVDGetDriveStatus());
+                rAssert(m_LastError != Success);
                 return Error;
             }
-            m_HandlePool[ i ].m_fileNo = GCNhandle;
+            m_HandlePool[i].m_fileNo = GCNhandle;
             break;
         }
     }
 
-    rAssertMsg( handle >= 0, "GcnDVDDrive: out of handles." );
+    rAssertMsg(handle >= 0, "GcnDVDDrive: out of handles.");
 
     *pHandle = (unsigned int) handle;
-    *pSize = DVDGetLength( GetFileInfo( handle ) );
+    *pSize = DVDGetLength(GetFileInfo(handle));
 
     m_OpenFiles++;
 
@@ -301,24 +278,22 @@ radDrive::CompletionStatus radGcnDVDDrive::OpenFile
 // Function:    radGcnDVDDrive::CloseFile
 //=============================================================================
 
-radDrive::CompletionStatus radGcnDVDDrive::CloseFile( radFileHandle handle, const char* fileName )
-{
+radDrive::CompletionStatus radGcnDVDDrive::CloseFile(radFileHandle handle, const char *fileName) {
     //
     // Ignore errors.
     //
-    DVDFileInfo* fileInfo = GetFileInfo( handle );
-    if ( m_pCB == &fileInfo->cb )
-    {
-        ::DVDCancel( m_pCB );
+    DVDFileInfo *fileInfo = GetFileInfo(handle);
+    if (m_pCB == &fileInfo->cb) {
+        ::DVDCancel(m_pCB);
         m_pCB = NULL;
     }
 
-    ::DVDClose( fileInfo );
+    ::DVDClose(fileInfo);
 
     //
     // Remove the handle.
     //
-    m_HandlePool[ handle ].m_fileNo = -1;
+    m_HandlePool[handle].m_fileNo = -1;
 
     m_OpenFiles--;
     return Complete;
@@ -329,22 +304,20 @@ radDrive::CompletionStatus radGcnDVDDrive::CloseFile( radFileHandle handle, cons
 //=============================================================================
 
 radDrive::CompletionStatus radGcnDVDDrive::ReadAligned
-( 
-    radFileHandle handle, 
-    const char* fileName,
-    unsigned int sector,
-    unsigned int numSectors,
-    void* pData, 
-    radMemorySpace pDataSpace 
-)
-{
-    rAssertMsg( pDataSpace == radMemorySpace_Main || pDataSpace == radMemorySpace_Aram, 
-                "radFileSystem: radGcnDVDDrive: reads only supported for Main or Aram memory." );
-    
-    DVDFileInfo* fileInfo = GetFileInfo( handle );
+        (
+                radFileHandle handle,
+                const char *fileName,
+                unsigned int sector,
+                unsigned int numSectors,
+                void *pData,
+                radMemorySpace pDataSpace
+        ) {
+    rAssertMsg(pDataSpace == radMemorySpace_Main || pDataSpace == radMemorySpace_Aram,
+               "radFileSystem: radGcnDVDDrive: reads only supported for Main or Aram memory.");
 
-    if ( !Seek( sector * m_MediaInfo.m_SectorSize, fileInfo ) )
-    {
+    DVDFileInfo *fileInfo = GetFileInfo(handle);
+
+    if (!Seek(sector * m_MediaInfo.m_SectorSize, fileInfo)) {
         return Error;
     }
 
@@ -353,29 +326,23 @@ radDrive::CompletionStatus radGcnDVDDrive::ReadAligned
     //
     // We can only read into main memory, so we must use the transfer buffer to read into ARAM
     //
-    if ( pDataSpace == radMemorySpace_Main )
-    {
-        if ( !Read( pData, readSize, sector * m_MediaInfo.m_SectorSize, fileInfo ) ) 
-        {
+    if (pDataSpace == radMemorySpace_Main) {
+        if (!Read(pData, readSize, sector * m_MediaInfo.m_SectorSize, fileInfo)) {
             return Error;
         }
-    }
-    else
-    {
+    } else {
         // We need to split the read size up into section that fit into our transfer buffer
         //
         unsigned int numReads = readSize / GCN_DVD_TRANSFER_BUFFER_SIZE;
         unsigned int location = sector;
-        char* userBuffer = (char*) pData;
-        
-        for ( unsigned int i = 0; i < numReads; i++ )
-        {
-            if ( ReadBuffered( handle, fileName, location, GCN_DVD_TRANSFER_BUFFER_SECTORS, 0, 
-                GCN_DVD_TRANSFER_BUFFER_SIZE, userBuffer, pDataSpace ) != Complete )
-            {
+        char *userBuffer = (char *) pData;
+
+        for (unsigned int i = 0; i < numReads; i++) {
+            if (ReadBuffered(handle, fileName, location, GCN_DVD_TRANSFER_BUFFER_SECTORS, 0,
+                             GCN_DVD_TRANSFER_BUFFER_SIZE, userBuffer, pDataSpace) != Complete) {
                 return Error;
             }
-            
+
             userBuffer += GCN_DVD_TRANSFER_BUFFER_SIZE;
             location += GCN_DVD_TRANSFER_BUFFER_SECTORS;
         }
@@ -384,17 +351,15 @@ radDrive::CompletionStatus radGcnDVDDrive::ReadAligned
         // Read the last bytes if the read size wasn't a multiple of the transfer buffer.
         //
         unsigned int endBytes = readSize % GCN_DVD_TRANSFER_BUFFER_SIZE;
-        if ( endBytes > 0 )
-        {
+        if (endBytes > 0) {
             unsigned int endSectors = numSectors - numReads * GCN_DVD_TRANSFER_BUFFER_SECTORS;
-            if ( ReadBuffered( handle, fileName, location, endSectors, 0, 
-                endBytes, userBuffer, pDataSpace ) != Complete )
-            {
+            if (ReadBuffered(handle, fileName, location, endSectors, 0,
+                             endBytes, userBuffer, pDataSpace) != Complete) {
                 return Error;
             }
         }
     }
-    
+
     m_LastError = Success;
     return Complete;
 }
@@ -404,58 +369,55 @@ radDrive::CompletionStatus radGcnDVDDrive::ReadAligned
 //=============================================================================
 
 radDrive::CompletionStatus radGcnDVDDrive::ReadBuffered
-( 
-    radFileHandle handle,
-    const char* fileName,
-    unsigned int sector,
-    unsigned int numSectors,
-    unsigned int position,
-    unsigned int numBytes,
-    void* pData, 
-    radMemorySpace pDataSpace 
-)
-{
-    rAssertMsg( pDataSpace == radMemorySpace_Main || pDataSpace == radMemorySpace_Aram, 
-                "radFileSystem: radGcnDVDDrive: reads only supported for Main or Aram memory." );
-    
-    DVDFileInfo* fileInfo = GetFileInfo( handle );
+        (
+                radFileHandle handle,
+                const char *fileName,
+                unsigned int sector,
+                unsigned int numSectors,
+                unsigned int position,
+                unsigned int numBytes,
+                void *pData,
+                radMemorySpace pDataSpace
+        ) {
+    rAssertMsg(pDataSpace == radMemorySpace_Main || pDataSpace == radMemorySpace_Aram,
+               "radFileSystem: radGcnDVDDrive: reads only supported for Main or Aram memory.");
 
-    if ( !Seek( sector * m_MediaInfo.m_SectorSize, fileInfo ) )
-    {
+    DVDFileInfo *fileInfo = GetFileInfo(handle);
+
+    if (!Seek(sector * m_MediaInfo.m_SectorSize, fileInfo)) {
         return Error;
     }
 
-    if ( !Read( m_SectorBuffer, numSectors * m_MediaInfo.m_SectorSize, sector * m_MediaInfo.m_SectorSize, fileInfo ) ) 
-    {
+    if (!Read(m_SectorBuffer, numSectors * m_MediaInfo.m_SectorSize,
+              sector * m_MediaInfo.m_SectorSize, fileInfo)) {
         return Error;
     }
-    
+
     //
     // Copy into the user's buffer.
     //
-    IRadMemorySpaceCopyRequest* pMemCpyRequest = 
-        radMemorySpaceCopyAsync( pData, 
-                                 pDataSpace, 
-                                 &m_SectorBuffer[ position ], 
-                                 radMemorySpace_Local,
-                                 numBytes );
+    IRadMemorySpaceCopyRequest *pMemCpyRequest =
+            radMemorySpaceCopyAsync(pData,
+                                    pDataSpace,
+                                    &m_SectorBuffer[position],
+                                    radMemorySpace_Local,
+                                    numBytes);
 
-    rAssert( pMemCpyRequest != NULL );
-    pMemCpyRequest->AddRef( );
+    rAssert(pMemCpyRequest != NULL);
+    pMemCpyRequest->AddRef();
 
     //
     // Run the request
     //
-    while ( !pMemCpyRequest->IsDone( ) )
-    {
+    while (!pMemCpyRequest->IsDone()) {
         CheckForGCNReset();
-        ::radThreadSleep( 0 );
+        ::radThreadSleep(0);
         CheckForGCNReset();
     }
-    
-    pMemCpyRequest->Release( );
+
+    pMemCpyRequest->Release();
     pMemCpyRequest = NULL;
-  
+
     return Complete;
 }
 
@@ -464,52 +426,46 @@ radDrive::CompletionStatus radGcnDVDDrive::ReadBuffered
 //=============================================================================
 
 radDrive::CompletionStatus radGcnDVDDrive::FindFirst
-( 
-    const char* searchSpec, IRadDrive::DirectoryInfo* pDirectoryInfo, radFileDirHandle* pHandle, bool firstSearch 
-)
-{
+        (
+                const char *searchSpec, IRadDrive::DirectoryInfo *pDirectoryInfo,
+                radFileDirHandle *pHandle, bool firstSearch
+        ) {
     //
     // Build the full filename
     //
-    char fullName[ radFileFilenameMax + 1 ];
-    char* pName;
-    BuildFileSpec( searchSpec, fullName, radFileFilenameMax + 1, &pName );
+    char fullName[radFileFilenameMax + 1];
+    char *pName;
+    BuildFileSpec(searchSpec, fullName, radFileFilenameMax + 1, &pName);
 
     //
     // Find a directory part and a wildcard part
     // There is no initial slash, so end == 0 means no directory was found.
     //
-    unsigned int end = strlen( pName ) - 1;
-    while ( end > 0 && pName[ end ] != '/' )
-    {
+    unsigned int end = strlen(pName) - 1;
+    while (end > 0 && pName[end] != '/') {
         end--;
     }
-    
+
     //
     // Set directory and searchSpec names
     //
-    char* dirName;
-    if ( end > 0 )
-    {
-        pName[ end ] = '\0';
+    char *dirName;
+    if (end > 0) {
+        pName[end] = '\0';
         dirName = pName;
-        pName = &pName[ end + 1 ];
-    }
-    else
-    {
+        pName = &pName[end + 1];
+    } else {
         dirName = ".";
     }
 
-    rAssertMsg( strlen( pName ) <= RAD_GCN_SPEC_LEN, "radFileSystem: long search spec." );
+    rAssertMsg(strlen(pName) <= RAD_GCN_SPEC_LEN, "radFileSystem: long search spec.");
 
     //
     // Open the directory.
     //
-    if ( !::DVDOpenDir( dirName, &( pHandle->m_DVD ) ) )
-    {
-        m_LastError = TranslateError( ::DVDGetDriveStatus( ) );
-        if ( m_LastError == Success )
-        {
+    if (!::DVDOpenDir(dirName, &(pHandle->m_DVD))) {
+        m_LastError = TranslateError(::DVDGetDriveStatus());
+        if (m_LastError == Success) {
             m_LastError = FileNotFound;
         }
         return Error;
@@ -518,41 +474,37 @@ radDrive::CompletionStatus radGcnDVDDrive::FindFirst
     //
     // Find the next entry.
     //
-    strcpy( pHandle->m_pSpec, pName );
-    return FindNext( pHandle, pDirectoryInfo );
+    strcpy(pHandle->m_pSpec, pName);
+    return FindNext(pHandle, pDirectoryInfo);
 }
 
 //=============================================================================
 // Function:    radGcnDVDDrive::FindNext
 //=============================================================================
 
-radDrive::CompletionStatus radGcnDVDDrive::FindNext( radFileDirHandle* pHandle, IRadDrive::DirectoryInfo* pDirectoryInfo )
-{
+radDrive::CompletionStatus
+radGcnDVDDrive::FindNext(radFileDirHandle *pHandle, IRadDrive::DirectoryInfo *pDirectoryInfo) {
     bool done = false;
-    while ( !done )
-    {
+    while (!done) {
         DVDDirEntry dirEntry;
-        if ( !::DVDReadDir( &( pHandle->m_DVD ), &dirEntry) )
-        {
+        if (!::DVDReadDir(&(pHandle->m_DVD), &dirEntry)) {
             //
             // No more entries
             //
             pDirectoryInfo->m_Name[0] = '\0';
             pDirectoryInfo->m_Type = IRadDrive::DirectoryInfo::IsDone;
             done = true;
-        }
-        else
-        {
+        } else {
             //
             // Check for a match
             //
-            if ( FileNameMatchesSearch( dirEntry.name, pHandle->m_pSpec ) )
-            {
-                strncpy( pDirectoryInfo->m_Name, dirEntry.name, radFileFilenameMax );
-                pDirectoryInfo->m_Name[ radFileFilenameMax ] = '\0';
+            if (FileNameMatchesSearch(dirEntry.name, pHandle->m_pSpec)) {
+                strncpy(pDirectoryInfo->m_Name, dirEntry.name, radFileFilenameMax);
+                pDirectoryInfo->m_Name[radFileFilenameMax] = '\0';
 
-                pDirectoryInfo->m_Type = dirEntry.isDir ? 
-                    IRadDrive::DirectoryInfo::IsDirectory : IRadDrive::DirectoryInfo::IsFile;
+                pDirectoryInfo->m_Type = dirEntry.isDir ?
+                                         IRadDrive::DirectoryInfo::IsDirectory
+                                                        : IRadDrive::DirectoryInfo::IsFile;
                 done = true;
             }
         }
@@ -566,9 +518,8 @@ radDrive::CompletionStatus radGcnDVDDrive::FindNext( radFileDirHandle* pHandle, 
 // Function:    radGcnDVDDrive::FindClose
 //=============================================================================
 
-radDrive::CompletionStatus radGcnDVDDrive::FindClose( radFileDirHandle* pHandle )
-{
-    ::DVDCloseDir( &( pHandle->m_DVD ) );
+radDrive::CompletionStatus radGcnDVDDrive::FindClose(radFileDirHandle *pHandle) {
+    ::DVDCloseDir(&(pHandle->m_DVD));
     return Complete;
 }
 
@@ -576,37 +527,34 @@ radDrive::CompletionStatus radGcnDVDDrive::FindClose( radFileDirHandle* pHandle 
 // Function:    radGcnDVDDrive::Service
 //=============================================================================
 
-void radGcnDVDDrive::Service( void )
-{
+void radGcnDVDDrive::Service(void) {
     //
     // Check if we need to poll. And grab the current status.
     //
-    Lock( );
-    if ( m_pPollFileInfo != NULL )
-    {
-        m_PollResult = ::DVDGetFileInfoStatus( m_pPollFileInfo );
+    Lock();
+    if (m_pPollFileInfo != NULL) {
+        m_PollResult = ::DVDGetFileInfoStatus(m_pPollFileInfo);
 
         //
         // We need to cancel the request if we have an error state that won't cause the
         // synchronous operation to complete.
         //
-        if ( 
-            m_PollResult != DVD_STATE_WAITING && 
-            m_PollResult != DVD_STATE_BUSY && 
-            m_PollResult != DVD_STATE_END &&
-            m_PollResult != DVD_STATE_FATAL_ERROR
-           )
-        {
-            ::DVDCancelAsync( &m_pPollFileInfo->cb, NULL );
+        if (
+                m_PollResult != DVD_STATE_WAITING &&
+                m_PollResult != DVD_STATE_BUSY &&
+                m_PollResult != DVD_STATE_END &&
+                m_PollResult != DVD_STATE_FATAL_ERROR
+                ) {
+            ::DVDCancelAsync(&m_pPollFileInfo->cb, NULL);
             m_pPollFileInfo = NULL;
         }
     }
-    Unlock( );
+    Unlock();
 
     //
     // Call the base class service.
     //
-    radDrive::Service( );
+    radDrive::Service();
 }
 
 //=============================================================================
@@ -626,25 +574,21 @@ void radGcnDVDDrive::Service( void )
 //------------------------------------------------------------------------------
 
 
-bool radGcnDVDDrive::SetMediaInfo( void )
-{
-    m_MediaInfo.m_VolumeName[ 0 ] = '\0';
+bool radGcnDVDDrive::SetMediaInfo(void) {
+    m_MediaInfo.m_VolumeName[0] = '\0';
     m_LastError = WrongMedia;
 
     //
     // Start a dummy operation to actually check the disk.
     //
-    if ( m_OpenFiles > 0 && m_pCB == NULL )
-    {
+    if (m_OpenFiles > 0 && m_pCB == NULL) {
         //
         // Find a file and seek on it.
         //
-        for ( unsigned int i = 0; i < GCN_MAX_DVD_HANDLES; i++ )
-        {
-            if ( m_HandlePool[ i ].m_fileNo >= 0 )
-            {
-                 DVDFileInfo* fileInfo = GetFileInfo( i );
-                ::DVDSeekAsync( fileInfo, 0, NULL );
+        for (unsigned int i = 0; i < GCN_MAX_DVD_HANDLES; i++) {
+            if (m_HandlePool[i].m_fileNo >= 0) {
+                DVDFileInfo *fileInfo = GetFileInfo(i);
+                ::DVDSeekAsync(fileInfo, 0, NULL);
                 m_pCB = &fileInfo->cb;
                 break;
             }
@@ -652,67 +596,65 @@ bool radGcnDVDDrive::SetMediaInfo( void )
     }
 
     s32 status = DVD_STATE_BUSY;
-    while ( ( status = ::DVDGetDriveStatus( ) ) == DVD_STATE_BUSY )
-    {
+    while ((status = ::DVDGetDriveStatus()) == DVD_STATE_BUSY) {
         // check for reset
         CheckForGCNReset();
-        ::radThreadSleep( 0 );
+        ::radThreadSleep(0);
         // check for reset
         CheckForGCNReset();
     }
 
-    switch( status )
-    {
-    case DVD_STATE_FATAL_ERROR:
-        rDebugString( "GcnDVDDrive: fatal error.\n" );
-        m_MediaInfo.m_MediaState = IRadDrive::MediaInfo::MediaNotPresent;
-        m_LastError = NoMedia;
-        return false;
+    switch (status) {
+        case DVD_STATE_FATAL_ERROR:
+            rDebugString("GcnDVDDrive: fatal error.\n");
+            m_MediaInfo.m_MediaState = IRadDrive::MediaInfo::MediaNotPresent;
+            m_LastError = NoMedia;
+            return false;
 
-    case DVD_STATE_END:
-    case DVD_STATE_BUSY:
-    case DVD_STATE_WAITING:
-    case DVD_STATE_MOTOR_STOPPED:
-    case DVD_STATE_PAUSING:
-    case DVD_STATE_IGNORED:
-    case DVD_STATE_CANCELED:
-        m_MediaInfo.m_MediaState = IRadDrive::MediaInfo::MediaPresent;
-        m_LastError = Success;
-        break;
+        case DVD_STATE_END:
+        case DVD_STATE_BUSY:
+        case DVD_STATE_WAITING:
+        case DVD_STATE_MOTOR_STOPPED:
+        case DVD_STATE_PAUSING:
+        case DVD_STATE_IGNORED:
+        case DVD_STATE_CANCELED:
+            m_MediaInfo.m_MediaState = IRadDrive::MediaInfo::MediaPresent;
+            m_LastError = Success;
+            break;
 
-    case DVD_STATE_RETRY:
-        m_MediaInfo.m_MediaState = IRadDrive::MediaInfo::MediaDamaged;
-        m_LastError = MediaCorrupt;
-        return false;
-    
-    case DVD_STATE_NO_DISK:
-        m_MediaInfo.m_MediaState = IRadDrive::MediaInfo::MediaNotPresent;
-        m_LastError = NoMedia;
-        return false;
+        case DVD_STATE_RETRY:
+            m_MediaInfo.m_MediaState = IRadDrive::MediaInfo::MediaDamaged;
+            m_LastError = MediaCorrupt;
+            return false;
 
-    case DVD_STATE_COVER_OPEN:
-        m_MediaInfo.m_MediaState = IRadDrive::MediaInfo::MediaNotPresent;
-        m_LastError = ShellOpen;
-        return false;
+        case DVD_STATE_NO_DISK:
+            m_MediaInfo.m_MediaState = IRadDrive::MediaInfo::MediaNotPresent;
+            m_LastError = NoMedia;
+            return false;
 
-    case DVD_STATE_WRONG_DISK:
-        m_MediaInfo.m_MediaState = IRadDrive::MediaInfo::MediaPresent;
-        return false;
+        case DVD_STATE_COVER_OPEN:
+            m_MediaInfo.m_MediaState = IRadDrive::MediaInfo::MediaNotPresent;
+            m_LastError = ShellOpen;
+            return false;
 
-    default:
-        rDebugString( "GcnDVDDrive: unknown error.\n" );
-        m_MediaInfo.m_MediaState = IRadDrive::MediaInfo::MediaNotPresent;
-        m_LastError = NoMedia;
-        return false;
+        case DVD_STATE_WRONG_DISK:
+            m_MediaInfo.m_MediaState = IRadDrive::MediaInfo::MediaPresent;
+            return false;
+
+        default:
+            rDebugString("GcnDVDDrive: unknown error.\n");
+            m_MediaInfo.m_MediaState = IRadDrive::MediaInfo::MediaNotPresent;
+            m_LastError = NoMedia;
+            return false;
     }
 
     //
     // Set the volume name. We use the disk ID parts which won't change: game name,
     // company name, disk number and game version.
     //
-    DVDDiskID* diskId = ::DVDGetCurrentDiskID( );
-    sprintf( m_MediaInfo.m_VolumeName, "game:[%.4s] company:[%.2s] disc:[%d] version[%d]",
-        diskId->gameName, diskId->company, diskId->diskNumber, diskId->gameVersion );
+    DVDDiskID *diskId = ::DVDGetCurrentDiskID();
+    sprintf(m_MediaInfo.m_VolumeName, "game:[%.4s] company:[%.2s] disc:[%d] version[%d]",
+            diskId->gameName, diskId->company, diskId->diskNumber, diskId->gameVersion);
 
     return true;
 }
@@ -729,33 +671,28 @@ bool radGcnDVDDrive::SetMediaInfo( void )
 //
 // Returns:     
 //------------------------------------------------------------------------------
-void radGcnDVDDrive::BuildFileSpec( const char* fileName, char* fullName, unsigned int size, char** pName )
-{
-    int len = strlen( s_GCNDVDDriveName );
-    strncpy( fullName, s_GCNDVDDriveName, size - 1 );
+void radGcnDVDDrive::BuildFileSpec(const char *fileName, char *fullName, unsigned int size,
+                                   char **pName) {
+    int len = strlen(s_GCNDVDDriveName);
+    strncpy(fullName, s_GCNDVDDriveName, size - 1);
 
     //
     // Strip leading slash.
     //
-    if ( fileName[ 0 ] == '\\' )
-    {
-        strncpy( &fullName[ len ], &fileName[ 1 ] , size - len - 1 );
+    if (fileName[0] == '\\') {
+        strncpy(&fullName[len], &fileName[1], size - len - 1);
+    } else {
+        strncpy(&fullName[len], fileName, size - len - 1);
     }
-    else
-    {
-        strncpy( &fullName[ len ], fileName, size - len - 1 );
-    }
-    fullName[ size - 1 ] = '\0';
-    *pName = &fullName[ len ];
+    fullName[size - 1] = '\0';
+    *pName = &fullName[len];
 
     //
     // Reverse all slashes
     //
-    char* p = *pName;
-    while( *p )
-    {
-        if( *p == '\\' )
-        {
+    char *p = *pName;
+    while (*p) {
+        if (*p == '\\') {
             *p = '/';
         }
         p++;
@@ -766,40 +703,38 @@ void radGcnDVDDrive::BuildFileSpec( const char* fileName, char* fullName, unsign
 // Function:    radGcnDVDDrive::TranslateError
 //=============================================================================
 
-radFileError radGcnDVDDrive::TranslateError( int error )
-{
-    switch( error )
-    {
-    case DVD_STATE_FATAL_ERROR:
-        return HardwareFailure;
+radFileError radGcnDVDDrive::TranslateError(int error) {
+    switch (error) {
+        case DVD_STATE_FATAL_ERROR:
+            return HardwareFailure;
 
-    case DVD_STATE_END:
-    case DVD_STATE_CANCELED:
-        return Success;
+        case DVD_STATE_END:
+        case DVD_STATE_CANCELED:
+            return Success;
 
-    case DVD_STATE_RETRY:
-        return MediaCorrupt;
-    
-    case DVD_STATE_NO_DISK:
-        return NoMedia;
+        case DVD_STATE_RETRY:
+            return MediaCorrupt;
 
-    case DVD_STATE_COVER_OPEN:
-        return ShellOpen;
-        
-    case DVD_STATE_WRONG_DISK:
-        return WrongMedia;
+        case DVD_STATE_NO_DISK:
+            return NoMedia;
 
-    case DVD_STATE_WAITING:
-    case DVD_STATE_BUSY:
-    case DVD_STATE_MOTOR_STOPPED:
-    case DVD_STATE_PAUSING:
-    case DVD_STATE_IGNORED:
-        rDebugString( "GcnDVDDrive: unsupported error." );
-        return HardwareFailure;
+        case DVD_STATE_COVER_OPEN:
+            return ShellOpen;
 
-    default:
-        rDebugString( "GcnDVDDrive: unknown error." );
-        return HardwareFailure;
+        case DVD_STATE_WRONG_DISK:
+            return WrongMedia;
+
+        case DVD_STATE_WAITING:
+        case DVD_STATE_BUSY:
+        case DVD_STATE_MOTOR_STOPPED:
+        case DVD_STATE_PAUSING:
+        case DVD_STATE_IGNORED:
+            rDebugString("GcnDVDDrive: unsupported error.");
+            return HardwareFailure;
+
+        default:
+            rDebugString("GcnDVDDrive: unknown error.");
+            return HardwareFailure;
     }
 }
 
@@ -807,45 +742,39 @@ radFileError radGcnDVDDrive::TranslateError( int error )
 // Function:    radGcnDVDDrive::Seek
 //=============================================================================
 
-bool radGcnDVDDrive::Seek( unsigned int position, DVDFileInfo* fileInfo )
-{
+bool radGcnDVDDrive::Seek(unsigned int position, DVDFileInfo *fileInfo) {
     //
     // We tell the service routine to start polling and start a synchronous seek.
     //
-    Lock( );
+    Lock();
     m_pPollFileInfo = fileInfo;
     m_PollResult = DVD_STATE_END;
-    Unlock( );
+    Unlock();
 
-    int result = ::DVDSeek( fileInfo, position );
+    int result = ::DVDSeek(fileInfo, position);
 
     //
     // The seek returned. Turn off the service call polling and grab its result.
     //
-    Lock( );
+    Lock();
     m_pPollFileInfo = NULL;
     int pollResult = m_PollResult;
     m_PollResult = DVD_STATE_END;
-    Unlock( );
+    Unlock();
 
-    if ( result < 0 )
-    {
+    if (result < 0) {
         //
         // Either there was a fatal error, or service canceled it.
         //
-        if ( pollResult != DVD_STATE_WAITING && pollResult != DVD_STATE_BUSY && pollResult != DVD_STATE_END )
-        {
-            m_LastError = TranslateError( pollResult );
-        }
-        else
-        {
-            rAssert( result != DVD_RESULT_CANCELED );
+        if (pollResult != DVD_STATE_WAITING && pollResult != DVD_STATE_BUSY &&
+            pollResult != DVD_STATE_END) {
+            m_LastError = TranslateError(pollResult);
+        } else {
+            rAssert(result != DVD_RESULT_CANCELED);
             m_LastError = HardwareFailure;
         }
         return false;
-    }
-    else
-    {
+    } else {
         return true;
     }
 }
@@ -854,45 +783,40 @@ bool radGcnDVDDrive::Seek( unsigned int position, DVDFileInfo* fileInfo )
 // Function:    radGcnDVDDrive::Read
 //=============================================================================
 
-bool radGcnDVDDrive::Read( void* pData, unsigned int size, unsigned int position, DVDFileInfo* fileInfo )
-{   
+bool
+radGcnDVDDrive::Read(void *pData, unsigned int size, unsigned int position, DVDFileInfo *fileInfo) {
     //
     // We tell the service routine to start polling and start a synchronous read.
     //
-    Lock( );
+    Lock();
     m_pPollFileInfo = fileInfo;
     m_PollResult = DVD_STATE_END;
-    Unlock( );
+    Unlock();
 
-    int result = ::DVDRead( fileInfo, pData, size, position );
+    int result = ::DVDRead(fileInfo, pData, size, position);
 
     //
     // The read returned. Turn off the service call polling and grab its result.
     //
-    Lock( );
+    Lock();
     m_pPollFileInfo = NULL;
     int pollResult = m_PollResult;
     m_PollResult = DVD_STATE_END;
-    Unlock( );
+    Unlock();
 
-    if ( result < 0 )
-    {
+    if (result < 0) {
         //
         // Either there was a fatal error, or service canceled it.
         //
-        if ( pollResult != DVD_STATE_WAITING && pollResult != DVD_STATE_BUSY && pollResult != DVD_STATE_END )
-        {
-            m_LastError = TranslateError( pollResult );
-        }
-        else
-        {
-            rAssert( result != DVD_RESULT_CANCELED );
+        if (pollResult != DVD_STATE_WAITING && pollResult != DVD_STATE_BUSY &&
+            pollResult != DVD_STATE_END) {
+            m_LastError = TranslateError(pollResult);
+        } else {
+            rAssert(result != DVD_RESULT_CANCELED);
             m_LastError = HardwareFailure;
         }
         return false;
-    }
-    else
-    {
+    } else {
         return true;
     }
 }
@@ -916,40 +840,37 @@ bool radGcnDVDDrive::Read( void* pData, unsigned int size, unsigned int position
 //------------------------------------------------------------------------------
 
 bool radGcnDVDDrive::FileNameMatchesSearch
-( 
-    const char* pFileName, 
-    const char* pSearchSpec 
-)
-{
-    rAssert( pFileName != NULL );
-    rAssert( pSearchSpec != NULL );
+        (
+                const char *pFileName,
+                const char *pSearchSpec
+        ) {
+    rAssert(pFileName != NULL);
+    rAssert(pSearchSpec != NULL);
 
     //
     // If the spec doesn't have a '.' in it, we can do this easily.
     //
-    if( strchr( pSearchSpec, '.' ) == NULL )
-    {
-        return ::radStringMatchesWildCardPattern( pFileName, pSearchSpec );
+    if (strchr(pSearchSpec, '.') == NULL) {
+        return ::radStringMatchesWildCardPattern(pFileName, pSearchSpec);
     }
 
     //
     // Make local copies of the input strings for hacking up.
     //
-    char nameBuf[ radFileFilenameMax + 1 ];
-    char* nameAfterDot;
-    char specBuf[ radFileFilenameMax + 1 ];
-    char* specAfterDot;
-    strcpy( nameBuf, pFileName );
-    strcpy( specBuf, pSearchSpec );
-    nameAfterDot = strchr( nameBuf, '.' );
-    specAfterDot = strchr( specBuf, '.' );
-   
+    char nameBuf[radFileFilenameMax + 1];
+    char *nameAfterDot;
+    char specBuf[radFileFilenameMax + 1];
+    char *specAfterDot;
+    strcpy(nameBuf, pFileName);
+    strcpy(specBuf, pSearchSpec);
+    nameAfterDot = strchr(nameBuf, '.');
+    specAfterDot = strchr(specBuf, '.');
+
 
     //
     // Now split each string into two at the dot.
     //
-    if( nameAfterDot != NULL )
-    {
+    if (nameAfterDot != NULL) {
         *nameAfterDot = '\0';
         nameAfterDot++;
     }
@@ -959,15 +880,12 @@ bool radGcnDVDDrive::FileNameMatchesSearch
     //
     // Perform matching on the two separate parts.
     //
-    bool result1 = ::radStringMatchesWildCardPattern( nameBuf, specBuf );
+    bool result1 = ::radStringMatchesWildCardPattern(nameBuf, specBuf);
     bool result2;
-    if( nameAfterDot != NULL )
-    {
-        result2 = ::radStringMatchesWildCardPattern( nameAfterDot, specAfterDot );
+    if (nameAfterDot != NULL) {
+        result2 = ::radStringMatchesWildCardPattern(nameAfterDot, specAfterDot);
+    } else {
+        result2 = ::radStringMatchesWildCardPattern("", specAfterDot);
     }
-    else
-    {
-        result2 = ::radStringMatchesWildCardPattern( "", specAfterDot );
-    }
-    return( result1 && result2 );
+    return (result1 && result2);
 }

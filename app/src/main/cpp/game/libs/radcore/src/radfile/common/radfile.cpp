@@ -32,28 +32,28 @@
 //=============================================================================
 
 #ifdef RAD_PS2
-void radMakeIconSys( radPs2IconSys* pIconSys, radSJISChar* title, unsigned short lineBreak ) 
+void radMakeIconSys(radPs2IconSys* pIconSys, radSJISChar* title, unsigned short lineBreak)
 {
     //
     // Do debug verification
     //
 #ifdef RAD_DEBUG
-    if ( radIsAscii( (char*)title ) )
+    if (radIsAscii((char*)title))
     {
-        rDebugPrintf( "TRC Violation: title string [%s] must be in SJIS format.\n", title );
-        rDebugPrintf( "Use radAsciiToSjis( ) to convert an ascii string to SJIS.\n", title );
+        rDebugPrintf("TRC Violation: title string [%s] must be in SJIS format.\n", title);
+        rDebugPrintf("Use radAsciiToSjis() to convert an ascii string to SJIS.\n", title);
     }
-    else if ( !radIsSjis( title ) )
+    else if (!radIsSjis(title))
     {
-        rDebugPrintf( "TRC Violation: title string [%s] must be in SJIS format.\n", title );
+        rDebugPrintf("TRC Violation: title string [%s] must be in SJIS format.\n", title);
     }
     else
     {
-        unsigned int length = radSjisStrlen( title );
-        if ( length > 32 )
+        unsigned int length = radSjisStrlen(title);
+        if (length> 32)
         {
-            rDebugPrintf( "TRC Violation: title string is too long. It must no more that 32 SJIS\n" );
-            rDebugPrintf( "characters. The given title string is [%u] characters.\n", length );
+            rDebugPrintf("TRC Violation: title string is too long. It must no more that 32 SJIS\n");
+            rDebugPrintf("characters. The given title string is [%u] characters.\n", length);
         }
     }
 #endif
@@ -61,18 +61,18 @@ void radMakeIconSys( radPs2IconSys* pIconSys, radSJISChar* title, unsigned short
     //
     // Zero the memory.
     //
-    memset( pIconSys, 0, sizeof( radPs2IconSys ) );
+    memset(pIconSys, 0, sizeof(radPs2IconSys));
 
     //
     // Store the header.  This is just the characters 'P', 'S', '2', 'D'.
     //
-    strncpy( pIconSys->m_Header, "PS2D", 4 );
+    strncpy(pIconSys->m_Header, "PS2D", 4);
 
     //
     // Store the product name.
     // The line break position is the character position that starts the second line.
     //
-    radSjisStrncpy( (radSJISChar*) pIconSys->m_TitleName, title, 32 );
+    radSjisStrncpy((radSJISChar*) pIconSys->m_TitleName, title, 32);
     pIconSys->m_TitleName[ 64 ] = 0;
     pIconSys->m_TitleName[ 65 ] = 0;
     pIconSys->m_LineBreakPosition = lineBreak * 2;
@@ -130,10 +130,10 @@ void radMakeIconSys( radPs2IconSys* pIconSys, radSJISChar* title, unsigned short
     //
     // Set the data in the memory card icon.sys structure
     //
-    memcpy( (void*) (&pIconSys->m_BgColor), bgcolor, sizeof( bgcolor ) );
-    memcpy( (void*) (&pIconSys->m_LightDir), lightdir, sizeof( lightdir ) );
-    memcpy( (void*) (&pIconSys->m_LightColor), lightcol, sizeof( lightcol ) );
-    memcpy( (void*) (&pIconSys->m_Ambient), ambient, sizeof( ambient ) );
+    memcpy((void*) (&pIconSys->m_BgColor), bgcolor, sizeof(bgcolor));
+    memcpy((void*) (&pIconSys->m_LightDir), lightdir, sizeof(lightdir));
+    memcpy((void*) (&pIconSys->m_LightColor), lightcol, sizeof(lightcol));
+    memcpy((void*) (&pIconSys->m_Ambient), ambient, sizeof(ambient));
 
     //
     // Icon names (null terminated strings of up to 64 characters).
@@ -144,45 +144,45 @@ void radMakeIconSys( radPs2IconSys* pIconSys, radSJISChar* title, unsigned short
     // icon is displayed when the copy choice is selected, and the delete icon is
     // displayed when the delete choice is selected.
     //
-    strncpy( pIconSys->m_ListIconName, "list.ico", 63 );
+    strncpy(pIconSys->m_ListIconName, "list.ico", 63);
     pIconSys->m_ListIconName[ 63 ] = '\0';
 
-    strncpy( pIconSys->m_CopyIconName, "copy.ico", 63 );
+    strncpy(pIconSys->m_CopyIconName, "copy.ico", 63);
     pIconSys->m_CopyIconName[ 63 ] = '\0';
 
-    strncpy( pIconSys->m_DeleteIconName, "delete.ico", 63 );
+    strncpy(pIconSys->m_DeleteIconName, "delete.ico", 63);
     pIconSys->m_DeleteIconName[ 63 ] = '\0';
 }
 
-void radSetIconSysTitle( radPs2IconSys* pIconSys, radSJISChar* title, unsigned short lineBreak )
+void radSetIconSysTitle(radPs2IconSys* pIconSys, radSJISChar* title, unsigned short lineBreak)
 {
 #ifdef RAD_DEBUG
-    if ( radIsAscii( (char*)title ) )
+    if (radIsAscii((char*)title))
     {
-        rDebugPrintf( "TRC Violation: title string [%s] must be in SJIS format.\n", title );
-        rDebugPrintf( "Use radAsciiToSjis( ) to convert an ascii string to SJIS.\n", title );
+        rDebugPrintf("TRC Violation: title string [%s] must be in SJIS format.\n", title);
+        rDebugPrintf("Use radAsciiToSjis() to convert an ascii string to SJIS.\n", title);
     }
-    else if ( !radIsSjis( title ) )
+    else if (!radIsSjis(title))
     {
-        rDebugPrintf( "TRC Violation: title string [%s] must be in SJIS format.\n", title );
+        rDebugPrintf("TRC Violation: title string [%s] must be in SJIS format.\n", title);
     }
     else
     {
-        unsigned int length = radSjisStrlen( title );
-        if ( length > 32 )
+        unsigned int length = radSjisStrlen(title);
+        if (length> 32)
         {
-            rDebugPrintf( "TRC Violation: title string is too long. It must no more that 32 SJIS\n" );
-            rDebugPrintf( "characters. The given title string is [%u] characters.\n", length );
+            rDebugPrintf("TRC Violation: title string is too long. It must no more that 32 SJIS\n");
+            rDebugPrintf("characters. The given title string is [%u] characters.\n", length);
         }
     }
 #endif
-    memset( pIconSys->m_TitleName, 0, sizeof( pIconSys->m_TitleName ) );
+    memset(pIconSys->m_TitleName, 0, sizeof(pIconSys->m_TitleName));
     
     //
     // Store the product name.
     // The line break position is the character position that starts the second line.
     //
-    radSjisStrncpy( (radSJISChar*) pIconSys->m_TitleName, title, 32 );
+    radSjisStrncpy((radSJISChar*) pIconSys->m_TitleName, title, 32);
     pIconSys->m_TitleName[ 64 ] = 0;
     pIconSys->m_TitleName[ 65 ] = 0;
     pIconSys->m_LineBreakPosition = lineBreak * 2;
@@ -210,13 +210,12 @@ void radSetIconSysTitle( radPs2IconSys* pIconSys, radSJISChar* title, unsigned s
 //------------------------------------------------------------------------------
 
 void radFileInitialize
-( 
-    unsigned int       maxOutstandingRequests,
-    unsigned int       maxOpenFiles,
-    radMemoryAllocator alloc 
-)
-{
-    radFileSystem::Initialize( maxOutstandingRequests, maxOpenFiles, alloc );
+        (
+                unsigned int maxOutstandingRequests,
+                unsigned int maxOpenFiles,
+                radMemoryAllocator alloc
+        ) {
+    radFileSystem::Initialize(maxOutstandingRequests, maxOpenFiles, alloc);
 }
 
 //=============================================================================
@@ -231,9 +230,8 @@ void radFileInitialize
 // Notes:       Must be the last function invoked.
 //------------------------------------------------------------------------------
 
-void radFileTerminate( void )
-{
-    radFileSystem::Terminate( );
+void radFileTerminate(void) {
+    radFileSystem::Terminate();
 }
 
 //=============================================================================
@@ -248,9 +246,8 @@ void radFileTerminate( void )
 //
 //------------------------------------------------------------------------------
 
-void radFileService( void )
-{
-    radFileSystem::Service( );
+void radFileService(void) {
+    radFileSystem::Service();
 }
 
 
@@ -270,9 +267,8 @@ void radFileService( void )
 //
 //------------------------------------------------------------------------------
 
-void radFileSetRootDirectory( const char* pDrive, const char *pRootDir )
-{
-    radFileSystem::SetRootDirectory( pDrive, pRootDir );
+void radFileSetRootDirectory(const char *pDrive, const char *pRootDir) {
+    radFileSystem::SetRootDirectory(pDrive, pRootDir);
 }
 
 //=============================================================================
@@ -295,9 +291,8 @@ void radFileSetRootDirectory( const char* pDrive, const char *pRootDir )
 //                  long enough to hold a path.
 //
 //------------------------------------------------------------------------------
-void radFileGetRootDirectory( const char* pDrive, char* pRootDir )
-{
-    radFileSystem::GetRootDirectory( pDrive, pRootDir );
+void radFileGetRootDirectory(const char *pDrive, char *pRootDir) {
+    radFileSystem::GetRootDirectory(pDrive, pRootDir);
 }
 
 //=============================================================================
@@ -313,26 +308,25 @@ void radFileGetRootDirectory( const char* pDrive, char* pRootDir )
 //
 //------------------------------------------------------------------------------
 
-void radFileOpenAsync( IRadFile** pIRadFile, 
-                  const char* pFileName,
-                  bool writeAccess,
-                  radFileOpenFlags flags,
-                  radFilePriority priority, 
-                  unsigned int cacheSize,
-                  radMemoryAllocator alloc,
-                  radMemorySpace cacheSpace )
-{
+void radFileOpenAsync(IRadFile **pIRadFile,
+                      const char *pFileName,
+                      bool writeAccess,
+                      radFileOpenFlags flags,
+                      radFilePriority priority,
+                      unsigned int cacheSize,
+                      radMemoryAllocator alloc,
+                      radMemorySpace cacheSpace) {
     radFileSystem::FileOpen
-    (
-        pIRadFile,
-        pFileName,
-        writeAccess,
-        flags,
-        priority,
-        cacheSize,
-        alloc,
-        cacheSpace
-    );
+            (
+                    pIRadFile,
+                    pFileName,
+                    writeAccess,
+                    flags,
+                    priority,
+                    cacheSize,
+                    alloc,
+                    cacheSpace
+            );
 }
 
 //=============================================================================
@@ -348,26 +342,25 @@ void radFileOpenAsync( IRadFile** pIRadFile,
 //
 //------------------------------------------------------------------------------
 
-void radFileOpenSync( IRadFile** pIRadFile, 
-                  const char* pFileName,
-                  bool writeAccess,
-                  radFileOpenFlags flags,
-                  radFilePriority priority, 
-                  unsigned int cacheSize,
-                  radMemoryAllocator alloc,
-                  radMemorySpace cacheSpace )
-{
+void radFileOpenSync(IRadFile **pIRadFile,
+                     const char *pFileName,
+                     bool writeAccess,
+                     radFileOpenFlags flags,
+                     radFilePriority priority,
+                     unsigned int cacheSize,
+                     radMemoryAllocator alloc,
+                     radMemorySpace cacheSpace) {
     radFileSystem::FileOpenSync
-    (
-        pIRadFile,
-        pFileName,
-        writeAccess,
-        flags,
-        priority,
-        cacheSize,
-        alloc,
-        cacheSpace
-    );
+            (
+                    pIRadFile,
+                    pFileName,
+                    writeAccess,
+                    flags,
+                    priority,
+                    cacheSize,
+                    alloc,
+                    cacheSpace
+            );
 }
 
 //=============================================================================
@@ -383,26 +376,25 @@ void radFileOpenSync( IRadFile** pIRadFile,
 //
 //------------------------------------------------------------------------------
 
-void radSaveGameOpenAsync( 
-    IRadFile** pIRadFile, 
-    const char* pFileName,
-    bool writeAccess,
-    radFileOpenFlags flags,
-    radMemcardInfo* memcardInfo,
-    unsigned int maxSize,
-    radFilePriority priority
-)
-{
+void radSaveGameOpenAsync(
+        IRadFile **pIRadFile,
+        const char *pFileName,
+        bool writeAccess,
+        radFileOpenFlags flags,
+        radMemcardInfo *memcardInfo,
+        unsigned int maxSize,
+        radFilePriority priority
+) {
     radFileSystem::SaveGameOpen
-    (
-        pIRadFile, 
-        pFileName,
-        writeAccess,
-        flags,
-        memcardInfo,
-        maxSize,
-        priority
-    );
+            (
+                    pIRadFile,
+                    pFileName,
+                    writeAccess,
+                    flags,
+                    memcardInfo,
+                    maxSize,
+                    priority
+            );
 }
 
 //=============================================================================
@@ -418,26 +410,25 @@ void radSaveGameOpenAsync(
 //
 //------------------------------------------------------------------------------
 
-void radSaveGameOpenSync( 
-    IRadFile** pIRadFile, 
-    const char* pFileName,
-    bool writeAccess,
-    radFileOpenFlags flags,
-    radMemcardInfo* memcardInfo,
-    unsigned int maxSize,
-    radFilePriority priority
-)
-{
+void radSaveGameOpenSync(
+        IRadFile **pIRadFile,
+        const char *pFileName,
+        bool writeAccess,
+        radFileOpenFlags flags,
+        radMemcardInfo *memcardInfo,
+        unsigned int maxSize,
+        radFilePriority priority
+) {
     radFileSystem::SaveGameOpenSync
-    (
-        pIRadFile, 
-        pFileName,
-        writeAccess,
-        flags,
-        memcardInfo,
-        maxSize,
-        priority
-    );
+            (
+                    pIRadFile,
+                    pFileName,
+                    writeAccess,
+                    flags,
+                    memcardInfo,
+                    maxSize,
+                    priority
+            );
 }
 
 //=============================================================================
@@ -452,14 +443,13 @@ void radSaveGameOpenSync(
 //------------------------------------------------------------------------------
 
 void radDriveOpenAsync
-( 
-    IRadDrive**     pIRadDrive,
-    const char*     pDriveName,
-    radFilePriority priority,
-    radMemoryAllocator alloc
-)
-{
-    radFileSystem::DriveOpen( pIRadDrive, pDriveName, priority, alloc );
+        (
+                IRadDrive **pIRadDrive,
+                const char *pDriveName,
+                radFilePriority priority,
+                radMemoryAllocator alloc
+        ) {
+    radFileSystem::DriveOpen(pIRadDrive, pDriveName, priority, alloc);
 }
 
 //=============================================================================
@@ -474,14 +464,13 @@ void radDriveOpenAsync
 //------------------------------------------------------------------------------
 
 void radDriveOpenSync
-( 
-    IRadDrive**     pIRadDrive,
-    const char*     pDriveName,
-    radFilePriority priority,
-    radMemoryAllocator alloc
-)
-{
-    radFileSystem::DriveOpenSync( pIRadDrive, pDriveName, priority, alloc );
+        (
+                IRadDrive **pIRadDrive,
+                const char *pDriveName,
+                radFilePriority priority,
+                radMemoryAllocator alloc
+        ) {
+    radFileSystem::DriveOpenSync(pIRadDrive, pDriveName, priority, alloc);
 }
 
 //=============================================================================
@@ -496,9 +485,8 @@ void radDriveOpenSync
 //
 //------------------------------------------------------------------------------
 
-bool radSetDefaultDrive( const char* pDriveName )
-{
-    return radFileSystem::SetDefaultDrive( pDriveName );
+bool radSetDefaultDrive(const char *pDriveName) {
+    return radFileSystem::SetDefaultDrive(pDriveName);
 }
 
 //=============================================================================
@@ -512,9 +500,8 @@ bool radSetDefaultDrive( const char* pDriveName )
 //
 //------------------------------------------------------------------------------
 
-void radGetDefaultDrive( char* pDriveName )
-{
-    radFileSystem::GetDefaultDrive( pDriveName );
+void radGetDefaultDrive(char *pDriveName) {
+    radFileSystem::GetDefaultDrive(pDriveName);
 }
 
 #ifdef CACHING_ENABLED
@@ -535,7 +522,7 @@ void radSetCacheFileNames
     const char* pCacheFileNameArray[ ]
 )
 {
-    radFileSystem::SetCacheFileNames( pCacheFileNameArray );
+    radFileSystem::SetCacheFileNames(pCacheFileNameArray);
 }
 
 //=============================================================================
@@ -556,7 +543,7 @@ void radSetCacheDirectory
     const char* pCacheDirectory
 )
 {
-    radFileSystem::SetCacheDirectory( pCacheDirectory );
+    radFileSystem::SetCacheDirectory(pCacheDirectory);
 }
 
 #endif //CACHING_ENABLED
@@ -573,9 +560,8 @@ void radSetCacheDirectory
 //
 //=============================================================================
 
-void radSetDefaultGranularity( unsigned int defaultGranularity )
-{
-    radFileSystem::SetDefaultGranularity( defaultGranularity );
+void radSetDefaultGranularity(unsigned int defaultGranularity) {
+    radFileSystem::SetDefaultGranularity(defaultGranularity);
 }
 
 //=============================================================================
@@ -598,24 +584,23 @@ void radSetDefaultGranularity( unsigned int defaultGranularity )
 //------------------------------------------------------------------------------
 
 void radFileRegisterCementLibraryAsync
-(
-    IRadCementLibrary** pIRadCementLibrary,
-    const char* cementLibraryFileName,
-    radCementLibraryPriority priority,
-    unsigned int cacheSize,
-    radMemoryAllocator alloc,
-    radMemorySpace cacheSpace
-)
-{
+        (
+                IRadCementLibrary **pIRadCementLibrary,
+                const char *cementLibraryFileName,
+                radCementLibraryPriority priority,
+                unsigned int cacheSize,
+                radMemoryAllocator alloc,
+                radMemorySpace cacheSpace
+        ) {
     radFileSystem::RegisterCementLibrary
-    (
-        pIRadCementLibrary,
-        cementLibraryFileName,
-        priority,
-        cacheSize,
-        alloc,
-        cacheSpace
-    );
+            (
+                    pIRadCementLibrary,
+                    cementLibraryFileName,
+                    priority,
+                    cacheSize,
+                    alloc,
+                    cacheSpace
+            );
 }
 
 //=============================================================================
@@ -638,24 +623,23 @@ void radFileRegisterCementLibraryAsync
 //------------------------------------------------------------------------------
 
 void radFileRegisterCementLibrarySync
-(
-    IRadCementLibrary** pIRadCementLibrary,
-    const char* cementLibraryFileName,
-    radCementLibraryPriority priority,
-    unsigned int cacheSize,
-    radMemoryAllocator alloc,
-    radMemorySpace cacheSpace
-)
-{
+        (
+                IRadCementLibrary **pIRadCementLibrary,
+                const char *cementLibraryFileName,
+                radCementLibraryPriority priority,
+                unsigned int cacheSize,
+                radMemoryAllocator alloc,
+                radMemorySpace cacheSpace
+        ) {
     radFileSystem::RegisterCementLibrarySync
-    (
-        pIRadCementLibrary,
-        cementLibraryFileName,
-        priority,
-        cacheSize,
-        alloc,
-        cacheSpace
-    );
+            (
+                    pIRadCementLibrary,
+                    cementLibraryFileName,
+                    priority,
+                    cacheSize,
+                    alloc,
+                    cacheSpace
+            );
 }
 
 //=============================================================================
@@ -668,23 +652,19 @@ void radFileRegisterCementLibrarySync
 // Returns:
 //------------------------------------------------------------------------------
 
-void radFileSetConnectTimeOut( unsigned int milliseconds )
-{
-    radFileSystem::SetConnectTimeOut( milliseconds );
+void radFileSetConnectTimeOut(unsigned int milliseconds) {
+    radFileSystem::SetConnectTimeOut(milliseconds);
 }
 
-bool radDriveMount( const char* pDriveSpec, radMemoryAllocator alloc )
-{
-    return radFileSystem::DriveMount( pDriveSpec, alloc );
+bool radDriveMount(const char *pDriveSpec, radMemoryAllocator alloc) {
+    return radFileSystem::DriveMount(pDriveSpec, alloc);
 }
 
-bool radDriveUnmount( const char* pDriveSpec )
-{
-    return radFileSystem::DriveUnmount( pDriveSpec );
+bool radDriveUnmount(const char *pDriveSpec) {
+    return radFileSystem::DriveUnmount(pDriveSpec);
 }
 
 
-void radFileSetAutoMount( bool auto_mount )
-{
-    radFileSystem::SetAutoMount( auto_mount );
+void radFileSetAutoMount(bool auto_mount) {
+    radFileSystem::SetAutoMount(auto_mount);
 }

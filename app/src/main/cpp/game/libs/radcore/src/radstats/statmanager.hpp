@@ -51,34 +51,34 @@ class radStatManager
 {
     public:
 
-    void Initialize( radMemoryAllocator alloc );
-    void Terminate ( void );
+    void Initialize(radMemoryAllocator alloc);
+    void Terminate (void);
 
     //
     // Implementations of the public access methods.
     //
-    void SetAccumulatorName( const char* moduleName, unsigned int index, const char* accumName );
-    void GetAccumulatorName( const char* moduleName, unsigned int index, char* pAccumName );
-    void InitModule( const char* moduleName, unsigned int numEntries, unsigned int numSamplesPerEntry );
-    void TerminateModule( const char* moduleName );
-    void ResetAccumulator( const char* moduleName, unsigned int index, unsigned int numSamplesToStore );
-    void AddSample( const char* moduleName, unsigned int index, float sample );
-    void Query( const char* moduleName, unsigned int index, unsigned int* pNumSamples, 
-                float* pTotal, float* pMean, float* pMax, float* pMin, float* pStandardDeviation );
-    void QueryPercentile( const char* moduleName, unsigned int index, 
-                          unsigned int percentile, float* pNumBelow );
-    void EnumerateAccumulators( const char* modulePattern, const char* accumPattern,
-                       void (*enumerationCallback)( const char* moduleName, const char* accumName ) );
+    void SetAccumulatorName(const char* moduleName, unsigned int index, const char* accumName);
+    void GetAccumulatorName(const char* moduleName, unsigned int index, char* pAccumName);
+    void InitModule(const char* moduleName, unsigned int numEntries, unsigned int numSamplesPerEntry);
+    void TerminateModule(const char* moduleName);
+    void ResetAccumulator(const char* moduleName, unsigned int index, unsigned int numSamplesToStore);
+    void AddSample(const char* moduleName, unsigned int index, float sample);
+    void Query(const char* moduleName, unsigned int index, unsigned int* pNumSamples,
+                float* pTotal, float* pMean, float* pMax, float* pMin, float* pStandardDeviation);
+    void QueryPercentile(const char* moduleName, unsigned int index,
+                          unsigned int percentile, float* pNumBelow);
+    void EnumerateAccumulators(const char* modulePattern, const char* accumPattern,
+                       void (*enumerationCallback)(const char* moduleName, const char* accumName));
 
     //
     // This member determines if there are any active stats modules.
     //
-    bool ModulesExist( void );
+    bool ModulesExist(void);
 
     //
     // This member converts a user-defined accumulator name to an index within a module.
     //
-    unsigned int GetIndex( const char* moduleName, const char* accumName );
+    unsigned int GetIndex(const char* moduleName, const char* accumName);
 
     static bool        s_Initialized;
 
@@ -104,7 +104,7 @@ class radStatManager
     //
     // This method locates a module container in the list given a name.
     //
-    radStatModuleContainer* FindModule( const char* moduleName );
+    radStatModuleContainer* FindModule(const char* moduleName);
 
     //
     // Allocator for internal use.

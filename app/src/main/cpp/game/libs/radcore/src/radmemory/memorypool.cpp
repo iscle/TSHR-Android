@@ -58,40 +58,39 @@
 //
 // Notes:
 //------------------------------------------------------------------------------
-    
+
 void radMemoryCreatePool
-( 
-    IRadMemoryPool**        ppPool, 
-	unsigned int            elementSize, 
-    unsigned int            numberOfElements,
-	unsigned int			growBy,
-    bool                    isThreadSafe, 
-    radMemoryDebugLevel     debugLevel,
-	radMemoryAllocator      allocator,
-    const char *            pName
-)
-{
-	rAssert( ppPool != NULL );
-	rAssert( elementSize > 0 );
-	rAssert( numberOfElements > 0 );
-	rAssert( !isThreadSafe );
-	rAssert( debugLevel <= High );
+        (
+                IRadMemoryPool **ppPool,
+                unsigned int elementSize,
+                unsigned int numberOfElements,
+                unsigned int growBy,
+                bool isThreadSafe,
+                radMemoryDebugLevel debugLevel,
+                radMemoryAllocator allocator,
+                const char *pName
+        ) {
+    rAssert(ppPool != NULL);
+    rAssert(elementSize > 0);
+    rAssert(numberOfElements > 0);
+    rAssert(!isThreadSafe);
+    rAssert(debugLevel <= High);
 
-	MemoryPool* pMemoryPool = new( allocator ) MemoryPool();
-	rAssert( pMemoryPool != NULL );
+    MemoryPool *pMemoryPool = new(allocator) MemoryPool();
+    rAssert(pMemoryPool != NULL);
 
-	pMemoryPool->Initialize
-	( 
-		NULL, 
-		elementSize, 
-		numberOfElements, 
-		growBy,
-		isThreadSafe, 
-		debugLevel, 
-		allocator,
-        pName
-	);
-	*ppPool = pMemoryPool;
+    pMemoryPool->Initialize
+            (
+                    NULL,
+                    elementSize,
+                    numberOfElements,
+                    growBy,
+                    isThreadSafe,
+                    debugLevel,
+                    allocator,
+                    pName
+            );
+    *ppPool = pMemoryPool;
 }
 
 //=============================================================================
@@ -116,42 +115,41 @@ void radMemoryCreatePool
 //
 // Notes:
 //------------------------------------------------------------------------------
-    
+
 void radMemoryCreatePool
-( 
-    IRadMemoryPool** ppPool, 
-	void*            placement,
-	unsigned int     elementSize, 
-    unsigned int     numberOfElements,
-	unsigned int     growBy,
-    bool             isThreadSafe, 
-    radMemoryDebugLevel  debugLevel,
-	radMemoryAllocator   allocator,
-    const char *    pName
-)
-{
-	rAssert( ppPool != NULL );
-	rAssert( placement != NULL );
-	rAssert( elementSize > 0 );
-	rAssert( numberOfElements > 0 );
-	rAssert( !isThreadSafe );
-	rAssert( debugLevel <= High );
+        (
+                IRadMemoryPool **ppPool,
+                void *placement,
+                unsigned int elementSize,
+                unsigned int numberOfElements,
+                unsigned int growBy,
+                bool isThreadSafe,
+                radMemoryDebugLevel debugLevel,
+                radMemoryAllocator allocator,
+                const char *pName
+        ) {
+    rAssert(ppPool != NULL);
+    rAssert(placement != NULL);
+    rAssert(elementSize > 0);
+    rAssert(numberOfElements > 0);
+    rAssert(!isThreadSafe);
+    rAssert(debugLevel <= High);
 
-	MemoryPool* pMemoryPool = new( allocator ) MemoryPool();
-	rAssert( pMemoryPool != NULL );
+    MemoryPool *pMemoryPool = new(allocator) MemoryPool();
+    rAssert(pMemoryPool != NULL);
 
-	pMemoryPool->Initialize
-	( 
-		placement, 
-		elementSize, 
-		numberOfElements, 
-		growBy,
-		isThreadSafe, 
-		debugLevel, 
-		(radMemoryAllocator) -1,
-        pName
-	);
-	*ppPool = pMemoryPool;
+    pMemoryPool->Initialize
+            (
+                    placement,
+                    elementSize,
+                    numberOfElements,
+                    growBy,
+                    isThreadSafe,
+                    debugLevel,
+                    (radMemoryAllocator) - 1,
+                    pName
+            );
+    *ppPool = pMemoryPool;
 }
 
 //=============================================================================
@@ -171,10 +169,9 @@ void radMemoryCreatePool
 //------------------------------------------------------------------------------
 
 MemoryPool::MemoryPool
-( 
-)	
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "MemoryPool" );
+        (
+        ) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "MemoryPool");
 }
 
 //=============================================================================
@@ -196,95 +193,93 @@ MemoryPool::MemoryPool
 //------------------------------------------------------------------------------
 
 void MemoryPool::Initialize
-(
-	void*                      pPlacement,
-	unsigned int               elementSize, 
-    unsigned int               numberOfElements,
-	unsigned int			   growBy,
-    bool                       isThreadSafe,
-	radMemoryDebugLevel        debugLevel,
-	radMemoryAllocator         allocator,
-    const char *               pName
-)
-{			
-	rAssert( elementSize > 0 );
-	rAssert( numberOfElements > 0 );
-	rAssert( !isThreadSafe );
-	rAssert( debugLevel <= High );
+        (
+                void *pPlacement,
+                unsigned int elementSize,
+                unsigned int numberOfElements,
+                unsigned int growBy,
+                bool isThreadSafe,
+                radMemoryDebugLevel debugLevel,
+                radMemoryAllocator allocator,
+                const char *pName
+        ) {
+    rAssert(elementSize > 0);
+    rAssert(numberOfElements > 0);
+    rAssert(!isThreadSafe);
+    rAssert(debugLevel <= High);
 
-	m_GrowBy			   = growBy;
-	m_pPlacement           = pPlacement;
-	m_RequestedElementSize = elementSize;
-	m_NumberOfElements	   = numberOfElements;
-	m_IsThreadSafe		   = isThreadSafe;
-	m_DebugLevel		   = debugLevel;
-	m_Chain				   = NULL;
-    m_ReferenceCount	   = 1;                  // Initial reference count
+    m_GrowBy = growBy;
+    m_pPlacement = pPlacement;
+    m_RequestedElementSize = elementSize;
+    m_NumberOfElements = numberOfElements;
+    m_IsThreadSafe = isThreadSafe;
+    m_DebugLevel = debugLevel;
+    m_Chain = NULL;
+    m_ReferenceCount = 1;                  // Initial reference count
 
-	m_Allocator            = allocator;
+    m_Allocator = allocator;
 
-	m_NumberFree           = m_NumberOfElements;
-	m_NumberAllocated      = 0;
+    m_NumberFree = m_NumberOfElements;
+    m_NumberAllocated = 0;
 
-	// Calculate and adjust (as appropriate) sizes.
-	m_ActualElementSize = RoundUpAlignment( elementSize, STANDARD_ALIGNMENT );
-	m_FillSize          = m_ActualElementSize - sizeof( MemList );
-	m_FillSize         /= sizeof( unsigned int );
-	m_Size              = m_ActualElementSize * numberOfElements;
+    // Calculate and adjust (as appropriate) sizes.
+    m_ActualElementSize = RoundUpAlignment(elementSize, STANDARD_ALIGNMENT);
+    m_FillSize = m_ActualElementSize - sizeof(MemList);
+    m_FillSize /= sizeof(unsigned int);
+    m_Size = m_ActualElementSize * numberOfElements;
 
-	if( pPlacement == NULL )
-	{
-		m_pPlacement = radMemoryAlloc( allocator, m_Size );
-        rAssert( m_pPlacement != NULL );
-        radMemoryMonitorIdentifyAllocation( m_pPlacement, g_nameFTech, "MemoryPool::m_pPlacement" );
-		pPlacement = m_pPlacement;
-	}
+    if (pPlacement == NULL) {
+        m_pPlacement = radMemoryAlloc(allocator, m_Size);
+        rAssert(m_pPlacement != NULL);
+        radMemoryMonitorIdentifyAllocation(m_pPlacement, g_nameFTech, "MemoryPool::m_pPlacement");
+        pPlacement = m_pPlacement;
+    }
 
-	pPlacement = (void*)RoundUpAlignment( (unsigned int)pPlacement, STANDARD_ALIGNMENT );
-	rAssert( pPlacement != NULL );
+    pPlacement = (void *) RoundUpAlignment((unsigned int) pPlacement, STANDARD_ALIGNMENT);
+    rAssert(pPlacement != NULL);
 
-    radMemoryMonitorDeclareSection( pPlacement, m_Size,  IRadMemoryMonitor::MemorySectionType_DynamicData );
-    
+    radMemoryMonitorDeclareSection(pPlacement, m_Size,
+                                   IRadMemoryMonitor::MemorySectionType_DynamicData);
+
 #ifdef RADMEMORYMONITOR
     {
     char szPoolName[ 128 ];
-    sprintf( szPoolName, "%s[MemoryPool]", pName );
-    radMemoryMonitorIdentifySection( pPlacement, szPoolName );
+    sprintf(szPoolName, "%s[MemoryPool]", pName);
+    radMemoryMonitorIdentifySection(pPlacement, szPoolName);
     }
 #endif
 
-	m_First    = (MemList*)pPlacement;
-	m_FreeHead = m_First;
+    m_First = (MemList *) pPlacement;
+    m_FreeHead = m_First;
 
-	// Walk through list and initialize free list.
-	MemList* curList = m_First;
-	unsigned char* pointer = NULL;
-	for
-	( 
-		unsigned int iBlock = 0;
-		iBlock < m_NumberOfElements;
-		++iBlock
-	)
-	{
-		pointer             = (unsigned char*)curList;
-		pointer            += m_ActualElementSize;
-	    curList->m_NextFree = (MemList*)pointer;
+    // Walk through list and initialize free list.
+    MemList *curList = m_First;
+    unsigned char *pointer = NULL;
+    for
+            (
+            unsigned int iBlock = 0;
+            iBlock < m_NumberOfElements;
+            ++iBlock
+            ) {
+        pointer = (unsigned char *) curList;
+        pointer += m_ActualElementSize;
+        curList->m_NextFree = (MemList *) pointer;
 #ifdef RAD_DEBUG
-		FillFreeBlock( curList );
+        FillFreeBlock(curList);
 #endif
-		curList = curList->m_NextFree;
-	}
+        curList = curList->m_NextFree;
+    }
 
-	pointer             = (unsigned char*)curList;
-	pointer            -= m_ActualElementSize;
-	curList             = (MemList*)pointer;
-	curList->m_NextFree = NULL;
-	m_FreeTail          = curList;
-	m_Last          = m_FreeTail;
+    pointer = (unsigned char *) curList;
+    pointer -= m_ActualElementSize;
+    curList = (MemList *) pointer;
+    curList->m_NextFree = NULL;
+    m_FreeTail = curList;
+    m_Last = m_FreeTail;
 
- 	rAssert( Validate() );
+    rAssert(Validate());
 }
-		
+
 //=============================================================================
 // Function:    MemoryPool:GetMemory
 //=============================================================================
@@ -299,106 +294,90 @@ void MemoryPool::Initialize
 // Notes:
 //------------------------------------------------------------------------------
 
-void* MemoryPool::GetMemory
-( 
-	void 
-)
-{
-	rAssert
-	( 
-		((m_FreeHead == NULL) && (m_FreeHead == NULL))
-		||
-		((m_FreeHead != NULL) && (m_FreeHead != NULL))
-	);
+void *MemoryPool::GetMemory
+        (
+                void
+        ) {
+    rAssert
+            (
+                    ((m_FreeHead == NULL) && (m_FreeHead == NULL))
+                    ||
+                    ((m_FreeHead != NULL) && (m_FreeHead != NULL))
+            );
 
-	void* pointer = NULL;
+    void *pointer = NULL;
 
-AttemptGet:
-	if( m_FreeHead != NULL )
-	{
-		// Use first entry on free list.
-		MemList* curList = m_FreeHead;
-		pointer          = (void*)m_FreeHead;
+    AttemptGet:
+    if (m_FreeHead != NULL) {
+        // Use first entry on free list.
+        MemList *curList = m_FreeHead;
+        pointer = (void *) m_FreeHead;
 
-		if( m_FreeHead == m_FreeTail )
-		{
-			rAssert( m_FreeHead->m_NextFree == NULL );
-			m_FreeHead = m_FreeTail = NULL;
-		}
-		else
-		{
-			m_FreeHead = m_FreeHead->m_NextFree;
-		}
-		curList->m_NextFree = NULL;
-		AddRef();
+        if (m_FreeHead == m_FreeTail) {
+            rAssert(m_FreeHead->m_NextFree == NULL);
+            m_FreeHead = m_FreeTail = NULL;
+        } else {
+            m_FreeHead = m_FreeHead->m_NextFree;
+        }
+        curList->m_NextFree = NULL;
+        AddRef();
 
-		rAssert( m_NumberFree > 0 );
-		--m_NumberFree;
-		++m_NumberAllocated;
-		rAssert( m_NumberAllocated <= m_NumberOfElements );
+        rAssert(m_NumberFree > 0);
+        --m_NumberFree;
+        ++m_NumberAllocated;
+        rAssert(m_NumberAllocated <= m_NumberOfElements);
 
-		rAssert
-		(
-			FillAndValidate
-			( 
-				pointer, 
-				USED_VALUE, 
-				m_ActualElementSize / sizeof( unsigned int ) 
-			)
-		);
-	}
-	else
-	{
-		// Pass on if chained defined.
-		if( m_Chain != NULL )
-		{
-			pointer = m_Chain->GetMemory();
-		}
-		else
-		{
-			if ( m_Allocator != (unsigned int)-1 )
-			{
-				if ( m_GrowBy > 0 )
-				{
-					rDebugString( "radMemoryPool: Out of pool elements, growing!\n" );
+        rAssert
+                (
+                        FillAndValidate
+                                (
+                                        pointer,
+                                        USED_VALUE,
+                                        m_ActualElementSize / sizeof(unsigned int)
+                                )
+                );
+    } else {
+        // Pass on if chained defined.
+        if (m_Chain != NULL) {
+            pointer = m_Chain->GetMemory();
+        } else {
+            if (m_Allocator != (unsigned int) -1) {
+                if (m_GrowBy > 0) {
+                    rDebugString("radMemoryPool: Out of pool elements, growing!\n");
 
-					IRadMemoryPool * pIRadMemoryPool = NULL;
+                    IRadMemoryPool *pIRadMemoryPool = NULL;
 
-					::radMemoryCreatePool(
-						& pIRadMemoryPool,
-						m_RequestedElementSize,
-						m_NumberOfElements,
-						m_GrowBy,
-						m_IsThreadSafe,
-						m_DebugLevel,
-						m_Allocator,
-                        "OverGrow" );
+                    ::radMemoryCreatePool(
+                            &pIRadMemoryPool,
+                            m_RequestedElementSize,
+                            m_NumberOfElements,
+                            m_GrowBy,
+                            m_IsThreadSafe,
+                            m_DebugLevel,
+                            m_Allocator,
+                            "OverGrow");
 
-					Chain( pIRadMemoryPool );
+                    Chain(pIRadMemoryPool);
 
-                    radRelease( pIRadMemoryPool, this );
+                    radRelease(pIRadMemoryPool, this);
 
-					goto AttemptGet;
-				}
-				else
-				{
-					rDebugString( "radMemoryPool: Out of memory, and grow size is zero\n" );
-				}
-			}
-			else
-			{
-				rDebugString( "radMemoryPool: Out of memory, can't grow placement pool\n" );
-			}
-		}
-	}
+                    goto AttemptGet;
+                } else {
+                    rDebugString("radMemoryPool: Out of memory, and grow size is zero\n");
+                }
+            } else {
+                rDebugString("radMemoryPool: Out of memory, can't grow placement pool\n");
+            }
+        }
+    }
 
 #if defined RADMEMORYMONITOR
-    if ( pointer != NULL )
+    if (pointer != NULL)
     {
-        radMemoryMonitorDeclareAllocation( pointer, m_RequestedElementSize );
+        radMemoryMonitorDeclareAllocation(pointer, m_RequestedElementSize);
     }
 #endif // RADMEMORYMONITOR
-	return( pointer );
+    return (pointer);
 }
 
 //=============================================================================
@@ -414,11 +393,11 @@ AttemptGet:
 // Notes:
 //------------------------------------------------------------------------------
 
-void* MemoryPool::GetMemory( unsigned int size )
-{
-    rAssertMsg( size <= m_ActualElementSize, "MemoryPool: Error: Memory size requested is larger than the size of memory pool element." );
+void *MemoryPool::GetMemory(unsigned int size) {
+    rAssertMsg(size <= m_ActualElementSize,
+               "MemoryPool: Error: Memory size requested is larger than the size of memory pool element.");
 
-    void * pMemory = GetMemory( );
+    void *pMemory = GetMemory();
 
     return pMemory;
 }
@@ -436,71 +415,61 @@ void* MemoryPool::GetMemory( unsigned int size )
 //------------------------------------------------------------------------------
 
 void MemoryPool::FreeMemory
-( 
-	void* pMemory 
-)
-{
-	rAssert
-	( 
-		((m_FreeHead == NULL) && (m_FreeHead == NULL))
-		||
-		((m_FreeHead != NULL) && (m_FreeHead != NULL))
-	);
+        (
+                void *pMemory
+        ) {
+    rAssert
+            (
+                    ((m_FreeHead == NULL) && (m_FreeHead == NULL))
+                    ||
+                    ((m_FreeHead != NULL) && (m_FreeHead != NULL))
+            );
 
-	rAssert( pMemory != NULL );
-	if( WithinRange( pMemory ) )
-	{
-		rAssert( ValidPointer( pMemory ) );
+    rAssert(pMemory != NULL);
+    if (WithinRange(pMemory)) {
+        rAssert(ValidPointer(pMemory));
 
-		MemList* curList = (MemList*)pMemory;
-		rAssert( WithinRange( curList ) );
+        MemList *curList = (MemList *) pMemory;
+        rAssert(WithinRange(curList));
 
-		// Add freed block to end of free list.
-		if( m_FreeTail == NULL )
-		{
-			m_FreeHead = curList;
-		}
-		else
-		{
-			m_FreeTail->m_NextFree = curList;
-		}
-		curList->m_NextFree = NULL;
-		m_FreeTail          = curList;
-		Release();
+        // Add freed block to end of free list.
+        if (m_FreeTail == NULL) {
+            m_FreeHead = curList;
+        } else {
+            m_FreeTail->m_NextFree = curList;
+        }
+        curList->m_NextFree = NULL;
+        m_FreeTail = curList;
+        Release();
 
-		++m_NumberFree;
-		rAssert( m_NumberFree <= m_NumberOfElements );
-		rAssert( m_NumberAllocated > 0 );
-		--m_NumberAllocated;
+        ++m_NumberFree;
+        rAssert(m_NumberFree <= m_NumberOfElements);
+        rAssert(m_NumberAllocated > 0);
+        --m_NumberAllocated;
 
 #if defined RADMEMORYMONITOR
-        if ( pMemory != NULL )
+        if (pMemory != NULL)
         {
-            radMemoryMonitorRescindAllocation( pMemory );
+            radMemoryMonitorRescindAllocation(pMemory);
         }
 #endif // RADMEMORYMONITOR
 
 #ifdef RAD_DEBUG
-		if( m_DebugLevel >= Moderate )
-		{
-			FillFreeBlock( curList );
-			rAssert( Validate() );
-		}
-#endif 
-	}
-	else
-	{
-		// Pass on to chain if defined.
-		if( m_Chain != NULL )
-		{
-			m_Chain->FreeMemory( pMemory );
-		}
-		else
-		{
-			// Complain if request is invalid.
-			rAssert( WithinRange( pMemory ) );
-		}
-	}
+        if(m_DebugLevel>= Moderate)
+        {
+            FillFreeBlock(curList);
+            rAssert(Validate());
+        }
+#endif
+    } else {
+        // Pass on to chain if defined.
+        if (m_Chain != NULL) {
+            m_Chain->FreeMemory(pMemory);
+        } else {
+            // Complain if request is invalid.
+            rAssert(WithinRange(pMemory));
+        }
+    }
 }
 
 //=============================================================================
@@ -515,17 +484,16 @@ void MemoryPool::FreeMemory
 // Notes:       true if memory can be freed, false otherwise
 //------------------------------------------------------------------------------
 
-bool MemoryPool::CanFreeMemory( void * pMemory )
-{
-	rAssert
-	( 
-		((m_FreeHead == NULL) && (m_FreeHead == NULL))
-		||
-		((m_FreeHead != NULL) && (m_FreeHead != NULL))
-	);
+bool MemoryPool::CanFreeMemory(void *pMemory) {
+    rAssert
+            (
+                    ((m_FreeHead == NULL) && (m_FreeHead == NULL))
+                    ||
+                    ((m_FreeHead != NULL) && (m_FreeHead != NULL))
+            );
 
-	rAssert( pMemory != NULL );
-	return WithinRange( pMemory );
+    rAssert(pMemory != NULL);
+    return WithinRange(pMemory);
 }
 
 //=============================================================================
@@ -541,11 +509,10 @@ bool MemoryPool::CanFreeMemory( void * pMemory )
 // Notes:       true if memory can be freed, false otherwise
 //------------------------------------------------------------------------------
 
-void* MemoryPool::GetMemoryAligned( unsigned int size, unsigned int alignment )
-{
-    (void)size;
-    (void)alignment;
-    rAssertMsg( false, "MemoryPool: Error: MemoryPool::GetMemoryAligned() is not implemented yet." );
+void *MemoryPool::GetMemoryAligned(unsigned int size, unsigned int alignment) {
+    (void) size;
+    (void) alignment;
+    rAssertMsg(false, "MemoryPool: Error: MemoryPool::GetMemoryAligned() is not implemented yet.");
     return NULL;
 }
 
@@ -561,10 +528,9 @@ void* MemoryPool::GetMemoryAligned( unsigned int size, unsigned int alignment )
 // Notes:       true if memory can be freed, false otherwise
 //------------------------------------------------------------------------------
 
-void  MemoryPool::FreeMemoryAligned( void * pMemory )
-{
-    (void)pMemory;
-    rAssertMsg( false, "MemoryPool: Error: MemoryPool::FreeMemoryAligned() is not implemented yet." );
+void MemoryPool::FreeMemoryAligned(void *pMemory) {
+    (void) pMemory;
+    rAssertMsg(false, "MemoryPool: Error: MemoryPool::FreeMemoryAligned() is not implemented yet.");
 }
 
 //=============================================================================
@@ -579,10 +545,10 @@ void  MemoryPool::FreeMemoryAligned( void * pMemory )
 // Notes:       true if memory can be freed, false otherwise
 //------------------------------------------------------------------------------
 
-bool  MemoryPool::CanFreeMemoryAligned( void * pMemory )
-{
-    (void)pMemory;
-    rAssertMsg( false, "MemoryPool: Error: MemoryPool::CanFreeMemoryAligned() is not implemented yet." );
+bool MemoryPool::CanFreeMemoryAligned(void *pMemory) {
+    (void) pMemory;
+    rAssertMsg(false,
+               "MemoryPool: Error: MemoryPool::CanFreeMemoryAligned() is not implemented yet.");
     return false;
 }
 
@@ -602,47 +568,42 @@ bool  MemoryPool::CanFreeMemoryAligned( void * pMemory )
 //------------------------------------------------------------------------------
 
 void MemoryPool::GetStatus
-( 
-	unsigned int* elementSize, 
-	unsigned int* numberFree,
-    unsigned int* numberAllocated 
-)
-{
+        (
+                unsigned int *elementSize,
+                unsigned int *numberFree,
+                unsigned int *numberAllocated
+        ) {
 
-	unsigned int chainElementSize = 0; 
-	unsigned int chainNumberFree = 0;
-	unsigned int chainNumberAllocated = 0; 
+    unsigned int chainElementSize = 0;
+    unsigned int chainNumberFree = 0;
+    unsigned int chainNumberAllocated = 0;
 
-	if( m_Chain != NULL )
-	{
+    if (m_Chain != NULL) {
 
 
-		// Get chain status
-		m_Chain->GetStatus( & chainElementSize, & chainNumberFree, & chainNumberAllocated );
+        // Get chain status
+        m_Chain->GetStatus(&chainElementSize, &chainNumberFree, &chainNumberAllocated);
 
-		// Validate or add chain status to this pool's status
-		rAssert( chainElementSize == *elementSize );
-		*numberFree      += chainNumberFree;
-		*numberAllocated += chainNumberAllocated;
-	}
+        // Validate or add chain status to this pool's status
+        rAssert(chainElementSize == *elementSize);
+        *numberFree += chainNumberFree;
+        *numberAllocated += chainNumberAllocated;
+    }
 
 
-	if ( elementSize != NULL )
-	{
-		*elementSize = m_RequestedElementSize;
-	}
+    if (elementSize != NULL) {
+        *elementSize = m_RequestedElementSize;
+    }
 
-	if ( numberFree != NULL )
-	{
-		*numberFree      = m_NumberFree + chainNumberFree;
-	}
+    if (numberFree != NULL) {
+        *numberFree = m_NumberFree + chainNumberFree;
+    }
 
-	if ( numberAllocated != NULL )
-	{
-		*numberAllocated = m_NumberAllocated + chainNumberAllocated;
-	}
+    if (numberAllocated != NULL) {
+        *numberAllocated = m_NumberAllocated + chainNumberAllocated;
+    }
 }
-          
+
 //=============================================================================
 // Function:    MemoryPool:Chain
 //=============================================================================
@@ -660,41 +621,36 @@ void MemoryPool::GetStatus
 //------------------------------------------------------------------------------
 
 void MemoryPool::Chain
-( 
-	IRadMemoryPool* pMemoryPool 
-)
-{
+        (
+                IRadMemoryPool *pMemoryPool
+        ) {
 #ifdef RAD_DEBUG
-	if( m_DebugLevel >= Moderate )
-	{
-		if( pMemoryPool != NULL )
-		{
-			// Verify that other pool is same size
-			unsigned int elementSize;
-			unsigned int numberFree;
-			unsigned int numberAllocated;
+    if(m_DebugLevel>= Moderate)
+    {
+        if(pMemoryPool != NULL)
+        {
+            // Verify that other pool is same size
+            unsigned int elementSize;
+            unsigned int numberFree;
+            unsigned int numberAllocated;
 
-			pMemoryPool->GetStatus( &elementSize, &numberFree, &numberAllocated );
-			rAssert( elementSize == m_RequestedElementSize );
-		}
-	}
+            pMemoryPool->GetStatus(&elementSize, &numberFree, &numberAllocated);
+            rAssert(elementSize == m_RequestedElementSize);
+        }
+    }
 #endif //debug
 
-	if( pMemoryPool == NULL )
-	{
-		if( m_Chain != NULL )
-		{
-            radRelease( m_Chain, this );
-		}
-	}
-	else
-	{
-		rAssert( m_Chain == NULL );
-        radAddRef( pMemoryPool, this );
-	}
-	m_Chain = static_cast< MemoryPool* >( pMemoryPool );
+    if (pMemoryPool == NULL) {
+        if (m_Chain != NULL) {
+            radRelease(m_Chain, this);
+        }
+    } else {
+        rAssert(m_Chain == NULL);
+        radAddRef(pMemoryPool, this);
+    }
+    m_Chain = static_cast<MemoryPool *>(pMemoryPool);
 
-	rAssert( (m_Chain == NULL) || m_Chain->Validate() );
+    rAssert((m_Chain == NULL) || m_Chain->Validate());
 }
 
 //=============================================================================
@@ -711,10 +667,9 @@ void MemoryPool::Chain
 //------------------------------------------------------------------------------
 
 void MemoryPool::AddRef
-( 
-	void 
-)
-{
+        (
+                void
+        ) {
     m_ReferenceCount++;
 }
 
@@ -732,16 +687,14 @@ void MemoryPool::AddRef
 //------------------------------------------------------------------------------
 
 void MemoryPool::Release
-( 
-	void 
-)   
-{
+        (
+                void
+        ) {
     // Decrement the reference count. If zero, delete the object.
-	rAssert( m_ReferenceCount != 0 );    
+    rAssert(m_ReferenceCount != 0);
     m_ReferenceCount--;
-        
-    if( m_ReferenceCount == 0 )
-    {
+
+    if (m_ReferenceCount == 0) {
         delete this;
     }
 }
@@ -759,19 +712,17 @@ void MemoryPool::Release
 //------------------------------------------------------------------------------
 
 MemoryPool::~MemoryPool
-(
-)
-{
-	rAssert( m_NumberAllocated == 0 );
-	rAssert( m_ReferenceCount == 0 );
-	    
-	Chain( NULL );
-	if( m_pPlacement != NULL )
-	{
-        radMemoryMonitorRescindSection( m_First );
-		radMemoryFree( m_pPlacement );
-		m_pPlacement = NULL;
-	}
+        (
+        ) {
+    rAssert(m_NumberAllocated == 0);
+    rAssert(m_ReferenceCount == 0);
+
+    Chain(NULL);
+    if (m_pPlacement != NULL) {
+        radMemoryMonitorRescindSection(m_First);
+        radMemoryFree(m_pPlacement);
+        m_pPlacement = NULL;
+    }
 }
 
 //=============================================================================
@@ -787,13 +738,12 @@ MemoryPool::~MemoryPool
 // Notes:
 //------------------------------------------------------------------------------
 
-void* MemoryPool::operator new
-(
-    size_t size,
-    radMemoryAllocator allocator
-)
-{
-    return radMemoryAlloc( allocator, size );
+void *MemoryPool::operator new
+        (
+                size_t size,
+                radMemoryAllocator allocator
+        ) {
+    return radMemoryAlloc(allocator, size);
 }
 
 //=============================================================================
@@ -808,9 +758,8 @@ void* MemoryPool::operator new
 // Notes:
 //------------------------------------------------------------------------------
 
-void MemoryPool::operator delete( void * pMemory )
-{
-    radMemoryFree( pMemory );
+void MemoryPool::operator delete(void *pMemory) {
+    radMemoryFree(pMemory);
 }
 
 #ifdef RAD_DEBUG
@@ -830,21 +779,21 @@ void MemoryPool::operator delete( void * pMemory )
 //------------------------------------------------------------------------------
 
 bool MemoryPool::FillAndValidate
-( 
-	void*        pMemory, 
-	unsigned int value, 
-	unsigned int size 
+(
+    void*        pMemory,
+    unsigned int value,
+    unsigned int size
 )
 {
-	if( m_DebugLevel >= Moderate )
-	{
-		if( m_DebugLevel == High )
-		{
-			MemorySet( pMemory, value, size );
-		}
-		rAssert( Validate() );
-	}
-	return( true );
+    if(m_DebugLevel>= Moderate)
+    {
+        if(m_DebugLevel == High)
+        {
+            MemorySet(pMemory, value, size);
+        }
+        rAssert(Validate());
+    }
+    return(true);
 }
 
 //=============================================================================
@@ -861,23 +810,23 @@ bool MemoryPool::FillAndValidate
 //------------------------------------------------------------------------------
 
 void MemoryPool::FillFreeBlock
-( 
-	MemList* curList 
+(
+    MemList* curList
 )
 {
-	if( m_DebugLevel >= High )
-	{
-		if( m_ActualElementSize > sizeof( MemList ) )
-		{
-			MemorySet( curList + 1, FREE_VALUE, m_FillSize );
-		}
-	}
+    if(m_DebugLevel>= High)
+    {
+        if(m_ActualElementSize> sizeof(MemList))
+        {
+            MemorySet(curList + 1, FREE_VALUE, m_FillSize);
+        }
+    }
 }
 
 //=============================================================================
 // Function:    MemoryPool:Validate
 //=============================================================================
-// Description: This is equivalent to "heapwalk()" in other standard heap 
+// Description: This is equivalent to "heapwalk()" in other standard heap
 //				managers.
 //
 // Parameters:  none
@@ -889,45 +838,45 @@ void MemoryPool::FillFreeBlock
 //------------------------------------------------------------------------------
 
 bool MemoryPool::Validate
-( 
-	void 
+(
+    void
 )
 {
-	if( m_DebugLevel < Moderate )
-	{
-		return( true );
-	}
-	bool bValidate = true;
+    if(m_DebugLevel <Moderate)
+    {
+        return(true);
+    }
+    bool bValidate = true;
 
-	// Walk through pool list to validate each member.
-	for
-	(
-		MemList* curList = m_FreeHead;
-		(curList != m_FreeTail) && (curList != NULL);
-		curList = curList->m_NextFree
-	)
-	{
-		rAssert( WithinRange( curList ) );
-		if( m_DebugLevel == High )
-		{
-			rAssert
-			( 
-				MemoryCheck( curList + 1, FREE_VALUE, m_FillSize ) 
-			);
-		}
-	}
+    // Walk through pool list to validate each member.
+    for
+    (
+        MemList* curList = m_FreeHead;
+        (curList != m_FreeTail) && (curList != NULL);
+        curList = curList->m_NextFree
+)
+    {
+        rAssert(WithinRange(curList));
+        if(m_DebugLevel == High)
+        {
+            rAssert
+            (
+                MemoryCheck(curList + 1, FREE_VALUE, m_FillSize)
+);
+        }
+    }
 
-	if( m_Chain != NULL )
-	{
-		bValidate = m_Chain->Validate();
-	}
-	return( bValidate );
+    if(m_Chain != NULL)
+    {
+        bValidate = m_Chain->Validate();
+    }
+    return(bValidate);
 }
 
 //=============================================================================
 // Function:    MemoryPool:ValidatePointer
 //=============================================================================
-// Description: Determines if the given pointer is a valid allocated pointer, 
+// Description: Determines if the given pointer is a valid allocated pointer,
 //				previously allocated by Allocate().
 //
 // Parameters:  pointer		pointer to validate.
@@ -939,28 +888,28 @@ bool MemoryPool::Validate
 //------------------------------------------------------------------------------
 
 bool MemoryPool::ValidPointer
-( 
-	void* pointer 
+(
+    void* pointer
 )
 {
-	if( m_DebugLevel < Moderate )
-	{
-		return( true );
-	}
+    if(m_DebugLevel <Moderate)
+    {
+        return(true);
+    }
 
-	for
-	( 
-		MemList* curList = m_First; 
-		curList <= m_Last; 
-		curList = (MemList*)(((unsigned char*)(curList)) + m_ActualElementSize)
-	)
-	{
-		if( (MemList*)pointer == curList )
-		{
-			return( true );
-		}
-	}
-	return( false );
+    for
+    (
+        MemList* curList = m_First;
+        curList <= m_Last;
+        curList = (MemList*)(((unsigned char*)(curList)) + m_ActualElementSize)
+)
+    {
+        if((MemList*)pointer == curList)
+        {
+            return(true);
+        }
+    }
+    return(false);
 }
 #endif //debug
 
@@ -979,20 +928,17 @@ bool MemoryPool::ValidPointer
 //------------------------------------------------------------------------------
 
 bool MemoryPool::WithinRange
-( 
-	void* pointer 
-)
-{
-	rAssert( m_First != NULL );
-	rAssert( m_Last != NULL );
-	if( pointer >= m_First )
-	{
-		if( pointer <= m_Last )
-		{
-			return( true );
-		}
-	}
-	return( false );
+        (
+                void *pointer
+        ) {
+    rAssert(m_First != NULL);
+    rAssert(m_Last != NULL);
+    if (pointer >= m_First) {
+        if (pointer <= m_Last) {
+            return (true);
+        }
+    }
+    return (false);
 }
 
 //=============================================================================
@@ -1006,28 +952,25 @@ bool MemoryPool::WithinRange
 //				size - Size of user's block to examine
 //
 // Returns:     0 means no errors (or successful memory check).
-//      		>0 is the number of error founds in memory check.
+//>0 is the number of error founds in memory check.
 //
 // Notes:       
 //------------------------------------------------------------------------------
 
 bool MemoryCheck
-( 
-	void*        block,  // Pointer to user's block to examine
-	unsigned int value,  // value to check for
-	unsigned int size    // Size of user's block to examine
-)
-{
-	rAssert( block != NULL );
-	unsigned int* block32 = (unsigned int*)block;
-	for( unsigned int i = 0; i < size; ++i, ++block32 )
-	{
-		if( *block32 != value )
-		{
-			return( false );
-		}
-	}
-	return( true );
+        (
+                void *block,  // Pointer to user's block to examine
+                unsigned int value,  // value to check for
+                unsigned int size    // Size of user's block to examine
+        ) {
+    rAssert(block != NULL);
+    unsigned int *block32 = (unsigned int *) block;
+    for (unsigned int i = 0; i < size; ++i, ++block32) {
+        if (*block32 != value) {
+            return (false);
+        }
+    }
+    return (true);
 }
 
 //=============================================================================
@@ -1045,18 +988,16 @@ bool MemoryCheck
 //------------------------------------------------------------------------------
 
 void MemorySet
-( 
-	void*        block,  // Pointer to user's block to initialize
-	unsigned int value,  // value to initialize to
-	unsigned int size    // Size of user's block to initialize
-)
-{
-	rAssert( block != NULL );
-	unsigned int* block32 = (unsigned int*)block;
-	for( unsigned int i = 0; i < size; ++i, ++block32 )
-	{
-		*block32 = value;
-	}
+        (
+                void *block,  // Pointer to user's block to initialize
+                unsigned int value,  // value to initialize to
+                unsigned int size    // Size of user's block to initialize
+        ) {
+    rAssert(block != NULL);
+    unsigned int *block32 = (unsigned int *) block;
+    for (unsigned int i = 0; i < size; ++i, ++block32) {
+        *block32 = value;
+    }
 }
 
 //=============================================================================
@@ -1072,11 +1013,10 @@ void MemorySet
 //------------------------------------------------------------------------------
 
 unsigned int RoundUpAlignment
-( 
-	unsigned int value,
-	unsigned int alignment
-)
-{
-	return( value + (alignment - 1) & (~(alignment - 1)) );
+        (
+                unsigned int value,
+                unsigned int alignment
+        ) {
+    return (value + (alignment - 1) & (~(alignment - 1)));
 }
 

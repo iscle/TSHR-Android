@@ -34,15 +34,17 @@
 // objects in the system.
 
 struct MemorySpaceAsyncRequest_Copy
-	:
-	public IRadMemorySpaceCopyRequest
-{
-    MemorySpaceAsyncRequest_Copy( void );
-    ~MemorySpaceAsyncRequest_Copy( void );
+        :
+                public IRadMemorySpaceCopyRequest {
+    MemorySpaceAsyncRequest_Copy(void);
 
-    virtual void AddRef( void );
-    virtual void Release( void );
-	virtual bool IsDone( void );
+    ~MemorySpaceAsyncRequest_Copy(void);
+
+    virtual void AddRef(void);
+
+    virtual void Release(void);
+
+    virtual bool IsDone(void);
 
     unsigned int m_RefCount;
 };

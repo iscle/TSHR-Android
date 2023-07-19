@@ -17,7 +17,7 @@
 //
 //=============================================================================
 
-#ifndef	DEBUGCONSOLEPROTOCOL_HPP
+#ifndef    DEBUGCONSOLEPROTOCOL_HPP
 #define DEBUGCONSOLEPROTOCOL_HPP
 
 //=============================================================================
@@ -31,7 +31,7 @@
 //
 // This is the protocol number we use for connect with the host via the IOP
 //
-#define HOST_DEBUG_CONSOLE_PROTOCOL (0xE123 + 5)         
+#define HOST_DEBUG_CONSOLE_PROTOCOL (0xE123 + 5)
 
 //
 // This constant govers the size of the buffer used for transfering data.
@@ -43,135 +43,119 @@
 // This enumeration defines the various commands we use in the protocol, The
 // protocol is very simple. Simple packets are used.
 //
-enum HdcpCommand
-{
-    HdcsCreate,                 
+enum HdcpCommand {
+    HdcsCreate,
     HdcsTitle,
-	HdcsBackgroundColor,
-	HdcsClear,
+    HdcsBackgroundColor,
+    HdcsClear,
     HdcsCursorPosition,
-	HdcsTextColor,
-	HdcsTextOutAt,
+    HdcsTextColor,
+    HdcsTextOutAt,
     HdcsTextOut,
-	HdcsClose,
-	HdcsKeyboardInput,
+    HdcsClose,
+    HdcsKeyboardInput,
     HdcsVirtualKeyInput,
-	HdcsPointerInput,
-	HdcsClientRecvReady,
+    HdcsPointerInput,
+    HdcsClientRecvReady,
     HdcsHostRecvReady
 };
 
-struct HdcpCreateCmd
-{
-    HdcpCommand     m_Command; 
-    unsigned int    m_ConsoleId;
-};	
-
-struct HdcpTitleCmd
-{
-    HdcpCommand     m_Command; 
-    unsigned int    m_ConsoleId;
-    char            m_Title[ 256 ];    // Title of window, null terminated.
+struct HdcpCreateCmd {
+    HdcpCommand m_Command;
+    unsigned int m_ConsoleId;
 };
 
-struct HdcpBackgroundColorCmd
-{
-    HdcpCommand     m_Command; 
-    unsigned int    m_ConsoleId;
-    unsigned int    m_BackgroundColor;                
+struct HdcpTitleCmd {
+    HdcpCommand m_Command;
+    unsigned int m_ConsoleId;
+    char m_Title[256];    // Title of window, null terminated.
 };
 
-struct HdcpClearCmd
-{
-    HdcpCommand     m_Command; 
-    unsigned int    m_ConsoleId;
+struct HdcpBackgroundColorCmd {
+    HdcpCommand m_Command;
+    unsigned int m_ConsoleId;
+    unsigned int m_BackgroundColor;
 };
 
-struct HdcpCursorPositionCmd
-{
-    HdcpCommand     m_Command; 
-    unsigned int    m_ConsoleId;
-	unsigned int    m_XPosition;
-	unsigned int    m_YPosition;
+struct HdcpClearCmd {
+    HdcpCommand m_Command;
+    unsigned int m_ConsoleId;
 };
 
-struct HdcpKeyboardInputCmd
-{
-    HdcpCommand     m_Command; 
-    unsigned int    m_ConsoleId;
-	unsigned int    m_AsciiKey;
+struct HdcpCursorPositionCmd {
+    HdcpCommand m_Command;
+    unsigned int m_ConsoleId;
+    unsigned int m_XPosition;
+    unsigned int m_YPosition;
 };
 
-struct HdcpVirtualKeyInputCmd
-{
-    HdcpCommand     m_Command; 
-    unsigned int    m_ConsoleId;
-	unsigned int    m_VirtualKey;
-    char            m_Ctrl;
-    char            m_Shift;
-    char            m_Alt;
+struct HdcpKeyboardInputCmd {
+    HdcpCommand m_Command;
+    unsigned int m_ConsoleId;
+    unsigned int m_AsciiKey;
 };
 
-enum HdcpInputMouseEventType
-{
+struct HdcpVirtualKeyInputCmd {
+    HdcpCommand m_Command;
+    unsigned int m_ConsoleId;
+    unsigned int m_VirtualKey;
+    char m_Ctrl;
+    char m_Shift;
+    char m_Alt;
+};
+
+enum HdcpInputMouseEventType {
     HdcpMouseMove,
     HdcpMouseLeftButtonDown,
     HdcpMouseLeftButtonUp,
     HdcpMouseLeftButtonClick
 };
 
-struct HdcpPointerInputCmd
-{
-    HdcpCommand     m_Command; 
-    unsigned int    m_ConsoleId;              
-	unsigned int    m_XTextPixels;
-	unsigned int    m_YTextPixels;
-	unsigned int    m_XScreenPixels;
-	unsigned int    m_YScreenPixels;
-    HdcpInputMouseEventType            m_Type;
-    char            m_Ctrl;
-    char            m_Shift;
-    char            m_Alt;
-    char            m_LButton;
+struct HdcpPointerInputCmd {
+    HdcpCommand m_Command;
+    unsigned int m_ConsoleId;
+    unsigned int m_XTextPixels;
+    unsigned int m_YTextPixels;
+    unsigned int m_XScreenPixels;
+    unsigned int m_YScreenPixels;
+    HdcpInputMouseEventType m_Type;
+    char m_Ctrl;
+    char m_Shift;
+    char m_Alt;
+    char m_LButton;
 };
 
-struct HdcpTextColorCmd
-{
-    HdcpCommand     m_Command; 
-    unsigned int    m_ConsoleId;              
-    unsigned int    m_TextColor;                
+struct HdcpTextColorCmd {
+    HdcpCommand m_Command;
+    unsigned int m_ConsoleId;
+    unsigned int m_TextColor;
 };
 
-struct HdcpTextOutAtCmd
-{
-    HdcpCommand     m_Command; 
-    unsigned int    m_ConsoleId;              
-    unsigned int    m_XPosition;
-	unsigned int    m_YPosition;
-	char            m_Text[ 84 ];
+struct HdcpTextOutAtCmd {
+    HdcpCommand m_Command;
+    unsigned int m_ConsoleId;
+    unsigned int m_XPosition;
+    unsigned int m_YPosition;
+    char m_Text[84];
 };
 
-struct HdcpTextOutCmd
-{
-    HdcpCommand     m_Command; 
-    unsigned int    m_ConsoleId;              
-	char            m_Text[ 84 ];
+struct HdcpTextOutCmd {
+    HdcpCommand m_Command;
+    unsigned int m_ConsoleId;
+    char m_Text[84];
 };
 
-struct HdcpCloseCmd
-{
-    HdcpCommand     m_Command; 
-    unsigned int    m_ConsoleId;              
+struct HdcpCloseCmd {
+    HdcpCommand m_Command;
+    unsigned int m_ConsoleId;
 };
 
-struct HdcpClientRecvReadyCmd
-{
-    HdcpCommand     m_Command; 
+struct HdcpClientRecvReadyCmd {
+    HdcpCommand m_Command;
 };
 
-struct HdcpHostRecvReadyCmd
-{
-    HdcpCommand     m_Command; 
+struct HdcpHostRecvReadyCmd {
+    HdcpCommand m_Command;
 };
 
 #endif

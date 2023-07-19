@@ -38,76 +38,84 @@
 //============================================================================
 
 struct IRadControllerInputPointXBox
-    :
-    public IRadControllerInputPoint
-{
-	virtual void iInitialize( char * pData ) = 0;
-    virtual void iVirtualTimeReMapped( unsigned int virtualTime ) = 0;
-    virtual void iVirtualTimeChanged( unsigned int virtualTime, char * pData ) = 0;
+        :
+                public IRadControllerInputPoint {
+    virtual void iInitialize(char *pData) = 0;
+
+    virtual void iVirtualTimeReMapped(unsigned int virtualTime) = 0;
+
+    virtual void iVirtualTimeChanged(unsigned int virtualTime, char *pData) = 0;
 };
 
 struct IRadControllerXBox
-    :
-    public IRadController
-{
-    virtual void iPoll( unsigned int virtualTime ) = 0;
-    virtual void iVirtualTimeReMapped( unsigned int virtualTime ) = 0;
-    virtual void iVirtualTimeChanged( unsigned int virtualTime ) = 0;
-    virtual void iSetBufferTime( unsigned int milliseconds, unsigned int pollingRate ) = 0;
-    virtual void iSetConnected( HANDLE hController ) = 0;
+        :
+                public IRadController {
+    virtual void iPoll(unsigned int virtualTime) = 0;
+
+    virtual void iVirtualTimeReMapped(unsigned int virtualTime) = 0;
+
+    virtual void iVirtualTimeChanged(unsigned int virtualTime) = 0;
+
+    virtual void iSetBufferTime(unsigned int milliseconds, unsigned int pollingRate) = 0;
+
+    virtual void iSetConnected(HANDLE hController) = 0;
 };
 
 //============================================================================
 // Globals
 //============================================================================
 
-struct XBoxInputPoint
-{
-    char * m_pType;
-    char * m_pName;
+struct XBoxInputPoint {
+    char *m_pType;
+    char *m_pName;
     unsigned int m_Mask;
 };
 
-static char * g_Xbipt[] =
-{
-    "Button",
-    "AnalogButton",
-    "XAxis",
-    "YAxis",
-    "AnalogAsDigital"
-};
+static char *g_Xbipt[] =
+        {
+                "Button",
+                "AnalogButton",
+                "XAxis",
+                "YAxis",
+                "AnalogAsDigital"
+        };
 
 static XBoxInputPoint g_XBoxPoints[] =
-{
-    { g_Xbipt[ 0 ], "DPadUp",           0x00000001 },
-    { g_Xbipt[ 0 ], "DPadDown",         0x00000002 },
-    { g_Xbipt[ 0 ], "DPadLeft",         0x00000004 },
-    { g_Xbipt[ 0 ], "DPadRight",        0x00000008 },
-    { g_Xbipt[ 0 ], "Start",            0x00000010 },
-    { g_Xbipt[ 0 ], "Back",             0x00000020 },
-    { g_Xbipt[ 0 ], "LeftThumb",        0x00000040 },
-    { g_Xbipt[ 0 ], "RightThumb",       0x00000080 },
-    { g_Xbipt[ 4 ], "A",                sizeof ( WORD ) + ( sizeof( BYTE ) * 0 ) },
-    { g_Xbipt[ 4 ], "B",                sizeof ( WORD ) + ( sizeof( BYTE ) * 1 ) },
-    { g_Xbipt[ 4 ], "X",                sizeof ( WORD ) + ( sizeof( BYTE ) * 2 ) },
-    { g_Xbipt[ 4 ], "Y",                sizeof ( WORD ) + ( sizeof( BYTE ) * 3 ) },
-    { g_Xbipt[ 1 ], "AnalogA",          sizeof ( WORD ) + ( sizeof( BYTE ) * 0 ) },
-    { g_Xbipt[ 1 ], "AnalogB",          sizeof ( WORD ) + ( sizeof( BYTE ) * 1 ) },
-    { g_Xbipt[ 1 ], "AnalogX",          sizeof ( WORD ) + ( sizeof( BYTE ) * 2 ) },
-    { g_Xbipt[ 1 ], "AnalogY",          sizeof ( WORD ) + ( sizeof( BYTE ) * 3 ) },
-    { g_Xbipt[ 4 ], "Black",            sizeof ( WORD ) + ( sizeof( BYTE ) * 4 ) },
-    { g_Xbipt[ 4 ], "White",            sizeof ( WORD ) + ( sizeof( BYTE ) * 5 ) },
-    { g_Xbipt[ 1 ], "AnalogBlack",      sizeof ( WORD ) + ( sizeof( BYTE ) * 4 ) },
-    { g_Xbipt[ 1 ], "AnalogWhite",      sizeof ( WORD ) + ( sizeof( BYTE ) * 5 ) },
-    { g_Xbipt[ 1 ], "LeftTrigger",      sizeof ( WORD ) + ( sizeof( BYTE ) * 6 ) },
-    { g_Xbipt[ 1 ], "RightTrigger",     sizeof ( WORD ) + ( sizeof( BYTE ) * 7 ) },
-    { g_Xbipt[ 2 ], "LeftStickX",       sizeof ( WORD ) + ( sizeof( BYTE ) * 8 ) + ( sizeof( SHORT ) * 0 ) },
-    { g_Xbipt[ 3 ], "LeftStickY",       sizeof ( WORD ) + ( sizeof( BYTE ) * 8 ) + ( sizeof( SHORT ) * 1 ) },
-    { g_Xbipt[ 2 ], "RightStickX",      sizeof ( WORD ) + ( sizeof( BYTE ) * 8 ) + ( sizeof( SHORT ) * 2 ) },
-    { g_Xbipt[ 3 ], "RightStickY",      sizeof ( WORD ) + ( sizeof( BYTE ) * 8 ) + ( sizeof( SHORT ) * 3 ) }
-};
+        {
+                {g_Xbipt[0], "DPadUp",       0x00000001},
+                {g_Xbipt[0], "DPadDown",     0x00000002},
+                {g_Xbipt[0], "DPadLeft",     0x00000004},
+                {g_Xbipt[0], "DPadRight",    0x00000008},
+                {g_Xbipt[0], "Start",        0x00000010},
+                {g_Xbipt[0], "Back",         0x00000020},
+                {g_Xbipt[0], "LeftThumb",    0x00000040},
+                {g_Xbipt[0], "RightThumb",   0x00000080},
+                {g_Xbipt[4], "A",            sizeof(WORD) + (sizeof(BYTE) * 0)},
+                {g_Xbipt[4], "B",            sizeof(WORD) + (sizeof(BYTE) * 1)},
+                {g_Xbipt[4], "X",            sizeof(WORD) + (sizeof(BYTE) * 2)},
+                {g_Xbipt[4], "Y",            sizeof(WORD) + (sizeof(BYTE) * 3)},
+                {g_Xbipt[1], "AnalogA",      sizeof(WORD) + (sizeof(BYTE) * 0)},
+                {g_Xbipt[1], "AnalogB",      sizeof(WORD) + (sizeof(BYTE) * 1)},
+                {g_Xbipt[1], "AnalogX",      sizeof(WORD) + (sizeof(BYTE) * 2)},
+                {g_Xbipt[1], "AnalogY",      sizeof(WORD) + (sizeof(BYTE) * 3)},
+                {g_Xbipt[4], "Black",        sizeof(WORD) + (sizeof(BYTE) * 4)},
+                {g_Xbipt[4], "White",        sizeof(WORD) + (sizeof(BYTE) * 5)},
+                {g_Xbipt[1], "AnalogBlack",  sizeof(WORD) + (sizeof(BYTE) * 4)},
+                {g_Xbipt[1], "AnalogWhite",  sizeof(WORD) + (sizeof(BYTE) * 5)},
+                {g_Xbipt[1], "LeftTrigger",  sizeof(WORD) + (sizeof(BYTE) * 6)},
+                {g_Xbipt[1], "RightTrigger", sizeof(WORD) + (sizeof(BYTE) * 7)},
+                {g_Xbipt[2], "LeftStickX",   sizeof(WORD) + (sizeof(BYTE) * 8) +
+                                             (sizeof(SHORT) * 0)},
+                {g_Xbipt[3], "LeftStickY",   sizeof(WORD) + (sizeof(BYTE) * 8) +
+                                             (sizeof(SHORT) * 1)},
+                {g_Xbipt[2], "RightStickX",  sizeof(WORD) + (sizeof(BYTE) * 8) +
+                                             (sizeof(SHORT) * 2)},
+                {g_Xbipt[3], "RightStickY",  sizeof(WORD) + (sizeof(BYTE) * 8) +
+                                             (sizeof(SHORT) * 3)}
+        };
 
-static class radControllerSystemXBox* s_pTheXBoxControllerSystem2 = NULL;
+static class radControllerSystemXBox *s_pTheXBoxControllerSystem2 = NULL;
+
 static radMemoryAllocator g_ControllerSystemAllocator = RADMEMORY_ALLOC_DEFAULT;
 
 //============================================================================
@@ -115,41 +123,37 @@ static radMemoryAllocator g_ControllerSystemAllocator = RADMEMORY_ALLOC_DEFAULT;
 //============================================================================
 
 class radControllerOutputPointXBox
-    :
-    public IRadControllerOutputPoint,
-    public radRefCount
-{
-    public:
+        :
+                public IRadControllerOutputPoint,
+                public radRefCount {
+public:
 
-    IMPLEMENT_REFCOUNTED( "radControllerOutputPointXBox" )
+    IMPLEMENT_REFCOUNTED("radControllerOutputPointXBox")
 
     //========================================================================
     // radControllerOutputPointXBox::rXBoxControllerOutputPoint
     //========================================================================
 
-    radControllerOutputPointXBox( const char * pName )
-        :
-        radRefCount( 0 ),
-        m_pName( pName ),
-        m_Gain( 0.0f )
-    {
-        radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radControllerOutputPointXBox" );
+    radControllerOutputPointXBox(const char *pName)
+            :
+            radRefCount(0),
+            m_pName(pName),
+            m_Gain(0.0f) {
+        radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radControllerOutputPointXBox");
     }
 
     //========================================================================
     // radControllerOutputPointXBox::~rXBoxControllerOutputPoint
     //========================================================================
 
-    ~radControllerOutputPointXBox( void )
-    {
+    ~radControllerOutputPointXBox(void) {
     }
 
     //========================================================================
     // radControllerOutputPointXBox::GetName
     //========================================================================
 
-    virtual const char * GetName( void )
-    {
+    virtual const char *GetName(void) {
         return m_pName;
     }
 
@@ -157,8 +161,7 @@ class radControllerOutputPointXBox
     // radControllerOutputPointXBox::GetType
     //========================================================================
 
-    virtual const char * GetType( void )
-    {
+    virtual const char *GetType(void) {
         return "Analog";
     }
 
@@ -166,8 +169,7 @@ class radControllerOutputPointXBox
     // radControllerOutputPointXBox::GetGain
     //========================================================================
 
-    virtual float GetGain( void )
-    {
+    virtual float GetGain(void) {
         return m_Gain;
     }
 
@@ -175,14 +177,10 @@ class radControllerOutputPointXBox
     // radControllerOutputPointXBox::SetGain
     //========================================================================
 
-    virtual void SetGain( float value )
-    {
-        if ( value < 0.0f )
-        {
+    virtual void SetGain(float value) {
+        if (value < 0.0f) {
             value = 0.0f;
-        }
-        else if ( value > 1.0f )
-        {
+        } else if (value > 1.0f) {
             value = 1.0f;
         }
 
@@ -193,7 +191,7 @@ class radControllerOutputPointXBox
     // radControllerOutputPointXBox Data Members
     //========================================================================
 
-    const char * m_pName;
+    const char *m_pName;
     float m_Gain;
 };
 
@@ -202,20 +200,18 @@ class radControllerOutputPointXBox
 //============================================================================
 
 class radControllerInputPointXBox
-    :
-    public IRadControllerInputPointXBox,
-    public radRefCount
-{
-    public:
+        :
+                public IRadControllerInputPointXBox,
+                public radRefCount {
+public:
 
-    IMPLEMENT_REFCOUNTED( "radControllerInputPointXBox" )
+    IMPLEMENT_REFCOUNTED("radControllerInputPointXBox")
 
     //========================================================================
     // radControllerInputPointXBox::iIVirtualTimeReMapped
     //========================================================================
 
-    virtual void iVirtualTimeReMapped( unsigned int virtualTime )
-    {
+    virtual void iVirtualTimeReMapped(unsigned int virtualTime) {
         //
         // The client has done a re-sync to game time, all we can do is
         // set our changed-state time to "now".
@@ -228,8 +224,7 @@ class radControllerInputPointXBox
     // radControllerInputPointXBox::CalculateNewValue
     //========================================================================
 
-	float CalculateNewValue( char * pData )
-	{
+    float CalculateNewValue(char *pData) {
         //
         // Calculate the current value of the input point according to the
         // data structure passed in.  We get initialized with the offset
@@ -239,69 +234,58 @@ class radControllerInputPointXBox
 
         float newValue = 0.0f;
 
-        if ( pData != NULL )
-        {
-            if ( m_pType == g_Xbipt[ 0 ] ) // Button
+        if (pData != NULL) {
+            if (m_pType == g_Xbipt[0]) // Button
             {
-                newValue = (((unsigned int*)(pData))[ 0 ] & m_Offset) ? 1.0f : 0.0f;
-            }
-            else if ( m_pType == g_Xbipt[ 1 ] ) // Analog Button
+                newValue = (((unsigned int *) (pData))[0] & m_Offset) ? 1.0f : 0.0f;
+            } else if (m_pType == g_Xbipt[1]) // Analog Button
             {
-                newValue = ((unsigned char*)pData)[ m_Offset ];
+                newValue = ((unsigned char *) pData)[m_Offset];
                 newValue /= 255.0f;
-            }
-            else if ( ( m_pType == g_Xbipt[ 2 ] ) || ( m_pType == g_Xbipt[ 3 ] ) ) // X/Y Axis
+            } else if ((m_pType == g_Xbipt[2]) || (m_pType == g_Xbipt[3])) // X/Y Axis
             {
-                SHORT* pShort = (SHORT*)( pData + m_Offset );
-                newValue = (float)(*pShort);
-                if ( newValue > 0.0f )
-                {
+                SHORT *pShort = (SHORT * )(pData + m_Offset);
+                newValue = (float) (*pShort);
+                if (newValue > 0.0f) {
                     newValue /= 65534.0f;
-                }
-                else
-                {
+                } else {
                     newValue /= 65536.0f;
                 }
 
                 newValue += 0.5f;
-            }
-            else if ( m_pType == g_Xbipt[ 4 ] ) //This is an analog button being used digitally.
+            } else if (m_pType == g_Xbipt[4]) //This is an analog button being used digitally.
             {
-                newValue = ((unsigned char*)pData)[ m_Offset ];
+                newValue = ((unsigned char *) pData)[m_Offset];
                 newValue /= 255.0f;
-                newValue = ( newValue > 0.01f ) ? 1.0f : 0.0f;
-            }
-            else
-            {
-                rAssert( 0 );
+                newValue = (newValue > 0.01f) ? 1.0f : 0.0f;
+            } else {
+                rAssert(0);
             }
         }
 
-		return newValue;
-	}
+        return newValue;
+    }
 
     //========================================================================
     // radControllerInputPointXBox::iIVirtualTimeChanged
     //========================================================================
 
-    virtual void iVirtualTimeChanged( unsigned int virtualTime, char * pData )
-    {
-        rAssert( pData != NULL );
+    virtual void iVirtualTimeChanged(unsigned int virtualTime, char *pData) {
+        rAssert(pData != NULL);
 
-		// Get a new value from the pData structure
+        // Get a new value from the pData structure
 
-		float newValue = CalculateNewValue( pData );
-        
+        float newValue = CalculateNewValue(pData);
+
         //
         // Check tolerance
         //
 
         if
-        (
-            ( newValue != m_Value ) && 
-            ( fabsf( newValue - m_Value ) >= m_Tolerance )
-        )
-        {
+                (
+                (newValue != m_Value) &&
+                (fabsf(newValue - m_Value) >= m_Tolerance)
+                ) {
             //
             // The input point has changed and we are in tolerance.
             //
@@ -315,24 +299,21 @@ class radControllerInputPointXBox
             // Notify callbacks
             //
 
-            AddRef( ); // Don't want to self destruct while we're calling out
+            AddRef(); // Don't want to self destruct while we're calling out
 
-            IRadWeakCallbackWrapper * pIWcr;
+            IRadWeakCallbackWrapper *pIWcr;
 
-            m_xIOl_Callbacks->Reset( );
+            m_xIOl_Callbacks->Reset();
 
-            if ( pIWcr = reinterpret_cast< IRadWeakCallbackWrapper * >( m_xIOl_Callbacks->GetNext( ) ) )
-            {
-                IRadControllerInputPointCallback * pCallback = ( IRadControllerInputPointCallback* ) pIWcr->GetWeakInterface( );
-                unsigned int userData = (unsigned int) pIWcr->GetUserData( );
+            if (pIWcr = reinterpret_cast<IRadWeakCallbackWrapper *>(m_xIOl_Callbacks->GetNext())) {
+                IRadControllerInputPointCallback *pCallback = (IRadControllerInputPointCallback *) pIWcr->GetWeakInterface();
+                unsigned int userData = (unsigned int) pIWcr->GetUserData();
 
-                pCallback->OnControllerInputPointChange( userData, m_Value );           
+                pCallback->OnControllerInputPointChange(userData, m_Value);
             }
 
-            Release( );
-        }
-        else
-        {
+            Release();
+        } else {
             //
             // This input point has not changed value, or failed the tolerance
             // test, so count time in state.
@@ -346,19 +327,17 @@ class radControllerInputPointXBox
     // radControllerInputPointXBox::iInitialize
     //========================================================================
 
-	virtual void iInitialize( char * pData )
-	{
-		// Set the new value
+    virtual void iInitialize(char *pData) {
+        // Set the new value
 
-		m_Value = CalculateNewValue( pData );
-	}
+        m_Value = CalculateNewValue(pData);
+    }
 
     //========================================================================
     // radControllerInputPointXBox::GetName
     //========================================================================
 
-    virtual const char * GetName( void )
-    {
+    virtual const char *GetName(void) {
         //
         // This points to a string in the global controller definition array
         // (see top of file)
@@ -366,39 +345,34 @@ class radControllerInputPointXBox
 
         return m_pName;
     }
-    
+
     //========================================================================
     // radControllerInputPointXBox::GetType
     //========================================================================
-    
-    virtual const char * GetType( void )
-    {
+
+    virtual const char *GetType(void) {
         //
         // This points to a string in the global controller definition array
         // (see top of file)
         //
 
-        return m_pType;      
+        return m_pType;
     }
 
     //========================================================================
     // radControllerInputPointXBox::SetTolerance
     //========================================================================
 
-    virtual void  SetTolerance( float percentage )
-    {
+    virtual void SetTolerance(float percentage) {
         //
         // Set tolerance in range.
         //
 
-        rAssert( percentage >= 0.0f && percentage <= 1.0f );
+        rAssert(percentage >= 0.0f && percentage <= 1.0f);
 
-        if ( percentage < 0.0f )
-        {
+        if (percentage < 0.0f) {
             percentage = 0.0f;
-        }
-        else if ( percentage > 1.0f )
-        {
+        } else if (percentage > 1.0f) {
             percentage = 1.0f;
         }
 
@@ -409,8 +383,7 @@ class radControllerInputPointXBox
     // radControllerInputPointXBox::GetTolerance
     //========================================================================
 
-    virtual float /* percentage */ GetTolerance( void )
-    {
+    virtual float /* percentage */ GetTolerance(void) {
         //
         // Simply retur the tolerance
         // 
@@ -421,33 +394,31 @@ class radControllerInputPointXBox
     //========================================================================
     // radControllerInputPointXBox::RegisterControllerInputPointCallback
     //========================================================================
-           
+
     virtual void RegisterControllerInputPointCallback
-    (
-        IRadControllerInputPointCallback * pCallback,
-        unsigned int userData = 0
-    )
-    {
+            (
+                    IRadControllerInputPointCallback *pCallback,
+                    unsigned int userData = 0
+            ) {
         //
         // Wrap the weak interface we a callback wrapper so we can store it
         // in our object list.
         //
 
-        rAssert( pCallback != NULL );
+        rAssert(pCallback != NULL);
 
-        ref< IRadWeakCallbackWrapper > xIWcr;
+        ref <IRadWeakCallbackWrapper> xIWcr;
 
-        radWeakCallbackWrapperCreate( &xIWcr, g_ControllerSystemAllocator ); 
+        radWeakCallbackWrapperCreate(&xIWcr, g_ControllerSystemAllocator);
 
-        rAssert( xIWcr != NULL );
+        rAssert(xIWcr != NULL);
 
-        if ( xIWcr != NULL )
-        {
-            xIWcr->SetWeakInterface( pCallback );
-            xIWcr->SetUserData( (void*) userData );
+        if (xIWcr != NULL) {
+            xIWcr->SetWeakInterface(pCallback);
+            xIWcr->SetUserData((void *) userData);
         }
 
-        m_xIOl_Callbacks->AddObject( xIWcr );
+        m_xIOl_Callbacks->AddObject(xIWcr);
     }
 
     //========================================================================
@@ -455,56 +426,50 @@ class radControllerInputPointXBox
     //========================================================================
 
     virtual void UnRegisterControllerInputPointCallback
-    (
-        IRadControllerInputPointCallback * pCallback
-    )
-    {
+            (
+                    IRadControllerInputPointCallback *pCallback
+            ) {
         //
         // Simply look for the callback in the list and delete it, if found.
         //
-        rAssert( pCallback != NULL );
+        rAssert(pCallback != NULL);
 
-        IRadWeakCallbackWrapper * pIWcr;
+        IRadWeakCallbackWrapper *pIWcr;
 
-        m_xIOl_Callbacks->Reset( );
+        m_xIOl_Callbacks->Reset();
 
-        if ( pIWcr = reinterpret_cast< IRadWeakCallbackWrapper * >( m_xIOl_Callbacks->GetNext( ) ) )
-        {
-            if ( pIWcr->GetWeakInterface( ) == pCallback )
-            {
-                m_xIOl_Callbacks->RemoveObject( pIWcr );
+        if (pIWcr = reinterpret_cast<IRadWeakCallbackWrapper *>(m_xIOl_Callbacks->GetNext())) {
+            if (pIWcr->GetWeakInterface() == pCallback) {
+                m_xIOl_Callbacks->RemoveObject(pIWcr);
                 return;
             }
         }
 
-        rAssertMsg( false, "Controller Input Point Callback Not Registered." );
+        rAssertMsg(false, "Controller Input Point Callback Not Registered.");
     }
 
     //========================================================================
     // radControllerInputPointXBox::GetCurrentValue
     //========================================================================
 
-    virtual float GetCurrentValue( unsigned int * pTime = NULL )
-    {
-        if ( pTime != NULL )
-        {
+    virtual float GetCurrentValue(unsigned int *pTime = NULL) {
+        if (pTime != NULL) {
             *pTime = m_TimeInState;
-        }                
-        
+        }
+
         //
         // we map it to the client's range here, this solves a bunch of
         // problems with the client remapping in mid-game.
         //
 
-        return (( m_MaxRange - m_MinRange ) * m_Value ) + m_MinRange;
+        return ((m_MaxRange - m_MinRange) * m_Value) + m_MinRange;
     }
 
     //========================================================================
     // radControllerInputPointXBox::SetRange
     //========================================================================
 
-    virtual void  SetRange( float min, float max )
-    {
+    virtual void SetRange(float min, float max) {
         //
         // Note that max range CAN be less than min range, if this is what
         // the client wants.
@@ -517,22 +482,19 @@ class radControllerInputPointXBox
     //========================================================================
     // radControllerInputPointXBox::GetRange
     //========================================================================
-    
-    virtual void GetRange( float * pMin, float * pMax )
-    {
+
+    virtual void GetRange(float *pMin, float *pMax) {
         //
         // Either param can be null, but not both!
         //
 
-        rAssert( pMin != NULL || pMax != NULL );
+        rAssert(pMin != NULL || pMax != NULL);
 
-        if ( pMin != NULL )
-        {
+        if (pMin != NULL) {
             *pMin = m_MinRange;
         }
 
-        if ( pMax != NULL )
-        {
+        if (pMax != NULL) {
             *pMax = m_MaxRange;
         }
     }
@@ -541,35 +503,34 @@ class radControllerInputPointXBox
     // radControllerInputPointXBox::radControllerInputPointXBox
     //========================================================================
 
-    radControllerInputPointXBox( const char * pType, const char * pName, unsigned int offset )
-        :
-        radRefCount( 0 ),
-        m_Value( 0.0f ),
-        m_MinRange( 0.0f ),
-        m_MaxRange( 1.0f ),
-        m_Tolerance( 0.0f ),
-        m_TimeInState( 0 ),
-        m_TimeOfStateChange( 0 ),
-        m_pType( pType ),
-        m_pName( pName ),
-        m_Offset( offset )
-    {
-        radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radControllerInputPointXBox" );
-        
+    radControllerInputPointXBox(const char *pType, const char *pName, unsigned int offset)
+            :
+            radRefCount(0),
+            m_Value(0.0f),
+            m_MinRange(0.0f),
+            m_MaxRange(1.0f),
+            m_Tolerance(0.0f),
+            m_TimeInState(0),
+            m_TimeOfStateChange(0),
+            m_pType(pType),
+            m_pName(pName),
+            m_Offset(offset) {
+        radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radControllerInputPointXBox");
+
         //
         // Object list to store our callbacks
         //
 
-        ::radObjectListCreate( & m_xIOl_Callbacks, g_ControllerSystemAllocator );
+        ::radObjectListCreate(&m_xIOl_Callbacks, g_ControllerSystemAllocator);
     }
 
     //========================================================================
     // radControllerInputPointXBox::~radControllerInputPointXBox
     //========================================================================
-    
-    ~radControllerInputPointXBox( void )
-    {        
-        rAssertMsg( m_xIOl_Callbacks->GetSize() == 0, "Sombody forgot to UnRegister an input point callback" );
+
+    ~radControllerInputPointXBox(void) {
+        rAssertMsg(m_xIOl_Callbacks->GetSize() == 0,
+                   "Sombody forgot to UnRegister an input point callback");
     }
 
     //========================================================================
@@ -584,12 +545,12 @@ class radControllerInputPointXBox
     unsigned int m_TimeInState;
     unsigned int m_TimeOfStateChange;
 
-    const char * m_pType;
-    const char * m_pName;
+    const char *m_pType;
+    const char *m_pName;
 
     unsigned int m_Offset;
 
-    ref< IRadObjectList > m_xIOl_Callbacks;
+    ref <IRadObjectList> m_xIOl_Callbacks;
 };
 
 //============================================================================
@@ -597,43 +558,38 @@ class radControllerInputPointXBox
 //============================================================================
 
 class radControllerXBox
-    :
-    public IRadControllerXBox,
-    public radRefCount
-{
-    public:
+        :
+                public IRadControllerXBox,
+                public radRefCount {
+public:
 
-    IMPLEMENT_REFCOUNTED( "radControllerXBox" )
+    IMPLEMENT_REFCOUNTED("radControllerXBox")
 
     //========================================================================
     // radControllerXBox::iPoll
     //========================================================================
 
-    virtual void iPoll( unsigned int virtualTime )
-    {
+    virtual void iPoll(unsigned int virtualTime) {
         //
         // Query the hardware for current state and store it in the
         // controller buffer, it will be pulled out by virtual time
         // changing.
         //
 
-        if ( GetRefCount( ) > 1 )
-        {
-            if ( m_hController != NULL )
-            {
+        if (GetRefCount() > 1) {
+            if (m_hController != NULL) {
                 XINPUT_STATE xInputState;
 
-                ::ZeroMemory( & xInputState, sizeof( xInputState ) );
+                ::ZeroMemory(&xInputState, sizeof(xInputState));
 
-                DWORD rval = XInputGetState( m_hController, & xInputState );
+                DWORD rval = XInputGetState(m_hController, &xInputState);
 
-                rAssert( rval == ERROR_SUCCESS || rval == ERROR_DEVICE_NOT_CONNECTED );
+                rAssert(rval == ERROR_SUCCESS || rval == ERROR_DEVICE_NOT_CONNECTED);
 
-                if ( rval == ERROR_SUCCESS )
-                {
+                if (rval == ERROR_SUCCESS) {
                     xInputState.dwPacketNumber = virtualTime;
 
-                    m_xIControllerBuffer2->EnqueuePacket( & xInputState );
+                    m_xIControllerBuffer2->EnqueuePacket(&xInputState);
                 }
             }
 
@@ -641,59 +597,56 @@ class radControllerXBox
             // Send our output point data to the device here
             //
 
-            if ( m_XInputFeedback.Header.dwStatus != ERROR_IO_PENDING ) 
-            {                
-                IRadControllerOutputPoint * pICop2_Left  = reinterpret_cast< IRadControllerOutputPoint * >( m_xIOl_OutputPoints->GetAt( 0 ) );
-                IRadControllerOutputPoint * pICop2_Right = reinterpret_cast< IRadControllerOutputPoint * >( m_xIOl_OutputPoints->GetAt( 1 ) );
+            if (m_XInputFeedback.Header.dwStatus != ERROR_IO_PENDING) {
+                IRadControllerOutputPoint *pICop2_Left = reinterpret_cast<IRadControllerOutputPoint *>(m_xIOl_OutputPoints->GetAt(
+                        0));
+                IRadControllerOutputPoint *pICop2_Right = reinterpret_cast<IRadControllerOutputPoint *>(m_xIOl_OutputPoints->GetAt(
+                        1));
 
-                WORD newLeftGain  = (WORD) ( pICop2_Left->GetGain( ) * 65535.0f );
-                WORD newRightGain = (WORD) ( pICop2_Right->GetGain( ) * 65535.0f );
-        
+                WORD newLeftGain = (WORD)(pICop2_Left->GetGain() * 65535.0f);
+                WORD newRightGain = (WORD)(pICop2_Right->GetGain() * 65535.0f);
+
                 if
-                (
-                    ( newLeftGain  != m_XInputFeedback.Rumble.wLeftMotorSpeed ) ||
-                    ( newRightGain != m_XInputFeedback.Rumble.wRightMotorSpeed )
-                )
-                {
-                    m_XInputFeedback.Header.dwStatus = ERROR_SUCCESS; // ( 0 )
-                    m_XInputFeedback.Header.hEvent   = NULL;
-                    m_XInputFeedback.Rumble.wLeftMotorSpeed =  newLeftGain;
+                        (
+                        (newLeftGain != m_XInputFeedback.Rumble.wLeftMotorSpeed) ||
+                        (newRightGain != m_XInputFeedback.Rumble.wRightMotorSpeed)
+                        ) {
+                    m_XInputFeedback.Header.dwStatus = ERROR_SUCCESS; // (0)
+                    m_XInputFeedback.Header.hEvent = NULL;
+                    m_XInputFeedback.Rumble.wLeftMotorSpeed = newLeftGain;
                     m_XInputFeedback.Rumble.wRightMotorSpeed = newRightGain;
 
-					rAssert(m_hController != 0);
+                    rAssert(m_hController != 0);
 
                     DWORD result = 0;
-					if(m_hController != 0)
-					{
-						result = XInputSetState( m_hController, & m_XInputFeedback );
-					}
+                    if (m_hController != 0) {
+                        result = XInputSetState(m_hController, &m_XInputFeedback);
+                    }
 
                     //
                     // Old Controllers don't support output and this will
                     // fail
                     //
 
-                    // rAssert( result == ERROR_IO_PENDING );
+                    // rAssert(result == ERROR_IO_PENDING);
                 }
             }
-        }                  
+        }
     }
 
     //========================================================================
     // radControllerXBox::iVirtualTimeReMapped
     //========================================================================
 
-    virtual void iVirtualTimeReMapped( unsigned int virtualTime )
-    {
-        m_xIControllerBuffer2->Flush( );
+    virtual void iVirtualTimeReMapped(unsigned int virtualTime) {
+        m_xIControllerBuffer2->Flush();
 
-        IRadControllerInputPointXBox * pICip2;
+        IRadControllerInputPointXBox *pICip2;
 
-        m_xIOl_InputPoints->Reset( );
+        m_xIOl_InputPoints->Reset();
 
-        while ( pICip2 = reinterpret_cast< IRadControllerInputPointXBox * >( m_xIOl_InputPoints->GetNext( ) ) )
-        {
-            pICip2->iVirtualTimeReMapped( virtualTime );
+        while (pICip2 = reinterpret_cast<IRadControllerInputPointXBox *>(m_xIOl_InputPoints->GetNext())) {
+            pICip2->iVirtualTimeReMapped(virtualTime);
         }
     }
 
@@ -701,10 +654,8 @@ class radControllerXBox
     // radControllerXBox::iVirtualTimeChanged
     //========================================================================
 
-    virtual void iVirtualTimeChanged( unsigned int virtualTime )
-    {
-        if( GetRefCount( ) > 1 )
-        {
+    virtual void iVirtualTimeChanged(unsigned int virtualTime) {
+        if (GetRefCount() > 1) {
             unsigned int time = 0;
 
             //
@@ -717,10 +668,9 @@ class radControllerXBox
             //
 
             while
-            (
-                m_xIControllerBuffer2->PeekNextPacket( & time, sizeof( time ) )
-            )
-            {
+                    (
+                    m_xIControllerBuffer2->PeekNextPacket(&time, sizeof(time))
+                    ) {
                 unsigned int packetAge = virtualTime - time;
 
                 //
@@ -728,8 +678,7 @@ class radControllerXBox
                 // is less than 25 virtual days (half an int) old.
                 //
 
-                if ( packetAge >= 0x7FFFFFFF )
-                {
+                if (packetAge >= 0x7FFFFFFF) {
                     //
                     // Packet is in the future, so we are done.
                     //
@@ -743,31 +692,27 @@ class radControllerXBox
 
                 XINPUT_STATE xInputState;
 
-                bool packet = m_xIControllerBuffer2->DequeuePacket( & xInputState );
+                bool packet = m_xIControllerBuffer2->DequeuePacket(&xInputState);
 
-                rAssertMsg( packet == true, "InternalError" );
+                rAssertMsg(packet == true, "InternalError");
 
                 //
                 // If we got the packet, which we better have, update all of our input points
                 //
 
-                if ( packet == true )
-                {
-                    m_xIOl_InputPoints->Reset( );
+                if (packet == true) {
+                    m_xIOl_InputPoints->Reset();
 
-                    IRadControllerInputPointXBox * pIXbcip2;
+                    IRadControllerInputPointXBox *pIXbcip2;
 
-                    while ( pIXbcip2 = reinterpret_cast< IRadControllerInputPointXBox * >( m_xIOl_InputPoints->GetNext( ) ) )
-                    {                                          
+                    while (pIXbcip2 = reinterpret_cast<IRadControllerInputPointXBox *>(m_xIOl_InputPoints->GetNext())) {
                         pIXbcip2->iVirtualTimeChanged
-                        (
-                            time, // virtual time of the packet.
-                            (char*) & ( xInputState.Gamepad )
-                        );
+                                (
+                                        time, // virtual time of the packet.
+                                        (char *) &(xInputState.Gamepad)
+                                );
                     }
-                }
-                else
-                {
+                } else {
                     //
                     // We should never get here, but break the while loop
                     // just incase.
@@ -784,32 +729,29 @@ class radControllerXBox
     //========================================================================
 
     virtual void iSetBufferTime
-    (
-        unsigned int milliseconds,
-        unsigned int pollingRate
-    )
-    {
+            (
+                    unsigned int milliseconds,
+                    unsigned int pollingRate
+            ) {
         //
         // This will flush the queue
         //
 
-        m_xIControllerBuffer2->SetQueueSize( ( milliseconds / pollingRate ) + 2 );
+        m_xIControllerBuffer2->SetQueueSize((milliseconds / pollingRate) + 2);
     }
 
     //========================================================================
     // radControllerXBox::IsConnection
     //========================================================================
 
-    virtual void iSetConnected( HANDLE hController )
-    {
+    virtual void iSetConnected(HANDLE hController) {
         //
         // The controller system will tell us if our handle has "gone bad"
         // or if we we're re-opened at the same location.
         //
 
-        if ( m_hController != NULL )
-        {
-            XInputClose( m_hController );
+        if (m_hController != NULL) {
+            XInputClose(m_hController);
         }
 
         m_hController = hController;
@@ -819,8 +761,7 @@ class radControllerXBox
     // radControllerXBox::IsConnection
     //========================================================================
 
-    virtual bool IsConnected( void )
-    {
+    virtual bool IsConnected(void) {
         //
         // A null handle is the flag for being disconnected.
         //
@@ -832,20 +773,18 @@ class radControllerXBox
     // radControllerXBox::GetType
     //========================================================================
 
-    virtual const char * GetType( void )
-    {
+    virtual const char *GetType(void) {
         //
         // Allways an XBoxStandard joystick
         //
         return "XBoxStandard";
     }
-    
+
     //========================================================================
     // radControllerXBox::GetClassification
     //========================================================================
 
-    virtual const char * GetClassification( void )
-    {
+    virtual const char *GetClassification(void) {
         //
         // Always a joystick
         //
@@ -858,29 +797,26 @@ class radControllerXBox
     //========================================================================
 
     virtual unsigned int GetNumberOfInputPointsOfType
-    (
-        const char * pType
-    )
-    {
+            (
+                    const char *pType
+            ) {
         //
         // Count up the number of input points of this time in the input
         // point list
         //
 
-        rAssert( pType != NULL );
+        rAssert(pType != NULL);
 
         unsigned int count = 0;
 
-        m_xIOl_InputPoints->Reset( );
+        m_xIOl_InputPoints->Reset();
 
-        IRadControllerInputPoint * pICip2;
+        IRadControllerInputPoint *pICip2;
 
-        while ( pICip2 = reinterpret_cast< IRadControllerInputPointXBox * >( m_xIOl_InputPoints->GetNext( ) ) )
-        {
-            if ( strcmp( pICip2->GetType( ), pType ) == 0 )
-            {
+        while (pICip2 = reinterpret_cast<IRadControllerInputPointXBox *>(m_xIOl_InputPoints->GetNext())) {
+            if (strcmp(pICip2->GetType(), pType) == 0) {
                 count++;
-            }        
+            }
         }
 
         return count;
@@ -890,27 +826,24 @@ class radControllerXBox
     // radControllerXBox::GetNumberOfOutputPointsOfType
     //========================================================================
 
-    unsigned int GetNumberOfOutputPointsOfType( const char * pType )
-    {
+    unsigned int GetNumberOfOutputPointsOfType(const char *pType) {
         //
         // Count up the number of Output points of this time in the Output
         // point list
         //
 
-        rAssert( pType != NULL );
+        rAssert(pType != NULL);
 
         unsigned int count = 0;
 
-        m_xIOl_OutputPoints->Reset( );
+        m_xIOl_OutputPoints->Reset();
 
-        IRadControllerOutputPoint * pICip2;
+        IRadControllerOutputPoint *pICip2;
 
-        while ( pICip2 = reinterpret_cast< IRadControllerOutputPoint * >( m_xIOl_OutputPoints->GetNext( ) ) )
-        {
-            if ( strcmp( pICip2->GetType( ), pType ) == 0 )
-            {
+        while (pICip2 = reinterpret_cast<IRadControllerOutputPoint *>(m_xIOl_OutputPoints->GetNext())) {
+            if (strcmp(pICip2->GetType(), pType) == 0) {
                 count++;
-            }        
+            }
         }
 
         return count;
@@ -920,38 +853,34 @@ class radControllerXBox
     // radControllerXBox::GetInputPointByTypeAndIndex
     //========================================================================
 
-    virtual IRadControllerInputPoint * GetInputPointByTypeAndIndex
-    (
-        const char * pType,
-        unsigned int index
-    )
-    {
+    virtual IRadControllerInputPoint *GetInputPointByTypeAndIndex
+            (
+                    const char *pType,
+                    unsigned int index
+            ) {
         //
         // Just loop through all of the input points counting each one of
         // that time
         //
 
-        rAssert( pType != NULL );
+        rAssert(pType != NULL);
 
         unsigned int count = 0;
 
-        m_xIOl_InputPoints->Reset( );
+        m_xIOl_InputPoints->Reset();
 
-        IRadControllerInputPoint * pICip2;
+        IRadControllerInputPoint *pICip2;
 
-        while ( pICip2 = reinterpret_cast< IRadControllerInputPointXBox * >( m_xIOl_InputPoints->GetNext( ) ) )
-        {
-            if ( strcmp( pICip2->GetType( ), pType ) == 0 )
-            {
-                if ( count == index )
-                {
+        while (pICip2 = reinterpret_cast<IRadControllerInputPointXBox *>(m_xIOl_InputPoints->GetNext())) {
+            if (strcmp(pICip2->GetType(), pType) == 0) {
+                if (count == index) {
                     return pICip2;
                 }
 
                 count++;
             }
         }
-        
+
         return NULL;
     }
 
@@ -959,31 +888,27 @@ class radControllerXBox
     // radControllerXBox::GetOutputPointByTypeAndIndex
     //========================================================================
 
-    IRadControllerOutputPoint * GetOutputPointByTypeAndIndex
-    (  
-        const char * pType,
-        unsigned int index
-    ) 
-    {
+    IRadControllerOutputPoint *GetOutputPointByTypeAndIndex
+            (
+                    const char *pType,
+                    unsigned int index
+            ) {
         //
         // Just loop through all of the Output points counting each one of
         // that time
         //
 
-        rAssert( pType != NULL );
+        rAssert(pType != NULL);
 
         unsigned int count = 0;
 
-        m_xIOl_OutputPoints->Reset( );
+        m_xIOl_OutputPoints->Reset();
 
-        IRadControllerOutputPoint * pICip2;
+        IRadControllerOutputPoint *pICip2;
 
-        while ( pICip2 = reinterpret_cast< IRadControllerOutputPoint * >( m_xIOl_OutputPoints->GetNext( ) ) )
-        {
-            if ( strcmp( pICip2->GetType( ), pType ) == 0 )
-            {
-                if ( count == index )
-                {
+        while (pICip2 = reinterpret_cast<IRadControllerOutputPoint *>(m_xIOl_OutputPoints->GetNext())) {
+            if (strcmp(pICip2->GetType(), pType) == 0) {
+                if (count == index) {
                     return pICip2;
                 }
 
@@ -998,26 +923,23 @@ class radControllerXBox
     // radControllerXBox::GetInputPointByName
     //========================================================================
 
-    virtual IRadControllerInputPoint * GetInputPointByName
-    (
-        const char * pName
-    )
-    {
+    virtual IRadControllerInputPoint *GetInputPointByName
+            (
+                    const char *pName
+            ) {
         //
         // Just loop through all of the input points comparing each ones
         // name to the name passed in.
         //
 
-        rAssert( pName != NULL );
+        rAssert(pName != NULL);
 
-        m_xIOl_InputPoints->Reset( );
+        m_xIOl_InputPoints->Reset();
 
-        IRadControllerInputPoint * pICip2;
+        IRadControllerInputPoint *pICip2;
 
-        while ( pICip2 = reinterpret_cast< IRadControllerInputPointXBox * >( m_xIOl_InputPoints->GetNext( ) ) )
-        {
-            if ( strcmp( pName, pICip2->GetName( ) ) == 0 )
-            {
+        while (pICip2 = reinterpret_cast<IRadControllerInputPointXBox *>(m_xIOl_InputPoints->GetNext())) {
+            if (strcmp(pName, pICip2->GetName()) == 0) {
                 return pICip2;
             }
         }
@@ -1029,26 +951,23 @@ class radControllerXBox
     // radControllerXBox::GetOutputPointByName
     //========================================================================
 
-    IRadControllerOutputPoint * GetOutputPointByName
-    (
-        const char * pName
-    )
-    {
+    IRadControllerOutputPoint *GetOutputPointByName
+            (
+                    const char *pName
+            ) {
         //
         // Just loop through all of the Output points comparing each ones
         // name to the name passed in.
         //
 
-        rAssert( pName != NULL );
+        rAssert(pName != NULL);
 
-        m_xIOl_OutputPoints->Reset( );
+        m_xIOl_OutputPoints->Reset();
 
-        IRadControllerOutputPoint * pICip2;
+        IRadControllerOutputPoint *pICip2;
 
-        while ( pICip2 = reinterpret_cast< IRadControllerOutputPoint * >( m_xIOl_OutputPoints->GetNext( ) ) )
-        {
-            if ( strcmp( pName, pICip2->GetName( ) ) == 0 )
-            {
+        while (pICip2 = reinterpret_cast<IRadControllerOutputPoint *>(m_xIOl_OutputPoints->GetNext())) {
+            if (strcmp(pName, pICip2->GetName()) == 0) {
                 return pICip2;
             }
         }
@@ -1060,49 +979,45 @@ class radControllerXBox
     // radControllerXBox::GetLocation
     //========================================================================
 
-    virtual const char * GetLocation( void )
-    {
+    virtual const char *GetLocation(void) {
         //
         // Just return the location string;
         //
 
-        return m_xIString_Location->GetChars( );
+        return m_xIString_Location->GetChars();
     }
 
     //========================================================================
     // radControllerXBox::GetNumberOfInputPoints
     //========================================================================
 
-    virtual unsigned int GetNumberOfInputPoints( void )
-    {
-        return m_xIOl_InputPoints->GetSize( );
+    virtual unsigned int GetNumberOfInputPoints(void) {
+        return m_xIOl_InputPoints->GetSize();
     }
 
     //========================================================================
     // radControllerXBox::GetInputPointByIndex
     //========================================================================
 
-    virtual IRadControllerInputPoint * GetInputPointByIndex( unsigned int index )
-    {
-        return reinterpret_cast< IRadControllerInputPointXBox * >( m_xIOl_InputPoints->GetAt( index ) );
+    virtual IRadControllerInputPoint *GetInputPointByIndex(unsigned int index) {
+        return reinterpret_cast<IRadControllerInputPointXBox *>(m_xIOl_InputPoints->GetAt(
+                index));
     }
 
     //========================================================================
     // radControllerXBox::GetNumberOfInputPoints
     //========================================================================
 
-    virtual unsigned int GetNumberOfOutputPoints( void )
-    {
-        return m_xIOl_OutputPoints->GetSize( );
+    virtual unsigned int GetNumberOfOutputPoints(void) {
+        return m_xIOl_OutputPoints->GetSize();
     }
 
     //========================================================================
     // radControllerXBox::GetOutputPointByIndex
     //========================================================================
 
-    virtual IRadControllerOutputPoint * GetOutputPointByIndex( unsigned int index )
-    {
-        return reinterpret_cast< IRadControllerOutputPoint * >( m_xIOl_OutputPoints->GetAt( index ) );
+    virtual IRadControllerOutputPoint *GetOutputPointByIndex(unsigned int index) {
+        return reinterpret_cast<IRadControllerOutputPoint *>(m_xIOl_OutputPoints->GetAt(index));
     }
 
     //========================================================================
@@ -1110,42 +1025,41 @@ class radControllerXBox
     //========================================================================
 
     radControllerXBox::radControllerXBox
-    (
-        unsigned int thisAllocator,
-        HANDLE hController,
-        unsigned int port,
-        unsigned int slot,
-        unsigned int virtualTime,
-        unsigned int bufferTime,
-        unsigned int pollingRate
-    )
-        :
-        radRefCount( 0 ),
-        m_hController( hController ),
-        m_Port( port ),
-        m_Slot( slot )
-    {
-        radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radControllerXBox" );
+            (
+                    unsigned int thisAllocator,
+                    HANDLE hController,
+                    unsigned int port,
+                    unsigned int slot,
+                    unsigned int virtualTime,
+                    unsigned int bufferTime,
+                    unsigned int pollingRate
+            )
+            :
+            radRefCount(0),
+            m_hController(hController),
+            m_Port(port),
+            m_Slot(slot) {
+        radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radControllerXBox");
 
-        ::ZeroMemory( & m_XInputFeedback, sizeof( m_XInputFeedback ) );
+        ::ZeroMemory(&m_XInputFeedback, sizeof(m_XInputFeedback));
 
         //
         // Get a controller buffering system, this is a shared component
         // used by other implementations on other platforms
         //
-        radControllerBufferCreate( &m_xIControllerBuffer2, g_ControllerSystemAllocator );
-        
+        radControllerBufferCreate(&m_xIControllerBuffer2, g_ControllerSystemAllocator);
+
         //
         // Get an object list to store our input points
         //
 
-        ::radObjectListCreate( & m_xIOl_InputPoints, g_ControllerSystemAllocator );
-        ::radObjectListCreate( & m_xIOl_OutputPoints, g_ControllerSystemAllocator );
+        ::radObjectListCreate(&m_xIOl_InputPoints, g_ControllerSystemAllocator);
+        ::radObjectListCreate(&m_xIOl_OutputPoints, g_ControllerSystemAllocator);
         //
         // Get a string to store our location
         //
 
-        ::radStringCreate( & m_xIString_Location, g_ControllerSystemAllocator );
+        ::radStringCreate(&m_xIString_Location, g_ControllerSystemAllocator);
 
         //
         // Initialize the controller buffer to store XINPUT_STATE sized packets.
@@ -1155,60 +1069,61 @@ class radControllerXBox
         // The queue size will get set later.
         //
 
-        m_xIControllerBuffer2->Initialize( 1, sizeof( XINPUT_STATE ) /* buffer size */);
+        m_xIControllerBuffer2->Initialize(1, sizeof(XINPUT_STATE) /* buffer size */);
 
         //
         // Create our location name based on our port and slot
         //
 
-		m_xIString_Location->SetSize( 12 );
-        m_xIString_Location->Append( "Port" );
-        m_xIString_Location->Append( (unsigned int) port );
-        m_xIString_Location->Append( "\\Slot" );
-        m_xIString_Location->Append( (unsigned int) slot );
+        m_xIString_Location->SetSize(12);
+        m_xIString_Location->Append("Port");
+        m_xIString_Location->Append((unsigned int) port);
+        m_xIString_Location->Append("\\Slot");
+        m_xIString_Location->Append((unsigned int) slot);
 
         //
         // Create all of our intput points, this is always the same for every
         // x box controller.  See static array above.
         //
 
-        for ( unsigned int button = 0; button < ( sizeof( g_XBoxPoints ) / sizeof( XBoxInputPoint ) ); button++ )
-        {
-			ref< radControllerInputPointXBox > pInputPoint = new( g_ControllerSystemAllocator ) radControllerInputPointXBox
-			(
-                g_XBoxPoints[ button ].m_pType, 
-                g_XBoxPoints[ button ].m_pName,
-                g_XBoxPoints[ button ].m_Mask
-            );
+        for (unsigned int button = 0;
+             button < (sizeof(g_XBoxPoints) / sizeof(XBoxInputPoint)); button++) {
+            ref <radControllerInputPointXBox> pInputPoint = new(
+                    g_ControllerSystemAllocator) radControllerInputPointXBox
+                    (
+                            g_XBoxPoints[button].m_pType,
+                            g_XBoxPoints[button].m_pName,
+                            g_XBoxPoints[button].m_Mask
+                    );
 
-            m_xIOl_InputPoints->AddObject( pInputPoint );
+            m_xIOl_InputPoints->AddObject(pInputPoint);
 
-			//
-			// Hand the point its first value
-			//
+            //
+            // Hand the point its first value
+            //
 
-            if ( m_hController != NULL )
-            {
+            if (m_hController != NULL) {
                 XINPUT_STATE xInputState;
 
-                ::ZeroMemory( & xInputState, sizeof( xInputState ) );
+                ::ZeroMemory(&xInputState, sizeof(xInputState));
 
-                DWORD rval = XInputGetState( m_hController, & xInputState );
+                DWORD rval = XInputGetState(m_hController, &xInputState);
 
-                rAssert( rval == ERROR_SUCCESS );
+                rAssert(rval == ERROR_SUCCESS);
 
-				pInputPoint->iInitialize( (char *) & xInputState.Gamepad );
+                pInputPoint->iInitialize((char *) &xInputState.Gamepad);
             }
         }
 
-        if ( m_xIOl_OutputPoints != NULL )
-        {
-            radControllerOutputPointXBox * pLeft = new( g_ControllerSystemAllocator ) radControllerOutputPointXBox( "LeftMotor" );
+        if (m_xIOl_OutputPoints != NULL) {
+            radControllerOutputPointXBox *pLeft = new(
+                    g_ControllerSystemAllocator) radControllerOutputPointXBox("LeftMotor");
 
-            radControllerOutputPointXBox * pRight = new( g_ControllerSystemAllocator ) radControllerOutputPointXBox( "RightMotor" );
+            radControllerOutputPointXBox *pRight = new(
+                    g_ControllerSystemAllocator) radControllerOutputPointXBox("RightMotor");
 
-            m_xIOl_OutputPoints->AddObject( reinterpret_cast< IRefCount * >( pLeft ) );
-            m_xIOl_OutputPoints->AddObject( reinterpret_cast< IRefCount * >( pRight ) );
+            m_xIOl_OutputPoints->AddObject(reinterpret_cast<IRefCount *>(pLeft));
+            m_xIOl_OutputPoints->AddObject(reinterpret_cast<IRefCount *>(pRight));
         }
 
         //
@@ -1217,19 +1132,17 @@ class radControllerXBox
         // the controller system has been run for a while.
         // 
 
-        iSetBufferTime( bufferTime, pollingRate );
-        iVirtualTimeReMapped( virtualTime );
+        iSetBufferTime(bufferTime, pollingRate);
+        iVirtualTimeReMapped(virtualTime);
     }
 
     //========================================================================
     // radControllerXBox::
     //========================================================================
 
-    ~radControllerXBox( void )
-    {
-        if ( m_hController != NULL )
-        {
-            XInputClose( m_hController );
+    ~radControllerXBox(void) {
+        if (m_hController != NULL) {
+            XInputClose(m_hController);
         }
     }
 
@@ -1241,13 +1154,13 @@ class radControllerXBox
     DWORD m_Port;
     DWORD m_Slot;
 
-    ref< IRadObjectList >             m_xIOl_InputPoints;
-    ref< IRadObjectList >             m_xIOl_OutputPoints;
+    ref <IRadObjectList> m_xIOl_InputPoints;
+    ref <IRadObjectList> m_xIOl_OutputPoints;
 
-    ref< IRadString >                 m_xIString_Location;
-    ref< IRadControllerBuffer >       m_xIControllerBuffer2;
-    
-    XINPUT_FEEDBACK                 m_XInputFeedback;
+    ref <IRadString> m_xIString_Location;
+    ref <IRadControllerBuffer> m_xIControllerBuffer2;
+
+    XINPUT_FEEDBACK m_XInputFeedback;
 };
 
 //============================================================================
@@ -1255,80 +1168,71 @@ class radControllerXBox
 //============================================================================
 
 class radControllerSystemXBox
-    :
-    public IRadControllerSystem,
-    public IRadTimerCallback,
-    public radRefCount
-{
-    public:
+        :
+                public IRadControllerSystem,
+                public IRadTimerCallback,
+                public radRefCount {
+public:
 
-    IMPLEMENT_REFCOUNTED( "radControllerSystemXBox" )
+    IMPLEMENT_REFCOUNTED("radControllerSystemXBox")
 
-     //========================================================================
+    //========================================================================
     // radControllerSystemXBox::CheckDeviceConnectionStatus
     //========================================================================
 
-    void CheckDeviceConnectionStatus( void )
-    {
-        AddRef( );
+    void CheckDeviceConnectionStatus(void) {
+        AddRef();
 
         //
         // Check if devices have been inserted or removed
         //        
         DWORD deviceInsertions = 0;
         DWORD deviceRemovals = 0;
-        
-        if ( XGetDeviceChanges( XDEVICE_TYPE_GAMEPAD, & deviceInsertions, & deviceRemovals ) )
-        {
-            for ( unsigned int i = 0; i < 4; i ++ )
-            {
+
+        if (XGetDeviceChanges(XDEVICE_TYPE_GAMEPAD, &deviceInsertions, &deviceRemovals)) {
+            for (unsigned int i = 0; i < 4; i++) {
                 unsigned int deviceMask = 1 << i;
 
-                if ( ( deviceInsertions & deviceMask ) || ( deviceRemovals & deviceMask ) )
-                {
+                if ((deviceInsertions & deviceMask) || (deviceRemovals & deviceMask)) {
 
                     //
                     // Find the controller in question (may not exist though)
                     //
-                    ref< IRadController > xIController2;
-                    ref< IRadControllerXBox > xIXBoxController2;
+                    ref <IRadController> xIController2;
+                    ref <IRadControllerXBox> xIXBoxController2;
 
-                    char location[ 255 ];
+                    char location[255];
 
-                    sprintf( location, "Port%d\\Slot0", i );
+                    sprintf(location, "Port%d\\Slot0", i);
 
-                    xIController2 = GetControllerAtLocation( location );
+                    xIController2 = GetControllerAtLocation(location);
 
-                    xIXBoxController2 = (IRadControllerXBox*) xIController2.m_pInterface;
+                    xIXBoxController2 = (IRadControllerXBox *) xIController2.m_pInterface;
 
 
                     // Is there a controller currently plugged in?
 
                     HANDLE hController = ::XInputOpen
-                    (
-                        XDEVICE_TYPE_GAMEPAD,
-                        XDEVICE_PORT0 + i,
-                        XDEVICE_NO_SLOT,
-                        false
-                    );
+                            (
+                                    XDEVICE_TYPE_GAMEPAD,
+                                    XDEVICE_PORT0 + i,
+                                    XDEVICE_NO_SLOT,
+                                    false
+                            );
 
-                    if ( hController != NULL )
-                    {
+                    if (hController != NULL) {
                         //
                         // Here a device has been inserted, so open it
                         //
 
-                        if ( xIXBoxController2 != NULL )
-                        {
+                        if (xIXBoxController2 != NULL) {
                             //
                             // Here the device is already constructed, just set
                             // it to the connected state.
                             //
-                            
-                            xIXBoxController2->iSetConnected( hController );
-                        }
-                        else
-                        {
+
+                            xIXBoxController2->iSetConnected(hController);
+                        } else {
                             //
                             // Here the controller at this location has not yet been 
                             // constructed, so construct a new controller
@@ -1338,98 +1242,90 @@ class radControllerSystemXBox
                             unsigned int pollingRate = 10;
 
                             virtualTime = radTimeGetMilliseconds() + m_VirtualTimeAdjust;
-                            
-                            if ( m_xITimer != NULL )
-                            {
-                                pollingRate = m_xITimer->GetTimeout( );
+
+                            if (m_xITimer != NULL) {
+                                pollingRate = m_xITimer->GetTimeout();
                             }
 
-                            xIController2 = new ( g_ControllerSystemAllocator ) radControllerXBox
-                            (
-                                g_ControllerSystemAllocator,
-                                hController,
-                                XDEVICE_PORT0 + i,
-                                XDEVICE_NO_SLOT,
-                                virtualTime,
-                                m_EventBufferTime,
-                                pollingRate
-                            );
+                            xIController2 = new(g_ControllerSystemAllocator) radControllerXBox
+                                    (
+                                            g_ControllerSystemAllocator,
+                                            hController,
+                                            XDEVICE_PORT0 + i,
+                                            XDEVICE_NO_SLOT,
+                                            virtualTime,
+                                            m_EventBufferTime,
+                                            pollingRate
+                                    );
 
                             m_xIOl_Controllers->AddObject
-                            (
-                                xIController2
-                            );
-                        }                        
-                    }
-                    else
-                    {
+                                    (
+                                            xIController2
+                                    );
+                        }
+                    } else {
                         //
                         // Here a device has been removed
                         //
 
-                        if ( xIXBoxController2 != NULL )
-                        {
-                            xIXBoxController2->iSetConnected( NULL );
+                        if (xIXBoxController2 != NULL) {
+                            xIXBoxController2->iSetConnected(NULL);
                         }
                     }
 
 
-                    IRadWeakInterfaceWrapper * pIWir;
+                    IRadWeakInterfaceWrapper *pIWir;
 
-                    m_xIOl_Callbacks->Reset( );
+                    m_xIOl_Callbacks->Reset();
 
-                    while( pIWir = reinterpret_cast< IRadWeakInterfaceWrapper * >( m_xIOl_Callbacks->GetNext( ) ) )
-                    {
+                    while (pIWir = reinterpret_cast<IRadWeakInterfaceWrapper *>(m_xIOl_Callbacks->GetNext())) {
 
-                        IRadControllerConnectionChangeCallback * pCallback = (IRadControllerConnectionChangeCallback *) pIWir->GetWeakInterface( );
-                        pCallback->OnControllerConnectionStatusChange( xIController2 );
+                        IRadControllerConnectionChangeCallback *pCallback = (IRadControllerConnectionChangeCallback *) pIWir->GetWeakInterface();
+                        pCallback->OnControllerConnectionStatusChange(xIController2);
                     }
 
-                                                                                 
-                }                
+
+                }
             }
         }
 
-        Release( );
+        Release();
     }
 
     //========================================================================
     // radControllerSystemXBox::OnTimerDone
     //========================================================================
 
-    virtual void OnTimerDone( unsigned int elapsedtime, void* pUserData )
-    {
+    virtual void OnTimerDone(unsigned int elapsedtime, void *pUserData) {
         //
         // Check for device connections, removals
         //
 
-        CheckDeviceConnectionStatus( );
-       
+        CheckDeviceConnectionStatus();
+
         //
         // Now, update all of our controllers
         //
 
-        m_xIOl_Controllers->Reset( );
+        m_xIOl_Controllers->Reset();
 
-        IRadControllerXBox * pIXbc2;
+        IRadControllerXBox *pIXbc2;
 
-        while ( pIXbc2 = reinterpret_cast< IRadControllerXBox * >( m_xIOl_Controllers->GetNext( ) ) )
-        {
+        while (pIXbc2 = reinterpret_cast<IRadControllerXBox *>(m_xIOl_Controllers->GetNext())) {
             //
             // The controller stamps packets with virtual time, so
             // we pass in virtual time.
             //
 
-            pIXbc2->iPoll( radTimeGetMilliseconds( ) + m_VirtualTimeAdjust );
+            pIXbc2->iPoll(radTimeGetMilliseconds() + m_VirtualTimeAdjust);
         }
 
         //
         // If the client is not driving us, we drive ourselves from this timer
         //
 
-        if ( m_UsingVirtualTime == false )
-        {
-            SetVirtualTime( radTimeGetMilliseconds( ) );
+        if (m_UsingVirtualTime == false) {
+            SetVirtualTime(radTimeGetMilliseconds());
         }
     }
 
@@ -1437,44 +1333,39 @@ class radControllerSystemXBox
     // radControllerSystemXBox::GetNumberOfControlelrs
     //========================================================================
 
-    virtual unsigned int GetNumberOfControllers( void )
-    {
-        return m_xIOl_Controllers->GetSize( );
+    virtual unsigned int GetNumberOfControllers(void) {
+        return m_xIOl_Controllers->GetSize();
     }
 
     //========================================================================
     // radControllerSystemXBox::GetControllerByIndex
     //========================================================================
 
-    virtual IRadController * GetControllerByIndex( unsigned int myindex )
-    {
-        return reinterpret_cast< IRadControllerXBox * >( m_xIOl_Controllers->GetAt( myindex ) );
+    virtual IRadController *GetControllerByIndex(unsigned int myindex) {
+        return reinterpret_cast<IRadControllerXBox *>(m_xIOl_Controllers->GetAt(myindex));
     }
 
     //========================================================================
     // radControllerSystemXBox::GetControllerAtLocation
     //========================================================================
 
-    virtual IRadController * GetControllerAtLocation
-    (
-        const char * pLocation
-    )
-    {
+    virtual IRadController *GetControllerAtLocation
+            (
+                    const char *pLocation
+            ) {
         //
         // Just loop through all of the controllers asking it for its location
         // if we find a match, return it.
         //
 
-        rAssert( pLocation != NULL );
+        rAssert(pLocation != NULL);
 
-        m_xIOl_Controllers->Reset( );
+        m_xIOl_Controllers->Reset();
 
-        IRadController * pIC2;
+        IRadController *pIC2;
 
-        while ( pIC2 = reinterpret_cast< IRadControllerXBox * >( m_xIOl_Controllers->GetNext( ) ) )
-        {
-            if ( strcmp( pIC2->GetLocation(), pLocation ) == 0 )
-            {
+        while (pIC2 = reinterpret_cast<IRadControllerXBox *>(m_xIOl_Controllers->GetNext())) {
+            if (strcmp(pIC2->GetLocation(), pLocation) == 0) {
                 return pIC2;
             }
         }
@@ -1486,10 +1377,8 @@ class radControllerSystemXBox
     // radControllerSystemXBox::SetBufferTime
     //========================================================================
 
-    virtual void SetBufferTime( unsigned int milliseconds )
-    {
-        if ( milliseconds == 0 )
-        {
+    virtual void SetBufferTime(unsigned int milliseconds) {
+        if (milliseconds == 0) {
             //
             // We are always buffering behind the scenes, so we set the
             // buffering time to one 60Hz frame even if the client thinks
@@ -1498,29 +1387,26 @@ class radControllerSystemXBox
 
             m_UsingVirtualTime = false;
 
-            MapVirtualTime( 0, 0 );
+            MapVirtualTime(0, 0);
 
             milliseconds = 10;
-        }
-        else
-        {
+        } else {
             m_UsingVirtualTime = true;
         }
 
-        
+
         unsigned int pollingRate = 10;
 
-        pollingRate = m_xITimer->GetTimeout( );
+        pollingRate = m_xITimer->GetTimeout();
 
         m_EventBufferTime = milliseconds;
 
-        m_xIOl_Controllers->Reset( );
+        m_xIOl_Controllers->Reset();
 
-        IRadControllerXBox * pIDipc2;
+        IRadControllerXBox *pIDipc2;
 
-        while ( pIDipc2 = reinterpret_cast< IRadControllerXBox * >( m_xIOl_Controllers->GetNext( ) ) )
-        {
-            pIDipc2->iSetBufferTime( milliseconds, pollingRate );
+        while (pIDipc2 = reinterpret_cast<IRadControllerXBox *>(m_xIOl_Controllers->GetNext())) {
+            pIDipc2->iSetBufferTime(milliseconds, pollingRate);
         }
     }
 
@@ -1529,11 +1415,10 @@ class radControllerSystemXBox
     //========================================================================
 
     virtual void MapVirtualTime
-    (
-        unsigned int systemTicks,
-        unsigned int virtualTicks
-    )
-    {
+            (
+                    unsigned int systemTicks,
+                    unsigned int virtualTicks
+            ) {
         //
         // Here the client has requested a (re)mapping of virtual time to
         // timer manager time.
@@ -1549,33 +1434,30 @@ class radControllerSystemXBox
         // Inform each controller that virtual time has been remapped.
         //
 
-        m_xIOl_Controllers->Reset( );
+        m_xIOl_Controllers->Reset();
 
-        IRadControllerXBox * pIXbc2;
+        IRadControllerXBox *pIXbc2;
 
-        while ( pIXbc2 = reinterpret_cast< IRadControllerXBox * >( m_xIOl_Controllers->GetNext( ) ) )
-        {
-            pIXbc2->iVirtualTimeReMapped( radTimeGetMilliseconds() + m_VirtualTimeAdjust );
-        }       
+        while (pIXbc2 = reinterpret_cast<IRadControllerXBox *>(m_xIOl_Controllers->GetNext())) {
+            pIXbc2->iVirtualTimeReMapped(radTimeGetMilliseconds() + m_VirtualTimeAdjust);
+        }
     }
 
     //========================================================================
     // radControllerSystemXBox::SetVirtualTime
     //========================================================================
 
-    virtual void SetVirtualTime( unsigned int virtualTime )
-    {
+    virtual void SetVirtualTime(unsigned int virtualTime) {
         //
         // Inform each controller that virtual time has changed.
         //
 
-        m_xIOl_Controllers->Reset( );
+        m_xIOl_Controllers->Reset();
 
-        IRadControllerXBox * pIXbc2;
+        IRadControllerXBox *pIXbc2;
 
-        while ( pIXbc2 = reinterpret_cast< IRadControllerXBox * >( m_xIOl_Controllers->GetNext( ) ) )
-        {
-            pIXbc2->iVirtualTimeChanged( virtualTime );
+        while (pIXbc2 = reinterpret_cast<IRadControllerXBox *>(m_xIOl_Controllers->GetNext())) {
+            pIXbc2->iVirtualTimeChanged(virtualTime);
         }
     }
 
@@ -1583,15 +1465,14 @@ class radControllerSystemXBox
     // radControllerSystemXBox::SetCaptureRate
     //========================================================================
 
-    virtual void SetCaptureRate( unsigned int ms )
-    {
-        m_xITimer->SetTimeout( ms );
+    virtual void SetCaptureRate(unsigned int ms) {
+        m_xITimer->SetTimeout(ms);
 
         //
         // Reset event queue size given new filling rate
         //
 
-        SetBufferTime( m_EventBufferTime );
+        SetBufferTime(m_EventBufferTime);
     }
 
     //========================================================================
@@ -1599,24 +1480,23 @@ class radControllerSystemXBox
     //========================================================================
 
     virtual void RegisterConnectionChangeCallback
-    (
-        IRadControllerConnectionChangeCallback * pCallback
-    )
-    {
+            (
+                    IRadControllerConnectionChangeCallback *pCallback
+            ) {
         //
         // Store the callback in a weak interface wrapper so we can store
         // it in an object list.
         //
 
-        rAssert( pCallback != NULL );
+        rAssert(pCallback != NULL);
 
-        ref< IRadWeakInterfaceWrapper > xIWir;
+        ref <IRadWeakInterfaceWrapper> xIWir;
 
-        ::radWeakInterfaceWrapperCreate( & xIWir, g_ControllerSystemAllocator );
+        ::radWeakInterfaceWrapperCreate(&xIWir, g_ControllerSystemAllocator);
 
-        xIWir->SetWeakInterface( pCallback );
+        xIWir->SetWeakInterface(pCallback);
 
-        m_xIOl_Callbacks->AddObject( xIWir );
+        m_xIOl_Callbacks->AddObject(xIWir);
     }
 
     //========================================================================
@@ -1624,39 +1504,35 @@ class radControllerSystemXBox
     //========================================================================
 
     virtual void UnRegisterConnectionChangeCallback
-    (
-        IRadControllerConnectionChangeCallback * pCallback
-    )
-    {
+            (
+                    IRadControllerConnectionChangeCallback *pCallback
+            ) {
         //
         // Look for the callback in the list and remove it if found.
         //
 
-        rAssert( pCallback != NULL );
+        rAssert(pCallback != NULL);
 
-        IRadWeakInterfaceWrapper * pIWir;
+        IRadWeakInterfaceWrapper *pIWir;
 
-        m_xIOl_Callbacks->Reset( );
+        m_xIOl_Callbacks->Reset();
 
-        while ( pIWir = reinterpret_cast< IRadWeakInterfaceWrapper * >( m_xIOl_Callbacks->GetNext( ) ) )
-        {
-            if ( pIWir->GetWeakInterface() == pCallback )
-            {
-                m_xIOl_Callbacks->RemoveObject( pIWir  );
+        while (pIWir = reinterpret_cast<IRadWeakInterfaceWrapper *>(m_xIOl_Callbacks->GetNext())) {
+            if (pIWir->GetWeakInterface() == pCallback) {
+                m_xIOl_Callbacks->RemoveObject(pIWir);
                 return;
             }
         }
-        
-        rAssertMsg( false, "Controller connection change callback not registered." );            
+
+        rAssertMsg(false, "Controller connection change callback not registered.");
     }
 
     //========================================================================
     // radControllerSystemXBox::Service
     //========================================================================
 
-    void Service( void )
-    {
-        m_xITimerList->Service(  );   
+    void Service(void) {
+        m_xITimerList->Service();
     }
 
     //========================================================================
@@ -1664,27 +1540,26 @@ class radControllerSystemXBox
     //========================================================================
 
     radControllerSystemXBox
-    (
-        IRadControllerConnectionChangeCallback* pConnectionChangeCallback,
-        radMemoryAllocator thisAllocator
-    )
-        :
-        m_UsingVirtualTime( false ),
-        m_VirtualTimeAdjust( 0 ),
-        m_EventBufferTime( 0 ),
-        m_DefaultConnectionChangeCallback( NULL )
-    {
-        radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radControllerSystemXBox" );
+            (
+                    IRadControllerConnectionChangeCallback *pConnectionChangeCallback,
+                    radMemoryAllocator thisAllocator
+            )
+            :
+            m_UsingVirtualTime(false),
+            m_VirtualTimeAdjust(0),
+            m_EventBufferTime(0),
+            m_DefaultConnectionChangeCallback(NULL) {
+        radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radControllerSystemXBox");
 
         //
         // Set our singleton to "this"
         //
-        rAssert( s_pTheXBoxControllerSystem2 == NULL );
+        rAssert(s_pTheXBoxControllerSystem2 == NULL);
         s_pTheXBoxControllerSystem2 = this;
-        
+
         g_ControllerSystemAllocator = thisAllocator;
 
-		//
+        //
         // Create a timer to poll with, this will be changed to a thread if
         // people start complaining about latencies.
         //
@@ -1692,42 +1567,40 @@ class radControllerSystemXBox
         //
         // Create a timer list to drive the processing of contollers
         //
-    
-        radTimeCreateList( &m_xITimerList, 1, g_ControllerSystemAllocator );
 
-        m_xITimerList->CreateTimer( & m_xITimer, 10, this );
+        radTimeCreateList(&m_xITimerList, 1, g_ControllerSystemAllocator);
+
+        m_xITimerList->CreateTimer(&m_xITimer, 10, this);
 
         //
         // Object list to hold controllers
         //
-        ::radObjectListCreate( & m_xIOl_Controllers, g_ControllerSystemAllocator );
-        rAssert( m_xIOl_Controllers != NULL );
+        ::radObjectListCreate(&m_xIOl_Controllers, g_ControllerSystemAllocator);
+        rAssert(m_xIOl_Controllers != NULL);
 
         //
         // Object list to hold callbacks
         //
-        ::radObjectListCreate( & m_xIOl_Callbacks, g_ControllerSystemAllocator );
-        rAssert( m_xIOl_Callbacks != NULL );
+        ::radObjectListCreate(&m_xIOl_Callbacks, g_ControllerSystemAllocator);
+        rAssert(m_xIOl_Callbacks != NULL);
 
         //
         // Register the default connection state callback
         //
         m_DefaultConnectionChangeCallback = pConnectionChangeCallback;
-        if( pConnectionChangeCallback )
-        {
+        if (pConnectionChangeCallback) {
             m_DefaultConnectionChangeCallback = pConnectionChangeCallback;
-            RegisterConnectionChangeCallback( pConnectionChangeCallback );
+            RegisterConnectionChangeCallback(pConnectionChangeCallback);
         }
 
         //
         // If there is no connection change callback, wait synchronously for the connection
         //
-        rWarningMsg( pConnectionChangeCallback != NULL, "Spinning while initializing controllers synchronously." );
-        if( pConnectionChangeCallback == NULL )
-        {
-            while( m_xIOl_Controllers->GetSize( ) == 0 )
-            {
-                CheckDeviceConnectionStatus( );
+        rWarningMsg(pConnectionChangeCallback != NULL,
+                    "Spinning while initializing controllers synchronously.");
+        if (pConnectionChangeCallback == NULL) {
+            while (m_xIOl_Controllers->GetSize() == 0) {
+                CheckDeviceConnectionStatus();
             }
         }
 
@@ -1735,31 +1608,30 @@ class radControllerSystemXBox
         //
         // Set everything to know state
         //        
-        SetCaptureRate( 10 );
-        MapVirtualTime( 0, 0 );
-        SetBufferTime( 0 );
+        SetCaptureRate(10);
+        MapVirtualTime(0, 0);
+        SetBufferTime(0);
     }
 
     //========================================================================
     // radControllerSystemXBox::~radControllerSystemXBox
     //========================================================================
-        
-    ~radControllerSystemXBox( void )
-    {
+
+    ~radControllerSystemXBox(void) {
         //
         // Unregister the default connection change callback
         //
-        if( m_DefaultConnectionChangeCallback != NULL )
-        {
-            UnRegisterConnectionChangeCallback( m_DefaultConnectionChangeCallback );
+        if (m_DefaultConnectionChangeCallback != NULL) {
+            UnRegisterConnectionChangeCallback(m_DefaultConnectionChangeCallback);
             m_DefaultConnectionChangeCallback = NULL;
         }
 
         //
         // Make sure the client(s) unregistered all of their callbacks.
         //
-        
-        rAssertMsg( m_xIOl_Callbacks->GetSize() == 0, "Somebody forgot to unregister a controller connection change callback" );
+
+        rAssertMsg(m_xIOl_Callbacks->GetSize() == 0,
+                   "Somebody forgot to unregister a controller connection change callback");
 
         g_ControllerSystemAllocator = RADMEMORY_ALLOC_DEFAULT;
 
@@ -1767,7 +1639,7 @@ class radControllerSystemXBox
         // Set the singleton back to null.
         //
 
-        rAssert( s_pTheXBoxControllerSystem2 == this );
+        rAssert(s_pTheXBoxControllerSystem2 == this);
         s_pTheXBoxControllerSystem2 = NULL;
 
     }
@@ -1776,18 +1648,18 @@ class radControllerSystemXBox
     //========================================================================
     // Data Members
     //========================================================================
-    
+
     bool m_UsingVirtualTime;
     unsigned int m_VirtualTimeAdjust;
     unsigned int m_EventBufferTime;
 
-    IRadControllerConnectionChangeCallback* m_DefaultConnectionChangeCallback;
+    IRadControllerConnectionChangeCallback *m_DefaultConnectionChangeCallback;
 
-    ref< IRadObjectList >     m_xIOl_Callbacks;
+    ref <IRadObjectList> m_xIOl_Callbacks;
 
-    ref< IRadObjectList >     m_xIOl_Controllers;
-    ref< IRadTimer >          m_xITimer;
-    ref< IRadTimerList >      m_xITimerList;
+    ref <IRadObjectList> m_xIOl_Controllers;
+    ref <IRadTimer> m_xITimer;
+    ref <IRadTimerList> m_xITimerList;
 
 };
 
@@ -1799,19 +1671,17 @@ class radControllerSystemXBox
 //============================================================================
 
 void radControllerInitialize
-(
-    IRadControllerConnectionChangeCallback* pConnectionChangeCallback,
-    radMemoryAllocator alloc
-)
-{
-    rAssert( s_pTheXBoxControllerSystem2 == NULL );
+        (
+                IRadControllerConnectionChangeCallback *pConnectionChangeCallback,
+                radMemoryAllocator alloc
+        ) {
+    rAssert(s_pTheXBoxControllerSystem2 == NULL);
 
-    new ( alloc ) radControllerSystemXBox( pConnectionChangeCallback, alloc );
+    new(alloc) radControllerSystemXBox(pConnectionChangeCallback, alloc);
 }
 
-void radControllerTerminate( void )
-{
-    radRelease( s_pTheXBoxControllerSystem2, NULL );
+void radControllerTerminate(void) {
+    radRelease(s_pTheXBoxControllerSystem2, NULL);
 }
 
 //============================================================================
@@ -1820,14 +1690,13 @@ void radControllerTerminate( void )
 //
 // Use this function to obtain an interface to the controller system object.
 //
-IRadControllerSystem* radControllerSystemGet
-( 
-    void
-)
-{
-    rAssert( s_pTheXBoxControllerSystem2 != NULL );
+IRadControllerSystem *radControllerSystemGet
+        (
+                void
+        ) {
+    rAssert(s_pTheXBoxControllerSystem2 != NULL);
 
-    return( s_pTheXBoxControllerSystem2 );
+    return (s_pTheXBoxControllerSystem2);
 }
 
 //============================================================================
@@ -1836,11 +1705,9 @@ IRadControllerSystem* radControllerSystemGet
 //
 // Use this function to drive the processing of the controller system
 //
-void radControllerSystemService( void )
-{
-    if( s_pTheXBoxControllerSystem2 != NULL )
-    {
-        s_pTheXBoxControllerSystem2->Service( );
+void radControllerSystemService(void) {
+    if (s_pTheXBoxControllerSystem2 != NULL) {
+        s_pTheXBoxControllerSystem2->Service();
     }
 }
 

@@ -32,7 +32,7 @@
 // Return:      radProfileSample - last unclosed profile sample
 //
 //===========================================================================
-radProfileSample * radProfiler::GetLastUnClosedProfile( )
+radProfileSample * radProfiler::GetLastUnClosedProfile()
 {
     return m_pLastUnClosedProfile;
 }
@@ -49,11 +49,11 @@ radProfileSample * radProfiler::GetLastUnClosedProfile( )
 // Return:      radProfileSample - found profile sample, else NULL
 //
 //===========================================================================
-radProfileSample * radProfiler::FindProfileSample( const char * pProfileName )
+radProfileSample * radProfiler::FindProfileSample(const char * pProfileName)
 {
-    int nIndex = BinarySearchSampleProfileArrayByHashedName( radMakeKey( pProfileName ) );
+    int nIndex = BinarySearchSampleProfileArrayByHashedName(radMakeKey(pProfileName));
 
-    if ( nIndex == -1 )
+    if (nIndex == -1)
     {
         //
         // cannot find the entry
@@ -65,7 +65,7 @@ radProfileSample * radProfiler::FindProfileSample( const char * pProfileName )
         //
         // must be in the range of the size
         //
-        rAssert( nIndex < (int)m_uProfileSampleArraySize );
+        rAssert(nIndex <(int)m_uProfileSampleArraySize);
         return m_pProfileSampleArrayByHashedName[ nIndex ].pSample;
     }
 }
@@ -83,7 +83,7 @@ radProfileSample * radProfiler::FindProfileSample( const char * pProfileName )
 // Return:      radProfileSample - newly inserted profile sample
 //
 //===========================================================================
-radProfileSample * radProfiler::InsertChildProfileSample( const char * pProfileName, radProfileSample * pParentProfileSample )
+radProfileSample * radProfiler::InsertChildProfileSample(const char * pProfileName, radProfileSample * pParentProfileSample)
 {
     //------------------------------------------------------------------------
     // Step 1, create a sample node, and insert into array and sort the array.
@@ -92,15 +92,15 @@ radProfileSample * radProfiler::InsertChildProfileSample( const char * pProfileN
     //
     // allocate additional memory for profiler
     //
-    AllocateMemoryForProfileSampleArrayAndCopyOldData( m_uProfileSampleArraySize + 1 );
+    AllocateMemoryForProfileSampleArrayAndCopyOldData(m_uProfileSampleArraySize + 1);
 
     //
     // add new entry into the profile sample pointer array
     //
-    m_pProfileSampleArrayByHashedName[ m_uProfileSampleArraySize - 1 ].HashedName = radMakeKey( pProfileName );
+    m_pProfileSampleArrayByHashedName[ m_uProfileSampleArraySize - 1 ].HashedName = radMakeKey(pProfileName);
 
-    ref< radProfileSample > pProfileSample = radProfileSampleCreate( m_alloc );
-    rAssertMsg( pProfileSample, "radProfiler: Error: Cannot create profile sample instance. ???Outof memory???" );
+    ref<radProfileSample> pProfileSample = radProfileSampleCreate(m_alloc);
+    rAssertMsg(pProfileSample, "radProfiler: Error: Cannot create profile sample instance. ???Outof memory???");
 
     m_pProfileSampleArrayByHashedName[ m_uProfileSampleArraySize - 1 ].pSample = pProfileSample;
 
@@ -110,20 +110,20 @@ radProfileSample * radProfiler::InsertChildProfileSample( const char * pProfileN
     //
     radProfileSample * pPrevProfileSample = NULL;
 
-    if ( m_pLastUnClosedProfile != NULL && m_pLastClosedProfile != NULL )
+    if (m_pLastUnClosedProfile != NULL && m_pLastClosedProfile != NULL)
     {
-        if ( m_pLastClosedProfile->GetParentNode( ) == m_pLastUnClosedProfile )
+        if (m_pLastClosedProfile->GetParentNode() == m_pLastUnClosedProfile)
         {
             pPrevProfileSample = m_pLastClosedProfile;
         }
     }
 
-    pProfileSample->Initialize( pProfileName, pParentProfileSample, pPrevProfileSample );
+    pProfileSample->Initialize(pProfileName, pParentProfileSample, pPrevProfileSample);
 
     //
     // sort array by hashed name, and check for hashed name duplicates
     //
-    SortSampleProfileArrayByHashedName( );
+    SortSampleProfileArrayByHashedName();
 
     //------------------------------------------------------------------------
     // Step 2, see if the insertion is a special case, if is, do things we need.
@@ -132,9 +132,9 @@ radProfileSample * radProfiler::InsertChildProfileSample( const char * pProfileN
     //
     // if there's no root profile sample, then this is the root profile sample.
     //
-    if ( m_pRootProfileSample == NULL )
+    if (m_pRootProfileSample == NULL)
     {
-        rAssert( pParentProfileSample == NULL );
+        rAssert(pParentProfileSample == NULL);
 
         m_pRootProfileSample = pProfileSample;
     }
@@ -154,11 +154,11 @@ radProfileSample * radProfiler::InsertChildProfileSample( const char * pProfileN
 // Return:     None
 //
 //===========================================================================
-void radProfiler::EndFrameForAllProfileNode( radTime64 uTotalFrameTimeInMicroSec, radTime64 uAveFrameTimeInMicroSec, radTime64 uThisFrameTimeInMicroSec, unsigned int uFrameCount )
+void radProfiler::EndFrameForAllProfileNode(radTime64 uTotalFrameTimeInMicroSec, radTime64 uAveFrameTimeInMicroSec, radTime64 uThisFrameTimeInMicroSec, unsigned int uFrameCount)
 {
-    for ( unsigned int i = 0; i < m_uProfileSampleArraySize; i++ )
+    for (unsigned int i = 0; i <m_uProfileSampleArraySize; i++)
     {
-        m_pProfileSampleArrayByHashedName[ i ].pSample->EndFrame( uTotalFrameTimeInMicroSec, uAveFrameTimeInMicroSec, uThisFrameTimeInMicroSec, uFrameCount );
+        m_pProfileSampleArrayByHashedName[ i ].pSample->EndFrame(uTotalFrameTimeInMicroSec, uAveFrameTimeInMicroSec, uThisFrameTimeInMicroSec, uFrameCount);
     }
 }
 
@@ -176,30 +176,30 @@ void radProfiler::EndFrameForAllProfileNode( radTime64 uTotalFrameTimeInMicroSec
 // Return:      None
 //
 //===========================================================================
-void radProfiler::AllocateMemoryForProfileSampleArrayAndCopyOldData( unsigned int uSize )
+void radProfiler::AllocateMemoryForProfileSampleArrayAndCopyOldData(unsigned int uSize)
 {
     //
     // we always allocate extra memory to fit unit of 16 entry
     //
-    unsigned int uRoundedSize = ( uSize / 16 + 1 ) * 16;
+    unsigned int uRoundedSize = (uSize / 16 + 1) * 16;
 
     //
     // if memory we have is sufficient, don't allocate extra memory
     //
-    if ( m_uProfileSampleMemorySize >= uRoundedSize )
+    if (m_uProfileSampleMemorySize>= uRoundedSize)
     {
         m_uProfileSampleArraySize = uSize;
         return;
     }
     else    // allocate memory with rounded size
     {
-        ProfileSamplePair * pNewSampleArrayMemory = static_cast< ProfileSamplePair * >( radMemoryAlloc( m_alloc, uRoundedSize * sizeof( ProfileSamplePair ) ) );
-        memset( pNewSampleArrayMemory, 0, sizeof( ProfileSamplePair ) * uRoundedSize );
+        ProfileSamplePair * pNewSampleArrayMemory = static_cast<ProfileSamplePair *>(radMemoryAlloc(m_alloc, uRoundedSize * sizeof(ProfileSamplePair)));
+        memset(pNewSampleArrayMemory, 0, sizeof(ProfileSamplePair) * uRoundedSize);
 
-        if ( m_pProfileSampleArrayByHashedName != NULL )
+        if (m_pProfileSampleArrayByHashedName != NULL)
         {
-            memcpy( pNewSampleArrayMemory, m_pProfileSampleArrayByHashedName, sizeof( ProfileSamplePair ) * m_uProfileSampleMemorySize );
-            radMemoryFree( m_pProfileSampleArrayByHashedName );
+            memcpy(pNewSampleArrayMemory, m_pProfileSampleArrayByHashedName, sizeof(ProfileSamplePair) * m_uProfileSampleMemorySize);
+            radMemoryFree(m_pProfileSampleArrayByHashedName);
         }
 
         m_pProfileSampleArrayByHashedName = pNewSampleArrayMemory;
@@ -220,18 +220,18 @@ void radProfiler::AllocateMemoryForProfileSampleArrayAndCopyOldData( unsigned in
 // Return:      None
 //
 //===========================================================================
-void radProfiler::SortSampleProfileArrayByHashedName( )
+void radProfiler::SortSampleProfileArrayByHashedName()
 {
     //
     // little bubble-bubble sort
     //
     ProfileSamplePair tmp;
     
-    for ( unsigned int i=0; i < m_uProfileSampleArraySize - 1; i++ )
+    for (unsigned int i=0; i <m_uProfileSampleArraySize - 1; i++)
     {
-        for ( unsigned int j=0; j < m_uProfileSampleArraySize - 1 - i; j++ )
+        for (unsigned int j=0; j <m_uProfileSampleArraySize - 1 - i; j++)
         {
-            if ( m_pProfileSampleArrayByHashedName[ j + 1 ].HashedName < m_pProfileSampleArrayByHashedName[ j ].HashedName )
+            if (m_pProfileSampleArrayByHashedName[ j + 1 ].HashedName <m_pProfileSampleArrayByHashedName[ j ].HashedName)
             {
                 tmp = m_pProfileSampleArrayByHashedName[ j ];
                 m_pProfileSampleArrayByHashedName[ j ] = m_pProfileSampleArrayByHashedName[ j + 1 ];
@@ -253,9 +253,9 @@ void radProfiler::SortSampleProfileArrayByHashedName( )
 // Return:      the index of the sample node, if not found return -1
 //
 //===========================================================================
-int radProfiler::BinarySearchSampleProfileArrayByHashedName( radKey HashedName )
+int radProfiler::BinarySearchSampleProfileArrayByHashedName(radKey HashedName)
 {
-    if ( m_pProfileSampleArrayByHashedName == NULL || m_uProfileSampleArraySize == 0 )
+    if (m_pProfileSampleArrayByHashedName == NULL || m_uProfileSampleArraySize == 0)
     {
         return -1;
     }
@@ -267,16 +267,16 @@ int radProfiler::BinarySearchSampleProfileArrayByHashedName( radKey HashedName )
     unsigned int uTop = m_uProfileSampleArraySize - 1;
     bool bFound = false;
     unsigned int uMid = 0;
-    while( ( uTop >= uBottom ) && ( ! bFound ) )
+    while((uTop>= uBottom) && (! bFound))
     {
-        uMid = ( uTop + uBottom ) / 2;
-        if ( m_pProfileSampleArrayByHashedName[ uMid ].HashedName == HashedName )
+        uMid = (uTop + uBottom) / 2;
+        if (m_pProfileSampleArrayByHashedName[ uMid ].HashedName == HashedName)
         {
             bFound = true;
         }
-        else if ( HashedName > m_pProfileSampleArrayByHashedName[ uMid ].HashedName )
+        else if (HashedName> m_pProfileSampleArrayByHashedName[ uMid ].HashedName)
         {
-            if ( uBottom >= m_uProfileSampleArraySize )
+            if (uBottom>= m_uProfileSampleArraySize)
             {
                 return -1;
             }
@@ -284,7 +284,7 @@ int radProfiler::BinarySearchSampleProfileArrayByHashedName( radKey HashedName )
         }
         else
         {
-            if ( uTop == 0 )
+            if (uTop == 0)
             {
                 return -1;
             }
@@ -292,7 +292,7 @@ int radProfiler::BinarySearchSampleProfileArrayByHashedName( radKey HashedName )
         }
     }
 
-    if ( bFound )
+    if (bFound)
     {
         return uMid;
     }

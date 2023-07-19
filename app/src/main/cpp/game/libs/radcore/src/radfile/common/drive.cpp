@@ -44,22 +44,21 @@
 // Returns:     
 //------------------------------------------------------------------------------
 
-radDrive::radDrive( )
-    :
-    radSafeRefCount( 1 ),
-    m_CallbackHead( NULL ),
-    m_CallbackTail( NULL ),
-    m_ErrorBehaviour( IRadDrive::Fail ),
-    m_pErrorUserSemaphore( NULL ),
-    m_pErrorThread( NULL ),
-    m_pErrorCallback( NULL ),
-    m_pUserData( NULL ),
-    m_InError( false ),
-    m_NotifyClear( true ),
-    m_InCallback( false ),
-    m_LastError( WrongMedia ), // make certain that we get initialized with the current disc
-    m_pDriveThread( NULL )
-{
+radDrive::radDrive()
+        :
+        radSafeRefCount(1),
+        m_CallbackHead(NULL),
+        m_CallbackTail(NULL),
+        m_ErrorBehaviour(IRadDrive::Fail),
+        m_pErrorUserSemaphore(NULL),
+        m_pErrorThread(NULL),
+        m_pErrorCallback(NULL),
+        m_pUserData(NULL),
+        m_InError(false),
+        m_NotifyClear(true),
+        m_InCallback(false),
+        m_LastError(WrongMedia), // make certain that we get initialized with the current disc
+        m_pDriveThread(NULL) {
 #ifdef RAD_DEBUG
     m_pNumRefFiles = 0;
     m_pNumRefDrives = 0;
@@ -77,9 +76,9 @@ radDrive::radDrive( )
 //
 //------------------------------------------------------------------------------
 
-radDrive::~radDrive( )
-{
-    rAssertMsg( m_CallbackHead == NULL, "radFileSystem: destroying drive with outstanding callbacks." );
+radDrive::~radDrive() {
+    rAssertMsg(m_CallbackHead == NULL,
+               "radFileSystem: destroying drive with outstanding callbacks.");
 }
 
 //=============================================================================
@@ -92,11 +91,10 @@ radDrive::~radDrive( )
 // Returns:     
 //------------------------------------------------------------------------------
 
-radFileError radDrive::GetLastError( void )
-{
-    Lock( );
+radFileError radDrive::GetLastError(void) {
+    Lock();
     radFileError lastError = m_LastError;
-    Unlock( );
+    Unlock();
     return lastError;
 }
 
@@ -110,8 +108,7 @@ radFileError radDrive::GetLastError( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-const IRadDrive::MediaInfo* radDrive::GetMediaInfo( )
-{
+const IRadDrive::MediaInfo *radDrive::GetMediaInfo() {
     return &m_MediaInfo;
 }
 
@@ -125,23 +122,19 @@ const IRadDrive::MediaInfo* radDrive::GetMediaInfo( )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radDrive::AddCallback( CompletionCallbackRequest* pCallback )
-{
-    Lock( );
-    
-    if ( m_CallbackHead == NULL )
-    {
+void radDrive::AddCallback(CompletionCallbackRequest *pCallback) {
+    Lock();
+
+    if (m_CallbackHead == NULL) {
         m_CallbackHead = pCallback;
-    }
-    else
-    {
+    } else {
         m_CallbackTail->m_Next = pCallback;
     }
 
     pCallback->m_Next = NULL;
     m_CallbackTail = pCallback;
 
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -154,83 +147,70 @@ void radDrive::AddCallback( CompletionCallbackRequest* pCallback )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radDrive::Service( void )
-{
+void radDrive::Service(void) {
     //
     // Get the active thread and go through the callback queue
     //
-    IRadThread* pThread = ::radThreadGetActiveThread( );
+    IRadThread *pThread = ::radThreadGetActiveThread();
 
-    Lock( );
-    
-    CompletionCallbackRequest** ppCallback = &m_CallbackHead;
-    CompletionCallbackRequest*  pEnd = NULL;
+    Lock();
 
-    while ( *ppCallback != NULL )
-    {
-        if ( (*ppCallback)->IsRegisteredThread( pThread ) )
-        {
+    CompletionCallbackRequest **ppCallback = &m_CallbackHead;
+    CompletionCallbackRequest *pEnd = NULL;
+
+    while (*ppCallback != NULL) {
+        if ((*ppCallback)->IsRegisteredThread(pThread)) {
             //
             // Take the callback off the list so it doesn't get called twice.
             //
-            CompletionCallbackRequest* pCallback = *ppCallback;
-            *ppCallback = ( CompletionCallbackRequest* ) pCallback->m_Next;
-            
+            CompletionCallbackRequest *pCallback = *ppCallback;
+            *ppCallback = (CompletionCallbackRequest *) pCallback->m_Next;
+
             //
             // Unlock for the actual callback, so we don't deadlock
             //
-            Unlock( );
-            pCallback->callback( );
-            Lock( );
+            Unlock();
+            pCallback->callback();
+            Lock();
 
             delete pCallback;
-        }
-        else
-        {
+        } else {
             pEnd = *ppCallback;
-            CompletionCallbackRequest* pCallback = ( CompletionCallbackRequest* ) (*ppCallback)->m_Next;
+            CompletionCallbackRequest *pCallback = (CompletionCallbackRequest *) (*ppCallback)->m_Next;
             ppCallback = &pCallback;
         }
     }
 
     m_CallbackTail = pEnd;
-    
+
     //
     // Global Error handler
     //
-    if ( m_InError == true && m_pErrorCallback != NULL )
-    {
+    if (m_InError == true && m_pErrorCallback != NULL) {
         //
         // If we are in a callback, don't call it again!
         //
-        if ( m_pErrorThread == ::radThreadGetActiveThread( ) && !m_InCallback )
-        {
+        if (m_pErrorThread == ::radThreadGetActiveThread() && !m_InCallback) {
             m_InCallback = true;
-            Unlock( );
+            Unlock();
 
-            if ( m_pUserData == NULL )
-            {
-                ResumeRequest( 
-                    m_pErrorCallback->OnDriveError( m_LastError, GetDriveName( ), (void*)(m_pDriveThread->GetCurrentRequest()) )
-                    );
-            }
-            else
-            {
-                ResumeRequest( 
-                    m_pErrorCallback->OnDriveError( m_LastError, GetDriveName( ), m_pUserData )
-                    );
+            if (m_pUserData == NULL) {
+                ResumeRequest(
+                        m_pErrorCallback->OnDriveError(m_LastError, GetDriveName(),
+                                                       (void *) (m_pDriveThread->GetCurrentRequest()))
+                );
+            } else {
+                ResumeRequest(
+                        m_pErrorCallback->OnDriveError(m_LastError, GetDriveName(), m_pUserData)
+                );
             }
 
             m_InCallback = false;
+        } else {
+            Unlock();
         }
-        else
-        {
-            Unlock( );
-        }
-    }
-    else
-    {
-        Unlock( );
+    } else {
+        Unlock();
     }
 }
 
@@ -247,16 +227,15 @@ void radDrive::Service( void )
 // Notes:       sets behaviour to Suspend
 //------------------------------------------------------------------------------
 
-void radDrive::RegisterErrorHandler( IRadDriveErrorCallback* callback, void* pUserData )
-{
-    rAssert( m_pErrorCallback == NULL );
+void radDrive::RegisterErrorHandler(IRadDriveErrorCallback *callback, void *pUserData) {
+    rAssert(m_pErrorCallback == NULL);
 
-    Lock( );
-    m_pErrorThread = ::radThreadGetActiveThread( );
+    Lock();
+    m_pErrorThread = ::radThreadGetActiveThread();
     m_pErrorCallback = callback;
     m_pUserData = pUserData;
     m_ErrorBehaviour = IRadDrive::Suspend;
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -271,15 +250,15 @@ void radDrive::RegisterErrorHandler( IRadDriveErrorCallback* callback, void* pUs
 // Notes:       sets behaviour to Fail
 //------------------------------------------------------------------------------
 
-void radDrive::UnregisterErrorHandler( IRadDriveErrorCallback* callback )
-{
-    rAssertMsg( m_pErrorCallback == callback, "radFileSystem: cannot unregister a different callback." );
+void radDrive::UnregisterErrorHandler(IRadDriveErrorCallback *callback) {
+    rAssertMsg(m_pErrorCallback == callback,
+               "radFileSystem: cannot unregister a different callback.");
 
-    Lock( );
+    Lock();
     m_pErrorCallback = NULL;
     m_pErrorThread = NULL;
     m_ErrorBehaviour = IRadDrive::Fail;
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -294,14 +273,13 @@ void radDrive::UnregisterErrorHandler( IRadDriveErrorCallback* callback )
 // Notes:       sets behaviour to Suspend
 //------------------------------------------------------------------------------
 
-void radDrive::RegisterErrorEvent( IRadThreadSemaphore* pSemaphore )
-{
-    rAssert( m_pErrorUserSemaphore == NULL );
+void radDrive::RegisterErrorEvent(IRadThreadSemaphore *pSemaphore) {
+    rAssert(m_pErrorUserSemaphore == NULL);
 
-    Lock( );
+    Lock();
     m_pErrorUserSemaphore = pSemaphore;
     m_ErrorBehaviour = IRadDrive::Suspend;
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -316,14 +294,14 @@ void radDrive::RegisterErrorEvent( IRadThreadSemaphore* pSemaphore )
 // Notes:       sets behaviour to Fail
 //------------------------------------------------------------------------------
 
-void radDrive::UnregisterErrorEvent( IRadThreadSemaphore* pSemaphore )
-{
-    rAssertMsg( m_pErrorUserSemaphore == pSemaphore, "radFileSystem: cannot unregister a different event." );
+void radDrive::UnregisterErrorEvent(IRadThreadSemaphore *pSemaphore) {
+    rAssertMsg(m_pErrorUserSemaphore == pSemaphore,
+               "radFileSystem: cannot unregister a different event.");
 
-    Lock( );
+    Lock();
     m_pErrorUserSemaphore = pSemaphore;
     m_ErrorBehaviour = IRadDrive::Fail;
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -336,22 +314,20 @@ void radDrive::UnregisterErrorEvent( IRadThreadSemaphore* pSemaphore )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radDrive::SetDefaultErrorBehaviour( IRadDrive::ErrorBehaviour behaviour )
-{
-    Lock( );
+void radDrive::SetDefaultErrorBehaviour(IRadDrive::ErrorBehaviour behaviour) {
+    Lock();
     m_ErrorBehaviour = behaviour;
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
 // Function:    radDrive::GetDefaultErrorBehaviour
 //=============================================================================
 
-IRadDrive::ErrorBehaviour radDrive::GetDefaultErrorBehaviour( void )
-{
-    Lock( );
+IRadDrive::ErrorBehaviour radDrive::GetDefaultErrorBehaviour(void) {
+    Lock();
     IRadDrive::ErrorBehaviour errorBehaviour = m_ErrorBehaviour;
-    Unlock( );
+    Unlock();
     return errorBehaviour;
 }
 
@@ -367,10 +343,9 @@ IRadDrive::ErrorBehaviour radDrive::GetDefaultErrorBehaviour( void )
 // Notes:       this must be called if an error event is used.
 //------------------------------------------------------------------------------
 
-void radDrive::ResumeRequest( bool retry )
-{
+void radDrive::ResumeRequest(bool retry) {
     m_InError = false;
-    m_pDriveThread->ResumeRequest( retry );
+    m_pDriveThread->ResumeRequest(retry);
 }
 
 //=============================================================================
@@ -384,8 +359,7 @@ void radDrive::ResumeRequest( bool retry )
 // Returns:     true if there is an error state
 //------------------------------------------------------------------------------
 
-bool radDrive::CheckForErrorState( void )
-{
+bool radDrive::CheckForErrorState(void) {
     return m_InError;
 }
 
@@ -393,18 +367,14 @@ bool radDrive::CheckForErrorState( void )
 // Function:    radDrive::SetErrorState
 //=============================================================================
 
-void radDrive::SetErrorState( void )
-{
+void radDrive::SetErrorState(void) {
     m_InError = true;
-    Lock( );
-    if ( m_pErrorUserSemaphore != NULL )
-    {
-        Unlock( );
-        m_pErrorUserSemaphore->Signal( );
-    }
-    else
-    {
-        Unlock( );
+    Lock();
+    if (m_pErrorUserSemaphore != NULL) {
+        Unlock();
+        m_pErrorUserSemaphore->Signal();
+    } else {
+        Unlock();
     }
 }
 
@@ -419,8 +389,7 @@ void radDrive::SetErrorState( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radDrive::SetErrorClearReporting( bool notifyOnErrorClear )
-{
+void radDrive::SetErrorClearReporting(bool notifyOnErrorClear) {
     m_NotifyClear = notifyOnErrorClear;
 }
 
@@ -428,8 +397,7 @@ void radDrive::SetErrorClearReporting( bool notifyOnErrorClear )
 // Function:    radDrive::SetErrorClearReporting
 //=============================================================================
 
-bool radDrive::GetErrorClearReporting( void )
-{
+bool radDrive::GetErrorClearReporting(void) {
     return m_NotifyClear;
 }
 
@@ -438,65 +406,58 @@ bool radDrive::GetErrorClearReporting( void )
 //=============================================================================
 
 void radDrive::QueueRequest
-( 
-    radRequest*          pRequest,
-    radFilePriority      priority,
-    bool                 toHead
-)     
-{
-    m_pDriveThread->QueueRequest( pRequest, priority, toHead );
+        (
+                radRequest *pRequest,
+                radFilePriority priority,
+                bool toHead
+        ) {
+    m_pDriveThread->QueueRequest(pRequest, priority, toHead);
 }
 
 //=============================================================================
 // Function:    radDrive::CancelRequests
 //=============================================================================
 
-void radDrive::CancelRequests( void* key, radFilePriority priority )
-{
-    m_pDriveThread->CancelRequests( key, priority );
+void radDrive::CancelRequests(void *key, radFilePriority priority) {
+    m_pDriveThread->CancelRequests(key, priority);
 }
 
 //=============================================================================
 // Function:    radDrive::OutstandingRequests
 //=============================================================================
 
-bool radDrive::OutstandingRequests( void )
-{
-    return m_pDriveThread->OutstandingRequests( );
+bool radDrive::OutstandingRequests(void) {
+    return m_pDriveThread->OutstandingRequests();
 }
 
 //=============================================================================
 // Function:    radDrive::OutstandingCallbacks
 //=============================================================================
 
-bool radDrive::OutstandingCallbacks( void )
-{
-    return ( m_CallbackHead != NULL );
+bool radDrive::OutstandingCallbacks(void) {
+    return (m_CallbackHead != NULL);
 }
 
 //=============================================================================
 // Function:    radDrive::RegisterCementLibrary
 //=============================================================================
 
-void radDrive::RegisterCementLibrary( radCementLibrary* pLib )
-{
-    m_LibraryList.AddLibrary( pLib );
+void radDrive::RegisterCementLibrary(radCementLibrary *pLib) {
+    m_LibraryList.AddLibrary(pLib);
 }
 
 //=============================================================================
 // Function:    radDrive::UnregisterCementLibrary
 //=============================================================================
-void radDrive::UnregisterCementLibrary( radCementLibrary* pLib )
-{
-    m_LibraryList.RemoveLibrary( pLib );
+void radDrive::UnregisterCementLibrary(radCementLibrary *pLib) {
+    m_LibraryList.RemoveLibrary(pLib);
 }
 
 //=============================================================================
 // Function:    radDrive::GetLibraryList
 //=============================================================================
 
-radCementLibraryList* radDrive::GetLibraryList( void )
-{
+radCementLibraryList *radDrive::GetLibraryList(void) {
     return &m_LibraryList;
 }
 
@@ -510,8 +471,7 @@ radCementLibraryList* radDrive::GetLibraryList( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-unsigned int radDrive::GetCreationSize( radMemcardInfo* memcardInfo, unsigned int size )
-{
+unsigned int radDrive::GetCreationSize(radMemcardInfo *memcardInfo, unsigned int size) {
     return size;
 }
 
@@ -519,88 +479,79 @@ unsigned int radDrive::GetCreationSize( radMemcardInfo* memcardInfo, unsigned in
 // Basic operations which don't need to be supported.
 //=============================================================================
 
-radDrive::CompletionStatus radDrive::CommitFile( radFileHandle handle, const char* fileName )
-{
+radDrive::CompletionStatus radDrive::CommitFile(radFileHandle handle, const char *fileName) {
     return Complete;
 }
 
-radDrive::CompletionStatus radDrive::OpenFile( const char* fileName, 
-                                       radFileOpenFlags flags, 
-                                       bool writeAccess, 
-                                       radFileHandle* pHandle, 
-                                       unsigned int* pSize )
-{
-    rWarningMsg( false, "This drive does not support the OpenFile function." );
-    return( Error );
+radDrive::CompletionStatus radDrive::OpenFile(const char *fileName,
+                                              radFileOpenFlags flags,
+                                              bool writeAccess,
+                                              radFileHandle *pHandle,
+                                              unsigned int *pSize) {
+    rWarningMsg(false, "This drive does not support the OpenFile function.");
+    return (Error);
 }
 
-radDrive::CompletionStatus radDrive::OpenSaveGame( const char* fileName, 
-                                       radFileOpenFlags flags, 
-                                       bool writeAccess,
-                                       radMemcardInfo* memcardInfo,
-                                       unsigned int maxSize,
-                                       radFileHandle* pHandle, 
-                                       unsigned int* pSize )
-{
-    rWarningMsg( false, "This drive does not support the OpenSaveGame function." );
-    return( Error );
+radDrive::CompletionStatus radDrive::OpenSaveGame(const char *fileName,
+                                                  radFileOpenFlags flags,
+                                                  bool writeAccess,
+                                                  radMemcardInfo *memcardInfo,
+                                                  unsigned int maxSize,
+                                                  radFileHandle *pHandle,
+                                                  unsigned int *pSize) {
+    rWarningMsg(false, "This drive does not support the OpenSaveGame function.");
+    return (Error);
 }
 
-radDrive::CompletionStatus radDrive::WriteFile( radFileHandle handle,
-                            const char* fileName,
-                            IRadFile::BufferedReadState state,
-                            unsigned int position, 
-                            const void* pData, 
-                            unsigned int bytesToWrite, 
-                            unsigned int* bytesWritten, 
-                            unsigned int* size, 
-                            radMemorySpace pDataSpace )
-{
-    rWarningMsg( false, "This drive does not support the WriteFile function." );
-    return( Error );
+radDrive::CompletionStatus radDrive::WriteFile(radFileHandle handle,
+                                               const char *fileName,
+                                               IRadFile::BufferedReadState state,
+                                               unsigned int position,
+                                               const void *pData,
+                                               unsigned int bytesToWrite,
+                                               unsigned int *bytesWritten,
+                                               unsigned int *size,
+                                               radMemorySpace pDataSpace) {
+    rWarningMsg(false, "This drive does not support the WriteFile function.");
+    return (Error);
 }
 
-radDrive::CompletionStatus radDrive::Format( void )
-{
-    rWarningMsg( false, "This drive does not support the Format function." );
-    return( Error );
+radDrive::CompletionStatus radDrive::Format(void) {
+    rWarningMsg(false, "This drive does not support the Format function.");
+    return (Error);
 }
 
-radDrive::CompletionStatus radDrive::CreateDir( const char* pName )
-{
-    rWarningMsg( false, "This drive does not support the CreateDir function." );
-    return( Error );
+radDrive::CompletionStatus radDrive::CreateDir(const char *pName) {
+    rWarningMsg(false, "This drive does not support the CreateDir function.");
+    return (Error);
 }
 
-radDrive::CompletionStatus radDrive::DestroyDir( const char* pName )
-{
-    rWarningMsg( false, "This drive does not support the DestroyDir function." );
-    return( Error );
+radDrive::CompletionStatus radDrive::DestroyDir(const char *pName) {
+    rWarningMsg(false, "This drive does not support the DestroyDir function.");
+    return (Error);
 }
 
-radDrive::CompletionStatus radDrive::DestroyFile( const char* filename )
-{
-    rWarningMsg( false, "This drive does not support the DestroyFile function." );
-    return( Error );
+radDrive::CompletionStatus radDrive::DestroyFile(const char *filename) {
+    rWarningMsg(false, "This drive does not support the DestroyFile function.");
+    return (Error);
 }
 
 radDrive::CompletionStatus radDrive::FindFirst
-( 
-    const char* searchSpec, IRadDrive::DirectoryInfo* pDirectoryInfo, radFileDirHandle* pHandle, bool firstSearch 
-)
-{
-    rWarningMsg( false, "This drive does not support the FindFirst function." );
-    return( Error );
+        (
+                const char *searchSpec, IRadDrive::DirectoryInfo *pDirectoryInfo,
+                radFileDirHandle *pHandle, bool firstSearch
+        ) {
+    rWarningMsg(false, "This drive does not support the FindFirst function.");
+    return (Error);
 }
 
-radDrive::CompletionStatus radDrive::FindNext( radFileDirHandle* pHandle, IRadDrive::DirectoryInfo* pDirectoryInfo )
-{
-    rWarningMsg( false, "This drive does not support the FindNext function." );
-    return( Error );
+radDrive::CompletionStatus
+radDrive::FindNext(radFileDirHandle *pHandle, IRadDrive::DirectoryInfo *pDirectoryInfo) {
+    rWarningMsg(false, "This drive does not support the FindNext function.");
+    return (Error);
 }
 
-radDrive::CompletionStatus radDrive::FindClose( radFileDirHandle* pHandle )
-{
-    rWarningMsg( false, "This drive does not support the FindClose function." );
-    return( Complete );
+radDrive::CompletionStatus radDrive::FindClose(radFileDirHandle *pHandle) {
+    rWarningMsg(false, "This drive does not support the FindClose function.");
+    return (Complete);
 }

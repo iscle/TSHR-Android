@@ -13,7 +13,7 @@
 //
 //=============================================================================
 
-#ifndef	RAD1394SERVER_H
+#ifndef    RAD1394SERVER_H
 #define RAD1394SERVER_H
 
 //=============================================================================
@@ -51,21 +51,19 @@
 // This structure is the format of our RPC read/write data requests. Used for communication
 // with the host EE
 //
-struct RPCReadWriteInfo
-{
-    unsigned int    m_Address;                  // Where is shared memory to access
-    unsigned int    m_Size;                     // Size of transfer
-    unsigned int    m_Atomic;                   // Used to indicate interrups should be disabled
-    unsigned int    m_LocalWrite;               // Indicates local write (boolean)
+struct RPCReadWriteInfo {
+    unsigned int m_Address;                  // Where is shared memory to access
+    unsigned int m_Size;                     // Size of transfer
+    unsigned int m_Atomic;                   // Used to indicate interrups should be disabled
+    unsigned int m_LocalWrite;               // Indicates local write (boolean)
 };
 
 //
 // Used for get and set size requests.
 //
-struct RPCGetSetMemorySize
-{
-    unsigned int    m_Size;
-    unsigned int    m_Filler[ 3 ];
+struct RPCGetSetMemorySize {
+    unsigned int m_Size;
+    unsigned int m_Filler[3];
 };
 
 #endif

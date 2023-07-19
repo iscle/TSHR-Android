@@ -61,22 +61,22 @@
 //
 // Typical usage scenario:
 // ... Create and name some accumulators.
-// radStatInitialize( "mymodulename", 2 );
-// radStatSetAccumulatorName( "mymodulename", 0, "Time" );
-// radStatSetAccumulatorName( "mymodulename", 1, "Memory" );
+// radStatInitialize("mymodulename", 2);
+// radStatSetAccumulatorName("mymodulename", 0, "Time");
+// radStatSetAccumulatorName("mymodulename", 1, "Memory");
 // ... measure some processing time
-// radStatAddSample( "mymodulename", "Time", timeSpent );
+// radStatAddSample("mymodulename", "Time", timeSpent);
 // ... allocate some memory
-// radStatAddSample( "mymodulename", "Memory", numBytes );
+// radStatAddSample("mymodulename", "Memory", numBytes);
 // ... free some memory
-// radStatAddSample( "mymodulename", "Memory", -numBytes );
+// radStatAddSample("mymodulename", "Memory", -numBytes);
 // ... at end of run, get info
-// radStatQuery( "mymodulename", "Time", NULL, &totalTime, NULL, NULL, NULL, NULL );
-// printf( "Total time is %f\n", totalTime );
-// radStatQuery( "mymodulename", "Memory", NULL, NULL, &avgMem, &maxMem, NULL, NULL );
-// printf( "Memory usage peak = %d bytes, average = %d bytes\n", (int)maxMem, (int)avgMem );
+// radStatQuery("mymodulename", "Time", NULL, &totalTime, NULL, NULL, NULL, NULL);
+// printf("Total time is %f\n", totalTime);
+// radStatQuery("mymodulename", "Memory", NULL, NULL, &avgMem, &maxMem, NULL, NULL);
+// printf("Memory usage peak = %d bytes, average = %d bytes\n", (int)maxMem, (int)avgMem);
 // ... free accumulators when program exits
-// radStatTerminate( "mymodulename" );
+// radStatTerminate("mymodulename");
 //
 
 #ifndef  RADSTATS_HPP
@@ -86,8 +86,8 @@
 // Build Configuration Check
 //=============================================================================
 
-#if !defined(RAD_DEBUG) && !defined(RAD_TUNE) && !defined(RAD_RELEASE) 
-    #error 'FTech requires definition of RAD_DEBUG, RAD_TUNE, or RAD_RELEASE'
+#if !defined(RAD_DEBUG) && !defined(RAD_TUNE) && !defined(RAD_RELEASE)
+#error 'FTech requires definition of RAD_DEBUG, RAD_TUNE, or RAD_RELEASE'
 #endif
 
 //=============================================================================
@@ -115,35 +115,35 @@
 //
 
 #ifdef PROFILE
-void radStatInitialize_Implementation( const char* moduleName, unsigned int numEntries, 
-                                       unsigned int numSamplesPerEntry, radMemoryAllocator alloc );
-void radStatTerminate_Implementation( const char* moduleName );
-void radStatSetAccumulatorName_Implementation( const char* moduleName, unsigned int index,
-                                               const char* accumName );
-void radStatGetAccumulatorName_Implementation( const char* moduleName, unsigned int index,
-                                               char* accumName );
-void radStatReset_Implementation( const char* moduleName, unsigned int index,
-                                  unsigned int numSamplesToStore );
-void radStatReset_Implementation( const char* moduleName, const char* accumName,
-                                  unsigned int numSamplesToStore );
-void radStatAddSample_Implementation( const char* moduleName, unsigned int index, float sample );
-void radStatAddSample_Implementation( const char* moduleName, const char* accumName, float sample );
-void radStatAddSample_Implementation( const char* moduleName, unsigned int index, int sample );
-void radStatAddSample_Implementation( const char* moduleName, const char* accumName, int sample );
-void radStatQuery_Implementation( const char* moduleName, unsigned int index,
+void radStatInitialize_Implementation(const char* moduleName, unsigned int numEntries,
+                                       unsigned int numSamplesPerEntry, radMemoryAllocator alloc);
+void radStatTerminate_Implementation(const char* moduleName);
+void radStatSetAccumulatorName_Implementation(const char* moduleName, unsigned int index,
+                                               const char* accumName);
+void radStatGetAccumulatorName_Implementation(const char* moduleName, unsigned int index,
+                                               char* accumName);
+void radStatReset_Implementation(const char* moduleName, unsigned int index,
+                                  unsigned int numSamplesToStore);
+void radStatReset_Implementation(const char* moduleName, const char* accumName,
+                                  unsigned int numSamplesToStore);
+void radStatAddSample_Implementation(const char* moduleName, unsigned int index, float sample);
+void radStatAddSample_Implementation(const char* moduleName, const char* accumName, float sample);
+void radStatAddSample_Implementation(const char* moduleName, unsigned int index, int sample);
+void radStatAddSample_Implementation(const char* moduleName, const char* accumName, int sample);
+void radStatQuery_Implementation(const char* moduleName, unsigned int index,
                                   unsigned int* pNumSamples, float* pTotal, 
                                   float* pMean, float* pMax, float* pMin,
-                                  float* pStandardDeviation );
-void radStatQuery_Implementation( const char* moduleName, const char* accumName,
+                                  float* pStandardDeviation);
+void radStatQuery_Implementation(const char* moduleName, const char* accumName,
                                   unsigned int* pNumSamples, float* pTotal, 
                                   float* pMean, float* pMax, float* pMin,
-                                  float* pStandardDeviation );
-void radStatQueryPercentile_Implementation( const char* moduleName, unsigned int index,
-                                            unsigned int percentile, float* pValueBelow );
-void radStatQueryPercentile_Implementation( const char* moduleName, const char* accumName,
-                                            unsigned int percentile, float* pValueBelow );
-void radStatEnumerateAccumulators_Implementation( const char* modulePattern, const char* accumPattern,
-                       void (*enumerationCallback)( const char* moduleName, const char* accumName ) );
+                                  float* pStandardDeviation);
+void radStatQueryPercentile_Implementation(const char* moduleName, unsigned int index,
+                                            unsigned int percentile, float* pValueBelow);
+void radStatQueryPercentile_Implementation(const char* moduleName, const char* accumName,
+                                            unsigned int percentile, float* pValueBelow);
+void radStatEnumerateAccumulators_Implementation(const char* modulePattern, const char* accumPattern,
+                       void (*enumerationCallback)(const char* moduleName, const char* accumName));
 
 #endif // PROFILE
 
@@ -152,25 +152,25 @@ void radStatEnumerateAccumulators_Implementation( const char* modulePattern, con
 //
 
 #ifdef PROFILE
-    #define radStatInitialize( x, y, z, a ) ( radStatInitialize_Implementation( x, y, z, a ) )
-    #define radStatTerminate( x ) ( radStatTerminate_Implementation( x ) )
-    #define radStatReset( x, y, z ) ( radStatReset_Implementation( x, y, z ) )
-    #define radStatAddSample( x, y, z ) ( radStatAddSample_Implementation ( x, y, z ) )
-    #define radStatQuery( a, b, c, d, e, f, g, h ) ( radStatQuery_Implementation( a, b, c, d, e, f, g, h ) )
-    #define radStatQueryPercentile( a, b, c, d ) ( radStatQueryPercentile_Implementation( a, b, c, d ) )
-    #define radStatSetAccumulatorName( x, y, z ) ( radStatSetAccumulatorName_Implementation( x, y, z ) )
-    #define radStatGetAccumulatorName( x, y, z ) ( radStatGetAccumulatorName_Implementation( x, y, z ) )
-    #define radStatEnumerateAccumulators( x, y, z ) ( radStatEnumerateAccumulators_Implementation( x, y, z ) )
+#define radStatInitialize(x, y, z, a) (radStatInitialize_Implementation(x, y, z, a))
+#define radStatTerminate(x) (radStatTerminate_Implementation(x))
+#define radStatReset(x, y, z) (radStatReset_Implementation(x, y, z))
+#define radStatAddSample(x, y, z) (radStatAddSample_Implementation (x, y, z))
+#define radStatQuery(a, b, c, d, e, f, g, h) (radStatQuery_Implementation(a, b, c, d, e, f, g, h))
+#define radStatQueryPercentile(a, b, c, d) (radStatQueryPercentile_Implementation(a, b, c, d))
+#define radStatSetAccumulatorName(x, y, z) (radStatSetAccumulatorName_Implementation(x, y, z))
+#define radStatGetAccumulatorName(x, y, z) (radStatGetAccumulatorName_Implementation(x, y, z))
+#define radStatEnumerateAccumulators(x, y, z) (radStatEnumerateAccumulators_Implementation(x, y, z))
 #else
-    #define radStatInitialize( x, y, z, a ) ((void)0)
-    #define radStatTerminate( x ) ((void)0)
-    #define radStatReset( x, y, z ) ((void)0)
-    #define radStatAddSample( x, y, z ) ((void)0)
-    #define radStatQuery( a, b, c, d, e, f, g, h ) ((void)0)
-    #define radStatQueryPercentile( a, b, c, d ) ((void)0)
-    #define radStatSetAccumulatorName( x, y, z ) ((void)0)
-    #define radStatGetAccumulatorName( x, y, z ) ((void)0)
-    #define radStatEnumerateAccumulators( x, y, z ) ((void)0)
+#define radStatInitialize(x, y, z, a) ((void)0)
+#define radStatTerminate(x) ((void)0)
+#define radStatReset(x, y, z) ((void)0)
+#define radStatAddSample(x, y, z) ((void)0)
+#define radStatQuery(a, b, c, d, e, f, g, h) ((void)0)
+#define radStatQueryPercentile(a, b, c, d) ((void)0)
+#define radStatSetAccumulatorName(x, y, z) ((void)0)
+#define radStatGetAccumulatorName(x, y, z) ((void)0)
+#define radStatEnumerateAccumulators(x, y, z) ((void)0)
 #endif // PROFILE
 
 
@@ -185,20 +185,21 @@ void radStatEnumerateAccumulators_Implementation( const char* modulePattern, con
 // a sequence of numbers and can then answer queries about the
 // data it has recorded. 
 //
-struct IRadSimpleStatistic : public IRefCount
-{
+struct IRadSimpleStatistic : public IRefCount {
     //
     // Clear the accumulated statistics and optionally
     // resize the buffer used for recording them.
     //
-    virtual void Reset( void ) = 0;
-    virtual void Reset( unsigned int bufferSize ) = 0;
+    virtual void Reset(void) = 0;
+
+    virtual void Reset(unsigned int bufferSize) = 0;
 
     //
     // Convenience methods to assign a name to the accumulator.
     //
-    virtual void SetName( const char* name ) = 0;
-    virtual void GetName( char* pName ) const = 0;
+    virtual void SetName(const char *name) = 0;
+
+    virtual void GetName(char *pName) const = 0;
 
     //
     // Accessor methods.
@@ -207,49 +208,51 @@ struct IRadSimpleStatistic : public IRefCount
     //
     // Record a new measurement.
     //
-    virtual void AddSample( float sample ) = 0;
-    virtual void AddSample( int sample ) = 0;
+    virtual void AddSample(float sample) = 0;
+
+    virtual void AddSample(int sample) = 0;
 
     //
     // Get the sum of all samples recorded.
     //
-    virtual float GetTotal( void ) const = 0;
+    virtual float GetTotal(void) const = 0;
 
     //
     // Get the number of samples recorded.
     //
-    virtual unsigned int GetNumSamples( void ) const = 0;
+    virtual unsigned int GetNumSamples(void) const = 0;
 
     //
     // Get the max and min sample values recorded.
     //
-    virtual float GetMax( void ) const = 0;
-    virtual float GetMin( void ) const = 0;
+    virtual float GetMax(void) const = 0;
+
+    virtual float GetMin(void) const = 0;
 
     //
     // Get the mean (average) of the samples.
     //
-    virtual float GetMean( void ) = 0;
+    virtual float GetMean(void) = 0;
 
     //
     // Compute the standard deviation of the samples
     // saved in the internal buffer.
     //
-    virtual float GetStandardDeviation( void ) = 0;
+    virtual float GetStandardDeviation(void) = 0;
 
     //
     // Answer a percentile query about the samples
     // saved in the internal buffer.
     //
-    virtual float GetPercentile( unsigned int percent ) = 0;
+    virtual float GetPercentile(unsigned int percent) = 0;
 };
 
 //
 // Factory for creating a new statistic object.
 //
-void radStatCreateSimpleStatistic( IRadSimpleStatistic** pNewStat, 
-                                   unsigned int pBufferSize = RADSTAT_DEFAULT_NUM_SAMPLES,
-                                   radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT );
+void radStatCreateSimpleStatistic(IRadSimpleStatistic **pNewStat,
+                                  unsigned int pBufferSize = RADSTAT_DEFAULT_NUM_SAMPLES,
+                                  radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT);
 
 
 #endif // RADSTATS

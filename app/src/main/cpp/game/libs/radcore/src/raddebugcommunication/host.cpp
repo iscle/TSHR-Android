@@ -24,6 +24,7 @@
 //=============================================================================
 
 #include "pch.hpp"
+
 #ifdef RAD_WIN32
 
 //=============================================================================
@@ -110,59 +111,59 @@ static rDbgComHost*  s_theHost = NULL;
 // Notes:
 //------------------------------------------------------------------------------
 
-rDbgComHost::rDbgComHost( void )
+rDbgComHost::rDbgComHost(void)
     :
-    m_ReferenceCount( 1 ),
-    m_MutexHandle( NULL ),
-    m_MemoryFileHandle( NULL ),
-    m_TargetTable( NULL ),
-    m_hWnd( NULL )
+    m_ReferenceCount(1),
+    m_MutexHandle(NULL),
+    m_MemoryFileHandle(NULL),
+    m_TargetTable(NULL),
+    m_hWnd(NULL)
 {
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "rDbgComHost" );
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "rDbgComHost");
 
     //
     // First obtain access to the mutex we use to protect manipulation of 
     // shared memory.
     //
-    m_MutexHandle = CreateMutex( NULL, FALSE, MUTEX_NAME );
-    rAssert( m_MutexHandle != NULL );
+    m_MutexHandle = CreateMutex(NULL, FALSE, MUTEX_NAME);
+    rAssert(m_MutexHandle != NULL);
 
     //
     // Now gain ownership of this mutex. Wait forever.
     //
-    WaitForSingleObject( m_MutexHandle, INFINITE );
+    WaitForSingleObject(m_MutexHandle, INFINITE);
 
     //
     // Gain access to the shared memory containing our target information 
     // table. If it does not exist yet, we are responsible for initializing it.
     //
-    m_MemoryFileHandle = CreateFileMapping( (HANDLE) 0xFFFFFFFF, NULL, PAGE_READWRITE, 0, 
-                                            sizeof( TargetInformation ) * MAX_TARGETS,
-                                            MEMORYFILE_NAME );
-    rAssert( m_MemoryFileHandle  != NULL );
+    m_MemoryFileHandle = CreateFileMapping((HANDLE) 0xFFFFFFFF, NULL, PAGE_READWRITE, 0,
+                                            sizeof(TargetInformation) * MAX_TARGETS,
+                                            MEMORYFILE_NAME);
+    rAssert(m_MemoryFileHandle  != NULL);
 
     //
     // Get the last error to see if the file already exists. If not, we are responsible
     // for initializing it.
     //
-    bool AlreadyInitialized = (ERROR_ALREADY_EXISTS == GetLastError( ) );
+    bool AlreadyInitialized = (ERROR_ALREADY_EXISTS == GetLastError());
 
     //
     // Map the view of the file into our process space.
     //
-    m_TargetTable = (TargetInformation*) MapViewOfFile( m_MemoryFileHandle, FILE_MAP_WRITE, 0, 0, 0 );
-    rAssert( m_TargetTable != NULL );
+    m_TargetTable = (TargetInformation*) MapViewOfFile(m_MemoryFileHandle, FILE_MAP_WRITE, 0, 0, 0);
+    rAssert(m_TargetTable != NULL);
 
-    if( !AlreadyInitialized )
+    if(!AlreadyInitialized)
     {
         //
         // Here we are responsible for initializing the shared memory. Do so now.
         // Lets set all records inintially not in use and set protocols to not in use.
         //
-        for( unsigned int i = 0 ; i < MAX_TARGETS ; i++ )
+        for(unsigned int i = 0 ; i <MAX_TARGETS ; i++)
         {
             m_TargetTable[ i ].m_RecordIsValid = false;    
-            for( unsigned int j = 0 ; j < MaxProtocols ; j++ )
+            for(unsigned int j = 0 ; j <MaxProtocols ; j++)
             {
                 m_TargetTable[ i ].m_Protocols[ j ] = 0;
             }
@@ -173,7 +174,7 @@ rDbgComHost::rDbgComHost( void )
         //
         HKEY RegKey;
         DWORD Disposition;
-        LONG result = RegCreateKeyEx( HKEY_CURRENT_USER, 
+        LONG result = RegCreateKeyEx(HKEY_CURRENT_USER,
                                       REGISTRY_KEY,
                                       0,
                                       NULL,
@@ -181,9 +182,9 @@ rDbgComHost::rDbgComHost( void )
                                       KEY_ALL_ACCESS,
                                       NULL,  
                                       &RegKey,
-                                      &Disposition );
+                                      &Disposition);
 
-        rAssert( result == ERROR_SUCCESS );
+        rAssert(result == ERROR_SUCCESS);
     
         //
         // Now eumrate the entries under this key.
@@ -194,18 +195,18 @@ rDbgComHost::rDbgComHost( void )
             DWORD       SubKeyLength;
             FILETIME    FileTime;
             
-            SubKeyLength = sizeof( radDbgComTargetName );
+            SubKeyLength = sizeof(radDbgComTargetName);
             
-            result = RegEnumKeyEx( RegKey, 
+            result = RegEnumKeyEx(RegKey,
                                    Index, 
                                    m_TargetTable[ Index ].m_TargetName,
                                    &SubKeyLength,
                                    0,
                                    NULL,
                                    NULL,
-                                   &FileTime );
+                                   &FileTime);
       
-            if( result == ERROR_SUCCESS )
+            if(result == ERROR_SUCCESS)
             {
                 //
                 // We have found a defintions. Open the key to this target name.
@@ -213,44 +214,44 @@ rDbgComHost::rDbgComHost( void )
                 HKEY TargetKey;
                 DWORD ValueSize;
                 
-                RegOpenKeyEx( RegKey, 
+                RegOpenKeyEx(RegKey,
                               m_TargetTable[ Index ].m_TargetName, 
-                              0, KEY_ALL_ACCESS, &TargetKey );
+                              0, KEY_ALL_ACCESS, &TargetKey);
                 
                 //
                 // Read the three values we stored here.
                 //
-                ValueSize = sizeof( radDbgComIPAddress );
-                RegQueryValueEx( TargetKey, "IPAddress", 0, NULL, 
+                ValueSize = sizeof(radDbgComIPAddress);
+                RegQueryValueEx(TargetKey, "IPAddress", 0, NULL,
                                  (unsigned char*) m_TargetTable[ Index ].m_IpAddress,   
-                                 &ValueSize );
+                                 &ValueSize);
 
-                ValueSize = sizeof( unsigned int );
-                RegQueryValueEx( TargetKey, "Port", 0, NULL, 
+                ValueSize = sizeof(unsigned int);
+                RegQueryValueEx(TargetKey, "Port", 0, NULL,
                                  (unsigned char*) &m_TargetTable[ Index ].m_Port,   
-                                 &ValueSize );
+                                 &ValueSize);
 
-                ValueSize = sizeof( unsigned int );
-                RegQueryValueEx( TargetKey, "Default", 0, NULL, 
+                ValueSize = sizeof(unsigned int);
+                RegQueryValueEx(TargetKey, "Default", 0, NULL,
                                  (unsigned char*) &m_TargetTable[ Index ].m_IsDefault,   
-                                 &ValueSize );
+                                 &ValueSize);
 
                 //
                 // Close the key.
                 //
-                RegCloseKey( TargetKey );
+                RegCloseKey(TargetKey);
                                 
                 m_TargetTable[ Index ].m_RecordIsValid = true;
             }
 
             Index++;
         }
-        while( result == ERROR_SUCCESS );
+        while(result == ERROR_SUCCESS);
 
         //
         // Close the key 
         //
-        RegCloseKey( RegKey );
+        RegCloseKey(RegKey);
 
     }
 
@@ -258,19 +259,19 @@ rDbgComHost::rDbgComHost( void )
     // Since we have the shared memory visble in this process space and it has been
     // initialized, we can release the mutex.
     //
-    ReleaseMutex( m_MutexHandle );
+    ReleaseMutex(m_MutexHandle);
 
     //
     // Register a window class used to field windows messages directed for sockets.
     // First get the parent module instance.
     //
     char Filename[ 256 ];
-    GetModuleFileName( NULL, Filename, sizeof(Filename) );
-    m_hInstance = GetModuleHandle( Filename );
+    GetModuleFileName(NULL, Filename, sizeof(Filename));
+    m_hInstance = GetModuleHandle(Filename);
 
     WNDCLASSEX WindowClass;
     
-    WindowClass.cbSize = sizeof( WNDCLASSEX );
+    WindowClass.cbSize = sizeof(WNDCLASSEX);
     WindowClass.style = 0;
     WindowClass.lpfnWndProc = WindowProcedure;
     WindowClass.cbClsExtra = 0;
@@ -283,7 +284,7 @@ rDbgComHost::rDbgComHost( void )
     WindowClass.lpszClassName = WINDOW_CLASSNAME;
     WindowClass.hIconSm = NULL;
 
-    RegisterClassEx( &WindowClass );    
+    RegisterClassEx(&WindowClass);
    
     //
     // Lets initialize sockets on for the calling processes.We want a socket implementation
@@ -293,10 +294,10 @@ rDbgComHost::rDbgComHost( void )
     WSADATA wsaData;
     int     err;
  
-    wVersionRequested = MAKEWORD( 2, 0 );
-    err = WSAStartup( wVersionRequested, &wsaData );
+    wVersionRequested = MAKEWORD(2, 0);
+    err = WSAStartup(wVersionRequested, &wsaData);
 
-    rAssert( err == 0);
+    rAssert(err == 0);
 
     s_theHost = this;
 }
@@ -312,36 +313,36 @@ rDbgComHost::rDbgComHost( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-rDbgComHost::~rDbgComHost( void )
+rDbgComHost::~rDbgComHost(void)
 {
     //
     // Terminate our access to sockets for this process.
     //
-    WSACleanup( );
+    WSACleanup();
 
     //
     // Remove our window class.
     //
-    UnregisterClass( WINDOW_CLASSNAME, m_hInstance );
+    UnregisterClass(WINDOW_CLASSNAME, m_hInstance);
 
     //
     // Gain ownership of this mutex. Wait forever.
     //
-    WaitForSingleObject( m_MutexHandle, INFINITE );
+    WaitForSingleObject(m_MutexHandle, INFINITE);
 
     //
     // Unmap view of the file and close it.
     //
-    UnmapViewOfFile( m_TargetTable );
+    UnmapViewOfFile(m_TargetTable);
 
-    CloseHandle( m_MemoryFileHandle );
+    CloseHandle(m_MemoryFileHandle);
 
     //
     // Release our mutex.
     //
-    ReleaseMutex( m_MutexHandle );
+    ReleaseMutex(m_MutexHandle);
             
-    CloseHandle( m_MutexHandle );
+    CloseHandle(m_MutexHandle);
 
     //
     // Finally clear the global indicating this system can be unloaded.
@@ -366,42 +367,42 @@ rDbgComHost::~rDbgComHost( void )
 //------------------------------------------------------------------------------
 
 bool rDbgComHost::AddTargetDefinition
-( 
+(
     const radDbgComTargetName   pName,
     const radDbgComIPAddress    pIpAddress,
     unsigned short              port
 )
 {
-    rAssert( strlen( pName ) != 0 );
-    rAssert( strlen( pIpAddress ) != 0 );    
+    rAssert(strlen(pName) != 0);
+    rAssert(strlen(pIpAddress) != 0);
 
     //
     // Now gain ownership of this mutex. Wait forever.
     //
-    WaitForSingleObject( m_MutexHandle, INFINITE );
+    WaitForSingleObject(m_MutexHandle, INFINITE);
     
     //
     // Verify that the target definition does not exist.
     //
     unsigned int freeEntry = MAX_TARGETS;
-    for( unsigned int i = 0 ; i < MAX_TARGETS ; i++ )
+    for(unsigned int i = 0 ; i <MAX_TARGETS ; i++)
     {   
-        if( m_TargetTable[ i ].m_RecordIsValid )
+        if(m_TargetTable[ i ].m_RecordIsValid)
         {
-            if( 0 == stricmp( pName, m_TargetTable[ i ].m_TargetName ) )
+            if(0 == stricmp(pName, m_TargetTable[ i ].m_TargetName))
             {
                 //
                 // Here we have the same name already defined. Return
                 // false.
                 //
-                ReleaseMutex( m_MutexHandle );
+                ReleaseMutex(m_MutexHandle);
 
-                return( false );
+                return(false);
             }
         }
         else
         {
-            if( freeEntry == MAX_TARGETS )
+            if(freeEntry == MAX_TARGETS)
             {
                 freeEntry = i;
             }
@@ -411,21 +412,21 @@ bool rDbgComHost::AddTargetDefinition
     //
     // Here we did not find a duplicate name. Check if have a free entry.
     //
-    if( freeEntry == MAX_TARGETS )
+    if(freeEntry == MAX_TARGETS)
     {
         //
         // No room in the inn. Fail request.
         //
-        ReleaseMutex( m_MutexHandle );
+        ReleaseMutex(m_MutexHandle);
 
-        return( false );
+        return(false);
     }
 
     //
     // Save the callers info into the shared memory image and mark record in use.
     //
-    strcpy( m_TargetTable[ freeEntry ].m_TargetName, pName );
-    strcpy( m_TargetTable[ freeEntry ].m_IpAddress, pIpAddress );
+    strcpy(m_TargetTable[ freeEntry ].m_TargetName, pName);
+    strcpy(m_TargetTable[ freeEntry ].m_IpAddress, pIpAddress);
     m_TargetTable[ freeEntry ].m_Port = port;
     m_TargetTable[ freeEntry ].m_IsDefault = 0;
     m_TargetTable[ freeEntry ].m_RecordIsValid = true;
@@ -434,14 +435,14 @@ bool rDbgComHost::AddTargetDefinition
     // Write this record to the registry.
     //
     char RegistryString[ 256 ];
-    strcpy( RegistryString, REGISTRY_KEY );
-    strcat( RegistryString, "\\");
-    strcat( RegistryString, pName );
+    strcpy(RegistryString, REGISTRY_KEY);
+    strcat(RegistryString, "\\");
+    strcat(RegistryString, pName);
 
     
     HKEY RegKey;
     DWORD Disposition;
-    LONG result = RegCreateKeyEx( HKEY_CURRENT_USER, 
+    LONG result = RegCreateKeyEx(HKEY_CURRENT_USER,
                                   RegistryString,
                                   0,
                                   NULL,
@@ -449,19 +450,19 @@ bool rDbgComHost::AddTargetDefinition
                                   KEY_ALL_ACCESS,
                                   NULL,  
                                   &RegKey,
-                                  &Disposition );
+                                  &Disposition);
 
-    rAssert( result == ERROR_SUCCESS );
+    rAssert(result == ERROR_SUCCESS);
 
-    RegSetValueEx( RegKey, "IPAddress", 0, REG_SZ, (const unsigned char*) pIpAddress, strlen( pIpAddress ) + 1 );
-    RegSetValueEx( RegKey, "Port", 0, REG_DWORD, (const unsigned char*) &m_TargetTable[ freeEntry ].m_Port, sizeof( m_TargetTable[ freeEntry ].m_Port ) );
-    RegSetValueEx( RegKey, "Default", 0, REG_DWORD, (const unsigned char*) &m_TargetTable[ freeEntry ].m_IsDefault, sizeof( m_TargetTable[ freeEntry ].m_IsDefault ) );
+    RegSetValueEx(RegKey, "IPAddress", 0, REG_SZ, (const unsigned char*) pIpAddress, strlen(pIpAddress) + 1);
+    RegSetValueEx(RegKey, "Port", 0, REG_DWORD, (const unsigned char*) &m_TargetTable[ freeEntry ].m_Port, sizeof(m_TargetTable[ freeEntry ].m_Port));
+    RegSetValueEx(RegKey, "Default", 0, REG_DWORD, (const unsigned char*) &m_TargetTable[ freeEntry ].m_IsDefault, sizeof(m_TargetTable[ freeEntry ].m_IsDefault));
 
-    RegCloseKey( RegKey );
+    RegCloseKey(RegKey);
 
-    ReleaseMutex( m_MutexHandle );
+    ReleaseMutex(m_MutexHandle);
 
-    return( true );
+    return(true);
 }
 
 //=============================================================================
@@ -478,40 +479,40 @@ bool rDbgComHost::AddTargetDefinition
 //------------------------------------------------------------------------------
 
 bool rDbgComHost::DeleteTargetDefinition
-( 
+(
     const radDbgComTargetName pName 
 )
 {
-    rAssert( strlen( pName ) != 0 );
+    rAssert(strlen(pName) != 0);
 
     //
     // Now gain ownership of this mutex. Wait forever.
     //
-    WaitForSingleObject( m_MutexHandle, INFINITE );
+    WaitForSingleObject(m_MutexHandle, INFINITE);
     
     //
     // Verify that the target definition does exist.
     //
-    for( unsigned int i = 0 ; i < MAX_TARGETS ; i++ )
+    for(unsigned int i = 0 ; i <MAX_TARGETS ; i++)
     {   
-        if( m_TargetTable[ i ].m_RecordIsValid )
+        if(m_TargetTable[ i ].m_RecordIsValid)
         {
-            if( 0 == stricmp( pName, m_TargetTable[ i ].m_TargetName ) )
+            if(0 == stricmp(pName, m_TargetTable[ i ].m_TargetName))
             {
                 //
                 // Here we have the record. Check that all protocols are
                 // zero, indicating that the record is not in use.
                 //
-                for( unsigned int j = 0 ; j < MaxProtocols ; j++ )
+                for(unsigned int j = 0 ; j <MaxProtocols ; j++)
                 {
-                    if( m_TargetTable[ i ].m_Protocols[ j ] != 0 )
+                    if(m_TargetTable[ i ].m_Protocols[ j ] != 0)
                     {
                         //  
                         // The record is in use. Return false.
                         //
-                        ReleaseMutex( m_MutexHandle );
+                        ReleaseMutex(m_MutexHandle);
 
-                        return( false );
+                        return(false);
                     }
                 }
 
@@ -523,7 +524,7 @@ bool rDbgComHost::DeleteTargetDefinition
         
                 HKEY RegKey;
                 DWORD Disposition;
-                LONG result = RegCreateKeyEx( HKEY_CURRENT_USER, 
+                LONG result = RegCreateKeyEx(HKEY_CURRENT_USER,
                                               REGISTRY_KEY,
                                               0,
                                               NULL,
@@ -531,20 +532,20 @@ bool rDbgComHost::DeleteTargetDefinition
                                               KEY_ALL_ACCESS,
                                               NULL,  
                                               &RegKey,
-                                              &Disposition );
+                                              &Disposition);
 
-                rAssert( result == ERROR_SUCCESS );
+                rAssert(result == ERROR_SUCCESS);
 
-                RegDeleteKey( RegKey, pName );
+                RegDeleteKey(RegKey, pName);
                       
-                RegCloseKey( RegKey );
+                RegCloseKey(RegKey);
 
                 //
                 // Life is good. Return success
                 //
-                ReleaseMutex( m_MutexHandle );
+                ReleaseMutex(m_MutexHandle);
 
-                return( true );
+                return(true);
             }
         }
     }
@@ -552,9 +553,9 @@ bool rDbgComHost::DeleteTargetDefinition
     //
     // If we get here, the record did not exist. Return false.
     //
-    ReleaseMutex( m_MutexHandle );
+    ReleaseMutex(m_MutexHandle);
 
-    return( false );
+    return(false);
 }    
 
 //=============================================================================
@@ -573,30 +574,30 @@ bool rDbgComHost::DeleteTargetDefinition
 //------------------------------------------------------------------------------
 
 void rDbgComHost::EnumerateTargets
-( 
+(
     void* context,
-    void (*pEnumerationCallback)( void* context, const radDbgComTargetName pName, const radDbgComIPAddress pIpAddress, unsigned short port, bool InUse ) 
+    void (*pEnumerationCallback)(void* context, const radDbgComTargetName pName, const radDbgComIPAddress pIpAddress, unsigned short port, bool InUse)
 )
 {
     //
     // Now gain ownership of this mutex. Wait forever.
     //
-    WaitForSingleObject( m_MutexHandle, INFINITE );
+    WaitForSingleObject(m_MutexHandle, INFINITE);
     
     //
     // Traverse table looking for valid records.
     //
-    for( unsigned int i = 0 ; i < MAX_TARGETS ; i++ )
+    for(unsigned int i = 0 ; i <MAX_TARGETS ; i++)
     {
-        if( m_TargetTable[ i ].m_RecordIsValid )    
+        if(m_TargetTable[ i ].m_RecordIsValid)
         {
             //
             // Determine if record is currently in use.
             //
             bool InUse = false;
-            for( unsigned int j = 0 ; j < MaxProtocols ; j++ )
+            for(unsigned int j = 0 ; j <MaxProtocols ; j++)
             {
-                if( m_TargetTable[ i ].m_Protocols[ j ] != 0 )
+                if(m_TargetTable[ i ].m_Protocols[ j ] != 0)
                 {
                     InUse = true;
                     break;
@@ -606,15 +607,15 @@ void rDbgComHost::EnumerateTargets
             //
             // Invoke the callback with this record,
             //
-            (pEnumerationCallback)( context,
+            (pEnumerationCallback)(context,
                                     m_TargetTable[ i ].m_TargetName,
                                     m_TargetTable[ i ].m_IpAddress,
                                     m_TargetTable[ i ].m_Port,
-                                    InUse );
+                                    InUse);
         }               
     }
      
-    ReleaseMutex( m_MutexHandle );
+    ReleaseMutex(m_MutexHandle);
 
 }
 
@@ -638,29 +639,29 @@ bool rDbgComHost::GetDefaultTarget
     //
     // Now gain ownership of this mutex. Wait forever.
     //
-    WaitForSingleObject( m_MutexHandle, INFINITE );
+    WaitForSingleObject(m_MutexHandle, INFINITE);
     
     //
     // Traverse table looking for valid records.
     //
-    for( unsigned int i = 0 ; i < MAX_TARGETS ; i++ )
+    for(unsigned int i = 0 ; i <MAX_TARGETS ; i++)
     {
-        if( m_TargetTable[ i ].m_RecordIsValid )    
+        if(m_TargetTable[ i ].m_RecordIsValid)
         {
-            if( m_TargetTable[ i ].m_IsDefault )
+            if(m_TargetTable[ i ].m_IsDefault)
             {
-                strcpy( pName, m_TargetTable[ i ].m_TargetName );
+                strcpy(pName, m_TargetTable[ i ].m_TargetName);
 
-                ReleaseMutex( m_MutexHandle );
+                ReleaseMutex(m_MutexHandle);
 
-                return( true );
+                return(true);
             }
         }
     }
 
-    ReleaseMutex( m_MutexHandle );
+    ReleaseMutex(m_MutexHandle);
 
-    return( false );
+    return(false);
 }
 
 //=============================================================================
@@ -685,16 +686,16 @@ bool rDbgComHost::SetDefaultTarget
     // First check if the specified target name exists. Do so under
     // mutex protection.
     //
-    WaitForSingleObject( m_MutexHandle, INFINITE );
+    WaitForSingleObject(m_MutexHandle, INFINITE);
     
     unsigned int FoundTargetIndex = MAX_TARGETS;
     unsigned int OldDefaultIndex = MAX_TARGETS;
 
-    for( unsigned int i = 0 ; i < MAX_TARGETS ; i++ )
+    for(unsigned int i = 0 ; i <MAX_TARGETS ; i++)
     {   
-        if( m_TargetTable[ i ].m_RecordIsValid )
+        if(m_TargetTable[ i ].m_RecordIsValid)
         {
-            if( 0 == stricmp( pName, m_TargetTable[ i ].m_TargetName ) )
+            if(0 == stricmp(pName, m_TargetTable[ i ].m_TargetName))
             {
                 //
                 // Here have a match. Save index and we are done.
@@ -702,39 +703,39 @@ bool rDbgComHost::SetDefaultTarget
                 FoundTargetIndex = i;
             }
             
-            if( m_TargetTable[ i ].m_IsDefault != 0 )
+            if(m_TargetTable[ i ].m_IsDefault != 0)
             {
                 OldDefaultIndex = i;
             }    
         }
     }
 
-    if( FoundTargetIndex == MAX_TARGETS )
+    if(FoundTargetIndex == MAX_TARGETS)
     {
         //
         // Did not find name. Return false.
         //
-        ReleaseMutex( m_MutexHandle );
+        ReleaseMutex(m_MutexHandle);
     
-        return( false );
+        return(false);
     }
 
     //
     // Check if we need to clear an exist default target.
     //
-    if( OldDefaultIndex != MAX_TARGETS )
+    if(OldDefaultIndex != MAX_TARGETS)
     {
         m_TargetTable[ OldDefaultIndex ].m_IsDefault = 0;
         
         char RegistryString[ 256 ];
-        strcpy( RegistryString, REGISTRY_KEY );
-        strcat( RegistryString, "\\");
-        strcat( RegistryString, m_TargetTable[ OldDefaultIndex ].m_TargetName );
+        strcpy(RegistryString, REGISTRY_KEY);
+        strcat(RegistryString, "\\");
+        strcat(RegistryString, m_TargetTable[ OldDefaultIndex ].m_TargetName);
 
     
         HKEY RegKey;
         DWORD Disposition;
-        LONG result = RegCreateKeyEx( HKEY_CURRENT_USER, 
+        LONG result = RegCreateKeyEx(HKEY_CURRENT_USER,
                                       RegistryString,
                                       0,
                                       NULL,
@@ -742,13 +743,13 @@ bool rDbgComHost::SetDefaultTarget
                                       KEY_ALL_ACCESS,
                                       NULL,  
                                       &RegKey,
-                                      &Disposition );
+                                      &Disposition);
 
-        rAssert( result == ERROR_SUCCESS );
+        rAssert(result == ERROR_SUCCESS);
 
-        RegSetValueEx( RegKey, "Default", 0, REG_DWORD, (const unsigned char*) &m_TargetTable[ OldDefaultIndex ].m_IsDefault, sizeof( m_TargetTable[ OldDefaultIndex ].m_IsDefault ) );
+        RegSetValueEx(RegKey, "Default", 0, REG_DWORD, (const unsigned char*) &m_TargetTable[ OldDefaultIndex ].m_IsDefault, sizeof(m_TargetTable[ OldDefaultIndex ].m_IsDefault));
 
-        RegCloseKey( RegKey );
+        RegCloseKey(RegKey);
     }
 
     //
@@ -757,13 +758,13 @@ bool rDbgComHost::SetDefaultTarget
     m_TargetTable[ FoundTargetIndex ].m_IsDefault = 1;
 
     char RegistryString[ 256 ];
-    strcpy( RegistryString, REGISTRY_KEY );
-    strcat( RegistryString, "\\");
-    strcat( RegistryString, m_TargetTable[ FoundTargetIndex ].m_TargetName );
+    strcpy(RegistryString, REGISTRY_KEY);
+    strcat(RegistryString, "\\");
+    strcat(RegistryString, m_TargetTable[ FoundTargetIndex ].m_TargetName);
 
     HKEY RegKey;
     DWORD Disposition;
-    LONG result = RegCreateKeyEx( HKEY_CURRENT_USER, 
+    LONG result = RegCreateKeyEx(HKEY_CURRENT_USER,
                                   RegistryString,
                                   0,
                                   NULL,
@@ -771,17 +772,17 @@ bool rDbgComHost::SetDefaultTarget
                                   KEY_ALL_ACCESS,
                                   NULL,  
                                   &RegKey,
-                                  &Disposition );
+                                  &Disposition);
 
-    rAssert( result == ERROR_SUCCESS );
+    rAssert(result == ERROR_SUCCESS);
 
-    RegSetValueEx( RegKey, "Default", 0, REG_DWORD, (const unsigned char*) &m_TargetTable[ FoundTargetIndex  ].m_IsDefault, sizeof( m_TargetTable[ FoundTargetIndex ].m_IsDefault ) );
+    RegSetValueEx(RegKey, "Default", 0, REG_DWORD, (const unsigned char*) &m_TargetTable[ FoundTargetIndex  ].m_IsDefault, sizeof(m_TargetTable[ FoundTargetIndex ].m_IsDefault));
 
-    RegCloseKey( RegKey );
+    RegCloseKey(RegKey);
 
-    ReleaseMutex( m_MutexHandle );
+    ReleaseMutex(m_MutexHandle);
 
-    return( true );
+    return(true);
 }
 
 
@@ -801,7 +802,7 @@ bool rDbgComHost::SetDefaultTarget
 //------------------------------------------------------------------------------
 
 void rDbgComHost::CreateChannel
-( 
+(
     const radDbgComTargetName    pName,
     unsigned short               protocol, 
     IRadDbgComChannel**          ppHostChannel
@@ -810,21 +811,21 @@ void rDbgComHost::CreateChannel
     //
     // Validdate protocol
     //
-    rAssert( (protocol >= 0xE000) && (protocol < 0xF000) );
+    rAssert((protocol>= 0xE000) && (protocol <0xF000));
 
     //
     // First check if the specified target name exists. Do so under
     // mutex protection.
     //
-    WaitForSingleObject( m_MutexHandle, INFINITE );
+    WaitForSingleObject(m_MutexHandle, INFINITE);
     
     unsigned int FoundTargetIndex = MAX_TARGETS;
 
-    for( unsigned int i = 0 ; i < MAX_TARGETS ; i++ )
+    for(unsigned int i = 0 ; i <MAX_TARGETS ; i++)
     {   
-        if( m_TargetTable[ i ].m_RecordIsValid )
+        if(m_TargetTable[ i ].m_RecordIsValid)
         {
-            if( 0 == stricmp( pName, m_TargetTable[ i ].m_TargetName ) )
+            if(0 == stricmp(pName, m_TargetTable[ i ].m_TargetName))
             {
                 //
                 // Here have a match. Save index and we are done.
@@ -835,14 +836,14 @@ void rDbgComHost::CreateChannel
         }
     }
 
-    if( FoundTargetIndex == MAX_TARGETS )
+    if(FoundTargetIndex == MAX_TARGETS)
     {
         //
         // Target name not found. Return null 
         //
         *ppHostChannel = NULL;
     
-        ReleaseMutex( m_MutexHandle );
+        ReleaseMutex(m_MutexHandle);
 
         return;
     }
@@ -852,32 +853,32 @@ void rDbgComHost::CreateChannel
     // is not in use.
     //
     unsigned int FreeProtocolIndex = MaxProtocols;
-    for( unsigned int j = 0 ; j < MaxProtocols ; j++ )
+    for(unsigned int j = 0 ; j <MaxProtocols ; j++)
     {
-        if( m_TargetTable[ FoundTargetIndex ].m_Protocols[ j ] == protocol )
+        if(m_TargetTable[ FoundTargetIndex ].m_Protocols[ j ] == protocol)
         {
             //  
             // The record is in use. Return null
             //
             *ppHostChannel = NULL;
 
-            ReleaseMutex( m_MutexHandle );
+            ReleaseMutex(m_MutexHandle);
             return;
         }
-        else if( m_TargetTable[ FoundTargetIndex ].m_Protocols[ j ] == 0 )
+        else if(m_TargetTable[ FoundTargetIndex ].m_Protocols[ j ] == 0)
         {
             FreeProtocolIndex = j;
         }
     }
     
-    if( FreeProtocolIndex == MaxProtocols )
+    if(FreeProtocolIndex == MaxProtocols)
     {
         //
         // All protocols in use.Fail
         //
         *ppHostChannel = NULL;
     
-        ReleaseMutex( m_MutexHandle );
+        ReleaseMutex(m_MutexHandle);
 
         return;
     }
@@ -890,9 +891,9 @@ void rDbgComHost::CreateChannel
     //
     // Mutex can be release now since we have updated shared resources.
     //
-    ReleaseMutex( m_MutexHandle );
+    ReleaseMutex(m_MutexHandle);
     
-    *ppHostChannel = new rDbgComHostChannel( this, FoundTargetIndex, protocol );
+    *ppHostChannel = new rDbgComHostChannel(this, FoundTargetIndex, protocol);
 }
 
 
@@ -908,7 +909,7 @@ void rDbgComHost::CreateChannel
 // Notes:
 //------------------------------------------------------------------------------
     
-void rDbgComHost::AddRef( void )
+void rDbgComHost::AddRef(void)
 {
     m_ReferenceCount++;
 }
@@ -925,10 +926,10 @@ void rDbgComHost::AddRef( void )
 // Notes:
 //------------------------------------------------------------------------------
     
-void rDbgComHost::Release( void )
+void rDbgComHost::Release(void)
 {
     m_ReferenceCount--;
-    if( m_ReferenceCount == 0 )
+    if(m_ReferenceCount == 0)
     {
         delete this;
     }   
@@ -947,12 +948,12 @@ void rDbgComHost::Release( void )
 //------------------------------------------------------------------------------
 
 HWND rDbgComHost::CreateWindowHelper
-( 
+(
     rDbgComHostChannel* pChannel 
 )
 {
-    m_hWnd = CreateWindowEx( WS_EX_NOPARENTNOTIFY, WINDOW_CLASSNAME, "", WS_POPUP, 0, 0, 0, 0, 
-                    NULL, NULL, m_hInstance, (void*) pChannel );
+    m_hWnd = CreateWindowEx(WS_EX_NOPARENTNOTIFY, WINDOW_CLASSNAME, "", WS_POPUP, 0, 0, 0, 0,
+                    NULL, NULL, m_hInstance, (void*) pChannel);
 
     return m_hWnd;
 }
@@ -969,9 +970,9 @@ HWND rDbgComHost::CreateWindowHelper
 // Notes:
 //------------------------------------------------------------------------------
 
-void rDbgComHost::DestroyWindowHelper( HWND hWnd )
+void rDbgComHost::DestroyWindowHelper(HWND hWnd)
 {
-    DestroyWindow( hWnd );
+    DestroyWindow(hWnd);
 }
 
 //=============================================================================
@@ -988,7 +989,7 @@ void rDbgComHost::DestroyWindowHelper( HWND hWnd )
 //------------------------------------------------------------------------------
 
 LRESULT CALLBACK rDbgComHost::WindowProcedure
-( 
+(
     HWND    hwnd, 
     UINT    uMsg, 
     WPARAM  wParam,
@@ -999,22 +1000,22 @@ LRESULT CALLBACK rDbgComHost::WindowProcedure
     // Check if create window. If so, lParam contains the this pointer of 
     // the channel we should direct the window message to.
     //
-    if( uMsg == WM_NCCREATE )
+    if(uMsg == WM_NCCREATE)
     {
         //
         // Set the windows instance data.
         //
-        SetWindowLong( hwnd, 0, (long) (((CREATESTRUCT*) lParam)->lpCreateParams) );
+        SetWindowLong(hwnd, 0, (long) (((CREATESTRUCT*) lParam)->lpCreateParams));
 
-        return( DefWindowProc(hwnd, uMsg, wParam, lParam) );
+        return(DefWindowProc(hwnd, uMsg, wParam, lParam));
     }
 
     //
     // Get the this pointer to the channel associated with this window.
     //
-    rDbgComHostChannel* pChannel = (rDbgComHostChannel*) GetWindowLong( hwnd, 0 );
+    rDbgComHostChannel* pChannel = (rDbgComHostChannel*) GetWindowLong(hwnd, 0);
 
-    return( pChannel->OnWindowMessage( hwnd, uMsg, wParam, lParam ) );
+    return(pChannel->OnWindowMessage(hwnd, uMsg, wParam, lParam));
 }
 
 //=============================================================================
@@ -1030,11 +1031,11 @@ LRESULT CALLBACK rDbgComHost::WindowProcedure
 //------------------------------------------------------------------------------
 
 const char* rDbgComHost::GetIpAddress
-( 
+(
     unsigned int targetIndex
 )
 {
-    return( m_TargetTable[ targetIndex ].m_IpAddress );
+    return(m_TargetTable[ targetIndex ].m_IpAddress);
 }
 
 //=============================================================================
@@ -1050,11 +1051,11 @@ const char* rDbgComHost::GetIpAddress
 //------------------------------------------------------------------------------
 
 unsigned short rDbgComHost::GetPort
-( 
+(
     unsigned int targetIndex
 )
 {
-    return( m_TargetTable[ targetIndex ].m_Port );
+    return(m_TargetTable[ targetIndex ].m_Port);
 }
 
 //=============================================================================
@@ -1070,7 +1071,7 @@ unsigned short rDbgComHost::GetPort
 //------------------------------------------------------------------------------
 
 void rDbgComHost::FreeProtocol
-( 
+(
     unsigned int    targetIndex,
     unsigned short  protocol
 )
@@ -1078,18 +1079,18 @@ void rDbgComHost::FreeProtocol
     //
     // Now gain ownership of this mutex. Wait forever.
     //
-    WaitForSingleObject( m_MutexHandle, INFINITE );
+    WaitForSingleObject(m_MutexHandle, INFINITE);
     
     //
     // Traverse table looking for the protocol.
     //
-    for( unsigned int j = 0 ; j < MaxProtocols ; j++ )
+    for(unsigned int j = 0 ; j <MaxProtocols ; j++)
     {
-        if( m_TargetTable[ targetIndex ].m_Protocols[ j ] == protocol )
+        if(m_TargetTable[ targetIndex ].m_Protocols[ j ] == protocol)
         {
             m_TargetTable[ targetIndex ].m_Protocols[ j ] = 0;
                    
-            ReleaseMutex( m_MutexHandle );
+            ReleaseMutex(m_MutexHandle);
             return;
         }
     }
@@ -1097,7 +1098,7 @@ void rDbgComHost::FreeProtocol
     //
     // If we get here things are fucked up.
     //
-    rAssert( false );
+    rAssert(false);
 }
 
 //=============================================================================
@@ -1112,25 +1113,25 @@ void rDbgComHost::FreeProtocol
 // Notes:       
 //------------------------------------------------------------------------------
 
-void rDbgComHost::Service( void )
+void rDbgComHost::Service(void)
 {
 
-    if ( m_hWnd == NULL  )
+    if (m_hWnd == NULL)
     {
         return;
     }
 
     MSG msg;
 
-    if ( PeekMessage( &msg, m_hWnd, 0, 0, PM_REMOVE ) ) 
+    if (PeekMessage(&msg, m_hWnd, 0, 0, PM_REMOVE))
     {
-        TranslateMessage( &msg );
+        TranslateMessage(&msg);
 
         //
         // We have a message. Normally, we would check for a quit message. We
         // use our own termination system instead.
         //
-        DispatchMessage( &msg );
+        DispatchMessage(&msg);
     }
 }
 
@@ -1146,15 +1147,15 @@ void rDbgComHost::Service( void )
 // Notes:       
 //------------------------------------------------------------------------------
 
-void radDbgComHostGetTargetTable( IRadDbgComTargetTable** pIRadDbgComTargetTable )
+void radDbgComHostGetTargetTable(IRadDbgComTargetTable** pIRadDbgComTargetTable)
 {
-    if( s_theHost != NULL )
+    if(s_theHost != NULL)
     {
-        radAddRef( s_theHost, NULL );
+        radAddRef(s_theHost, NULL);
     }
     else
     {
-        s_theHost = new rDbgComHost( );
+        s_theHost = new rDbgComHost();
     }       
 
     *pIRadDbgComTargetTable = s_theHost;
@@ -1173,7 +1174,7 @@ void radDbgComHostGetTargetTable( IRadDbgComTargetTable** pIRadDbgComTargetTable
 //------------------------------------------------------------------------------
 
 void radDbgComHostCreateChannel
-( 
+(
     const radDbgComTargetName pName,
     unsigned short protocol, 
     IRadDbgComChannel** ppChannel
@@ -1181,18 +1182,18 @@ void radDbgComHostCreateChannel
 {
     rDbgComHost* pTargetTable;
     
-    radDbgComHostGetTargetTable( (IRadDbgComTargetTable**) &pTargetTable );
+    radDbgComHostGetTargetTable((IRadDbgComTargetTable**) &pTargetTable);
 
-    pTargetTable->CreateChannel( pName, protocol, ppChannel );
+    pTargetTable->CreateChannel(pName, protocol, ppChannel);
 
-    radRelease( pTargetTable, NULL );
+    radRelease(pTargetTable, NULL);
 }
 
-void radDbgComHostService( void )
+void radDbgComHostService(void)
 {
-    if ( s_theHost != NULL )
+    if (s_theHost != NULL)
     {
-        s_theHost->Service( );
+        s_theHost->Service();
     }
 }
 

@@ -25,6 +25,7 @@
 //=============================================================================
 
 #include "pch.hpp"
+
 #ifdef RAD_WIN32
 #include <windows.h>
 #endif // RAD_WIN32
@@ -58,11 +59,11 @@ extern "C"
 #include "targetsocketchannel.hpp"  // Socket channel implementation
 
 #ifdef RAD_GAMECUBE
-    #include "targethiosocket.hpp"
+#include "targethiosocket.hpp"
 #endif
 
 #ifdef RAD_PS2
-    #include "target1394socket.hpp"     // Socket implementation using 1394 FireWire
+#include "target1394socket.hpp"     // Socket implementation using 1394 FireWire
 #endif
 
 #undef NULL
@@ -88,14 +89,14 @@ const unsigned int CheckForConnectTimeout = 100;    // Milliseconds
 //
 // This static maintains a pointer to the signleton debug com target.
 //
-static rDbgComTarget* s_theTarget = NULL;
+static rDbgComTarget *s_theTarget = NULL;
 
 //
 // This static mutex is the mutex used by all debug communication system
 // and those systems relies on debugcommunication.
-// It is exported via radDbgComMutexLock( ) and radDbgComMutexUnlock( ).
+// It is exported via radDbgComMutexLock() and radDbgComMutexUnlock().
 //
-static IRadThreadMutex * s_theDbgComSystemThreadMutex = NULL;
+static IRadThreadMutex *s_theDbgComSystemThreadMutex = NULL;
 
 //=============================================================================
 // Function:    radDbgComTargetInitialize
@@ -109,13 +110,12 @@ static IRadThreadMutex * s_theDbgComSystemThreadMutex = NULL;
 //------------------------------------------------------------------------------
 
 void radDbgComTargetInitialize
-( 
-    radDbgComType targetType,
-    unsigned short port,
-    void* pInitInfo,
-    radMemoryAllocator alloc
-)
-{
+        (
+                radDbgComType targetType,
+                unsigned short port,
+                void *pInitInfo,
+                radMemoryAllocator alloc
+        ) {
 #ifndef RADDEBUGCOMMUNICATION
 
     (void) targetType;
@@ -125,23 +125,23 @@ void radDbgComTargetInitialize
 
 #else
 
-    rAssertMsg( s_theTarget == NULL, "radDebugCommunication already initialized" );
+    rAssertMsg(s_theTarget == NULL, "radDebugCommunication already initialized");
 
-    if ( s_theDbgComSystemThreadMutex == NULL )
+    if (s_theDbgComSystemThreadMutex == NULL)
     {
-        radThreadCreateMutex( & s_theDbgComSystemThreadMutex, alloc );
-        rAssert( s_theDbgComSystemThreadMutex );
+        radThreadCreateMutex(& s_theDbgComSystemThreadMutex, alloc);
+        rAssert(s_theDbgComSystemThreadMutex);
     }
 
-    radDbgComMutexLock( );
+    radDbgComMutexLock();
 
-    rDbgComTarget * pTarget = new( alloc ) rDbgComTarget( );
+    rDbgComTarget * pTarget = new(alloc) rDbgComTarget();
 
-    pTarget->Initialize( targetType, port, pInitInfo, alloc );
+    pTarget->Initialize(targetType, port, pInitInfo, alloc);
 
     s_theTarget = pTarget;
 
-    radDbgComMutexUnlock( );
+    radDbgComMutexUnlock();
 #endif
 
 };
@@ -156,27 +156,26 @@ void radDbgComTargetInitialize
 // Notes:
 //------------------------------------------------------------------------------
 
-void radDbgComTargetTerminate( void )
-{
+void radDbgComTargetTerminate(void) {
 
 #ifdef RADDEBUGCOMMUNICATION
 
-    radDbgComMutexLock( );
+    radDbgComMutexLock();
 
-    rAssertMsg( s_theTarget != NULL, "radDebugCommunication not initialized" );    
+    rAssertMsg(s_theTarget != NULL, "radDebugCommunication not initialized");
     
-    s_theTarget->Terminate( );
-    radRelease( s_theTarget, NULL );
+    s_theTarget->Terminate();
+    radRelease(s_theTarget, NULL);
     
     //
     // Here the static should have been zerod. If it is not zero, it indicates
     // clients are  still holding channels and did not clean up.
     //
-    rAssertMsg( s_theTarget == NULL, "radDebugCommunicaiton detected clients still holding channels");
+    rAssertMsg(s_theTarget == NULL, "radDebugCommunicaiton detected clients still holding channels");
 
-    radDbgComMutexUnlock( );
+    radDbgComMutexUnlock();
 
-    radRelease( s_theDbgComSystemThreadMutex, NULL );
+    radRelease(s_theDbgComSystemThreadMutex, NULL);
 
     s_theDbgComSystemThreadMutex = NULL;
 #endif
@@ -194,19 +193,18 @@ void radDbgComTargetTerminate( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void radDbgComService( void )
-{
+void radDbgComService(void) {
 
 #ifdef RADDEBUGCOMMUNICATION
 
-    radDbgComMutexLock( );
+    radDbgComMutexLock();
 
-    if( s_theTarget != NULL )
+    if(s_theTarget != NULL)
     {
-        s_theTarget->Service( );
+        s_theTarget->Service();
     }
 
-    radDbgComMutexUnlock( );
+    radDbgComMutexUnlock();
 
 #endif
 }
@@ -225,12 +223,11 @@ void radDbgComService( void )
 //------------------------------------------------------------------------------
 
 void radDbgComTargetCreateChannel
-( 
-    unsigned short protocol, 
-    IRadDbgComChannel** ppChannel,
-    radMemoryAllocator alloc
-)
-{
+        (
+                unsigned short protocol,
+                IRadDbgComChannel **ppChannel,
+                radMemoryAllocator alloc
+        ) {
 #ifndef RADDEBUGCOMMUNICATION
 
     (void) protocol;
@@ -241,18 +238,18 @@ void radDbgComTargetCreateChannel
 #else
 
     static bool bWarningShown = false;
-    if( s_theTarget == NULL )
+    if(s_theTarget == NULL)
     {
-        if ( bWarningShown == false )
+        if (bWarningShown == false)
         {
-            rDebugString( "Warning: Debug Communication System not initialized\n");
+            rDebugString("Warning: Debug Communication System not initialized\n");
             bWarningShown = true;
         }
         *ppChannel = NULL;
     }
     else
     {
-        s_theTarget->CreateChannel( protocol, ppChannel, alloc );
+        s_theTarget->CreateChannel(protocol, ppChannel, alloc);
     }
 
 #endif
@@ -269,14 +266,12 @@ void radDbgComTargetCreateChannel
 // Notes:
 //------------------------------------------------------------------------------
 
-void radDbgComMutexLock( )
-{
-    if ( s_theDbgComSystemThreadMutex == NULL )
-    {
-        radThreadCreateMutex( & s_theDbgComSystemThreadMutex );
-        rAssert( s_theDbgComSystemThreadMutex );
+void radDbgComMutexLock() {
+    if (s_theDbgComSystemThreadMutex == NULL) {
+        radThreadCreateMutex(&s_theDbgComSystemThreadMutex);
+        rAssert(s_theDbgComSystemThreadMutex);
     }
-    s_theDbgComSystemThreadMutex->Lock( );
+    s_theDbgComSystemThreadMutex->Lock();
 }
 
 //=============================================================================
@@ -289,11 +284,9 @@ void radDbgComMutexLock( )
 // Notes:
 //------------------------------------------------------------------------------
 
-void radDbgComMutexUnlock( )
-{
-    if ( s_theDbgComSystemThreadMutex != NULL )
-    {
-        s_theDbgComSystemThreadMutex->Unlock( );
+void radDbgComMutexUnlock() {
+    if (s_theDbgComSystemThreadMutex != NULL) {
+        s_theDbgComSystemThreadMutex->Unlock();
     }
 }
 
@@ -313,19 +306,19 @@ void radDbgComMutexUnlock( )
 // Notes:
 //------------------------------------------------------------------------------
 
-rDbgComTarget::rDbgComTarget( void )
+rDbgComTarget::rDbgComTarget(void)
     :
-    m_TimerList( NULL ),
-    m_ReferenceCount( 1 ),
-    m_Timer( NULL )
+    m_TimerList(NULL),
+    m_ReferenceCount(1),
+    m_Timer(NULL)
 {
-    Lock( );
+    Lock();
 
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "rDbgComTarget" );
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "rDbgComTarget");
     //
     // Initialize our array of protocols to be all free.
     //
-    for( unsigned int i = 0 ; i < MaxProtocols ; i++ )
+    for(unsigned int i = 0 ; i <MaxProtocols ; i++)
     {
         m_ProtocolTable[ i ].m_State = ProtocolInfoEntry::Free;
         m_ProtocolTable[ i ].m_pConnection = NULL;      
@@ -333,7 +326,7 @@ rDbgComTarget::rDbgComTarget( void )
         m_ProtocolTable[ i ].m_HostComputerName[ 0 ] = '\0';
     }
 
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -346,75 +339,75 @@ rDbgComTarget::rDbgComTarget( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-rDbgComTarget::~rDbgComTarget( void )
+rDbgComTarget::~rDbgComTarget(void)
 {
-    Lock( );
+    Lock();
 
-    for( unsigned int i = 0 ; i < MaxProtocols ; i++ )
+    for(unsigned int i = 0 ; i <MaxProtocols ; i++)
     {
-        rAssert( m_ProtocolTable[ i ].m_State == ProtocolInfoEntry::Free );
+        rAssert(m_ProtocolTable[ i ].m_State == ProtocolInfoEntry::Free);
     }
 
-	#if defined( RAD_WIN32 ) || defined( RAD_XBOX )
+#if defined(RAD_WIN32) || defined(RAD_XBOX)
     {
         //
         // Terminate our access to sockets for this process.
         //
-        WSACleanup( );
+        WSACleanup();
 
-        #ifdef RAD_XBOX
+#ifdef RAD_XBOX
         {
-            #ifndef OLD_XDK
+#ifndef OLD_XDK
                 XNetCleanup();
-            #else
+#else
                 XnetCleanup();
-            #endif
+#endif
         }
-        #endif // RAD_XBOX
+#endif // RAD_XBOX
 
         delete m_SocketImp;
      }
-    #endif
-     
-    #ifdef RAD_PS2
+#endif
 
-    if( m_TargetType == UsbTcpIp )
+#ifdef RAD_PS2
+
+    if(m_TargetType == UsbTcpIp)
     {
-        #ifdef SN_TCPIP
+#ifdef SN_TCPIP
         //
-        // PS2 shutdown SNs stack. 
+        // PS2 shutdown SNs stack.
         //
         sockAPIderegthr();
-        #endif
+#endif
     }
-    if( m_TargetType != Deci )
+    if(m_TargetType != Deci)
     {
         delete m_SocketImp;
     }
 
-    #endif
+#endif
 
-    #ifdef RAD_GAMECUBE
+#ifdef RAD_GAMECUBE
 
     delete (CTargetHIOSocket*) m_SocketImp;
- 
-    #endif
 
-    radRelease( m_Dispatcher, this );
+#endif
+
+    radRelease(m_Dispatcher, this);
 
     //
     // Finally clear the global indicating this system can be unloaded.
     //
     s_theTarget = NULL;
 
-    Unlock( );
-}            
+    Unlock();
+}
 
 //=============================================================================
 // Function:    rDbgComTarget::Initialize
 //=============================================================================
-// Description: This member must be invokd prior to obtaining a channel. 
-//              
+// Description: This member must be invokd prior to obtaining a channel.
+//
 // Parameters:  Target type - specifies low-level com channel
 //              port - what port to use for communicaiton,
 //              initInfo - additional information used for initialization
@@ -425,14 +418,14 @@ rDbgComTarget::~rDbgComTarget( void )
 //------------------------------------------------------------------------------
 
 void rDbgComTarget::Initialize
-( 
-    radDbgComType   targetType, 
+(
+    radDbgComType   targetType,
     unsigned short  port,
     void*           initInfo,
     radMemoryAllocator alloc
 )
 {
-    radSingleLock< IRadThreadMutex > singleLock( this, true );
+    radSingleLock<IRadThreadMutex> singleLock(this, true);
 
     int result;
 
@@ -444,77 +437,77 @@ void rDbgComTarget::Initialize
     m_Allocator = alloc;
 
     //
-    // Create dispatcher. We use this to drive other processing in this subsystem. 
+    // Create dispatcher. We use this to drive other processing in this subsystem.
     //
-    radDispatchCreate( &m_Dispatcher, 10, alloc );
-    rAssert( m_Dispatcher );
-    radMemoryMonitorReportAddRef( m_Dispatcher, this );
+    radDispatchCreate(&m_Dispatcher, 10, alloc);
+    rAssert(m_Dispatcher);
+    radMemoryMonitorReportAddRef(m_Dispatcher, this);
 
-	//
-	// Create a timer list for timeout
-	//
-    radTimeCreateList( &m_TimerList, 10, alloc );
-    rAssert( m_TimerList );
-    radMemoryMonitorReportAddRef( m_TimerList, this );
-    
+    //
+    // Create a timer list for timeout
+    //
+    radTimeCreateList(&m_TimerList, 10, alloc);
+    rAssert(m_TimerList);
+    radMemoryMonitorReportAddRef(m_TimerList, this);
+
     //
     // Lets initialize sockets. For now, if RAD_PS2 we assume the SNTCPIP stack and for Windows
     // just the Windows Sockets.
     //
-	#if defined( RAD_WIN32 ) || defined( RAD_XBOX )
-    if( m_TargetType == WinSocket )
+#if defined(RAD_WIN32) || defined(RAD_XBOX)
+    if(m_TargetType == WinSocket)
     {
         //
         // Lets initialize sockets on for the calling processes.We want a socket implementation
         // of version 2.0 or greater. If less than 2.0, still use it.
         //
- 
-	    #ifdef RAD_XBOX
-        #ifndef OLD_XDK
+
+#ifdef RAD_XBOX
+#ifndef OLD_XDK
 
         XNetStartupParams xnsp;
         memset(&xnsp, 0, sizeof(xnsp));
         xnsp.cfgSizeOfStruct = sizeof(XNetStartupParams);
-        xnsp.cfgFlags = XNET_STARTUP_BYPASS_SECURITY; 
+        xnsp.cfgFlags = XNET_STARTUP_BYPASS_SECURITY;
         XNetStartup(&xnsp);
 
-        #else
-    	    XnetInitialize( NULL, true );
-        #endif
-        #endif // RAD_XBOX
+#else
+            XnetInitialize(NULL, true);
+#endif
+#endif // RAD_XBOX
 
-	    WORD    wVersionRequested;
+        WORD    wVersionRequested;
         WSADATA wsaData;
         int     err;
- 
-        wVersionRequested = MAKEWORD( 2, 0 );
-        err = WSAStartup( wVersionRequested, &wsaData );
 
-        rAssert( err == 0 );
+        wVersionRequested = MAKEWORD(2, 0);
+        err = WSAStartup(wVersionRequested, &wsaData);
 
-        m_SocketImp = new( alloc ) radSocket( );
+        rAssert(err == 0);
+
+        m_SocketImp = new(alloc) radSocket();
     }
-    #endif
+#endif
 
-    #ifdef RAD_PS2
+#ifdef RAD_PS2
 
     //
     // Now lets perform some initialization. The DECI system requires no explicit initialization
-    // 
-    if( m_TargetType == Deci )
+    //
+    if(m_TargetType == Deci)
     {
         return;
     }
-    else if( m_TargetType == UsbTcpIp )
+    else if(m_TargetType == UsbTcpIp)
     {
         //
         // This code has been removed. Uncomment if you want to use TCPIP over USB. Performance
         // was very poor.
         //
-        rAssert( false );
-    
-        #ifdef SN_TCPIP           
-        
+        rAssert(false);
+
+#ifdef SN_TCPIP
+
         //
         // Lets load and initialize SNs tcpip stack.
         //
@@ -524,26 +517,26 @@ void rDbgComTarget::Initialize
         // Load up the IRX modules. Need the USB drive and sns stack. Need to build up
         // the IP address information correctly. Check if the Modules are all ready in place.
         //
-        if( SN_EIOPNORESP == sockAPIinit(1) )
+        if(SN_EIOPNORESP == sockAPIinit(1))
         {
             radDbgComUsbTcpIpInitInfo*   pAddr =  (radDbgComUsbTcpIpInitInfo*) initInfo;
             char iop_params[ 512 ];
             unsigned int x = 0;
-            strcpy( &iop_params[ x ], pAddr->m_IPAddress );
-            x += (strlen( &iop_params[ x ] ) + 1 );
-            strcpy( &iop_params[ x ], pAddr->m_SubMask );
-            x += (strlen( &iop_params[ x ] ) + 1 );
-            strcpy( &iop_params[ x ], pAddr->m_Gateway );
-            x += (strlen( &iop_params[ x ] ) + 1 );
- 
+            strcpy(&iop_params[ x ], pAddr->m_IPAddress);
+            x += (strlen(&iop_params[ x ]) + 1);
+            strcpy(&iop_params[ x ], pAddr->m_SubMask);
+            x += (strlen(&iop_params[ x ]) + 1);
+            strcpy(&iop_params[ x ], pAddr->m_Gateway);
+            x += (strlen(&iop_params[ x ]) + 1);
+
             IRadPlatform* pIPs2Platform;
-            pIPs2Platform = radPlatformGet( );
-	        pIPs2Platform->LoadIrxModule( "usbd.irx" );
-	        pIPs2Platform->LoadIrxModule( "sndbget.irx", x, iop_params  );
-	        
+            pIPs2Platform = radPlatformGet();
+            pIPs2Platform->LoadIrxModule("usbd.irx");
+            pIPs2Platform->LoadIrxModule("sndbget.irx", x, iop_params);
+
             result = sockAPIinit(1);
-            rAssert( result == 0 );
-        } 
+            rAssert(result == 0);
+        }
 
         //
         // Register this thread.
@@ -551,16 +544,16 @@ void rDbgComTarget::Initialize
         sockAPIregthr();
 
         //
-        // Wait to attach 
+        // Wait to attach
         //
         sn_bool Attached = SN_FALSE;
         short   idVendor;
         short   idProduct;
 
-        while( Attached == SN_FALSE)
+        while(Attached == SN_FALSE)
         {
             result = snmdm_get_attached(&Attached, &idVendor, &idProduct);
-            rAssert( result == 0 );
+            rAssert(result == 0);
             sn_delay(10);
         }
 
@@ -568,105 +561,105 @@ void rDbgComTarget::Initialize
         // Start the stack.
         //
         int currentState;
-        sn_stack_state( SN_STACK_STATE_START, &currentState);
-  
+        sn_stack_state(SN_STACK_STATE_START, &currentState);
+
         //
         // Wait a couple seconds as per the example.
         //
         sn_delay(4000);
 
-        m_SocketImp = new( alloc ) radSocket( );
+        m_SocketImp = new(alloc) radSocket();
 
-        #endif
+#endif
 
     }
-    else if( m_TargetType == FireWire )
+    else if(m_TargetType == FireWire)
     {
-        m_SocketImp = new( alloc ) CTarget1394Socket( );
+        m_SocketImp = new(alloc) CTarget1394Socket();
     }
     else
     {
-        rAssertMsg( false, "Invalid com type specified\n");
+        rAssertMsg(false, "Invalid com type specified\n");
     }
-    #endif
+#endif
 
     //
     // For the GameCube, we have a socket emulation using HIO
     //
-    #ifdef RAD_GAMECUBE
- 
-    rAssert( m_TargetType == HostIO );
+#ifdef RAD_GAMECUBE
+
+    rAssert(m_TargetType == HostIO);
 
     s32 hioChannel = 1;
-    if( initInfo != NULL )
+    if(initInfo != NULL)
     {
         hioChannel = ((radDbgComGameCubeInitInfo *)initInfo)->m_HioChannel;
     }
 
-    m_SocketImp = new( alloc ) CTargetHIOSocket(hioChannel);
+    m_SocketImp = new(alloc) CTargetHIOSocket(hioChannel);
 
-    #endif
+#endif
 
     //
     // Lets begin the set up of sockets. First create a socket we will use for
     // listening for host connections.
     //
-    m_ListeningSocket = m_SocketImp->socket( AF_INET, SOCK_STREAM, 0 );          
-    rAssert( m_ListeningSocket > 0 );
- 
+    m_ListeningSocket = m_SocketImp->socket(AF_INET, SOCK_STREAM, 0);
+    rAssert(m_ListeningSocket> 0);
+
     //
     // Set socket options so we are allowed to re-use the address.
     //
     int ReuseAddr = 1;
-    result = m_SocketImp->setsockopt( m_ListeningSocket, SOL_SOCKET, SO_REUSEADDR, (const char*) &ReuseAddr, sizeof( int ) );
-    rAssert( result == 0 );
+    result = m_SocketImp->setsockopt(m_ListeningSocket, SOL_SOCKET, SO_REUSEADDR, (const char*) &ReuseAddr, sizeof(int));
+    rAssert(result == 0);
 
 #ifndef RAD_XBOX
     int KeepAlive = 1;
-    result = m_SocketImp->setsockopt( m_ListeningSocket, SOL_SOCKET, SO_KEEPALIVE, (const char*) &KeepAlive, sizeof( int ) );
-    rAssert( result == 0 );    
+    result = m_SocketImp->setsockopt(m_ListeningSocket, SOL_SOCKET, SO_KEEPALIVE, (const char*) &KeepAlive, sizeof(int));
+    rAssert(result == 0);
 #endif // !RAD_XBOX
 
-    //  
+    //
     // Bind the socket using the specified port.
     //
     sockaddr_in sockAddr;
-	memset( &sockAddr, 0, sizeof(sockAddr) );
-	sockAddr.sin_family = AF_INET;
-	sockAddr.sin_addr.s_addr = htonl( INADDR_ANY );
-    sockAddr.sin_port = htons( m_Port );
-       
-    result = m_SocketImp->bind( m_ListeningSocket, (struct sockaddr*) &sockAddr, sizeof( sockAddr ) );
-    rAssert( result == 0 );
+    memset(&sockAddr, 0, sizeof(sockAddr));
+    sockAddr.sin_family = AF_INET;
+    sockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    sockAddr.sin_port = htons(m_Port);
 
-    //  
+    result = m_SocketImp->bind(m_ListeningSocket, (struct sockaddr*) &sockAddr, sizeof(sockAddr));
+    rAssert(result == 0);
+
+    //
     // Set the socket option to be non-blocking. Must use two different techiques.
     //
-    #ifdef RAD_PS2
+#ifdef RAD_PS2
     int NonBlocking = 1;
-    result = m_SocketImp->setsockopt( m_ListeningSocket, SOL_SOCKET, SO_NBIO, (const char*) &NonBlocking, sizeof( int ) );
-    rAssert( result == 0 );    
-    #endif
-    
-	#if defined( RAD_WIN32 ) || defined( RAD_XBOX )
+    result = m_SocketImp->setsockopt(m_ListeningSocket, SOL_SOCKET, SO_NBIO, (const char*) &NonBlocking, sizeof(int));
+    rAssert(result == 0);
+#endif
+
+#if defined(RAD_WIN32) || defined(RAD_XBOX)
     unsigned long NonBlocking = 1;
-    result = m_SocketImp->ioctlsocket( m_ListeningSocket, FIONBIO, &NonBlocking );
-    rAssert( result == 0 );    
-    #endif
+    result = m_SocketImp->ioctlsocket(m_ListeningSocket, FIONBIO, &NonBlocking);
+    rAssert(result == 0);
+#endif
     
     //
     // Now lets listen for incoming connections.
     //
-    result = m_SocketImp->listen( m_ListeningSocket, 5 );
-    rAssert( result == 0 );    
+    result = m_SocketImp->listen(m_ListeningSocket, 5);
+    rAssert(result == 0);
     
     //
     // Lets create a timer. We use this to periodically check for 
     // connections
     //
-    m_TimerList->CreateTimer( &m_Timer, CheckForConnectTimeout, this );
-    rAssert( m_TimerList );
-    radMemoryMonitorReportAddRef( m_TimerList, this );
+    m_TimerList->CreateTimer(&m_Timer, CheckForConnectTimeout, this);
+    rAssert(m_TimerList);
+    radMemoryMonitorReportAddRef(m_TimerList, this);
 }
 
 //=============================================================================
@@ -683,34 +676,34 @@ void rDbgComTarget::Initialize
 //------------------------------------------------------------------------------
 
 void rDbgComTarget::Terminate
-( 
+(
     void
 )
 {
 
-#if defined( RAD_WIN32 ) || defined( RAD_XBOX ) || defined( RAD_GAMECUBE )
+#if defined(RAD_WIN32) || defined(RAD_XBOX) || defined(RAD_GAMECUBE)
 
-    radSingleLock< IRadThreadMutex > singleLock( this, true );
+    radSingleLock<IRadThreadMutex> singleLock(this, true);
 
-    radRelease( m_Timer, this );
+    radRelease(m_Timer, this);
 
     //
     // Close our listening socket.
     //
-    m_SocketImp->closesocket( m_ListeningSocket );
+    m_SocketImp->closesocket(m_ListeningSocket);
 
 #endif
 
 #ifdef RAD_PS2
 
-    if( m_TargetType != Deci )
+    if(m_TargetType != Deci)
     {
-        radRelease( m_Timer, this );
+        radRelease(m_Timer, this);
   
         //
         // Close our listening socket.
         //
-        m_SocketImp->closesocket( m_ListeningSocket );
+        m_SocketImp->closesocket(m_ListeningSocket);
     }
 
 #endif
@@ -718,11 +711,11 @@ void rDbgComTarget::Terminate
     //
     // Deactivate any pending connections.
     //
-    for( unsigned int i = 0 ; i < MaxProtocols ; i++ )
+    for(unsigned int i = 0 ; i <MaxProtocols ; i++)
     {
-        if( m_ProtocolTable[ i ].m_State == ProtocolInfoEntry::ConnectionPending )
+        if(m_ProtocolTable[ i ].m_State == ProtocolInfoEntry::ConnectionPending)
         {
-            m_ProtocolTable[ i ].m_pConnection->Deactivate( );
+            m_ProtocolTable[ i ].m_pConnection->Deactivate();
         }        
     }
 
@@ -735,12 +728,12 @@ void rDbgComTarget::Terminate
     // and will not be probibitative.  Service the dispatcher while waiting 
     // for timer to expire. This is not a great solution but will do.
     //
-    unsigned int StartTime = radTimeGetMilliseconds( );
+    unsigned int StartTime = radTimeGetMilliseconds();
         
-    while( radTimeGetMilliseconds( ) - StartTime < 2000 )
+    while(radTimeGetMilliseconds() - StartTime <2000)
     {
-        m_TimerList->Service( );
-        m_Dispatcher->Service( );
+        m_TimerList->Service();
+        m_Dispatcher->Service();
     }
 
 #endif
@@ -748,11 +741,11 @@ void rDbgComTarget::Terminate
     //
     // Spin here until no more dispatch events are queued.
     //
-    while( 0 != m_Dispatcher->Service( ) )
+    while(0 != m_Dispatcher->Service())
     {
-        m_TimerList->Service( );
+        m_TimerList->Service();
     }
-    radRelease( m_TimerList, this );
+    radRelease(m_TimerList, this);
 }
 
 //=============================================================================
@@ -768,20 +761,20 @@ void rDbgComTarget::Terminate
 // Notes:
 //------------------------------------------------------------------------------
 
-void rDbgComTarget::Service( void )
+void rDbgComTarget::Service(void)
 {
-    Lock( );
+    Lock();
 
     //
     // Simply drive our internal dispatcher and timer list.
     //
-    m_Dispatcher->Service( );
+    m_Dispatcher->Service();
 
-    if( m_TimerList != NULL )
+    if(m_TimerList != NULL)
     {
-        m_TimerList->Service( );
+        m_TimerList->Service();
     }
-    Unlock( );
+    Unlock();
 }
 
 
@@ -800,37 +793,37 @@ void rDbgComTarget::Service( void )
 //------------------------------------------------------------------------------
 
 void rDbgComTarget::CreateChannel
-( 
+(
     unsigned short          protocol,
     IRadDbgComChannel**     ppChannel,
     radMemoryAllocator      alloc    
 )
 {
-    radSingleLock< IRadThreadMutex > singleLock( this, true );
+    radSingleLock<IRadThreadMutex> singleLock(this, true);
 
     //
     // Validdate protocol
     //
-    rAssert( (protocol >= 0xE000) && (protocol < 0xF000) );
+    rAssert((protocol>= 0xE000) && (protocol <0xF000));
 
     //
     // Based on the target type, construct the appropaite target channel object. Currently
     // we support DECI and sockets target channels.
     //
-#if defined( RAD_WIN32 ) || defined( RAD_XBOX ) || defined( RAD_GAMECUBE )
+#if defined(RAD_WIN32) || defined(RAD_XBOX) || defined(RAD_GAMECUBE)
 
-     *ppChannel = new( alloc ) rDbgComSocketTargetChannel( this, protocol );        
+     *ppChannel = new(alloc) rDbgComSocketTargetChannel(this, protocol);
 
 #endif
 
 #ifdef RAD_PS2    
 
-    if( m_TargetType == Deci )
+    if(m_TargetType == Deci)
     {
         //
         // Construct up a DECITargetChannel
         //
-        *ppChannel = new( alloc ) rDbgComDECITargetChannel( this, protocol );
+        *ppChannel = new(alloc) rDbgComDECITargetChannel(this, protocol);
 
     }
     else
@@ -839,7 +832,7 @@ void rDbgComTarget::CreateChannel
         // Here we are using standard sockets for our communication. Construct 
         // the socket channel object.
         //  
-        *ppChannel = new( alloc ) rDbgComSocketTargetChannel( this, protocol );        
+        *ppChannel = new(alloc) rDbgComSocketTargetChannel(this, protocol);
     }
 
 #endif
@@ -859,7 +852,7 @@ void rDbgComTarget::CreateChannel
 //------------------------------------------------------------------------------
 
 void rDbgComTarget::OnTimerDone
-( 
+(
     unsigned int    elapsedtime,
     void*           userData
 )
@@ -867,26 +860,26 @@ void rDbgComTarget::OnTimerDone
     (void) userData;
     (void) elapsedtime;
 
-    radSingleLock< IRadThreadMutex > singleLock( this, true );
+    radSingleLock<IRadThreadMutex> singleLock(this, true);
 
     //
     // Lets check to see if anyone has called our socket.
     //
-    SOCKET lsocket = m_SocketImp->accept( m_ListeningSocket, NULL, NULL );
+    SOCKET lsocket = m_SocketImp->accept(m_ListeningSocket, NULL, NULL);
 
-    if( lsocket != INVALID_SOCKET )
+    if(lsocket != INVALID_SOCKET)
     {
         //
         // Here the some host application has connected to us. Lets new
         // up a connection object. Note that it is intentional that the object
         // is not assigned to anything. The object internal maintains its lifetime.
         //
-        rDbgComTargetConnection* p = new( m_Allocator ) rDbgComTargetConnection( lsocket, this );
+        rDbgComTargetConnection* p = new(m_Allocator) rDbgComTargetConnection(lsocket, this);
 
         //
-        // James Tan : don't trigger radMemoryMonitorReportRelease( ) here
+        // James Tan : don't trigger radMemoryMonitorReportRelease() here
         // 
-        p->Release( );
+        p->Release();
     }       
 }
 
@@ -904,21 +897,21 @@ void rDbgComTarget::OnTimerDone
 //------------------------------------------------------------------------------
 
 ProtocolInfoEntry* rDbgComTarget::FindProtocol
-( 
+(
     unsigned short protocol
 )
 {
-    radSingleLock< IRadThreadMutex > singleLock( this, true );
+    radSingleLock<IRadThreadMutex> singleLock(this, true);
 
-    for( unsigned int i = 0 ; i < MaxProtocols ; i++ )
+    for(unsigned int i = 0 ; i <MaxProtocols ; i++)
     {
-        if( (m_ProtocolTable[ i ].m_State != ProtocolInfoEntry::Free) && (m_ProtocolTable[ i ].m_Protocol == protocol) )
+        if((m_ProtocolTable[ i ].m_State != ProtocolInfoEntry::Free) && (m_ProtocolTable[ i ].m_Protocol == protocol))
         {
-            return( &m_ProtocolTable[ i ] );
+            return(&m_ProtocolTable[ i ]);
         }
     }
         
-    return( NULL );
+    return(NULL);
 }
 
 //=============================================================================
@@ -935,21 +928,21 @@ ProtocolInfoEntry* rDbgComTarget::FindProtocol
 //------------------------------------------------------------------------------
 
 ProtocolInfoEntry* rDbgComTarget::FindFreeProtocol
-( 
+(
     void
 )
 {
-    radSingleLock< IRadThreadMutex > singleLock( this, true );
+    radSingleLock<IRadThreadMutex> singleLock(this, true);
 
-    for( unsigned int i = 0 ; i < MaxProtocols ; i++ )
+    for(unsigned int i = 0 ; i <MaxProtocols ; i++)
     {
-        if( m_ProtocolTable[ i ].m_State == ProtocolInfoEntry::Free )
+        if(m_ProtocolTable[ i ].m_State == ProtocolInfoEntry::Free)
         {
-            return( &m_ProtocolTable[ i ] );
+            return(&m_ProtocolTable[ i ]);
         }
     }
         
-    return( NULL );
+    return(NULL);
 }
 
 //=============================================================================
@@ -964,9 +957,9 @@ ProtocolInfoEntry* rDbgComTarget::FindFreeProtocol
 // Notes:
 //------------------------------------------------------------------------------
 
-void rDbgComTarget::Lock( )
+void rDbgComTarget::Lock()
 {
-    radDbgComMutexLock( );
+    radDbgComMutexLock();
 }
 
 //=============================================================================
@@ -981,9 +974,9 @@ void rDbgComTarget::Lock( )
 // Notes:
 //------------------------------------------------------------------------------
 
-void rDbgComTarget::Unlock( )
+void rDbgComTarget::Unlock()
 {
-    radDbgComMutexUnlock( );
+    radDbgComMutexUnlock();
 }
 
 //=============================================================================
@@ -998,11 +991,11 @@ void rDbgComTarget::Unlock( )
 // Notes:
 //------------------------------------------------------------------------------
     
-void rDbgComTarget::AddRef( void )
+void rDbgComTarget::AddRef(void)
 {
-    Lock( );
+    Lock();
     m_ReferenceCount++;
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -1017,18 +1010,18 @@ void rDbgComTarget::AddRef( void )
 // Notes:
 //------------------------------------------------------------------------------
     
-void rDbgComTarget::Release( void )
+void rDbgComTarget::Release(void)
 {
-    Lock( );
+    Lock();
     m_ReferenceCount--;
-    if( m_ReferenceCount == 0 )
+    if(m_ReferenceCount == 0)
     {
-        Unlock( );
+        Unlock();
         delete this;
     }
     else
     {
-        Unlock( );
+        Unlock();
     }
 }
 
@@ -1045,11 +1038,11 @@ void rDbgComTarget::Release( void )
 //------------------------------------------------------------------------------
 
 #ifdef RAD_DEBUG
-void rDbgComTarget::Dump( char* pStringBuffer, unsigned int bufferSize )
+void rDbgComTarget::Dump(char* pStringBuffer, unsigned int bufferSize)
 {
-    Lock( );
-    sprintf( pStringBuffer, "Object: [radDbgComTarget] At Memory Location:[0x%x]\n", (unsigned int) this );
-    Unlock( );
+    Lock();
+    sprintf(pStringBuffer, "Object: [radDbgComTarget] At Memory Location:[0x%x]\n", (unsigned int) this);
+    Unlock();
 }
 
 #endif

@@ -40,50 +40,57 @@
 //
 // This class implements the balenced (AVL) binary tree.
 //
-class radObjectAVLTree : public radObjectBTree
-{
+class radObjectAVLTree : public radObjectBTree {
 public:
-    radObjectAVLTree( radMemoryAllocator allocator );
-    virtual ~radObjectAVLTree( );
+    radObjectAVLTree(radMemoryAllocator allocator);
+
+    virtual ~radObjectAVLTree();
 
     // IRadObjectBTree
     virtual bool AddObject
-    (
-        const radKey32& key,
-        IRefCount* pIObject
-    );
+            (
+                    const radKey32 &key,
+                    IRefCount *pIObject
+            );
 
-    virtual bool RemoveObject( const radKey32& key );
-    virtual bool RemoveObject( IRefCount* pIObject );
+    virtual bool RemoveObject(const radKey32 &key);
+
+    virtual bool RemoveObject(IRefCount *pIObject);
 
 protected:
 
     //
     // Calculate the depth of the various subtrees
     //
-    int GetMaxDepth( radObjectBTreeNode* pNode );
-    int GetLeftDepth( radObjectBTreeNode* pNode );
-    int GetRightDepth( radObjectBTreeNode* pNode );
+    int GetMaxDepth(radObjectBTreeNode *pNode);
+
+    int GetLeftDepth(radObjectBTreeNode *pNode);
+
+    int GetRightDepth(radObjectBTreeNode *pNode);
 
     //
     // Rotate a node in the given direction
     //
-    inline void RotateLeft( radObjectBTreeNode* pNode );
-    inline void RotateRight( radObjectBTreeNode* pNode );
-    inline void RotateDoubleLeft( radObjectBTreeNode* pNode );
-    inline void RotateDoubleRight( radObjectBTreeNode* pNode );
+    inline void RotateLeft(radObjectBTreeNode *pNode);
+
+    inline void RotateRight(radObjectBTreeNode *pNode);
+
+    inline void RotateDoubleLeft(radObjectBTreeNode *pNode);
+
+    inline void RotateDoubleRight(radObjectBTreeNode *pNode);
 
     //
     // Generic function to rebalence a node
     //
-    void BalanceNode( radObjectBTreeNode* pNode );
+    void BalanceNode(radObjectBTreeNode *pNode);
+
     void DoBalance
-    (
-        radObjectBTreeNode* pNode,
-        int lefttDepth,
-        int rightDepth,
-        int maxDepth
-    );
+            (
+                    radObjectBTreeNode *pNode,
+                    int lefttDepth,
+                    int rightDepth,
+                    int maxDepth
+            );
 
 private:
 };

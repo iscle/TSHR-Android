@@ -32,38 +32,33 @@
 //============================================================================
 
 struct radWeakCallbackWrapper
-	:
-	public IRadWeakCallbackWrapper,
-	public radRefCount
+        :
+                public IRadWeakCallbackWrapper,
+                public radRefCount {
 
-{
-
-	IMPLEMENT_REFCOUNTED( "radWeakCallbackWrapper" )
+    IMPLEMENT_REFCOUNTED("radWeakCallbackWrapper")
 
     //========================================================================
     // bWeakCallbackWrapper::SetWeakCallback
     //========================================================================
 
-	virtual void SetWeakInterface( void * pWeakCallback )
-	{
-		m_pWeakCallback = pWeakCallback;
-	}
+    virtual void SetWeakInterface(void *pWeakCallback) {
+        m_pWeakCallback = pWeakCallback;
+    }
 
     //========================================================================
     // bWeakCallbackWrapper::GetWeakCallback
     //========================================================================
 
-    virtual void * GetWeakInterface( void )
-	{
-		return m_pWeakCallback;
-	}
+    virtual void *GetWeakInterface(void) {
+        return m_pWeakCallback;
+    }
 
     //========================================================================
     // bWeakCallbackWrapper::SetUserData
     //========================================================================
 
-    virtual void SetUserData( void * pUserData )
-    {
+    virtual void SetUserData(void *pUserData) {
         m_UserData = pUserData;
     }
 
@@ -71,8 +66,7 @@ struct radWeakCallbackWrapper
     // bWeakCallbackWrapper::GetUserData
     //========================================================================
 
-    virtual void * GetUserData( void )
-    {
+    virtual void *GetUserData(void) {
         return m_UserData;
     }
 
@@ -80,26 +74,24 @@ struct radWeakCallbackWrapper
     // bWeakCallbackWrapper::bWeakCallbackWrapper
     //========================================================================
 
-	radWeakCallbackWrapper( void )
-		:
-		radRefCount( 1 ),
-		m_pWeakCallback( NULL ),
-        m_UserData( NULL )
-	{
-        radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radWeakCallbackWrapper" );
+    radWeakCallbackWrapper(void)
+            :
+            radRefCount(1),
+            m_pWeakCallback(NULL),
+            m_UserData(NULL) {
+        radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radWeakCallbackWrapper");
     }
 
-	unsigned int m_RefCount;
+    unsigned int m_RefCount;
 
-	void * m_pWeakCallback;
-    void * m_UserData;
+    void *m_pWeakCallback;
+    void *m_UserData;
 
 
 };
 
-void radWeakCallbackWrapperCreate( IRadWeakCallbackWrapper** ppIWcr, radMemoryAllocator allocator )
-{
-    *ppIWcr = new ( allocator ) radWeakCallbackWrapper( );
+void radWeakCallbackWrapperCreate(IRadWeakCallbackWrapper **ppIWcr, radMemoryAllocator allocator) {
+    *ppIWcr = new(allocator) radWeakCallbackWrapper();
 }
 
 
@@ -123,20 +115,19 @@ void radWeakCallbackWrapperCreate( IRadWeakCallbackWrapper** ppIWcr, radMemoryAl
 //------------------------------------------------------------------------------
 
 void radWeakCallbackRegister
-(
-    IRadObjectList* pCallbackList,
-    radMemoryAllocator allocator,
-    void* pCallback,
-    void* pUserData
-)
-{
-    ref< IRadWeakCallbackWrapper > xIWcw;
-    ::radWeakCallbackWrapperCreate( & xIWcw, allocator );
-    
-    xIWcw->SetWeakInterface( (void*) pCallback );
-    xIWcw->SetUserData( pUserData );
-    
-    pCallbackList->AddObject( xIWcw );
+        (
+                IRadObjectList *pCallbackList,
+                radMemoryAllocator allocator,
+                void *pCallback,
+                void *pUserData
+        ) {
+    ref <IRadWeakCallbackWrapper> xIWcw;
+    ::radWeakCallbackWrapperCreate(&xIWcw, allocator);
+
+    xIWcw->SetWeakInterface((void *) pCallback);
+    xIWcw->SetUserData(pUserData);
+
+    pCallbackList->AddObject(xIWcw);
 }
 
 //=============================================================================
@@ -154,38 +145,33 @@ void radWeakCallbackRegister
 //------------------------------------------------------------------------------
 
 void radWeakCallbackUnregister
-(
-    IRadObjectList* pCallbackList,
-    void* pCallback,
-    void* pUserData
-)
-{
-    ref< IRadWeakCallbackWrapper > xIWcw;
-    
+        (
+                IRadObjectList *pCallbackList,
+                void *pCallback,
+                void *pUserData
+        ) {
+    ref <IRadWeakCallbackWrapper> xIWcw;
+
     for
-    (
-        unsigned int i = 0;
-        i < pCallbackList->GetSize( );
-        i++
-    )
-    {
-        xIWcw = reinterpret_cast< IRadWeakCallbackWrapper * >
-        (
-            pCallbackList->GetAt( i )
+            (
+            unsigned int i = 0;
+            i < pCallbackList->GetSize();
+            i++
+            ) {
+        xIWcw = reinterpret_cast<IRadWeakCallbackWrapper *>(pCallbackList->GetAt(i)
         );
-        
+
         if
-        (
-            xIWcw->GetWeakInterface( ) == pCallback &&
-            xIWcw->GetUserData( ) == pUserData
-        )
-        {
-            pCallbackList->RemoveObject( xIWcw );
+                (
+                xIWcw->GetWeakInterface() == pCallback &&
+                xIWcw->GetUserData() == pUserData
+                ) {
+            pCallbackList->RemoveObject(xIWcw);
             return;
         }
-        
+
         xIWcw = NULL;
     }
-    
-    rAssert( 0 ); // not found
+
+    rAssert(0); // not found
 }

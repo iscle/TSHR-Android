@@ -62,26 +62,23 @@ typedef tUidUnaligned radKey;
 //              provide odds of approximately one in four billion.
 //------------------------------------------------------------------------------
 
-inline radKey radMakeKey( const char* pToken, radKey keyValue = 0 )
-{
-	if ( pToken != NULL )
-	{
-		while( *pToken )
-		{
+inline radKey radMakeKey(const char *pToken, radKey keyValue = 0) {
+    if (pToken != NULL) {
+        while (*pToken) {
             // Pure3D Algorithm
             keyValue *= 65599;
-            keyValue = (keyValue ^ ( static_cast< radKey >( *pToken ) ) );
-            
-			//
-			// Update the token's position
-			//
-			pToken++;
-		}
-    
-		return( keyValue );
-	}
+            keyValue = (keyValue ^ (static_cast<radKey>(*pToken)));
 
-	return keyValue;
+            //
+            // Update the token's position
+            //
+            pToken++;
+        }
+
+        return (keyValue);
+    }
+
+    return keyValue;
 }
 
 //=============================================================================
@@ -97,21 +94,20 @@ inline radKey radMakeKey( const char* pToken, radKey keyValue = 0 )
 //
 //------------------------------------------------------------------------------
 
-inline radKey radMakeCaseInsensitiveKey( const char* pToken, radKey keyValue = 0 )
-{
-    while( *pToken )
-    {
+inline radKey radMakeCaseInsensitiveKey(const char *pToken, radKey keyValue = 0) {
+    while (*pToken) {
         // Case insensitive Pure3d Algorithm
         keyValue *= 65599;
-        keyValue = (keyValue ^ static_cast< radKey >(*pToken < 'a' ? *pToken + 'a' - 'A' : *pToken));
+        keyValue = (keyValue ^
+                    static_cast<radKey>(*pToken < 'a' ? *pToken + 'a' - 'A' : *pToken));
 
         //
         // Update the token's position
         //
         pToken++;
     }
-    
-    return( keyValue );
+
+    return (keyValue);
 }
 
 
@@ -138,34 +134,31 @@ typedef unsigned int radKey32;
 //              provide odds of approximately one in four billion.
 //------------------------------------------------------------------------------
 
-inline radKey32 radMakeKey32( const char* pToken, radKey32 keyValue = 0 )
-{
-	if ( pToken != NULL )
-	{
-		while( *pToken )
-		{
-            
-			//
-			// X31 Alogrithm
-			//
-			keyValue = ( keyValue << 5 ) - keyValue + (radKey32) *pToken;
-    
-			//
-			// Radcore algorithm
-			//
-			//keyValue = keyValue + (keyValue >> 24);
-			//keyValue = (keyValue << 7) + *pToken;
-        
-			//
-			// Update the token's position
-			//
-			pToken++;
-		}
-    
-		return( keyValue );
-	}
+inline radKey32 radMakeKey32(const char *pToken, radKey32 keyValue = 0) {
+    if (pToken != NULL) {
+        while (*pToken) {
 
-	return keyValue;
+            //
+            // X31 Alogrithm
+            //
+            keyValue = (keyValue << 5) - keyValue + (radKey32) *pToken;
+
+            //
+            // Radcore algorithm
+            //
+            //keyValue = keyValue + (keyValue>> 24);
+            //keyValue = (keyValue <<7) + *pToken;
+
+            //
+            // Update the token's position
+            //
+            pToken++;
+        }
+
+        return (keyValue);
+    }
+
+    return keyValue;
 }
 
 //=============================================================================
@@ -181,28 +174,24 @@ inline radKey32 radMakeKey32( const char* pToken, radKey32 keyValue = 0 )
 //
 //------------------------------------------------------------------------------
 
-inline radKey32 radMakeCaseInsensitiveKey32( const char* pToken, radKey32 keyValue = 0 )
-{
+inline radKey32 radMakeCaseInsensitiveKey32(const char *pToken, radKey32 keyValue = 0) {
     radKey32 c;
 
-    while( *pToken )
-    {
+    while (*pToken) {
         //
         // Case insensitive X31 alogrithm
         //
-        c = static_cast< radKey32 >
-        (
-            ( *pToken < 'a' ) ? ( *pToken + 'a' - 'A' ) : ( *pToken )
+        c = static_cast<radKey32>((*pToken < 'a') ? (*pToken + 'a' - 'A') : (*pToken)
         );
-        keyValue = ( keyValue << 5 ) - keyValue + c;
-        
+        keyValue = (keyValue << 5) - keyValue + c;
+
         //
         // Update the token's position
         //
         pToken++;
     }
-    
-    return( keyValue );
+
+    return (keyValue);
 }
 
 //=============================================================================
@@ -217,18 +206,17 @@ inline radKey32 radMakeCaseInsensitiveKey32( const char* pToken, radKey32 keyVal
 //              
 // Returns:     Returns true if a match is found, otherwise false.
 //
-// Notes:       The template uses the == and < operators on class A
+// Notes:       The template uses the == and <operators on class A
 //------------------------------------------------------------------------------
 
-template< class A >
+template<class A>
 bool radBinarySearch
-(
-    const A& matchElement,
-    const A* pSortedArray,
-    const int numElements,
-    unsigned int* pIndex
-)
-{
+        (
+                const A &matchElement,
+                const A *pSortedArray,
+                const int numElements,
+                unsigned int *pIndex
+        ) {
     //
     // Iterate through cache file names using a binary search
     //
@@ -237,25 +225,22 @@ bool radBinarySearch
     unsigned int mid;
     unsigned int high = numElements;
 
-    while( low <= high )
-    {
+    while (low <= high) {
         //
         // Calculate the mid point.  The actual function is:
-        //      mid = ( low + high ) / 2;
+        //      mid = (low + high) / 2;
         // We spice it up a bit to avoid overflow problems and
         // to confuse anybody who may be reading it ;)
         //
-        mid = ( low / 2 ) + ( high / 2 );
-        if( low&0x01 && high&0x01 )
-        {
+        mid = (low / 2) + (high / 2);
+        if (low & 0x01 && high & 0x01) {
             mid++;
         }
-    
+
         //
         // Do they match?
         //
-        if( pSortedArray[ mid ] == matchElement )
-        {
+        if (pSortedArray[mid] == matchElement) {
             matchfound = true;
             (*pIndex) = mid;
             break;
@@ -264,17 +249,13 @@ bool radBinarySearch
         //
         // Update the search
         //
-        if( pSortedArray[ mid ] < matchElement )
-        {
+        if (pSortedArray[mid] < matchElement) {
             low = mid + 1;
-        }
-        else
-        {
+        } else {
             //
             // We don't want to "underflow" unsigned int
             //
-            if( mid == 0 )
-            {
+            if (mid == 0) {
                 break;
             }
             high = mid - 1;
@@ -293,8 +274,8 @@ bool radBinarySearch
 
 typedef unsigned int radCrc;
 
-extern radCrc s_CRCTable[ RADCRCTABLESIZE ];
-extern bool   s_CRCIsInitialized;
+extern radCrc s_CRCTable[RADCRCTABLESIZE];
+extern bool s_CRCIsInitialized;
 
 //=============================================================================
 // Function:    radCRCInit
@@ -307,32 +288,25 @@ extern bool   s_CRCIsInitialized;
 //
 //------------------------------------------------------------------------------
 
-inline void radCRCInit( void )
-{
-    if ( !s_CRCIsInitialized )
-    {
-        rAssertMsg( sizeof( radCrc ) == 4, "radKey: radCrc must be 32 bit integers." );
+inline void radCRCInit(void) {
+    if (!s_CRCIsInitialized) {
+        rAssertMsg(sizeof(radCrc) == 4, "radKey: radCrc must be 32 bit integers.");
 
         unsigned int i, j;
         radCrc CRCRem;
 
-        for ( i = 0; i < RADCRCTABLESIZE; i++ ) 
-        {
-            CRCRem = ( (radCrc) i << 24 );
+        for (i = 0; i < RADCRCTABLESIZE; i++) {
+            CRCRem = ((radCrc) i << 24);
 
-            for ( j = 0; j < 8; j++ ) 
-            {
-                if ( CRCRem & 0x80000000L )
-                {
-                    CRCRem = ( CRCRem << 1 ) ^ RADCRCPOLYNOMIAL;
-                }
-                else
-                {
-                    CRCRem = ( CRCRem << 1 );
+            for (j = 0; j < 8; j++) {
+                if (CRCRem & 0x80000000L) {
+                    CRCRem = (CRCRem << 1) ^ RADCRCPOLYNOMIAL;
+                } else {
+                    CRCRem = (CRCRem << 1);
                 }
             }
 
-            s_CRCTable[ i ] = CRCRem;
+            s_CRCTable[i] = CRCRem;
         }
 
         s_CRCIsInitialized = true;
@@ -352,23 +326,22 @@ inline void radCRCInit( void )
 //
 //------------------------------------------------------------------------------
 
-inline radCrc radCRCCalculate( const char* buf, unsigned int buf_size, radCrc CRC = 0xffffffff )
-{
-    rAssertMsg( s_CRCIsInitialized, "radKey: CRC table not initialized." );
+inline radCrc radCRCCalculate(const char *buf, unsigned int buf_size, radCrc CRC = 0xffffffff) {
+    rAssertMsg(s_CRCIsInitialized, "radKey: CRC table not initialized.");
 
     int i;
     unsigned int j;
 
-    for ( j = 0; j < buf_size; j++ ) 
-    {
-        i = ((int) (CRC >> 24) ^ buf[ j ]) & 0xff;
-        CRC = (CRC << 8) ^ s_CRCTable[ i ];
+    for (j = 0; j < buf_size; j++) {
+        i = ((int) (CRC >> 24) ^ buf[j]) & 0xff;
+        CRC = (CRC << 8) ^ s_CRCTable[i];
     }
     return CRC;
 }
 
-void KeyToStringKey32( char * pBuf, radKey32 key );
-radKey32 StringKeyToKey32( char * pBuf );
+void KeyToStringKey32(char *pBuf, radKey32 key);
+
+radKey32 StringKeyToKey32(char *pBuf);
 
 
 #endif //RADKEY_HPP

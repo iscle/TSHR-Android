@@ -18,17 +18,17 @@
 //
 //=============================================================================
 
-#ifndef	RADFILE_HPP
+#ifndef    RADFILE_HPP
 #define RADFILE_HPP
 
 //=============================================================================
 // Build Configuration Check
 //=============================================================================
- 
+
 #if !defined(RAD_GAMECUBE) && !defined(RAD_PS2) && !defined(RAD_XBOX) && !defined(RAD_WIN32)
-    #error 'FTech requires definition of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, or RAD_WIN32'
+#error 'FTech requires definition of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, or RAD_WIN32'
 #endif
- 
+
 //=============================================================================
 // Include Files
 //=============================================================================
@@ -55,7 +55,7 @@ struct IRadDrive;
 // The default path token seperator employed by the file system is the forward
 // slash ie ("\\"). It will be used whenever the the file system returns a file 
 // name or path. When the caller provides a path name or file name he can use
-// either the forward or backslash. (ie "\\" or "/" ).
+// either the forward or backslash. (ie "\\" or "/").
 //
 // PS2 Drive and filename considerations: 
 // the host drive is used by default in debug mode and the CDVD is used in release mode.
@@ -156,8 +156,7 @@ struct IRadDrive;
 // are performed with respect to other file operations in the system. Normally
 // first-in first-out manner unless the priority is altered.
 //
-enum radFilePriority
-{   
+enum radFilePriority {
     HighPriority,
     NormalPriority,
     LowPriority,
@@ -168,8 +167,7 @@ enum radFilePriority
 // This enumeration is used to govern the way a file is opened. Note: not all drive
 // types support creation.
 //
-enum radFileOpenFlags
-{
+enum radFileOpenFlags {
     OpenExisting = 0,               // Will open only if file exists,
     OpenAlways = 1,                 // If file does not exist, file will be created
     CreateAlways = 3                // Will create always even if file exists.
@@ -179,8 +177,7 @@ enum radFileOpenFlags
 // This enumeration is used to define the various errors that are reported by the
 // file system.
 //
-enum radFileError
-{
+enum radFileError {
     Success,                    // No Error
     FileNotFound,               // File not found on media
     ShellOpen,                  // Disk door, shell open
@@ -194,7 +191,7 @@ enum radFileError
     MediaWrongType,             // Unsupported media
     MediaInvalid,               // Unrecognized media
     DataCorrupt                 // Data failed CRC check
-};    
+};
 
 //
 // Constants to govern the maximum length of drive names and filenames. Does not
@@ -212,7 +209,7 @@ const unsigned int radFileDriveMax = 26;
 // Save Game Structures
 //=============================================================================
 
-#ifdef RAD_PS2 
+#ifdef RAD_PS2
 #include <radstring.hpp>
 
 struct radPs2IconSys
@@ -254,8 +251,8 @@ struct radMemcardInfo
 // Function to fill out a radPs2IconSys structure. 
 // title is in SJIS, lineBreak is in characters.
 //
-void radMakeIconSys( radPs2IconSys* pIconSys, radSJISChar* title, unsigned short lineBreak ); 
-void radSetIconSysTitle( radPs2IconSys* pIconSys, radSJISChar* title, unsigned short lineBreak );  
+void radMakeIconSys(radPs2IconSys* pIconSys, radSJISChar* title, unsigned short lineBreak);
+void radSetIconSysTitle(radPs2IconSys* pIconSys, radSJISChar* title, unsigned short lineBreak);
 
 #endif
 
@@ -353,17 +350,17 @@ struct radMemcardInfo
 // of open files. However some operating systems, like the PS2 limit the number of 
 // open files. If this limit is exceeded, the file system asserts and displays all open files.
 //
-void radFileInitialize( unsigned int maxOutstandingRequests = 50, 
-                        unsigned int maxOpenFiles = 14, // Ps2 Limit
-                        radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT );
+void radFileInitialize(unsigned int maxOutstandingRequests = 50,
+                       unsigned int maxOpenFiles = 14, // Ps2 Limit
+                       radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT);
 
-void radFileTerminate( void );
+void radFileTerminate(void);
 
 //
 // For the file system callbacks to operate correctly, this service must be invoked
 // periodically by the game's main loop. This call is also needed to run the RemoteDrive.
 //
-void radFileService( void );
+void radFileService(void);
 
 //
 // This function can be used to specify what directory on a drive will be
@@ -385,10 +382,10 @@ void radFileService( void );
 // It can also be called again for the same drive, but generally this should
 // not be done.
 // For example:
-//  radFileSetRootDirectory( "C:", "foo" ) - C: root is now C:\foo\
+//  radFileSetRootDirectory("C:", "foo") - C: root is now C:\foo\
 //      - A request for C:\mydir\myfile will actually get C:\foo\mydir\myfile
-//  radFileSetRootDirectory( "D:", "bar" ) - D: root is now D:\bar\
-//  radFileSetRootDirectory( "C:", "" ) - C: root is restored to C:\
+//  radFileSetRootDirectory("D:", "bar") - D: root is now D:\bar\
+//  radFileSetRootDirectory("C:", "") - C: root is restored to C:\
 //
 // NOTE root directory relocation is not quite the same thing as setting
 // the current working directory. If you changed the current working directory,
@@ -406,8 +403,9 @@ void radFileService( void );
 // files will be ignored.
 //
 
-void radFileSetRootDirectory( const char* pDrive, const char *pRootDir );
-void radFileGetRootDirectory( const char* pDrive, char* pRootDir );
+void radFileSetRootDirectory(const char *pDrive, const char *pRootDir);
+
+void radFileGetRootDirectory(const char *pDrive, char *pRootDir);
 
 //
 // These functions open a file. The object must be checked to see if it was 
@@ -415,49 +413,49 @@ void radFileGetRootDirectory( const char* pDrive, char* pRootDir );
 // associate with the file. This can increase read performance significantly if 
 // caller plans on reading a few bytes at a time.
 //
-// radFileOpen( ) is asynchronous and returns an object immediately which has not
+// radFileOpen() is asynchronous and returns an object immediately which has not
 // necessarily been created. A completion callback or event can be used to inform
 // the user when their operation is complete.
 //
-void radFileOpenAsync( IRadFile** pIRadFile, 
-                  const char* pFileName,
-                  bool writeAccess = false,
-                  radFileOpenFlags flags = OpenExisting,
-                  radFilePriority priority = NormalPriority, 
-                  unsigned int cacheSize = 0,
-                  radMemoryAllocator alloc = RADMEMORY_ALLOC_TEMP,
-                  radMemorySpace cacheSpace = radMemorySpace_Local );
+void radFileOpenAsync(IRadFile **pIRadFile,
+                      const char *pFileName,
+                      bool writeAccess = false,
+                      radFileOpenFlags flags = OpenExisting,
+                      radFilePriority priority = NormalPriority,
+                      unsigned int cacheSize = 0,
+                      radMemoryAllocator alloc = RADMEMORY_ALLOC_TEMP,
+                      radMemorySpace cacheSpace = radMemorySpace_Local);
 
-void radFileOpenSync( IRadFile** pIRadFile, 
-                  const char* pFileName,
-                  bool writeAccess = false,
-                  radFileOpenFlags flags = OpenExisting,
-                  radFilePriority priority = NormalPriority, 
-                  unsigned int cacheSize = 0,
-                  radMemoryAllocator alloc = RADMEMORY_ALLOC_TEMP,
-                  radMemorySpace cacheSpace = radMemorySpace_Local );
+void radFileOpenSync(IRadFile **pIRadFile,
+                     const char *pFileName,
+                     bool writeAccess = false,
+                     radFileOpenFlags flags = OpenExisting,
+                     radFilePriority priority = NormalPriority,
+                     unsigned int cacheSize = 0,
+                     radMemoryAllocator alloc = RADMEMORY_ALLOC_TEMP,
+                     radMemorySpace cacheSpace = radMemorySpace_Local);
 
 //
 // Special function to open save games
 //
-void radSaveGameOpenAsync( 
-    IRadFile** pIRadFile, 
-    const char* pFileName,
-    bool writeAccess = false,
-    radFileOpenFlags flags = OpenExisting,
-    radMemcardInfo* memcardInfo = NULL,
-    unsigned int maxSize = 0,
-    radFilePriority priority = NormalPriority
+void radSaveGameOpenAsync(
+        IRadFile **pIRadFile,
+        const char *pFileName,
+        bool writeAccess = false,
+        radFileOpenFlags flags = OpenExisting,
+        radMemcardInfo *memcardInfo = NULL,
+        unsigned int maxSize = 0,
+        radFilePriority priority = NormalPriority
 );
 
-void radSaveGameOpenSync( 
-    IRadFile** pIRadFile, 
-    const char* pFileName,
-    bool writeAccess = false,
-    radFileOpenFlags flags = OpenExisting,
-    radMemcardInfo* memcardInfo = NULL,
-    unsigned int maxSize = 0,
-    radFilePriority priority = NormalPriority
+void radSaveGameOpenSync(
+        IRadFile **pIRadFile,
+        const char *pFileName,
+        bool writeAccess = false,
+        radFileOpenFlags flags = OpenExisting,
+        radMemcardInfo *memcardInfo = NULL,
+        unsigned int maxSize = 0,
+        radFilePriority priority = NormalPriority
 );
 
 //
@@ -466,49 +464,49 @@ void radSaveGameOpenSync(
 // the game, it is advised that initialization code open and hold the drive for the 
 // life of the game.
 //
-// radDriveOpen( ) is asynchronous and returns an object immediately which has not
+// radDriveOpen() is asynchronous and returns an object immediately which has not
 // necessarily been created. A completion callback or event can be used to inform
 // the user when their operation is complete.
 //
-void radDriveOpenAsync( IRadDrive** pIRadDrive,
-                   const char* pDriveName,
-                   radFilePriority priority = NormalPriority, 
-                   radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT );
+void radDriveOpenAsync(IRadDrive **pIRadDrive,
+                       const char *pDriveName,
+                       radFilePriority priority = NormalPriority,
+                       radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT);
 
-void radDriveOpenSync( IRadDrive** pIRadDrive,
-                   const char* pDriveName,
-                   radFilePriority priority = NormalPriority, 
-                   radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT );
+void radDriveOpenSync(IRadDrive **pIRadDrive,
+                      const char *pDriveName,
+                      radFilePriority priority = NormalPriority,
+                      radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT);
 
 //
 // TEMPORARY! These are for temporary backward compatibility ONLY!
 //
-inline void radFileOpen( IRadFile** pIRadFile, 
-                  const char* pFileName,
-                  bool writeAccess = false,
-                  radFileOpenFlags flags = OpenExisting,
-                  radFilePriority priority = NormalPriority, 
-                  unsigned int cacheSize = 0,
-                  radMemoryAllocator alloc = RADMEMORY_ALLOC_TEMP,
-                  radMemorySpace cacheSpace = radMemorySpace_Local )
-{
-    radFileOpenAsync( pIRadFile, pFileName, writeAccess, flags, priority, cacheSize, alloc, cacheSpace );
+inline void radFileOpen(IRadFile **pIRadFile,
+                        const char *pFileName,
+                        bool writeAccess = false,
+                        radFileOpenFlags flags = OpenExisting,
+                        radFilePriority priority = NormalPriority,
+                        unsigned int cacheSize = 0,
+                        radMemoryAllocator alloc = RADMEMORY_ALLOC_TEMP,
+                        radMemorySpace cacheSpace = radMemorySpace_Local) {
+    radFileOpenAsync(pIRadFile, pFileName, writeAccess, flags, priority, cacheSize, alloc,
+                     cacheSpace);
 }
 
-inline void radDriveOpen( IRadDrive** pIRadDrive,
-                   const char* pDriveName,
-                   radFilePriority priority = NormalPriority, 
-                   radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT )
-{
-    radDriveOpenAsync( pIRadDrive, pDriveName, priority, alloc );
+inline void radDriveOpen(IRadDrive **pIRadDrive,
+                         const char *pDriveName,
+                         radFilePriority priority = NormalPriority,
+                         radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT) {
+    radDriveOpenAsync(pIRadDrive, pDriveName, priority, alloc);
 }
 
 //
 // Get/Set the default drive. See Section "Drive and file naming conventions"
 // for the default drive on each platform.
 //
-bool radSetDefaultDrive( const char* pDriveName );
-void radGetDefaultDrive( char* pDriveName );
+bool radSetDefaultDrive(const char *pDriveName);
+
+void radGetDefaultDrive(char *pDriveName);
 
 #ifdef CACHING_ENABLED
 //
@@ -519,28 +517,27 @@ void radGetDefaultDrive( char* pDriveName );
 // when they are opened. The last filename in the list
 // must always be NULL.
 // If you wish to cache files that are not in this list, explicitly specify
-// that you are using CACHED:, CACHEF:, etc.  (as opposed to D:, F:, etc. )
+// that you are using CACHED:, CACHEF:, etc.  (as opposed to D:, F:, etc.)
 //
-void radSetCacheFileNames( const char* pCacheFileNameArray[ ] );
+void radSetCacheFileNames(const char* pCacheFileNameArray[ ]);
 
 //
 // You can change the actual directory where files are cached manually.
 // Make sure that this is changed only when no files are currently open.
 //
-void radSetCacheDirectory( const char* pCacheDirectory );
+void radSetCacheDirectory(const char* pCacheDirectory);
 
 #endif //CACHING_ENABLED
 
 //
 // Set the default size of the various chunks transfered during a file read/write.
 //
-void radSetDefaultGranularity( unsigned int defaultGranularity );
+void radSetDefaultGranularity(unsigned int defaultGranularity);
 
 //
 // Priorities to dictate if the library is searched before or after the drive.
 //
-enum radCementLibraryPriority
-{
+enum radCementLibraryPriority {
     radCementLibraryBeforeDrive,
     radCementLibraryAfterDrive,
     radCementLibraryNumPriorities
@@ -555,44 +552,44 @@ enum radCementLibraryPriority
 // drive for the platform, or is determined by a cementLibraryName of the form
 // "drivename:filename". 
 //
-// radFileRegisterCementLibrary( ) is asynchronous and returns an object immediately 
+// radFileRegisterCementLibrary() is asynchronous and returns an object immediately
 // which has not necessarily been created. A completion callback or event can be used to 
 // inform the user when ther operation is complete.
 //
 void radFileRegisterCementLibraryAsync
-(
-    IRadCementLibrary** pIRadCementLibrary,
-    const char* cementLibraryFileName,
-    radCementLibraryPriority priority = radCementLibraryBeforeDrive,
-    unsigned int cacheSize = 0,
-    radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT,
-    radMemorySpace cacheSpace = radMemorySpace_Local
-);
+        (
+                IRadCementLibrary **pIRadCementLibrary,
+                const char *cementLibraryFileName,
+                radCementLibraryPriority priority = radCementLibraryBeforeDrive,
+                unsigned int cacheSize = 0,
+                radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT,
+                radMemorySpace cacheSpace = radMemorySpace_Local
+        );
 
 void radFileRegisterCementLibrarySync
-(
-    IRadCementLibrary** pIRadCementLibrary,
-    const char* cementLibraryFileName,
-    radCementLibraryPriority priority = radCementLibraryBeforeDrive,
-    unsigned int cacheSize = 0,
-    radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT,
-    radMemorySpace cacheSpace = radMemorySpace_Local
-);
+        (
+                IRadCementLibrary **pIRadCementLibrary,
+                const char *cementLibraryFileName,
+                radCementLibraryPriority priority = radCementLibraryBeforeDrive,
+                unsigned int cacheSize = 0,
+                radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT,
+                radMemorySpace cacheSpace = radMemorySpace_Local
+        );
 
 //
 // TEMPORARY! This is for temporary backward compatibility only!
 //
 inline void radFileRegisterCementLibrary
-(
-    IRadCementLibrary** pIRadCementLibrary,
-    const char* cementLibraryFileName,
-    radCementLibraryPriority priority = radCementLibraryBeforeDrive,
-    unsigned int cacheSize = 0,
-    radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT,
-    radMemorySpace cacheSpace = radMemorySpace_Local
-)
-{
-    radFileRegisterCementLibraryAsync( pIRadCementLibrary, cementLibraryFileName, priority, cacheSize, alloc, cacheSpace );
+        (
+                IRadCementLibrary **pIRadCementLibrary,
+                const char *cementLibraryFileName,
+                radCementLibraryPriority priority = radCementLibraryBeforeDrive,
+                unsigned int cacheSize = 0,
+                radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT,
+                radMemorySpace cacheSpace = radMemorySpace_Local
+        ) {
+    radFileRegisterCementLibraryAsync(pIRadCementLibrary, cementLibraryFileName, priority,
+                                      cacheSize, alloc, cacheSpace);
 }
 
 //
@@ -600,25 +597,27 @@ inline void radFileRegisterCementLibrary
 // for the host file server to appear before failing requests. This service is needed
 // for applications like the boot loader and should not be required by games.
 //
-void radFileSetConnectTimeOut( unsigned int milliseconds );
+void radFileSetConnectTimeOut(unsigned int milliseconds);
 
 //
 // Drive mount points, All drives must be mounted before they can be used. If no argument
 // is given, then the default drive is used. Both of these functions are synchronous.
 // Unmounting waits for all outstanding requests to finish, so it can take a long time.
 //
-bool radDriveMount( const char* pDriveSpec = NULL, radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT );
-bool radDriveUnmount( const char* pDriveSpec = NULL);
+bool
+radDriveMount(const char *pDriveSpec = NULL, radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT);
+
+bool radDriveUnmount(const char *pDriveSpec = NULL);
 
 //
 // Mostly for the sake of windows tools, by default auto-mounting is turned on. This
 // will mount a drive when it is used (by opening a file or drive). It will use the
-// same allocator which is given to radFileInitialize( ). Games should turn auto-mounting
-// off using radFileSetAutoMount( ), and mount all drives explicitly. This will allow the
+// same allocator which is given to radFileInitialize(). Games should turn auto-mounting
+// off using radFileSetAutoMount(), and mount all drives explicitly. This will allow the
 // game to dictate when a drive is mounted, and which allocator is used. If auto-mount is
-// turned on, radFileTerminate( ) will auto-unmount.
+// turned on, radFileTerminate() will auto-unmount.
 //
-void radFileSetAutoMount( bool auto_mount );
+void radFileSetAutoMount(bool auto_mount);
 
 //=============================================================================
 // Interfaces
@@ -627,174 +626,183 @@ void radFileSetAutoMount( bool auto_mount );
 //
 // This interface is used to interact with a file object. 
 //
-struct IRadFile : public IRefCount
-{
+struct IRadFile : public IRefCount {
     //
     // Basic asynchronous file operations. Objects passed by reference must survive
     // until the operation completes.
     //
-    virtual void ReadAsync( void* pBuffer, unsigned int bytesToRead, radMemorySpace pBufferSpace = radMemorySpace_Local ) = 0;
-    virtual void WriteAsync( const void* pBuffer, unsigned int bytesToWrite, radMemorySpace pBufferSpace = radMemorySpace_Local ) = 0;
-    virtual void SetPositionAsync( unsigned int position ) = 0;
-    virtual void GetPositionAsync( unsigned int* pPosition ) = 0;
-    virtual void GetSizeAsync( unsigned int* pSize ) = 0;
-    virtual void CommitAsync( void ) = 0;
+    virtual void ReadAsync(void *pBuffer, unsigned int bytesToRead,
+                           radMemorySpace pBufferSpace = radMemorySpace_Local) = 0;
+
+    virtual void WriteAsync(const void *pBuffer, unsigned int bytesToWrite,
+                            radMemorySpace pBufferSpace = radMemorySpace_Local) = 0;
+
+    virtual void SetPositionAsync(unsigned int position) = 0;
+
+    virtual void GetPositionAsync(unsigned int *pPosition) = 0;
+
+    virtual void GetSizeAsync(unsigned int *pSize) = 0;
+
+    virtual void CommitAsync(void) = 0;
 
     //
     // Basic synchronous file operations.
     //
-    virtual void ReadSync( void* pBuffer, unsigned int bytesToRead, radMemorySpace pBufferSpace = radMemorySpace_Local ) = 0;
-    virtual void WriteSync( const void* pBuffer, unsigned int bytesToWrite, radMemorySpace pBufferSpace = radMemorySpace_Local ) = 0;
-    virtual void SetPositionSync( unsigned int position ) = 0;
-    virtual void GetPositionSync( unsigned int* pPosition ) = 0;
-    virtual void GetSizeSync( unsigned int* pSize ) = 0;
-    virtual void CommitSync( void ) = 0;
+    virtual void ReadSync(void *pBuffer, unsigned int bytesToRead,
+                          radMemorySpace pBufferSpace = radMemorySpace_Local) = 0;
+
+    virtual void WriteSync(const void *pBuffer, unsigned int bytesToWrite,
+                           radMemorySpace pBufferSpace = radMemorySpace_Local) = 0;
+
+    virtual void SetPositionSync(unsigned int position) = 0;
+
+    virtual void GetPositionSync(unsigned int *pPosition) = 0;
+
+    virtual void GetSizeSync(unsigned int *pSize) = 0;
+
+    virtual void CommitSync(void) = 0;
 
     //
     // This member is provided for convience. It can be used to obtain the file size 
     // without waiting. It will assert if the file has not completed opening. Bad things
     // will happen if an asynchronous write operation is queued up.
     //
-    virtual unsigned int GetSize( void ) = 0;
+    virtual unsigned int GetSize(void) = 0;
 
     //
     // Get the optimal read size/alignment (sector size)
     //
-    virtual unsigned int GetOptimalSize( void ) = 0;
+    virtual unsigned int GetOptimalSize(void) = 0;
 
     //
     // Use this member to cancel all outstanding requests issued against the file object.
     // Callbacks will still be invoked.
     //
-    virtual void CancelAsync( void ) = 0;
+    virtual void CancelAsync(void) = 0;
 
     //
     // This allows the caller to receive asychronous notification when all previously issued
     // file operations complete.
     //
-    virtual void AddCompletionCallback( IRadFileCompletionCallback* pCallback, void* pUserData ) = 0;
-    virtual void AddCompletionEvent( IRadThreadSemaphore* pSemaphore ) = 0;
+    virtual void AddCompletionCallback(IRadFileCompletionCallback *pCallback, void *pUserData) = 0;
+
+    virtual void AddCompletionEvent(IRadThreadSemaphore *pSemaphore) = 0;
 
     //
     // Use this member to check for completion of all operations issued against this file
     // object. Returns true if no outstanding operations exist.
     //
-    virtual bool CheckForCompletion( void ) = 0;
+    virtual bool CheckForCompletion(void) = 0;
 
     //
     // Use this member to wait for completion of an asynchronous operation.
     //
-    virtual void WaitForCompletion( void ) = 0;            
-    
+    virtual void WaitForCompletion(void) = 0;
+
     //
     // Use this member to retrieve the status of the last operation performed on the file.
     // 
-    virtual radFileError GetLastError( void ) = 0;
+    virtual radFileError GetLastError(void) = 0;
 
     //
     // Use this member to determine if the file is open.
     //
-    virtual bool IsOpen( void ) = 0;
+    virtual bool IsOpen(void) = 0;
 
     //
     // This member function is provided for convenience. It allows the caller to obtain 
     // the name of the file. Can be useful if caller does not want to maintain the name.
     // Pointer will be valid as long a file object is valid.
     //
-    virtual const char* GetFilename( void ) = 0;
+    virtual const char *GetFilename(void) = 0;
 
     //
     // This member function is provided for convenience. It allows the caller to obtain 
     // the name of the drive which own the file.
     //
-    virtual const char* GetDrivename( void ) = 0;
+    virtual const char *GetDrivename(void) = 0;
 
-	//
-	// Sets the priority of the file after the file has been created, there
-	// must be 0 pending requests against the file.
-	//
-    virtual void SetPriority( radFilePriority priority ) = 0;
-	virtual radFilePriority GetPriority( void ) = 0;
+    //
+    // Sets the priority of the file after the file has been created, there
+    // must be 0 pending requests against the file.
+    //
+    virtual void SetPriority(radFilePriority priority) = 0;
 
-    virtual bool IsSaveGame( void ) = 0;
+    virtual radFilePriority GetPriority(void) = 0;
+
+    virtual bool IsSaveGame(void) = 0;
 
     //
     // Turn buffered reads on/off. By default it is auto, which means it is used
     // as needed. Off will cause an assert on all non-optimal reads.
     // Setting the state can only occur if there are no outstanding requests.
     //
-    enum BufferedReadState
-    {
+    enum BufferedReadState {
         BufferedReadAuto,
         BufferedReadOn,
         BufferedReadOff
     };
 
-    virtual void SetBufferedRead( BufferedReadState state ) = 0;
+    virtual void SetBufferedRead(BufferedReadState state) = 0;
 
-    virtual unsigned int GetHandle( void ) = 0;
+    virtual unsigned int GetHandle(void) = 0;
 };
 
 //
 // This interface is used to configure a cement library.  Each cement file
 // is owned by the user and, to unregister the library, just release it.
 //
-struct IRadCementLibrary : public IRefCount
-{
+struct IRadCementLibrary : public IRefCount {
     //
     // Check if it's loaded.
     //
-    enum CementLibraryStatus
-    {
+    enum CementLibraryStatus {
         CementLibraryPending,
         CementLibraryReady,
         CementLibraryError
     };
 
-    virtual CementLibraryStatus GetStatus( void ) = 0;
+    virtual CementLibraryStatus GetStatus(void) = 0;
 
     //
     // Use this member to wait for completion of an asynchronous operation.
     //
-    virtual void WaitForCompletion( void ) = 0;            
+    virtual void WaitForCompletion(void) = 0;
 
     //
     // This allows the caller to receive asychronous notification when the
     // cement library is completely registered.
     //
-    virtual void SetCompletionCallback( IRadCementLibraryCompletionCallback* pCallback,
-                                        void* pUserData ) = 0;
+    virtual void SetCompletionCallback(IRadCementLibraryCompletionCallback *pCallback,
+                                       void *pUserData) = 0;
 
     //
     // Use this member to determine if the file is open (same as GetStatus == CementLibraryReady).
     //
-    virtual bool IsOpen( void ) = 0;
+    virtual bool IsOpen(void) = 0;
 };
 
 //
 // Use this interface to interact with the drive object.
 //
-struct IRadDrive : public IRefCount
-{
+struct IRadDrive : public IRefCount {
     //
     // This member can be used to determine capabilities about the drive. Returns
     // a combination of these flags. Note all drives are readable by default. This 
     // service is synchronous.
     // 
-    #define radDriveWriteable   1<<0          // Supports writes and file creates/destroys
-    #define radDriveEnumerable  1<<1          // Supports enumeration
-    #define radDriveRemovable   1<<2          // Drive can be removed
-    #define radDriveFormat      1<<3          // Drive can be formatted
-    #define radDriveDirectory   1<<4          // Drive supports directory creation/deletion 
-    #define radDriveFile        1<<5          // Drive supports OpenFile
-    #define radDriveSaveGame    1<<6          // Drive supports OpenSaveGame
+#define radDriveWriteable   1<<0          // Supports writes and file creates/destroys
+#define radDriveEnumerable  1<<1          // Supports enumeration
+#define radDriveRemovable   1<<2          // Drive can be removed
+#define radDriveFormat      1<<3          // Drive can be formatted
+#define radDriveDirectory   1<<4          // Drive supports directory creation/deletion
+#define radDriveFile        1<<5          // Drive supports OpenFile
+#define radDriveSaveGame    1<<6          // Drive supports OpenSaveGame
 
-    virtual unsigned int GetCapabilities( void ) = 0;    
+    virtual unsigned int GetCapabilities(void) = 0;
 
-    struct MediaInfo
-    {
-        enum MediaState
-        {
+    struct MediaInfo {
+        enum MediaState {
             MediaPresent,                       // Present and valid
             MediaNotPresent,                    // No media present
             MediaNotFormatted,                  // Media not formatted
@@ -804,27 +812,25 @@ struct IRadDrive : public IRefCount
             MediaDamaged                        // Media file system damaged or media failing
         };
 
-        MediaState    m_MediaState;             // State of media
-        unsigned int  m_FreeSpace;              // Free space
-        unsigned int  m_FreeFiles;              // Free files
-        unsigned int  m_SectorSize;             // Sector size for read/write alignments
-        char          m_VolumeName[ 64 + 1];    // Volume name of media
-                                                // needs to be at least 64 + 1 for ps2 cd
+        MediaState m_MediaState;             // State of media
+        unsigned int m_FreeSpace;              // Free space
+        unsigned int m_FreeFiles;              // Free files
+        unsigned int m_SectorSize;             // Sector size for read/write alignments
+        char m_VolumeName[64 + 1];    // Volume name of media
+        // needs to be at least 64 + 1 for ps2 cd
     };
 
-    struct DirectoryInfo
-    {
-        enum DirectoryEntryType
-        {
+    struct DirectoryInfo {
+        enum DirectoryEntryType {
             IsFile,                         // Returned if record is file
             IsDirectory,                    // Returned if record is directory
             IsDone,                         // Return when no more records match
             IsSaveGame                      // Returned if record is a save game
-        }   m_Type;
-               
-        char    m_Name[ radFileFilenameMax + 1 ];   // Name matching search.
-    };   
-    
+        } m_Type;
+
+        char m_Name[radFileFilenameMax + 1];   // Name matching search.
+    };
+
     //
     // Basic drive operations.
     // GetMediaInfo:     get information about the current media.
@@ -843,54 +849,67 @@ struct IRadDrive : public IRefCount
     // Basic asynchronous drive operations. Objects passed by reference must survive
     // until the operation completes.
     //
-    virtual void GetMediaInfoAsync( MediaInfo* pMediaInfo ) = 0;
-    virtual void FormatAsync( void ) = 0;
-    virtual void CreateDirectoryAsync( const char* pDirectoryName ) = 0;
-    virtual void DestroyDirectoryAsync( const char* pDirectoryName ) = 0;
-    virtual void FindFirstAsync( const char* searchspec, DirectoryInfo* pDirectoryInfo ) = 0;
-    virtual void FindNextAsync(  DirectoryInfo* pDirectoryInfo ) = 0;
-    virtual void DestroyFileAsync( const char* pFileName, bool simpleName = false ) = 0;
+    virtual void GetMediaInfoAsync(MediaInfo *pMediaInfo) = 0;
+
+    virtual void FormatAsync(void) = 0;
+
+    virtual void CreateDirectoryAsync(const char *pDirectoryName) = 0;
+
+    virtual void DestroyDirectoryAsync(const char *pDirectoryName) = 0;
+
+    virtual void FindFirstAsync(const char *searchspec, DirectoryInfo *pDirectoryInfo) = 0;
+
+    virtual void FindNextAsync(DirectoryInfo *pDirectoryInfo) = 0;
+
+    virtual void DestroyFileAsync(const char *pFileName, bool simpleName = false) = 0;
 
     //
     // Basic synchronous drive operations. Operation occurs after all asynchronous
     // operations are finished.
     //
-    virtual void GetMediaInfoSync( MediaInfo* pMediaInfo ) = 0;
-    virtual void FormatSync( void ) = 0;
-    virtual void CreateDirectorySync( const char* pDirectoryName ) = 0;
-    virtual void DestroyDirectorySync( const char* pDirectoryName ) = 0;
-    virtual void FindFirstSync( const char* searchspec, DirectoryInfo* pDirectoryInfo ) = 0;
-    virtual void FindNextSync( DirectoryInfo* pDirectoryInfo ) = 0;
-    virtual void DestroyFileSync( const char* pFileName, bool simpleName = false ) = 0;
+    virtual void GetMediaInfoSync(MediaInfo *pMediaInfo) = 0;
+
+    virtual void FormatSync(void) = 0;
+
+    virtual void CreateDirectorySync(const char *pDirectoryName) = 0;
+
+    virtual void DestroyDirectorySync(const char *pDirectoryName) = 0;
+
+    virtual void FindFirstSync(const char *searchspec, DirectoryInfo *pDirectoryInfo) = 0;
+
+    virtual void FindNextSync(DirectoryInfo *pDirectoryInfo) = 0;
+
+    virtual void DestroyFileSync(const char *pFileName, bool simpleName = false) = 0;
 
     //
     // Use this member to cancel all outstanding requests issued against the drive object.
     // Callbacks will still be invoked.
     //
-    virtual void CancelAsync( void ) = 0;
+    virtual void CancelAsync(void) = 0;
 
     //
     // This allows the caller to receive asychronous notification when all previously issued
     // drive operations complete.
     //
-    virtual void AddCompletionCallback( IRadDriveCompletionCallback* pCallback, void* pUserData ) = 0;
-    virtual void AddCompletionEvent( IRadThreadSemaphore* pSemaphore ) = 0;
+    virtual void AddCompletionCallback(IRadDriveCompletionCallback *pCallback, void *pUserData) = 0;
+
+    virtual void AddCompletionEvent(IRadThreadSemaphore *pSemaphore) = 0;
 
     //
     // Use this member to check for completion of all operations issued against this drive
     // object. Returns true if no outstanding operations exist.
     //
-    virtual bool CheckForCompletion( void ) = 0;
+    virtual bool CheckForCompletion(void) = 0;
 
     //
     // Use this member to wait for completion of an asynchronous operation.
     //
-    virtual void WaitForCompletion( void ) = 0;            
-    
+    virtual void WaitForCompletion(void) = 0;
+
     //
     // Use this member to retrieve the status of the last operation performed on the drive.
     // 
-    virtual radFileError GetLastError( void ) = 0;
+    virtual radFileError GetLastError(void) = 0;
 
     //
     // Global error handling. When there is an error, the file system will do one of three
@@ -902,137 +921,139 @@ struct IRadDrive : public IRefCount
     // false will fail the operation.
     //
     // The second is to install an error event. This event will be signalled when there
-    // is an error. ResumeRequest( ) must be called after the error is cleared.
+    // is an error. ResumeRequest() must be called after the error is cleared.
     //
-    // The third is to poll the error status using CheckForErrorState( ). This must
-    // be preceeded by a call to SetDefaultErrorBehaviour( Suspend ). When the error
-    // is cleared, ResumeRequest( ) must be called.
+    // The third is to poll the error status using CheckForErrorState(). This must
+    // be preceeded by a call to SetDefaultErrorBehaviour(Suspend). When the error
+    // is cleared, ResumeRequest() must be called.
     //
     // NOTE: the error handler will be invoked again with Success when the error condition
     // is cleared.
     //
-    // NOTE: error callbacks will only be invoked at the next call to radFileService( ).
+    // NOTE: error callbacks will only be invoked at the next call to radFileService().
     //
     // NOTE: registering callbacks and events automatically set the default error
-    // behaviour to Suspend. This must be done explicitly for CheckForErrorState( ).
+    // behaviour to Suspend. This must be done explicitly for CheckForErrorState().
     //
     // NOTE: by default, the error behaviour is Fail.
     //
 
-    enum ErrorBehaviour
-    {
+    enum ErrorBehaviour {
         Fail,       // Fail operation on error
         Retry,      // Retry the operation
-        Suspend     // Suspend file system until ResumeRequest( ) is called
+        Suspend     // Suspend file system until ResumeRequest() is called
     };
 
-    virtual void RegisterErrorHandler( IRadDriveErrorCallback* callback, void* pUserData ) = 0;
-    virtual void UnregisterErrorHandler( IRadDriveErrorCallback* callback ) = 0;
+    virtual void RegisterErrorHandler(IRadDriveErrorCallback *callback, void *pUserData) = 0;
 
-    virtual void RegisterErrorEvent( IRadThreadSemaphore* pSemaphore ) = 0;
-    virtual void UnregisterErrorEvent( IRadThreadSemaphore* pSemaphore ) = 0;
+    virtual void UnregisterErrorHandler(IRadDriveErrorCallback *callback) = 0;
 
-    virtual bool CheckForErrorState( void ) = 0;
-    virtual void ResumeRequest( bool retry ) = 0;
+    virtual void RegisterErrorEvent(IRadThreadSemaphore *pSemaphore) = 0;
 
-    virtual void SetDefaultErrorBehaviour( ErrorBehaviour behaviour ) = 0;
+    virtual void UnregisterErrorEvent(IRadThreadSemaphore *pSemaphore) = 0;
+
+    virtual bool CheckForErrorState(void) = 0;
+
+    virtual void ResumeRequest(bool retry) = 0;
+
+    virtual void SetDefaultErrorBehaviour(ErrorBehaviour behaviour) = 0;
 
     //
     // This member controls whether the global error handler will be invoked again when
     // an error condition clears. The default is yes. If this happens, the error condition
     // passed to the handler will be Success.
     //
-    virtual void SetErrorClearReporting( bool notifyOnErrorClear ) = 0;
+    virtual void SetErrorClearReporting(bool notifyOnErrorClear) = 0;
 
     //
     // These members are used to set/get the size in bytes that file read and write requests
     // will be partitioned into. By using a smaller size, priority file requests can
     // more quickly be scheduled. By default, the size is infinity.
     //
-    virtual void SetReadWriteGranularity( unsigned int Size ) = 0;
-    virtual unsigned int GetReadWriteGranularity( void ) = 0;
+    virtual void SetReadWriteGranularity(unsigned int Size) = 0;
+
+    virtual unsigned int GetReadWriteGranularity(void) = 0;
 
     //
     // This function is purely provided as a helper. It allows the caller to explicity
     // open or create a file on this drive. File name should not contain the drive.
-    // FileOpen( ) is asynchronous and FileOpenSync( ) is synchronous.
+    // FileOpen() is asynchronous and FileOpenSync() is synchronous.
     // NOTE: to wait for the operation to complete, wait on the FILE not the drive.
     //
-    virtual void  FileOpenAsync( IRadFile** pIRadFile, 
-                  const char* pFileName,
-                  bool writeAccess = false,
-                  radFileOpenFlags flags = OpenExisting,
-                  radFilePriority priority = NormalPriority, 
-                  unsigned int cacheSize= 0,
-                  radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT,
-                  radMemorySpace cacheSpace = radMemorySpace_Local ) = 0;
+    virtual void FileOpenAsync(IRadFile **pIRadFile,
+                               const char *pFileName,
+                               bool writeAccess = false,
+                               radFileOpenFlags flags = OpenExisting,
+                               radFilePriority priority = NormalPriority,
+                               unsigned int cacheSize = 0,
+                               radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT,
+                               radMemorySpace cacheSpace = radMemorySpace_Local) = 0;
 
     // TEMPORARY!!!
-    virtual void  FileOpen( IRadFile** pIRadFile, 
-                  const char* pFileName,
-                  bool writeAccess = false,
-                  radFileOpenFlags flags = OpenExisting,
-                  radFilePriority priority = NormalPriority, 
-                  unsigned int cacheSize= 0,
-                  radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT,
-                  radMemorySpace cacheSpace = radMemorySpace_Local ) = 0;
+    virtual void FileOpen(IRadFile **pIRadFile,
+                          const char *pFileName,
+                          bool writeAccess = false,
+                          radFileOpenFlags flags = OpenExisting,
+                          radFilePriority priority = NormalPriority,
+                          unsigned int cacheSize = 0,
+                          radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT,
+                          radMemorySpace cacheSpace = radMemorySpace_Local) = 0;
 
-    virtual void  FileOpenSync( IRadFile** pIRadFile, 
-                  const char* pFileName,
-                  bool writeAccess = false,
-                  radFileOpenFlags flags = OpenExisting,
-                  radFilePriority priority = NormalPriority, 
-                  unsigned int cacheSize= 0,
-                  radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT,
-                  radMemorySpace cacheSpace = radMemorySpace_Local ) = 0;
+    virtual void FileOpenSync(IRadFile **pIRadFile,
+                              const char *pFileName,
+                              bool writeAccess = false,
+                              radFileOpenFlags flags = OpenExisting,
+                              radFilePriority priority = NormalPriority,
+                              unsigned int cacheSize = 0,
+                              radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT,
+                              radMemorySpace cacheSpace = radMemorySpace_Local) = 0;
 
-    virtual void SaveGameOpenAsync( IRadFile** pIRadFile, 
-                    const char* pFileName,
-                    bool writeAccess = false,
-                    radFileOpenFlags flags = OpenExisting,
-                    radMemcardInfo* memcardInfo = NULL,
-                    unsigned int maxSize = 0,
-					bool simpleName = false,
-                    radFilePriority priority = NormalPriority ) = 0;
+    virtual void SaveGameOpenAsync(IRadFile **pIRadFile,
+                                   const char *pFileName,
+                                   bool writeAccess = false,
+                                   radFileOpenFlags flags = OpenExisting,
+                                   radMemcardInfo *memcardInfo = NULL,
+                                   unsigned int maxSize = 0,
+                                   bool simpleName = false,
+                                   radFilePriority priority = NormalPriority) = 0;
 
-    virtual void SaveGameOpenSync( IRadFile** pIRadFile, 
-                    const char* pFileName,
-                    bool writeAccess = false,
-                    radFileOpenFlags flags = OpenExisting,
-                    radMemcardInfo* memcardInfo = NULL,
-                    unsigned int maxSize = 0,
-					bool simpleName = false,
-                    radFilePriority priority = NormalPriority ) = 0;
+    virtual void SaveGameOpenSync(IRadFile **pIRadFile,
+                                  const char *pFileName,
+                                  bool writeAccess = false,
+                                  radFileOpenFlags flags = OpenExisting,
+                                  radMemcardInfo *memcardInfo = NULL,
+                                  unsigned int maxSize = 0,
+                                  bool simpleName = false,
+                                  radFilePriority priority = NormalPriority) = 0;
 
-    virtual void SetPriority( radFilePriority priority ) = 0;
-	virtual radFilePriority GetPriority( void ) = 0;
+    virtual void SetPriority(radFilePriority priority) = 0;
 
-    virtual const char* GetDriveName( void ) = 0;
+    virtual radFilePriority GetPriority(void) = 0;
+
+    virtual const char *GetDriveName(void) = 0;
 
     //
     // Return the amount of space needed on the drive to create a file of size `size'
     // using the given memcardinfo. For regular files, this will just return the size,
     // for save games, it will return the smallest size that will allow creation.
     //
-    virtual unsigned int GetCreationSize( radMemcardInfo* memcardInfo, unsigned int size ) = 0;
+    virtual unsigned int GetCreationSize(radMemcardInfo *memcardInfo, unsigned int size) = 0;
 };
 
 //
 // Interface for callbacks used to notify the user when asynchronous cement file registration
 // is complete.
 //
-struct IRadCementLibraryCompletionCallback : public IRefCount
-{
-    virtual void OnCementLibraryRegistered( void* pUserData ) = 0;
+struct IRadCementLibraryCompletionCallback : public IRefCount {
+    virtual void OnCementLibraryRegistered(void *pUserData) = 0;
 };
 
 //
 // Interface for callbacks used to notify the user when asynchronous file operations are
 // complete.
 //
-struct IRadFileCompletionCallback : public IRefCount
-{
-    virtual void OnFileOperationsComplete( void* pUserData ) = 0;
+struct IRadFileCompletionCallback : public IRefCount {
+    virtual void OnFileOperationsComplete(void *pUserData) = 0;
 };
 
 //
@@ -1040,18 +1061,16 @@ struct IRadFileCompletionCallback : public IRefCount
 // complete.
 //
 
-struct IRadDriveCompletionCallback : public IRefCount
-{
-    virtual void OnDriveOperationsComplete( void* pUserData ) = 0;    
+struct IRadDriveCompletionCallback : public IRefCount {
+    virtual void OnDriveOperationsComplete(void *pUserData) = 0;
 };
 
 //
 // Interface for callbacks used to notify the user when an error has occurred on a drive.
 // Returning true will retry the request, and false will fail the request.
 //
-struct IRadDriveErrorCallback 
-{
-    virtual bool OnDriveError( radFileError error, const char* pDriveName, void* pUserData ) = 0;
+struct IRadDriveErrorCallback {
+    virtual bool OnDriveError(radFileError error, const char *pDriveName, void *pUserData) = 0;
 };
 
 

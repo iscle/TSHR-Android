@@ -52,8 +52,9 @@
 // These functions install and remove the crash handler
 //
 
-void radCrashHandlerInitialize( radMemoryAllocator allocator = RADMEMORY_ALLOC_DEFAULT );
-void radCrashHandlerTerminate( void );
+void radCrashHandlerInitialize(radMemoryAllocator allocator = RADMEMORY_ALLOC_DEFAULT);
+
+void radCrashHandlerTerminate(void);
 
 #endif // RADCRASHHANDLER_HPP
 

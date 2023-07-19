@@ -16,7 +16,7 @@
 //
 //=============================================================================
 
-#ifndef	PS2CDDDRIVE_HPP
+#ifndef    PS2CDDDRIVE_HPP
 #define PS2CDDDRIVE_HPP
 
 //=============================================================================
@@ -37,7 +37,7 @@
 #define PS2_CD_SECTOR_SIZE     2048
 #define PS2_DVD_SECTOR_SIZE    2048
 #define PS2_MAX_SECTOR_SIZE    2048
-#define MAX_PS2FILENAMELEN     76 
+#define MAX_PS2FILENAMELEN     76
 
 //
 // Number of times to retry a read
@@ -77,7 +77,7 @@
 //
 // The name of the drive.
 //
-static const char s_PS2CDDriveName[ ] = "CDROM:";
+static const char s_PS2CDDriveName[] = "CDROM:";
 
 //=============================================================================
 // Public Functions
@@ -86,69 +86,70 @@ static const char s_PS2CDDriveName[ ] = "CDROM:";
 //
 // Every physical drive type must provide a drive factory.
 //
-void radPs2CdDriveFactory( radDrive** ppDrive, const char* driveSpec, radMemoryAllocator alloc );
+void radPs2CdDriveFactory(radDrive **ppDrive, const char *driveSpec, radMemoryAllocator alloc);
 
 //=============================================================================
 // Class Declarations
 //=============================================================================
 
 class radPs2CdDrive : public radBufferedReader,
-                      public radDrive
-{
+                      public radDrive {
 public:
 
     //
     // Constructor / destructor.
     //
-    radPs2CdDrive( radMemoryAllocator alloc );
-    virtual ~radPs2CdDrive( void );
+    radPs2CdDrive(radMemoryAllocator alloc);
 
-    void Lock( void );
-    void Unlock( void );
+    virtual ~radPs2CdDrive(void);
+
+    void Lock(void);
+
+    void Unlock(void);
 
     //
     // This member reports this physical drives capabilities
     //
-    unsigned int GetCapabilities( void );
+    unsigned int GetCapabilities(void);
 
-    const char* GetDriveName( void );
+    const char *GetDriveName(void);
 
-    CompletionStatus Initialize( void );
+    CompletionStatus Initialize(void);
 
-    CompletionStatus OpenFile( const char*        fileName, 
-                               radFileOpenFlags   flags, 
-                               bool               writeAccess, 
-                               radFileHandle*     pHandle, 
-                               unsigned int*      pSize );
+    CompletionStatus OpenFile(const char *fileName,
+                              radFileOpenFlags flags,
+                              bool writeAccess,
+                              radFileHandle *pHandle,
+                              unsigned int *pSize);
 
-    CompletionStatus CloseFile( radFileHandle handle, const char* fileName );
+    CompletionStatus CloseFile(radFileHandle handle, const char *fileName);
 
-    CompletionStatus ReadAligned( radFileHandle handle, 
-                                  const char* fileName,
+    CompletionStatus ReadAligned(radFileHandle handle,
+                                 const char *fileName,
+                                 unsigned int sector,
+                                 unsigned int numSectors,
+                                 void *pData,
+                                 radMemorySpace pDataSpace);
+
+    CompletionStatus ReadBuffered(radFileHandle handle,
+                                  const char *fileName,
                                   unsigned int sector,
                                   unsigned int numSectors,
-                                  void* pData, 
-                                  radMemorySpace pDataSpace );
- 
-     CompletionStatus ReadBuffered( radFileHandle handle,
-                                    const char* fileName,
-                                    unsigned int sector,
-                                    unsigned int numSectors,
-                                    unsigned int position,
-                                    unsigned int numBytes,
-                                    void* pData, 
-                                    radMemorySpace pDataSpace );
+                                  unsigned int position,
+                                  unsigned int numBytes,
+                                  void *pData,
+                                  radMemorySpace pDataSpace);
 
-    unsigned int GetReadBufferSectors( void );
+    unsigned int GetReadBufferSectors(void);
 
-    CompletionStatus FindFirst( const char*                 searchSpec, 
-                                IRadDrive::DirectoryInfo*   pDirectoryInfo, 
-                                radFileDirHandle*           pHandle,
-                                bool                        firstSearch );
+    CompletionStatus FindFirst(const char *searchSpec,
+                               IRadDrive::DirectoryInfo *pDirectoryInfo,
+                               radFileDirHandle *pHandle,
+                               bool firstSearch);
 
-    CompletionStatus FindNext( radFileDirHandle* pHandle, IRadDrive::DirectoryInfo* pDirectoryInfo );
+    CompletionStatus FindNext(radFileDirHandle *pHandle, IRadDrive::DirectoryInfo *pDirectoryInfo);
 
-    CompletionStatus FindClose( radFileDirHandle* pHandle );
+    CompletionStatus FindClose(radFileDirHandle *pHandle);
 
     //
     // radBufferedReader
@@ -156,23 +157,34 @@ public:
     IMPLEMENT_BUFFERED_READ;
 
 private:
-    bool SetMediaInfo( void );
-    radFileError ReadVolumeName( char* nameBuffer );
-    radFileError LoadDirectory( void );
-    radFileError BuildDirectory( unsigned int dirAddress, unsigned int level, char* pName, unsigned int key );
-    void BuildFileSpec( const char* fileName, char* fullName, unsigned int size, char** pName );
-    radFileError FindDirectorySector( const char* dirName, unsigned int dirNameLen, unsigned int* lsn, unsigned int* size );
-    bool FileNameMatchesSearch( const char* pFileName, const char* pSearchSpec );
-    radFileError Read(unsigned int lsn, void* buffer, unsigned int sectors, bool IntoIOP );
-    radFileError DiskChanged( void );
+    bool SetMediaInfo(void);
 
-    unsigned int            m_OpenFiles;
+    radFileError ReadVolumeName(char *nameBuffer);
+
+    radFileError LoadDirectory(void);
+
+    radFileError
+    BuildDirectory(unsigned int dirAddress, unsigned int level, char *pName, unsigned int key);
+
+    void BuildFileSpec(const char *fileName, char *fullName, unsigned int size, char **pName);
+
+    radFileError
+    FindDirectorySector(const char *dirName, unsigned int dirNameLen, unsigned int *lsn,
+                        unsigned int *size);
+
+    bool FileNameMatchesSearch(const char *pFileName, const char *pSearchSpec);
+
+    radFileError Read(unsigned int lsn, void *buffer, unsigned int sectors, bool IntoIOP);
+
+    radFileError DiskChanged(void);
+
+    unsigned int m_OpenFiles;
 
     //
     // This is the volume name of the current disk. Even if the media info changes,
     // this is the disk that is accepted.
     //
-    char                    m_VolumeName[ 64 + 1];
+    char m_VolumeName[64 + 1];
 
 
     //
@@ -180,50 +192,48 @@ private:
     // to have the alignment because we dma from this buffer to IOP sometimes and keeping
     // it aligned to 128 greatly improves transfer rates
     //
-    unsigned char  m_SectorBufferSpace[ PS2_CD_DRIVE_TRANSFER_BUFFER_SIZE + PS2_CD_DRIVE_ALIGNMENT ];
-    unsigned char* m_SectorBuffer;
+    unsigned char m_SectorBufferSpace[PS2_CD_DRIVE_TRANSFER_BUFFER_SIZE + PS2_CD_DRIVE_ALIGNMENT];
+    unsigned char *m_SectorBuffer;
 
     //
     // These data structures are used to maintain the directory information. We read
     // the entire directory tree and hash all of the filenames.
     //
-    struct DirectoryEntry
-    {
+    struct DirectoryEntry {
         unsigned int m_HashValue;           // Hashed filename
         unsigned int m_Lsn;                 // Logical sector number of start of file.
         unsigned int m_Size;                // Size of file.
-        inline bool operator==( const DirectoryEntry& dirEntry ) const
-        { 
+        inline bool operator==(const DirectoryEntry &dirEntry) const {
             return m_HashValue == dirEntry.m_HashValue;
         }
-        inline bool operator<( const DirectoryEntry& dirEntry ) const
-        { 
+
+        inline bool operator<(const DirectoryEntry &dirEntry) const {
             return m_HashValue < dirEntry.m_HashValue;
         }
-        static int compare( const void* elem1, const void* elem2 )
-        {
-            return ((DirectoryEntry*) elem1)->m_HashValue < ((DirectoryEntry*) elem2)->m_HashValue ? -1 : 1;
+
+        static int compare(const void *elem1, const void *elem2) {
+            return ((DirectoryEntry *) elem1)->m_HashValue < ((DirectoryEntry *) elem2)->m_HashValue
+                   ? -1 : 1;
         }
     };
 
-    DirectoryEntry  m_Directory[ MAX_DIRECTORYFILES ];  // Table of directory entries
-    unsigned int    m_NumDirEntries;    // Number of entries actually loaded.
+    DirectoryEntry m_Directory[MAX_DIRECTORYFILES];  // Table of directory entries
+    unsigned int m_NumDirEntries;    // Number of entries actually loaded.
 
     //
     // temporary data for traversal
     //
-    struct TravInfo
-    {
-        unsigned int    m_address;
-        unsigned int    m_key;
+    struct TravInfo {
+        unsigned int m_address;
+        unsigned int m_key;
     };
 
-    TravInfo    m_TmpTravInfo[ MAX_SUBDIRS ][ MAX_DIRS_PER_SECTOR ];
+    TravInfo m_TmpTravInfo[MAX_SUBDIRS][MAX_DIRS_PER_SECTOR];
 
     //
     // Mutex for critical sections
     //
-    IRadThreadMutex*    m_pMutex;
+    IRadThreadMutex *m_pMutex;
 };
 
 #endif // PS2CDDDRIVE_HPP

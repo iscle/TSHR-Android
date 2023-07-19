@@ -34,13 +34,12 @@
 // Return:      none
 //
 //=============================================================================
-TrackingHeap::TrackingHeap():
-    m_TrackAllocations( true ),
-    m_TotalAllocated( 0 ),
-    m_MaxSize( 0 ),
-    m_HighWater( 0 ),
-    m_NumberOfAllocations( 0 )
-{
+TrackingHeap::TrackingHeap() :
+        m_TrackAllocations(true),
+        m_TotalAllocated(0),
+        m_MaxSize(0),
+        m_HighWater(0),
+        m_NumberOfAllocations(0) {
 }
 
 //=============================================================================
@@ -53,16 +52,14 @@ TrackingHeap::TrackingHeap():
 // Return:      none
 //
 //=============================================================================
-TrackingHeap::~TrackingHeap()
-{
+TrackingHeap::~TrackingHeap() {
 #ifndef RAD_WIN32 // this routine is a problem for wind0ze.
-    rAssert( m_NumberOfAllocations == 0 );
+    rAssert(m_NumberOfAllocations == 0);
     ADDRESS_SIZE_MAP::iterator it;
-    for( it = m_Map.begin(); it != m_Map.end(); ++it )
-    {
-        void*  address = ( *it ).first;
-        size_t size    = ( *it ).second;
-        rTunePrintf( "leaked %p - %d bytes\n", address, size );
+    for (it = m_Map.begin(); it != m_Map.end(); ++it) {
+        void *address = (*it).first;
+        size_t size = (*it).second;
+        rTunePrintf("leaked %p - %d bytes\n", address, size);
     }
 #endif
 }
@@ -77,8 +74,7 @@ TrackingHeap::~TrackingHeap()
 // Return:      none
 //
 //=============================================================================
-void TrackingHeap::AddRef( void )
-{
+void TrackingHeap::AddRef(void) {
     radRefCount::Implement_AddRef();
 }
 
@@ -92,11 +88,9 @@ void TrackingHeap::AddRef( void )
 // Return:      bool - true or false - is it contained
 //
 //=============================================================================
-bool TrackingHeap::CanFreeMemory( void* pMemory )
-{
-    ADDRESS_SIZE_MAP::iterator found = m_Map.find( pMemory );
-    if( found == m_Map.end() )
-    {
+bool TrackingHeap::CanFreeMemory(void *pMemory) {
+    ADDRESS_SIZE_MAP::iterator found = m_Map.find(pMemory);
+    if (found == m_Map.end()) {
         return false;
     }
     return true;
@@ -112,9 +106,8 @@ bool TrackingHeap::CanFreeMemory( void* pMemory )
 // Return:      bool - true or false - is it contained
 //
 //=============================================================================
-bool TrackingHeap::CanFreeMemoryAligned( void* pMemory )
-{
-    return CanFreeMemory( pMemory );
+bool TrackingHeap::CanFreeMemoryAligned(void *pMemory) {
+    return CanFreeMemory(pMemory);
 }
 
 //=============================================================================
@@ -127,24 +120,22 @@ bool TrackingHeap::CanFreeMemoryAligned( void* pMemory )
 // Return:      NONE
 //
 //=============================================================================
-void TrackingHeap::FreeMemory( void* pMemory )
-{
-    ADDRESS_SIZE_MAP::iterator found = m_Map.find( pMemory );
-    if( ( found == m_Map.end() ) && m_TrackAllocations )
-    {
-        rAssert( false );
+void TrackingHeap::FreeMemory(void *pMemory) {
+    ADDRESS_SIZE_MAP::iterator found = m_Map.find(pMemory);
+    if ((found == m_Map.end()) && m_TrackAllocations) {
+        rAssert(false);
         return;
     }
-    size_t foundSize = ( *found ).second;
+    size_t foundSize = (*found).second;
     --m_NumberOfAllocations;
-    radMemoryPlatFree( pMemory );
-    if( m_TrackAllocations )
-    {
+    radMemoryPlatFree(pMemory);
+    if (m_TrackAllocations) {
         m_TotalAllocated -= foundSize;
-        m_Map.erase( pMemory );
+        m_Map.erase(pMemory);
     }
-    ::radMemoryMonitorRescindAllocation( pMemory );
+    ::radMemoryMonitorRescindAllocation(pMemory);
 }
+
 //=============================================================================
 // TrackingHeap::FreeMemoryAligned
 //=============================================================================
@@ -155,26 +146,24 @@ void TrackingHeap::FreeMemory( void* pMemory )
 // Return:      none
 //
 //=============================================================================
-void TrackingHeap::FreeMemoryAligned( void* pMemory )
-{
-    ADDRESS_SIZE_MAP::iterator found = m_Map.find( pMemory );
-    if( ( found == m_Map.end() ) && m_TrackAllocations )
-    {
-        rAssert( false );
+void TrackingHeap::FreeMemoryAligned(void *pMemory) {
+    ADDRESS_SIZE_MAP::iterator found = m_Map.find(pMemory);
+    if ((found == m_Map.end()) && m_TrackAllocations) {
+        rAssert(false);
         return;
     }
-    size_t foundSize = ( *found ).second;
+    size_t foundSize = (*found).second;
     --m_NumberOfAllocations;
-    radMemoryPlatFreeAligned( pMemory );
-    if( m_TrackAllocations )
-    {
+    radMemoryPlatFreeAligned(pMemory);
+    if (m_TrackAllocations) {
         m_TotalAllocated -= foundSize;
-        m_Map.erase( pMemory );
+        m_Map.erase(pMemory);
     }
-    ::radMemoryMonitorRescindAllocation( pMemory );
+    ::radMemoryMonitorRescindAllocation(pMemory);
 }
+
 //=============================================================================
-// TrackingHeap::GetMemory( size_t size )
+// TrackingHeap::GetMemory(size_t size)
 //=============================================================================
 // Description: allocates some memory from the heap
 //
@@ -183,18 +172,16 @@ void TrackingHeap::FreeMemoryAligned( void* pMemory )
 // Return:      pointer to some memory
 //
 //=============================================================================
-void* TrackingHeap::GetMemory ( unsigned int size )
-{
-    void* returnMe = radMemoryPlatAlloc( size );
-    if( returnMe != NULL )
-    {
-        RecordAllocation( returnMe, size );
+void *TrackingHeap::GetMemory(unsigned int size) {
+    void *returnMe = radMemoryPlatAlloc(size);
+    if (returnMe != NULL) {
+        RecordAllocation(returnMe, size);
     }
     return returnMe;
 }
 
 //=============================================================================
-// TrackingHeap::GetMemoryAligned( size_t size )
+// TrackingHeap::GetMemoryAligned(size_t size)
 //=============================================================================
 // Description: allocates some memory from the heap
 //
@@ -204,12 +191,10 @@ void* TrackingHeap::GetMemory ( unsigned int size )
 // Return:      pointer to some memory
 //
 //=============================================================================
-void* TrackingHeap::GetMemoryAligned( unsigned int size, unsigned int align )
-{
-    void* returnMe = radMemoryPlatAllocAligned( size, align );
-    if( returnMe != NULL )
-    {
-        RecordAllocation( returnMe, size );
+void *TrackingHeap::GetMemoryAligned(unsigned int size, unsigned int align) {
+    void *returnMe = radMemoryPlatAllocAligned(size, align);
+    if (returnMe != NULL) {
+        RecordAllocation(returnMe, size);
     }
     return returnMe;
 }
@@ -224,9 +209,8 @@ void* TrackingHeap::GetMemoryAligned( unsigned int size, unsigned int align )
 // Return:      none
 //
 //=============================================================================
-void TrackingHeap::GetMemoryObject( IRadMemoryObject** ppMemoryObject, unsigned int size )
-{
-    rAssert( false );
+void TrackingHeap::GetMemoryObject(IRadMemoryObject **ppMemoryObject, unsigned int size) {
+    rAssert(false);
 }
 
 //=============================================================================
@@ -239,9 +223,9 @@ void TrackingHeap::GetMemoryObject( IRadMemoryObject** ppMemoryObject, unsigned 
 // Return:      none
 //
 //=============================================================================
-void TrackingHeap::GetMemoryObjectAligned( IRadMemoryObject ** ppIRadMemoryObject, unsigned int size, unsigned int alignment )
-{
-    rAssert( false );
+void TrackingHeap::GetMemoryObjectAligned(IRadMemoryObject **ppIRadMemoryObject, unsigned int size,
+                                          unsigned int alignment) {
+    rAssert(false);
 }
 
 //=============================================================================
@@ -254,8 +238,7 @@ void TrackingHeap::GetMemoryObjectAligned( IRadMemoryObject ** ppIRadMemoryObjec
 // Return:      size of the heap in bytes
 //
 //=============================================================================
-unsigned int TrackingHeap::GetSize()
-{
+unsigned int TrackingHeap::GetSize() {
     return m_MaxSize;
 }
 
@@ -271,15 +254,14 @@ unsigned int TrackingHeap::GetSize()
 //
 //=============================================================================
 void TrackingHeap::GetStatus(
-	unsigned int* totalFreeMemory,
-	unsigned int* largestBlock,
-	unsigned int* numberOfObjects,
-	unsigned int* highWaterMark )
-{
-    if( totalFreeMemory != NULL )    *totalFreeMemory = m_MaxSize - m_TotalAllocated;
-    if( largestBlock    != NULL )    *largestBlock    = 0;
-    if( numberOfObjects != NULL )    *numberOfObjects = m_NumberOfAllocations;
-    if( highWaterMark   != NULL )    *highWaterMark   = m_HighWater;
+        unsigned int *totalFreeMemory,
+        unsigned int *largestBlock,
+        unsigned int *numberOfObjects,
+        unsigned int *highWaterMark) {
+    if (totalFreeMemory != NULL) *totalFreeMemory = m_MaxSize - m_TotalAllocated;
+    if (largestBlock != NULL) *largestBlock = 0;
+    if (numberOfObjects != NULL) *numberOfObjects = m_NumberOfAllocations;
+    if (highWaterMark != NULL) *highWaterMark = m_HighWater;
 }
 
 //=============================================================================
@@ -293,23 +275,20 @@ void TrackingHeap::GetStatus(
 // Return:      none
 //
 //=============================================================================
-void TrackingHeap::RecordAllocation( void* address, size_t size )
-{
-    //rAssert( reinterpret_cast< unsigned int >( address ) != 0x024D3320 );
+void TrackingHeap::RecordAllocation(void *address, size_t size) {
+    //rAssert(reinterpret_cast<unsigned int>(address) != 0x024D3320);
     ++m_NumberOfAllocations;
-    if( m_TotalAllocated > m_HighWater )
-    {
+    if (m_TotalAllocated > m_HighWater) {
         m_HighWater = m_TotalAllocated;
     }
 
     //12 had better be the debug heap!
-    radMemoryAllocator old = radMemorySetCurrentAllocator( 12 );
-    if( m_TrackAllocations )
-    {
-        ::radMemoryMonitorDeclareAllocation( address, size );
+    radMemoryAllocator old = radMemorySetCurrentAllocator(12);
+    if (m_TrackAllocations) {
+        ::radMemoryMonitorDeclareAllocation(address, size);
         m_TotalAllocated += size;
-        m_Map[ address ] = size;
-        radMemorySetCurrentAllocator( old );
+        m_Map[address] = size;
+        radMemorySetCurrentAllocator(old);
     }
 }
 
@@ -323,8 +302,7 @@ void TrackingHeap::RecordAllocation( void* address, size_t size )
 // Return:      none
 //
 //=============================================================================
-void TrackingHeap::Release( void )
-{
+void TrackingHeap::Release(void) {
     radRefCount::Implement_Release();
 }
 
@@ -338,8 +316,7 @@ void TrackingHeap::Release( void )
 // Return:      none
 //
 //=============================================================================
-void TrackingHeap::SetSize( size_t size )
-{
+void TrackingHeap::SetSize(size_t size) {
     m_MaxSize = size;
 }
 
@@ -353,8 +330,7 @@ void TrackingHeap::SetSize( size_t size )
 // Return:      none
 //
 //=============================================================================
-void TrackingHeap::TrackAllocations( bool trackAllocations )
-{
+void TrackingHeap::TrackAllocations(bool trackAllocations) {
     m_TrackAllocations = trackAllocations;
 }
 
@@ -368,10 +344,9 @@ void TrackingHeap::TrackAllocations( bool trackAllocations )
 // Return:      none
 //
 //=============================================================================
-bool TrackingHeap::ValidateHeap( void )
-{
+bool TrackingHeap::ValidateHeap(void) {
 #ifndef RAD_WIN32  // happens all the time in wind0ze
-    rAssert( false );
+    rAssert(false);
 #endif
     return true;
 }
@@ -386,11 +361,10 @@ bool TrackingHeap::ValidateHeap( void )
 // Return:      none
 //
 //=============================================================================
-IRadMemoryHeap* radMemoryCreateTrackingHeap( unsigned int size,
-	radMemoryAllocator allocator,
-    const char * pName )
-{
-    TrackingHeap* pHeap = new ( allocator ) TrackingHeap;
-    pHeap->SetSize( size );
+IRadMemoryHeap *radMemoryCreateTrackingHeap(unsigned int size,
+                                            radMemoryAllocator allocator,
+                                            const char *pName) {
+    TrackingHeap *pHeap = new(allocator) TrackingHeap;
+    pHeap->SetSize(size);
     return pHeap;
 }

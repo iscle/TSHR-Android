@@ -45,12 +45,12 @@
 //
 // This is the state list for controlling traversals
 //
-static const int TraversalStateList[ 3 ][ 4 ] =
-{
-    { 2, 3, 1, 4 },     // Pre order
-    { 1, 2, 3, 4 },     // In order
-    { 1, 3, 4, 2 }      // Post order
-};
+static const int TraversalStateList[3][4] =
+        {
+                {2, 3, 1, 4},     // Pre order
+                {1, 2, 3, 4},     // In order
+                {1, 3, 4, 2}      // Post order
+        };
 
 
 //============================================================================
@@ -64,78 +64,68 @@ static const int TraversalStateList[ 3 ][ 4 ] =
 #define NULLREFCOUNTPTR ((IRefCount*)0)
 #define NULLKEYPTR ((radKey32*)0)
 
-static radObjectBTreeNode* gpNodeTable;
-static radObjectBTreeNode*  gpNextFreeNode;
+static radObjectBTreeNode *gpNodeTable;
+static radObjectBTreeNode *gpNextFreeNode;
 static unsigned int gUsedNodes;
 static unsigned int gMaxNodes;
 
-struct FreeNode
-{
-    radObjectBTreeNode* pNextFree;
+struct FreeNode {
+    radObjectBTreeNode *pNextFree;
 };
 
-static inline radObjectBTreeNode* AllocBTreeNode( void )
-{
-    rTuneAssert( NULLNODEPTR != gpNextFreeNode );
-    
-    radObjectBTreeNode* pRet = gpNextFreeNode;
-    
-    gpNextFreeNode = ((FreeNode*)gpNextFreeNode)->pNextFree;
-    
+static inline radObjectBTreeNode *AllocBTreeNode(void) {
+    rTuneAssert(NULLNODEPTR != gpNextFreeNode);
+
+    radObjectBTreeNode *pRet = gpNextFreeNode;
+
+    gpNextFreeNode = ((FreeNode *) gpNextFreeNode)->pNextFree;
+
     gUsedNodes++;
-    
+
     return pRet;
 }
 
-static inline void FreeBTreeNode( radObjectBTreeNode* pNode )
-{
-    FreeNode * pFn = (FreeNode*) pNode;
-    
-    ((FreeNode*)pNode)->pNextFree = gpNextFreeNode;
+static inline void FreeBTreeNode(radObjectBTreeNode *pNode) {
+    FreeNode *pFn = (FreeNode *) pNode;
+
+    ((FreeNode *) pNode)->pNextFree = gpNextFreeNode;
     gpNextFreeNode = pNode;
-    
+
     gUsedNodes--;
 }
 
-static inline short Ref( radObjectBTreeNode * pNode )
-{
-    short index = ( pNode - gpNodeTable );
-    
+static inline short Ref(radObjectBTreeNode *pNode) {
+    short index = (pNode - gpNodeTable);
+
     return index;
 }
 
-static inline radObjectBTreeNode* DeRef( short index )
-{
-    if ( NULLNODEINDEX == index )
-    {
+static inline radObjectBTreeNode *DeRef(short index) {
+    if (NULLNODEINDEX == index) {
         return NULLNODEPTR;
     }
-    
+
     return gpNodeTable + index;
 }
 
-void radObjectBTree::Initialize( radObjectBTreeNode* pNodePool, unsigned int maxNodes )
-{
+void radObjectBTree::Initialize(radObjectBTreeNode *pNodePool, unsigned int maxNodes) {
     gpNodeTable = pNodePool;
     gMaxNodes = maxNodes;
     gUsedNodes = 0;
     gpNextFreeNode = gpNodeTable;
-    
-    for( unsigned int i = 0; i < maxNodes - 1; i ++ )
-    {
-        ((FreeNode*)(gpNodeTable + i))->pNextFree = gpNodeTable + i + 1;
+
+    for (unsigned int i = 0; i < maxNodes - 1; i++) {
+        ((FreeNode *) (gpNodeTable + i))->pNextFree = gpNodeTable + i + 1;
     }
-    
-    ((FreeNode*)(gpNodeTable + maxNodes - 1))->pNextFree = 0;
+
+    ((FreeNode *) (gpNodeTable + maxNodes - 1))->pNextFree = 0;
 }
 
-short radObjectBTree::GetNumAllocatedNodes( void )
-{
+short radObjectBTree::GetNumAllocatedNodes(void) {
     return gUsedNodes;
 }
-    
-void radObjectBTree::Terminate( void )
-{
+
+void radObjectBTree::Terminate(void) {
     gpNodeTable = NULLNODEPTR;
     gMaxNodes = 0;
 }
@@ -149,15 +139,14 @@ void radObjectBTree::Terminate( void )
 //
 //------------------------------------------------------------------------------
 
-radObjectBTree::radObjectBTree( )
-    :
-    mRootNode( NULLNODEINDEX ),
-    m_Size( 0 ),
-    m_TraversalOrder( PreOrder ),
-    m_pLastTraverseNode( NULLNODEPTR ),
-    m_TraversalState( 0 )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radObjectBTree" );
+radObjectBTree::radObjectBTree()
+        :
+        mRootNode(NULLNODEINDEX),
+        m_Size(0),
+        m_TraversalOrder(PreOrder),
+        m_pLastTraverseNode(NULLNODEPTR),
+        m_TraversalState(0) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radObjectBTree");
     //
 }
 
@@ -167,13 +156,12 @@ radObjectBTree::radObjectBTree( )
 // Description: Destructor
 //
 //------------------------------------------------------------------------------
-    
-radObjectBTree::~radObjectBTree( )
-{
+
+radObjectBTree::~radObjectBTree() {
     //
     // Clean up the tree
     //
-    RemoveAll( );
+    RemoveAll();
 }
 
 //=============================================================================
@@ -192,40 +180,38 @@ radObjectBTree::~radObjectBTree( )
 //------------------------------------------------------------------------------
 
 bool radObjectBTree::AddObject
-(
-    const radKey32& key,
-    IRefCount* pIObject
-)
-{
+        (
+                const radKey32 &key,
+                IRefCount *pIObject
+        ) {
     //
     // Stop any traversals
     //
     m_pLastTraverseNode = NULLNODEPTR;
-    
+
     //
     // Find a suitable location for this node
     //
-    radObjectBTreeNode* pNode = NULLNODEPTR;
-    radObjectBTreeNode* pParentNode = NULLNODEPTR;
+    radObjectBTreeNode *pNode = NULLNODEPTR;
+    radObjectBTreeNode *pParentNode = NULLNODEPTR;
     int side = 0;
     find
-    (
-        key,
-        &pNode,
-        &pParentNode,
-        &side
-    );
+            (
+                    key,
+                    &pNode,
+                    &pParentNode,
+                    &side
+            );
 
     //
     // If the node does not already exist, add it
     //
     bool nodeAdded = false;
-    if( pNode == NULLNODEPTR )
-    {
+    if (pNode == NULLNODEPTR) {
         //
         // Create the new node for this object
         //
-        radObjectBTreeNode* pNewNode = AllocBTreeNode( );
+        radObjectBTreeNode *pNewNode = AllocBTreeNode();
         pNewNode->m_key = key;
         pNewNode->m_xIObject = pIObject;
         pNewNode->mLeftNode = NULLNODEINDEX;
@@ -234,23 +220,17 @@ bool radObjectBTree::AddObject
         //
         // If there is are objects so far, use the root node
         //
-        if( pParentNode == NULLNODEPTR )
-        {
-            rAssert( mRootNode == NULLNODEINDEX );
-            mRootNode = Ref( pNewNode );
-        }
-        else
-        {
+        if (pParentNode == NULLNODEPTR) {
+            rAssert(mRootNode == NULLNODEINDEX);
+            mRootNode = Ref(pNewNode);
+        } else {
             //
             // Add it to the tree
             //
-            if( side > 0 )
-            {
-                pParentNode->mRightNode = Ref( pNewNode );
-            }
-            else
-            {
-                pParentNode->mLeftNode = Ref( pNewNode );
+            if (side > 0) {
+                pParentNode->mRightNode = Ref(pNewNode);
+            } else {
+                pParentNode->mLeftNode = Ref(pNewNode);
             }
         }
 
@@ -278,16 +258,15 @@ bool radObjectBTree::AddObject
 //------------------------------------------------------------------------------
 
 void radObjectBTree::deleteNode
-(
-    radObjectBTreeNode* pNode
-)
-{
-    rAssert( pNode != NULLNODEPTR );
-    rAssert( pNode->mLeftNode == NULLNODEINDEX );
-    rAssert( pNode->mRightNode == NULLNODEINDEX );
+        (
+                radObjectBTreeNode *pNode
+        ) {
+    rAssert(pNode != NULLNODEPTR);
+    rAssert(pNode->mLeftNode == NULLNODEINDEX);
+    rAssert(pNode->mRightNode == NULLNODEINDEX);
 
     pNode->m_xIObject = NULLREFCOUNTPTR;
-    FreeBTreeNode( pNode );
+    FreeBTreeNode(pNode);
 }
 
 //=============================================================================
@@ -303,86 +282,70 @@ void radObjectBTree::deleteNode
 //------------------------------------------------------------------------------
 
 bool radObjectBTree::RemoveObject
-(
-    const radKey32& key
-)
-{
+        (
+                const radKey32 &key
+        ) {
     //
     // Stop any traversals
     //
     m_pLastTraverseNode = NULLNODEPTR;
-    
+
     //
     // Find the node with the given key
     //
-    radObjectBTreeNode* pNode = NULLNODEPTR;
-    radObjectBTreeNode* pParentNode = NULLNODEPTR;
+    radObjectBTreeNode *pNode = NULLNODEPTR;
+    radObjectBTreeNode *pParentNode = NULLNODEPTR;
     int side = 0;
     find
-    (
-        key,
-        &pNode,
-        &pParentNode,
-        &side
-    );
+            (
+                    key,
+                    &pNode,
+                    &pParentNode,
+                    &side
+            );
 
     //
     // If the node is found, remove it
     //
     bool noderemoved = false;
-    if( pNode != NULLNODEPTR )
-    {
+    if (pNode != NULLNODEPTR) {
         //
         // Find out what is pointing to this node
         //
-        short * pPointToMe = NULLNODEINDEXPTR;
-        
-        if( pParentNode == NULLNODEPTR )
-        {
-            pPointToMe = & mRootNode;
-        }
-        else if( pParentNode->mLeftNode == Ref( pNode ) )
-        {
-            pPointToMe = & pParentNode->mLeftNode;
-        }
-        else
-        {
-            pPointToMe = & pParentNode->mRightNode;
+        short *pPointToMe = NULLNODEINDEXPTR;
+
+        if (pParentNode == NULLNODEPTR) {
+            pPointToMe = &mRootNode;
+        } else if (pParentNode->mLeftNode == Ref(pNode)) {
+            pPointToMe = &pParentNode->mLeftNode;
+        } else {
+            pPointToMe = &pParentNode->mRightNode;
         }
 
         //
         // What kind of node are we
         //
-        if( pNode->mLeftNode == NULLNODEINDEX )
-        {
-            if( pNode->mRightNode == NULLNODEINDEX )
-            {
+        if (pNode->mLeftNode == NULLNODEINDEX) {
+            if (pNode->mRightNode == NULLNODEINDEX) {
                 //
                 // We are a leaf, just remove ourselves from the tree
                 //
                 (*pPointToMe) = NULLNODEINDEX;
-            }
-            else
-            {
+            } else {
                 //
                 // Left subtree empty, replace with right
                 //
                 (*pPointToMe) = pNode->mRightNode;
                 pNode->mRightNode = NULLNODEINDEX;
             }
-        }
-        else
-        {
-            if( pNode->mRightNode ==  NULLNODEINDEX )
-            {
+        } else {
+            if (pNode->mRightNode == NULLNODEINDEX) {
                 //
                 // Right subtree empty, replace with left
                 //
                 (*pPointToMe) = pNode->mLeftNode;
                 pNode->mLeftNode = NULLNODEINDEX;
-            }
-            else
-            {
+            } else {
                 //
                 // In middle of tree.  We could replace the node with
                 // the predessor or the successor.
@@ -390,16 +353,15 @@ bool radObjectBTree::RemoveObject
                 // right subtree.
                 //
                 pPointToMe = &pNode->mRightNode;
-                radObjectBTreeNode* pSuccessor = DeRef( pNode->mRightNode );
-                while( pSuccessor->mLeftNode != NULLNODEINDEX )
-                {
+                radObjectBTreeNode *pSuccessor = DeRef(pNode->mRightNode);
+                while (pSuccessor->mLeftNode != NULLNODEINDEX) {
                     pPointToMe = &pSuccessor->mLeftNode;
-                    pSuccessor = DeRef( pSuccessor->mLeftNode );
+                    pSuccessor = DeRef(pSuccessor->mLeftNode);
                 }
 
                 // We don't actually move it up here, we just copy
                 // its information and then remove it
-                copyNode( pSuccessor, pNode );
+                copyNode(pSuccessor, pNode);
                 (*pPointToMe) = pSuccessor->mRightNode;
 
                 pNode = pSuccessor;
@@ -411,7 +373,7 @@ bool radObjectBTree::RemoveObject
         //
         // Delete the node
         //
-        deleteNode( pNode );
+        deleteNode(pNode);
 
         //
         // Adjust the size of the tree
@@ -442,11 +404,9 @@ bool radObjectBTree::RemoveObject
 //
 //------------------------------------------------------------------------------
 
-bool radObjectBTree::RemoveObject( IRefCount* pIObject )
-{
+bool radObjectBTree::RemoveObject(IRefCount *pIObject) {
     // Fast return for simple case
-    if( pIObject == NULLREFCOUNTPTR )
-    {
+    if (pIObject == NULLREFCOUNTPTR) {
         return false;
     }
 
@@ -454,22 +414,20 @@ bool radObjectBTree::RemoveObject( IRefCount* pIObject )
     // Travese the BTree nodes until the suitable one is found, then remove it.
     //
     radKey32 mykey = 0;
-    IRefCount* pMyObject = GetFirst( PreOrder, &mykey );
-    while( ( pMyObject != NULLREFCOUNTPTR ) && ( pMyObject != pIObject ) )
-    {
-        pMyObject = GetNext( &mykey );
+    IRefCount *pMyObject = GetFirst(PreOrder, &mykey);
+    while ((pMyObject != NULLREFCOUNTPTR) && (pMyObject != pIObject)) {
+        pMyObject = GetNext(&mykey);
     }
 
     //
     // Did we find it?
     //
     bool noderemoved = false;
-    if( pMyObject != NULLREFCOUNTPTR )
-    {
+    if (pMyObject != NULLREFCOUNTPTR) {
         //
         // Remove the node
         //
-        noderemoved = RemoveObject( mykey );
+        noderemoved = RemoveObject(mykey);
         pMyObject = NULLREFCOUNTPTR;
     }
 
@@ -490,8 +448,7 @@ bool radObjectBTree::RemoveObject( IRefCount* pIObject )
 //
 //------------------------------------------------------------------------------
 
-void radObjectBTree::RemoveAll( void )
-{
+void radObjectBTree::RemoveAll(void) {
     //
     // Stop any pending traversals
     //
@@ -503,9 +460,8 @@ void radObjectBTree::RemoveAll( void )
     // our stack.
     // Use a helper function do destroy the tree.
     //
-    if( mRootNode != NULLNODEINDEX )
-    {
-        RemoveAll_Helper( DeRef( mRootNode ) );
+    if (mRootNode != NULLNODEINDEX) {
+        RemoveAll_Helper(DeRef(mRootNode));
     }
 
     //
@@ -528,30 +484,27 @@ void radObjectBTree::RemoveAll( void )
 //------------------------------------------------------------------------------
 
 void radObjectBTree::RemoveAll_Helper
-(
-    radObjectBTreeNode* pNode
-)
-{
-    rAssert( pNode != NULLNODEPTR );
+        (
+                radObjectBTreeNode *pNode
+        ) {
+    rAssert(pNode != NULLNODEPTR);
 
     // Destroy the left subtree
-    if( pNode->mLeftNode != NULLNODEINDEX )
-    {
-        RemoveAll_Helper( DeRef( pNode->mLeftNode ) );
+    if (pNode->mLeftNode != NULLNODEINDEX) {
+        RemoveAll_Helper(DeRef(pNode->mLeftNode));
         pNode->mLeftNode = NULLNODEINDEX;
     }
 
     // Destroy the right subtree
-    if( pNode->mRightNode != NULLNODEINDEX )
-    {
-        RemoveAll_Helper( DeRef( pNode->mRightNode ) );
+    if (pNode->mRightNode != NULLNODEINDEX) {
+        RemoveAll_Helper(DeRef(pNode->mRightNode));
         pNode->mRightNode = NULLNODEINDEX;
     }
 
     //
     // Destroy this node
     //
-    deleteNode( pNode );
+    deleteNode(pNode);
 }
 
 //=============================================================================
@@ -566,34 +519,32 @@ void radObjectBTree::RemoveAll_Helper
 //
 //------------------------------------------------------------------------------
 
-IRefCount* radObjectBTree::FindObject( const radKey32& key )
-{
+IRefCount *radObjectBTree::FindObject(const radKey32 &key) {
     //
     // Find the node
     //
-    radObjectBTreeNode* pNode = NULLNODEPTR;
-    radObjectBTreeNode* pParentNode = NULLNODEPTR;
+    radObjectBTreeNode *pNode = NULLNODEPTR;
+    radObjectBTreeNode *pParentNode = NULLNODEPTR;
     int side = 0;
     find
-    (
-        key,
-        &pNode,
-        &pParentNode,
-        &side
-    );
+            (
+                    key,
+                    &pNode,
+                    &pParentNode,
+                    &side
+            );
 
     //
     // Get the object
     //
-    IRefCount* pObject = NULLREFCOUNTPTR;
-    if( pNode != NULLNODEPTR )
-    {
+    IRefCount *pObject = NULLREFCOUNTPTR;
+    if (pNode != NULLNODEPTR) {
         //
         // The key was found, get the object
         //
         pObject = pNode->m_xIObject;
     }
-    
+
     //
     // Return the object
     //
@@ -615,12 +566,11 @@ IRefCount* radObjectBTree::FindObject( const radKey32& key )
 //
 //------------------------------------------------------------------------------
 
-IRefCount* radObjectBTree::GetFirst
-(
-    TraversalOrder traversalOrder,
-    radKey32* pKey
-)
-{
+IRefCount *radObjectBTree::GetFirst
+        (
+                TraversalOrder traversalOrder,
+                radKey32 *pKey
+        ) {
     //
     // Set the traversal order
     //
@@ -629,9 +579,8 @@ IRefCount* radObjectBTree::GetFirst
     //
     // Verify the traversal order
     //
-    if( m_TraversalOrder >= radObjectBTree::MaxTraversalOrder )
-    {
-        rWarningMsg( 0, "Using an unknown traversal order!" );
+    if (m_TraversalOrder >= radObjectBTree::MaxTraversalOrder) {
+        rWarningMsg(0, "Using an unknown traversal order!");
         return NULLREFCOUNTPTR;
     }
 
@@ -639,20 +588,19 @@ IRefCount* radObjectBTree::GetFirst
     // Stop pending traversals and set the first node to the root
     //
     m_pLastTraverseNode = NULLNODEPTR;
-    if( mRootNode != NULLNODEINDEX )
-    {
-        m_pLastTraverseNode = DeRef( mRootNode );
+    if (mRootNode != NULLNODEINDEX) {
+        m_pLastTraverseNode = DeRef(mRootNode);
     }
 
     //
     // Set the traversal state
     //
-    m_TraversalState = TraversalStateList[ m_TraversalOrder ][ 0 ];
+    m_TraversalState = TraversalStateList[m_TraversalOrder][0];
 
     //
     // Get the first node
     //
-    return GetNext( pKey );
+    return GetNext(pKey);
 }
 
 //=============================================================================
@@ -670,35 +618,29 @@ IRefCount* radObjectBTree::GetFirst
 //
 //------------------------------------------------------------------------------
 
-IRefCount* radObjectBTree::GetNext
-(
-    radKey32* pKey
-)
-{
+IRefCount *radObjectBTree::GetNext
+        (
+                radKey32 *pKey
+        ) {
     //
     // Use the GetNextNode helper
     //
-    radObjectBTreeNode* pNode = NULLNODEPTR;
-    IRefCount* pNext = NULLREFCOUNTPTR;
-    pNode = GetNextNode( );
+    radObjectBTreeNode *pNode = NULLNODEPTR;
+    IRefCount *pNext = NULLREFCOUNTPTR;
+    pNode = GetNextNode();
 
     //
     // If it is the last
     //
-    if( pNode == NULLNODEPTR )
-    {
-        if( pKey != NULLKEYPTR )
-        {
+    if (pNode == NULLNODEPTR) {
+        if (pKey != NULLKEYPTR) {
             (*pKey) = 0;
         }
-    }
-    else
-    {
+    } else {
         //
         // Return the info
         //
-        if( pKey != NULLKEYPTR )
-        {
+        if (pKey != NULLKEYPTR) {
             (*pKey) = pNode->m_key;
         }
         pNext = pNode->m_xIObject;
@@ -718,8 +660,7 @@ IRefCount* radObjectBTree::GetNext
 //
 //------------------------------------------------------------------------------
 
-unsigned int radObjectBTree::GetSize( void )
-{
+unsigned int radObjectBTree::GetSize(void) {
     return m_Size;
 }
 
@@ -742,25 +683,25 @@ void radObjectBTree::DisplayTree
 )
 {
     // Do spaces
-    for( int i = 0; i < indent; i++ )
+    for(int i = 0; i <indent; i++)
     {
-        rDebugString( "  " );
+        rDebugString("  ");
     }
 
     // Print node
-    if( pNode == NULLNODEPTR )
+    if(pNode == NULLNODEPTR)
     {
-        rDebugString( "( --, -- )\n" );
+        rDebugString("(--, --)\n");
     }
     else
     {
         char buf[ 256 ];
-        sprintf( buf, "( %i, %#x )\n", pNode->m_key, reinterpret_cast< unsigned int >( static_cast< IRefCount* >( pNode->m_xIObject ) ) );
-        rDebugString( buf );
+        sprintf(buf, "(%i, %#x)\n", pNode->m_key, reinterpret_cast<unsigned int>(static_cast<IRefCount*>(pNode->m_xIObject)));
+        rDebugString(buf);
 
         // Print subtrees
-        DisplayTree( DeRef( pNode->mLeftNode ), indent + 1 );
-        DisplayTree( DeRef( pNode->mRightNode ), indent + 1 );
+        DisplayTree(DeRef(pNode->mLeftNode), indent + 1);
+        DisplayTree(DeRef(pNode->mRightNode), indent + 1);
     }
 }
 #endif
@@ -774,98 +715,77 @@ void radObjectBTree::DisplayTree
 //
 //------------------------------------------------------------------------------
 
-radObjectBTreeNode* radObjectBTree::GetNextNode( )
-{
+radObjectBTreeNode *radObjectBTree::GetNextNode() {
     //
     // Store the next node
     //
-    radObjectBTreeNode* pNext = m_pLastTraverseNode;
+    radObjectBTreeNode *pNext = m_pLastTraverseNode;
 
     //
     // If there is no active traversal, just return NULL
     //
-    if( m_pLastTraverseNode == NULLNODEPTR )
-    {
+    if (m_pLastTraverseNode == NULLNODEPTR) {
         pNext = NULLNODEPTR;
-    }
-    else
-    {
+    } else {
         //
         // Find the next node
         //
-        while( true )
-        {
+        while (true) {
             //
             // We use a state based traversal using our traversal state list.
             //
-            if( m_TraversalState == 1 )
-            {
-                if( pNext->mLeftNode != NULLNODEINDEX )
-                {
-                    pNext = DeRef( pNext->mLeftNode );
-                    m_TraversalState = TraversalStateList[ m_TraversalOrder ][ 0 ];
-                }
-                else
-                {
-                    m_TraversalState = TraversalStateList[ m_TraversalOrder ][ 1 ];
+            if (m_TraversalState == 1) {
+                if (pNext->mLeftNode != NULLNODEINDEX) {
+                    pNext = DeRef(pNext->mLeftNode);
+                    m_TraversalState = TraversalStateList[m_TraversalOrder][0];
+                } else {
+                    m_TraversalState = TraversalStateList[m_TraversalOrder][1];
                 }
             }
 
-            if( m_TraversalState == 2 )
-            {
-                m_TraversalState = TraversalStateList[ m_TraversalOrder ][ 2 ];
+            if (m_TraversalState == 2) {
+                m_TraversalState = TraversalStateList[m_TraversalOrder][2];
                 break;
             }
 
-            if( m_TraversalState == 3 )
-            {
-                if( pNext->mRightNode != NULLNODEINDEX )
-                {
-                    pNext = DeRef( pNext->mRightNode );
-                    m_TraversalState = TraversalStateList[ m_TraversalOrder ][ 0 ];
-                }
-                else
-                {
-                    m_TraversalState = TraversalStateList[ m_TraversalOrder ][ 3 ];
+            if (m_TraversalState == 3) {
+                if (pNext->mRightNode != NULLNODEINDEX) {
+                    pNext = DeRef(pNext->mRightNode);
+                    m_TraversalState = TraversalStateList[m_TraversalOrder][0];
+                } else {
+                    m_TraversalState = TraversalStateList[m_TraversalOrder][3];
                 }
             }
 
-            if( m_TraversalState == 4 )
-            {
+            if (m_TraversalState == 4) {
                 //
                 // Get the parent node (equivalent to popping off the stack like
                 // as we used to do).
                 //
-                radObjectBTreeNode* pCurrentNode = NULLNODEPTR;
+                radObjectBTreeNode *pCurrentNode = NULLNODEPTR;
                 int side = 0;
                 find
-                (
-                    m_pLastTraverseNode->m_key,
-                    &pCurrentNode,
-                    &pNext,
-                    &side
-                );
-                rAssert( pCurrentNode == m_pLastTraverseNode );
+                        (
+                                m_pLastTraverseNode->m_key,
+                                &pCurrentNode,
+                                &pNext,
+                                &side
+                        );
+                rAssert(pCurrentNode == m_pLastTraverseNode);
                 m_pLastTraverseNode = pNext;
 
                 //
                 // If there is no parent, we are done
                 //
-                if( pNext == NULLNODEPTR )
-                {
+                if (pNext == NULLNODEPTR) {
                     break;
-                }
-                else
-                {
-                    rAssert( side != 0 );
-                    
-                    if( side < 0 )
-                    {
-                        m_TraversalState = TraversalStateList[ m_TraversalOrder ][ 1 ];
-                    }
-                    else
-                    {
-                        m_TraversalState = TraversalStateList[ m_TraversalOrder ][ 3 ];
+                } else {
+                    rAssert(side != 0);
+
+                    if (side < 0) {
+                        m_TraversalState = TraversalStateList[m_TraversalOrder][1];
+                    } else {
+                        m_TraversalState = TraversalStateList[m_TraversalOrder][3];
                     }
                 }
             }
@@ -901,11 +821,11 @@ radObjectBTreeNode* radObjectBTree::GetNextNode( )
 //              pLocation - (out) the location where the key would reside
 //
 // Note:        The location where the key would reside is one of three values:
-//              < 0   - The given key would reside to the left of the node
+//              <0   - The given key would reside to the left of the node
 //                      returned in pNode.  Also, the left subtree of pNode is
 //                      NULL.
 //              ==0   - the parent must be NULL.
-//              > 0   - The given key would reside to the right of the node
+//> 0   - The given key would reside to the right of the node
 //                      returned in pNode.  Also, the right subtree of pNode is
 //                      NULL.
 //
@@ -914,13 +834,12 @@ radObjectBTreeNode* radObjectBTree::GetNextNode( )
 //------------------------------------------------------------------------------
 
 void radObjectBTree::find
-(
-    const radKey32& key,
-    radObjectBTreeNode** ppNode,
-    radObjectBTreeNode** ppParent,
-    int* pSide
-)
-{
+        (
+                const radKey32 &key,
+                radObjectBTreeNode **ppNode,
+                radObjectBTreeNode **ppParent,
+                int *pSide
+        ) {
     (*pSide) = 0;
     (*ppNode) = NULLNODEPTR;
     (*ppParent) = NULLNODEPTR;
@@ -928,18 +847,16 @@ void radObjectBTree::find
     //
     // Start off at the root node
     //
-    (*ppNode) = DeRef( mRootNode );
+    (*ppNode) = DeRef(mRootNode);
 
     //
     // Iterate the nodes
     //
-    while( (*ppNode) != NULLNODEPTR )
-    {
+    while ((*ppNode) != NULLNODEPTR) {
         //
         // Do the keys match?
         //
-        if( key == (*ppNode)->m_key )
-        {
+        if (key == (*ppNode)->m_key) {
             break;
         }
 
@@ -949,14 +866,11 @@ void radObjectBTree::find
         // is only an int and this might lead to an overflow).
         //
         (*ppParent) = (*ppNode);
-        if( key < (*ppNode)->m_key )
-        {
-            (*ppNode) = DeRef( (*ppNode)->mLeftNode );
+        if (key < (*ppNode)->m_key) {
+            (*ppNode) = DeRef((*ppNode)->mLeftNode);
             (*pSide) = -1;
-        }
-        else
-        {
-            (*ppNode) = DeRef( (*ppNode)->mRightNode );
+        } else {
+            (*ppNode) = DeRef((*ppNode)->mRightNode);
             (*pSide) = 1;
         }
     }
@@ -970,11 +884,10 @@ void radObjectBTree::find
 //-----------------------------------------------------------------------------
 
 void radObjectBTree::copyNode
-(
-    radObjectBTreeNode* pSrc,
-    radObjectBTreeNode* pDest
-)
-{
+        (
+                radObjectBTreeNode *pSrc,
+                radObjectBTreeNode *pDest
+        ) {
     pDest->m_key = pSrc->m_key;
     pDest->m_xIObject = pSrc->m_xIObject;
 }

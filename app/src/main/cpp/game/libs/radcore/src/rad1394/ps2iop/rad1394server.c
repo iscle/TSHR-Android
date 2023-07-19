@@ -54,37 +54,47 @@
 //
 // Priority of the thread used to service RPC requests.
 //
-#define RPCThreadPriority   ((( USER_HIGHEST_PRIORITY + USER_LOWEST_PRIORITY ) / 2 ) + 1) //10
-        
+#define RPCThreadPriority   (((USER_HIGHEST_PRIORITY + USER_LOWEST_PRIORITY) / 2) + 1) //10
+
 //
 // The following is the Unit directory. I do not completely understand it and arrived
 // at its definition through alot of experimentation. There is more information that
 // can follow this structure but I found this was enough to get things working.
 //
-struct UnitDirectory
-{
-    unsigned short  m_CRC;                  // Calculated by the unit add call.
-    unsigned short  m_NumberOfQuadlets;     // Number of 32 bit words in table.
-    unsigned char   m_UnitSpecID[ 3 ];      // Set to match of Win2k driver
-    unsigned char   m_UnitSpecIDCode;       // Magic Number
-    unsigned char   m_UnitSwVersion[ 3 ];   // Set to match of Win2k driver
-    unsigned char   m_UnitSwVersionCode;    // Magic Number
-};          
+struct UnitDirectory {
+    unsigned short m_CRC;                  // Calculated by the unit add call.
+    unsigned short m_NumberOfQuadlets;     // Number of 32 bit words in table.
+    unsigned char m_UnitSpecID[3];      // Set to match of Win2k driver
+    unsigned char m_UnitSpecIDCode;       // Magic Number
+    unsigned char m_UnitSwVersion[3];   // Set to match of Win2k driver
+    unsigned char m_UnitSwVersionCode;    // Magic Number
+};
 
 //=============================================================================
 // Local Function Prototypes
 //=============================================================================
 
-static int ILinkReadCallback( unsigned int offsetLow, unsigned int size, unsigned char* payload, int pb);
-static int ILinkWriteCallback( unsigned int offsetLow, unsigned int size, unsigned char* payload, int pb);
-static int ILinkInitialize( unsigned int sharedMemoryRegionSize );
-static void ILinkTerminate( void );
-static int RPCInitialize( void );
-static void RPCThread( void );
-static void* RPCFunctionHandler( unsigned int functionNumber, void* pData, int size );
-static void ReadSharedMemory( unsigned int address, unsigned int numBytes, unsigned char* ptr );
-static void WriteSharedMemory( unsigned int address, unsigned int numBytes, unsigned char* ptr );
-static void WriteToMaster( unsigned int address, unsigned int numBytes, unsigned char* ptr );
+static int
+ILinkReadCallback(unsigned int offsetLow, unsigned int size, unsigned char *payload, int pb);
+
+static int
+ILinkWriteCallback(unsigned int offsetLow, unsigned int size, unsigned char *payload, int pb);
+
+static int ILinkInitialize(unsigned int sharedMemoryRegionSize);
+
+static void ILinkTerminate(void);
+
+static int RPCInitialize(void);
+
+static void RPCThread(void);
+
+static void *RPCFunctionHandler(unsigned int functionNumber, void *pData, int size);
+
+static void ReadSharedMemory(unsigned int address, unsigned int numBytes, unsigned char *ptr);
+
+static void WriteSharedMemory(unsigned int address, unsigned int numBytes, unsigned char *ptr);
+
+static void WriteToMaster(unsigned int address, unsigned int numBytes, unsigned char *ptr);
 
 //=============================================================================
 // Statics
@@ -93,7 +103,7 @@ static void WriteToMaster( unsigned int address, unsigned int numBytes, unsigned
 //
 // This is the Module Information Block. All IOP modules must have one of these.
 //
-ModuleInfo g_Module = { "Radical1394Server", 0x0100 };
+ModuleInfo g_Module = {"Radical1394Server", 0x0100};
 
 //
 // Unit directory. Built at runtime to prevent others from hacking like I did.
@@ -118,23 +128,23 @@ static int s_MasterNodeId = INVALID_NODEID;
 // Pointer to the shared memory used to communicate between the PS2 and the host
 // over FireWire. Also maintained is the size of this block.
 //
-static unsigned char*   s_pSharedMemory = NULL;
-static unsigned int     s_SharedMemorySize = 0;
+static unsigned char *s_pSharedMemory = NULL;
+static unsigned int s_SharedMemorySize = 0;
 
 //
 // This static holds the address of where the read/write is to occur. We receive
 // this is in a seperate transaction than the actual data.
 //
-static unsigned int     s_ReadWriteAddress;
-static unsigned int     s_ReadWriteSize = 0;
-static unsigned int     s_Atomic;
-static unsigned int     s_LocalWrite;
+static unsigned int s_ReadWriteAddress;
+static unsigned int s_ReadWriteSize = 0;
+static unsigned int s_Atomic;
+static unsigned int s_LocalWrite;
 
 //
 // This static is used for transfering RPC requests. It must be big enough 
 // for all of the various request sizes.
 //
-static unsigned char   s_RpcData[ RPCMaxReadWriteSize ];
+static unsigned char s_RpcData[RPCMaxReadWriteSize];
 
 //=============================================================================
 // Public Functions
@@ -155,34 +165,32 @@ static unsigned char   s_RpcData[ RPCMaxReadWriteSize ];
 //              code. System does not seem to support IRX unloading so no point.
 //------------------------------------------------------------------------------
 
-int start( int argc, char* argv[ ] )
-{
+int start(int argc, char *argv[]) {
     //
     // Display a banner message.
     //
-    printf( "Foundation Tech - 1394 FireWire Server  V2.00\n" );
+    printf("Foundation Tech - 1394 FireWire Server  V2.00\n");
 
     //
     // Flush the data cache and reenable interrupts. Note sure why but other IRXs do
     // this.
     //
     FlushDcache();
-  
+
     CpuEnableIntr();
-    
+
     //
     // Initialize the RPC component.
     //
-    if( !RPCInitialize( ) )
-    {
-        printf( "Error initializing ILink RPC\n");
-        return( NO_RESIDENT_END );
+    if (!RPCInitialize()) {
+        printf("Error initializing ILink RPC\n");
+        return (NO_RESIDENT_END);
     }
 
     //
     // Inform the system that we are staying around.
     //
-    return( RESIDENT_END );
+    return (RESIDENT_END);
 }
 
 
@@ -197,37 +205,35 @@ int start( int argc, char* argv[ ] )
 //              1 - sucess
 //------------------------------------------------------------------------------
 
-int RPCInitialize( void )
-{
+int RPCInitialize(void) {
     //
     // All we do is create a thread. This thread will be responsible for fielding
     // RPC requests from the EE.
     //
     struct ThreadParam threadParam;
-    int                threadId;
+    int threadId;
 
     //
     // Set up the thread data
     //
     threadParam.attr = TH_C;
     threadParam.entry = RPCThread;
-    threadParam.initPriority = RPCThreadPriority ;
+    threadParam.initPriority = RPCThreadPriority;
     threadParam.stackSize = 0x500;
     threadParam.option = 0;
 
-    threadId = CreateThread( &threadParam );
+    threadId = CreateThread(&threadParam);
 
-    if( threadId <= 0 )
-    {
-        return( 0 );
+    if (threadId <= 0) {
+        return (0);
     }
 
     //
     // Start the thread and we are done.
     //
-    StartThread( threadId, 0 );
-    
-    return( 1 );
+    StartThread(threadId, 0);
+
+    return (1);
 }
 
 //=============================================================================
@@ -242,30 +248,30 @@ int RPCInitialize( void )
 //
 //------------------------------------------------------------------------------
 
-void RPCThread( void )
-{
+void RPCThread(void) {
     sceSifQueueData queueData;
     sceSifServeData serverData;
-    
+
     //
     // Make sure the RPC system is initialized. 
     //
-    sceSifInitRpc( 0 );
+    sceSifInitRpc(0);
 
     //
     // Set up RPC queue.
     //
-    sceSifSetRpcQueue( &queueData, GetThreadId( ) );
+    sceSifSetRpcQueue(&queueData, GetThreadId());
 
     //
     // Add our RPC function. We currently only use one function.
     //
-    sceSifRegisterRpc( &serverData, rad1394FunctionId, RPCFunctionHandler, (void*)&s_RpcData, 0, 0, &queueData );
-  
+    sceSifRegisterRpc(&serverData, rad1394FunctionId, RPCFunctionHandler, (void *) &s_RpcData, 0, 0,
+                      &queueData);
+
     //
     // Enter Loop which sleeps until an RPC request comes in. We never return from this function.
     //
-    sceSifRpcLoop( &queueData );
+    sceSifRpcLoop(&queueData);
 }
 
 //=============================================================================
@@ -281,26 +287,22 @@ void RPCThread( void )
 //
 //------------------------------------------------------------------------------
 
-void* RPCFunctionHandler( unsigned int functionNumber, void* pData, int size )
-{
+void *RPCFunctionHandler(unsigned int functionNumber, void *pData, int size) {
     //
     // Switch on the function.
     //
-    switch( functionNumber )
-    {
-        case rad1394SetMemorySpace :
-        {
+    switch (functionNumber) {
+        case rad1394SetMemorySpace : {
             //
             // This function invoked to set the memory space. Check if we have memory
             // If so, free terminiate the ILink and free the memory. Then allocate memory
             // and re-initialize.
             //
-            struct RPCGetSetMemorySize* pInfo = (struct RPCGetSetMemorySize*) pData;
-    
-            if( s_SharedMemorySize != 0 )
-            {
-                ILinkTerminate( );
-                FreeSysMemory( s_pSharedMemory );
+            struct RPCGetSetMemorySize *pInfo = (struct RPCGetSetMemorySize *) pData;
+
+            if (s_SharedMemorySize != 0) {
+                ILinkTerminate();
+                FreeSysMemory(s_pSharedMemory);
             }
 
             //
@@ -308,111 +310,98 @@ void* RPCFunctionHandler( unsigned int functionNumber, void* pData, int size )
             // for the protocol.
             //
             s_SharedMemorySize = pInfo->m_Size;
-            
-            if( s_SharedMemorySize == 0 )
-            {
+
+            if (s_SharedMemorySize == 0) {
                 break;
             }
 
-            s_pSharedMemory = (unsigned char*) AllocSysMemory( 0, s_SharedMemorySize, NULL );
-            if( s_pSharedMemory == NULL )
-            {
-                printf( "Error allocating memory. Terminating.\n");
-                while( 1 );
-            }        
+            s_pSharedMemory = (unsigned char *) AllocSysMemory(0, s_SharedMemorySize, NULL);
+            if (s_pSharedMemory == NULL) {
+                printf("Error allocating memory. Terminating.\n");
+                while (1);
+            }
 
-            memset( s_pSharedMemory, 0, s_SharedMemorySize );
-            
+            memset(s_pSharedMemory, 0, s_SharedMemorySize);
+
             //
             // Initialize the Ilink;
             //
-            if( !ILinkInitialize( s_SharedMemorySize ) )
-            {
-                printf( "Error initializing ILink driver\n");
-            } 
+            if (!ILinkInitialize(s_SharedMemorySize)) {
+                printf("Error initializing ILink driver\n");
+            }
             break;
         };
-    
-        case rad1394GetMemorySpace :
-        {
+
+        case rad1394GetMemorySpace : {
             //
             // This function invoked to get the memory space. Just return current
             // size setting.
             //
-            struct RPCGetSetMemorySize* pInfo = (struct RPCGetSetMemorySize*) pData;
+            struct RPCGetSetMemorySize *pInfo = (struct RPCGetSetMemorySize *) pData;
 
             pInfo->m_Size = s_SharedMemorySize;
 
             break;
         }
 
-        case rad1394ReadWriteInfo :
-        {
+        case rad1394ReadWriteInfo : {
             //
             // This function is invoked to provide us with the size and address of
             // the subsequent read/write that will occur. Just save the data.
             //
-            struct RPCReadWriteInfo* pInfo = (struct RPCReadWriteInfo*) pData;
-    
+            struct RPCReadWriteInfo *pInfo = (struct RPCReadWriteInfo *) pData;
+
             s_ReadWriteAddress = pInfo->m_Address;
             s_ReadWriteSize = pInfo->m_Size;
             s_Atomic = pInfo->m_Atomic;
             s_LocalWrite = pInfo->m_LocalWrite;
-                      
+
             break;
         }
 
-        case rad1394ReadAsync :
-        {
+        case rad1394ReadAsync : {
             //
             // Just copy the data to the pointer provided using the address and size received
             // earlier. Check if interrupts should be disabled during the operation.
             //
-            if( s_Atomic )
-            {
-                CpuDisableIntr( );
+            if (s_Atomic) {
+                CpuDisableIntr();
             }
 
-            ReadSharedMemory( s_ReadWriteAddress, s_ReadWriteSize, pData );
+            ReadSharedMemory(s_ReadWriteAddress, s_ReadWriteSize, pData);
 
-            if( s_Atomic )
-            {
-                CpuEnableIntr( );
+            if (s_Atomic) {
+                CpuEnableIntr();
             }
 
             break;
         }
 
-        case rad1394WriteAsync :
-        {
+        case rad1394WriteAsync : {
             //
             // Write the data using data provided earlier.
             //
-            if( s_Atomic )
-            {
-                CpuDisableIntr( );
+            if (s_Atomic) {
+                CpuDisableIntr();
             }
 
-            WriteSharedMemory( s_ReadWriteAddress, s_ReadWriteSize, pData );
+            WriteSharedMemory(s_ReadWriteAddress, s_ReadWriteSize, pData);
 
-            if( s_Atomic )
-            {
-                CpuEnableIntr( );
+            if (s_Atomic) {
+                CpuEnableIntr();
             }
-            
+
             //
             // Send the data to the host if we can.
             //
-            if( !s_LocalWrite )
-            {
-                WriteToMaster( s_ReadWriteAddress, s_ReadWriteSize, pData );
+            if (!s_LocalWrite) {
+                WriteToMaster(s_ReadWriteAddress, s_ReadWriteSize, pData);
             }
             break;
         }
 
-        default :
-        {
-            printf( "rad1394: Invalid function number received\n");
+        default : {
+            printf("rad1394: Invalid function number received\n");
             break;
         }
     }
@@ -420,7 +409,7 @@ void* RPCFunctionHandler( unsigned int functionNumber, void* pData, int size )
     //
     // Return the data. Not always needed by the client.
     //
-    return( pData );
+    return (pData);
 }
 
 //=============================================================================
@@ -436,21 +425,17 @@ void* RPCFunctionHandler( unsigned int functionNumber, void* pData, int size )
 //
 //------------------------------------------------------------------------------
 
-void ReadSharedMemory( unsigned int address, unsigned int numBytes, unsigned char* ptr )
-{
+void ReadSharedMemory(unsigned int address, unsigned int numBytes, unsigned char *ptr) {
     //
     // Check if the parameters make sense.
     //
-    if( (address < s_SharedMemorySize ) && ((address + numBytes) <= s_SharedMemorySize ) )
-    {
+    if ((address < s_SharedMemorySize) && ((address + numBytes) <= s_SharedMemorySize)) {
         //
         // Simply perform a memcpy of the requested size.
         //
-        memcpy( ptr, s_pSharedMemory + address, numBytes );
-    }
-    else
-    {
-        printf( "ILink Server: Invalid read occurred\n");
+        memcpy(ptr, s_pSharedMemory + address, numBytes);
+    } else {
+        printf("ILink Server: Invalid read occurred\n");
     }
 }
 
@@ -467,21 +452,17 @@ void ReadSharedMemory( unsigned int address, unsigned int numBytes, unsigned cha
 //
 //------------------------------------------------------------------------------
 
-void WriteSharedMemory( unsigned int address, unsigned int numBytes, unsigned char* ptr )
-{
+void WriteSharedMemory(unsigned int address, unsigned int numBytes, unsigned char *ptr) {
     //
     // Check if the parameters make sense.
     //
-    if( (address < s_SharedMemorySize ) && ((address + numBytes) <= s_SharedMemorySize ) )
-    {
+    if ((address < s_SharedMemorySize) && ((address + numBytes) <= s_SharedMemorySize)) {
         //
         // Simply perform a memcpy of the requested size.
         //
-        memcpy( s_pSharedMemory + address, ptr, numBytes );
-    }
-    else
-    {
-        printf( "ILink Server: Invalid write occurred\n");
+        memcpy(s_pSharedMemory + address, ptr, numBytes);
+    } else {
+        printf("ILink Server: Invalid write occurred\n");
     }
 }
 
@@ -497,9 +478,8 @@ void WriteSharedMemory( unsigned int address, unsigned int numBytes, unsigned ch
 //
 //------------------------------------------------------------------------------
 
-int ILinkInitialize( unsigned int sharedMemoryRegionSize )
-{
-    int EUI64[ 2 ] = { 0, 0 };
+int ILinkInitialize(unsigned int sharedMemoryRegionSize) {
+    int EUI64[2] = {0, 0};
     int result;
     int readReplyPacket;
     int writeReplyPacket;
@@ -508,33 +488,30 @@ int ILinkInitialize( unsigned int sharedMemoryRegionSize )
     // Start the initialization sequence. Much of this was arrived at through experimentation.
     // as documentation sucked and there were no examples at time of writing.
     //
-    sce1394Initialize( NULL );
+    sce1394Initialize(NULL);
 
     //
     // Get the GUID of this device
     //
-    result = sce1394SbEui64( EUI64 );
-    if( result == SCE1394ERR_OK )
-    {
-        printf( "ILink GUID = [0x%08x 0x%08x]\n",EUI64[ 0 ], EUI64[ 1 ] );
-    }
-    else
-    {
-        return( 0 );
+    result = sce1394SbEui64(EUI64);
+    if (result == SCE1394ERR_OK) {
+        printf("ILink GUID = [0x%08x 0x%08x]\n", EUI64[0], EUI64[1]);
+    } else {
+        return (0);
     }
 
     //
     // This set is critical. Must set the asycn payloadsl.
     //
-    sce1394ConfSet( SCE1394CF_TRSIZE_MASTER, PayLoadSizeMaster );
-    sce1394ConfSet( SCE1394CF_TRSIZE_SLAVE,  PayLoadSize );
+    sce1394ConfSet(SCE1394CF_TRSIZE_MASTER, PayLoadSizeMaster);
+    sce1394ConfSet(SCE1394CF_TRSIZE_SLAVE, PayLoadSize);
 
     //
     // Increasing the priority appears to improve performance. Disable this since 
     // changed data transfer mechanisms.
     //
-    //    sce1394ConfSet( SCE1394CF_PRIORITY_HI, 9 );
-    //    sce1394ConfSet( SCE1394CF_PRIORITY_LO, 10 );
+    //    sce1394ConfSet(SCE1394CF_PRIORITY_HI, 9);
+    //    sce1394ConfSet(SCE1394CF_PRIORITY_LO, 10);
 
     //
     // Now lets add our unit directory. The content is rather magical but this seems to work.
@@ -543,43 +520,43 @@ int ILinkInitialize( unsigned int sharedMemoryRegionSize )
     s_UnitDirectory.m_CRC = 0;                              // Calculated by the add call.
     s_UnitDirectory.m_NumberOfQuadlets = 2;                 // Number of 32 bit words in table
     s_UnitDirectory.m_UnitSpecIDCode = 0x12;                // Magic number
-    s_UnitDirectory.m_UnitSpecID[ 0 ] = (unsigned char) (RadUnitSpecId & 0x0000ff); 
-    s_UnitDirectory.m_UnitSpecID[ 1 ] = (unsigned char) ((RadUnitSpecId & 0x00ff00) >> 8);
-    s_UnitDirectory.m_UnitSpecID[ 2 ] = (unsigned char) ((RadUnitSpecId & 0xff0000) >> 16);
+    s_UnitDirectory.m_UnitSpecID[0] = (unsigned char) (RadUnitSpecId & 0x0000ff);
+    s_UnitDirectory.m_UnitSpecID[1] = (unsigned char) ((RadUnitSpecId & 0x00ff00) >> 8);
+    s_UnitDirectory.m_UnitSpecID[2] = (unsigned char) ((RadUnitSpecId & 0xff0000) >> 16);
     s_UnitDirectory.m_UnitSwVersionCode = 0x13;
-    s_UnitDirectory.m_UnitSwVersion[ 0 ] = (unsigned char) (RadUnitSwVersion & 0x0000ff); 
-    s_UnitDirectory.m_UnitSwVersion[ 1 ] = (unsigned char) ((RadUnitSwVersion & 0x00ff00) >> 8 ); 
-    s_UnitDirectory.m_UnitSwVersion[ 2 ] = (unsigned char) ((RadUnitSwVersion & 0xff0000) >> 16); 
+    s_UnitDirectory.m_UnitSwVersion[0] = (unsigned char) (RadUnitSwVersion & 0x0000ff);
+    s_UnitDirectory.m_UnitSwVersion[1] = (unsigned char) ((RadUnitSwVersion & 0x00ff00) >> 8);
+    s_UnitDirectory.m_UnitSwVersion[2] = (unsigned char) ((RadUnitSwVersion & 0xff0000) >> 16);
 
     //
     // Add the unit directory.
     //
-    s_UnitId = sce1394UnitAdd( sizeof( s_UnitDirectory ) / 4, (unsigned int*) &s_UnitDirectory );    
+    s_UnitId = sce1394UnitAdd(sizeof(s_UnitDirectory) / 4, (unsigned int *) &s_UnitDirectory);
 
     //
     // Let. Now lets add our asychronous data handler. We only respond to write requests. We
     // don't care about lock requests. We respond to address range 0:0 though 0:size of memory. 
     //
-    s_DataIndId = sce1394TrDataInd( 0, 0, sharedMemoryRegionSize, NULL, ILinkWriteCallback, NULL, ILinkReadCallback, NULL, NULL );
+    s_DataIndId = sce1394TrDataInd(0, 0, sharedMemoryRegionSize, NULL, ILinkWriteCallback, NULL,
+                                   ILinkReadCallback, NULL, NULL);
 
     //
     // Lets allocate a transaction context. Used to perform our write requests. We don't know the address
     // of the master yet so just set the node id to zero.
     //
-    s_TransactionContext = sce1394TrAlloc( 0xffff, 0 );
+    s_TransactionContext = sce1394TrAlloc(0xffff, 0);
 
-    if( s_TransactionContext < 0 )
-    {
-        return( 0 );
+    if (s_TransactionContext < 0) {
+        return (0);
     }
 
     //
     // Finally lets enable the system.
     //
-    sce1394SbEnable( );
-    sce1394SbReset( 1 );
+    sce1394SbEnable();
+    sce1394SbReset(1);
 
-    return( 1 );
+    return (1);
 }
 
 //=============================================================================
@@ -592,20 +569,19 @@ int ILinkInitialize( unsigned int sharedMemoryRegionSize )
 // Returns:     n/a
 //------------------------------------------------------------------------------
 
-void ILinkTerminate( void )
-{
+void ILinkTerminate(void) {
     //
     // Just free up Ilink stuff
     //
-    sce1394SbDisable( 1 );
+    sce1394SbDisable(1);
 
-    sce1394TrFree( s_TransactionContext );
+    sce1394TrFree(s_TransactionContext);
 
-    sce1394TrDataUnInd( s_DataIndId );
+    sce1394TrDataUnInd(s_DataIndId);
 
-    sce1394UnitDelete( s_UnitId );
-    
-    sce1394Destroy( );
+    sce1394UnitDelete(s_UnitId);
+
+    sce1394Destroy();
 }
 
 //=============================================================================
@@ -626,25 +602,22 @@ void ILinkTerminate( void )
 //              Note sure of all details but it appears to work.
 //------------------------------------------------------------------------------
 
-int ILinkReadCallback( unsigned int offsetLow, unsigned int size, unsigned char* payload, int pb)
-{
+int ILinkReadCallback(unsigned int offsetLow, unsigned int size, unsigned char *payload, int pb) {
     //
     // To keep reads atomic, disable interrupts if we write to addess zero. This address
     // is were are control block is and is the only thing that needs protection.
     //
-    if( offsetLow == 0 )
-    {
-        CpuDisableIntr( );
+    if (offsetLow == 0) {
+        CpuDisableIntr();
     }
 
-    ReadSharedMemory( offsetLow, size, payload );
+    ReadSharedMemory(offsetLow, size, payload);
 
-    if( offsetLow == 0 )
-    {
-       CpuEnableIntr( );
+    if (offsetLow == 0) {
+        CpuEnableIntr();
     }
 
-    return( 0 );
+    return (0);
 }
 
 //=============================================================================
@@ -665,30 +638,27 @@ int ILinkReadCallback( unsigned int offsetLow, unsigned int size, unsigned char*
 //              Note sure of all details but it appears to work.
 //------------------------------------------------------------------------------
 
-int ILinkWriteCallback( unsigned int offsetLow, unsigned int size, unsigned char* payload, int pb)
-{
+int ILinkWriteCallback(unsigned int offsetLow, unsigned int size, unsigned char *payload, int pb) {
     //
     // Save the node id the master.
     //
-    s_MasterNodeId = sce1394PbGet(pb, SCE1394PB_SOURCE );         
+    s_MasterNodeId = sce1394PbGet(pb, SCE1394PB_SOURCE);
 
     //
     // To keep writes atomic, disable interrupts if we write to addess zero. This address
     // is were are control block is and is the only thing that needs protection.
     //
-    if( offsetLow == 0 )
-    {
-        CpuDisableIntr( );
+    if (offsetLow == 0) {
+        CpuDisableIntr();
     }
 
-    WriteSharedMemory( offsetLow, size, payload );
+    WriteSharedMemory(offsetLow, size, payload);
 
-    if( offsetLow == 0 )
-    {
-        CpuEnableIntr( );
+    if (offsetLow == 0) {
+        CpuEnableIntr();
     }
 
-    return( 0 );
+    return (0);
 }
 
 //=============================================================================
@@ -706,66 +676,59 @@ int ILinkWriteCallback( unsigned int offsetLow, unsigned int size, unsigned char
 //              Higher level protocols will deal with error detection.
 //------------------------------------------------------------------------------
 
-void WriteToMaster( unsigned int offset, unsigned int size, unsigned char* pData )
-{
-    int          bytesSent;
+void WriteToMaster(unsigned int offset, unsigned int size, unsigned char *pData) {
+    int bytesSent;
     unsigned int currentRetry;
 
     //
     // Check if we have received the node id of the master. If not, we don't
     // know who we are talking to.
     //
-    if( s_MasterNodeId == INVALID_NODEID )
-    {
+    if (s_MasterNodeId == INVALID_NODEID) {
         return;
     }
 
     //
     // Set up the transaction context.
     //
-    sce1394TrSetDest( s_TransactionContext, s_MasterNodeId );
-    sce1394TrSetBlockSize( s_TransactionContext, PayLoadSizeMaster );
-    sce1394TrSetGenNumber( s_TransactionContext, sce1394SbGenNumber( ) );
-    sce1394TrSetSpeed( s_TransactionContext, SCE1394_SPEED_100M );
+    sce1394TrSetDest(s_TransactionContext, s_MasterNodeId);
+    sce1394TrSetBlockSize(s_TransactionContext, PayLoadSizeMaster);
+    sce1394TrSetGenNumber(s_TransactionContext, sce1394SbGenNumber());
+    sce1394TrSetSpeed(s_TransactionContext, SCE1394_SPEED_100M);
 
     //
     // Issue the write request. Sometimes, for some unknown reason, the operation fails.
     // By retrying, things work. Do it for a limited time.
     //
     currentRetry = 0;
-    while( size > 0 )
-    {
+    while (size > 0) {
         //
         // Sorry about the goto.
         //  
         retry:
-            bytesSent = sce1394TrWrite( s_TransactionContext, 1, offset, size, pData );
-            if( bytesSent < 0 )
-            {
-                //
-                // Here there is a retry. Fail if limit exceeded.
-                //
-                if( currentRetry < 50 )
-                {
-                    goto retry;
-                }
-                      
-                //
-                // Output message and indicate things did not work.
-                //
-                printf( "ILink transmit retry limit exceeded\n" );
-                          
-                break;   
+        bytesSent = sce1394TrWrite(s_TransactionContext, 1, offset, size, pData);
+        if (bytesSent < 0) {
+            //
+            // Here there is a retry. Fail if limit exceeded.
+            //
+            if (currentRetry < 50) {
+                goto retry;
             }
-            else
-            {
-                //
-                // Update size, pointer and offset with the amount sent.
-                //
-                size = size - bytesSent;
-                pData = pData + bytesSent;
-                offset = offset + bytesSent;
-            }
+
+            //
+            // Output message and indicate things did not work.
+            //
+            printf("ILink transmit retry limit exceeded\n");
+
+            break;
+        } else {
+            //
+            // Update size, pointer and offset with the amount sent.
+            //
+            size = size - bytesSent;
+            pData = pData + bytesSent;
+            offset = offset + bytesSent;
+        }
     }
 }
 

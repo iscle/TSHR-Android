@@ -41,12 +41,12 @@
 // Statics
 //=============================================================================
 
-static rad1394Client*  s_the1394Client = NULL;
+static rad1394Client *s_the1394Client = NULL;
 
 //
 // Maintains stuff for the RCP link with the IOP server.
 //
-static sceSifClientData    s_RpcClientData __attribute__((aligned (16)));
+static sceSifClientData s_RpcClientData __attribute__((aligned (16)));
 
 //
 // Buffer used for get/set memory space requests.
@@ -56,7 +56,7 @@ static RPCGetSetMemorySize s_RpcSizeRequest __attribute__((aligned (16)));
 //
 // Buffer used for read and write of data. 
 //
-static RPCReadWriteInfo    s_RpcReadWriteInfo __attribute__((aligned (16)));
+static RPCReadWriteInfo s_RpcReadWriteInfo __attribute__((aligned (16)));
 
 //=============================================================================
 // Public Functions
@@ -77,19 +77,18 @@ static RPCReadWriteInfo    s_RpcReadWriteInfo __attribute__((aligned (16)));
 //------------------------------------------------------------------------------
 
 void rad1394Initialize
-( 
-    radMemoryAllocator alloc
-)
-{
+        (
+                radMemoryAllocator alloc
+        ) {
     //
     // Assert that this subsystem has not allready been initialized.
     //
-    rAssertMsg( s_the1394Client == NULL, "rad1394 client already initialized\n");
-    
+    rAssertMsg(s_the1394Client == NULL, "rad1394 client already initialized\n");
+
     //
     // Construct the object.
     //
-    s_the1394Client = new( alloc ) rad1394Client( alloc );
+    s_the1394Client = new(alloc) rad1394Client(alloc);
 }
 
 //=============================================================================
@@ -104,16 +103,15 @@ void rad1394Initialize
 // Notes:       
 //------------------------------------------------------------------------------
 
-void rad1394Terminate( void )
-{
+void rad1394Terminate(void) {
     //
     // Make sure has been initailzed. Release reference.
     //
-    rAssertMsg( s_the1394Client != NULL, "rad1394 client not initialized\n");
-    
-    radRelease( s_the1394Client, NULL );
+    rAssertMsg(s_the1394Client != NULL, "rad1394 client not initialized\n");
 
-    rAssertMsg( s_the1394Client == NULL, "rad1394 client still in use\n");
+    radRelease(s_the1394Client, NULL);
+
+    rAssertMsg(s_the1394Client == NULL, "rad1394 client still in use\n");
 
 }
 
@@ -131,10 +129,9 @@ void rad1394Terminate( void )
 //              pointer.
 //------------------------------------------------------------------------------
 
-IRad1394Slave* rad1394Get( void )
-{
-    rAssertMsg( s_the1394Client != NULL, "rad1394 client not initialized\n");
-    return( s_the1394Client );
+IRad1394Slave *rad1394Get(void) {
+    rAssertMsg(s_the1394Client != NULL, "rad1394 client not initialized\n");
+    return (s_the1394Client);
 };
 
 //=============================================================================
@@ -151,35 +148,32 @@ IRad1394Slave* rad1394Get( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-rad1394Client::rad1394Client( radMemoryAllocator alloc )
-    :
-    m_ReferenceCount( 1 ),
-    m_Allocator( alloc ),
-    m_OutstandingRequest( 0 )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "rad1394Client" );
+rad1394Client::rad1394Client(radMemoryAllocator alloc)
+        :
+        m_ReferenceCount(1),
+        m_Allocator(alloc),
+        m_OutstandingRequest(0) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "rad1394Client");
     //
     // Lets first see if the IRX is already running and loaded on the IOP. 
     // This may be the case, if we have used the bootloader.
     //
-    sceSifInitRpc( 0 ); 
-    
+    sceSifInitRpc(0);
+
     //
     // Spin here a few times, trying to see if the server is there.
     //
     unsigned int attempts = 3;
-    while( attempts != 0 )
-    {
+    while (attempts != 0) {
         attempts--;
-            
-        sceSifBindRpc( &s_RpcClientData, rad1394FunctionId, 0 );
-    
+
+        sceSifBindRpc(&s_RpcClientData, rad1394FunctionId, 0);
+
         //
         // If it is not there, the documentation recommends, that you delay
         // a bit to allow the IOP to run.
         //
-        if( s_RpcClientData.serve != 0 )
-        {
+        if (s_RpcClientData.serve != 0) {
             //
             // Here the server is present. We can simply return as we 
             // are connected.
@@ -188,8 +182,7 @@ rad1394Client::rad1394Client( radMemoryAllocator alloc )
         }
 
         unsigned int spinCount = 5000;
-        while( spinCount != 0 )
-        {
+        while (spinCount != 0) {
             spinCount--;
         }
     }
@@ -198,22 +191,20 @@ rad1394Client::rad1394Client( radMemoryAllocator alloc )
     // If we get here, we assume that the server has not been loaded. Lets do so now.
     // Need our module and the Sony ILink Driver.
     //
-    radPlatformGet( )->LoadIrxModule( "ILink.irx" );
-    radPlatformGet( )->LoadIrxModule( "rad1394.irx" );
+    radPlatformGet()->LoadIrxModule("ILink.irx");
+    radPlatformGet()->LoadIrxModule("rad1394.irx");
 
     //
     // Lets try to bind. Do so until we succeed.
     //
-    while( true )
-    {
-        sceSifBindRpc( &s_RpcClientData, rad1394FunctionId, 0 );
-    
+    while (true) {
+        sceSifBindRpc(&s_RpcClientData, rad1394FunctionId, 0);
+
         //
         // If it is not there, the documentation recommends, that you delay
         // a bit to allow the IOP to run.
         //
-        if( s_RpcClientData.serve != 0 )
-        {
+        if (s_RpcClientData.serve != 0) {
             //
             // Here the server is present. We can simply return as we 
             // are connected.
@@ -222,8 +213,7 @@ rad1394Client::rad1394Client( radMemoryAllocator alloc )
         }
 
         unsigned int spinCount = 5000;
-        while( spinCount != 0 )
-        {
+        while (spinCount != 0) {
             spinCount--;
         }
     }
@@ -239,12 +229,11 @@ rad1394Client::rad1394Client( radMemoryAllocator alloc )
 // Notes:
 //------------------------------------------------------------------------------
 
-rad1394Client::~rad1394Client( void )
-{
+rad1394Client::~rad1394Client(void) {
     //
     // Set the memory space to zero, effectively talking the device off line.
     //
-    SetMemorySpace( 0 );
+    SetMemorySpace(0);
 
     s_the1394Client = NULL;
 }
@@ -263,20 +252,20 @@ rad1394Client::~rad1394Client( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void rad1394Client::SetMemorySpace( unsigned int size )
-{
+void rad1394Client::SetMemorySpace(unsigned int size) {
     //
     // Can't have an oustanding request.
     //
-    rAssert( !m_OutstandingRequest );
+    rAssert(!m_OutstandingRequest);
 
     //
     // Set up request and issue the RPC call. This one is done synchronously.
     //
     s_RpcSizeRequest.m_Size = size;
 
-    sceSifCallRpc( &s_RpcClientData, rad1394SetMemorySpace, 0, &s_RpcSizeRequest, sizeof( s_RpcSizeRequest ),
-                   NULL, 0, NULL, NULL );
+    sceSifCallRpc(&s_RpcClientData, rad1394SetMemorySpace, 0, &s_RpcSizeRequest,
+                  sizeof(s_RpcSizeRequest),
+                  NULL, 0, NULL, NULL);
 
 }
 
@@ -293,20 +282,20 @@ void rad1394Client::SetMemorySpace( unsigned int size )
 // Notes:
 //------------------------------------------------------------------------------
 
-unsigned int rad1394Client::GetMemorySpace( void )
-{
+unsigned int rad1394Client::GetMemorySpace(void) {
     //
     // Can't have an oustanding request.
     //
-    rAssert( !m_OutstandingRequest );
+    rAssert(!m_OutstandingRequest);
 
     //
     // Issue the RPC call. This one is done synchronously.
     //
-    sceSifCallRpc( &s_RpcClientData, rad1394GetMemorySpace, 0, &s_RpcSizeRequest, sizeof( s_RpcSizeRequest ),
-                   &s_RpcSizeRequest, sizeof( s_RpcSizeRequest ), NULL, NULL );
+    sceSifCallRpc(&s_RpcClientData, rad1394GetMemorySpace, 0, &s_RpcSizeRequest,
+                  sizeof(s_RpcSizeRequest),
+                  &s_RpcSizeRequest, sizeof(s_RpcSizeRequest), NULL, NULL);
 
-    return( s_RpcSizeRequest.m_Size );
+    return (s_RpcSizeRequest.m_Size);
 
 }
 
@@ -327,25 +316,24 @@ unsigned int rad1394Client::GetMemorySpace( void )
 //------------------------------------------------------------------------------
 
 void rad1394Client::ReadMemoryAsync
-( 
-    unsigned int address,
-    unsigned int size,
-    void*        dest,
-    bool         atomic
-)
-{
+        (
+                unsigned int address,
+                unsigned int size,
+                void *dest,
+                bool atomic
+        ) {
     //
     // Can't have an oustanding request.
     //
-    rAssert( !m_OutstandingRequest );
+    rAssert(!m_OutstandingRequest);
 
     //
     // Validate paramaters.
     //
-    rAssert( (address & 0x03) == 0 );
-    rAssert( (size & 0x0f) == 0 );
-    rAssert( ((unsigned int) dest & 0x0f) == 0 );
-    rAssert( size <= RPCMaxReadWriteSize );
+    rAssert((address & 0x03) == 0);
+    rAssert((size & 0x0f) == 0);
+    rAssert(((unsigned int) dest & 0x0f) == 0);
+    rAssert(size <= RPCMaxReadWriteSize);
 
     //
     // First send the address of where to read synchnorously accross.
@@ -357,8 +345,9 @@ void rad1394Client::ReadMemoryAsync
     //
     // Issue the RPC call. This one is done synchronously.
     //
-    sceSifCallRpc( &s_RpcClientData, rad1394ReadWriteInfo, 0, &s_RpcReadWriteInfo, sizeof( s_RpcReadWriteInfo ),
-                   NULL, 0, NULL, NULL );
+    sceSifCallRpc(&s_RpcClientData, rad1394ReadWriteInfo, 0, &s_RpcReadWriteInfo,
+                  sizeof(s_RpcReadWriteInfo),
+                  NULL, 0, NULL, NULL);
 
     //
     // Now lets do the actual transfer. Do it asychronously. Note:: Doing a read asynch did not
@@ -366,13 +355,13 @@ void rad1394Client::ReadMemoryAsync
     //
 //    m_OutstandingRequest = true;
 
-//    SyncDCache( dest, (unsigned char*) dest + size  );
+//    SyncDCache(dest, (unsigned char*) dest + size);
 
-//    sceSifCallRpc( &s_RpcClientData, rad1394ReadAsync,SIF_RPCM_NOWAIT | SIF_RPCM_NOWBDC, NULL, 0,
-//                 dest, size, NULL, NULL );
+//    sceSifCallRpc(&s_RpcClientData, rad1394ReadAsync,SIF_RPCM_NOWAIT | SIF_RPCM_NOWBDC, NULL, 0,
+//                 dest, size, NULL, NULL);
 
-    sceSifCallRpc( &s_RpcClientData, rad1394ReadAsync,0, NULL, 0,
-                   dest, size, NULL, NULL );
+    sceSifCallRpc(&s_RpcClientData, rad1394ReadAsync, 0, NULL, 0,
+                  dest, size, NULL, NULL);
 
 }
 
@@ -394,26 +383,25 @@ void rad1394Client::ReadMemoryAsync
 //------------------------------------------------------------------------------
 
 void rad1394Client::WriteMemoryAsync
-( 
-    unsigned int address,
-    unsigned int size,
-    void*        source,
-    bool         atomic,
-    bool         localWrite
-)
-{
+        (
+                unsigned int address,
+                unsigned int size,
+                void *source,
+                bool atomic,
+                bool localWrite
+        ) {
     //
     // Can't have an oustanding request.
     //
-    rAssert( !m_OutstandingRequest );
+    rAssert(!m_OutstandingRequest);
 
     //
     // Validate paramaters.
     //
-    rAssert( (address & 0x03) == 0 );
-    rAssert( (size & 0x0f) == 0 );
-    rAssert( ((unsigned int) source & 0x0f) == 0 );
-    rAssert( size <= RPCMaxReadWriteSize );
+    rAssert((address & 0x03) == 0);
+    rAssert((size & 0x0f) == 0);
+    rAssert(((unsigned int) source & 0x0f) == 0);
+    rAssert(size <= RPCMaxReadWriteSize);
 
     //
     // First send the address of where to write synchnorously accross.
@@ -426,17 +414,18 @@ void rad1394Client::WriteMemoryAsync
     //
     // Issue the RPC call. This one is done synchronously.
     //
-    sceSifCallRpc( &s_RpcClientData, rad1394ReadWriteInfo, 0, &s_RpcReadWriteInfo, sizeof( s_RpcReadWriteInfo ),
-                   NULL, 0, NULL, NULL );
+    sceSifCallRpc(&s_RpcClientData, rad1394ReadWriteInfo, 0, &s_RpcReadWriteInfo,
+                  sizeof(s_RpcReadWriteInfo),
+                  NULL, 0, NULL, NULL);
 
     //
     // Now lets do the actual transfer. Do it synchronously as no-wait made performance worse.
     //
     //    m_OutstandingRequest = true;
 
-    sceSifCallRpc( &s_RpcClientData, rad1394WriteAsync, 0 /*SIF_RPCM_NOWAIT*/, source, size,
-                   NULL, 0, NULL, NULL );
- 
+    sceSifCallRpc(&s_RpcClientData, rad1394WriteAsync, 0 /*SIF_RPCM_NOWAIT*/, source, size,
+                  NULL, 0, NULL, NULL);
+
 }
 
 //=============================================================================
@@ -451,26 +440,23 @@ void rad1394Client::WriteMemoryAsync
 // Notes:
 //------------------------------------------------------------------------------
 
-bool rad1394Client::CheckForCompletion( void )
-{
+bool rad1394Client::CheckForCompletion(void) {
     //
     // Always return complete as the async version did not perform well.
     //
-    return( true );
+    return (true);
 
-    if( !m_OutstandingRequest )
-    {
-        return( true );
+    if (!m_OutstandingRequest) {
+        return (true);
     }
 
-    if( 0 == sceSifCheckStatRpc( (sceSifRpcData*) &s_RpcClientData ) )   
-    {
+    if (0 == sceSifCheckStatRpc((sceSifRpcData * ) & s_RpcClientData)) {
         m_OutstandingRequest = false;
 
-        return( true );
+        return (true);
     }
 
-    return( false );
+    return (false);
 }
 
 //=============================================================================
@@ -486,11 +472,10 @@ bool rad1394Client::CheckForCompletion( void )
 //------------------------------------------------------------------------------
 
 void rad1394Client::AddRef
-(
-	void
-)
-{
-	m_ReferenceCount++;
+        (
+                void
+        ) {
+    m_ReferenceCount++;
 }
 
 //=============================================================================
@@ -506,16 +491,14 @@ void rad1394Client::AddRef
 //------------------------------------------------------------------------------
 
 void rad1394Client::Release
-(
-	void
-)
-{
-	m_ReferenceCount--;
+        (
+                void
+        ) {
+    m_ReferenceCount--;
 
-	if ( m_ReferenceCount == 0 )
-	{
-		delete this;
-	}
+    if (m_ReferenceCount == 0) {
+        delete this;
+    }
 }
 
 //=============================================================================
@@ -532,9 +515,9 @@ void rad1394Client::Release
 
 #ifdef RAD_DEBUG
 
-void rad1394Client::Dump( char* pStringBuffer, unsigned int bufferSize )
+void rad1394Client::Dump(char* pStringBuffer, unsigned int bufferSize)
 {
-    sprintf( pStringBuffer, "Object: [rad1394Client] At Memory Location:[0x%x]\n", (unsigned int) this );
+    sprintf(pStringBuffer, "Object: [rad1394Client] At Memory Location:[0x%x]\n", (unsigned int) this);
 }
 
 #endif

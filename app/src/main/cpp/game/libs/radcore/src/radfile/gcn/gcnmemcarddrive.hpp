@@ -16,7 +16,7 @@
 //
 //=============================================================================
 
-#ifndef	GCNMEMCARDDDRIVE_HPP
+#ifndef    GCNMEMCARDDDRIVE_HPP
 #define GCNMEMCARDDDRIVE_HPP
 
 //=============================================================================
@@ -32,13 +32,13 @@
 // Statics
 //=============================================================================
 
-static const char s_GCNMemcardDrive[ ] = "MEMCARDCHANNEL?:";
+static const char s_GCNMemcardDrive[] = "MEMCARDCHANNEL?:";
 #define GCNMEMCARDDRIVE_PORT_LOC    14
 
 #define GCNMEMCARDDRIVE_SECTOR_SIZE     8192
 
 // MUST BE AT LEAST 3!! This is the max size of the header info.
-#define GCNMEMCARDDRIVE_TRANSFER_BUFFER_SECTORS  3 
+#define GCNMEMCARDDRIVE_TRANSFER_BUFFER_SECTORS  3
 #define GCNMEMCARDDRIVE_TRANSFER_BUFFER_SIZE (GCNMEMCARDDRIVE_TRANSFER_BUFFER_SECTORS * GCNMEMCARDDRIVE_SECTOR_SIZE)
 
 //
@@ -60,7 +60,7 @@ static const char s_GCNMemcardDrive[ ] = "MEMCARDCHANNEL?:";
 // changed to handle the proxies.
 //
 
-void radGcnMemcardDriveFactory( radDrive** ppDrive, const char* driveSpec, radMemoryAllocator alloc );
+void radGcnMemcardDriveFactory(radDrive **ppDrive, const char *driveSpec, radMemoryAllocator alloc);
 
 //=============================================================================
 // Class Declarations
@@ -70,122 +70,141 @@ void radGcnMemcardDriveFactory( radDrive** ppDrive, const char* driveSpec, radMe
 
 class radGcnMemcardDrive : public radDrive,
                            public radSignedReader,
-                           public radSignedWriter
-{
+                           public radSignedWriter {
 public:
 
     //
     // Constructor / destructor.
     //
-    radGcnMemcardDrive( const char* pdrivespec, radMemoryAllocator alloc );
-    virtual ~radGcnMemcardDrive( void );
+    radGcnMemcardDrive(const char *pdrivespec, radMemoryAllocator alloc);
 
-    void Lock( void );
-    void Unlock( void );
+    virtual ~radGcnMemcardDrive(void);
+
+    void Lock(void);
+
+    void Unlock(void);
 
     //
     // This member reports this physical drives capabilities
     //
-    unsigned int GetCapabilities( void );
+    unsigned int GetCapabilities(void);
 
-    const char* GetDriveName( void );
+    const char *GetDriveName(void);
 
-    unsigned int GetCreationSize( radMemcardInfo* memcardInfo, unsigned int size );
+    unsigned int GetCreationSize(radMemcardInfo *memcardInfo, unsigned int size);
 
-    CompletionStatus Initialize( void );
+    CompletionStatus Initialize(void);
 
-    CompletionStatus OpenSaveGame( const char*      fileName, 
-                                   radFileOpenFlags flags, 
-                                   bool             writeAccess,
-                                   radMemcardInfo*  memcardInfo,
-                                   unsigned int     maxSize,
-                                   radFileHandle*   pHandle, 
-                                   unsigned int*    pSize );
+    CompletionStatus OpenSaveGame(const char *fileName,
+                                  radFileOpenFlags flags,
+                                  bool writeAccess,
+                                  radMemcardInfo *memcardInfo,
+                                  unsigned int maxSize,
+                                  radFileHandle *pHandle,
+                                  unsigned int *pSize);
 
-    CompletionStatus CloseFile( radFileHandle handle, const char* fileName );
+    CompletionStatus CloseFile(radFileHandle handle, const char *fileName);
 
-    CompletionStatus CommitFile( radFileHandle  handle, const char* fileName );
+    CompletionStatus CommitFile(radFileHandle handle, const char *fileName);
 
-    CompletionStatus ReadSignedBlock( radFileHandle  handle,
-                                      const char* fileName,                              
-                                      unsigned int   block,
-                                      unsigned int   position,
-                                      unsigned int   numBytes,
-                                      void*          pData, 
-                                      radMemorySpace pDataSpace );
+    CompletionStatus ReadSignedBlock(radFileHandle handle,
+                                     const char *fileName,
+                                     unsigned int block,
+                                     unsigned int position,
+                                     unsigned int numBytes,
+                                     void *pData,
+                                     radMemorySpace pDataSpace);
 
-    unsigned int GetReadBlockSize( void );
-    unsigned int GetReadHeaderSize( radFileHandle handle );
+    unsigned int GetReadBlockSize(void);
 
-    CompletionStatus WriteSignedBlock( radFileHandle handle,
-                                       const char* fileName,
-                                       unsigned int block,
-                                       unsigned int position,
-                                       unsigned int numBytes,
-                                       const void* pData,
-                                       unsigned int* size,
-                                       radMemorySpace pDataSpace );
+    unsigned int GetReadHeaderSize(radFileHandle handle);
 
-    unsigned int GetWriteBlockSize( void );
-    unsigned int GetWriteHeaderSize( radFileHandle handle );
+    CompletionStatus WriteSignedBlock(radFileHandle handle,
+                                      const char *fileName,
+                                      unsigned int block,
+                                      unsigned int position,
+                                      unsigned int numBytes,
+                                      const void *pData,
+                                      unsigned int *size,
+                                      radMemorySpace pDataSpace);
 
-    CompletionStatus DestroyFile( const char* fileName ); 
+    unsigned int GetWriteBlockSize(void);
 
-    CompletionStatus Format( void );
+    unsigned int GetWriteHeaderSize(radFileHandle handle);
 
-    CompletionStatus FindFirst( const char*                 searchSpec, 
-                                IRadDrive::DirectoryInfo*   pDirectoryInfo, 
-                                radFileDirHandle*           pHandle,
-                                bool                        firstSearch );
+    CompletionStatus DestroyFile(const char *fileName);
 
-    CompletionStatus FindNext( radFileDirHandle* pHandle, IRadDrive::DirectoryInfo* pDirectoryInfo );
+    CompletionStatus Format(void);
 
-    CompletionStatus FindClose( radFileDirHandle* pHandle );
+    CompletionStatus FindFirst(const char *searchSpec,
+                               IRadDrive::DirectoryInfo *pDirectoryInfo,
+                               radFileDirHandle *pHandle,
+                               bool firstSearch);
+
+    CompletionStatus FindNext(radFileDirHandle *pHandle, IRadDrive::DirectoryInfo *pDirectoryInfo);
+
+    CompletionStatus FindClose(radFileDirHandle *pHandle);
 
     IMPLEMENT_SIGNED_READ;
+
     IMPLEMENT_SIGNED_WRITE;
 
 private:
-    bool SetMediaInfo( void );
-    IRadDrive::MediaInfo::MediaState ErrorToMediaState( int result );
-    int GetChannel( void );
-    void BuildFileSpec( const char* fileName, char* fullName, unsigned int size, char** pName );
-    radFileError TranslateError( int error );
-    radFileError OpenGCNFile( char* fileName, CARDFileInfo* cardInfo );
-    void PackHeader( const radMemcardInfo* memcardInfo, CARDStat* cardStat, unsigned int fileSize );
-    unsigned int HeaderSize( const radMemcardInfo* memInfo );
+    bool SetMediaInfo(void);
 
-    bool Copy( CARDFileInfo* pDestInfo, CARDFileInfo* pSrcInfo );
-    bool DoFun( int result );
+    IRadDrive::MediaInfo::MediaState ErrorToMediaState(int result);
 
-    bool Mount( bool MountBroken = false );
-    void Unmount( void );
+    int GetChannel(void);
 
-    char    m_DriveName[ sizeof( s_GCNMemcardDrive ) + 1 ];
+    void BuildFileSpec(const char *fileName, char *fullName, unsigned int size, char **pName);
+
+    radFileError TranslateError(int error);
+
+    radFileError OpenGCNFile(char *fileName, CARDFileInfo *cardInfo);
+
+    void PackHeader(const radMemcardInfo *memcardInfo, CARDStat *cardStat, unsigned int fileSize);
+
+    unsigned int HeaderSize(const radMemcardInfo *memInfo);
+
+    bool Copy(CARDFileInfo *pDestInfo, CARDFileInfo *pSrcInfo);
+
+    bool DoFun(int result);
+
+    bool Mount(bool MountBroken = false);
+
+    void Unmount(void);
+
+    char m_DriveName[sizeof(s_GCNMemcardDrive) + 1];
 
     unsigned int m_OpenFiles;
 
-    bool    m_IsMounted;
-    bool    m_Changed;
+    bool m_IsMounted;
+    bool m_Changed;
 
     //
     // Each drive needs a work area.
     //
-    char    m_WorkAreaBuffer[ CARD_WORKAREA_SIZE + 32 ];
-    char*   m_WorkArea;
+    char m_WorkAreaBuffer[CARD_WORKAREA_SIZE + 32];
+    char *m_WorkArea;
 
-    bool FileNameMatchesSearch( const char* pFileName,  const char* pSearchSpec );
-    bool LoadBlock( radFileHandle handle, unsigned int block );
-    bool FlushBlock( void );
-    unsigned int GetTableSize( unsigned int fileSize );
-    radCrc CalculateCRC( unsigned int fileSize );
-    bool GetSizeFromHandle( radFileHandle handle, unsigned int* size );
-    bool InitializeFile( radFileHandle handle,
-                         CARDFileInfo* pCardInfo, 
-                         CARDStat* pCardStat,
-                         radMemcardInfo* memcardInfo, 
-                         unsigned int headerSize,
-                         unsigned int fileSize );
+    bool FileNameMatchesSearch(const char *pFileName, const char *pSearchSpec);
+
+    bool LoadBlock(radFileHandle handle, unsigned int block);
+
+    bool FlushBlock(void);
+
+    unsigned int GetTableSize(unsigned int fileSize);
+
+    radCrc CalculateCRC(unsigned int fileSize);
+
+    bool GetSizeFromHandle(radFileHandle handle, unsigned int *size);
+
+    bool InitializeFile(radFileHandle handle,
+                        CARDFileInfo *pCardInfo,
+                        CARDStat *pCardStat,
+                        radMemcardInfo *memcardInfo,
+                        unsigned int headerSize,
+                        unsigned int fileSize);
 };
 
 #endif // GCNMEMCARDDDRIVE_HPP

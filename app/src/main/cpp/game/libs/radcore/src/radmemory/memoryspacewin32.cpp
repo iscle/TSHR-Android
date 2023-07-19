@@ -38,13 +38,11 @@ unsigned int radMemorySpace_OptimalAlignment = 4;
 
 MemorySpaceAsyncRequest_Copy g_MemorySpaceAsyncRequest_Copy_Placeholder;
 
-void radMemorySpaceInitialize( void )
-{
+void radMemorySpaceInitialize(void) {
     // Do nothing on this platform
 }
 
-void radMemorySpaceTerminate( void )
-{
+void radMemorySpaceTerminate(void) {
     // Do nothing on this platform
 }
 
@@ -52,51 +50,45 @@ void radMemorySpaceTerminate( void )
 // radMemoryCopyAsync
 //============================================================================
 
-IRadMemorySpaceCopyRequest * radMemorySpaceCopyAsync
-(
-	void * pDest,
-	radMemorySpace spaceDest,
-	const void * pSrc,
-	radMemorySpace spaceSrc,
-	unsigned int bytes
-)
-{   
-    rAssert( pDest != NULL );
-    rAssert( spaceDest = radMemorySpace_Main );
-    rAssert( pSrc != NULL );
-    rAssert( spaceSrc = radMemorySpace_Main );
-    rAssert( bytes > 0 );
+IRadMemorySpaceCopyRequest *radMemorySpaceCopyAsync
+        (
+                void *pDest,
+                radMemorySpace spaceDest,
+                const void *pSrc,
+                radMemorySpace spaceSrc,
+                unsigned int bytes
+        ) {
+    rAssert(pDest != NULL);
+    rAssert(spaceDest = radMemorySpace_Main);
+    rAssert(pSrc != NULL);
+    rAssert(spaceSrc = radMemorySpace_Main);
+    rAssert(bytes > 0);
 
-	::memcpy( pDest, pSrc, bytes ); 
+    ::memcpy(pDest, pSrc, bytes);
 
-	return & g_MemorySpaceAsyncRequest_Copy_Placeholder;
+    return &g_MemorySpaceAsyncRequest_Copy_Placeholder;
 }
 
-MemorySpaceAsyncRequest_Copy::MemorySpaceAsyncRequest_Copy( void )
-    :
-    m_RefCount( 0 )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "MemorySpaceAsyncRequest_Copy" );
+MemorySpaceAsyncRequest_Copy::MemorySpaceAsyncRequest_Copy(void)
+        :
+        m_RefCount(0) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "MemorySpaceAsyncRequest_Copy");
 }
 
-MemorySpaceAsyncRequest_Copy::~MemorySpaceAsyncRequest_Copy( void )
-{
-    rAssert( m_RefCount == 0 ); // The game is not reference counting properly
+MemorySpaceAsyncRequest_Copy::~MemorySpaceAsyncRequest_Copy(void) {
+    rAssert(m_RefCount == 0); // The game is not reference counting properly
 }
 
-void MemorySpaceAsyncRequest_Copy::AddRef( void )
-{
+void MemorySpaceAsyncRequest_Copy::AddRef(void) {
     m_RefCount++;
 }
 
-void MemorySpaceAsyncRequest_Copy::Release( void )
-{
-    rAssert( m_RefCount > 0 );
+void MemorySpaceAsyncRequest_Copy::Release(void) {
+    rAssert(m_RefCount > 0);
     m_RefCount--;
 }
 
-bool MemorySpaceAsyncRequest_Copy::IsDone( void )
-{
+bool MemorySpaceAsyncRequest_Copy::IsDone(void) {
     return true;
 }
 
@@ -104,35 +96,34 @@ bool MemorySpaceAsyncRequest_Copy::IsDone( void )
 // radMemoryAlloc
 //============================================================================
 
-void * radMemorySpaceAlloc( radMemorySpace space, radMemoryAllocator allocator, unsigned int numBytes )
-{
-	return ::radMemoryAlloc( allocator, numBytes );
+void *
+radMemorySpaceAlloc(radMemorySpace space, radMemoryAllocator allocator, unsigned int numBytes) {
+    return ::radMemoryAlloc(allocator, numBytes);
 }
 
 //============================================================================
 // radMemoryAllocAligned
 //============================================================================
 
-void * radMemorySpaceAllocAligned
-( 
-	radMemorySpace space, 
-	radMemoryAllocator allocator,
-	unsigned int numBytes, 
-	unsigned int alignment 
-)
-{
-	return ::radMemoryAllocAligned( allocator, numBytes, alignment );
+void *radMemorySpaceAllocAligned
+        (
+                radMemorySpace space,
+                radMemoryAllocator allocator,
+                unsigned int numBytes,
+                unsigned int alignment
+        ) {
+    return ::radMemoryAllocAligned(allocator, numBytes, alignment);
 }
 
 //============================================================================
 // radMemorySpaceGetAllocator
 //============================================================================
 
-IRadMemoryAllocator * radMemorySpaceGetAllocator( radMemorySpace memSpace, radMemoryAllocator allocator )
-{
-    rAssert( memSpace == radMemorySpace_Main );
+IRadMemoryAllocator *
+radMemorySpaceGetAllocator(radMemorySpace memSpace, radMemoryAllocator allocator) {
+    rAssert(memSpace == radMemorySpace_Main);
 
-    return ::radMemoryGetAllocator( allocator );
+    return ::radMemoryGetAllocator(allocator);
 }
 
 //============================================================================
@@ -140,13 +131,12 @@ IRadMemoryAllocator * radMemorySpaceGetAllocator( radMemorySpace memSpace, radMe
 //============================================================================
 
 void radMemorySpaceFree
-(  
-	radMemorySpace space, 
-	radMemoryAllocator allocator,
-	void * pMemory
-)
-{
-	::radMemoryFree( allocator, pMemory );
+        (
+                radMemorySpace space,
+                radMemoryAllocator allocator,
+                void *pMemory
+        ) {
+    ::radMemoryFree(allocator, pMemory);
 }
 
 //============================================================================
@@ -154,13 +144,12 @@ void radMemorySpaceFree
 //============================================================================
 
 void radMemorySpaceFreeAligned
-( 
-	radMemorySpace space, 
-	radMemoryAllocator allocator,
-	void * pMemory
-)
-{
-	::radMemoryFreeAligned( allocator, pMemory );
+        (
+                radMemorySpace space,
+                radMemoryAllocator allocator,
+                void *pMemory
+        ) {
+    ::radMemoryFreeAligned(allocator, pMemory);
 }
 
 

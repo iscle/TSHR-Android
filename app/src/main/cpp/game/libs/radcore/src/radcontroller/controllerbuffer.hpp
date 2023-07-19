@@ -36,45 +36,51 @@
 //=============================================================================
 
 class ControllerBuffer
-    :
-    public IRadControllerBuffer,
-    public radObject
-{
-	IMPLEMENT_BASEOBJECT( "ControllerBuffer" )
+        :
+                public IRadControllerBuffer,
+                public radObject {
+    IMPLEMENT_BASEOBJECT("ControllerBuffer")
 
-    public:
-        ControllerBuffer( radMemoryAllocator allocator = RADMEMORY_ALLOC_TEMP );
-		virtual ~ControllerBuffer( void );
+public:
+    ControllerBuffer(radMemoryAllocator allocator = RADMEMORY_ALLOC_TEMP);
 
-		void AddRef( void );
-		void Release( void ); 
+    virtual ~ControllerBuffer(void);
 
-        void Initialize( unsigned int queueSize, unsigned int bufferSize );
-        void SetQueueSize( unsigned int queueSize );
-        void EnqueuePacket( void* pPacket );
-        bool PeekNextPacket( void* pBuffer, int peekSize ); 
-        bool DequeuePacket( void* pNextPacket );
-        void Flush( void );    
+    void AddRef(void);
 
-    private:
-        int m_ReferenceCount;
+    void Release(void);
 
-        //
-        // Holds the packets.
-        // 
-        unsigned char* m_BufferArray;
-        
-        unsigned int m_QueueSize;
-        unsigned int m_PacketSize;
-        unsigned int m_HeadIndex;
-        unsigned int m_TailIndex;
-        
-        //
-        // Contains pointers to packets in m_BufferArray.
-        //
-        unsigned char** m_PacketArray;
+    void Initialize(unsigned int queueSize, unsigned int bufferSize);
 
-        radMemoryAllocator m_Allocator;
+    void SetQueueSize(unsigned int queueSize);
+
+    void EnqueuePacket(void *pPacket);
+
+    bool PeekNextPacket(void *pBuffer, int peekSize);
+
+    bool DequeuePacket(void *pNextPacket);
+
+    void Flush(void);
+
+private:
+    int m_ReferenceCount;
+
+    //
+    // Holds the packets.
+    //
+    unsigned char *m_BufferArray;
+
+    unsigned int m_QueueSize;
+    unsigned int m_PacketSize;
+    unsigned int m_HeadIndex;
+    unsigned int m_TailIndex;
+
+    //
+    // Contains pointers to packets in m_BufferArray.
+    //
+    unsigned char **m_PacketArray;
+
+    radMemoryAllocator m_Allocator;
 };
 
 #endif // CONTROLLERBUFFER_HPP_

@@ -34,7 +34,7 @@
 //=============================================================================
 
 #if !defined(RAD_GAMECUBE) && !defined(RAD_PS2) && !defined(RAD_XBOX) && !defined(RAD_WIN32)
-    #error 'FTech requires definition of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, or RAD_WIN32'
+#error 'FTech requires definition of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, or RAD_WIN32'
 #endif
 
 //=============================================================================
@@ -43,15 +43,15 @@
 
 #include <stdlib.h>
 #include <radobject.hpp>
-#include <radmemory.hpp>                     
+#include <radmemory.hpp>
 
 #ifdef RAD_WIN32
 //
-// windows.h must be included because radPlatformInitialize( ) need HWND and
+// windows.h must be included because radPlatformInitialize() need HWND and
 // HINSTANCE definition.
 //
 #include <windows.h>
-#endif 
+#endif
 
 //=============================================================================
 // Forward Declarations
@@ -66,14 +66,14 @@ struct IRadPlatform;
 //
 // Invoked this function as one of the very last functions in your game
 //
-void radPlatformTerminate( void );
+void radPlatformTerminate(void);
 
 //
 // Use this member to get an interface to the plaform specific interface. If the
 // system has not been initialized, NULL will be returned. If you maintain the interface
 // pointer, remember to addref it.
 //
-IRadPlatform* radPlatformGet( void );
+IRadPlatform *radPlatformGet(void);
 
 //
 // These functions are provided to convert between little and big endian. Big endian
@@ -83,17 +83,20 @@ IRadPlatform* radPlatformGet( void );
 
 #define RAD_BIG_ENDIAN
 
-inline unsigned short radPlatformEndian16( unsigned short value ) { return( __lhbrx( &value, 0 ) ); }
-inline unsigned int radPlatformEndian32( unsigned int value ) { return( __lwbrx( &value, 0 ) ); }
-inline float radPlatformEndianFloat( float value ) { float x; int* p = (int*) &x; *p = __lwbrx( &value, 0 ); return( x ); }
+inline unsigned short radPlatformEndian16(unsigned short value) { return(__lhbrx(&value, 0)); }
+inline unsigned int radPlatformEndian32(unsigned int value) { return(__lwbrx(&value, 0)); }
+inline float radPlatformEndianFloat(float value) { float x; int* p = (int*) &x; *p = __lwbrx(&value, 0); return(x); }
 
-#else 
+#else
 
 #define RAD_LITTLE_ENDIAN
 
-inline unsigned short radPlatformEndian16( unsigned short value ) { return( value ); }
-inline unsigned int radPlatformEndian32( unsigned int value ) { return( value ); }
-inline float radPlatformEndianFloat( float value ) { return( value ); }
+inline unsigned short radPlatformEndian16(unsigned short value) { return (value); }
+
+inline unsigned int radPlatformEndian32(unsigned int value) { return (value); }
+
+inline float radPlatformEndianFloat(float value) { return (value); }
+
 #endif
 
 
@@ -107,8 +110,8 @@ inline float radPlatformEndianFloat( float value ) { return( value ); }
 // Windows requires the game provide the main window handle and the module
 // instance.
 //
-void radPlatformInitialize( HWND hMainWindow, HINSTANCE hInstance,
-                            radMemoryAllocator = RADMEMORY_ALLOC_DEFAULT );
+void radPlatformInitialize(HWND hMainWindow, HINSTANCE hInstance,
+                            radMemoryAllocator = RADMEMORY_ALLOC_DEFAULT);
 
 //
 // Interface used to field messages from the main window.
@@ -121,7 +124,7 @@ struct IRadPlatformWin32MessageCallback
         WORD Message,
         WORD wParam,
         LONG lParam
-    ) = 0;
+) = 0;
 };
 
 //
@@ -129,16 +132,16 @@ struct IRadPlatformWin32MessageCallback
 //
 struct IRadPlatform : public IRefCount
 {
-    virtual HWND GetMainWindowHandle( void ) = 0;
-    virtual HINSTANCE GetInstanceHandle( void ) = 0;
+    virtual HWND GetMainWindowHandle(void) = 0;
+    virtual HINSTANCE GetInstanceHandle(void) = 0;
     virtual void RegisterMainWindowCallback
     (
         IRadPlatformWin32MessageCallback* pICallback
-    ) = 0;
+) = 0;
     virtual void UnRegisterMainWindowCallback
     (
         IRadPlatformWin32MessageCallback* pICallback
-    ) = 0;
+) = 0;
 };
 #endif // RAD_WIN32
 
@@ -151,7 +154,7 @@ struct IRadPlatform : public IRefCount
 //
 // XBOX initialization requires no parameters
 //
-void radPlatformInitialize( void );
+void radPlatformInitialize(void);
 
 //
 // XBOX Platform interface.
@@ -190,10 +193,10 @@ enum radPlatformGameMediaType
     GameMediaDVD            // Game is distributed on DVD
 };
 
-void radPlatformInitialize( const char* pIrxPath, radPlatformIOPMedia IOPMedia, 
+void radPlatformInitialize(const char* pIrxPath, radPlatformIOPMedia IOPMedia,
                             radPlatformGameMediaType = GameMediaCD,
                             const char* pIopImage = RADPLATFORM_IOP_IMG_FILENAME,
-                            radMemoryAllocator = RADMEMORY_ALLOC_DEFAULT );
+                            radMemoryAllocator = RADMEMORY_ALLOC_DEFAULT);
 
 //
 // PS2 plaform interface. 
@@ -205,15 +208,15 @@ struct IRadPlatform : public IRefCount
         const char* pIrxFilenameNoPath,
         int argSize = 0,
         char* args = NULL
-    ) = 0;
+) = 0;
     virtual void UnloadIrxModule
     (
         const char* IrxFilenameNoPath
-    ) = 0;
+) = 0;
     virtual radPlatformGameMediaType GetMediaType
     (
         void
-    ) = 0;
+) = 0;
 };
 
 #endif // RAD_PS2
@@ -226,7 +229,7 @@ struct IRadPlatform : public IRefCount
 //
 // Game cube initialization yet to be defined.
 //
-void radPlatformInitialize( void );
+void radPlatformInitialize(void);
 
 //
 // Game Cube Platform interface.

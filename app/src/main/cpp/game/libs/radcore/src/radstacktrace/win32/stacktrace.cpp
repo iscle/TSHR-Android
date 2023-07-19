@@ -18,39 +18,35 @@
 // ::radStackTraceWin32Get
 //=============================================================================
 
-extern "C" void radStackTraceWin32Get( unsigned int * results, int max, const void * basePointer )
-{
-  unsigned int  prevfp;
-  unsigned int  curfp;
-  unsigned int  last;
-	
-  prevfp = 0x00000000;
+extern "C" void radStackTraceWin32Get(unsigned int *results, int max, const void *basePointer) {
+    unsigned int prevfp;
+    unsigned int curfp;
+    unsigned int last;
 
-  //_asm
-  //{
-  //  mov   curfp, ebp
-  //}
+    prevfp = 0x00000000;
 
-  curfp = ( unsigned int ) basePointer;
+    //_asm
+    //{
+    //  mov   curfp, ebp
+    //}
 
-  while (max--)
-  {
-    if (curfp != NULL &&     // is this frame pointer not NULL
-        curfp > prevfp &&    // this frame pointer has to be greater than the previous
-        !(curfp & 0x3))      // has to be 4byte aligned
-    {
-	    (*results++) = last = ret_addr_from_fp( curfp );
-		  
-      prevfp = curfp;
-      curfp = prev_fp_from_fp( curfp );
+    curfp = (unsigned int) basePointer;
+
+    while (max--) {
+        if (curfp != NULL &&     // is this frame pointer not NULL
+            curfp > prevfp &&    // this frame pointer has to be greater than the previous
+            !(curfp & 0x3))      // has to be 4byte aligned
+        {
+            (*results++) = last = ret_addr_from_fp(curfp);
+
+            prevfp = curfp;
+            curfp = prev_fp_from_fp(curfp);
+        } else {
+            (*results++) = last;
+
+            curfp = NULL;
+        }
     }
-    else
-    {
-      (*results++) = last;
-
-      curfp = NULL;
-    }
-  }
 }
 
 
@@ -58,7 +54,6 @@ extern "C" void radStackTraceWin32Get( unsigned int * results, int max, const vo
 // ::radStackTraceGet
 //=============================================================================
 
-extern "C" void radStackTraceGet( unsigned int *results, int max )
-{
-    radStackTraceWin32Get( results, max, ( void * )( (unsigned int) & results - 8 ) );
+extern "C" void radStackTraceGet(unsigned int *results, int max) {
+    radStackTraceWin32Get(results, max, (void *) ((unsigned int) &results - 8));
 }

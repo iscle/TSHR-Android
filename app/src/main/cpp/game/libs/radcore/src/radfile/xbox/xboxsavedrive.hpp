@@ -16,7 +16,7 @@
 //
 //=============================================================================
 
-#ifndef	XBOXSAVEDRIVE_HPP
+#ifndef    XBOXSAVEDRIVE_HPP
 #define XBOXSAVEDRIVE_HPP
 
 //=============================================================================
@@ -31,7 +31,7 @@
 // Defines
 //=============================================================================
 
-static const char s_XBOXMemcardDrive[ ] = "MEMCARD??:";
+static const char s_XBOXMemcardDrive[] = "MEMCARD??:";
 #define XBOXMEMCARDDRIVE_PORT_LOC    7
 #define XBOXMEMCARDDRIVE_SLOT_LOC    8
 
@@ -56,7 +56,7 @@ static const char s_XBOXMemcardDrive[ ] = "MEMCARD??:";
 //
 // Every physical drive type must provide a drive factory.
 //
-void radXboxSaveDriveFactory( radDrive** ppDrive, const char* driveSpec, radMemoryAllocator alloc );
+void radXboxSaveDriveFactory(radDrive **ppDrive, const char *driveSpec, radMemoryAllocator alloc);
 
 //=============================================================================
 // Class Declarations
@@ -64,153 +64,168 @@ void radXboxSaveDriveFactory( radDrive** ppDrive, const char* driveSpec, radMemo
 
 class radXboxSaveDrive : public radDrive,
                          public radSignedReader,
-                         public radSignedWriter
-{
+                         public radSignedWriter {
 public:
 
     //
     // Constructor / destructor.
     //
-    radXboxSaveDrive( const char* pdrivespec, radMemoryAllocator alloc );
-    virtual ~radXboxSaveDrive( void );
+    radXboxSaveDrive(const char *pdrivespec, radMemoryAllocator alloc);
 
-    void Lock( void );
-    void Unlock( void );
+    virtual ~radXboxSaveDrive(void);
+
+    void Lock(void);
+
+    void Unlock(void);
 
     //
     // This member reports this physical drives capabilities
     //
-    unsigned int GetCapabilities( void );
+    unsigned int GetCapabilities(void);
 
-    const char* GetDriveName( void );
+    const char *GetDriveName(void);
 
-    unsigned int GetCreationSize( radMemcardInfo* memcardInfo, unsigned int size );
- 
-    CompletionStatus Initialize( void );
+    unsigned int GetCreationSize(radMemcardInfo *memcardInfo, unsigned int size);
 
-    CompletionStatus OpenSaveGame( const char*      fileName, 
-                                   radFileOpenFlags flags, 
-                                   bool             writeAccess,
-                                   radMemcardInfo*  memcardInfo,
-                                   unsigned int     maxSize,
-                                   radFileHandle*   pHandle, 
-                                   unsigned int*    pSize );
+    CompletionStatus Initialize(void);
 
-    CompletionStatus CloseFile( radFileHandle   handle, const char* fileName );
+    CompletionStatus OpenSaveGame(const char *fileName,
+                                  radFileOpenFlags flags,
+                                  bool writeAccess,
+                                  radMemcardInfo *memcardInfo,
+                                  unsigned int maxSize,
+                                  radFileHandle *pHandle,
+                                  unsigned int *pSize);
 
-    CompletionStatus CommitFile( radFileHandle  handle, const char* fileName );
+    CompletionStatus CloseFile(radFileHandle handle, const char *fileName);
 
-    CompletionStatus ReadSignedBlock( radFileHandle  handle,
-                                      const char*    fileName,
-                                      unsigned int   block,
-                                      unsigned int   position,
-                                      unsigned int   numBytes,
-                                      void*          pData, 
-                                      radMemorySpace pDataSpace );
+    CompletionStatus CommitFile(radFileHandle handle, const char *fileName);
 
-    unsigned int GetReadBlockSize( void );
-    unsigned int GetReadHeaderSize( radFileHandle handle );
+    CompletionStatus ReadSignedBlock(radFileHandle handle,
+                                     const char *fileName,
+                                     unsigned int block,
+                                     unsigned int position,
+                                     unsigned int numBytes,
+                                     void *pData,
+                                     radMemorySpace pDataSpace);
 
-    CompletionStatus WriteSignedBlock( radFileHandle handle,
-                                       const char*  fileName,
-                                       unsigned int block,
-                                       unsigned int position,
-                                       unsigned int numBytes,
-                                       const void* pData,
-                                       unsigned int* size,
-                                       radMemorySpace pDataSpace );
+    unsigned int GetReadBlockSize(void);
 
-    unsigned int GetWriteBlockSize( void );
-    unsigned int GetWriteHeaderSize( radFileHandle handle );
+    unsigned int GetReadHeaderSize(radFileHandle handle);
 
-    CompletionStatus FindFirst( const char*                 searchSpec, 
-                                IRadDrive::DirectoryInfo*   pDirectoryInfo, 
-                                radFileDirHandle*           pHandle,
-                                bool                        firstSearch );
+    CompletionStatus WriteSignedBlock(radFileHandle handle,
+                                      const char *fileName,
+                                      unsigned int block,
+                                      unsigned int position,
+                                      unsigned int numBytes,
+                                      const void *pData,
+                                      unsigned int *size,
+                                      radMemorySpace pDataSpace);
 
-    CompletionStatus FindNext( radFileDirHandle* pHandle, IRadDrive::DirectoryInfo* pDirectoryInfo );
+    unsigned int GetWriteBlockSize(void);
+
+    unsigned int GetWriteHeaderSize(radFileHandle handle);
+
+    CompletionStatus FindFirst(const char *searchSpec,
+                               IRadDrive::DirectoryInfo *pDirectoryInfo,
+                               radFileDirHandle *pHandle,
+                               bool firstSearch);
+
+    CompletionStatus FindNext(radFileDirHandle *pHandle, IRadDrive::DirectoryInfo *pDirectoryInfo);
 
     //
     // This is needed to avoid clashing with an XBOX define.
     //
-    CompletionStatus FindClose( radFileDirHandle* pHandle )
-    {
-        return FindCloseX( pHandle );
+    CompletionStatus FindClose(radFileDirHandle *pHandle) {
+        return FindCloseX(pHandle);
     }
 
-    CompletionStatus FindCloseX( radFileDirHandle* pHandle );
+    CompletionStatus FindCloseX(radFileDirHandle *pHandle);
 
-    CompletionStatus DestroyFile( const char* filename );
+    CompletionStatus DestroyFile(const char *filename);
 
     IMPLEMENT_SIGNED_READ;
+
     IMPLEMENT_SIGNED_WRITE;
 
 private:
     //
     // Helper functions.
     //
-    void SetMediaInfo( void );
-    void BuildFileSpec( const char* fileName, char* fullName, unsigned int size, char** pName );
-    radFileError TranslateError( unsigned int windowsError );
-    void GetPort( int* port, int* slot );
-    bool Mount( void );
-    void Unmount( void );
-    bool HandleError( unsigned int error );
-    IRadDrive::MediaInfo::MediaState ErrorToMediaState( radFileError result );
-    void AsciiToUnicode( WCHAR* dest, const char* src );
-    void UnicodeToAscii( char* dest, const WCHAR* src );
+    void SetMediaInfo(void);
 
-    unsigned int    m_Capabilities;
-    unsigned int    m_OpenFiles;
-    char            m_DriveName[ radFileDrivenameMax + 1 ];
+    void BuildFileSpec(const char *fileName, char *fullName, unsigned int size, char **pName);
+
+    radFileError TranslateError(unsigned int windowsError);
+
+    void GetPort(int *port, int *slot);
+
+    bool Mount(void);
+
+    void Unmount(void);
+
+    bool HandleError(unsigned int error);
+
+    IRadDrive::MediaInfo::MediaState ErrorToMediaState(radFileError result);
+
+    void AsciiToUnicode(WCHAR *dest, const char *src);
+
+    void UnicodeToAscii(char *dest, const WCHAR *src);
+
+    unsigned int m_Capabilities;
+    unsigned int m_OpenFiles;
+    char m_DriveName[radFileDrivenameMax + 1];
 
     //
     // Check if a card is mounted, and keep it's real name.
     //
-    bool            m_IsMounted;
-    char            m_DriveLetter;
+    bool m_IsMounted;
+    char m_DriveLetter;
 
     //
     // We need to keep a small list to indicate if a file has been written to yet.
     //
-    struct MemcardInitList
-    {
+    struct MemcardInitList {
         radFileHandle m_Handle;
     };
-    MemcardInitList m_InitList[ XBOX_MAX_CARD_HANDLES ];
+    MemcardInitList m_InitList[XBOX_MAX_CARD_HANDLES];
 
     //
     // Directory searching is a bit strange. We actually have to do the wildcard matching
     // ourselves!
     //
-    struct MemcardDirHandle
-    {
-        char    m_pSpec[ radFileFilenameMax + 1 ];
-        void*   m_Handle;
+    struct MemcardDirHandle {
+        char m_pSpec[radFileFilenameMax + 1];
+        void *m_Handle;
     };
-    bool FileNameMatchesSearch( const char* pFileName, const char* pSearchSpec );
 
-    MemcardDirHandle m_HandlePool[ XBOX_MAX_CARD_HANDLES ];
+    bool FileNameMatchesSearch(const char *pFileName, const char *pSearchSpec);
 
-    enum DirResult
-    {
+    MemcardDirHandle m_HandlePool[XBOX_MAX_CARD_HANDLES];
+
+    enum DirResult {
         Done,
         Fail,
         NoMatch
-    };  
+    };
 
-    DirResult TranslateDirInfo( IRadDrive::DirectoryInfo*   pDirectoryInfo, 
-                                const void*                 pFindData,
-                                const void*                 winHandle,
-                                const char*                 pSpec );
+    DirResult TranslateDirInfo(IRadDrive::DirectoryInfo *pDirectoryInfo,
+                               const void *pFindData,
+                               const void *winHandle,
+                               const char *pSpec);
+
     //
     // Helper function for block caching.
     //
-    bool LoadBlock( radFileHandle handle, unsigned int block );
-    bool FlushBlock( void );
-    unsigned int GetTableSize( unsigned int fileSize );
-    bool GetSizeFromHandle( radFileHandle handle, unsigned int* size );
-    bool InitializeFile( radFileHandle handle, unsigned int size, bool validHeader );
+    bool LoadBlock(radFileHandle handle, unsigned int block);
+
+    bool FlushBlock(void);
+
+    unsigned int GetTableSize(unsigned int fileSize);
+
+    bool GetSizeFromHandle(radFileHandle handle, unsigned int *size);
+
+    bool InitializeFile(radFileHandle handle, unsigned int size, bool validHeader);
 };
 
 #endif // XBOXSAVEDRIVE_HPP

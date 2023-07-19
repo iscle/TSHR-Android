@@ -8,72 +8,58 @@
 
 #include <stdlib.h>
 
-template < class T > class radLinkedClass
-{
-	public:
-		
-		static T * GetLinkedClassHead( void )
-		{
-			return s_pLinkedClassHead;
-		}
+template<class T>
+class radLinkedClass {
+public:
 
-		T * GetLinkedClassNext( void )
-		{
-			return m_pLinkedClassNext;
-		}
+    static T *GetLinkedClassHead(void) {
+        return s_pLinkedClassHead;
+    }
 
-		T * GetLinkedClassPrev( void )
-		{
-			return m_pLinkedClassPrev;
-		}
+    T *GetLinkedClassNext(void) {
+        return m_pLinkedClassNext;
+    }
 
-	protected:
+    T *GetLinkedClassPrev(void) {
+        return m_pLinkedClassPrev;
+    }
 
-		radLinkedClass( void )
-		{
-            m_pLinkedClassNext = NULL;
+protected:
 
-            if ( s_pLinkedClassTail != NULL )
-            {
-                s_pLinkedClassTail->m_pLinkedClassNext = static_cast< T * >( this );
-                m_pLinkedClassPrev = s_pLinkedClassTail;
-            }
-            else
-            {
-                s_pLinkedClassHead = static_cast< T * >( this );
-                m_pLinkedClassPrev = NULL;
-            }
+    radLinkedClass(void) {
+        m_pLinkedClassNext = NULL;
 
-            s_pLinkedClassTail = static_cast< T * >( this );
+        if (s_pLinkedClassTail != NULL) {
+            s_pLinkedClassTail->m_pLinkedClassNext = static_cast<T *>(this);
+            m_pLinkedClassPrev = s_pLinkedClassTail;
+        } else {
+            s_pLinkedClassHead = static_cast<T *>(this);
+            m_pLinkedClassPrev = NULL;
+        }
 
-		}
+        s_pLinkedClassTail = static_cast<T *>(this);
 
-		~radLinkedClass( void )
-		{
-			if ( m_pLinkedClassPrev != NULL )
-			{
-				m_pLinkedClassPrev->m_pLinkedClassNext = m_pLinkedClassNext;
-			}
-			else
-			{
-				s_pLinkedClassHead = m_pLinkedClassNext;
-			}
+    }
 
-			if ( m_pLinkedClassNext != NULL )
-			{
-				m_pLinkedClassNext->m_pLinkedClassPrev = m_pLinkedClassPrev;
-			}
-            else
-            {
-                s_pLinkedClassTail = m_pLinkedClassPrev;
-            }
-		}
+    ~radLinkedClass(void) {
+        if (m_pLinkedClassPrev != NULL) {
+            m_pLinkedClassPrev->m_pLinkedClassNext = m_pLinkedClassNext;
+        } else {
+            s_pLinkedClassHead = m_pLinkedClassNext;
+        }
 
-		T * m_pLinkedClassNext;
-		T * m_pLinkedClassPrev;
+        if (m_pLinkedClassNext != NULL) {
+            m_pLinkedClassNext->m_pLinkedClassPrev = m_pLinkedClassPrev;
+        } else {
+            s_pLinkedClassTail = m_pLinkedClassPrev;
+        }
+    }
 
-	static T * s_pLinkedClassHead;
-    static T * s_pLinkedClassTail;
+    T *m_pLinkedClassNext;
+    T *m_pLinkedClassPrev;
+
+    static T *s_pLinkedClassHead;
+    static T *s_pLinkedClassTail;
 };
 
 #endif // LINKED_CLASS

@@ -28,10 +28,10 @@
 //=============================================================================
 
 #if !defined(RAD_GAMECUBE) && !defined(RAD_PS2) && !defined(RAD_XBOX) && !defined(RAD_WIN32)
-    #error 'FTech requires definition of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, or RAD_WIN32'
+#error 'FTech requires definition of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, or RAD_WIN32'
 #endif
-#if !defined(RAD_DEBUG) && !defined(RAD_TUNE) && !defined(RAD_RELEASE) 
-    #error 'FTech requires definition of RAD_DEBUG, RAD_TUNE, or RAD_RELEASE'
+#if !defined(RAD_DEBUG) && !defined(RAD_TUNE) && !defined(RAD_RELEASE)
+#error 'FTech requires definition of RAD_DEBUG, RAD_TUNE, or RAD_RELEASE'
 #endif
 
 //=============================================================================
@@ -45,7 +45,7 @@
 // Definitions
 //=============================================================================
 
-typedef void (radDebugOutputHandler)(const char * pString );
+typedef void (radDebugOutputHandler)(const char *pString);
 
 //=============================================================================
 // Macros and defines
@@ -66,37 +66,49 @@ typedef void (radDebugOutputHandler)(const char * pString );
 
 #if defined (RAD_WIN32) || defined (RAD_XBOX)
 #ifdef __cplusplus
-    bool rDebugAssertFail_Implementation( const char* condition, const char* filename, unsigned int linenum);
+bool rDebugAssertFail_Implementation(const char* condition, const char* filename, unsigned int linenum);
 #else
-    int rDebugAssertFail_Implementation( const char* condition, const char* filename, unsigned int linenum);
+int rDebugAssertFail_Implementation(const char* condition, const char* filename, unsigned int linenum);
 #endif
 #endif
 
-#if defined( RAD_PS2 ) || defined( RAD_GAMECUBE )
-bool rDebugAssertFail_Implementation( const char* condition, const char* filename, unsigned int linenum);
+#if defined(RAD_PS2) || defined(RAD_GAMECUBE)
+bool rDebugAssertFail_Implementation(const char* condition, const char* filename, unsigned int linenum);
 #endif
 
-void rDebugHaltOnAsserts_Implementation( bool halt );
-void rDebugWarningFail_Implementation( const char* condition, const char* filename, unsigned int linenum);
-void rDebugValidFail_Implementation( const char *condition, const char *filename, unsigned int linenum);
-int  rDebugValidPointer_Implementation( void *p );
-int  rDebugValidPointer32_Implementation( void *p );
+void rDebugHaltOnAsserts_Implementation(bool halt);
 
-void rDebuggerString_Implementation( const char* string );
-void rDebugString_Implementation( const char * pString );
+void
+rDebugWarningFail_Implementation(const char *condition, const char *filename, unsigned int linenum);
 
-void rDebugChannelInitialize_Implementation( int allocator );
-void rDebugChannel_Implementation( const char * pChannel, const char * pMessage );
-void rDebugChannelEnable_Implementation( const char * pChannel );
-void rDebugChannelDisable_Implementation( const char * pChannelName );
-void rDebugChannelTerminate_Implementaion( void );
+void
+rDebugValidFail_Implementation(const char *condition, const char *filename, unsigned int linenum);
+
+int rDebugValidPointer_Implementation(void *p);
+
+int rDebugValidPointer32_Implementation(void *p);
+
+void rDebuggerString_Implementation(const char *string);
+
+void rDebugString_Implementation(const char *pString);
+
+void rDebugChannelInitialize_Implementation(int allocator);
+
+void rDebugChannel_Implementation(const char *pChannel, const char *pMessage);
+
+void rDebugChannelEnable_Implementation(const char *pChannel);
+
+void rDebugChannelDisable_Implementation(const char *pChannelName);
+
+void rDebugChannelTerminate_Implementaion(void);
 
 //
 // USE THESE MACROS AND FUNCTIONS
 //
 
-#define rNullStringWrap( x ) ( ( x ) == NULL ? "<NULL>" : x )
-void rDebugSetOutputHandler     ( radDebugOutputHandler * pOutputProc );
+#define rNullStringWrap(x) ((x) == NULL ? "<NULL>" : x)
+
+void rDebugSetOutputHandler(radDebugOutputHandler *pOutputProc);
 
 //
 // These functions are always available, that is, they get compiled in
@@ -104,30 +116,30 @@ void rDebugSetOutputHandler     ( radDebugOutputHandler * pOutputProc );
 //
 
 #if defined (RAD_WIN32) || defined (RAD_XBOX)
-	#define rReleaseBreak() { __asm { int 3 } }
+#define rReleaseBreak() { __asm { int 3 } }
 #endif
 
 #ifdef RAD_PS2
-    #define rReleaseBreak() { asm( ".word 0x0000004d"); }
+#define rReleaseBreak() { asm(".word 0x0000004d"); }
 #endif
 
 #ifdef RAD_GAMECUBE
-    #define rReleaseBreak(){ asm(trap); }
+#define rReleaseBreak(){ asm(trap); }
 #endif
 
-//#define rReleaseString( x )( rDebugString_Implementation( x ) )
-#define rReleaseString( x )( (void)0 )
+//#define rReleaseString(x)(rDebugString_Implementation(x))
+#define rReleaseString(x)((void)0)
 //
 // Always compile in release asserts.
 //
 
 
-#define rReleaseAssert( x ) if (!(x)) if ( rDebugAssertFail_Implementation(#x,__FILE__,__LINE__) ) { rReleaseBreak(); }
-#define rReleaseAssertMsg( x, msg )  if (!(x)) if ( rDebugAssertFail_Implementation(msg,__FILE__,__LINE__) ) { rReleaseBreak(); }
-#define rReleaseWarning( x ) if (!(x)) rDebugWarningFail_Implementation(#x,__FILE__,__LINE__)
-#define rReleaseWarningMsg( x, msg ) if (!(x)) rDebugWarningFail_Implementation(msg,__FILE__,__LINE__)
+#define rReleaseAssert(x) if (!(x)) if (rDebugAssertFail_Implementation(#x,__FILE__,__LINE__)) { rReleaseBreak(); }
+#define rReleaseAssertMsg(x, msg)  if (!(x)) if (rDebugAssertFail_Implementation(msg,__FILE__,__LINE__)) { rReleaseBreak(); }
+#define rReleaseWarning(x) if (!(x)) rDebugWarningFail_Implementation(#x,__FILE__,__LINE__)
+#define rReleaseWarningMsg(x, msg) if (!(x)) rDebugWarningFail_Implementation(msg,__FILE__,__LINE__)
 
-void rReleasePrintf( const char *fmt, ... );
+void rReleasePrintf(const char *fmt, ...);
 
 //
 // Tune asserts, compiled only in RAD_TUNE and RAD_DEBUG
@@ -135,41 +147,41 @@ void rReleasePrintf( const char *fmt, ... );
 
 #if defined RAD_DEBUG || defined RAD_TUNE
 
-    #define rTuneString( x )(rDebugString_Implementation( x ) )
-    #define rTuneAssert( x ) if (!(x)) if ( rDebugAssertFail_Implementation(#x,__FILE__,__LINE__) ) { rReleaseBreak(); }
-    #define rTuneAssertMsg( x, msg )  if (!(x)) if ( rDebugAssertFail_Implementation(msg,__FILE__,__LINE__) ) { rReleaseBreak(); }
-    #define rTuneWarning( x ) if (!(x)) rDebugWarningFail_Implementation(#x,__FILE__,__LINE__)
-    #define rTuneWarningMsg( x, msg ) if (!(x)) rDebugWarningFail_Implementation(msg,__FILE__,__LINE__)
+#define rTuneString(x)(rDebugString_Implementation(x))
+#define rTuneAssert(x) if (!(x)) if (rDebugAssertFail_Implementation(#x,__FILE__,__LINE__)) { rReleaseBreak(); }
+#define rTuneAssertMsg(x, msg)  if (!(x)) if (rDebugAssertFail_Implementation(msg,__FILE__,__LINE__)) { rReleaseBreak(); }
+#define rTuneWarning(x) if (!(x)) rDebugWarningFail_Implementation(#x,__FILE__,__LINE__)
+#define rTuneWarningMsg(x, msg) if (!(x)) rDebugWarningFail_Implementation(msg,__FILE__,__LINE__)
 
-    void rTunePrintf( const char *fmt, ... );
+void rTunePrintf(const char *fmt, ...);
 
 #else
 
-    //
-    // These functions get compiled out in release
-    //
-    #define rTuneString( x )((void )0)       // Output string
+//
+// These functions get compiled out in release
+//
+#define rTuneString(x)((void)0)       // Output string
 
-    #define rTuneAssert( x ) ((void)0)            // Assert condition X TRUE
-    #define rTuneAssertMsg( x, msg ) ((void)0)    // Assert x true, display msg if not
-    #define rTuneWarning( x ) ((void)0)           // If x false, display warning
-    #define rTuneWarningMsg( x, msg ) ((void)0)   // If x false, display msg
-   
-    #ifdef RAD_PS2 
-        #ifdef RAD_MW 
-            #define rTunePrintf( ... ) ((void)0)
-        #else
-            #define rTunePrintf(format, args...) ((void)0)
-        #endif
-    #endif
+#define rTuneAssert(x) ((void)0)            // Assert condition X TRUE
+#define rTuneAssertMsg(x, msg) ((void)0)    // Assert x true, display msg if not
+#define rTuneWarning(x) ((void)0)           // If x false, display warning
+#define rTuneWarningMsg(x, msg) ((void)0)   // If x false, display msg
 
-    #if defined (RAD_WIN32) || defined (RAD_XBOX)
-        inline void rTunePrintf( const char *fmt, ... ) { }
-    #endif
+#ifdef RAD_PS2
+#ifdef RAD_MW
+#define rTunePrintf(...) ((void)0)
+#else
+#define rTunePrintf(format, args...) ((void)0)
+#endif
+#endif
 
-    #ifdef RAD_GAMECUBE
-        #define rTunePrintf( ... ) ((void)0)
-    #endif
+#if defined (RAD_WIN32) || defined (RAD_XBOX)
+inline void rTunePrintf(const char *fmt, ...) { }
+#endif
+
+#ifdef RAD_GAMECUBE
+#define rTunePrintf(...) ((void)0)
+#endif
 
 #endif
 
@@ -179,63 +191,63 @@ void rReleasePrintf( const char *fmt, ... );
 
 #if defined RAD_DEBUG 
 
-    #define rBreak() rReleaseBreak()
-    #define rWarning( x ) if (!(x)) rDebugWarningFail_Implementation(#x,__FILE__,__LINE__)
-    #define rWarningMsg( x, msg ) if (!(x)) rDebugWarningFail_Implementation(msg,__FILE__,__LINE__)
-    #define rDebugString( x )(rDebugString_Implementation( x ) )
-    #define rDebugChannelInitialize( x ) rDebugChannelInitialize_Implementation( x )
-    #define rDebugChannel( y, x ) rDebugChannel_Implementation( y, x )
-    #define rDebugChannelEnable( y ) rDebugChannelEnable_Implementation( y )
-    #define rDebugChannelDisable( y ) rDebugChannelDisable_Implementation( y )
-    #define rDebugChannelTerminate() rDebugChannelTerminate_Implementaion( )
+#define rBreak() rReleaseBreak()
+#define rWarning(x) if (!(x)) rDebugWarningFail_Implementation(#x,__FILE__,__LINE__)
+#define rWarningMsg(x, msg) if (!(x)) rDebugWarningFail_Implementation(msg,__FILE__,__LINE__)
+#define rDebugString(x)(rDebugString_Implementation(x))
+#define rDebugChannelInitialize(x) rDebugChannelInitialize_Implementation(x)
+#define rDebugChannel(y, x) rDebugChannel_Implementation(y, x)
+#define rDebugChannelEnable(y) rDebugChannelEnable_Implementation(y)
+#define rDebugChannelDisable(y) rDebugChannelDisable_Implementation(y)
+#define rDebugChannelTerminate() rDebugChannelTerminate_Implementaion()
 
-    #define rDebugHaltOnAsserts( x ) rDebugHaltOnAsserts_Implementation( x )
+#define rDebugHaltOnAsserts(x) rDebugHaltOnAsserts_Implementation(x)
 
-    #define rAssert( x ) if (!(x)) if ( rDebugAssertFail_Implementation(#x,__FILE__,__LINE__) ) { rReleaseBreak(); }
-	#define rAssertMsg( x, msg )  if (!(x)) if ( rDebugAssertFail_Implementation(msg,__FILE__,__LINE__) ) { rReleaseBreak(); }
-    
-    void rDebugPrintf( const char *fmt, ... );
+#define rAssert(x) if (!(x)) if (rDebugAssertFail_Implementation(#x,__FILE__,__LINE__)) { rReleaseBreak(); }
+#define rAssertMsg(x, msg)  if (!(x)) if (rDebugAssertFail_Implementation(msg,__FILE__,__LINE__)) { rReleaseBreak(); }
 
-    void rDebugChannelPrintf( const char * pChannel, const char *fmt, ... );
+void rDebugPrintf(const char *fmt, ...);
+
+void rDebugChannelPrintf(const char * pChannel, const char *fmt, ...);
 
 #else
 
-    #define rDebugHaltOnAsserts( x ) ((void)0)
-    //
-    // These functions get compiled out in release
-    //
-    #define rBreak() ((void)0)
-    #define rAssert( x ) ((void)0)            // Assert condition X TRUE
-    #define rAssertMsg( x, msg ) ((void)0)    // Assert x true, display msg if not
-    #define rWarning( x ) ((void)0)           // If x false, display warning
-    #define rWarningMsg( x, msg ) ((void)0)   // If x false, display msg
-    
-    #define rDebugString( x )((void )0)       // Output string
-    #define rDebugChannelInitialize( x ) ((void)0)
-    #define rDebugChannel( y, x ) ((void)0)
-    #define rDebugChannelEnable( y ) ((void)0)
-    #define rDebugChannelDisable( y ) ((void)0)
-    #define rDebugChannelTerminate()((void)0)
+#define rDebugHaltOnAsserts(x) ((void)0)
+//
+// These functions get compiled out in release
+//
+#define rBreak() ((void)0)
+#define rAssert(x) ((void)0)            // Assert condition X TRUE
+#define rAssertMsg(x, msg) ((void)0)    // Assert x true, display msg if not
+#define rWarning(x) ((void)0)           // If x false, display warning
+#define rWarningMsg(x, msg) ((void)0)   // If x false, display msg
 
-    #ifdef RAD_PS2 
-        #ifdef RAD_MW 
-            #define rDebugPrintf( ... ) ((void)0)
-            #define rDebugChannelPrintf( ... ) ((void)0)
-        #else
-            #define rDebugPrintf(format, args...) ((void)0)
-            #define rDebugChannelPrintf(format, args...) ((void)0)
-        #endif
-    #endif
+#define rDebugString(x)((void)0)       // Output string
+#define rDebugChannelInitialize(x) ((void)0)
+#define rDebugChannel(y, x) ((void)0)
+#define rDebugChannelEnable(y) ((void)0)
+#define rDebugChannelDisable(y) ((void)0)
+#define rDebugChannelTerminate()((void)0)
 
-    #if defined (RAD_WIN32) || defined (RAD_XBOX)
-        inline void rDebugPrintf( const char *fmt, ... ) { }
-        inline void rDebugChannelPrintf( const char *fmt, ... ) { }
-    #endif
+#ifdef RAD_PS2
+#ifdef RAD_MW
+#define rDebugPrintf(...) ((void)0)
+#define rDebugChannelPrintf(...) ((void)0)
+#else
+#define rDebugPrintf(format, args...) ((void)0)
+#define rDebugChannelPrintf(format, args...) ((void)0)
+#endif
+#endif
 
-    #ifdef RAD_GAMECUBE
-        #define rDebugPrintf( ... ) ((void)0)
-        #define rDebugChannelPrintf( ... ) ((void)0)
-    #endif
+#if defined (RAD_WIN32) || defined (RAD_XBOX)
+inline void rDebugPrintf(const char *fmt, ...) { }
+inline void rDebugChannelPrintf(const char *fmt, ...) { }
+#endif
+
+#ifdef RAD_GAMECUBE
+#define rDebugPrintf(...) ((void)0)
+#define rDebugChannelPrintf(...) ((void)0)
+#endif
 
 #endif
 

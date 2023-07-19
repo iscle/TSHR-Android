@@ -16,7 +16,7 @@
 //
 //=============================================================================
 
-#ifndef	PS2HOSTDDDRIVE_HPP
+#ifndef    PS2HOSTDDDRIVE_HPP
 #define PS2HOSTDDRIVE_HPP
 
 //=============================================================================
@@ -51,7 +51,7 @@
 // Statics
 //=============================================================================
 
-static const char s_PS2HostDriveName[ ] = "HOSTDRIVE:";
+static const char s_PS2HostDriveName[] = "HOSTDRIVE:";
 
 //=============================================================================
 // Public Functions
@@ -60,71 +60,72 @@ static const char s_PS2HostDriveName[ ] = "HOSTDRIVE:";
 //
 // Every physical drive type must provide a drive factory.
 //
-void radPs2HostDriveFactory( radDrive** ppDrive, const char* driveSpec, radMemoryAllocator alloc );
+void radPs2HostDriveFactory(radDrive **ppDrive, const char *driveSpec, radMemoryAllocator alloc);
 
 //=============================================================================
 // Class Declarations
 //=============================================================================
 
 class radPs2HostDrive : public radBufferedReader,
-                        public radDrive
-{
+                        public radDrive {
 public:
 
     //
     // Constructor / destructor.
     //
-    radPs2HostDrive( radMemoryAllocator alloc );
-    virtual ~radPs2HostDrive( void );
+    radPs2HostDrive(radMemoryAllocator alloc);
 
-    void Lock( void );
-    void Unlock( void );
+    virtual ~radPs2HostDrive(void);
+
+    void Lock(void);
+
+    void Unlock(void);
 
     //
     // This member reports this physical drives capabilities
     //
-    unsigned int GetCapabilities( void );
+    unsigned int GetCapabilities(void);
 
-    const char* GetDriveName( void );
+    const char *GetDriveName(void);
 
-    CompletionStatus Initialize( void );
+    CompletionStatus Initialize(void);
 
-    CompletionStatus OpenFile( const char*        fileName, 
-                               radFileOpenFlags   flags, 
-                               bool               writeAccess, 
-                               radFileHandle*     pHandle, 
-                               unsigned int*      pSize );
+    CompletionStatus OpenFile(const char *fileName,
+                              radFileOpenFlags flags,
+                              bool writeAccess,
+                              radFileHandle *pHandle,
+                              unsigned int *pSize);
 
-    CompletionStatus CloseFile( radFileHandle handle, const char* fileName );
+    CompletionStatus CloseFile(radFileHandle handle, const char *fileName);
 
-    CompletionStatus ReadAligned( radFileHandle handle, 
-                                  const char* fileName,
+    CompletionStatus ReadAligned(radFileHandle handle,
+                                 const char *fileName,
+                                 unsigned int sector,
+                                 unsigned int numSectors,
+                                 void *pData,
+                                 radMemorySpace pDataSpace);
+
+    CompletionStatus ReadBuffered(radFileHandle handle,
+                                  const char *fileName,
                                   unsigned int sector,
                                   unsigned int numSectors,
-                                  void* pData, 
-                                  radMemorySpace pDataSpace );
- 
-    CompletionStatus ReadBuffered( radFileHandle handle,
-                                   const char* fileName,
-                                   unsigned int sector,
-                                   unsigned int numSectors,
-                                   unsigned int position,
-                                   unsigned int numBytes,
-                                   void* pData, 
-                                   radMemorySpace pDataSpace );
+                                  unsigned int position,
+                                  unsigned int numBytes,
+                                  void *pData,
+                                  radMemorySpace pDataSpace);
 
-    unsigned int GetReadBufferSectors( void );
+    unsigned int GetReadBufferSectors(void);
 
-    CompletionStatus WriteFile( radFileHandle handle, 
-                                const char* fileName,
-                                unsigned int position, 
-                                const void* pData, 
-                                unsigned int bytesToWrite, 
-                                unsigned int* bytesWritten, 
-                                unsigned int* size, 
-                                radMemorySpace pDataSpace );
+    CompletionStatus WriteFile(radFileHandle handle,
+                               const char *fileName,
+                               unsigned int position,
+                               const void *pData,
+                               unsigned int bytesToWrite,
+                               unsigned int *bytesWritten,
+                               unsigned int *size,
+                               radMemorySpace pDataSpace);
 
-    CompletionStatus DestroyFile( const char* filename );
+    CompletionStatus DestroyFile(const char *filename);
 
     //
     // radBufferedReader
@@ -132,18 +133,19 @@ public:
     IMPLEMENT_BUFFERED_READ;
 
 private:
-    void BuildFileSpec( const char* fileName, char* fullName, unsigned int size, char** pName );
+    void BuildFileSpec(const char *fileName, char *fullName, unsigned int size, char **pName);
 
     //
     // This buffer is used to when the read request is not sector aligned.
     //
-    unsigned char  m_TransferBufferSpace[ PS2_HOST_DRIVE_TRANSFER_BUFFER_SIZE + PS2_HOST_DRIVE_ALIGNMENT ];
-    unsigned char* m_TransferBuffer;
+    unsigned char m_TransferBufferSpace[
+            PS2_HOST_DRIVE_TRANSFER_BUFFER_SIZE + PS2_HOST_DRIVE_ALIGNMENT];
+    unsigned char *m_TransferBuffer;
 
     //
     // Mutex for critical sections
     //
-    IRadThreadMutex*    m_pMutex;
+    IRadThreadMutex *m_pMutex;
 };
 
 #endif // PS2HOSTDDRIVE_HPP

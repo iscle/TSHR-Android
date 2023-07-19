@@ -18,7 +18,7 @@
 //
 //=============================================================================
 
-#ifndef	RAD1394CLIENT_HPP
+#ifndef    RAD1394CLIENT_HPP
 #define RAD1394CLIENT_HPP
 
 //=============================================================================
@@ -49,43 +49,49 @@
 // running on the PS2 IOP
 //
 class rad1394Client : public IRad1394Slave,
-					  public radObject
-{
-    public:
+                      public radObject {
+public:
 
     //
     // Constructor. Nothing too interesting.
     //
-    rad1394Client( radMemoryAllocator alloc );
-    virtual ~rad1394Client( void );
-  
-	//
-	// IRad1394 Interfaces
-	//
-    void SetMemorySpace( unsigned int size );
-    unsigned int GetMemorySpace( void );
-    void ReadMemoryAsync( unsigned int address, unsigned int size, void* dest, bool atomic );
-    void WriteMemoryAsync( unsigned int address, unsigned int size, void* source, bool atomic, bool localWrite );
-    bool CheckForCompletion( void ); 
-    
-    virtual void AddRef( void );
-    virtual void Release( void );
+    rad1394Client(radMemoryAllocator alloc);
 
-    #ifdef RAD_DEBUG
-    virtual void Dump( char* pStringBuffer, unsigned int bufferSize );
-    #endif
+    virtual ~rad1394Client(void);
 
-    private:
+    //
+    // IRad1394 Interfaces
+    //
+    void SetMemorySpace(unsigned int size);
+
+    unsigned int GetMemorySpace(void);
+
+    void ReadMemoryAsync(unsigned int address, unsigned int size, void *dest, bool atomic);
+
+    void WriteMemoryAsync(unsigned int address, unsigned int size, void *source, bool atomic,
+                          bool localWrite);
+
+    bool CheckForCompletion(void);
+
+    virtual void AddRef(void);
+
+    virtual void Release(void);
+
+#ifdef RAD_DEBUG
+    virtual void Dump(char* pStringBuffer, unsigned int bufferSize);
+#endif
+
+private:
 
     //
     // This member maintains the reference count of this object.
     //
-    unsigned int m_ReferenceCount;    
+    unsigned int m_ReferenceCount;
 
     //
     // USed to peform memory allocations.
     //
-    radMemoryAllocator  m_Allocator;
+    radMemoryAllocator m_Allocator;
 
     //
     // Flag indicating if we have an outstanding operation.

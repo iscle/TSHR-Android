@@ -27,9 +27,8 @@
 #include <radmemorymonitor.hpp>
 
 
-static void * operator new[]( size_t size, radMemoryAllocator allocator )
-{
-    return ::radMemoryAlloc( allocator, size );
+static void *operator new[](size_t size, radMemoryAllocator allocator) {
+    return ::radMemoryAlloc(allocator, size);
 }
 
 //=============================================================================
@@ -37,48 +36,44 @@ static void * operator new[]( size_t size, radMemoryAllocator allocator )
 //=============================================================================
 
 void radControllerBufferCreate
-( 
-    IRadControllerBuffer**  ppIRadControllerBuffer,
-    radMemoryAllocator      alloc 
-)
-{
-    *ppIRadControllerBuffer = new( alloc ) ControllerBuffer( alloc );
+        (
+                IRadControllerBuffer **ppIRadControllerBuffer,
+                radMemoryAllocator alloc
+        ) {
+    *ppIRadControllerBuffer = new(alloc) ControllerBuffer(alloc);
 }
 
 //=============================================================================
 // ControllerBuffer::ControllerBuffer
 //=============================================================================
 
-ControllerBuffer::ControllerBuffer( radMemoryAllocator allocator )
-    :
-    m_ReferenceCount( 1 ),
-    m_BufferArray( NULL ),
-    m_QueueSize( 0 ),
-    m_PacketSize( 0 ),
-    m_HeadIndex( 0 ),
-    m_TailIndex( 0 ),
-    m_PacketArray( NULL ),
-    m_Allocator( allocator )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "ControllerBuffer" );
+ControllerBuffer::ControllerBuffer(radMemoryAllocator allocator)
+        :
+        m_ReferenceCount(1),
+        m_BufferArray(NULL),
+        m_QueueSize(0),
+        m_PacketSize(0),
+        m_HeadIndex(0),
+        m_TailIndex(0),
+        m_PacketArray(NULL),
+        m_Allocator(allocator) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "ControllerBuffer");
 }
 
 //=============================================================================
 // ControllerBuffer::~ControllerBuffer
 //=============================================================================
-    
-ControllerBuffer::~ControllerBuffer( void )
-{
-    radMemoryFree( m_Allocator, m_BufferArray );
-    radMemoryFree( m_Allocator, m_PacketArray );
+
+ControllerBuffer::~ControllerBuffer(void) {
+    radMemoryFree(m_Allocator, m_BufferArray);
+    radMemoryFree(m_Allocator, m_PacketArray);
 }
 
 //=============================================================================
 // ControllerBuffer::AddRef
 //=============================================================================
 
-void ControllerBuffer::AddRef( void )
-{
+void ControllerBuffer::AddRef(void) {
     m_ReferenceCount++;
 }
 
@@ -86,12 +81,10 @@ void ControllerBuffer::AddRef( void )
 // ControllerBuffer::Release
 //=============================================================================
 
-void ControllerBuffer::Release( void )
-{
+void ControllerBuffer::Release(void) {
     m_ReferenceCount--;
 
-    if( m_ReferenceCount == 0 )
-    {
+    if (m_ReferenceCount == 0) {
         delete this;
     }
 }
@@ -100,43 +93,39 @@ void ControllerBuffer::Release( void )
 // ControllerBuffer::Initialize
 //=============================================================================
 
-void ControllerBuffer::Initialize( unsigned int queueSize, unsigned int packetSize )
-{
-    rAssert( queueSize != 0 && packetSize != 0 );
+void ControllerBuffer::Initialize(unsigned int queueSize, unsigned int packetSize) {
+    rAssert(queueSize != 0 && packetSize != 0);
 
     //
     // To make sure no one calls initialize twice.
     //
-    rAssert( m_QueueSize == 0 );
+    rAssert(m_QueueSize == 0);
 
     m_PacketSize = packetSize;
 
-    SetQueueSize( queueSize );
+    SetQueueSize(queueSize);
 }
 
 //=============================================================================
 // ControllerBuffer::SetQueueSize
 //=============================================================================
 
-void ControllerBuffer::SetQueueSize( unsigned int queueSize )
-{
-    if( m_BufferArray != NULL && m_PacketArray != NULL )
-    {   
-        delete( m_BufferArray );
-        delete( m_PacketArray );
+void ControllerBuffer::SetQueueSize(unsigned int queueSize) {
+    if (m_BufferArray != NULL && m_PacketArray != NULL) {
+        delete (m_BufferArray);
+        delete (m_PacketArray);
     }
 
     m_QueueSize = queueSize;
 
-    m_BufferArray = new(m_Allocator) unsigned char[ m_QueueSize * m_PacketSize ];
-    m_PacketArray = new(m_Allocator) unsigned char*[ m_QueueSize * sizeof( unsigned char* ) ];
+    m_BufferArray = new(m_Allocator) unsigned char[m_QueueSize * m_PacketSize];
+    m_PacketArray = new(m_Allocator) unsigned char *[m_QueueSize * sizeof(unsigned char *)];
 
-    rAssert( m_BufferArray != NULL );
-    rAssert( m_PacketArray != NULL );
+    rAssert(m_BufferArray != NULL);
+    rAssert(m_PacketArray != NULL);
 
-    for( unsigned int i=0; i<m_QueueSize; i++ )
-    {
-        m_PacketArray[ i ] = m_BufferArray + ( m_PacketSize * i );
+    for (unsigned int i = 0; i < m_QueueSize; i++) {
+        m_PacketArray[i] = m_BufferArray + (m_PacketSize * i);
     }
 
     m_HeadIndex = 0;
@@ -147,21 +136,19 @@ void ControllerBuffer::SetQueueSize( unsigned int queueSize )
 // ControllerBuffer::EnqueuePacket
 //=============================================================================
 
-void ControllerBuffer::EnqueuePacket( void* pPacket )
-{
-    memcpy( (void*)m_PacketArray[ m_TailIndex ], pPacket, m_PacketSize );
+void ControllerBuffer::EnqueuePacket(void *pPacket) {
+    memcpy((void *) m_PacketArray[m_TailIndex], pPacket, m_PacketSize);
 
-    m_TailIndex = ( m_TailIndex + 1 ) % m_QueueSize;
+    m_TailIndex = (m_TailIndex + 1) % m_QueueSize;
 
     //
     // If the queue is full, move the head index to point to the oldest 
     // item.
     //
-    if( m_TailIndex == m_HeadIndex )
-    {
-        rDebugString( "radControllerSystem: Buffer Overflow\n" );
+    if (m_TailIndex == m_HeadIndex) {
+        rDebugString("radControllerSystem: Buffer Overflow\n");
 
-        m_HeadIndex = ( m_HeadIndex + 1 ) % m_QueueSize;
+        m_HeadIndex = (m_HeadIndex + 1) % m_QueueSize;
     }
 }
 
@@ -169,13 +156,11 @@ void ControllerBuffer::EnqueuePacket( void* pPacket )
 // ControllerBuffer::PeekNextPacket
 //=============================================================================
 
-bool ControllerBuffer::PeekNextPacket( void* pBuffer, int peekSize )
-{
-    if( m_HeadIndex == m_TailIndex )
-    {
+bool ControllerBuffer::PeekNextPacket(void *pBuffer, int peekSize) {
+    if (m_HeadIndex == m_TailIndex) {
         return false;
     }
-    memcpy( pBuffer, (void*)m_PacketArray[ m_HeadIndex ], peekSize );
+    memcpy(pBuffer, (void *) m_PacketArray[m_HeadIndex], peekSize);
     return true;
 }
 
@@ -183,15 +168,13 @@ bool ControllerBuffer::PeekNextPacket( void* pBuffer, int peekSize )
 // ControllerBuffer::DequeuePacket
 //=============================================================================
 
-bool ControllerBuffer::DequeuePacket( void* pNextPacket )
-{
-    if( m_HeadIndex == m_TailIndex )
-    {
+bool ControllerBuffer::DequeuePacket(void *pNextPacket) {
+    if (m_HeadIndex == m_TailIndex) {
         return false;
     }
 
-    memcpy( pNextPacket, (void*)m_PacketArray[ m_HeadIndex ], m_PacketSize );
-    m_HeadIndex = ( m_HeadIndex + 1 ) % m_QueueSize;
+    memcpy(pNextPacket, (void *) m_PacketArray[m_HeadIndex], m_PacketSize);
+    m_HeadIndex = (m_HeadIndex + 1) % m_QueueSize;
 
     return true;
 }
@@ -200,8 +183,7 @@ bool ControllerBuffer::DequeuePacket( void* pNextPacket )
 // ControllerBuffer::Flush
 //=============================================================================
 
-void ControllerBuffer::Flush( void )
-{
+void ControllerBuffer::Flush(void) {
     m_HeadIndex = 0;
     m_TailIndex = 0;
 }

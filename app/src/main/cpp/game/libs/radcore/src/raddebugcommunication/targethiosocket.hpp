@@ -21,7 +21,7 @@
 //
 //=============================================================================
 
-#ifndef	TARGETHIOSOCKET_HPP
+#ifndef    TARGETHIOSOCKET_HPP
 #define TARGETHIOSOCKET_HPP
 
 //=============================================================================
@@ -47,91 +47,99 @@
 // Definition for the target side socket implementation using the GameCube HostIO
 // communcation system.
 //
-class CTargetHIOSocket : public radSocket
-{
-    public:
+class CTargetHIOSocket : public radSocket {
+public:
 
-    CTargetHIOSocket( s32 channel = 1 );
-    virtual ~CTargetHIOSocket( void );
+    CTargetHIOSocket(s32 channel = 1);
+
+    virtual ~CTargetHIOSocket(void);
 
     //
     // Implement the various socket functions. Note this is not a true sockets implementation.
     //
-    virtual int socket( int af, int type, int protocol);
-    virtual int closesocket( int socket );
-    virtual int setsockopt( int socket, int level, int optname, const char* optval, int optlen);
-    virtual int accept( int socket, struct sockaddr* addr, int* addrlen);
-    virtual int bind( int socket, struct sockaddr* addr, int addrlen);
-    virtual int listen( int socket, int backlog);
-    virtual int connect( int sock, const struct sockaddr* addr, int addrlen );
-    virtual int recv( int socket, char* buf, int len, int flags);
-    virtual int send( int socket, const char* buf, int len, int flags);
-    virtual int lasterror( int socket );
+    virtual int socket(int af, int type, int protocol);
 
-    private:
+    virtual int closesocket(int socket);
+
+    virtual int setsockopt(int socket, int level, int optname, const char *optval, int optlen);
+
+    virtual int accept(int socket, struct sockaddr *addr, int *addrlen);
+
+    virtual int bind(int socket, struct sockaddr *addr, int addrlen);
+
+    virtual int listen(int socket, int backlog);
+
+    virtual int connect(int sock, const struct sockaddr *addr, int addrlen);
+
+    virtual int recv(int socket, char *buf, int len, int flags);
+
+    virtual int send(int socket, const char *buf, int len, int flags);
+
+    virtual int lasterror(int socket);
+
+private:
 
     //
     // Static function to obtain invoked when USB channels enumerated.
     //
-    static BOOL HIOEnumerationCallback( s32 chan );
-    
+    static BOOL HIOEnumerationCallback(s32 chan);
+
     //
     // Static used to signal completion of asynch reads and writes
     //
-    static void ReadWriteCallback( void );
+    static void ReadWriteCallback(void);
 
     //
     // Member to perform the host communication
     //
-    void DoHIOCommunication( void );
+    void DoHIOCommunication(void);
 
     //
     // Members to read, write and resolve state.
     //
-    bool ReadData( void );
-    bool WriteData( void );
-    void ResolveState( void );
+    bool ReadData(void);
+
+    bool WriteData(void);
+
+    void ResolveState(void);
 
     //
     // Helper to round up a number to a multiple of 32
     //
-    unsigned int RoundUpTo32( unsigned int value );    
+    unsigned int RoundUpTo32(unsigned int value);
 
-    public:
+public:
 
-    void* operator new( size_t size, radMemoryAllocator alloc )
-    {
+    void *operator new(size_t size, radMemoryAllocator alloc) {
         s_Allocator = alloc;
-        return( radMemoryAllocAligned( alloc, size, 32 ) );
-   }    
+        return (radMemoryAllocAligned(alloc, size, 32));
+    }
 
-    void operator delete( void * pMemory )
-    {
-	    radMemoryFreeAligned( s_Allocator, pMemory );
+    void operator delete(void *pMemory) {
+        radMemoryFreeAligned(s_Allocator, pMemory);
     }
 
     //
     // Helper to find socket index from channel index.
     //
-    unsigned int GetSocketIndex( unsigned int channelIndex );
-    
+    unsigned int GetSocketIndex(unsigned int channelIndex);
+
     //
     // Helper to get a free buffer.
     //
-    unsigned int GetBufferIndex( HioChannelControlBlock* pControlBlock );
+    unsigned int GetBufferIndex(HioChannelControlBlock *pControlBlock);
 
 
-    private:
+private:
 
     //
     // These data structure are used to manage socket information 
     // maintained in memory.
     //
-    enum SocketState
-    {
+    enum SocketState {
         Free,               // Socket is not in use
         Listen,             // Socket is allocated and listening
-        Connecting,         // Socket is connecting ( not currently used on target )
+        Connecting,         // Socket is connecting (not currently used on target)
         Connected,          // Socket is connected,
         PendingDisconnect,  // Waiting for data to be sent before disconnect.
         Disconnected,       // Local Disconnected
@@ -141,51 +149,50 @@ class CTargetHIOSocket : public radSocket
     //
     // This structure is cooked to keep alignment to 32 bytes.
     //
-  	struct Socket
-	{
-		SocketState     m_State;                          // Maintains state of the connection.
-        unsigned int    m_HioChannel;                     // Shared memory index
-		unsigned int    m_BytesInTxBuffer;                // Bytes queued for transmision.
-		unsigned int    m_BytesInRxBuffer;                // Bytes received
-        unsigned int    m_Pad[ 4 ];                       // Keep 32 byte alignment.
-		unsigned char   m_TxBuffer[ HIO_CHANNEL_SIZE ];   // Buffer for sending data
-		unsigned char   m_RxBuffer[ HIO_CHANNEL_SIZE ];   // Buffer for receiving data.
-	};
+    struct Socket {
+        SocketState m_State;                          // Maintains state of the connection.
+        unsigned int m_HioChannel;                     // Shared memory index
+        unsigned int m_BytesInTxBuffer;                // Bytes queued for transmision.
+        unsigned int m_BytesInRxBuffer;                // Bytes received
+        unsigned int m_Pad[4];                       // Keep 32 byte alignment.
+        unsigned char m_TxBuffer[HIO_CHANNEL_SIZE];   // Buffer for sending data
+        unsigned char m_RxBuffer[HIO_CHANNEL_SIZE];   // Buffer for receiving data.
+    };
 
-    Socket m_SocketArray[ HIO_CHANNEL_COUNT ] ATTRIBUTE_ALIGN( 32 );
+    Socket m_SocketArray[HIO_CHANNEL_COUNT]
+    ATTRIBUTE_ALIGN(32);
 
     //
     // This is used to indentiy the socket we are waiting for a connection on.
     //
-    unsigned int        m_ListenSocketIndex;
+    unsigned int m_ListenSocketIndex;
 
     //
     // Thise member indicates the time we last hear from the host.
     //
-    unsigned int        m_TimeOfLastContact;
-	unsigned int        m_TimeOfLastService;
+    unsigned int m_TimeOfLastContact;
+    unsigned int m_TimeOfLastService;
 
     //
     // Static flag set when a asych read or write completes.
     //
-    static bool         s_AsyncReadWriteComplete;
+    static bool s_AsyncReadWriteComplete;
 
     //
     // Maintains a count of open sockets. Used to determine shutdown condition.
     //
-    unsigned int        m_OpenSocketCount;
+    unsigned int m_OpenSocketCount;
 
     //
     // Static obtained when HIO devices enumerated.
     //
-    static  s32         s_Channel;
+    static s32 s_Channel;
 
     //
     // This maintains the state of our communication state machine.
     //
-    enum ComState
-    {
-		Init,
+    enum ComState {
+        Init,
         Idle,
         ReadingControlBlock,
         ReReadingControlBlock,
@@ -193,25 +200,26 @@ class CTargetHIOSocket : public radSocket
         WritingData,
         WritingControlBlock
     };
-    ComState            m_ComState;
-    
+    ComState m_ComState;
+
     //
     // Need an index to determine where we are in the current read/write process.
     //
-    unsigned int        m_ReadWriteIndex;  
-    
-    HioMemoryMap*       m_pHioMemory;
-    
+    unsigned int m_ReadWriteIndex;
+
+    HioMemoryMap *m_pHioMemory;
+
     //    
     // Controls which one gets next send buffer.
     //
-    unsigned int    m_LastSendIndex;    
-    unsigned int    m_CurrentSendIndex;                   
+    unsigned int m_LastSendIndex;
+    unsigned int m_CurrentSendIndex;
 
     //
     // This buffer is used when we read/write the HIO shared memory control block.
     //
-    HioChannelControlBlock m_ChannelControlBlock ATTRIBUTE_ALIGN( 32 );
+    HioChannelControlBlock m_ChannelControlBlock
+    ATTRIBUTE_ALIGN(32);
 
     //
     // Need to have a static for the allocator, since this is used to free the aligned memory.

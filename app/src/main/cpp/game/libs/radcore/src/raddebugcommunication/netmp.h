@@ -14,47 +14,47 @@
 #define _NETMP_H
 
 typedef struct {
-	u_char code;
-	u_char result;
+    u_char code;
+    u_char result;
 } NETMP_HDR;
 
 /* Message Code */
-#define NETMP_CODE_CONNECT	0
-#define NETMP_CODE_CONNECTR	1
-#define NETMP_CODE_RESET	2
-#define NETMP_CODE_RESETR	3
-#define NETMP_CODE_MESSAGE	4
-#define NETMP_CODE_MESSAGER	5
-#define NETMP_CODE_STATUS	6
-#define NETMP_CODE_STATUSR	7
-#define NETMP_CODE_KILL		8
-#define NETMP_CODE_KILLR	9
-#define NETMP_CODE_VERSION	10
-#define NETMP_CODE_VERSIONR	11
+#define NETMP_CODE_CONNECT    0
+#define NETMP_CODE_CONNECTR    1
+#define NETMP_CODE_RESET    2
+#define NETMP_CODE_RESETR    3
+#define NETMP_CODE_MESSAGE    4
+#define NETMP_CODE_MESSAGER    5
+#define NETMP_CODE_STATUS    6
+#define NETMP_CODE_STATUSR    7
+#define NETMP_CODE_KILL        8
+#define NETMP_CODE_KILLR    9
+#define NETMP_CODE_VERSION    10
+#define NETMP_CODE_VERSIONR    11
 
 /* Result Code */
-#define NETMP_ERR_OK		0
-#define NETMP_ERR_INVAL		1
-#define NETMP_ERR_BUSY		2
-#define NETMP_ERR_NOTCONN	3
-#define NETMP_ERR_ALREADYCONN	4
-#define NETMP_ERR_NOMEM		5
-#define NETMP_ERR_NOPROTO	6
+#define NETMP_ERR_OK        0
+#define NETMP_ERR_INVAL        1
+#define NETMP_ERR_BUSY        2
+#define NETMP_ERR_NOTCONN    3
+#define NETMP_ERR_ALREADYCONN    4
+#define NETMP_ERR_NOMEM        5
+#define NETMP_ERR_NOPROTO    6
 
 typedef struct {
-	u_short reserved;
-	u_int param[4];
+    u_short reserved;
+    u_int param[4];
 } NETMP_BOOTP;
 
 typedef struct {
-	u_char  pri;
-	u_char  reserved;
-	u_short proto;
+    u_char pri;
+    u_char reserved;
+    u_short proto;
 } NETMP_PROTOS;
 
-#define NETMP_PRI_DEFAULT	0x80
+#define NETMP_PRI_DEFAULT    0x80
 
-#endif 
+#endif
 
 // Local variables:
 // tab-width: 4

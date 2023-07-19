@@ -34,21 +34,27 @@
 //============================================================================
 
 struct IRadControllerOutputPointDirectInput
-    :
-    public IRadControllerOutputPoint
-{
-    virtual const char * GetName( void ) = 0;
-    virtual const char * GetType( void ) = 0;
-    virtual float GetGain( void ) = 0;
-    virtual void  SetGain( float value ) = 0;
+        :
+                public IRadControllerOutputPoint {
+    virtual const char *GetName(void) = 0;
 
-    virtual void UpdateEffect( LPCDIEFFECT pEffect ) = 0;
-    virtual void Start( void ) = 0;
-    virtual void Stop( void ) = 0;
+    virtual const char *GetType(void) = 0;
 
-    virtual void Init( IDirectInputDevice8* pDevice ) = 0;
-    virtual void SendOutput( void ) = 0;
-    virtual void ReleaseEffect( void ) = 0;
+    virtual float GetGain(void) = 0;
+
+    virtual void SetGain(float value) = 0;
+
+    virtual void UpdateEffect(LPCDIEFFECT pEffect) = 0;
+
+    virtual void Start(void) = 0;
+
+    virtual void Stop(void) = 0;
+
+    virtual void Init(IDirectInputDevice8 *pDevice) = 0;
+
+    virtual void SendOutput(void) = 0;
+
+    virtual void ReleaseEffect(void) = 0;
 };
 
 //============================================================================
@@ -56,118 +62,122 @@ struct IRadControllerOutputPointDirectInput
 //============================================================================
 #define MAX_FORCES 8 // Maximum number of forces set for each force Type.
 
-enum eForceType
-{
-    SPRING, 
-    CONSTANT, 
-    DAMPER, 
-    SIDE_COLLISION, 
-    FRONTAL_COLLISION, 
-    DIRT_ROAD, BUMPY_ROAD, 
-    SLIPPERY_ROAD, 
-    SURFACE_EFFECT, 
+enum eForceType {
+    SPRING,
+    CONSTANT,
+    DAMPER,
+    SIDE_COLLISION,
+    FRONTAL_COLLISION,
+    DIRT_ROAD, BUMPY_ROAD,
+    SLIPPERY_ROAD,
+    SURFACE_EFFECT,
     CAR_AIRBORNE,
     NUMBER_FORCE_EFFECTS
 };
 
-enum ePeriodicType
-{
-    SINE, 
-    SQUARE, 
-    TRIANGLE, 
-    SAWTOOTHUP, 
+enum ePeriodicType {
+    SINE,
+    SQUARE,
+    TRIANGLE,
+    SAWTOOTHUP,
     SAWTOOTHDOWN
 };
 
-enum eConditionForceNumber
-{
-    CONDITION_0, 
-    CONDITION_1, 
-    CONDITION_2, 
-    CONDITION_3, 
-    CONDITION_4, 
-    CONDITION_5, 
-    CONDITION_6, 
+enum eConditionForceNumber {
+    CONDITION_0,
+    CONDITION_1,
+    CONDITION_2,
+    CONDITION_3,
+    CONDITION_4,
+    CONDITION_5,
+    CONDITION_6,
     CONDITION_7
 };
 
-enum ePeriodicForceNumber
-{
-    PERIODIC_0, 
-    PERIODIC_1, 
-    PERIODIC_2, 
-    PERIODIC_3, 
-    PERIODIC_4, 
-    PERIODIC_5, 
-    PERIODIC_6, 
+enum ePeriodicForceNumber {
+    PERIODIC_0,
+    PERIODIC_1,
+    PERIODIC_2,
+    PERIODIC_3,
+    PERIODIC_4,
+    PERIODIC_5,
+    PERIODIC_6,
     PERIODIC_7
 };
 
-enum eConstantForceNumber
-{
-    CONSTANT_0, 
-    CONSTANT_1, 
-    CONSTANT_2, 
-    CONSTANT_3, 
-    CONSTANT_4, 
-    CONSTANT_5, 
-    CONSTANT_6, 
+enum eConstantForceNumber {
+    CONSTANT_0,
+    CONSTANT_1,
+    CONSTANT_2,
+    CONSTANT_3,
+    CONSTANT_4,
+    CONSTANT_5,
+    CONSTANT_6,
     CONSTANT_7
 };
 
-enum eRampForceNumber
-{
-    RAMP_0, 
-    RAMP_1, 
-    RAMP_2, 
-    RAMP_3, 
-    RAMP_4, 
-    RAMP_5, 
-    RAMP_6, 
+enum eRampForceNumber {
+    RAMP_0,
+    RAMP_1,
+    RAMP_2,
+    RAMP_3,
+    RAMP_4,
+    RAMP_5,
+    RAMP_6,
     RAMP_7
 };
 
 class ControllerOutputPointDirectInput
-    :
-    public IRadControllerOutputPoint,
-    public radRefCount
-{
+        :
+                public IRadControllerOutputPoint,
+                public radRefCount {
 public:
 
-    IMPLEMENT_REFCOUNTED( "ControllerOutputPointDirectInput" )
+    IMPLEMENT_REFCOUNTED("ControllerOutputPointDirectInput")
 
-    ControllerOutputPointDirectInput( LPCDIEFFECTINFO pdei, DWORD dataOffset );
-    ~ControllerOutputPointDirectInput( void );
+    ControllerOutputPointDirectInput(LPCDIEFFECTINFO pdei, DWORD dataOffset);
 
-    virtual const char * GetName( void );
-    virtual const char * GetType( void );
-    virtual float GetGain( void );
-    virtual void  SetGain( float value );
-    virtual void UpdateEffect( LPCDIEFFECT pEffect );
-    
-    virtual void Start( void );
-    virtual void Stop( void );
-    
-    virtual void Init( IDirectInputDevice8* pDevice );
-    virtual void SendOutput( void );
-    
-    void ReleaseEffect( void );
-    void CreateEffect( GUID guidEffect, LPCDIEFFECT effect, int forceNumber );
-    void SetParams( LPCDIEFFECT effect, int forceNumber );
+    ~ControllerOutputPointDirectInput(void);
+
+    virtual const char *GetName(void);
+
+    virtual const char *GetType(void);
+
+    virtual float GetGain(void);
+
+    virtual void SetGain(float value);
+
+    virtual void UpdateEffect(LPCDIEFFECT pEffect);
+
+    virtual void Start(void);
+
+    virtual void Stop(void);
+
+    virtual void Init(IDirectInputDevice8 *pDevice);
+
+    virtual void SendOutput(void);
+
+    void ReleaseEffect(void);
+
+    void CreateEffect(GUID guidEffect, LPCDIEFFECT effect, int forceNumber);
+
+    void SetParams(LPCDIEFFECT effect, int forceNumber);
 
     long GetOffset() const { return m_diActuator; }
+
 protected:
-    HRESULT UnloadEffect( int forceNumber );
+    HRESULT UnloadEffect(int forceNumber);
+
 protected:
-    LPDIRECTINPUTDEVICE8    m_pDIDevice;
-    LPDIRECTINPUTEFFECT     m_pEffectID[MAX_FORCES];
-    DIEFFECTINFO            m_diEffectInfo;
-    DWORD                   m_diActuator;
-    
-    bool                    m_bEffectPlaying[MAX_FORCES];
-    float                   m_fGain;
-    int                     m_iForceNumber; // Not being used right now.. but if you wish to
-                                            // have multiple forces per output point... use it.
+    LPDIRECTINPUTDEVICE8 m_pDIDevice;
+    LPDIRECTINPUTEFFECT m_pEffectID[MAX_FORCES];
+    DIEFFECTINFO m_diEffectInfo;
+    DWORD m_diActuator;
+
+    bool m_bEffectPlaying[MAX_FORCES];
+    float m_fGain;
+    int m_iForceNumber; // Not being used right now.. but if you wish to
+    // have multiple forces per output point... use it.
 };
 
 //=============================================================================
@@ -177,10 +187,9 @@ protected:
 //=============================================================================
 // class ConstantForceOutputPoint
 //=============================================================================
-class ConstantForceOutputPoint : public ControllerOutputPointDirectInput
-{
+class ConstantForceOutputPoint : public ControllerOutputPointDirectInput {
 public:
-   
+
 protected:
 
 private:
@@ -189,8 +198,7 @@ private:
 //=============================================================================
 // class ConditionalForceOutputPoint
 //=============================================================================
-class ConditionalForceOutputPoint : public ControllerOutputPointDirectInput
-{
+class ConditionalForceOutputPoint : public ControllerOutputPointDirectInput {
 public:
 protected:
 private:
@@ -199,8 +207,7 @@ private:
 //=============================================================================
 // class PeriodicForceOutputPoint
 //=============================================================================
-class PeriodicForceOutputPoint : public ControllerOutputPointDirectInput
-{
+class PeriodicForceOutputPoint : public ControllerOutputPointDirectInput {
 public:
 protected:
 private:

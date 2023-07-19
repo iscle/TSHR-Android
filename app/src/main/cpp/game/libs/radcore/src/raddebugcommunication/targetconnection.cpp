@@ -25,6 +25,7 @@
 //=============================================================================
 
 #include "pch.hpp"
+
 #ifdef RAD_WIN32
 #include <windows.h>
 #endif // RAD_WIN32
@@ -53,9 +54,11 @@ extern "C"
 #include "targetconnection.hpp"     // Connection objects
 #include "protocol.hpp"             // Protocol
 #include "targetsocketchannel.hpp"
+
 #ifdef RAD_GAMECUBE
 #include "targethiosocket.hpp"
 #endif
+
 #include "decitypes.h"
 #include "deci2x.h"
 #include "netmp.h"
@@ -75,7 +78,7 @@ const unsigned int MessageTimeout = 2000;       // Milliseconds
 // 
 // Translate socket error codes and error macro
 //
-#define WSAGetLastError( ) sn_errno( m_Socket )
+#define WSAGetLastError() sn_errno(m_Socket)
 
 #endif
 
@@ -103,54 +106,55 @@ const unsigned int MessageTimeout = 2000;       // Milliseconds
 //------------------------------------------------------------------------------
 
 rDbgComTargetConnection::rDbgComTargetConnection
-( 
-    SOCKET lsocket,
-    rDbgComTarget* pTarget
-)
-    :
-    m_ReferenceCount( 1 ),
-    m_Socket( lsocket ),
-    m_pParentTarget( pTarget ),
-    m_ConnectionState( WaitForNETMPConnect ),
-    m_TimerActive( false ),
-    m_Active( true )
-{
-    Lock( );
+        (
+                SOCKET lsocket,
+                rDbgComTarget *pTarget
+        )
+        :
+        m_ReferenceCount(1),
+        m_Socket(lsocket),
+        m_pParentTarget(pTarget),
+        m_ConnectionState(WaitForNETMPConnect),
+        m_TimerActive(false),
+        m_Active(true) {
+    Lock();
 
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "rDbgComTargetConnection" );
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "rDbgComTargetConnection");
     //  
     // Make sure we update the parent reference.
     //
 
-    m_pParentTarget->AddRef( );
+    m_pParentTarget->AddRef();
 
     //  
     // Set socket option to linger so unsent data is sent when we close. Set time-out
     // to zero as this was the  only way the close was detected by the host.
     //
-    linger  Linger;
+    linger Linger;
     Linger.l_onoff = 0;
     Linger.l_linger = 0;
-    int result = m_pParentTarget->m_SocketImp->setsockopt( m_Socket, SOL_SOCKET, SO_LINGER, (const char*) &Linger, sizeof( linger ) );
-    rAssert( result == 0 );    
+    int result = m_pParentTarget->m_SocketImp->setsockopt(m_Socket, SOL_SOCKET, SO_LINGER,
+                                                          (const char *) &Linger, sizeof(linger));
+    rAssert(result == 0);
 
     //  
     // Set socket option to send keep alive messages
     //
 #ifndef RAD_XBOX
     int KeepAlive = 1;
-    result = m_pParentTarget->m_SocketImp->setsockopt( m_Socket, SOL_SOCKET, SO_KEEPALIVE, (const char*) &KeepAlive, sizeof( int ) );
-    rAssert( result == 0 );    
+    result = m_pParentTarget->m_SocketImp->setsockopt(m_Socket, SOL_SOCKET, SO_KEEPALIVE,
+                                                      (const char *) &KeepAlive, sizeof(int));
+    rAssert(result == 0);
 #endif // !RAD_XBOX
- 
+
     //  
     // Lets set up our receiver. We are expectin teh DECI connect message in a timely
     // manner.
     //
     m_CurrentReadAddress = m_RxBuffer;
-    m_CurrentBytesToRead = sizeof(DECI2_HDR) + sizeof(NETMP_HDR) + sizeof( NETMP_PROTOS ); 
-    rAssert( m_CurrentBytesToRead <= sizeof( m_RxBuffer ) );
-    m_StartTime = radTimeGetMilliseconds( );
+    m_CurrentBytesToRead = sizeof(DECI2_HDR) + sizeof(NETMP_HDR) + sizeof(NETMP_PROTOS);
+    rAssert(m_CurrentBytesToRead <= sizeof(m_RxBuffer));
+    m_StartTime = radTimeGetMilliseconds();
     m_TimerActive = true;
 
     m_CurrentBytesToWrite = 0;
@@ -158,9 +162,9 @@ rDbgComTargetConnection::rDbgComTargetConnection
     //
     // Finally queue to the dispatcher. This is what keeps this object reference.
     //
-    m_pParentTarget->m_Dispatcher->QueueCallback( this, NULL );
+    m_pParentTarget->m_Dispatcher->QueueCallback(this, NULL);
 
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -173,20 +177,18 @@ rDbgComTargetConnection::rDbgComTargetConnection
 // Notes:
 //------------------------------------------------------------------------------
 
-rDbgComTargetConnection::~rDbgComTargetConnection( void )
-{
-    radSingleLock< IRadThreadMutex > singleLock( this, true );
+rDbgComTargetConnection::~rDbgComTargetConnection(void) {
+    radSingleLock <IRadThreadMutex> singleLock(this, true);
 
     //
     // Check if connected. If so remove ourself from the table.
     //
-    if( m_ConnectionState == Connected )
-    {
-        ProtocolInfoEntry* pEntry = m_pParentTarget->FindProtocol( m_Protocol );
-        
-        rAssert( pEntry != NULL );
-        rAssert( pEntry->m_State == ProtocolInfoEntry::ConnectionPending );       
-        rAssert( pEntry->m_pConnection == this );
+    if (m_ConnectionState == Connected) {
+        ProtocolInfoEntry *pEntry = m_pParentTarget->FindProtocol(m_Protocol);
+
+        rAssert(pEntry != NULL);
+        rAssert(pEntry->m_State == ProtocolInfoEntry::ConnectionPending);
+        rAssert(pEntry->m_pConnection == this);
 
         pEntry->m_pConnection = NULL;
         pEntry->m_State = ProtocolInfoEntry::Free;
@@ -195,19 +197,18 @@ rDbgComTargetConnection::~rDbgComTargetConnection( void )
     //
     // close the socket if non zero.
     //
-    if( m_Socket != 0 )
-    {
-        m_pParentTarget->m_SocketImp->closesocket( m_Socket );
+    if (m_Socket != 0) {
+        m_pParentTarget->m_SocketImp->closesocket(m_Socket);
     }
- 
+
     //
     // Lets drop the references to things we hold.
     //
-    m_pParentTarget->Release( );
-}            
+    m_pParentTarget->Release();
+}
 
 //=============================================================================
-// Function:    rDbgComTargetConnection::OnDispatchEvent( )
+// Function:    rDbgComTargetConnection::OnDispatchEvent()
 //=============================================================================
 // Description: We use this member to interact with the socket. 
 //              
@@ -216,118 +217,103 @@ rDbgComTargetConnection::~rDbgComTargetConnection( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void rDbgComTargetConnection::OnDispatchCallack( void* userData )
-{
-    radSingleLock< IRadThreadMutex > singleLock( this, true );
+void rDbgComTargetConnection::OnDispatchCallack(void *userData) {
+    radSingleLock <IRadThreadMutex> singleLock(this, true);
 
     (void) userData;
 
     //
     // If we are no longer active, return.
     //
-    if( !m_Active )
-    {
+    if (!m_Active) {
         return;
     }
 
     //
     // First check for time-outs if the timer is active.
     //
-    if( m_TimerActive )
-    {
+    if (m_TimerActive) {
         //
         // Get the current time and check it against the time-out.
         //
-        if( (radTimeGetMilliseconds( ) - m_StartTime) > MessageTimeout )
-        {
+        if ((radTimeGetMilliseconds() - m_StartTime) > MessageTimeout) {
             //
             // Here we have a time-out. All we need to do is return. This will
             // cause this object to be deleted as the dispatcher will no longer be
             // holding a reference.
- 
+
             return;
         }
     }
-    
+
     //
     // Check if we are receiving data. If so attempt to receive it.
     //
-    if( m_CurrentBytesToRead != 0 )
-    {
+    if (m_CurrentBytesToRead != 0) {
         //
         // Here we are receiving data. Attempt to read the data.
         //
-        int bytesRead = m_pParentTarget->m_SocketImp->recv( m_Socket, (char*) m_CurrentReadAddress, m_CurrentBytesToRead, 0 );
-        if( bytesRead <= 0 )
-        {
+        int bytesRead = m_pParentTarget->m_SocketImp->recv(m_Socket, (char *) m_CurrentReadAddress,
+                                                           m_CurrentBytesToRead, 0);
+        if (bytesRead <= 0) {
             //
             // Check last error. If it is not a would block indication, things are not
             // go and we just return.
             //
-            if( WSAEWOULDBLOCK != m_pParentTarget->m_SocketImp->lasterror( m_Socket ) )
-            {
-                 return;
+            if (WSAEWOULDBLOCK != m_pParentTarget->m_SocketImp->lasterror(m_Socket)) {
+                return;
             }
-        }
-        else
-        {
+        } else {
             //
             // Update number of bytes received.
             //
             m_CurrentReadAddress += bytesRead;
             m_CurrentBytesToRead -= bytesRead;
-            if( m_CurrentBytesToRead == 0 )
-            {
+            if (m_CurrentBytesToRead == 0) {
                 //
                 // Here we have received data. Process the packet. Will return false
                 // if problem.
                 //
-                if( !ProcessReceiveComplete( ) )
-                {
+                if (!ProcessReceiveComplete()) {
                     //
                     // Return. Things are not good.
                     //
 
                     return;
-                }               
+                }
             }
         }
-    }     
-                        
+    }
+
     //
     // Check if any more data to send.
     //  
-    if( m_CurrentBytesToWrite != 0 )
-    {
+    if (m_CurrentBytesToWrite != 0) {
         //
         // Here we have data to send.
         //
-        int bytesWritten = m_pParentTarget->m_SocketImp->send( m_Socket, (char*) m_CurrentWriteAddress, m_CurrentBytesToWrite, 0 );
-        if( bytesWritten <= 0 )
-        {
+        int bytesWritten = m_pParentTarget->m_SocketImp->send(m_Socket,
+                                                              (char *) m_CurrentWriteAddress,
+                                                              m_CurrentBytesToWrite, 0);
+        if (bytesWritten <= 0) {
             //
             // Check last error. If it is not a would block indication, things are not
             // go and we just return.
             //
-            if( WSAEWOULDBLOCK != m_pParentTarget->m_SocketImp->lasterror( m_Socket ) )
-            {
+            if (WSAEWOULDBLOCK != m_pParentTarget->m_SocketImp->lasterror(m_Socket)) {
                 //
                 // Return. Things are not good.
                 //
                 return;
             }
-        }
-        else
-        {
+        } else {
             //
             // Update number of bytes written.
             //
             m_CurrentWriteAddress += bytesWritten;
             m_CurrentBytesToWrite -= bytesWritten;
-            if( m_CurrentBytesToWrite == 0 )
-            {
-                if( !ProcessSendComplete( ) )
-                {
+            if (m_CurrentBytesToWrite == 0) {
+                if (!ProcessSendComplete()) {
                     //
                     // Return. Things are not good.
                     //
@@ -336,11 +322,11 @@ void rDbgComTargetConnection::OnDispatchCallack( void* userData )
             }
         }
     }
-        
+
     //
     // Here we dispatch ourselves.
     //
-    m_pParentTarget->m_Dispatcher->QueueCallback( this, NULL );
+    m_pParentTarget->m_Dispatcher->QueueCallback(this, NULL);
 }
 
 //=============================================================================
@@ -357,113 +343,103 @@ void rDbgComTargetConnection::OnDispatchCallack( void* userData )
 // Notes:
 //------------------------------------------------------------------------------
 
-bool rDbgComTargetConnection::ProcessReceiveComplete( void )
-{
-    radSingleLock< IRadThreadMutex > singleLock( this, true );
+bool rDbgComTargetConnection::ProcessReceiveComplete(void) {
+    radSingleLock <IRadThreadMutex> singleLock(this, true);
 
     //
     // Check the state.
     //
-    if( m_ConnectionState == WaitForNETMPConnect )
-    {
+    if (m_ConnectionState == WaitForNETMPConnect) {
         //
         // Here we are waiting for a connection packet. Make sure we 
         // got one. If not return false.
         //
-        struct ConnectPacket
-        {
-	        DECI2_HDR       m_Deci2;
-		    NETMP_HDR       m_Netmp;
-		    NETMP_PROTOS    m_Protos;
+        struct ConnectPacket {
+            DECI2_HDR m_Deci2;
+            NETMP_HDR m_Netmp;
+            NETMP_PROTOS m_Protos;
         };
-        ConnectPacket* pPacket = (ConnectPacket*) m_RxBuffer;  
-    
-        if( (radPlatformEndian16( pPacket->m_Deci2.protocol ) != DECI2_PROTO_NETMP ) ||
-            ( pPacket->m_Netmp.code  != NETMP_CODE_CONNECT) )
-        {
+        ConnectPacket *pPacket = (ConnectPacket *) m_RxBuffer;
+
+        if ((radPlatformEndian16(pPacket->m_Deci2.protocol) != DECI2_PROTO_NETMP) ||
+            (pPacket->m_Netmp.code != NETMP_CODE_CONNECT)) {
             //
             // Fail the operation.  
             //
-            return( false );
+            return (false);
         }
-                          
+
         //
         // Check if the requested protocol has already been obtained. 
         //
-        ProtocolInfoEntry* pEntry = m_pParentTarget->FindProtocol( radPlatformEndian16( pPacket->m_Protos.proto ) );
+        ProtocolInfoEntry *pEntry = m_pParentTarget->FindProtocol(
+                radPlatformEndian16(pPacket->m_Protos.proto));
 
-        if( (pEntry != NULL) && (pEntry->m_State != ProtocolInfoEntry::ChannelPending ) )
-        {
+        if ((pEntry != NULL) && (pEntry->m_State != ProtocolInfoEntry::ChannelPending)) {
             //
             // Here we found the protocol already in use. Build up a send packet and
             // report that the protocol is in use. Save the name that was using it as well.
             //
-            strcpy( m_HostOwnerName, pEntry->m_HostComputerName );
+            strcpy(m_HostOwnerName, pEntry->m_HostComputerName);
 
-            m_CurrentBytesToWrite = MakeNETMPConnectReply( false );
+            m_CurrentBytesToWrite = MakeNETMPConnectReply(false);
             m_CurrentWriteAddress = m_TxBuffer;
-          
+
             //
             // Set the new state and reset the receiver, and timeout.
             // We are now waiting for the message to check for the connected computer.
             //
             m_ConnectionState = WaitForNETMPStatus;
-                
+
             m_CurrentReadAddress = m_RxBuffer;
-            m_CurrentBytesToRead = sizeof(DECI2_HDR) + sizeof(NETMP_HDR); 
-            rAssert( m_CurrentBytesToRead <= sizeof( m_RxBuffer ) );
-            m_StartTime = radTimeGetMilliseconds( );
+            m_CurrentBytesToRead = sizeof(DECI2_HDR) + sizeof(NETMP_HDR);
+            rAssert(m_CurrentBytesToRead <= sizeof(m_RxBuffer));
+            m_StartTime = radTimeGetMilliseconds();
             m_TimerActive = true;
-          
-        }
-        else
-        {
+
+        } else {
             //
             // Here the protocol is not in use. Send a success message and set the
             // state waiting for the computer message. Save the protocol.
             //
-            m_Protocol = radPlatformEndian16( pPacket->m_Protos.proto );            
+            m_Protocol = radPlatformEndian16(pPacket->m_Protos.proto);
 
-            m_CurrentBytesToWrite = MakeNETMPConnectReply( true );
+            m_CurrentBytesToWrite = MakeNETMPConnectReply(true);
             m_CurrentWriteAddress = m_TxBuffer;
-          
+
             m_ConnectionState = WaitForNETMPMessage;
-                
+
             m_CurrentReadAddress = m_RxBuffer;
-            m_CurrentBytesToRead = sizeof(DECI2_HDR) + sizeof(NETMP_HDR) + MaxComputerName + 1; 
-            rAssert( m_CurrentBytesToRead <= sizeof( m_RxBuffer ) );
-            m_StartTime = radTimeGetMilliseconds( );
+            m_CurrentBytesToRead = sizeof(DECI2_HDR) + sizeof(NETMP_HDR) + MaxComputerName + 1;
+            rAssert(m_CurrentBytesToRead <= sizeof(m_RxBuffer));
+            m_StartTime = radTimeGetMilliseconds();
             m_TimerActive = true;
         }
-    }
-    else if( m_ConnectionState == WaitForNETMPStatus )
-    {
+    } else if (m_ConnectionState == WaitForNETMPStatus) {
         //
         // Here we are waiting for a status message. Make sure the received packet is
         // correct.
         //
-        struct StatusPacket
-        {
-	        DECI2_HDR       m_Deci2;
-		    NETMP_HDR       m_Netmp;
+        struct StatusPacket {
+            DECI2_HDR m_Deci2;
+            NETMP_HDR m_Netmp;
         };
-        StatusPacket* pPacket = (StatusPacket*) m_RxBuffer;  
-    
-        if( (radPlatformEndian16( pPacket->m_Deci2.protocol) != DECI2_PROTO_NETMP ) ||
-            (pPacket->m_Netmp.code != NETMP_CODE_STATUS) )
-        {
+        StatusPacket *pPacket = (StatusPacket *) m_RxBuffer;
+
+        if ((radPlatformEndian16(pPacket->m_Deci2.protocol) != DECI2_PROTO_NETMP) ||
+            (pPacket->m_Netmp.code != NETMP_CODE_STATUS)) {
             //
             // Fail the operation.  
             //
-            return( false );
+            return (false);
         }
-    
+
         //
         // Lets build up the reply. We have the name of the owner.
         //
-        m_CurrentBytesToWrite = MakeNETMPStatusReply( m_HostOwnerName );
+        m_CurrentBytesToWrite = MakeNETMPStatusReply(m_HostOwnerName);
         m_CurrentWriteAddress = m_TxBuffer;
-          
+
         //
         // We just want the send to complete. Then we close the socket.
         //
@@ -471,39 +447,35 @@ bool rDbgComTargetConnection::ProcessReceiveComplete( void )
         m_CurrentBytesToRead = 0;
 
         m_TimerActive = false;
-    }
-    else if( m_ConnectionState == WaitForNETMPMessage )
-    {
+    } else if (m_ConnectionState == WaitForNETMPMessage) {
         //
         // Here we are waiting for a computer name message. Make sure the received packet is
         // correct.
         //
-        struct MessagePacket
-        {
-	        DECI2_HDR       m_Deci2;
-		    NETMP_HDR       m_Netmp;
-            char            m_ComputerName[ MaxComputerName + 1 ];
+        struct MessagePacket {
+            DECI2_HDR m_Deci2;
+            NETMP_HDR m_Netmp;
+            char m_ComputerName[MaxComputerName + 1];
         };
-        MessagePacket* pPacket = (MessagePacket*) m_RxBuffer;  
-    
-        if( (radPlatformEndian16( pPacket->m_Deci2.protocol) != DECI2_PROTO_NETMP ) ||
-            (pPacket->m_Netmp.code != NETMP_CODE_MESSAGE) )
-        {
+        MessagePacket *pPacket = (MessagePacket *) m_RxBuffer;
+
+        if ((radPlatformEndian16(pPacket->m_Deci2.protocol) != DECI2_PROTO_NETMP) ||
+            (pPacket->m_Netmp.code != NETMP_CODE_MESSAGE)) {
             //
             // Fail the operation.  
             //
-            return( false );
+            return (false);
         }
-                
+
         //
         // Save the computer name.
         //
-        strcpy( m_HostOwnerName, pPacket->m_ComputerName );
+        strcpy(m_HostOwnerName, pPacket->m_ComputerName);
 
         //
         // Lets build up the reply. We have the name of the owner.
         //
-        m_CurrentBytesToWrite = MakeNETMPMessageReply(  );
+        m_CurrentBytesToWrite = MakeNETMPMessageReply();
         m_CurrentWriteAddress = m_TxBuffer;
 
         //
@@ -513,55 +485,47 @@ bool rDbgComTargetConnection::ProcessReceiveComplete( void )
         m_ConnectionState = WaitForInternalReconnect;
 
         m_CurrentReadAddress = m_RxBuffer;
-        m_CurrentBytesToRead = sizeof(DECI2_HDR) + sizeof(rDbgComReconnectPacket); 
-        rAssert( m_CurrentBytesToRead <= sizeof( m_RxBuffer ) );
-        m_StartTime = radTimeGetMilliseconds( );
+        m_CurrentBytesToRead = sizeof(DECI2_HDR) + sizeof(rDbgComReconnectPacket);
+        rAssert(m_CurrentBytesToRead <= sizeof(m_RxBuffer));
+        m_StartTime = radTimeGetMilliseconds();
         m_TimerActive = true;
-    }
-    else if( m_ConnectionState == WaitForInternalReconnect )
-    {
+    } else if (m_ConnectionState == WaitForInternalReconnect) {
         //
         // Here we are waiting for a internal reconnect. If we get it, things
         // are in good shape.
         //
-        struct ReconnectPacket
-        {
-	        DECI2_HDR               m_Deci2;
-            rDbgComReconnectPacket  m_ReconnectPacket;
+        struct ReconnectPacket {
+            DECI2_HDR m_Deci2;
+            rDbgComReconnectPacket m_ReconnectPacket;
         };
-        ReconnectPacket* pPacket = (ReconnectPacket*) m_RxBuffer;  
-    
-        if( (radPlatformEndian16( pPacket->m_Deci2.protocol) != m_Protocol ) ||
-            (radPlatformEndian32(pPacket->m_ReconnectPacket.m_Command ) != CmdReconnect) )
-        {
+        ReconnectPacket *pPacket = (ReconnectPacket *) m_RxBuffer;
+
+        if ((radPlatformEndian16(pPacket->m_Deci2.protocol) != m_Protocol) ||
+            (radPlatformEndian32(pPacket->m_ReconnectPacket.m_Command) != CmdReconnect)) {
             //
             // Fail the operation.  
             //
-            return( false );
+            return (false);
         }
-        
+
         //
         // Here everything is good. We want to check if a pending connection
         // exists
         //
-        ProtocolInfoEntry* pEntry = m_pParentTarget->FindProtocol( m_Protocol );
-        
-        if( pEntry == NULL ) 
-        {
+        ProtocolInfoEntry *pEntry = m_pParentTarget->FindProtocol(m_Protocol);
+
+        if (pEntry == NULL) {
             //
             // Here there is no entry with this protocol. Attempt to find a free entry.
             //
-            pEntry = m_pParentTarget->FindFreeProtocol( );
-            if( pEntry == NULL )
-            {
+            pEntry = m_pParentTarget->FindFreeProtocol();
+            if (pEntry == NULL) {
                 //
                 // If we have no free entries, just return false. This will close things
                 // up and host will receive error.
                 //
-                return( false );
-            }
-            else
-            {
+                return (false);
+            } else {
                 //
                 // Here we have a free entry and have established a connection with host.
                 // The client on the target has yet to create the target channel however.
@@ -570,8 +534,8 @@ bool rDbgComTargetConnection::ProcessReceiveComplete( void )
                 pEntry->m_pConnection = this;           // Weak reference
                 pEntry->m_Protocol = m_Protocol;
                 pEntry->m_State = ProtocolInfoEntry::ConnectionPending;
-                strcpy( pEntry->m_HostComputerName, m_HostOwnerName ) ;
-                
+                strcpy(pEntry->m_HostComputerName, m_HostOwnerName);
+
                 //
                 // Set up the to read a byte. If we get anything, we shut down
                 // the connection as we.
@@ -582,31 +546,26 @@ bool rDbgComTargetConnection::ProcessReceiveComplete( void )
                 m_ConnectionState = Connected;
                 m_TimerActive = false;
             }
-        }
-        else
-        {
+        } else {
             //
             // Here we have an entry for this protocol. If it does not reflect the
             // pending channel state, then should just disconnect.
             //
-            if( pEntry->m_State != ProtocolInfoEntry::ChannelPending )
-            {
-                return( false );
-            }
-            else 
-            {
+            if (pEntry->m_State != ProtocolInfoEntry::ChannelPending) {
+                return (false);
+            } else {
                 //
                 // Lets give the pending channel its socket to use for communication.
                 // First set up the state of the table.
                 //                                              
-                strcpy( pEntry->m_HostComputerName, m_HostOwnerName );
+                strcpy(pEntry->m_HostComputerName, m_HostOwnerName);
                 pEntry->m_State = ProtocolInfoEntry::Connected;
                 pEntry->m_Protocol = m_Protocol;
-      
+
                 //
                 // Give the pending connection the socket.
                 //
-                pEntry->m_pChannel->SetSocket( m_Socket );
+                pEntry->m_pChannel->SetSocket(m_Socket);
 
                 //
                 // We zero our socket, so when this object goes out of scope,
@@ -615,25 +574,23 @@ bool rDbgComTargetConnection::ProcessReceiveComplete( void )
                 pEntry->m_pChannel = NULL;
 
                 m_Socket = 0;
-    
-                return( false );
-            }    
+
+                return (false);
+            }
 
         }
-    }
-    else
-    {
+    } else {
         //
         // Received something unexpected. Return false.
         //
-        return( false );
+        return (false);
 
-    }      
+    }
 
     //
     // Everything ok if we get here.
     //
-    return( true );
+    return (true);
 }
 
 //=============================================================================
@@ -650,28 +607,26 @@ bool rDbgComTargetConnection::ProcessReceiveComplete( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-bool rDbgComTargetConnection::ProcessSendComplete( void )
-{   
-    radSingleLock< IRadThreadMutex > singleLock( this, true );
+bool rDbgComTargetConnection::ProcessSendComplete(void) {
+    radSingleLock <IRadThreadMutex> singleLock(this, true);
 
     //
     // Check the state and act accordingly.
     //
-    if( m_ConnectionState == WaitForNETMPStatusReplySend )
-    {
+    if (m_ConnectionState == WaitForNETMPStatusReplySend) {
         //
         // Here we have finished the send of the reply message indicating that
         // the protocol was already in use. Return false and an the connection 
         // will be closed.
         //
-        return( false );
+        return (false);
     }
 
     //
     // All other cases of sends, keep the channel alive.
     //
 
-    return( true );
+    return (true);
 }
 
 //=============================================================================
@@ -687,47 +642,42 @@ bool rDbgComTargetConnection::ProcessSendComplete( void )
 //------------------------------------------------------------------------------
 
 unsigned int rDbgComTargetConnection::MakeNETMPConnectReply
-( 
-    bool    success
-)
-{
-    radSingleLock< IRadThreadMutex > singleLock( this, true );
+        (
+                bool success
+        ) {
+    radSingleLock <IRadThreadMutex> singleLock(this, true);
 
     //
     // Define the packet structure for a connect request.
     //
-    struct ConnectReplyPacket
-    {
-	    DECI2_HDR       m_Deci2;
-		NETMP_HDR       m_Netmp;
+    struct ConnectReplyPacket {
+        DECI2_HDR m_Deci2;
+        NETMP_HDR m_Netmp;
     };
-   
-    rAssert( sizeof( m_TxBuffer ) >= sizeof( ConnectReplyPacket ) );
-    ConnectReplyPacket* pPacket = (ConnectReplyPacket*) m_TxBuffer;  
-        
+
+    rAssert(sizeof(m_TxBuffer) >= sizeof(ConnectReplyPacket));
+    ConnectReplyPacket *pPacket = (ConnectReplyPacket *) m_TxBuffer;
+
     //
     // Build the DECI part.
     //
-    pPacket->m_Deci2.length = radPlatformEndian16( sizeof( ConnectReplyPacket ) );
+    pPacket->m_Deci2.length = radPlatformEndian16(sizeof(ConnectReplyPacket));
     pPacket->m_Deci2.reserved = 0;
-    pPacket->m_Deci2.protocol = radPlatformEndian16( DECI2_PROTO_NETMP );
+    pPacket->m_Deci2.protocol = radPlatformEndian16(DECI2_PROTO_NETMP);
     pPacket->m_Deci2.source = DECI2_NODE_HOST;
-    pPacket->m_Deci2.destination = DECI2_NODE_HOST;            
-  
+    pPacket->m_Deci2.destination = DECI2_NODE_HOST;
+
     //
     // Build up the netmp part.
     //
     pPacket->m_Netmp.code = NETMP_CODE_CONNECTR;
-    if( success )
-    {
+    if (success) {
         pPacket->m_Netmp.result = NETMP_ERR_OK;
-    }
-    else
-    {
+    } else {
         pPacket->m_Netmp.result = NETMP_ERR_BUSY;
     }
 
-    return( sizeof( ConnectReplyPacket ) );
+    return (sizeof(ConnectReplyPacket));
 }
 
 //=============================================================================
@@ -743,44 +693,42 @@ unsigned int rDbgComTargetConnection::MakeNETMPConnectReply
 //------------------------------------------------------------------------------
 
 unsigned int rDbgComTargetConnection::MakeNETMPStatusReply
-( 
-    char*   name
-)
-{
-    radSingleLock< IRadThreadMutex > singleLock( this, true );
+        (
+                char *name
+        ) {
+    radSingleLock <IRadThreadMutex> singleLock(this, true);
 
     //
     // Define the packet structure for a connect request.
     //
-    struct StatusReplyPacket
-    {
-	    DECI2_HDR       m_Deci2;
-		NETMP_HDR       m_Netmp;
-        unsigned short  m_Reserved[ 5 ];
-        char            m_Name[ MaxComputerName + 1 ];
+    struct StatusReplyPacket {
+        DECI2_HDR m_Deci2;
+        NETMP_HDR m_Netmp;
+        unsigned short m_Reserved[5];
+        char m_Name[MaxComputerName + 1];
     };
-   
-    rAssert( sizeof( m_TxBuffer ) >= sizeof( StatusReplyPacket ) );
-    StatusReplyPacket* pPacket = (StatusReplyPacket*) m_TxBuffer;  
-        
+
+    rAssert(sizeof(m_TxBuffer) >= sizeof(StatusReplyPacket));
+    StatusReplyPacket *pPacket = (StatusReplyPacket *) m_TxBuffer;
+
     //
     // Build the DECI part.
     //
-    pPacket->m_Deci2.length = radPlatformEndian16( sizeof( StatusReplyPacket ) );
+    pPacket->m_Deci2.length = radPlatformEndian16(sizeof(StatusReplyPacket));
     pPacket->m_Deci2.reserved = 0;
-    pPacket->m_Deci2.protocol = radPlatformEndian16( DECI2_PROTO_NETMP) ;
+    pPacket->m_Deci2.protocol = radPlatformEndian16(DECI2_PROTO_NETMP);
     pPacket->m_Deci2.source = DECI2_NODE_HOST;
-    pPacket->m_Deci2.destination = DECI2_NODE_HOST;            
-  
+    pPacket->m_Deci2.destination = DECI2_NODE_HOST;
+
     //
     // Build up the netmp part.
     //
     pPacket->m_Netmp.code = NETMP_CODE_STATUSR;
     pPacket->m_Netmp.result = NETMP_ERR_OK;
-    
-    strcpy(  pPacket->m_Name, name );
 
-    return( sizeof( StatusReplyPacket ) );
+    strcpy(pPacket->m_Name, name);
+
+    return (sizeof(StatusReplyPacket));
 }
 
 //=============================================================================
@@ -796,40 +744,38 @@ unsigned int rDbgComTargetConnection::MakeNETMPStatusReply
 //------------------------------------------------------------------------------
 
 unsigned int rDbgComTargetConnection::MakeNETMPMessageReply
-( 
-    void
-)
-{
-    radSingleLock< IRadThreadMutex > singleLock( this, true );
+        (
+                void
+        ) {
+    radSingleLock <IRadThreadMutex> singleLock(this, true);
 
     //
     // Define the packet structure for a connect request.
     //
-    struct MessageReplyPacket
-    {
-	    DECI2_HDR       m_Deci2;
-		NETMP_HDR       m_Netmp;
+    struct MessageReplyPacket {
+        DECI2_HDR m_Deci2;
+        NETMP_HDR m_Netmp;
     };
-   
-    rAssert( sizeof( m_TxBuffer ) >= sizeof( MessageReplyPacket ) );
-    MessageReplyPacket* pPacket = (MessageReplyPacket*) m_TxBuffer;  
-        
+
+    rAssert(sizeof(m_TxBuffer) >= sizeof(MessageReplyPacket));
+    MessageReplyPacket *pPacket = (MessageReplyPacket *) m_TxBuffer;
+
     //
     // Build the DECI part.
     //
-    pPacket->m_Deci2.length = radPlatformEndian16( sizeof( MessageReplyPacket ) );
+    pPacket->m_Deci2.length = radPlatformEndian16(sizeof(MessageReplyPacket));
     pPacket->m_Deci2.reserved = 0;
-    pPacket->m_Deci2.protocol = radPlatformEndian16( DECI2_PROTO_NETMP );
+    pPacket->m_Deci2.protocol = radPlatformEndian16(DECI2_PROTO_NETMP);
     pPacket->m_Deci2.source = DECI2_NODE_HOST;
-    pPacket->m_Deci2.destination = DECI2_NODE_HOST;            
-  
+    pPacket->m_Deci2.destination = DECI2_NODE_HOST;
+
     //
     // Build up the netmp part.
     //
     pPacket->m_Netmp.code = NETMP_CODE_MESSAGER;
     pPacket->m_Netmp.result = NETMP_ERR_OK;
 
-    return( sizeof( MessageReplyPacket ) );
+    return (sizeof(MessageReplyPacket));
 }
 
 //=============================================================================
@@ -843,12 +789,11 @@ unsigned int rDbgComTargetConnection::MakeNETMPMessageReply
 //
 // Notes:
 //------------------------------------------------------------------------------
-    
-void rDbgComTargetConnection::AddRef( void )
-{
-    Lock( );
+
+void rDbgComTargetConnection::AddRef(void) {
+    Lock();
     m_ReferenceCount++;
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -862,19 +807,15 @@ void rDbgComTargetConnection::AddRef( void )
 //
 // Notes:
 //------------------------------------------------------------------------------
-    
-void rDbgComTargetConnection::Release( void )
-{
-    Lock( );
+
+void rDbgComTargetConnection::Release(void) {
+    Lock();
     m_ReferenceCount--;
-    if( m_ReferenceCount == 0 )
-    {
-        Unlock( );
+    if (m_ReferenceCount == 0) {
+        Unlock();
         delete this;
-    }
-    else
-    {
-        Unlock( );
+    } else {
+        Unlock();
     }
 }
 
@@ -890,9 +831,8 @@ void rDbgComTargetConnection::Release( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void rDbgComTargetConnection::Lock( void )
-{
-    radDbgComMutexLock( );
+void rDbgComTargetConnection::Lock(void) {
+    radDbgComMutexLock();
 }
 
 //=============================================================================
@@ -907,9 +847,8 @@ void rDbgComTargetConnection::Lock( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void rDbgComTargetConnection::Unlock( void )
-{
-    radDbgComMutexUnlock( );
+void rDbgComTargetConnection::Unlock(void) {
+    radDbgComMutexUnlock();
 }
 
 //=============================================================================
@@ -925,11 +864,10 @@ void rDbgComTargetConnection::Unlock( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void rDbgComTargetConnection::Deactivate( void )
-{
-    Lock( );
+void rDbgComTargetConnection::Deactivate(void) {
+    Lock();
     m_Active = false;
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -945,11 +883,10 @@ void rDbgComTargetConnection::Deactivate( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-SOCKET rDbgComTargetConnection::GetSocket( void )
-{
-    Lock( );
+SOCKET rDbgComTargetConnection::GetSocket(void) {
+    Lock();
 
-    SOCKET s = m_Socket ;    
+    SOCKET s = m_Socket;
     m_Socket = 0;
     m_Active = false;
 
@@ -957,9 +894,9 @@ SOCKET rDbgComTargetConnection::GetSocket( void )
     // and we do not want it to think it is connected.   
 
     m_ConnectionState = WaitForNETMPConnect;
-    Unlock( );
+    Unlock();
 
-    return( s );
+    return (s);
 }
 
 //=============================================================================
@@ -976,11 +913,11 @@ SOCKET rDbgComTargetConnection::GetSocket( void )
 
 #ifdef RAD_DEBUG
 
-void rDbgComTargetConnection::Dump( char* pStringBuffer, unsigned int bufferSize )
+void rDbgComTargetConnection::Dump(char* pStringBuffer, unsigned int bufferSize)
 {
-    Lock( );
-    sprintf( pStringBuffer, "Object: [rDbgComTargetConnection] At Memory Location:[0x%x]\n", (unsigned int) this );
-    Unlock( );
+    Lock();
+    sprintf(pStringBuffer, "Object: [rDbgComTargetConnection] At Memory Location:[0x%x]\n", (unsigned int) this);
+    Unlock();
 }
 
 #endif

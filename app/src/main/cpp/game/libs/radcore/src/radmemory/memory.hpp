@@ -19,7 +19,7 @@
 //
 //=============================================================================
 
-#ifndef	MEMORY_HPP
+#ifndef    MEMORY_HPP
 #define MEMORY_HPP
 
 //=============================================================================
@@ -54,6 +54,7 @@
 //=============================================================================
 
 class MemoryHeap;
+
 class MemoryPool;
 
 //=============================================================================
@@ -65,11 +66,10 @@ class MemoryPool;
 // from the memory heap. These memory objects are reference
 // counted. To free the memory object, simply delete the reference.
 //
-class MemoryObject : public IRadMemoryObject
-{
+class MemoryObject : public IRadMemoryObject {
 public:
 
-	MemoryObject( unsigned int size, void* memoryAddress, IRadMemoryHeap* pMemoryHeap );
+    MemoryObject(unsigned int size, void *memoryAddress, IRadMemoryHeap *pMemoryHeap);
 
     //
     // This member is used to retrieve the actual address of memory that
@@ -78,154 +78,158 @@ public:
     // address. Not that this memory will not fail as no alloction is
     // performed.
     //    
-    void* GetMemoryAddress( void );
-    
+    void *GetMemoryAddress(void);
+
     //
     // Use this member to get the size of the memory represented by 
     // this object.
     //
-    unsigned int GetMemorySize( void );
+    unsigned int GetMemorySize(void);
 
     //
     // Invoke this member anytime another object is given a pointer to this object.
     // Simply updates the reference count.
     //
-    void AddRef( void );
+    void AddRef(void);
 
     //
     // This member should be used instead of delete. It will ensure correct management
     // of the objects lifetime.
     //
-    void Release( void );   
+    void Release(void);
 
-  	void* operator new( size_t size, void* placement ) { return( placement ); };
-	virtual ~MemoryObject();
+    void *operator new(size_t size, void *placement) { return (placement); };
+
+    virtual ~MemoryObject();
 
 private:
 
     // This data member contains a count of objects referencing this object.
-        
-	unsigned int    m_Size;
-	void*		    m_MemoryAddress;
-	IRadMemoryHeap* m_MemoryHeap;
-    int	            m_ReferenceCount;
+
+    unsigned int m_Size;
+    void *m_MemoryAddress;
+    IRadMemoryHeap *m_MemoryHeap;
+    int m_ReferenceCount;
 };
 
 //
 // This is the interface definition used to interace with a pool object. A pool object
 // supports allocations of fixed sized objects.
 //
-class MemoryPool : public IRadMemoryPool
-{
+class MemoryPool : public IRadMemoryPool {
 public:
 
-	MemoryPool();
+    MemoryPool();
 
     //
     // Inhirtance from IRadMemoryAllocator
     //
-    void* GetMemory( unsigned int size );
-    void  FreeMemory( void* pMemory );
-    bool  CanFreeMemory( void * pMemory );
+    void *GetMemory(unsigned int size);
 
-    void* GetMemoryAligned( unsigned int size, unsigned int alignment );
-    void  FreeMemoryAligned( void * pMemory );
-    bool  CanFreeMemoryAligned( void * pMemory );
+    void FreeMemory(void *pMemory);
 
-    void* GetMemory( void );
+    bool CanFreeMemory(void *pMemory);
+
+    void *GetMemoryAligned(unsigned int size, unsigned int alignment);
+
+    void FreeMemoryAligned(void *pMemory);
+
+    bool CanFreeMemoryAligned(void *pMemory);
+
+    void *GetMemory(void);
 
     //
     // This member is used to determine the information about pool object. It
     // reports the element size, the number of free elements, the number of allocated
     // elements.
     //
-    void GetStatus( unsigned int* elementSize, unsigned int* numberFree,
-                    unsigned int* numberAllocated );         
-     
-   
+    void GetStatus(unsigned int *elementSize, unsigned int *numberFree,
+                   unsigned int *numberAllocated);
+
+
     //
     // Invoke this member anytime another object is given a pointer to this object.
     // Simply updates the reference count.
     //
-    void AddRef( void );
+    void AddRef(void);
 
     //
     // This member should be used instead of delete. It will ensure correct management
     // of the objects lifetime.
     //
-    void Release( void );   
+    void Release(void);
 
-	struct MemList
-	{
-		MemList* m_NextFree;
-	};
+    struct MemList {
+        MemList *m_NextFree;
+    };
 
-	virtual ~MemoryPool();
+    virtual ~MemoryPool();
 
-    void * operator new( size_t size, radMemoryAllocator allocator );
-    void operator delete( void * pMemory );
+    void *operator new(size_t size, radMemoryAllocator allocator);
 
-	void Initialize( void*                      pPlacement,
-					 unsigned int               elementSize, 
-					 unsigned int               numberOfElements,
-					 unsigned int               growSize,
-					 bool                       isThreadSafe,
-					 radMemoryDebugLevel        debugLevel,
-					 radMemoryAllocator         allocator,
-                     const char *               pName );
+    void operator delete(void *pMemory);
+
+    void Initialize(void *pPlacement,
+                    unsigned int elementSize,
+                    unsigned int numberOfElements,
+                    unsigned int growSize,
+                    bool isThreadSafe,
+                    radMemoryDebugLevel debugLevel,
+                    radMemoryAllocator allocator,
+                    const char *pName);
 
 private:
 
-	void Chain ( IRadMemoryPool * pIRadMemoryPool );
+    void Chain(IRadMemoryPool *pIRadMemoryPool);
 
 #ifdef RAD_DEBUG
-	bool FillAndValidate( void* pMemory, unsigned int value, unsigned int size );
+    bool FillAndValidate(void* pMemory, unsigned int value, unsigned int size);
 
-	void FillFreeBlock( MemList* curList );
+    void FillFreeBlock(MemList* curList);
 
-	// This is equivalent to "heapwalk()" in other standard heap managers.
+    // This is equivalent to "heapwalk()" in other standard heap managers.
 
-	bool Validate( void );
+    bool Validate(void);
 
-	// Determines if the given pointer is a valid allocated pointer, previously
-	// allocated by Allocate().
+    // Determines if the given pointer is a valid allocated pointer, previously
+    // allocated by Allocate().
 
-	bool ValidPointer( void* pointer );
+    bool ValidPointer(void* pointer);
 #endif //debug
 
-	// Determines if a given pointer is valid within the range of this
-	// heap.
+    // Determines if a given pointer is valid within the range of this
+    // heap.
 
-    bool WithinRange( void* pointer );
+    bool WithinRange(void *pointer);
 
-	// Pointers to the start and finish blocks of the heap.  First never 
-	// moves but last moves depending on the size of the last block.
+    // Pointers to the start and finish blocks of the heap.  First never
+    // moves but last moves depending on the size of the last block.
 
-    MemList* m_First;
-    MemList* m_Last;
+    MemList *m_First;
+    MemList *m_Last;
 
-	// Pointers to the head and tail of the free memory block list.
+    // Pointers to the head and tail of the free memory block list.
 
-	MemList* m_FreeHead;
-	MemList* m_FreeTail;
+    MemList *m_FreeHead;
+    MemList *m_FreeTail;
 
-	// Pointer to the "chained" pool.
+    // Pointer to the "chained" pool.
 
-    MemoryPool* m_Chain;
+    MemoryPool *m_Chain;
 
-	unsigned int m_Allocator;
-    int          m_ReferenceCount;
-	unsigned int m_RequestedElementSize;
-	unsigned int m_ActualElementSize;
-	unsigned int m_FillSize;
-	unsigned int m_NumberOfElements;
-	unsigned int m_GrowBy;
-	bool         m_IsThreadSafe;
+    unsigned int m_Allocator;
+    int m_ReferenceCount;
+    unsigned int m_RequestedElementSize;
+    unsigned int m_ActualElementSize;
+    unsigned int m_FillSize;
+    unsigned int m_NumberOfElements;
+    unsigned int m_GrowBy;
+    bool m_IsThreadSafe;
 
-	radMemoryDebugLevel m_DebugLevel;
+    radMemoryDebugLevel m_DebugLevel;
 
-	unsigned int  m_Size;
-	void*         m_pPlacement;
+    unsigned int m_Size;
+    void *m_pPlacement;
 
     unsigned int m_NumberFree;
     unsigned int m_NumberAllocated;
@@ -233,15 +237,15 @@ private:
 
 // Validates a given memory block to have a known pattern.
 
-bool MemoryCheck( void* block, unsigned int value, unsigned int size );
+bool MemoryCheck(void *block, unsigned int value, unsigned int size);
 
 // Writes a known pattern into a given memory block.
 
-void MemorySet( void* block, unsigned int value, unsigned int size );
+void MemorySet(void *block, unsigned int value, unsigned int size);
 
 // Takes any given value and rounds it up to the next multiple of 4
 // in order to cause values to be aligned to 32-bits.
 
-unsigned int RoundUpAlignment( unsigned int value, unsigned int alignment );
+unsigned int RoundUpAlignment(unsigned int value, unsigned int alignment);
 
 #endif

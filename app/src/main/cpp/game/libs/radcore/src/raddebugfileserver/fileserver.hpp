@@ -50,48 +50,48 @@ class rDebugFileServer : public IRadDebugFileServer,
     //
     // Constructor. 
     //
-    rDebugFileServer( int pNumExceptions );
+    rDebugFileServer(int pNumExceptions);
     
     //
     // Methods required by the IRefCount inreface spec.
     //
-    virtual void AddRef( void );
-    virtual void Release( void );
+    virtual void AddRef(void);
+    virtual void Release(void);
 
     //
     // Methods required by the IRadDbgComFileServer interface spec.
     //
-    virtual void SetBasePath( char* pPath );
-    virtual void SetDefaultHost( bool pLocal );
-    virtual void SetBootData( unsigned char* pData, int pDataLength );
-    virtual void AddException( char* pString );
-    virtual void RemoveException( char *pString );
-    virtual void ClearExceptions( void );
-    virtual void SetPathOverride( bool pEnable );
-    virtual void RegisterLogCallback( IRadDebugFileServerLogCallback* pCallback );
-    virtual void RegisterFileCallback( IRadDebugFileServerFileCallback* pCallback );
-    virtual void RegisterStatusCallback( IRadDbgComChannelStatusCallback* pCallback );
-    virtual bool Attach( radDbgComTargetName pName, char* pErrorMessage );
-    virtual void Detach( void );
-    virtual void EnumerateOpenFiles( void (*pEnumerationCallback)( char* pName, char* pMessage ) ) const;
-    virtual void GetTargetInterface( IRadDbgComTargetTable** pTargetTable ) const;
-    virtual bool IsConnected( void ) const;
+    virtual void SetBasePath(char* pPath);
+    virtual void SetDefaultHost(bool pLocal);
+    virtual void SetBootData(unsigned char* pData, int pDataLength);
+    virtual void AddException(char* pString);
+    virtual void RemoveException(char *pString);
+    virtual void ClearExceptions(void);
+    virtual void SetPathOverride(bool pEnable);
+    virtual void RegisterLogCallback(IRadDebugFileServerLogCallback* pCallback);
+    virtual void RegisterFileCallback(IRadDebugFileServerFileCallback* pCallback);
+    virtual void RegisterStatusCallback(IRadDbgComChannelStatusCallback* pCallback);
+    virtual bool Attach(radDbgComTargetName pName, char* pErrorMessage);
+    virtual void Detach(void);
+    virtual void EnumerateOpenFiles(void (*pEnumerationCallback)(char* pName, char* pMessage)) const;
+    virtual void GetTargetInterface(IRadDbgComTargetTable** pTargetTable) const;
+    virtual bool IsConnected(void) const;
     
     //
     // Methods required by the IRadDbgComChannelStatusCallback interface.
     //
-    virtual void OnStatusChange( IRadDbgComChannel::ConnectionState connectionState,
-                                 const char* Message );
+    virtual void OnStatusChange(IRadDbgComChannel::ConnectionState connectionState,
+                                 const char* Message);
 
     //
     // Methods required by the IRadDbgComChannelSendCallback interface.
     //
-    virtual void OnSendComplete( bool Successful );
+    virtual void OnSendComplete(bool Successful);
 
     //
     // Methods required by the IRadDbgComChannelReceiveCallback interface.
     //
-    virtual void OnReceiveComplete( bool Successful, unsigned int bytesReceived );
+    virtual void OnReceiveComplete(bool Successful, unsigned int bytesReceived);
 
 
     private:
@@ -99,37 +99,37 @@ class rDebugFileServer : public IRadDebugFileServer,
     //
     // Destructor. Public freeing is done via Release.
     //
-    ~rDebugFileServer( void );
+    ~rDebugFileServer(void);
 
     //
     // Converts a target's file name to a full path and file name on the host.
     //
-    void QualifyFilename( char* pFilename, char* pFullpath );
+    void QualifyFilename(char* pFilename, char* pFullpath);
     
     //
     // Determines whether or nor a file should be served up by the host.
     //
-    bool CheckIfFileOnHost( char* filename );
+    bool CheckIfFileOnHost(char* filename);
 
     //
     // Handle a request from the target.
     //
-    void ProcessFileRequest( char* request, int requestSize, char* reply, int* replySize );
+    void ProcessFileRequest(char* request, int requestSize, char* reply, int* replySize);
 
     //
     // Wildcard matcher for exception rules.
     //
-    bool StringMatch( char* MatchName, char* Name);
+    bool StringMatch(char* MatchName, char* Name);
 
     //
     // Close all open files. Used when connection is terminated.
     //
-    void CloseFiles( );
+    void CloseFiles();
 
     //
     // Pass a debug message to the logger callback.
     //
-    void LogMessage( char* pString );
+    void LogMessage(char* pString);
 
 
     //
@@ -170,8 +170,8 @@ class rDebugFileServer : public IRadDebugFileServer,
     struct IRadDbgComTargetTable* m_Host; // debug comms target interface
     struct IRadDbgComChannel* m_Channel;  // debug comms channel object
 
-    char m_ReceiveBuffer[ sizeof( HfpReadRpy ) ]; // buffer for incoming data
-    char m_SendBuffer[ sizeof( HfpReadRpy ) ];    // buffer for outgoing data
+    char m_ReceiveBuffer[ sizeof(HfpReadRpy) ]; // buffer for incoming data
+    char m_SendBuffer[ sizeof(HfpReadRpy) ];    // buffer for outgoing data
 
     bool   m_TxOutstanding;               // more data to send?
     unsigned int m_TxPendingBytes;        // # bytes to be sent

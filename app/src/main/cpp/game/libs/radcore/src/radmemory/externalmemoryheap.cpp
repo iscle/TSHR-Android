@@ -22,15 +22,15 @@
 //============================================================================
 
 #include "pch.hpp"
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <raddebug.hpp>
 #include <radmemory.hpp>
 #include <radmemorymonitor.hpp>
 #include "externalmemoryobject.hpp"
 #include "externalmemoryheap.hpp"
 
-#if defined RAD_PS2 && ! defined RAD_MW
-            extern "C" double fptodp( float );
+#if defined RAD_PS2 && !defined RAD_MW
+extern "C" double fptodp(float);
 #endif
 
 //=============================================================================
@@ -38,7 +38,7 @@
 //=============================================================================
 // Description: This interface is used to construct a external memory heap
 //              object. An external memory heap is memory that is not part of
-//              the processes' memory. (i.e., Sound memory ).
+//              the processes' memory. (i.e., Sound memory).
 //
 // Parameters:  ppExternalHeap      returns heap
 //              pStartAddress       Address of the first valid memory address
@@ -52,31 +52,30 @@
 //------------------------------------------------------------------------------
 
 void radMemoryExternalHeapCreate
-(
-    IRadMemoryHeap** ppExternalHeap, 
-    void*          pStartOfExternalMemory,
-    unsigned int sizeOfExternalMemory,
-    radMemorySpace memorySpace,
-    unsigned int maxAllocations, // size of allocation pool
-    unsigned int growAllocationsBy, // grow allocation pool by
-    radMemoryAllocator   allocator,
-    const char * pName
-)
-{
+        (
+                IRadMemoryHeap **ppExternalHeap,
+                void *pStartOfExternalMemory,
+                unsigned int sizeOfExternalMemory,
+                radMemorySpace memorySpace,
+                unsigned int maxAllocations, // size of allocation pool
+                unsigned int growAllocationsBy, // grow allocation pool by
+                radMemoryAllocator allocator,
+                const char *pName
+        ) {
     *ppExternalHeap = NULL;
 
-    ExternalMemoryHeap * pExternalMemoryHeap = new( allocator ) ExternalMemoryHeap( );
+    ExternalMemoryHeap *pExternalMemoryHeap = new(allocator) ExternalMemoryHeap();
 
     pExternalMemoryHeap->Initialize
-    (
-        pStartOfExternalMemory,
-        sizeOfExternalMemory,
-        memorySpace,
-        maxAllocations,
-        growAllocationsBy,
-        allocator,
-        pName
-    );
+            (
+                    pStartOfExternalMemory,
+                    sizeOfExternalMemory,
+                    memorySpace,
+                    maxAllocations,
+                    growAllocationsBy,
+                    allocator,
+                    pName
+            );
 
     *ppExternalHeap = pExternalMemoryHeap;
 
@@ -95,13 +94,12 @@ void radMemoryExternalHeapCreate
 // Notes:
 //------------------------------------------------------------------------------
 
-void* ExternalMemoryHeap::operator new
-(
-    size_t size,
-    radMemoryAllocator allocator
-)
-{
-    return radMemoryAlloc( allocator, size );
+void *ExternalMemoryHeap::operator new
+        (
+                size_t size,
+                radMemoryAllocator allocator
+        ) {
+    return radMemoryAlloc(allocator, size);
 }
 
 //=============================================================================
@@ -116,9 +114,8 @@ void* ExternalMemoryHeap::operator new
 // Notes:
 //------------------------------------------------------------------------------
 
-void ExternalMemoryHeap::operator delete( void * pMemory )
-{
-    radMemoryFree( pMemory );
+void ExternalMemoryHeap::operator delete(void *pMemory) {
+    radMemoryFree(pMemory);
 }
 
 //============================================================================
@@ -126,10 +123,9 @@ void ExternalMemoryHeap::operator delete( void * pMemory )
 //============================================================================
 
 /* virtual */ void ExternalMemoryHeap::AddRef
-(
-    void
-)
-{
+        (
+                void
+        ) {
     m_ReferenceCount++;
 }
 
@@ -138,10 +134,9 @@ void ExternalMemoryHeap::operator delete( void * pMemory )
 //============================================================================
 
 /* virtual */ void ExternalMemoryHeap::Release
-(
-    void
-)
-{
+        (
+                void
+        ) {
     m_ReferenceCount--;
 
     //
@@ -151,12 +146,11 @@ void ExternalMemoryHeap::operator delete( void * pMemory )
     //
 
     if
-    (
-        ( m_ReferenceCount == 0 ) &&
-        ( m_pEmo_First == m_pEmo_Last ) &&
-        ( m_pEmo_First->m_ReferenceCount == 0 )
-    )
-    {
+            (
+            (m_ReferenceCount == 0) &&
+            (m_pEmo_First == m_pEmo_Last) &&
+            (m_pEmo_First->m_ReferenceCount == 0)
+            ) {
         delete this;
     }
 }
@@ -166,12 +160,11 @@ void ExternalMemoryHeap::operator delete( void * pMemory )
 //============================================================================
 
 /* virtual */ void ExternalMemoryHeap::GetMemoryObject
-(
-    IRadMemoryObject** ppMemoryObject,
-    unsigned int size
-)
-{
-    *ppMemoryObject = Allocate( size, 4 );
+        (
+                IRadMemoryObject **ppMemoryObject,
+                unsigned int size
+        ) {
+    *ppMemoryObject = Allocate(size, 4);
 }
 
 //============================================================================
@@ -179,12 +172,11 @@ void ExternalMemoryHeap::operator delete( void * pMemory )
 //============================================================================
 
 /* virtual */ void ExternalMemoryHeap::GetMemoryObjectAligned
-(
-    IRadMemoryObject ** ppIRadMemoryObject, unsigned int size,
-    unsigned int alignment
-)
-{
-    *ppIRadMemoryObject = Allocate( size, alignment );
+        (
+                IRadMemoryObject **ppIRadMemoryObject, unsigned int size,
+                unsigned int alignment
+        ) {
+    *ppIRadMemoryObject = Allocate(size, alignment);
 }
 
 
@@ -192,22 +184,20 @@ void ExternalMemoryHeap::operator delete( void * pMemory )
 // ExternalMemoryHeap::GetMemory
 //============================================================================
 
-/* virtual */ void* ExternalMemoryHeap::GetMemory
-(
-    unsigned int size
-)
-{
-    IRadMemoryObject * pIMemoryObject = Allocate( size, 4 );
-   
+/* virtual */ void *ExternalMemoryHeap::GetMemory
+        (
+                unsigned int size
+        ) {
+    IRadMemoryObject *pIMemoryObject = Allocate(size, 4);
+
     //
     // We just return the memory pointer.  We don't delete reference because
-    // a reference count of > 0 means that the memory is used.  We will find
+    // a reference count of> 0 means that the memory is used.  We will find
     // the block later and delete it ourselves.
     //
 
-    if ( pIMemoryObject != NULL )
-    {
-        return pIMemoryObject->GetMemoryAddress( );
+    if (pIMemoryObject != NULL) {
+        return pIMemoryObject->GetMemoryAddress();
     }
 
     return NULL;
@@ -216,23 +206,21 @@ void ExternalMemoryHeap::operator delete( void * pMemory )
 //============================================================================
 // ExternalMemoryHeap::GetMemory
 //============================================================================
-/* virtual */ void* ExternalMemoryHeap::GetMemoryAligned
-( 
-    unsigned int size, 
-    unsigned int alignment 
-)
-{
-    ExternalMemoryObject * pMemoryObject = Allocate( size, alignment );
-   
+/* virtual */ void *ExternalMemoryHeap::GetMemoryAligned
+        (
+                unsigned int size,
+                unsigned int alignment
+        ) {
+    ExternalMemoryObject *pMemoryObject = Allocate(size, alignment);
+
     //
     // We just return the memory pointer.  We don't delete reference because
-    // a reference count of > 0 means that the memory is used.  We will find
+    // a reference count of> 0 means that the memory is used.  We will find
     // the block later and delete it ourselves.
     //
 
-    if ( pMemoryObject != NULL )
-    {
-        return pMemoryObject->GetMemoryAddress( );
+    if (pMemoryObject != NULL) {
+        return pMemoryObject->GetMemoryAddress();
     }
 
     return NULL;
@@ -243,34 +231,29 @@ void ExternalMemoryHeap::operator delete( void * pMemory )
 //============================================================================
 
 /* virtual */ bool ExternalMemoryHeap::CanFree
-(
-    void * pMemory
-)
-{
+        (
+                void *pMemory
+        ) {
     //
     // Find the memory object and release it
     //
 
-    ExternalMemoryObject * pEmo_Free = m_pEmo_First;
+    ExternalMemoryObject *pEmo_Free = m_pEmo_First;
 
-    while ( ( pEmo_Free != NULL ) &&
-            ( pEmo_Free->m_ClientAddress != reinterpret_cast< unsigned int >( pMemory ) ) )
-    {
+    while ((pEmo_Free != NULL) &&
+           (pEmo_Free->m_ClientAddress != reinterpret_cast<unsigned int>(pMemory))) {
         pEmo_Free = pEmo_Free->m_pEmo_Next;
     }
 
     if
-    (
-        ( m_ReferenceCount == 0 ) &&
-        ( m_pEmo_First == m_pEmo_Last ) &&
-        ( m_pEmo_First->m_ReferenceCount == 0 )
-    )
-    {
-        return( false );
-    }
-    else
-    {
-        return( true );
+            (
+            (m_ReferenceCount == 0) &&
+            (m_pEmo_First == m_pEmo_Last) &&
+            (m_pEmo_First->m_ReferenceCount == 0)
+            ) {
+        return (false);
+    } else {
+        return (true);
     }
 }
 
@@ -279,11 +262,10 @@ void ExternalMemoryHeap::operator delete( void * pMemory )
 //============================================================================
 
 /* virtual */ void ExternalMemoryHeap::FreeMemory
-(
-    void * pMemory
-)
-{
-    rAssert( CanFree( pMemory ) );
+        (
+                void *pMemory
+        ) {
+    rAssert(CanFree(pMemory));
 
 
 
@@ -291,47 +273,41 @@ void ExternalMemoryHeap::operator delete( void * pMemory )
     // Find the memory object and release it
     //
 
-    ExternalMemoryObject * pEmo_Free = m_pEmo_First;
+    ExternalMemoryObject *pEmo_Free = m_pEmo_First;
 
-    while( ( pEmo_Free != NULL ) && ( pEmo_Free->m_ClientAddress != reinterpret_cast< unsigned int >( pMemory ) ) )
-    {
+    while ((pEmo_Free != NULL) &&
+           (pEmo_Free->m_ClientAddress != reinterpret_cast<unsigned int>(pMemory))) {
         pEmo_Free = pEmo_Free->m_pEmo_Next;
     }
 
     if
-    (
-        ( m_ReferenceCount == 0 ) &&
-        ( m_pEmo_First == m_pEmo_Last ) &&
-        ( m_pEmo_First->m_ReferenceCount == 0 )
-    )
-    {
-        rAssertMsg( false, "ExternalMemoryHeap::FreeMemory - Block Not Allocated." );
-    }
-    else
-    {
-        radRelease( pEmo_Free, this );
+            (
+            (m_ReferenceCount == 0) &&
+            (m_pEmo_First == m_pEmo_Last) &&
+            (m_pEmo_First->m_ReferenceCount == 0)
+            ) {
+        rAssertMsg(false, "ExternalMemoryHeap::FreeMemory - Block Not Allocated.");
+    } else {
+        radRelease(pEmo_Free, this);
     }
 }
 
 void ExternalMemoryHeap::FreeMemoryAligned
-( 
-    void* pMemory 
-)
-{
-    
-    rAssert( CanFree( pMemory ) );
+        (
+                void *pMemory
+        ) {
 
-    FreeMemory( pMemory );
+    rAssert(CanFree(pMemory));
+
+    FreeMemory(pMemory);
 }
 
-bool ExternalMemoryHeap::CanFreeMemory( void * pMemory )
-{
-    return CanFree( pMemory );
+bool ExternalMemoryHeap::CanFreeMemory(void *pMemory) {
+    return CanFree(pMemory);
 }
 
-bool ExternalMemoryHeap::CanFreeMemoryAligned( void * pMemory )
-{
-    return CanFree( pMemory );
+bool ExternalMemoryHeap::CanFreeMemoryAligned(void *pMemory) {
+    return CanFree(pMemory);
 }
 
 //============================================================================
@@ -339,105 +315,93 @@ bool ExternalMemoryHeap::CanFreeMemoryAligned( void * pMemory )
 //============================================================================
 
 /* virtual */ void ExternalMemoryHeap::GetStatus
-(
-    unsigned int * totalFreeMemory,
-    unsigned int * largestBlock,
-    unsigned int * numberOfObjects,
-    unsigned int * lowWaterMark
-)
-{
+        (
+                unsigned int *totalFreeMemory,
+                unsigned int *largestBlock,
+                unsigned int *numberOfObjects,
+                unsigned int *lowWaterMark
+        ) {
     unsigned int _totalFreeMemory = 0;
     unsigned int _largestBlock = 0;
     unsigned int _numberOfObjects = 0;
-    
-    ExternalMemoryObject * pEmo = m_pEmo_First;
 
-    while( pEmo != NULL )
-    {
-        if ( pEmo->m_ReferenceCount == 0 )
-        {
+    ExternalMemoryObject *pEmo = m_pEmo_First;
+
+    while (pEmo != NULL) {
+        if (pEmo->m_ReferenceCount == 0) {
             (_totalFreeMemory) += pEmo->m_Size;
-            if ( pEmo->m_Size > (_largestBlock) )
-            {
+            if (pEmo->m_Size > (_largestBlock)) {
                 (_largestBlock) = pEmo->m_Size;
             }
-        }
-        else
-        {
+        } else {
             (_numberOfObjects)++;
         }
 
         pEmo = pEmo->m_pEmo_Next;
     }
 
-    if ( totalFreeMemory != NULL )
-    {
+    if (totalFreeMemory != NULL) {
         *totalFreeMemory = _totalFreeMemory;
     }
 
-    if ( largestBlock != NULL )
-    {
+    if (largestBlock != NULL) {
         *largestBlock = _largestBlock;
     }
 
-    if ( numberOfObjects != NULL )
-    {
+    if (numberOfObjects != NULL) {
         *numberOfObjects = _numberOfObjects;
     }
 
-    if ( lowWaterMark != NULL )
-    {
+    if (lowWaterMark != NULL) {
         *lowWaterMark = 0;
     }
 }
 
-void ExternalMemoryHeap::Map( void )
-{
-    ExternalMemoryObject * pSearch = m_pEmo_First;
+void ExternalMemoryHeap::Map(void) {
+    ExternalMemoryObject *pSearch = m_pEmo_First;
 
-    rDebugPrintf( "External Dump:\n" );
+    rDebugPrintf("External Dump:\n");
 
     //
     // all those #ifdef are there for get ride off "software math library call" warning in PS2 
     //
-#if defined RAD_PS2 && ! defined RAD_MW
-    rDebugPrintf( "    Size: Space:[%d]Size:[0x%x]B[%d]B[%.2f]K[%.2f]Meg\n",
+#if defined RAD_PS2 && !defined RAD_MW
+    rDebugPrintf("    Size: Space:[%d]Size:[0x%x]B[%d]B[%.2f]K[%.2f]Meg\n",
             m_RadMemorySpace,
             m_HeapSize,
             m_HeapSize,
-            fptodp( (float) m_HeapSize / 1024.0f ),
-            fptodp( (float) m_HeapSize / ( 1024.0f * 1024.0f ) ) );
+            fptodp((float) m_HeapSize / 1024.0f),
+            fptodp((float) m_HeapSize / (1024.0f * 1024.0f)));
 #else
-    rDebugPrintf( "    Size: Space:[%d]Size:[0x%x]B[%d]B[%.2f]K[%.2f]Meg\n",
-            m_RadMemorySpace,
-            m_HeapSize,
-            m_HeapSize,
-            (float) m_HeapSize / 1024.0f,
-            (float) m_HeapSize / ( 1024.0f * 1024.0f ) );
+    rDebugPrintf("    Size: Space:[%d]Size:[0x%x]B[%d]B[%.2f]K[%.2f]Meg\n",
+                 m_RadMemorySpace,
+                 m_HeapSize,
+                 m_HeapSize,
+                 (float) m_HeapSize / 1024.0f,
+                 (float) m_HeapSize / (1024.0f * 1024.0f));
 #endif
 
-    
-    while( pSearch )
-    {
-    //
-    // all those #ifdef are there for get ride off "software math library call" warning in PS2 
-    //
-#if defined RAD_PS2 && ! defined RAD_MW
-        rDebugPrintf( "    [%s][%20s]Addr:[0x%6x]Size:[0x%6x]B[%6d]B[%6.2f]K[%6.2f]M\n",
+
+    while (pSearch) {
+        //
+        // all those #ifdef are there for get ride off "software math library call" warning in PS2
+        //
+#if defined RAD_PS2 && !defined RAD_MW
+        rDebugPrintf("    [%s][%20s]Addr:[0x%6x]Size:[0x%6x]B[%6d]B[%6.2f]K[%6.2f]M\n",
             pSearch->m_ReferenceCount == 0 ? "-" : "*",
-            pSearch->GetName( ),
+            pSearch->GetName(),
             pSearch->m_Address, pSearch->m_Size,
             pSearch->m_Size,
-            fptodp( (float) pSearch->m_Size / 1024.0f ),
-            fptodp( (float) pSearch->m_Size / ( 1024.0f * 1024.0f ) ) );
+            fptodp((float) pSearch->m_Size / 1024.0f),
+            fptodp((float) pSearch->m_Size / (1024.0f * 1024.0f)));
 #else
-        rDebugPrintf( "    [%s][%20s]Addr:[0x%6x]Size:[0x%6x]B[%6d]B[%6.2f]K[%6.2f]M\n",
-            pSearch->m_ReferenceCount == 0 ? "-" : "*",
-            pSearch->GetName( ),
-            pSearch->m_Address, pSearch->m_Size,
-            pSearch->m_Size,
-            (float) pSearch->m_Size / 1024.0f,
-            (float) pSearch->m_Size / ( 1024.0f * 1024.0f ) );
+        rDebugPrintf("    [%s][%20s]Addr:[0x%6x]Size:[0x%6x]B[%6d]B[%6.2f]K[%6.2f]M\n",
+                     pSearch->m_ReferenceCount == 0 ? "-" : "*",
+                     pSearch->GetName(),
+                     pSearch->m_Address, pSearch->m_Size,
+                     pSearch->m_Size,
+                     (float) pSearch->m_Size / 1024.0f,
+                     (float) pSearch->m_Size / (1024.0f * 1024.0f));
 #endif
         pSearch = pSearch->m_pEmo_Next;
     }
@@ -448,48 +412,47 @@ void ExternalMemoryHeap::Map( void )
 //============================================================================
 
 void ExternalMemoryHeap::Initialize
-(
-    void * pStartOfExternalMemory,
-    unsigned int sizeOfExternalMemory,
-    radMemorySpace memorySpace,
-    unsigned int maxAllocations, // size of allocation pool
-    unsigned int growAllocationsBy, // grow allocation pool by
-    radMemoryAllocator allocSlot,
-    const char * pName
-)
-{
+        (
+                void *pStartOfExternalMemory,
+                unsigned int sizeOfExternalMemory,
+                radMemorySpace memorySpace,
+                unsigned int maxAllocations, // size of allocation pool
+                unsigned int growAllocationsBy, // grow allocation pool by
+                radMemoryAllocator allocSlot,
+                const char *pName
+        ) {
 
 
     m_HeapSize = sizeOfExternalMemory;
     m_RadMemorySpace = memorySpace;
 
-    ::radMemoryCreatePool( & refIRadMemoryPool_Emo,
-        sizeof( ExternalMemoryObject ),
-        maxAllocations + 1, // Extra one for big free block
-        growAllocationsBy,
-        false,
-        None,
-        allocSlot );
+    ::radMemoryCreatePool(&refIRadMemoryPool_Emo,
+                          sizeof(ExternalMemoryObject),
+                          maxAllocations + 1, // Extra one for big free block
+                          growAllocationsBy,
+                          false,
+                          None,
+                          allocSlot);
 
     //
     // Create one big free block
     //
 
-    ExternalMemoryObject * pEmo_FreeMem = ExternalMemoryObject::Create( refIRadMemoryPool_Emo );
+    ExternalMemoryObject *pEmo_FreeMem = ExternalMemoryObject::Create(refIRadMemoryPool_Emo);
 
-    rAssert( pEmo_FreeMem != NULL );
-        
+    rAssert(pEmo_FreeMem != NULL);
+
     pEmo_FreeMem->Initialize(
-        this,
-        0,
-        reinterpret_cast< unsigned int >( pStartOfExternalMemory ),
-        sizeOfExternalMemory,
-        NULL,
-        NULL
+            this,
+            0,
+            reinterpret_cast<unsigned int>(pStartOfExternalMemory),
+            sizeOfExternalMemory,
+            NULL,
+            NULL
     );
 
-    rAssert( pEmo_FreeMem != NULL );
- 
+    rAssert(pEmo_FreeMem != NULL);
+
     //
     // Set up our doubly linked list
     //
@@ -498,17 +461,17 @@ void ExternalMemoryHeap::Initialize
     m_pEmo_Last = pEmo_FreeMem;
 
     radMemoryMonitorDeclareSection(
-        (void*) m_pEmo_First->m_Address,
-        m_pEmo_First->m_Size,
-        IRadMemoryMonitor::MemorySectionType_DynamicData,
-        memorySpace,
-        NULL );
+            (void *) m_pEmo_First->m_Address,
+            m_pEmo_First->m_Size,
+            IRadMemoryMonitor::MemorySectionType_DynamicData,
+            memorySpace,
+            NULL);
 
 #ifdef RADMEMORYMONITOR
     {
     char szFullName[ 128 ];
-    sprintf( szFullName, "%s[ExternalMemoryHeap]", pName );
-    radMemoryMonitorIdentifySection( (void*) m_pEmo_First->m_Address, szFullName, memorySpace );
+    sprintf(szFullName, "%s[ExternalMemoryHeap]", pName);
+    radMemoryMonitorIdentifySection((void*) m_pEmo_First->m_Address, szFullName, memorySpace);
     }
 #endif // RADMEMORYMONITOR
 }
@@ -518,16 +481,15 @@ void ExternalMemoryHeap::Initialize
 //============================================================================
 
 ExternalMemoryHeap::ExternalMemoryHeap
-(
-    void
-)
-    :
-    m_ReferenceCount( 1 ),
-    m_HeapSize( 0 ),
-    m_pEmo_First( NULL ),
-    m_pEmo_Last( NULL )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "ExternalMemoryHeap" );
+        (
+                void
+        )
+        :
+        m_ReferenceCount(1),
+        m_HeapSize(0),
+        m_pEmo_First(NULL),
+        m_pEmo_Last(NULL) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "ExternalMemoryHeap");
 }
 
 //============================================================================
@@ -535,128 +497,127 @@ ExternalMemoryHeap::ExternalMemoryHeap
 //============================================================================
 
 /* virtual */ ExternalMemoryHeap::~ExternalMemoryHeap
-(
-    void
-)
-{
+        (
+                void
+        ) {
     //
     // If there is more than one block, or the one block isn't free
     // we !
     //
 
-    rAssert( m_pEmo_First->m_pEmo_Next == NULL );
-    rAssert( m_pEmo_First->m_pEmo_Previous == NULL );
-    rAssert( m_pEmo_First->m_ReferenceCount == 0 );
+    rAssert(m_pEmo_First->m_pEmo_Next == NULL);
+    rAssert(m_pEmo_First->m_pEmo_Previous == NULL);
+    rAssert(m_pEmo_First->m_ReferenceCount == 0);
 
     radMemoryMonitorRescindSection(
-        (void*) m_pEmo_First->m_Address,
-        m_RadMemorySpace );
+            (void *) m_pEmo_First->m_Address,
+            m_RadMemorySpace);
 
-    ExternalMemoryObject::Destroy( refIRadMemoryPool_Emo, m_pEmo_First );
+    ExternalMemoryObject::Destroy(refIRadMemoryPool_Emo, m_pEmo_First);
 }
 
 //============================================================================
 // ExternalMemoryHeap::Allocate
 //============================================================================
-ExternalMemoryObject * ExternalMemoryHeap::Allocate
-(
-    unsigned int size,
-    unsigned int alignment
-)
-{
-    rAssert( radMemoryGetAllocationName( ) );
+ExternalMemoryObject *ExternalMemoryHeap::Allocate
+        (
+                unsigned int size,
+                unsigned int alignment
+        ) {
+    rAssert(radMemoryGetAllocationName());
 
-    ExternalMemoryObject * pEmo_New = NULL;
+    ExternalMemoryObject *pEmo_New = NULL;
 
-    if ( size > 0 )
-    {
-        pEmo_New = AllocateFirstFit( size, alignment );
+    if (size > 0) {
+        pEmo_New = AllocateFirstFit(size, alignment);
 
-        if ( pEmo_New == NULL )
-        {
+        if (pEmo_New == NULL) {
             unsigned int totalFreeMemory;
             unsigned int largestBlock;
             unsigned int numberOfObjects;
             unsigned int lowWaterMark;
 
-            GetStatus( & totalFreeMemory, & largestBlock, & numberOfObjects, & lowWaterMark );
+            GetStatus(&totalFreeMemory, &largestBlock, &numberOfObjects, &lowWaterMark);
 
-            rDebugPrintf( "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" );
+            rDebugPrintf(
+                    "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 
-#if defined RAD_PS2 && ! defined RAD_MW
-            
-            rDebugPrintf( "Out of memory or external nodes allocating: [%s][0x%x]B[%d]B[%.2f]K[%.2f]M\n",
-                radMemoryGetAllocationName( ),
+#if defined RAD_PS2 && !defined RAD_MW
+
+            rDebugPrintf("Out of memory or external nodes allocating: [%s][0x%x]B[%d]B[%.2f]K[%.2f]M\n",
+                radMemoryGetAllocationName(),
                 size,
                 size,
-                fptodp( (float) size / 1024.0f ),
-                fptodp( ( (float) size / ( 1024.0f * 1024.0f ) ) ) );
+                fptodp((float) size / 1024.0f),
+                fptodp(((float) size / (1024.0f * 1024.0f))));
 
-            rDebugPrintf( "    totalFreeMemory:         [0x%x]B[%d]B[%.2f]K[%.2f]M\n",
+            rDebugPrintf("    totalFreeMemory:         [0x%x]B[%d]B[%.2f]K[%.2f]M\n",
                 totalFreeMemory,
                 totalFreeMemory,
-                fptodp( (float) totalFreeMemory / 1024.0f ),
-                fptodp( (float) totalFreeMemory / ( 1024.0f * 1024.0f ) ) );
+                fptodp((float) totalFreeMemory / 1024.0f),
+                fptodp((float) totalFreeMemory / (1024.0f * 1024.0f)));
 
-            rDebugPrintf( "    largestBlock:      [0x%x]B[%d]B[%.2f]K[%.2f]M\n",
+            rDebugPrintf("    largestBlock:      [0x%x]B[%d]B[%.2f]K[%.2f]M\n",
                 largestBlock,
                 largestBlock,
-                fptodp( (float) largestBlock / 1024.0f ),
-                fptodp( (float) largestBlock / ( 1024.0f * 1024.0f ) ) );
+                fptodp((float) largestBlock / 1024.0f),
+                fptodp((float) largestBlock / (1024.0f * 1024.0f)));
 
 #else
-            rDebugPrintf( "Out of memory or external nodes allocating: [%s][0x%x]B[%d]B[%.2f]K[%.2f]M\n",
-                radMemoryGetAllocationName( ),
-                size,
-                size,
-                (float) size / 1024.0f,
-                (float) size / ( 1024.0f * 1024.0f ) );
+            rDebugPrintf(
+                    "Out of memory or external nodes allocating: [%s][0x%x]B[%d]B[%.2f]K[%.2f]M\n",
+                    radMemoryGetAllocationName(),
+                    size,
+                    size,
+                    (float) size / 1024.0f,
+                    (float) size / (1024.0f * 1024.0f));
 
-            rDebugPrintf( "    totalFreeMemory:         [0x%x]B[%d]B[%.2f]K[%.2f]M\n",
-                totalFreeMemory,
-                totalFreeMemory,
-                (float) totalFreeMemory / 1024.0f,
-                (float) totalFreeMemory / ( 1024.0f * 1024.0f ) );
+            rDebugPrintf("    totalFreeMemory:         [0x%x]B[%d]B[%.2f]K[%.2f]M\n",
+                         totalFreeMemory,
+                         totalFreeMemory,
+                         (float) totalFreeMemory / 1024.0f,
+                         (float) totalFreeMemory / (1024.0f * 1024.0f));
 
-            rDebugPrintf( "    largestBlock:      [0x%x]B[%d]B[%.2f]K[%.2f]M\n",
-                largestBlock,
-                largestBlock,
-                (float) largestBlock / 1024.0f,
-                (float) largestBlock / ( 1024.0f * 1024.0f ) );
+            rDebugPrintf("    largestBlock:      [0x%x]B[%d]B[%.2f]K[%.2f]M\n",
+                         largestBlock,
+                         largestBlock,
+                         (float) largestBlock / 1024.0f,
+                         (float) largestBlock / (1024.0f * 1024.0f));
 #endif
 
-            rDebugPrintf( "    numberOfObjects (allocated): [%d]\n", numberOfObjects );
+            rDebugPrintf("    numberOfObjects (allocated): [%d]\n", numberOfObjects);
 
             unsigned int numberFree = 0;
             unsigned int numberAllocated = 0;
 
-            refIRadMemoryPool_Emo->GetStatus( NULL, & numberFree, & numberAllocated );
+            refIRadMemoryPool_Emo->GetStatus(NULL, &numberFree, &numberAllocated);
 
 
-            rDebugPrintf( "    max nodes (free and allocated): [%d]\n", numberFree + numberAllocated );
-                
-            rDebugPrintf( "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" );
-            Map( );
-            rDebugPrintf( "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" );
-        }
-        else
-        {
-            rAssert( ((unsigned int) pEmo_New->GetMemoryAddress( ) % alignment ) == 0 );
+            rDebugPrintf("    max nodes (free and allocated): [%d]\n",
+                         numberFree + numberAllocated);
 
-            pEmo_New->SetName( radMemoryGetAllocationName( ) );
+            rDebugPrintf(
+                    "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+            Map();
+            rDebugPrintf(
+                    "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        } else {
+            rAssert(((unsigned int) pEmo_New->GetMemoryAddress() % alignment) == 0);
+
+            pEmo_New->SetName(radMemoryGetAllocationName());
 
             radMemoryMonitorDeclareAllocation(
-                (void*) pEmo_New->m_ClientAddress,
-                pEmo_New->m_ClientSize,
-                MM_MAX_CALLSTACK_DEPTH,
-                m_RadMemorySpace );
+                    (void *) pEmo_New->m_ClientAddress,
+                    pEmo_New->m_ClientSize,
+                    MM_MAX_CALLSTACK_DEPTH,
+                    m_RadMemorySpace);
         }
     }
 
-    radMemorySetAllocationName( NULL );
-        
-    // Map( );
-    
+    radMemorySetAllocationName(NULL);
+
+    // Map();
+
     return pEmo_New;
 }
 
@@ -664,30 +625,26 @@ ExternalMemoryObject * ExternalMemoryHeap::Allocate
 // ExternalMemoryHeap::AllocateFirstFit
 //============================================================================
 
-ExternalMemoryObject * ExternalMemoryHeap::AllocateFirstFit
-(
-    unsigned int size,
-    unsigned int alignment
-)
-{
-    ExternalMemoryObject * pEmo_Ptr = m_pEmo_First;      
+ExternalMemoryObject *ExternalMemoryHeap::AllocateFirstFit
+        (
+                unsigned int size,
+                unsigned int alignment
+        ) {
+    ExternalMemoryObject *pEmo_Ptr = m_pEmo_First;
 
     //
     // Just loop through until we find a free block that fits
     //
 
-    while ( pEmo_Ptr != NULL )
-    {
-        if ( ( pEmo_Ptr->m_ReferenceCount == 0 ) )
-        {
+    while (pEmo_Ptr != NULL) {
+        if ((pEmo_Ptr->m_ReferenceCount == 0)) {
             //
             // We have to adjust this block's size for aligning this memory block
             //
 
-            unsigned int unalignmentval = CalculateUnalignment( pEmo_Ptr->m_Address, alignment );
+            unsigned int unalignmentval = CalculateUnalignment(pEmo_Ptr->m_Address, alignment);
 
-            if( pEmo_Ptr->m_Size >= size + unalignmentval )
-            {
+            if (pEmo_Ptr->m_Size >= size + unalignmentval) {
                 break;
             }
         }
@@ -695,10 +652,9 @@ ExternalMemoryObject * ExternalMemoryHeap::AllocateFirstFit
         pEmo_Ptr = pEmo_Ptr->m_pEmo_Next;
     }
 
-    if ( pEmo_Ptr != NULL )
-    {
-        pEmo_Ptr = SplitBlockBottom( pEmo_Ptr, size, alignment );
-    }     
+    if (pEmo_Ptr != NULL) {
+        pEmo_Ptr = SplitBlockBottom(pEmo_Ptr, size, alignment);
+    }
 
     return pEmo_Ptr;
 }
@@ -707,42 +663,37 @@ ExternalMemoryObject * ExternalMemoryHeap::AllocateFirstFit
 // ExternalMemoryHeap::AllocateClosestFit
 //============================================================================
 
-ExternalMemoryObject * ExternalMemoryHeap::AllocateClosestFit
-(
-    unsigned int size,
-    unsigned int alignment
-)
-{
-    ExternalMemoryObject * pEmo_Ptr = m_pEmo_First;
-    ExternalMemoryObject * pEmo_ClosestFit = NULL;      
+ExternalMemoryObject *ExternalMemoryHeap::AllocateClosestFit
+        (
+                unsigned int size,
+                unsigned int alignment
+        ) {
+    ExternalMemoryObject *pEmo_Ptr = m_pEmo_First;
+    ExternalMemoryObject *pEmo_ClosestFit = NULL;
 
     //
     // Just loop through until we find a free block that fits
     //
-    
-    while ( pEmo_Ptr != NULL )
-    {
-        unsigned int unalignmentval = CalculateUnalignment( pEmo_Ptr->m_Address, alignment );
 
-        if( ( pEmo_Ptr->m_ReferenceCount == 0 ) && ( pEmo_Ptr->m_Size >= ( size + unalignmentval ) ) )
-        {
+    while (pEmo_Ptr != NULL) {
+        unsigned int unalignmentval = CalculateUnalignment(pEmo_Ptr->m_Address, alignment);
+
+        if ((pEmo_Ptr->m_ReferenceCount == 0) && (pEmo_Ptr->m_Size >= (size + unalignmentval))) {
             if
-            (
-                ( ( pEmo_ClosestFit != NULL ) && ( pEmo_ClosestFit->m_Size > pEmo_Ptr->m_Size ) ) ||
-                ( pEmo_ClosestFit == NULL )
-            )
-            {
+                    (
+                    ((pEmo_ClosestFit != NULL) && (pEmo_ClosestFit->m_Size > pEmo_Ptr->m_Size)) ||
+                    (pEmo_ClosestFit == NULL)
+                    ) {
                 pEmo_ClosestFit = pEmo_Ptr;
-            }           
+            }
         }
 
         pEmo_Ptr = pEmo_Ptr->m_pEmo_Next;
     }
 
-    if ( pEmo_ClosestFit != NULL )
-    {
-        pEmo_Ptr = SplitBlockBottom( pEmo_ClosestFit, size, alignment );
-    }     
+    if (pEmo_ClosestFit != NULL) {
+        pEmo_Ptr = SplitBlockBottom(pEmo_ClosestFit, size, alignment);
+    }
 
     return pEmo_Ptr;
 }
@@ -751,34 +702,30 @@ ExternalMemoryObject * ExternalMemoryHeap::AllocateClosestFit
 // ExternalMemoryHeap::AllocateLastFit
 //============================================================================
 
-ExternalMemoryObject * ExternalMemoryHeap::AllocateLastFit
-(
-    unsigned int size,
-    unsigned int alignment
-)
-{
-    ExternalMemoryObject * pEmo_Ptr = m_pEmo_Last;      
+ExternalMemoryObject *ExternalMemoryHeap::AllocateLastFit
+        (
+                unsigned int size,
+                unsigned int alignment
+        ) {
+    ExternalMemoryObject *pEmo_Ptr = m_pEmo_Last;
 
     //
     // Just loop through until we find a free block that fits
     //
 
-    while ( pEmo_Ptr != NULL )
-    {
-        unsigned int unalignmentval = CalculateUnalignment( pEmo_Ptr->m_Address, alignment );
+    while (pEmo_Ptr != NULL) {
+        unsigned int unalignmentval = CalculateUnalignment(pEmo_Ptr->m_Address, alignment);
 
-        if ( ( pEmo_Ptr->m_ReferenceCount == 0 ) && ( pEmo_Ptr->m_Size >= ( size + unalignmentval ) ) )
-        {
+        if ((pEmo_Ptr->m_ReferenceCount == 0) && (pEmo_Ptr->m_Size >= (size + unalignmentval))) {
             break;
         }
 
         pEmo_Ptr = pEmo_Ptr->m_pEmo_Previous;
     }
 
-    if ( pEmo_Ptr != NULL )
-    {
-        pEmo_Ptr = SplitBlockTop( pEmo_Ptr, size, alignment );
-    }     
+    if (pEmo_Ptr != NULL) {
+        pEmo_Ptr = SplitBlockTop(pEmo_Ptr, size, alignment);
+    }
 
     return pEmo_Ptr;
 }
@@ -787,19 +734,17 @@ ExternalMemoryObject * ExternalMemoryHeap::AllocateLastFit
 // ExternalMemoryHeap::SplitBlockBottom
 //============================================================================
 
-ExternalMemoryObject * ExternalMemoryHeap::SplitBlockBottom
-(
-    ExternalMemoryObject * pEmo_OldFreeBlock,
-    unsigned int size,
-    unsigned int alignment
-)
-{
+ExternalMemoryObject *ExternalMemoryHeap::SplitBlockBottom
+        (
+                ExternalMemoryObject *pEmo_OldFreeBlock,
+                unsigned int size,
+                unsigned int alignment
+        ) {
     // How much is this block out of alignment ?
 
-    unsigned int unalignmentval = CalculateUnalignment( pEmo_OldFreeBlock->m_Address, alignment );
+    unsigned int unalignmentval = CalculateUnalignment(pEmo_OldFreeBlock->m_Address, alignment);
 
-    if ( pEmo_OldFreeBlock->m_Size == ( size + unalignmentval )  )
-    {
+    if (pEmo_OldFreeBlock->m_Size == (size + unalignmentval)) {
         //
         // The size is exactly what we need so allocate the whole thing
         //
@@ -807,10 +752,8 @@ ExternalMemoryObject * ExternalMemoryHeap::SplitBlockBottom
 
         pEmo_OldFreeBlock->m_ClientSize = size;
         pEmo_OldFreeBlock->m_ClientAddress =
-            pEmo_OldFreeBlock->m_Address + unalignmentval;
-    }
-    else
-    {
+                pEmo_OldFreeBlock->m_Address + unalignmentval;
+    } else {
         //
         // The free block is big enough so just allocate part of it
         //
@@ -820,29 +763,27 @@ ExternalMemoryObject * ExternalMemoryHeap::SplitBlockBottom
         // become the allocated block.
         //
 
-        ExternalMemoryObject * pEmo_NewFreeBlock = ExternalMemoryObject::Create( refIRadMemoryPool_Emo );
+        ExternalMemoryObject *pEmo_NewFreeBlock = ExternalMemoryObject::Create(
+                refIRadMemoryPool_Emo);
 
-        if ( pEmo_NewFreeBlock == NULL )
-        {
+        if (pEmo_NewFreeBlock == NULL) {
             return NULL;
         }
 
         pEmo_NewFreeBlock->Initialize(
-            this,
-            0, // referenceCount
-            pEmo_OldFreeBlock->m_Address + ( size + unalignmentval ),
-            pEmo_OldFreeBlock->m_Size - ( size + unalignmentval ),
-            pEmo_OldFreeBlock->m_pEmo_Next,
-            pEmo_OldFreeBlock
+                this,
+                0, // referenceCount
+                pEmo_OldFreeBlock->m_Address + (size + unalignmentval),
+                pEmo_OldFreeBlock->m_Size - (size + unalignmentval),
+                pEmo_OldFreeBlock->m_pEmo_Next,
+                pEmo_OldFreeBlock
         );
 
-        rAssert( pEmo_NewFreeBlock->m_Size > 0 );
+        rAssert(pEmo_NewFreeBlock->m_Size > 0);
 
-        if ( pEmo_NewFreeBlock != NULL )
-        {
+        if (pEmo_NewFreeBlock != NULL) {
 
-            if ( pEmo_OldFreeBlock->m_pEmo_Next != NULL )
-            {
+            if (pEmo_OldFreeBlock->m_pEmo_Next != NULL) {
                 //
                 // We are at the end of the list so we must fix up our last pointer
                 //
@@ -850,22 +791,19 @@ ExternalMemoryObject * ExternalMemoryHeap::SplitBlockBottom
             }
             pEmo_OldFreeBlock->m_pEmo_Next = pEmo_NewFreeBlock;
             pEmo_OldFreeBlock->m_ReferenceCount = 1;
-            pEmo_OldFreeBlock->m_Size = ( size + unalignmentval );
+            pEmo_OldFreeBlock->m_Size = (size + unalignmentval);
             pEmo_OldFreeBlock->m_ClientSize = size;
             pEmo_OldFreeBlock->m_ClientAddress = pEmo_OldFreeBlock->m_Address + unalignmentval;
 
-            if ( m_pEmo_Last == pEmo_OldFreeBlock )
-            {
+            if (m_pEmo_Last == pEmo_OldFreeBlock) {
                 m_pEmo_Last = pEmo_NewFreeBlock;
             }
-        }
-        else
-        {
+        } else {
             return NULL;
         }
     }
-    
-    rAssert( pEmo_OldFreeBlock->GetMemoryAddress( ) != NULL );
+
+    rAssert(pEmo_OldFreeBlock->GetMemoryAddress() != NULL);
 
     return pEmo_OldFreeBlock;
 }
@@ -874,27 +812,23 @@ ExternalMemoryObject * ExternalMemoryHeap::SplitBlockBottom
 // ExternalMemoryHeap::SplitBlockTop
 //============================================================================
 
-ExternalMemoryObject * ExternalMemoryHeap::SplitBlockTop
-(
-    ExternalMemoryObject * pEmo_OldFreeBlock,
-    unsigned int size,
-    unsigned int alignment
-)
-{
+ExternalMemoryObject *ExternalMemoryHeap::SplitBlockTop
+        (
+                ExternalMemoryObject *pEmo_OldFreeBlock,
+                unsigned int size,
+                unsigned int alignment
+        ) {
 
-    unsigned int unalignmentval = CalculateUnalignment( pEmo_OldFreeBlock->m_Address, alignment );
+    unsigned int unalignmentval = CalculateUnalignment(pEmo_OldFreeBlock->m_Address, alignment);
 
-    if ( pEmo_OldFreeBlock->m_Size == ( size + unalignmentval ) )
-    {
+    if (pEmo_OldFreeBlock->m_Size == (size + unalignmentval)) {
         //
         // The size is exactly what we need so allocate the whole thing
         //
         pEmo_OldFreeBlock->m_ReferenceCount = 1;
         pEmo_OldFreeBlock->m_ClientSize = size;
         pEmo_OldFreeBlock->m_ClientAddress = pEmo_OldFreeBlock->m_Address + unalignmentval;
-    }
-    else
-    {
+    } else {
         //
         // The free block is big enough so just allocate part of it
         //
@@ -904,27 +838,25 @@ ExternalMemoryObject * ExternalMemoryHeap::SplitBlockTop
         // become the allocated block.
         //
 
-        
-        ExternalMemoryObject * pEmo_NewFreeBlock = ExternalMemoryObject::Create( refIRadMemoryPool_Emo );
 
-        if ( pEmo_NewFreeBlock == NULL )
-        {
+        ExternalMemoryObject *pEmo_NewFreeBlock = ExternalMemoryObject::Create(
+                refIRadMemoryPool_Emo);
+
+        if (pEmo_NewFreeBlock == NULL) {
             return NULL;
         }
 
         pEmo_NewFreeBlock->Initialize(
-            this,
-            0, // referenceCount
-            pEmo_OldFreeBlock->m_Address,
-            pEmo_OldFreeBlock->m_Size - ( size + unalignmentval ),
-            pEmo_OldFreeBlock,
-            pEmo_OldFreeBlock->m_pEmo_Previous
+                this,
+                0, // referenceCount
+                pEmo_OldFreeBlock->m_Address,
+                pEmo_OldFreeBlock->m_Size - (size + unalignmentval),
+                pEmo_OldFreeBlock,
+                pEmo_OldFreeBlock->m_pEmo_Previous
         );
 
-        if ( pEmo_NewFreeBlock != NULL )
-        {
-            if ( pEmo_OldFreeBlock->m_pEmo_Previous != NULL )
-            {
+        if (pEmo_NewFreeBlock != NULL) {
+            if (pEmo_OldFreeBlock->m_pEmo_Previous != NULL) {
                 pEmo_OldFreeBlock->m_pEmo_Previous->m_pEmo_Next = pEmo_NewFreeBlock;
             }
 
@@ -935,17 +867,14 @@ ExternalMemoryObject * ExternalMemoryHeap::SplitBlockTop
             pEmo_OldFreeBlock->m_ClientSize = size;
             pEmo_OldFreeBlock->m_ClientAddress = pEmo_OldFreeBlock->m_Address + unalignmentval;
 
-            if ( m_pEmo_First == pEmo_OldFreeBlock )
-            {
+            if (m_pEmo_First == pEmo_OldFreeBlock) {
                 m_pEmo_First = pEmo_NewFreeBlock;
             }
-        }
-        else
-        {
+        } else {
             return NULL;
         }
     }
-    
+
     return pEmo_OldFreeBlock;
 }
 
@@ -955,61 +884,54 @@ ExternalMemoryObject * ExternalMemoryHeap::SplitBlockTop
 //============================================================================
 
 void ExternalMemoryHeap::Free
-(
-    ExternalMemoryObject * pEmo_Free
-)
-{
-    rAssert( pEmo_Free != NULL );
-    
-    radMemoryMonitorRescindAllocation(
-        (void*) pEmo_Free->m_ClientAddress,
-        m_RadMemorySpace );
+        (
+                ExternalMemoryObject *pEmo_Free
+        ) {
+    rAssert(pEmo_Free != NULL);
 
-    pEmo_Free->SetName( "Free" );
-    
+    radMemoryMonitorRescindAllocation(
+            (void *) pEmo_Free->m_ClientAddress,
+            m_RadMemorySpace);
+
+    pEmo_Free->SetName("Free");
+
     pEmo_Free->m_ReferenceCount = 0;
     pEmo_Free->m_ClientAddress = 0;
     pEmo_Free->m_ClientSize = 0;
 
-    ExternalMemoryObject * pEmo_Ptr = pEmo_Free->m_pEmo_Next;
+    ExternalMemoryObject *pEmo_Ptr = pEmo_Free->m_pEmo_Next;
 
-    if ( ( pEmo_Ptr != NULL ) && ( pEmo_Ptr->m_ReferenceCount == 0 ) )
-    {
+    if ((pEmo_Ptr != NULL) && (pEmo_Ptr->m_ReferenceCount == 0)) {
         pEmo_Free->m_Size = pEmo_Free->m_Size + pEmo_Ptr->m_Size;
         pEmo_Free->m_pEmo_Next = pEmo_Ptr->m_pEmo_Next;
 
-        if ( pEmo_Ptr->m_pEmo_Next != NULL )
-        {
+        if (pEmo_Ptr->m_pEmo_Next != NULL) {
             pEmo_Ptr->m_pEmo_Next->m_pEmo_Previous = pEmo_Free;
         }
 
-        if ( pEmo_Ptr == m_pEmo_Last )
-        {
+        if (pEmo_Ptr == m_pEmo_Last) {
             m_pEmo_Last = pEmo_Free;
         }
 
-        ExternalMemoryObject::Destroy( refIRadMemoryPool_Emo, pEmo_Ptr );
+        ExternalMemoryObject::Destroy(refIRadMemoryPool_Emo, pEmo_Ptr);
     }
 
     pEmo_Ptr = pEmo_Free->m_pEmo_Previous;
 
-    if ( (pEmo_Ptr != NULL ) && ( pEmo_Ptr->m_ReferenceCount == 0 ) )
-    {
+    if ((pEmo_Ptr != NULL) && (pEmo_Ptr->m_ReferenceCount == 0)) {
         pEmo_Free->m_Size = pEmo_Free->m_Size + pEmo_Ptr->m_Size;
         pEmo_Free->m_pEmo_Previous = pEmo_Ptr->m_pEmo_Previous;
         pEmo_Free->m_Address = pEmo_Ptr->m_Address;
 
-        if ( pEmo_Ptr->m_pEmo_Previous != NULL )
-        {
+        if (pEmo_Ptr->m_pEmo_Previous != NULL) {
             pEmo_Ptr->m_pEmo_Previous->m_pEmo_Next = pEmo_Free;
         }
-       
-        if ( pEmo_Ptr == m_pEmo_First )
-        {
+
+        if (pEmo_Ptr == m_pEmo_First) {
             m_pEmo_First = pEmo_Free;
         }
 
-        ExternalMemoryObject::Destroy( refIRadMemoryPool_Emo, pEmo_Ptr );
+        ExternalMemoryObject::Destroy(refIRadMemoryPool_Emo, pEmo_Ptr);
     }
 
     //
@@ -1018,8 +940,7 @@ void ExternalMemoryHeap::Free
     // memory object, so we must destroy ourslves.
     //
 
-    if ( ( m_ReferenceCount == 0 ) && ( m_pEmo_First == m_pEmo_Last ) )
-    {
+    if ((m_ReferenceCount == 0) && (m_pEmo_First == m_pEmo_Last)) {
         delete this;
     }
 }
@@ -1028,8 +949,7 @@ void ExternalMemoryHeap::Free
 // ExternalMemoryHeap::GetSize
 //============================================================================
 
-/* virtual */ unsigned int ExternalMemoryHeap::GetSize( void )
-{
+/* virtual */ unsigned int ExternalMemoryHeap::GetSize(void) {
     return m_HeapSize;
 }
 
@@ -1037,7 +957,6 @@ void ExternalMemoryHeap::Free
 // ExternalMemoryHeap::ValidateHeap
 //============================================================================
 
-/* virtual */ bool ExternalMemoryHeap::ValidateHeap( void )
-{
+/* virtual */ bool ExternalMemoryHeap::ValidateHeap(void) {
     return true;
 }

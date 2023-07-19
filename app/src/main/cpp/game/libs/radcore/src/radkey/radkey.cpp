@@ -6,6 +6,6 @@
 #include <pch.hpp>
 #include <radkey.hpp>
 
-radCrc s_CRCTable[ RADCRCTABLESIZE ];
-bool   s_CRCIsInitialized = false;
+radCrc s_CRCTable[RADCRCTABLESIZE];
+bool s_CRCIsInitialized = false;
 

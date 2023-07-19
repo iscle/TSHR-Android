@@ -26,19 +26,16 @@
 // Returns:     
 //------------------------------------------------------------------------------
 
-unsigned int radDriveThread::DriveThreadEntry( void* userData )
-{
-    radDriveThread* parent = ( radDriveThread* ) userData;
+unsigned int radDriveThread::DriveThreadEntry(void *userData) {
+    radDriveThread *parent = (radDriveThread *) userData;
     bool errorRetry = false; // are we retrying an error
 
-    while ( true )
-    {
+    while (true) {
         //
         // Suspend (requests will wake us). If we wake up check if we should end.
         //
-        parent->m_pSema->Wait( );
-        if ( parent->m_TerminateThread )
-        {
+        parent->m_pSema->Wait();
+        if (parent->m_TerminateThread) {
             break;
         }
 
@@ -46,110 +43,105 @@ unsigned int radDriveThread::DriveThreadEntry( void* userData )
         // Process request
         //
         radFilePriority priority;
-        radRequest* request = parent->NextRequest( &priority );
-        rAssertMsg( request != NULL, "radDriveThread: thread synchronization error" );
+        radRequest *request = parent->NextRequest(&priority);
+        rAssertMsg(request != NULL, "radDriveThread: thread synchronization error");
 
-        parent->SetCurrentRequest( request );
-        
+        parent->SetCurrentRequest(request);
+
         radDrive::CompletionStatus completionStatus;
 
         //
         // Get the drive
         //
-        radDrive* drive = request->GetOwner( );
+        radDrive *drive = request->GetOwner();
 
-        if ( drive->GetLastError( ) != Success )
-        {
+        if (drive->GetLastError() != Success) {
             //
             // re-init the drive
             //
-            completionStatus = request->ReInit( );
-            if ( completionStatus == radDrive::Complete )
-            {
-                completionStatus = request->DoRequest( );
+            completionStatus = request->ReInit();
+            if (completionStatus == radDrive::Complete) {
+                completionStatus = request->DoRequest();
             }
-        }
-        else
-        {
-            completionStatus = request->DoRequest( );
+        } else {
+            completionStatus = request->DoRequest();
         }
 
         //
         // First check if we need to indicate that an error has cleared:
         //
-        if ( errorRetry == true && 
-             drive->GetLastError( ) == Success &&
-             drive->GetDefaultErrorBehaviour( ) == IRadDrive::Suspend && 
-             drive->GetErrorClearReporting( ) == true  )
-        {
-            parent->WaitGlobalError( drive );
+        if (errorRetry == true &&
+            drive->GetLastError() == Success &&
+            drive->GetDefaultErrorBehaviour() == IRadDrive::Suspend &&
+            drive->GetErrorClearReporting() == true) {
+            parent->WaitGlobalError(drive);
             errorRetry = false;
         }
-        
-        switch( completionStatus )
-        {
-        case radDrive::Complete:
-            delete request;
-            parent->SetCurrentRequest( NULL );
-            break;
 
-        case radDrive::Error: 
-            switch( drive->GetDefaultErrorBehaviour( ) )
-            {
-            case IRadDrive::Fail:
-                rDebugPrintf( "radFileError: [%d]. Failing operation. For additional info install an error handler.\n", drive->GetLastError( ) );
+        switch (completionStatus) {
+            case radDrive::Complete:
                 delete request;
-                parent->SetCurrentRequest( NULL );
+                parent->SetCurrentRequest(NULL);
                 break;
-            case IRadDrive::Retry:
-                rDebugPrintf( "radFileError: [%d]. Retrying operation. For additional info install an error handler.\n", drive->GetLastError( ) );
-                parent->QueueRequest( request, priority, true );
-                parent->SetCurrentRequest( NULL );
-                break;
-            case IRadDrive::Suspend: // signal user, then wait then retry/fail
-                parent->WaitGlobalError( drive );
-                
-                if ( parent->m_Retry )
-                {
-                    parent->QueueRequest( request, priority, true );
-                    parent->SetCurrentRequest( NULL );
 
-                    parent->m_Retry = false;
-                    errorRetry = true;
-                }
-                else
-                {
-                    delete request;
-                    parent->SetCurrentRequest( NULL );
-                }
+            case radDrive::Error:
+                switch (drive->GetDefaultErrorBehaviour()) {
+                    case IRadDrive::Fail:
+                        rDebugPrintf(
+                                "radFileError: [%d]. Failing operation. For additional info install an error handler.\n",
+                                drive->GetLastError());
+                        delete request;
+                        parent->SetCurrentRequest(NULL);
+                        break;
+                    case IRadDrive::Retry:
+                        rDebugPrintf(
+                                "radFileError: [%d]. Retrying operation. For additional info install an error handler.\n",
+                                drive->GetLastError());
+                        parent->QueueRequest(request, priority, true);
+                        parent->SetCurrentRequest(NULL);
+                        break;
+                    case IRadDrive::Suspend: // signal user, then wait then retry/fail
+                        parent->WaitGlobalError(drive);
 
+                        if (parent->m_Retry) {
+                            parent->QueueRequest(request, priority, true);
+                            parent->SetCurrentRequest(NULL);
+
+                            parent->m_Retry = false;
+                            errorRetry = true;
+                        } else {
+                            delete request;
+                            parent->SetCurrentRequest(NULL);
+                        }
+
+                        break;
+                    default:
+                        rAssertMsg(0, "radDriveThread: internal error");
+                }
                 break;
+
+            case radDrive::MoreToDo:  // requeue at the head and at the same priority
+                parent->QueueRequest(request, priority, true);
+                parent->SetCurrentRequest(NULL);
+                break;
+
+            case radDrive::KeepAlive: // do nothing
+                break;
+
             default:
-                rAssertMsg( 0, "radDriveThread: internal error" );
-            }
-            break;
-
-        case radDrive::MoreToDo:  // requeue at the head and at the same priority
-            parent->QueueRequest( request, priority, true );
-            parent->SetCurrentRequest( NULL );
-            break;
-
-        case radDrive::KeepAlive: // do nothing
-            break;
-
-        default:
-            rAssertMsg( 0, "radDriveThread: internal error" );
+                rAssertMsg(0, "radDriveThread: internal error");
         }
 
         //
         // Now that old request is done.
         //
-        parent->Lock( );
+        parent->Lock();
         parent->m_OutstandingRequests--;
-        parent->Unlock( );
+        parent->Unlock();
     }
 
-    rAssertMsg( parent->NextRequest( NULL ) == NULL, "radDriveThread: cannot terminate with outstanding requests" );
+    rAssertMsg(parent->NextRequest(NULL) == NULL,
+               "radDriveThread: cannot terminate with outstanding requests");
     return 0;
 }
 
@@ -157,53 +149,51 @@ unsigned int radDriveThread::DriveThreadEntry( void* userData )
 // Public Member Functions
 //=============================================================================
 
-radDriveThread::radDriveThread( IRadThreadMutex* pMutex, radMemoryAllocator alloc, unsigned int stackSize )
-    :
-    m_pMutex( pMutex ),
-    m_pThread( NULL ),
-    m_TerminateThread( false ),
-    m_pSema( NULL ),
-    m_CurrentRequest( NULL ),
-    m_pErrorSemaphore( NULL ),
-    m_Retry( false ),
-    m_OutstandingRequests( 0 ),
-    m_CancelKey( NULL )
-{
-    radAddRef( m_pMutex, this );
+radDriveThread::radDriveThread(IRadThreadMutex *pMutex, radMemoryAllocator alloc,
+                               unsigned int stackSize)
+        :
+        m_pMutex(pMutex),
+        m_pThread(NULL),
+        m_TerminateThread(false),
+        m_pSema(NULL),
+        m_CurrentRequest(NULL),
+        m_pErrorSemaphore(NULL),
+        m_Retry(false),
+        m_OutstandingRequests(0),
+        m_CancelKey(NULL) {
+    radAddRef(m_pMutex, this);
 
-    for ( unsigned int i = 0; i < NumPriorities; i++ )
-    {
+    for (unsigned int i = 0; i < NumPriorities; i++) {
         m_RequestHead[i] = NULL;
         m_RequestTail[i] = NULL;
     }
 
-    radThreadCreateSemaphore( &m_pSema, 0, alloc );
-    rAssertMsg( m_pSema != NULL, "radDriveThread: cannot create semaphore" );
+    radThreadCreateSemaphore(&m_pSema, 0, alloc);
+    rAssertMsg(m_pSema != NULL, "radDriveThread: cannot create semaphore");
 
-    radThreadCreateSemaphore( &m_pErrorSemaphore, 0, alloc );
-    rAssertMsg( m_pErrorSemaphore != NULL, "radDriveThread: cannot create semaphore" );
+    radThreadCreateSemaphore(&m_pErrorSemaphore, 0, alloc);
+    rAssertMsg(m_pErrorSemaphore != NULL, "radDriveThread: cannot create semaphore");
 
-    radThreadCreateThread( &m_pThread, 
-                           DriveThreadEntry, 
-                           this, 
-                           IRadThread::PriorityHigh, 
-                           stackSize,
-                           alloc );
-    rAssertMsg( m_pThread != NULL, "radDriveThread: cannot create thread" );
+    radThreadCreateThread(&m_pThread,
+                          DriveThreadEntry,
+                          this,
+                          IRadThread::PriorityHigh,
+                          stackSize,
+                          alloc);
+    rAssertMsg(m_pThread != NULL, "radDriveThread: cannot create thread");
 }
 
-radDriveThread::~radDriveThread( )
-{
+radDriveThread::~radDriveThread() {
 
     // stop the thread
     m_TerminateThread = true;
-    m_pSema->Signal( );
-    m_pThread->WaitForTermination( );
-    radRelease( m_pThread, this );
+    m_pSema->Signal();
+    m_pThread->WaitForTermination();
+    radRelease(m_pThread, this);
 
-    radRelease( m_pMutex, this );
-    radRelease( m_pSema, this );
-    radRelease( m_pErrorSemaphore, this );
+    radRelease(m_pMutex, this);
+    radRelease(m_pSema, this);
+    radRelease(m_pErrorSemaphore, this);
 }
 
 //=============================================================================
@@ -216,9 +206,8 @@ radDriveThread::~radDriveThread( )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radDriveThread::Lock( void )
-{
-    m_pMutex->Lock( );
+void radDriveThread::Lock(void) {
+    m_pMutex->Lock();
 }
 
 //=============================================================================
@@ -231,9 +220,8 @@ void radDriveThread::Lock( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radDriveThread::Unlock( void )
-{
-    m_pMutex->Unlock( );
+void radDriveThread::Unlock(void) {
+    m_pMutex->Unlock();
 }
 
 //=============================================================================
@@ -251,50 +239,42 @@ void radDriveThread::Unlock( void )
 //------------------------------------------------------------------------------
 
 void radDriveThread::QueueRequest
-( 
-    radRequest*          pRequest,
-    radFilePriority      priority,
-    bool                 toHead
-)     
-{
-    Lock( );
-    
+        (
+                radRequest *pRequest,
+                radFilePriority priority,
+                bool toHead
+        ) {
+    Lock();
+
     //
     // Add to the head or tail as appropriate
     //
-    if ( toHead )
-    {
-        if ( m_RequestTail[ priority ] == NULL )
-        {
-            m_RequestTail[ priority ] = pRequest;
+    if (toHead) {
+        if (m_RequestTail[priority] == NULL) {
+            m_RequestTail[priority] = pRequest;
         }
 
-        pRequest->m_Next = m_RequestHead[ priority ];
-        m_RequestHead[ priority ] = pRequest;
-    }
-    else
-    {
-        if ( m_RequestHead[ priority ] == NULL )
-        {
-            m_RequestHead[ priority ] = pRequest;
-        }
-        else
-        {
-            m_RequestTail[ priority ]->m_Next = pRequest;
+        pRequest->m_Next = m_RequestHead[priority];
+        m_RequestHead[priority] = pRequest;
+    } else {
+        if (m_RequestHead[priority] == NULL) {
+            m_RequestHead[priority] = pRequest;
+        } else {
+            m_RequestTail[priority]->m_Next = pRequest;
         }
 
         pRequest->m_Next = NULL;
-        m_RequestTail[ priority ] = pRequest;
+        m_RequestTail[priority] = pRequest;
     }
 
     m_OutstandingRequests++;
 
-    Unlock( );
-    
+    Unlock();
+
     //
     // signal the thread.
     //    
-    m_pSema->Signal( );
+    m_pSema->Signal();
 }
 
 //=============================================================================
@@ -309,21 +289,18 @@ void radDriveThread::QueueRequest
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radDriveThread::CancelRequests( void* key, radFilePriority priority )
-{
-    Lock( );
+void radDriveThread::CancelRequests(void *key, radFilePriority priority) {
+    Lock();
 
-    radRequest** ppRequest = &m_RequestHead[ priority ];
-    radRequest* pEnd = NULL;
+    radRequest **ppRequest = &m_RequestHead[priority];
+    radRequest *pEnd = NULL;
 
-    while ( *ppRequest != NULL )
-    {
-        if ( (*ppRequest)->ShouldCancel( key ) )
-        {
+    while (*ppRequest != NULL) {
+        if ((*ppRequest)->ShouldCancel(key)) {
             //
             // Remove the element
             //
-            radRequest* pRequest = *ppRequest;
+            radRequest *pRequest = *ppRequest;
             *ppRequest = pRequest->m_Next;
 
             delete pRequest;
@@ -331,18 +308,16 @@ void radDriveThread::CancelRequests( void* key, radFilePriority priority )
             // Don't forget to tell the semaphore!
             // We need to wait (we will never block) so the count is correct
             //
-            m_pSema->Wait( );
-        }
-        else
-        {
+            m_pSema->Wait();
+        } else {
             pEnd = *ppRequest;
-            ppRequest = &( (*ppRequest)->m_Next );
+            ppRequest = &((*ppRequest)->m_Next);
         }
     }
 
-    m_RequestTail[ priority ] = pEnd;
+    m_RequestTail[priority] = pEnd;
 
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -355,8 +330,7 @@ void radDriveThread::CancelRequests( void* key, radFilePriority priority )
 // Returns:     The current request.
 //------------------------------------------------------------------------------
 
-const radRequest* const radDriveThread::GetCurrentRequest() const
-{
+const radRequest *const radDriveThread::GetCurrentRequest() const {
     return m_CurrentRequest;
 }
 
@@ -370,11 +344,10 @@ const radRequest* const radDriveThread::GetCurrentRequest() const
 // Returns:     True if the queue is not empty.
 //------------------------------------------------------------------------------
 
-bool radDriveThread::OutstandingRequests( void )
-{
-    Lock( );
-    bool ret = ( m_OutstandingRequests != 0 );
-    Unlock( );
+bool radDriveThread::OutstandingRequests(void) {
+    Lock();
+    bool ret = (m_OutstandingRequests != 0);
+    Unlock();
 
     return ret;
 }
@@ -382,7 +355,7 @@ bool radDriveThread::OutstandingRequests( void )
 //=============================================================================
 // Private Member Functions
 //=============================================================================
-    
+
 //=============================================================================
 // Function:    radDriveThread::WaitGlobalError
 //=============================================================================
@@ -393,20 +366,18 @@ bool radDriveThread::OutstandingRequests( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radDriveThread::WaitGlobalError( radDrive* drive )
-{
-    drive->SetErrorState( );
-    m_pErrorSemaphore->Wait( );
+void radDriveThread::WaitGlobalError(radDrive *drive) {
+    drive->SetErrorState();
+    m_pErrorSemaphore->Wait();
 }
 
 //=============================================================================
 // Function:    radDriveThread::WaitGlobalError
 //=============================================================================
 
-void radDriveThread::ResumeRequest( bool retry )
-{
+void radDriveThread::ResumeRequest(bool retry) {
     m_Retry = retry;
-    m_pErrorSemaphore->Signal( );
+    m_pErrorSemaphore->Signal();
 }
 
 //=============================================================================
@@ -420,20 +391,16 @@ void radDriveThread::ResumeRequest( bool retry )
 // Returns:     the next request or NULL if there are none
 //------------------------------------------------------------------------------
 
-radRequest* radDriveThread::NextRequest( radFilePriority* priority )
-{
-    radRequest* pRequest = NULL;
-    
-    Lock( );
-    for ( unsigned int i = 0; i < NumPriorities; i++ )
-    {
-        if ( m_RequestHead[i] != NULL )
-        {
+radRequest *radDriveThread::NextRequest(radFilePriority *priority) {
+    radRequest *pRequest = NULL;
+
+    Lock();
+    for (unsigned int i = 0; i < NumPriorities; i++) {
+        if (m_RequestHead[i] != NULL) {
             //
             // Special case if there's exactly one request on this queue
             //
-            if ( m_RequestHead[i] == m_RequestTail[i] )
-            {
+            if (m_RequestHead[i] == m_RequestTail[i]) {
                 m_RequestTail[i] = NULL;
             }
 
@@ -444,15 +411,14 @@ radRequest* radDriveThread::NextRequest( radFilePriority* priority )
             m_RequestHead[i] = pRequest->m_Next;
             pRequest->m_Next = NULL;
 
-            if ( priority != NULL )
-            {
-                *priority = ( radFilePriority )i;
+            if (priority != NULL) {
+                *priority = (radFilePriority) i;
             }
 
             break;
         }
     }
-    Unlock( );
+    Unlock();
 
     return pRequest;
 }
@@ -468,8 +434,7 @@ radRequest* radDriveThread::NextRequest( radFilePriority* priority )
 // Returns:     nothing
 //------------------------------------------------------------------------------
 
-void radDriveThread::SetCurrentRequest( radRequest* request )
-{
+void radDriveThread::SetCurrentRequest(radRequest *request) {
     m_CurrentRequest = request;
 }
 

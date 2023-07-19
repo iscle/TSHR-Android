@@ -68,7 +68,7 @@ radMemoryAllocator radStatManager::s_Alloc       = RADMEMORY_ALLOC_DEFAULT;
 //===========================================================================
 
 void radStatInitialize_Implementation
-( 
+(
     const char* moduleName, 
     unsigned int numEntries,                                        
     unsigned int numSamplesPerEntry,
@@ -78,13 +78,13 @@ void radStatInitialize_Implementation
     //
     // First instantiate the singleton if it does not exist.
     //
-    if( s_theManager.s_Initialized )
+    if(s_theManager.s_Initialized)
     {
-        s_theManager.Terminate( );
+        s_theManager.Terminate();
     }
-    s_theManager.Initialize( alloc );
-    s_theManager.InitModule( moduleName, numEntries, numSamplesPerEntry );
-    rAssert( s_theManager.ModulesExist( ) );
+    s_theManager.Initialize(alloc);
+    s_theManager.InitModule(moduleName, numEntries, numSamplesPerEntry);
+    rAssert(s_theManager.ModulesExist());
 }
 
 
@@ -102,21 +102,21 @@ void radStatInitialize_Implementation
 //
 //===========================================================================
 
-void radStatTerminate_Implementation( const char* moduleName )
+void radStatTerminate_Implementation(const char* moduleName)
 {
-    if( !s_theManager.s_Initialized )
+    if(!s_theManager.s_Initialized)
     {
         return;
     }
 
-    s_theManager.TerminateModule( moduleName );
+    s_theManager.TerminateModule(moduleName);
 
     //
     // If there are no more modules, delete the singleton.
     //
-    if( !s_theManager.ModulesExist( ) )
+    if(!s_theManager.ModulesExist())
     {
-        s_theManager.Terminate( );
+        s_theManager.Terminate();
     }
 }
 
@@ -133,18 +133,18 @@ void radStatTerminate_Implementation( const char* moduleName )
 //===========================================================================
 
 void radStatSetAccumulatorName_Implementation
-( 
+(
     const char* moduleName, 
     unsigned int index,                       
     const char* accumName
 )
 {
-    if( !s_theManager.s_Initialized )
+    if(!s_theManager.s_Initialized)
     {
         return;
     }
 
-    s_theManager.SetAccumulatorName( moduleName, index, accumName );
+    s_theManager.SetAccumulatorName(moduleName, index, accumName);
 }
 
 
@@ -162,18 +162,18 @@ void radStatSetAccumulatorName_Implementation
 //===========================================================================
 
 void radStatGetAccumulatorName_Implementation
-( 
+(
     const char* moduleName, 
     unsigned int index,                       
     char* accumName 
 )
 {
-    if( !s_theManager.s_Initialized )
+    if(!s_theManager.s_Initialized)
     {
         return;
     }
 
-    s_theManager.GetAccumulatorName( moduleName, index, accumName );
+    s_theManager.GetAccumulatorName(moduleName, index, accumName);
 }
 
 
@@ -194,18 +194,18 @@ void radStatGetAccumulatorName_Implementation
 //===========================================================================
 
 void radStatReset_Implementation
-( 
+(
     const char* moduleName, 
     unsigned int index,    
     unsigned int numSamplesToStore
 )
 {
-    if( !s_theManager.s_Initialized )
+    if(!s_theManager.s_Initialized)
     {
         return;
     }
 
-    s_theManager.ResetAccumulator( moduleName, index, numSamplesToStore );
+    s_theManager.ResetAccumulator(moduleName, index, numSamplesToStore);
 }
 
 
@@ -226,19 +226,19 @@ void radStatReset_Implementation
 //===========================================================================
 
 void radStatReset_Implementation
-( 
+(
     const char* moduleName, 
     const char* accumName,    
     unsigned int numSamplesToStore
 )
 {
-    if( !s_theManager.s_Initialized )
+    if(!s_theManager.s_Initialized)
     {
         return;
     }
 
-    unsigned int index = s_theManager.GetIndex( moduleName, accumName );
-    s_theManager.ResetAccumulator( moduleName, index, numSamplesToStore );
+    unsigned int index = s_theManager.GetIndex(moduleName, accumName);
+    s_theManager.ResetAccumulator(moduleName, index, numSamplesToStore);
 }
 
 
@@ -255,34 +255,34 @@ void radStatReset_Implementation
 //===========================================================================
 
 void radStatAddSample_Implementation
-( 
+(
     const char* moduleName, 
     unsigned int index, 
     float sample 
 )
 {
-    if( !s_theManager.s_Initialized )
+    if(!s_theManager.s_Initialized)
     {
         return;
     }
 
-    s_theManager.AddSample( moduleName, index, sample );
+    s_theManager.AddSample(moduleName, index, sample);
 }
 
 
 void radStatAddSample_Implementation
-( 
+(
     const char* moduleName, 
     unsigned int index, 
     int sample 
 )
 {
-    if( !s_theManager.s_Initialized )
+    if(!s_theManager.s_Initialized)
     {
         return;
     }
 
-    s_theManager.AddSample( moduleName, index, ( float ) sample );
+    s_theManager.AddSample(moduleName, index, (float) sample);
 }
 
 
@@ -299,36 +299,36 @@ void radStatAddSample_Implementation
 //===========================================================================
 
 void radStatAddSample_Implementation
-( 
+(
     const char* moduleName, 
     const char* accumName,
     float sample 
 )
 {
-    if( !s_theManager.s_Initialized )
+    if(!s_theManager.s_Initialized)
     {
         return;
     }
 
-    unsigned int index = s_theManager.GetIndex( moduleName, accumName );
-    s_theManager.AddSample( moduleName, index, sample );
+    unsigned int index = s_theManager.GetIndex(moduleName, accumName);
+    s_theManager.AddSample(moduleName, index, sample);
 }
 
 
 void radStatAddSample_Implementation
-( 
+(
     const char* moduleName, 
     const char* accumName,
     int sample 
 )
 {
-    if( !s_theManager.s_Initialized )
+    if(!s_theManager.s_Initialized)
     {
         return;
     }
 
-    unsigned int index = s_theManager.GetIndex( moduleName, accumName );
-    s_theManager.AddSample( moduleName, index, ( float ) sample );
+    unsigned int index = s_theManager.GetIndex(moduleName, accumName);
+    s_theManager.AddSample(moduleName, index, (float) sample);
 }
 
 
@@ -355,7 +355,7 @@ void radStatAddSample_Implementation
 //===========================================================================
 
 void radStatQuery_Implementation
-( 
+(
     const char* moduleName, 
     unsigned int index,
     unsigned int* pNumSamples, 
@@ -366,13 +366,13 @@ void radStatQuery_Implementation
     float* pStandardDeviation 
 )
 {
-    if( !s_theManager.s_Initialized )
+    if(!s_theManager.s_Initialized)
     {
         return;
     }
 
-    s_theManager.Query( moduleName, index, pNumSamples, pTotal, 
-                        pMean, pMax, pMin, pStandardDeviation );
+    s_theManager.Query(moduleName, index, pNumSamples, pTotal,
+                        pMean, pMax, pMin, pStandardDeviation);
 }
 
 
@@ -399,7 +399,7 @@ void radStatQuery_Implementation
 //===========================================================================
 
 void radStatQuery_Implementation
-( 
+(
     const char* moduleName, 
     const char* accumName,
     unsigned int* pNumSamples, 
@@ -410,14 +410,14 @@ void radStatQuery_Implementation
     float* pStandardDeviation 
 )
 {
-    if( !s_theManager.s_Initialized )
+    if(!s_theManager.s_Initialized)
     {
         return;
     }
 
-    unsigned int index = s_theManager.GetIndex( moduleName, accumName );
-    s_theManager.Query( moduleName, index, pNumSamples, pTotal, 
-                        pMean, pMax, pMin, pStandardDeviation );
+    unsigned int index = s_theManager.GetIndex(moduleName, accumName);
+    s_theManager.Query(moduleName, index, pNumSamples, pTotal,
+                        pMean, pMax, pMin, pStandardDeviation);
 }
 
 
@@ -441,19 +441,19 @@ void radStatQuery_Implementation
 //
 //===========================================================================
 void radStatQueryPercentile_Implementation
-( 
+(
     const char* moduleName, 
     unsigned int index,                       
     unsigned int percentile, 
     float* pNumBelow
 )
 {
-    if( !s_theManager.s_Initialized )
+    if(!s_theManager.s_Initialized)
     {
         return;
     }
 
-    s_theManager.QueryPercentile( moduleName, index, percentile, pNumBelow );
+    s_theManager.QueryPercentile(moduleName, index, percentile, pNumBelow);
 }
 
 
@@ -477,20 +477,20 @@ void radStatQueryPercentile_Implementation
 //
 //===========================================================================
 void radStatQueryPercentile_Implementation
-( 
+(
     const char* moduleName, 
     const char* accumName,
     unsigned int percentile, 
     float* pNumBelow
 )
 {
-    if( !s_theManager.s_Initialized )
+    if(!s_theManager.s_Initialized)
     {
         return;
     }
 
-    unsigned int index = s_theManager.GetIndex( moduleName, accumName );
-    s_theManager.QueryPercentile( moduleName, index, percentile, pNumBelow );
+    unsigned int index = s_theManager.GetIndex(moduleName, accumName);
+    s_theManager.QueryPercentile(moduleName, index, percentile, pNumBelow);
 }
 
 
@@ -515,18 +515,18 @@ void radStatQueryPercentile_Implementation
 //===========================================================================
 
 void radStatEnumerateAccumulators_Implementation
-( 
+(
     const char* modulePattern, 
     const char* accumPattern,    
-    void (*enumerationCallback)( const char* moduleName, const char* accumName )
+    void (*enumerationCallback)(const char* moduleName, const char* accumName)
 )
 {
-    if( !s_theManager.s_Initialized )
+    if(!s_theManager.s_Initialized)
     {
         return;
     }
 
-    s_theManager.EnumerateAccumulators( modulePattern, accumPattern, enumerationCallback );
+    s_theManager.EnumerateAccumulators(modulePattern, accumPattern, enumerationCallback);
 }
 
 
@@ -546,9 +546,9 @@ void radStatEnumerateAccumulators_Implementation
 //
 //===========================================================================
 
-void radStatManager::Initialize( radMemoryAllocator alloc )
+void radStatManager::Initialize(radMemoryAllocator alloc)
 {
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radStatManager" );
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radStatManager");
     m_Modules = NULL;
     s_Alloc = alloc;
     s_Initialized = true;
@@ -566,24 +566,24 @@ void radStatManager::Initialize( radMemoryAllocator alloc )
 //
 //===========================================================================
 
-void radStatManager::Terminate( void )
+void radStatManager::Terminate(void)
 {
     radStatModuleContainer* module;
     radStatModuleContainer* temp;
     module = m_Modules;
-    while( module != NULL )
+    while(module != NULL)
     {
         temp = module;
         module = module->m_Next;
-        if( temp->m_Accumulators != NULL )
+        if(temp->m_Accumulators != NULL)
         {
-            for( unsigned int i = 0; i < temp->m_NumAccum; i++ )
+            for(unsigned int i = 0; i <temp->m_NumAccum; i++)
             {
-                radRelease( temp->m_Accumulators[ i ], this );
+                radRelease(temp->m_Accumulators[ i ], this);
             }
-            radMemoryFree( s_Alloc, temp->m_Accumulators );
+            radMemoryFree(s_Alloc, temp->m_Accumulators);
         }
-        radMemoryFree( s_Alloc, temp );
+        radMemoryFree(s_Alloc, temp);
     }
 }
 
@@ -600,9 +600,9 @@ void radStatManager::Terminate( void )
 //
 //===========================================================================
 
-bool radStatManager::ModulesExist( void )
+bool radStatManager::ModulesExist(void)
 {
-    return( m_Modules != NULL );
+    return(m_Modules != NULL);
 }
 
 
@@ -617,13 +617,13 @@ bool radStatManager::ModulesExist( void )
 //
 //===========================================================================
 
-radStatManager::radStatModuleContainer* radStatManager::FindModule( const char* moduleName )
+radStatManager::radStatModuleContainer* radStatManager::FindModule(const char* moduleName)
 {
     radStatModuleContainer* module = m_Modules;
     bool found = false;
-    while( !found && module != NULL )
+    while(!found && module != NULL)
     {
-        if( strcmp( moduleName, module->m_ModuleName ) == 0 )
+        if(strcmp(moduleName, module->m_ModuleName) == 0)
         {
             found = true;
         }
@@ -633,7 +633,7 @@ radStatManager::radStatModuleContainer* radStatManager::FindModule( const char* 
         }
     }
 
-    return( module );
+    return(module);
 }
 
 
@@ -650,19 +650,19 @@ radStatManager::radStatModuleContainer* radStatManager::FindModule( const char* 
 //
 //===========================================================================
 
-unsigned int radStatManager::GetIndex( const char* moduleName, const char* accumName )
+unsigned int radStatManager::GetIndex(const char* moduleName, const char* accumName)
 {
-    radStatModuleContainer* module = FindModule( moduleName );
+    radStatModuleContainer* module = FindModule(moduleName);
     unsigned int index = 0xffffffff;  // invalid index
 
-    if( module != NULL )
+    if(module != NULL)
     {
         bool found = false;
-        for( unsigned int i = 0; !found && i < module->m_NumAccum; i++ )
+        for(unsigned int i = 0; !found && i <module->m_NumAccum; i++)
         {
             char name[ 256 ];
-            module->m_Accumulators[ i ]->GetName( name );
-            if( strcmp( accumName, name ) == 0 )
+            module->m_Accumulators[ i ]->GetName(name);
+            if(strcmp(accumName, name) == 0)
             {
                 found = true;
                 index = i;
@@ -672,17 +672,17 @@ unsigned int radStatManager::GetIndex( const char* moduleName, const char* accum
     else
     {
         char buf[ 512 ];
-        sprintf( buf, "Statistics module %s not found.\n", moduleName );
-        rAssertMsg( false, buf );
+        sprintf(buf, "Statistics module %s not found.\n", moduleName);
+        rAssertMsg(false, buf);
     }
 
-    if( index == 0xffffffff )
+    if(index == 0xffffffff)
     {
-        rDebugPrintf( "Warning: No accumulator called '%s' found in module %s\n",
-                      accumName, moduleName );
+        rDebugPrintf("Warning: No accumulator called '%s' found in module %s\n",
+                      accumName, moduleName);
     }
 
-    return( index );
+    return(index);
 }
 
 
@@ -701,7 +701,7 @@ unsigned int radStatManager::GetIndex( const char* moduleName, const char* accum
 //===========================================================================
 
 void radStatManager::InitModule
-( 
+(
     const char* moduleName, 
     unsigned int numEntries, 
     unsigned int numSamplesPerEntry 
@@ -710,39 +710,39 @@ void radStatManager::InitModule
     //
     // Locate the module. If it doesn't exist, create one and store it.
     //
-    radStatModuleContainer* module = FindModule( moduleName );
-    if( module == NULL )
+    radStatModuleContainer* module = FindModule(moduleName);
+    if(module == NULL)
     {
-        module = ( radStatModuleContainer* )radMemoryAlloc( s_Alloc, sizeof( radStatModuleContainer ) );
-        rAssert( module != NULL );
+        module = (radStatModuleContainer*)radMemoryAlloc(s_Alloc, sizeof(radStatModuleContainer));
+        rAssert(module != NULL);
         module->m_Next = m_Modules;
         m_Modules = module;
         module->m_Accumulators = NULL;
         module->m_NumAccum = 0;
-        strcpy( module->m_ModuleName, moduleName );
+        strcpy(module->m_ModuleName, moduleName);
     }
 
     //
     // Resize the accumulator array if necessary.
     //
-    if( module->m_Accumulators == NULL || module->m_NumAccum != numEntries )
+    if(module->m_Accumulators == NULL || module->m_NumAccum != numEntries)
     {
-        if( module->m_Accumulators != NULL )
+        if(module->m_Accumulators != NULL)
         {
-            for( unsigned int i = 0; i < module->m_NumAccum; i++ )
+            for(unsigned int i = 0; i <module->m_NumAccum; i++)
             {
-                radRelease( module->m_Accumulators[ i ], this );
+                radRelease(module->m_Accumulators[ i ], this);
             }
-            radMemoryFree( s_Alloc, module->m_Accumulators );
+            radMemoryFree(s_Alloc, module->m_Accumulators);
         }
-        module->m_Accumulators = ( IRadSimpleStatistic** )radMemoryAlloc( s_Alloc, numEntries * sizeof( IRadSimpleStatistic* ) );
-        rAssert( module->m_Accumulators != NULL );
-        for( unsigned int i = 0; i < numEntries; i++ )
+        module->m_Accumulators = (IRadSimpleStatistic**)radMemoryAlloc(s_Alloc, numEntries * sizeof(IRadSimpleStatistic*));
+        rAssert(module->m_Accumulators != NULL);
+        for(unsigned int i = 0; i <numEntries; i++)
         {
             IRadSimpleStatistic *stat;
-            radStatCreateSimpleStatistic( &stat, 0, s_Alloc );
+            radStatCreateSimpleStatistic(&stat, 0, s_Alloc);
             module->m_Accumulators[ i ] = stat;;
-            rAssert( module->m_Accumulators[ i ] != NULL );
+            rAssert(module->m_Accumulators[ i ] != NULL);
         }
         module->m_NumAccum = numEntries;
     }
@@ -750,10 +750,10 @@ void radStatManager::InitModule
     //
     // Reset the accumulators and resize their history buffers.
     //
-    for( unsigned int i = 0; i < module->m_NumAccum; i++ )
+    for(unsigned int i = 0; i <module->m_NumAccum; i++)
     {
-        module->m_Accumulators[ i ]->Reset( numSamplesPerEntry );
-        module->m_Accumulators[ i ]->SetName( "" );
+        module->m_Accumulators[ i ]->Reset(numSamplesPerEntry);
+        module->m_Accumulators[ i ]->SetName("");
     }
 }
 
@@ -781,9 +781,9 @@ void radStatManager::TerminateModule
     bool found = false;
     radStatModuleContainer* module = m_Modules;
     radStatModuleContainer* prev = NULL;
-    while( !found && module != NULL )
+    while(!found && module != NULL)
     {
-        if( strcmp( moduleName, module->m_ModuleName ) == 0 )
+        if(strcmp(moduleName, module->m_ModuleName) == 0)
         {
             found = true;
         }
@@ -798,9 +798,9 @@ void radStatManager::TerminateModule
     // If we found it, unlink it from the list and
     // free its memory.
     //
-    if( found )
+    if(found)
     {
-        if( prev == NULL )
+        if(prev == NULL)
         {
             m_Modules = module->m_Next;
         }
@@ -809,15 +809,15 @@ void radStatManager::TerminateModule
             prev->m_Next = module->m_Next;
         }
 
-        if( module->m_Accumulators != NULL )
+        if(module->m_Accumulators != NULL)
         {
-            for( unsigned int i = 0; i < module->m_NumAccum; i++ )
+            for(unsigned int i = 0; i <module->m_NumAccum; i++)
             {
-                radRelease( module->m_Accumulators[ i ], this );
+                radRelease(module->m_Accumulators[ i ], this);
             }
-            radMemoryFree( s_Alloc, module->m_Accumulators );
+            radMemoryFree(s_Alloc, module->m_Accumulators);
         }
-        radMemoryFree( s_Alloc, module );
+        radMemoryFree(s_Alloc, module);
     }
 }
 
@@ -837,7 +837,7 @@ void radStatManager::TerminateModule
 //===========================================================================
 
 void radStatManager::ResetAccumulator
-( 
+(
     const char* moduleName, 
     unsigned int index, 
     unsigned int numSamplesToStore
@@ -846,22 +846,22 @@ void radStatManager::ResetAccumulator
     //
     // Locate the module. If it doesn't exist, issue a warning.
     //
-    radStatModuleContainer* module = FindModule( moduleName );
-    if( module == NULL )
+    radStatModuleContainer* module = FindModule(moduleName);
+    if(module == NULL)
     {
         char buf[ 512 ];
-        sprintf( buf, "Statistics module %s not found.\n", moduleName );
-        rAssertMsg( false, buf );
+        sprintf(buf, "Statistics module %s not found.\n", moduleName);
+        rAssertMsg(false, buf);
     }
     else
     {
         //
         // Found it - update the appropriate accumulator.
         //
-        rAssert( module->m_Accumulators != NULL );
-        if( index < module->m_NumAccum )
+        rAssert(module->m_Accumulators != NULL);
+        if(index <module->m_NumAccum)
         {
-            module->m_Accumulators[ index ]->Reset( numSamplesToStore );
+            module->m_Accumulators[ index ]->Reset(numSamplesToStore);
         }
     }
 }
@@ -881,7 +881,7 @@ void radStatManager::ResetAccumulator
 //===========================================================================
 
 void radStatManager::AddSample
-( 
+(
     const char* moduleName, 
     unsigned int index, 
     float sample
@@ -890,23 +890,23 @@ void radStatManager::AddSample
     //
     // Locate the module. If it doesn't exist, issue a warning.
     //
-    radStatModuleContainer* module = FindModule( moduleName );
-    if( module == NULL )
+    radStatModuleContainer* module = FindModule(moduleName);
+    if(module == NULL)
     {
         char buf[ 512 ];
-        sprintf( buf, "Statistics buffer for module %s not found.\n", moduleName );
-        rAssertMsg( false, buf );
+        sprintf(buf, "Statistics buffer for module %s not found.\n", moduleName);
+        rAssertMsg(false, buf);
     }
     else
     {
         //
         // Found it - update the appropriate accumulator.
         //
-        rAssert( module->m_Accumulators != NULL );
-        rAssert( module->m_NumAccum > index );
-        if( index < module->m_NumAccum )
+        rAssert(module->m_Accumulators != NULL);
+        rAssert(module->m_NumAccum> index);
+        if(index <module->m_NumAccum)
         {
-            module->m_Accumulators[ index ]->AddSample( sample );
+            module->m_Accumulators[ index ]->AddSample(sample);
         }
     }
 }
@@ -938,7 +938,7 @@ void radStatManager::AddSample
 //===========================================================================
 
 void radStatManager::Query
-( 
+(
     const char* moduleName, 
     unsigned int index, 
     unsigned int* pNumSamples,     
@@ -952,54 +952,54 @@ void radStatManager::Query
     //
     // Locate the module. If it doesn't exist, issue a warning.
     //
-    radStatModuleContainer* module = FindModule( moduleName );
-    if( module == NULL )
+    radStatModuleContainer* module = FindModule(moduleName);
+    if(module == NULL)
     {
         char buf[ 512 ];
-        sprintf( buf, "Statistics buffer for module %s not found.\n", moduleName );
-        rAssertMsg( false, buf );
+        sprintf(buf, "Statistics buffer for module %s not found.\n", moduleName);
+        rAssertMsg(false, buf);
     }
     else
     {
         //
         // Found it - get the appropriate accumulator.
         //
-        rAssert( module->m_Accumulators != NULL );
-        if( index < module->m_NumAccum )
+        rAssert(module->m_Accumulators != NULL);
+        if(index <module->m_NumAccum)
         {
             IRadSimpleStatistic* stat = module->m_Accumulators[ index ];
 
             //
             // Answer requested queries.
             //
-            if( pNumSamples != NULL )
+            if(pNumSamples != NULL)
             {
-                *pNumSamples = stat->GetNumSamples( );
+                *pNumSamples = stat->GetNumSamples();
             }
 
-            if( pTotal != NULL )
+            if(pTotal != NULL)
             {
-                *pTotal = stat->GetTotal( );
+                *pTotal = stat->GetTotal();
             }
 
-            if( pMean != NULL )
+            if(pMean != NULL)
             {
-                *pMean = stat->GetMean( );
+                *pMean = stat->GetMean();
             }
 
-            if( pMax != NULL )
+            if(pMax != NULL)
             {
-                *pMax = stat->GetMax( );
+                *pMax = stat->GetMax();
             }
 
-            if( pMin != NULL )
+            if(pMin != NULL)
             {
-                *pMin = stat->GetMin( );
+                *pMin = stat->GetMin();
             }
 
-            if( pStandardDeviation != NULL )
+            if(pStandardDeviation != NULL)
             {
-                *pStandardDeviation = stat->GetStandardDeviation( );
+                *pStandardDeviation = stat->GetStandardDeviation();
             }
         }
     }
@@ -1022,7 +1022,7 @@ void radStatManager::Query
 //===========================================================================
 
 void radStatManager::QueryPercentile
-( 
+(
     const char* moduleName, 
     unsigned int index,     
     unsigned int percentile, 
@@ -1032,23 +1032,23 @@ void radStatManager::QueryPercentile
     //
     // Locate the module. If it doesn't exist, issue a warning.
     //
-    radStatModuleContainer* module = FindModule( moduleName );
-    if( module == NULL )
+    radStatModuleContainer* module = FindModule(moduleName);
+    if(module == NULL)
     {
         char buf[ 512 ];
-        sprintf( buf, "Statistics buffer for module %s not found.\n", moduleName );
-        rAssertMsg( false, buf );
+        sprintf(buf, "Statistics buffer for module %s not found.\n", moduleName);
+        rAssertMsg(false, buf);
     }
     else
     {
         //
         // Found it - query the appropriate accumulator.
         //
-        rAssert( module->m_Accumulators != NULL );
-        rAssert( pNumBelow != NULL );
-        if( index < module->m_NumAccum )
+        rAssert(module->m_Accumulators != NULL);
+        rAssert(pNumBelow != NULL);
+        if(index <module->m_NumAccum)
         {
-            *pNumBelow = module->m_Accumulators[ index ]->GetPercentile( percentile );
+            *pNumBelow = module->m_Accumulators[ index ]->GetPercentile(percentile);
         }
     }
 }
@@ -1068,7 +1068,7 @@ void radStatManager::QueryPercentile
 //===========================================================================
 
 void radStatManager::SetAccumulatorName
-( 
+(
     const char* moduleName, 
     unsigned int index, 
     const char* accumName
@@ -1077,22 +1077,22 @@ void radStatManager::SetAccumulatorName
     //
     // Locate the module. If it doesn't exist, issue a warning.
     //
-    radStatModuleContainer* module = FindModule( moduleName );
-    if( module == NULL )
+    radStatModuleContainer* module = FindModule(moduleName);
+    if(module == NULL)
     {
         char buf[ 512 ];
-        sprintf( buf, "Statistics buffer for module %s not found.\n", moduleName );
-        rAssertMsg( false, buf );
+        sprintf(buf, "Statistics buffer for module %s not found.\n", moduleName);
+        rAssertMsg(false, buf);
     }
     else
     {
         //
         // Found it - Update the appropriate accumulator.
         //
-        rAssert( module->m_Accumulators != NULL );
-        if( index < module->m_NumAccum )
+        rAssert(module->m_Accumulators != NULL);
+        if(index <module->m_NumAccum)
         {
-            module->m_Accumulators[ index ]->SetName( accumName );
+            module->m_Accumulators[ index ]->SetName(accumName);
         }
     }
 }
@@ -1113,7 +1113,7 @@ void radStatManager::SetAccumulatorName
 //===========================================================================
 
 void radStatManager::GetAccumulatorName
-( 
+(
     const char* moduleName, 
     unsigned int index, 
     char* pAccumName
@@ -1122,22 +1122,22 @@ void radStatManager::GetAccumulatorName
     //
     // Locate the module. If it doesn't exist, issue a warning.
     //
-    radStatModuleContainer* module = FindModule( moduleName );
-    if( module == NULL )
+    radStatModuleContainer* module = FindModule(moduleName);
+    if(module == NULL)
     {
         char buf[ 512 ];
-        sprintf( buf, "Statistics buffer for module %s not found.\n", moduleName );
-        rAssertMsg( false, buf );
+        sprintf(buf, "Statistics buffer for module %s not found.\n", moduleName);
+        rAssertMsg(false, buf);
     }
     else
     {
         //
         // Found it - Update the appropriate accumulator.
         //
-        rAssert( module->m_Accumulators != NULL );
-        if( index < module->m_NumAccum )
+        rAssert(module->m_Accumulators != NULL);
+        if(index <module->m_NumAccum)
         {
-            module->m_Accumulators[ index ]->GetName( pAccumName );
+            module->m_Accumulators[ index ]->GetName(pAccumName);
         }
     }
 }
@@ -1163,38 +1163,38 @@ void radStatManager::GetAccumulatorName
 //
 //===========================================================================
 void radStatManager::EnumerateAccumulators
-( 
+(
     const char* modulePattern, 
     const char* accumPattern,                       
-    void (*enumerationCallback)( const char* moduleName, const char* accumName )
+    void (*enumerationCallback)(const char* moduleName, const char* accumName)
 )
 {
-    rAssert( enumerationCallback != NULL );
-    rAssert( modulePattern != NULL );
-    rAssert( accumPattern != NULL );
+    rAssert(enumerationCallback != NULL);
+    rAssert(modulePattern != NULL);
+    rAssert(accumPattern != NULL);
 
     //
     // Loop over all known modules.
     //
     radStatModuleContainer* module = m_Modules;
-    while( module != NULL )
+    while(module != NULL)
     {
-        if( radStringMatchesWildCardPattern( module->m_ModuleName, modulePattern ) )
+        if(radStringMatchesWildCardPattern(module->m_ModuleName, modulePattern))
         {
             //
             // If the module name matches, loop over all its accumulators.
             //
-            for( unsigned int i = 0; i < module->m_NumAccum; i++ )
+            for(unsigned int i = 0; i <module->m_NumAccum; i++)
             {
                 char accumName[ 256 ];
-                module->m_Accumulators[ i ]->GetName( accumName );
+                module->m_Accumulators[ i ]->GetName(accumName);
 
                 //
                 // If the accumulator name matches, invoke the callback.
                 //
-                if( radStringMatchesWildCardPattern( accumName, accumPattern ) )
+                if(radStringMatchesWildCardPattern(accumName, accumPattern))
                 {
-                    (*enumerationCallback)( module->m_ModuleName, accumName );
+                    (*enumerationCallback)(module->m_ModuleName, accumName);
                 }
             }
         }

@@ -17,7 +17,7 @@
 // Notes:       
 //=============================================================================
 
-#ifndef	SYSTEM_HPP
+#ifndef    SYSTEM_HPP
 #define SYSTEM_HPP
 
 //=============================================================================
@@ -33,8 +33,9 @@
 // exclusion operations. These two functions provide platform independant
 // ways of doing this. 
 //
-void radThreadInternalLock( void );
-void radThreadInternalUnlock( void );
+void radThreadInternalLock(void);
+
+void radThreadInternalUnlock(void);
 
 #endif
 

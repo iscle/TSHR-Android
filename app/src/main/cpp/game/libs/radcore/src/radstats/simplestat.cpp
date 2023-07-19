@@ -52,17 +52,16 @@
 //===========================================================================
 
 void radStatCreateSimpleStatistic
-( 
-    IRadSimpleStatistic** pNewStat, 
-    unsigned int pBufferSize,
-    radMemoryAllocator alloc
-)
-{
-    rAssert( pNewStat != NULL );
+        (
+                IRadSimpleStatistic **pNewStat,
+                unsigned int pBufferSize,
+                radMemoryAllocator alloc
+        ) {
+    rAssert(pNewStat != NULL);
 
-    *pNewStat = new( alloc ) radSimpleStatistic( pBufferSize );
-    rAssert( *pNewStat != NULL );
-    radAddRef( *pNewStat, NULL );
+    *pNewStat = new(alloc) radSimpleStatistic(pBufferSize);
+    rAssert(*pNewStat != NULL);
+    radAddRef(*pNewStat, NULL);
 }
 
 
@@ -83,24 +82,23 @@ void radStatCreateSimpleStatistic
 //
 //===========================================================================
 
-radSimpleStatistic::radSimpleStatistic( void )
-    :
-    m_ReferenceCount( 0 ),
-    m_Samples( NULL ),
-    m_SortedSamples( NULL ),
-    m_NextIndex( 0 ),
-    m_BufferFill( 0 ),
-    m_NumSamples( 0 ),
-    m_Total( 0 ),
-    m_Max( 0 ),
-    m_Min( 0 ),
-    m_Mean( 0.0 ),
-    m_MeanIsCurrent( false ),
-    m_SortingIsCurrent( false )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radSimpleStatistic" );
-    m_Name[ 0 ] = '\0';
-    Reset( 0 );
+radSimpleStatistic::radSimpleStatistic(void)
+        :
+        m_ReferenceCount(0),
+        m_Samples(NULL),
+        m_SortedSamples(NULL),
+        m_NextIndex(0),
+        m_BufferFill(0),
+        m_NumSamples(0),
+        m_Total(0),
+        m_Max(0),
+        m_Min(0),
+        m_Mean(0.0),
+        m_MeanIsCurrent(false),
+        m_SortingIsCurrent(false) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radSimpleStatistic");
+    m_Name[0] = '\0';
+    Reset(0);
 }
 
 
@@ -116,24 +114,23 @@ radSimpleStatistic::radSimpleStatistic( void )
 //
 //===========================================================================
 
-radSimpleStatistic::radSimpleStatistic( unsigned int bufferSize )
-    :
-    m_ReferenceCount( 0 ),
-    m_Samples( NULL ),
-    m_SortedSamples( NULL ),
-    m_NextIndex( 0 ),
-    m_BufferFill( 0 ),
-    m_NumSamples( 0 ),
-    m_Total( 0 ),
-    m_Max( 0 ),
-    m_Min( 0 ),
-    m_Mean( 0.0 ),
-    m_MeanIsCurrent( false ),
-    m_SortingIsCurrent( false )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radSimpleStatistic" );
-    m_Name[ 0 ] = '\0';
-    Reset( bufferSize );
+radSimpleStatistic::radSimpleStatistic(unsigned int bufferSize)
+        :
+        m_ReferenceCount(0),
+        m_Samples(NULL),
+        m_SortedSamples(NULL),
+        m_NextIndex(0),
+        m_BufferFill(0),
+        m_NumSamples(0),
+        m_Total(0),
+        m_Max(0),
+        m_Min(0),
+        m_Mean(0.0),
+        m_MeanIsCurrent(false),
+        m_SortingIsCurrent(false) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radSimpleStatistic");
+    m_Name[0] = '\0';
+    Reset(bufferSize);
 }
 
 
@@ -148,16 +145,13 @@ radSimpleStatistic::radSimpleStatistic( unsigned int bufferSize )
 //
 //===========================================================================
 
-radSimpleStatistic::~radSimpleStatistic( void )
-{
-    if( m_Samples != NULL )
-    {
-        radMemoryFree( GetThisAllocator( ), m_Samples );
+radSimpleStatistic::~radSimpleStatistic(void) {
+    if (m_Samples != NULL) {
+        radMemoryFree(GetThisAllocator(), m_Samples);
     }
 
-    if( m_SortedSamples != NULL )
-    {
-        radMemoryFree( GetThisAllocator( ), m_SortedSamples );
+    if (m_SortedSamples != NULL) {
+        radMemoryFree(GetThisAllocator(), m_SortedSamples);
     }
 }
 
@@ -173,8 +167,7 @@ radSimpleStatistic::~radSimpleStatistic( void )
 //
 //===========================================================================
 
-void radSimpleStatistic::AddRef( void )
-{
+void radSimpleStatistic::AddRef(void) {
     m_ReferenceCount++;
 }
 
@@ -191,11 +184,9 @@ void radSimpleStatistic::AddRef( void )
 //
 //===========================================================================
 
-void radSimpleStatistic::Release( void )
-{
+void radSimpleStatistic::Release(void) {
     m_ReferenceCount--;
-    if( m_ReferenceCount < 1 )
-    {
+    if (m_ReferenceCount < 1) {
         delete this;
     }
 }
@@ -215,11 +206,10 @@ void radSimpleStatistic::Release( void )
 //
 //===========================================================================
 
-void radSimpleStatistic::SetName( const char* name )
-{
-    rAssert( name != NULL );
-    rAssert( strlen( name ) < 256 );
-    strcpy( m_Name, name );
+void radSimpleStatistic::SetName(const char *name) {
+    rAssert(name != NULL);
+    rAssert(strlen(name) < 256);
+    strcpy(m_Name, name);
 }
 
 
@@ -234,10 +224,9 @@ void radSimpleStatistic::SetName( const char* name )
 //
 //===========================================================================
 
-void radSimpleStatistic::GetName( char* pName ) const
-{
-    rAssert( pName != NULL );
-    strcpy( pName, m_Name );
+void radSimpleStatistic::GetName(char *pName) const {
+    rAssert(pName != NULL);
+    strcpy(pName, m_Name);
 }
 
 
@@ -253,8 +242,7 @@ void radSimpleStatistic::GetName( char* pName ) const
 //
 //===========================================================================
 
-void radSimpleStatistic::Reset( void )
-{
+void radSimpleStatistic::Reset(void) {
     //
     // Reset other members to initial states.
     //
@@ -288,40 +276,36 @@ void radSimpleStatistic::Reset( void )
 //
 //===========================================================================
 
-void radSimpleStatistic::Reset( unsigned int bufferSize )
-{
+void radSimpleStatistic::Reset(unsigned int bufferSize) {
     //
     // If we need to resize the history buffer, delete the old one first.
     //
-    if( m_Samples != NULL && bufferSize != m_BufferSize )
-    {
-        radMemoryFree( GetThisAllocator( ), m_Samples );
+    if (m_Samples != NULL && bufferSize != m_BufferSize) {
+        radMemoryFree(GetThisAllocator(), m_Samples);
         m_Samples = NULL;
     }
 
     //
     // Resetting invalidates the history, so delete the sorting buffer.
     //
-    if( m_SortedSamples != NULL )
-    {
-        radMemoryFree( GetThisAllocator( ), m_SortedSamples );
+    if (m_SortedSamples != NULL) {
+        radMemoryFree(GetThisAllocator(), m_SortedSamples);
         m_SortedSamples = NULL;
     }
 
     //
     // Allocate new history buffer if needed.
     //
-    if( m_Samples == NULL && bufferSize > 0 )
-    {
-        m_Samples = ( float* )radMemoryAlloc( GetThisAllocator( ), sizeof( float ) * bufferSize );
-        rAssert( m_Samples != NULL );
+    if (m_Samples == NULL && bufferSize > 0) {
+        m_Samples = (float *) radMemoryAlloc(GetThisAllocator(), sizeof(float) * bufferSize);
+        rAssert(m_Samples != NULL);
     }
     m_BufferSize = bufferSize;
 
     //
     // Reset other members to initial states.
     //
-    Reset( );
+    Reset();
 }
 
 
@@ -338,23 +322,17 @@ void radSimpleStatistic::Reset( unsigned int bufferSize )
 //
 //===========================================================================
 
-void radSimpleStatistic::AddSample( float sample )
-{
+void radSimpleStatistic::AddSample(float sample) {
     //
     // Update minimax data.
     //
-    if( m_NumSamples == 0 )
-    {
+    if (m_NumSamples == 0) {
         m_Min = m_Max = sample;
-    }
-    else
-    {
-        if( sample < m_Min )
-        {
+    } else {
+        if (sample < m_Min) {
             m_Min = sample;
         }
-        if( sample > m_Max )
-        {
+        if (sample > m_Max) {
             m_Max = sample;
         }
     }
@@ -374,26 +352,22 @@ void radSimpleStatistic::AddSample( float sample )
     //
     // Record sample in history buffer.
     //
-    if( m_Samples != NULL )
-    {
-        m_Samples[ m_NextIndex ] = sample;
+    if (m_Samples != NULL) {
+        m_Samples[m_NextIndex] = sample;
         m_NextIndex++;
-        if( m_NextIndex >= m_BufferSize )
-        {
+        if (m_NextIndex >= m_BufferSize) {
             m_NextIndex = 0;
         }
-        if( m_BufferFill < m_BufferSize )
-        {
+        if (m_BufferFill < m_BufferSize) {
             m_BufferFill++;
         }
     }
 }
 
 
-void radSimpleStatistic::AddSample( int sample )
-{
-    float s = ( float ) sample;
-    AddSample( s );
+void radSimpleStatistic::AddSample(int sample) {
+    float s = (float) sample;
+    AddSample(s);
 }
 
 
@@ -408,9 +382,8 @@ void radSimpleStatistic::AddSample( int sample )
 //
 //===========================================================================
 
-float radSimpleStatistic::GetTotal( void ) const
-{
-    return( m_Total );
+float radSimpleStatistic::GetTotal(void) const {
+    return (m_Total);
 }
 
 
@@ -425,9 +398,8 @@ float radSimpleStatistic::GetTotal( void ) const
 //
 //===========================================================================
 
-unsigned int radSimpleStatistic::GetNumSamples( void ) const
-{
-    return( m_NumSamples );
+unsigned int radSimpleStatistic::GetNumSamples(void) const {
+    return (m_NumSamples);
 }
 
 
@@ -444,9 +416,8 @@ unsigned int radSimpleStatistic::GetNumSamples( void ) const
 //
 //===========================================================================
 
-float radSimpleStatistic::GetMax( void ) const
-{
-    return( m_Max );
+float radSimpleStatistic::GetMax(void) const {
+    return (m_Max);
 }
 
 
@@ -463,9 +434,8 @@ float radSimpleStatistic::GetMax( void ) const
 //
 //===========================================================================
 
-float radSimpleStatistic::GetMin( void ) const
-{
-    return( m_Min );
+float radSimpleStatistic::GetMin(void) const {
+    return (m_Min);
 }
 
 
@@ -483,17 +453,15 @@ float radSimpleStatistic::GetMin( void ) const
 //
 //===========================================================================
 
-float radSimpleStatistic::GetMean( void )
-{
+float radSimpleStatistic::GetMean(void) {
     //
     // Recompute the mean if necessary.
     //
-    if( !m_MeanIsCurrent && m_NumSamples > 0 )
-    {
-        m_Mean = m_Total / ( float )m_NumSamples;
+    if (!m_MeanIsCurrent && m_NumSamples > 0) {
+        m_Mean = m_Total / (float) m_NumSamples;
         m_MeanIsCurrent = true;
     }
-    return( m_Mean );
+    return (m_Mean);
 }
 
 
@@ -516,45 +484,41 @@ float radSimpleStatistic::GetMean( void )
 //
 //===========================================================================
 
-float radSimpleStatistic::GetStandardDeviation( void )
-{
+float radSimpleStatistic::GetStandardDeviation(void) {
     //
     // Trap error condition: If there are no samples, let's
     // define the deviation to be zero.
     //
-    if( m_NumSamples == 0 || m_Samples == NULL )
-    {
-        return( 0.0 );
+    if (m_NumSamples == 0 || m_Samples == NULL) {
+        return (0.0);
     }
 
     //
     // Update the mean if need be.
     //
-    if( !m_MeanIsCurrent )
-    {
-        GetMean( );
+    if (!m_MeanIsCurrent) {
+        GetMean();
     }
 
     //
     // Sum the differences of the sample data from the mean.
     //
     float totalDeviation = 0.0;
-    for( unsigned int i = 0; i < m_BufferFill; i++ )
-    {
-        float delta = m_Samples[ i ] - m_Mean;
-        totalDeviation += ( delta * delta );
+    for (unsigned int i = 0; i < m_BufferFill; i++) {
+        float delta = m_Samples[i] - m_Mean;
+        totalDeviation += (delta * delta);
     }
 
     //
     // Calculate the variance from the deviation.
     //
-    float variance = totalDeviation / ( float ) m_NumSamples;
+    float variance = totalDeviation / (float) m_NumSamples;
 
     //
     // Now return the standard deviation.
     //
-    rAssert( variance >= 0.0 );
-    return( ( float )sqrtf( variance ) );
+    rAssert(variance >= 0.0);
+    return ((float) sqrtf(variance));
 }
 
 
@@ -591,51 +555,45 @@ float radSimpleStatistic::GetStandardDeviation( void )
 //
 //===========================================================================
 
-float radSimpleStatistic::GetPercentile( unsigned int percent )
-{
+float radSimpleStatistic::GetPercentile(unsigned int percent) {
     //
     // On error condition, just return the mean.
     //
-    if( m_Samples == NULL || m_NumSamples == 0 )
-    {
-        return( GetMean( ) );
+    if (m_Samples == NULL || m_NumSamples == 0) {
+        return (GetMean());
     }
 
     //
     // Handle trivial cases.
     //
-    if( percent == 0 )
-    {
-        return( GetMin( ) );
-    }
-    else if( percent >= 100 )
-    {
-        return( GetMax( ) );
+    if (percent == 0) {
+        return (GetMin());
+    } else if (percent >= 100) {
+        return (GetMax());
     }
 
     //
     // If the data is not already sorted, sort it.
     //
-    if( !m_SortingIsCurrent || m_SortedSamples == NULL )
-    {
+    if (!m_SortingIsCurrent || m_SortedSamples == NULL) {
         //
         // First allocate a buffer if needed.
         //
-        if( m_SortedSamples == NULL )
-        {
-            m_SortedSamples = ( float* )radMemoryAlloc( GetThisAllocator( ), sizeof( float ) * m_BufferSize );
-            rAssert( m_SortedSamples != NULL );
+        if (m_SortedSamples == NULL) {
+            m_SortedSamples = (float *) radMemoryAlloc(GetThisAllocator(),
+                                                       sizeof(float) * m_BufferSize);
+            rAssert(m_SortedSamples != NULL);
         }
 
         //
         // Copy data from one buffer to the other.
         //
-        memcpy( m_SortedSamples, m_Samples, m_BufferSize * sizeof( float ) );
+        memcpy(m_SortedSamples, m_Samples, m_BufferSize * sizeof(float));
 
         //
         // Sort the second buffer.
         //
-        qsort( m_SortedSamples, m_BufferFill, sizeof( float ), FloatCompare );
+        qsort(m_SortedSamples, m_BufferFill, sizeof(float), FloatCompare);
 
         //
         // Set sorted flag to eliminate redundant work.
@@ -646,15 +604,15 @@ float radSimpleStatistic::GetPercentile( unsigned int percent )
     //
     // Calculate the index of the percentile and round to the nearest integer index.
     //
-    float realIndex = ( ( float ) ( m_BufferSize - 1 ) * ( float ) percent ) / ( float )100.0;
-    int index = ( int )( realIndex + 0.5 );
-    rAssert( index < ( int ) m_BufferSize );
-    rAssert( index >= 0.0 );
-    
+    float realIndex = ((float) (m_BufferSize - 1) * (float) percent) / (float) 100.0;
+    int index = (int) (realIndex + 0.5);
+    rAssert(index < (int) m_BufferSize);
+    rAssert(index >= 0.0);
+
     //
     // Return the sample at that index in the sorted array.
     //
-    return( m_SortedSamples[ index ] );
+    return (m_SortedSamples[index]);
 }
 
 
@@ -674,9 +632,9 @@ float radSimpleStatistic::GetPercentile( unsigned int percent )
 
 #ifdef RAD_DEBUG
 
-void radSimpleStatistic::Dump( char * pStringBuffer, unsigned int bufferSize )
+void radSimpleStatistic::Dump(char * pStringBuffer, unsigned int bufferSize)
 {
-    sprintf( pStringBuffer, "Object: [radSimpleStatistic] At Memory Location:[0x%x]\n", (unsigned int) this );
+    sprintf(pStringBuffer, "Object: [radSimpleStatistic] At Memory Location:[0x%x]\n", (unsigned int) this);
 }
 
 #endif
@@ -693,20 +651,16 @@ void radSimpleStatistic::Dump( char * pStringBuffer, unsigned int bufferSize )
 //
 //===========================================================================
 
-int FloatCompare( const void* arg1, const void* arg2 )
-{
-    float f1 = *( float* ) arg1;
-    float f2 = *( float* ) arg2;
+int FloatCompare(const void *arg1, const void *arg2) {
+    float f1 = *(float *) arg1;
+    float f2 = *(float *) arg2;
 
-    if( f1 > f2 )
-    {
-        return( 1 );
-    }
-    else if ( f1 < f2 )
-    {
-        return( -1 );
+    if (f1 > f2) {
+        return (1);
+    } else if (f1 < f2) {
+        return (-1);
     }
 
-    return( 0 );
+    return (0);
 }
 

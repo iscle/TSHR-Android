@@ -41,7 +41,7 @@ struct IRadDebugConsole;
 //=============================================================================
 
 #ifndef RGB
-#define RGB(r,g,b)  ((unsigned long)(((unsigned char)(r)|((unsigned short)((unsigned char)(g))<<8))|(((unsigned long)(unsigned char)(b))<<16)))
+#define RGB(r, g, b)  ((unsigned long)(((unsigned char)(r)|((unsigned short)((unsigned char)(g))<<8))|(((unsigned long)(unsigned char)(b))<<16)))
 #endif
 
 //=============================================================================
@@ -52,15 +52,15 @@ struct IRadDebugConsole;
 // Use this member function to create a debug console. The debug communicaiton
 // system must have been previously initialized or null will be returned.
 //
-void radDebugConsoleCreate( IRadDebugConsole** ppConsole, 
-                            radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT,
-                            bool bSyncMode = false );
+void radDebugConsoleCreate(IRadDebugConsole **ppConsole,
+                           radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT,
+                           bool bSyncMode = false);
 
 //
 // For the debug console to work, the following service must be invoked periodically.
 // Make sure it is added to your main game loop.
 //
-void radDebugConsoleService( void );
+void radDebugConsoleService(void);
 
 //=============================================================================
 // Interfaces
@@ -69,40 +69,51 @@ void radDebugConsoleService( void );
 //
 // This is the main iterface used to interact with a debug console. 
 //
-struct IRadDebugConsole : public IRefCount
-{
-    virtual void SetTitle( const char* pConsoleTitle ) = 0;
-    virtual void SetBackgroundColor( unsigned int textColor ) = 0;  
-    virtual void Clear( void ) = 0;
+struct IRadDebugConsole : public IRefCount {
+    virtual void SetTitle(const char *pConsoleTitle) = 0;
 
-    virtual void SetCursorPosition( unsigned int x, unsigned int y ) = 0;
-	virtual void SetTextColor( unsigned int textColor ) = 0;
-	virtual void TextOutAt( const char* pText, int x, int y ) = 0;
-    virtual void TextOut( const char*  pText ) = 0;
+    virtual void SetBackgroundColor(unsigned int textColor) = 0;
 
-	virtual void SetKeyboardInputCallback( IRadDebugConsoleKeyboardInputCallback* pCallback ) = 0;
-	virtual void SetPointerInputCallback( IRadDebugConsolePointerInputCallback* pCallback ) = 0;
+    virtual void Clear(void) = 0;
+
+    virtual void SetCursorPosition(unsigned int x, unsigned int y) = 0;
+
+    virtual void SetTextColor(unsigned int textColor) = 0;
+
+    virtual void TextOutAt(const char *pText, int x, int y) = 0;
+
+    virtual void TextOut(const char *pText) = 0;
+
+    virtual void SetKeyboardInputCallback(IRadDebugConsoleKeyboardInputCallback *pCallback) = 0;
+
+    virtual void SetPointerInputCallback(IRadDebugConsolePointerInputCallback *pCallback) = 0;
 };
 
 //
 // Interface used to field mouse pointer input.
 //
-struct IRadDebugConsolePointerInputCallback
-{
-    virtual void OnButtonClick( int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl, bool shift, bool alt ) = 0;
+struct IRadDebugConsolePointerInputCallback {
+    virtual void
+    OnButtonClick(int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl,
+                  bool shift, bool alt) = 0;
 
-    virtual void OnButtonDown( int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl, bool shift, bool alt ) = 0;
+    virtual void
+    OnButtonDown(int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl,
+                 bool shift, bool alt) = 0;
 
-    virtual void OnButtonUp( int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl, bool shift, bool alt ) = 0;
+    virtual void
+    OnButtonUp(int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl,
+               bool shift, bool alt) = 0;
 
-    virtual void OnButtonMove( int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl, bool shift, bool alt, bool bottondown ) = 0;
+    virtual void
+    OnButtonMove(int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl,
+                 bool shift, bool alt, bool bottondown) = 0;
 };
 
-struct IRadDebugConsoleKeyboardInputCallback
-{
-	virtual void OnChar( int asciiKey ) = 0;
+struct IRadDebugConsoleKeyboardInputCallback {
+    virtual void OnChar(int asciiKey) = 0;
 
-    virtual void OnVKey( int virtualKey, bool ctrl, bool shift, bool alt ) = 0;
+    virtual void OnVKey(int virtualKey, bool ctrl, bool shift, bool alt) = 0;
 };
 
 //----------------------------------------------------------------------------

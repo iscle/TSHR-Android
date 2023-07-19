@@ -23,8 +23,8 @@
 // use PS2EE software math library explicitly, so we don't get warning on it.
 //
 #if defined RAD_PS2 && !defined RAD_MW
-extern "C" unsigned long __udivdi3( unsigned long, unsigned long );
-extern "C" float __floatdisf( unsigned long );
+extern "C" unsigned long __udivdi3(unsigned long, unsigned long);
+extern "C" float __floatdisf(unsigned long);
 #endif
 
 #ifdef RADPROFILER
@@ -42,12 +42,12 @@ radProfiler * g_pTheProfiler = NULL;
 // Return:      none
 //
 //===========================================================================
-void radProfilerInitialize( unsigned int InitReserveProfileSamplesMemory, unsigned int MaxProfileSamples, bool UseWatcher, radMemoryAllocator alloc )
+void radProfilerInitialize(unsigned int InitReserveProfileSamplesMemory, unsigned int MaxProfileSamples, bool UseWatcher, radMemoryAllocator alloc)
 {
     //
     // Assert that this subsystem has not allready been initialized.
     //
-    rAssertMsg( g_pTheProfiler == NULL, "radProfiler: Error: radProfiler already initialized");
+    rAssertMsg(g_pTheProfiler == NULL, "radProfiler: Error: radProfiler already initialized");
 
     //
     // Construct the object.
@@ -55,16 +55,16 @@ void radProfilerInitialize( unsigned int InitReserveProfileSamplesMemory, unsign
     radProfiler * pProfiler = NULL;
     
 #ifdef DEBUGWATCH
-    if ( UseWatcher )
+    if (UseWatcher)
     {
-        pProfiler = new( alloc ) radWatcherEnabledProfiler( alloc );
+        pProfiler = new(alloc) radWatcherEnabledProfiler(alloc);
     }
     else
 #endif // DEBUGWATCH
     {
-        pProfiler = new( alloc ) radProfiler( alloc );
+        pProfiler = new(alloc) radProfiler(alloc);
     }
-    pProfiler->Initialize( InitReserveProfileSamplesMemory, MaxProfileSamples, alloc );
+    pProfiler->Initialize(InitReserveProfileSamplesMemory, MaxProfileSamples, alloc);
     g_pTheProfiler = pProfiler;
 }
 
@@ -80,14 +80,14 @@ void radProfilerInitialize( unsigned int InitReserveProfileSamplesMemory, unsign
 // Return:      none
 //
 //===========================================================================
-void radProfilerTerminate( )
+void radProfilerTerminate()
 {
-    rAssertMsg( g_pTheProfiler != NULL, "radProfiler: Error: radProfiler not initialized");
+    rAssertMsg(g_pTheProfiler != NULL, "radProfiler: Error: radProfiler not initialized");
 
     radProfiler * pOldPtr = g_pTheProfiler;
     g_pTheProfiler = NULL;
-    pOldPtr->Terminate( );
-    radRelease( static_cast< IRadProfiler* >( pOldPtr ), NULL );
+    pOldPtr->Terminate();
+    radRelease(static_cast<IRadProfiler*>(pOldPtr), NULL);
 }
 
 //===========================================================================
@@ -102,7 +102,7 @@ void radProfilerTerminate( )
 // Return:      profiler
 //
 //===========================================================================
-IRadProfiler * radProfilerGet( )
+IRadProfiler * radProfilerGet()
 {
     return g_pTheProfiler;
 }
@@ -119,20 +119,20 @@ IRadProfiler * radProfilerGet( )
 // Return:      None
 //
 //===========================================================================
-radProfiler::radProfiler( radMemoryAllocator alloc ) :
-    m_alloc( alloc ),
-    m_pProfileSampleArrayByHashedName( NULL ),
-    m_uProfileSampleArraySize( 0 ),
-    m_uProfileSampleMemorySize( 0 ),
-    m_uFrameStartTime( 0 ),
-    m_uFrameCount( 0 ),
-    m_uTotalFrameTime( 0 ),
-    m_fAveFrameTime( 0.0f ),
-    m_fMaxFrameTime( 0.0f ),
-    m_fMinFrameTime( 9999999.0f ),
-    m_fFramePerSec( 0 )
+radProfiler::radProfiler(radMemoryAllocator alloc) :
+    m_alloc(alloc),
+    m_pProfileSampleArrayByHashedName(NULL),
+    m_uProfileSampleArraySize(0),
+    m_uProfileSampleMemorySize(0),
+    m_uFrameStartTime(0),
+    m_uFrameCount(0),
+    m_uTotalFrameTime(0),
+    m_fAveFrameTime(0.0f),
+    m_fMaxFrameTime(0.0f),
+    m_fMinFrameTime(9999999.0f),
+    m_fFramePerSec(0)
 {
-    rAssertMsg( g_pTheProfiler == NULL, "radProfiler: Error: Cannot create second instance of singleton object [g_pTheProfiler].\n" );
+    rAssertMsg(g_pTheProfiler == NULL, "radProfiler: Error: Cannot create second instance of singleton object [g_pTheProfiler].\n");
 }
 
 //===========================================================================
@@ -147,9 +147,9 @@ radProfiler::radProfiler( radMemoryAllocator alloc ) :
 // Return:      None
 //
 //===========================================================================
-radProfiler::~radProfiler( )
+radProfiler::~radProfiler()
 {
-    Terminate( );
+    Terminate();
 }
 
 //===========================================================================
@@ -167,19 +167,19 @@ radProfiler::~radProfiler( )
 // Return:      None
 //
 //===========================================================================
-void radProfiler::Initialize( unsigned int InitReserveProfileSamplesMemory, unsigned int MaxProfileSamples, radMemoryAllocator alloc )
+void radProfiler::Initialize(unsigned int InitReserveProfileSamplesMemory, unsigned int MaxProfileSamples, radMemoryAllocator alloc)
 {
-    rAssertMsg( m_pProfileSamplesPool == NULL, "radProfiler: Error: Cannot re-initialize the system." );
-    radMemoryCreatePool( & m_pProfileSamplesPool, sizeof( radProfileSample ), InitReserveProfileSamplesMemory, MaxProfileSamples, false, Moderate, alloc, "radProfiler::m_pProfileSamplesPool" );
-    rAssert( m_pProfileSamplesPool != NULL );
+    rAssertMsg(m_pProfileSamplesPool == NULL, "radProfiler: Error: Cannot re-initialize the system.");
+    radMemoryCreatePool(& m_pProfileSamplesPool, sizeof(radProfileSample), InitReserveProfileSamplesMemory, MaxProfileSamples, false, Moderate, alloc, "radProfiler::m_pProfileSamplesPool");
+    rAssert(m_pProfileSamplesPool != NULL);
 
-    radProfileSample::SetProfileSampleMemoryAllocator( m_pProfileSamplesPool );
+    radProfileSample::SetProfileSampleMemoryAllocator(m_pProfileSamplesPool);
 
-    m_pRootProfileSample = radProfileSampleCreate( m_alloc );
-    m_pRootProfileSample->Initialize( "radProfiler", NULL, NULL );
+    m_pRootProfileSample = radProfileSampleCreate(m_alloc);
+    m_pRootProfileSample->Initialize("radProfiler", NULL, NULL);
     m_pLastUnClosedProfile = m_pRootProfileSample;
 
-    OnInitializeFrameCounter( & m_fAveFrameTime, & m_fMaxFrameTime, & m_fMinFrameTime, & m_fFramePerSec );
+    OnInitializeFrameCounter(& m_fAveFrameTime, & m_fMaxFrameTime, & m_fMinFrameTime, & m_fFramePerSec);
 }
 
 //===========================================================================
@@ -194,13 +194,13 @@ void radProfiler::Initialize( unsigned int InitReserveProfileSamplesMemory, unsi
 // Return:      None
 //
 //===========================================================================
-void radProfiler::Terminate( )
+void radProfiler::Terminate()
 {
     m_pLastUnClosedProfile = NULL;
     m_pLastClosedProfile = NULL;
 
     m_pRootProfileSample = NULL;
-    radMemoryFree( m_pProfileSampleArrayByHashedName );
+    radMemoryFree(m_pProfileSampleArrayByHashedName);
     m_pProfileSampleArrayByHashedName = NULL;
     m_uProfileSampleArraySize = 0;
     m_uProfileSampleMemorySize = 0;
@@ -220,24 +220,24 @@ void radProfiler::Terminate( )
 // Return:      None
 //
 //===========================================================================
-void radProfiler::BeginProfile( const char * pProfileName )
+void radProfiler::BeginProfile(const char * pProfileName)
 {
-    ref< radProfileSample > pSample = NULL;
+    ref<radProfileSample> pSample = NULL;
 
-    pSample = FindProfileSample( pProfileName );
+    pSample = FindProfileSample(pProfileName);
 
     //
     // if profile point is not yet created, create one
     //
-    if ( pSample == NULL )
+    if (pSample == NULL)
     {
-        pSample = InsertChildProfileSample( pProfileName, GetLastUnClosedProfile( ) );
+        pSample = InsertChildProfileSample(pProfileName, GetLastUnClosedProfile());
 
-        rAssertMsg( pSample != NULL, "radProfiler: Error: Cannot begin profile sample specified (cannot create).\n" );
+        rAssertMsg(pSample != NULL, "radProfiler: Error: Cannot begin profile sample specified (cannot create).\n");
 
-        if ( pSample != NULL )
+        if (pSample != NULL)
         {
-            OnInsertNewProfileSample( pSample );
+            OnInsertNewProfileSample(pSample);
         }
     }
 
@@ -247,24 +247,24 @@ void radProfiler::BeginProfile( const char * pProfileName )
     //    and higher parent of last unclosed profile points
     //
 #ifdef RAD_DEBUG
-    radProfileSample * pLastUnClosedProfile = GetLastUnClosedProfile( );
+    radProfileSample * pLastUnClosedProfile = GetLastUnClosedProfile();
 
-    while( pLastUnClosedProfile != NULL )
+    while(pLastUnClosedProfile != NULL)
     {
-        if ( strcmp( pProfileName, pLastUnClosedProfile->GetName( ) ) == 0 )
+        if (strcmp(pProfileName, pLastUnClosedProfile->GetName()) == 0)
         {
-            rDebugPrintf( "radProfiler: Error: Cannot BeginProfile( \"%s\"); profile point already began.\n", pProfileName );
-            rAssert( false );
+            rDebugPrintf("radProfiler: Error: Cannot BeginProfile(\"%s\"); profile point already began.\n", pProfileName);
+            rAssert(false);
             return;
         }
-        pLastUnClosedProfile = static_cast< radProfileSample * >( pLastUnClosedProfile->GetParentNode( ) );
+        pLastUnClosedProfile = static_cast<radProfileSample *>(pLastUnClosedProfile->GetParentNode());
     }
 #endif // RAD_DEBUG
 
     //
     // begine the measurment of the sample
     //
-    pSample->BegineMeasure( );
+    pSample->BegineMeasure();
     m_pLastUnClosedProfile = pSample;
 }
 
@@ -280,22 +280,22 @@ void radProfiler::BeginProfile( const char * pProfileName )
 // Return:      None
 //
 //===========================================================================
-void radProfiler::EndProfile( const char * pProfileName )
+void radProfiler::EndProfile(const char * pProfileName)
 {
-    ref< radProfileSample > pSample = NULL;
+    ref<radProfileSample> pSample = NULL;
 
-    pSample = FindProfileSample( pProfileName );
+    pSample = FindProfileSample(pProfileName);
 
-    rAssertMsg( pSample != NULL, "radProfiler: Error: Cannot end profile sample specified (not found).\n" );
+    rAssertMsg(pSample != NULL, "radProfiler: Error: Cannot end profile sample specified (not found).\n");
 
     //
     // profile point to be ended must be last unclosed profile point, we do not allow interleaved profile points
     // yet.
     //
-    rAssertMsg( m_pLastUnClosedProfile == pSample, "radProfiler: Error: Profiler cannot end current profile point specified (disallowing interleaved profile points).\n" );
+    rAssertMsg(m_pLastUnClosedProfile == pSample, "radProfiler: Error: Profiler cannot end current profile point specified (disallowing interleaved profile points).\n");
 
-    pSample->EndMeasure( );
-    m_pLastUnClosedProfile = static_cast< radProfileSample * >( pSample->GetParentNode( ) );
+    pSample->EndMeasure();
+    m_pLastUnClosedProfile = static_cast<radProfileSample *>(pSample->GetParentNode());
     m_pLastClosedProfile = pSample;
 }
 
@@ -311,12 +311,12 @@ void radProfiler::EndProfile( const char * pProfileName )
 // Return:      None
 //
 //===========================================================================
-void radProfiler::BeginFrame( )
+void radProfiler::BeginFrame()
 {
     //
     // Get Current time, and record it
     //
-    m_uFrameStartTime = radTimeGetMicroseconds64( );
+    m_uFrameStartTime = radTimeGetMicroseconds64();
     m_uFrameCount ++;
 }
 
@@ -333,37 +333,37 @@ void radProfiler::BeginFrame( )
 // Return:      None
 //
 //===========================================================================
-void radProfiler::EndFrame( )
+void radProfiler::EndFrame()
 {
-    unsigned int uDeltaTime = (unsigned int)( radTimeGetMicroseconds64( ) - m_uFrameStartTime );
+    unsigned int uDeltaTime = (unsigned int)(radTimeGetMicroseconds64() - m_uFrameStartTime);
 
     m_uTotalFrameTime += uDeltaTime;
 
 #if defined RAD_PS2 && !defined RAD_MW
-    m_fAveFrameTime = __floatdisf( __udivdi3( m_uTotalFrameTime, m_uFrameCount ) ) / 1000.0f;
+    m_fAveFrameTime = __floatdisf(__udivdi3(m_uTotalFrameTime, m_uFrameCount)) / 1000.0f;
 #else
-    m_fAveFrameTime = (float)( m_uTotalFrameTime / m_uFrameCount ) / 1000.0f;
+    m_fAveFrameTime = (float)(m_uTotalFrameTime / m_uFrameCount) / 1000.0f;
 #endif
     float fDeltaTime = uDeltaTime / 1000.0f;
 
-    if ( m_fMaxFrameTime < fDeltaTime )
+    if (m_fMaxFrameTime <fDeltaTime)
     {
         m_fMaxFrameTime = fDeltaTime;
     }
 
-    if ( m_fMinFrameTime > fDeltaTime )
+    if (m_fMinFrameTime> fDeltaTime)
     {
         m_fMinFrameTime = fDeltaTime;
     }
 
 #if defined RAD_PS2 && !defined RAD_MW
-    m_fFramePerSec = (float)m_uFrameCount / __floatdisf( __udivdi3( m_uTotalFrameTime, ( 1000 * 1000 ) ) );
+    m_fFramePerSec = (float)m_uFrameCount / __floatdisf(__udivdi3(m_uTotalFrameTime, (1000 * 1000)));
 
-    EndFrameForAllProfileNode( m_uTotalFrameTime, __udivdi3( m_uTotalFrameTime, m_uFrameCount ), uDeltaTime, m_uFrameCount );
+    EndFrameForAllProfileNode(m_uTotalFrameTime, __udivdi3(m_uTotalFrameTime, m_uFrameCount), uDeltaTime, m_uFrameCount);
 #else
-    m_fFramePerSec = (float)m_uFrameCount / (float)( m_uTotalFrameTime / ( 1000 * 1000 ) );
+    m_fFramePerSec = (float)m_uFrameCount / (float)(m_uTotalFrameTime / (1000 * 1000));
 
-    EndFrameForAllProfileNode( m_uTotalFrameTime, ( m_uTotalFrameTime / m_uFrameCount ), uDeltaTime, m_uFrameCount );
+    EndFrameForAllProfileNode(m_uTotalFrameTime, (m_uTotalFrameTime / m_uFrameCount), uDeltaTime, m_uFrameCount);
 #endif
 }
 
@@ -379,7 +379,7 @@ void radProfiler::EndFrame( )
 // Return:     IRadProfileSample - root sample, contain all child nodes.
 //
 //===========================================================================
-IRadProfileSample * radProfiler::GetRootProfileSample( )
+IRadProfileSample * radProfiler::GetRootProfileSample()
 {
     return m_pRootProfileSample;
 }
@@ -396,9 +396,9 @@ IRadProfileSample * radProfiler::GetRootProfileSample( )
 // Return:     IRadProfileSample - sample node.
 //
 //===========================================================================
-IRadProfileSample * radProfiler::GetProfileSample( const char * pName )
+IRadProfileSample * radProfiler::GetProfileSample(const char * pName)
 {
-    return FindProfileSample( pName );
+    return FindProfileSample(pName);
 }
 
 //===========================================================================
@@ -413,12 +413,12 @@ IRadProfileSample * radProfiler::GetProfileSample( const char * pName )
 // Return:      None
 //
 //===========================================================================
-void radProfiler::OnInsertNewProfileSample( radProfileSample * pProfile )
+void radProfiler::OnInsertNewProfileSample(radProfileSample * pProfile)
 {
     (void)pProfile;
 }
 
-void radProfiler::OnInitializeFrameCounter( float * fAveFrameTime, float * fMaxFrameTime, float * fMinFrameTime, float * fFramePerSec )
+void radProfiler::OnInitializeFrameCounter(float * fAveFrameTime, float * fMaxFrameTime, float * fMinFrameTime, float * fFramePerSec)
 {
     (void)fAveFrameTime;
     (void)fMaxFrameTime;
@@ -441,9 +441,9 @@ void radProfiler::OnInitializeFrameCounter( float * fAveFrameTime, float * fMaxF
 // Return:      None
 //
 //===========================================================================
-void radProfiler::DebugDump( )
+void radProfiler::DebugDump()
 {
-    m_pRootProfileSample->DebugDump( );
+    m_pRootProfileSample->DebugDump();
 }
 
 #endif // RAD_DEBUG
@@ -464,7 +464,7 @@ void radProfiler::DebugDump( )
 // Return:      None
 //
 //===========================================================================
-void radWatcherEnabledProfiler::OnInsertNewProfileSample( radProfileSample * pProfile )
+void radWatcherEnabledProfiler::OnInsertNewProfileSample(radProfileSample * pProfile)
 {
     //
     // build a path from profile sample's parent tree
@@ -474,26 +474,26 @@ void radWatcherEnabledProfiler::OnInsertNewProfileSample( radProfileSample * pPr
 
     char szNameSpace[ 256 ] = "";
 
-    BuildNameSpace( pProfile, szNameSpace );
+    BuildNameSpace(pProfile, szNameSpace);
 
-    radDbgWatchAddFloat( & pProfile->m_fAveTimeInMSec, "AveTime(msec)", szNameSpace );
-    radDbgWatchAddFloat( & pProfile->m_fMinTimeInMSec, "MinTime(msec)", szNameSpace );
-    radDbgWatchAddFloat( & pProfile->m_fMaxTimeInMSec, "MaxTime(msec)", szNameSpace );
-    radDbgWatchAddFloat( & pProfile->m_fAveTimePerFrameInPercent, "AveTime(% of Frame)", szNameSpace );
-    radDbgWatchAddFloat( & pProfile->m_fMinTimePerFrameInPercent, "MinTime(% of Frame)", szNameSpace );
-    radDbgWatchAddFloat( & pProfile->m_fMaxTimePerFrameInPercent, "MaxTime(% of Frame)", szNameSpace );
-    radDbgWatchAddUnsignedInt( & pProfile->m_uSampleCountAllFrame, "TotalExecutionCount", szNameSpace );
+    radDbgWatchAddFloat(& pProfile->m_fAveTimeInMSec, "AveTime(msec)", szNameSpace);
+    radDbgWatchAddFloat(& pProfile->m_fMinTimeInMSec, "MinTime(msec)", szNameSpace);
+    radDbgWatchAddFloat(& pProfile->m_fMaxTimeInMSec, "MaxTime(msec)", szNameSpace);
+    radDbgWatchAddFloat(& pProfile->m_fAveTimePerFrameInPercent, "AveTime(% of Frame)", szNameSpace);
+    radDbgWatchAddFloat(& pProfile->m_fMinTimePerFrameInPercent, "MinTime(% of Frame)", szNameSpace);
+    radDbgWatchAddFloat(& pProfile->m_fMaxTimePerFrameInPercent, "MaxTime(% of Frame)", szNameSpace);
+    radDbgWatchAddUnsignedInt(& pProfile->m_uSampleCountAllFrame, "TotalExecutionCount", szNameSpace);
 }
 
-void radWatcherEnabledProfiler::OnInitializeFrameCounter( float * fAveFrameTime, float * fMaxFrameTime, float * fMinFrameTime, float * fFramePerSec )
+void radWatcherEnabledProfiler::OnInitializeFrameCounter(float * fAveFrameTime, float * fMaxFrameTime, float * fMinFrameTime, float * fFramePerSec)
 {
-    radProfileSample * pSample = static_cast< radProfileSample * >( GetRootProfileSample( ) );
+    radProfileSample * pSample = static_cast<radProfileSample *>(GetRootProfileSample());
     char szNameSpace[ 256 ];
-    sprintf( szNameSpace, "\\%s", pSample->GetName( ) );
-    radDbgWatchAddFloat( fAveFrameTime, "AveFrameTime(msec)", szNameSpace );
-    radDbgWatchAddFloat( fMaxFrameTime, "MaxFrameTime(msec)", szNameSpace );
-    radDbgWatchAddFloat( fMinFrameTime, "MinFrameTime(msec)", szNameSpace );
-    radDbgWatchAddFloat( fFramePerSec, "FramePerSec", szNameSpace );
+    sprintf(szNameSpace, "\\%s", pSample->GetName());
+    radDbgWatchAddFloat(fAveFrameTime, "AveFrameTime(msec)", szNameSpace);
+    radDbgWatchAddFloat(fMaxFrameTime, "MaxFrameTime(msec)", szNameSpace);
+    radDbgWatchAddFloat(fMinFrameTime, "MinFrameTime(msec)", szNameSpace);
+    radDbgWatchAddFloat(fFramePerSec, "FramePerSec", szNameSpace);
 
 }
 
@@ -511,15 +511,15 @@ void radWatcherEnabledProfiler::OnInitializeFrameCounter( float * fAveFrameTime,
 // Return:      None
 //
 //===========================================================================
-void radWatcherEnabledProfiler::BuildNameSpace( radProfileSample * pProfile, char * szNameSpace )
+void radWatcherEnabledProfiler::BuildNameSpace(radProfileSample * pProfile, char * szNameSpace)
 {
-    if( pProfile != static_cast< radProfileSample * >( GetRootProfileSample( ) ) )
+    if(pProfile != static_cast<radProfileSample *>(GetRootProfileSample()))
     {
-        BuildNameSpace( static_cast< radProfileSample * >( pProfile->GetParentNode( ) ), szNameSpace );
+        BuildNameSpace(static_cast<radProfileSample *>(pProfile->GetParentNode()), szNameSpace);
     }
 
-    strcat( szNameSpace, "\\" );
-    strcat( szNameSpace, pProfile->GetName( ) );
+    strcat(szNameSpace, "\\");
+    strcat(szNameSpace, pProfile->GetName());
 }
 
 #endif // DEBUGWATCH

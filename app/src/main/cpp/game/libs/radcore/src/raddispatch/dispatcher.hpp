@@ -19,7 +19,7 @@
 //
 //=============================================================================
 
-#ifndef	DISPATCHER_HPP
+#ifndef    DISPATCHER_HPP
 #define DISPATCHER_HPP
 
 //=============================================================================
@@ -31,7 +31,7 @@
 #endif
 #ifdef RAD_XBOX
 #include <xtl.h>
-#endif 
+#endif
 
 
 #include <raddispatch.hpp>
@@ -50,76 +50,77 @@
 // This is the Implementation of the Dispatcher. 
 //
 class radDispatcher : public IRadDispatcher,
-                      public radObject
-{
-    public:
+                      public radObject {
+public:
 
     //
     // Constructor. Pass allocator and max event to queue. Nothing to interesting.
     //
-    radDispatcher( unsigned int maxCallbacks, radMemoryAllocator alloc );
-    virtual ~radDispatcher( void );   // Only virtual to prevent warning
+    radDispatcher(unsigned int maxCallbacks, radMemoryAllocator alloc);
+
+    virtual ~radDispatcher(void);   // Only virtual to prevent warning
 
     //
     // Virtual members to implement.
     //
-    virtual unsigned int Service( void ); 
+    virtual unsigned int Service(void);
 
     //
     // Use this member of queue a dispatch callback for deffered exectuion.
     //
-    virtual void QueueCallback( IRadDispatchCallback* pDispatchCallback, void* userData );
+    virtual void QueueCallback(IRadDispatchCallback *pDispatchCallback, void *userData);
 
     //
     // This member also queues an event. However, it supports queing from
     // an interrupt context. It will not modify the state of the interrupt mask. Need due
     // to limitations of some OSs.
     //
-    virtual void QueueCallbackFromInterrupt( IRadDispatchCallback* pDispatchCallback, void* userData );
+    virtual void
+    QueueCallbackFromInterrupt(IRadDispatchCallback *pDispatchCallback, void *userData);
 
     //
     // Used to reference counting.
     //
-    virtual void AddRef( void ); 
-    virtual void Release( void );
-    
-    #ifdef RAD_DEBUG
+    virtual void AddRef(void);
 
-    virtual void Dump( char * pStringBuffer, unsigned int bufferSize );
-    
-    #endif
+    virtual void Release(void);
 
-    private:
-    
+#ifdef RAD_DEBUG
+
+    virtual void Dump(char * pStringBuffer, unsigned int bufferSize);
+
+#endif
+
+private:
+
     //
     // Referecnce count.
     //
-    unsigned int        m_ReferenceCount;
+    unsigned int m_ReferenceCount;
 
     //
     // This data structure is used to manage a circular queue of dispatch objects.
     // Event objects are added to the added to the head and removed from the tail.
     //
-    struct  Event
-    {
-        IRadDispatchCallback* m_Callback;
-        void*                 m_UserData;
-    };             
+    struct Event {
+        IRadDispatchCallback *m_Callback;
+        void *m_UserData;
+    };
 
-    Event*              m_EventQueue; 
-    unsigned int        m_MaxEvents;
-    unsigned int        m_EventQueueHeadIndex;
-    unsigned int        m_EventQueueTailIndex;
-    unsigned int        m_EventsQueued;
+    Event *m_EventQueue;
+    unsigned int m_MaxEvents;
+    unsigned int m_EventQueueHeadIndex;
+    unsigned int m_EventQueueTailIndex;
+    unsigned int m_EventsQueued;
 
     //
     // Under Windows we require a critical section to protect data structures.
     //
-    #if defined ( RAD_WIN32 ) || defined( RAD_XBOX )
-    
+#if defined (RAD_WIN32) || defined(RAD_XBOX)
+
     CRITICAL_SECTION    m_CriticalSection;
 
-    #endif
+#endif
 
 };
 

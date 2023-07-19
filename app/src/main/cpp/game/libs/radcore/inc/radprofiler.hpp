@@ -59,17 +59,19 @@ struct IRadProfiler;
 //
 // alloc - allocator for memory used by profiler.
 //
-void radProfilerInitialize( unsigned int InitReserveProfileSamplesMemory = 50, unsigned int MaxProfileSamples = 200, bool UseWatcher = true, radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT );
+void radProfilerInitialize(unsigned int InitReserveProfileSamplesMemory = 50,
+                           unsigned int MaxProfileSamples = 200, bool UseWatcher = true,
+                           radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT);
 
 //
 // Terminate the profiler.
 //
-void radProfilerTerminate( void );
+void radProfilerTerminate(void);
 
 //
 // Return the pointer of the profiler sub-system.
 //
-IRadProfiler * radProfilerGet( );
+IRadProfiler *radProfilerGet();
 
 //=============================================================================
 // Interfaces
@@ -88,79 +90,82 @@ IRadProfiler * radProfilerGet( );
 //        to display profile sample must be vanished if RADPROFILER is not defined.
 //        Because profiler is gone if RADPROFILER is not defined.
 //
-struct IRadProfileSample : public IRefCount
-{
+struct IRadProfileSample : public IRefCount {
     //
     // Get parent sample node.
     //
-    virtual IRadProfileSample * GetParentNode( ) = 0;
+    virtual IRadProfileSample *GetParentNode() = 0;
 
     //
     // Get the name of the profile sample
     //
-    virtual const char * GetName( ) = 0;
+    virtual const char *GetName() = 0;
 
     //
     // Get first child node.
     //
-    virtual IRadProfileSample * GetFirstChildNode( ) = 0;
+    virtual IRadProfileSample *GetFirstChildNode() = 0;
 
     //
     // Get next sibling node
     //
-    virtual IRadProfileSample * GetNextSilbingNode( ) = 0;
+    virtual IRadProfileSample *GetNextSilbingNode() = 0;
 
     //
     // Get prev sibling node
     //
-    virtual IRadProfileSample * GetPrevSiblingNode( ) = 0;
+    virtual IRadProfileSample *GetPrevSiblingNode() = 0;
 
     //
     // Get sample result data (msec based)
     //
-    virtual void GetSampleResult( float * pAveTimeInMSec, float * pMinTimeInMSec, float * pMaxTimeInMSec, unsigned int * pExecutionCount ) = 0;
+    virtual void
+    GetSampleResult(float *pAveTimeInMSec, float *pMinTimeInMSec, float *pMaxTimeInMSec,
+                    unsigned int *pExecutionCount) = 0;
 
     //
     // Get sample result data (frame based)
     //
-    virtual void GetSampleResultPerFrame( float * pAveTimePerFrameInPercent, float * pMinTimePerFrameInPercent, float * pMaxTimePerFrameInPercent, unsigned int * pExecutionCountPerFrame ) = 0;
+    virtual void
+    GetSampleResultPerFrame(float *pAveTimePerFrameInPercent, float *pMinTimePerFrameInPercent,
+                            float *pMaxTimePerFrameInPercent,
+                            unsigned int *pExecutionCountPerFrame) = 0;
 
 };
 
 //
 // Profiler
 //
-struct IRadProfiler : public IRefCount
-{
+struct IRadProfiler : public IRefCount {
     //
     // Begin a profiling a block of code, name must be unique
     //
-    virtual void BeginProfile( const char * pProfileName ) = 0;
+    virtual void BeginProfile(const char *pProfileName) = 0;
 
     //
     // End a profiling a block of code, name must be unique
     //
-    virtual void EndProfile( const char * pProfileName ) = 0;
+    virtual void EndProfile(const char *pProfileName) = 0;
 
     //
     // Mark beginning of a frame,
     //
-    virtual void BeginFrame( ) = 0;
+    virtual void BeginFrame() = 0;
 
     //
     // Mark ending of a frame,
     //
-    virtual void EndFrame( ) = 0;
+    virtual void EndFrame() = 0;
 
     //
     // Get the root profile sample 
     //
-    virtual IRadProfileSample * GetRootProfileSample( ) = 0;
+    virtual IRadProfileSample *GetRootProfileSample() = 0;
 
     //
     // Get a profile sample by name, name is always unique
     //
-    virtual IRadProfileSample * GetProfileSample( const char * pName ) = 0;
+    virtual IRadProfileSample *GetProfileSample(const char *pName) = 0;
 };
 
 
@@ -170,44 +175,43 @@ struct IRadProfiler : public IRefCount
 //
 #ifndef RADPROFILER
 
-    #define radProfilerBeginProfile( string )
-    #define radProfilerEndProfile( string )
+#define radProfilerBeginProfile(string)
+#define radProfilerEndProfile(string)
 
-    #define radProfilerBeginFrame( )
-    #define radProfilerEndFrame( )
+#define radProfilerBeginFrame()
+#define radProfilerEndFrame()
 
-    inline void radProfilerInitialize( unsigned int InitReserveProfileSamplesMemory, unsigned int MaxProfileSamples, bool UseWatcher, radMemoryAllocator alloc )
-    {
-        (void)InitReserveProfileSamplesMemory;
-        (void)MaxProfileSamples;
-        (void)UseWatcher;
-        (void)alloc;
-    }
+inline void
+radProfilerInitialize(unsigned int InitReserveProfileSamplesMemory, unsigned int MaxProfileSamples,
+                      bool UseWatcher, radMemoryAllocator alloc) {
+    (void) InitReserveProfileSamplesMemory;
+    (void) MaxProfileSamples;
+    (void) UseWatcher;
+    (void) alloc;
+}
 
-    inline void radProfilerTerminate( )
-    {
-    }
+inline void radProfilerTerminate() {
+}
 
-    inline IRadProfiler * radProfilerGet( )
-    {
-        return NULL;
-    }
+inline IRadProfiler *radProfilerGet() {
+    return NULL;
+}
 
 #else
 
-    //
-    // wrap around a piece of code using those two functions, it
-    // it measure the time used by a piece of code.
-    //
-    #define radProfilerBeginProfile( string )     radProfilerGet( )->BeginProfile( string );
-    #define radProfilerEndProfile( string )       radProfilerGet( )->EndProfile( string );
+//
+// wrap around a piece of code using those two functions, it
+// it measure the time used by a piece of code.
+//
+#define radProfilerBeginProfile(string)     radProfilerGet()->BeginProfile(string);
+#define radProfilerEndProfile(string)       radProfilerGet()->EndProfile(string);
 
-    //
-    // wrap those two functions around beginning/ending rendering of a
-    // frame. Stats are based on frame.
-    //
-    #define radProfilerBeginFrame( )     radProfilerGet( )->BeginFrame( );
-    #define radProfilerEndFrame( )       radProfilerGet( )->EndFrame( );
+//
+// wrap those two functions around beginning/ending rendering of a
+// frame. Stats are based on frame.
+//
+#define radProfilerBeginFrame()     radProfilerGet()->BeginFrame();
+#define radProfilerEndFrame()       radProfilerGet()->EndFrame();
 
 #endif
 

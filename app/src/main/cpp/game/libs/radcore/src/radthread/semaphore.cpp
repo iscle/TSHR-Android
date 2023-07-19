@@ -24,18 +24,19 @@
 //=============================================================================
 
 #include "pch.hpp"
+
 #ifdef RAD_WIN32
-    #include <windows.h>
+#include <windows.h>
 #endif
 #ifdef RAD_XBOX
-    #include <xtl.h>
+#include <xtl.h>
 #endif
 #ifdef RAD_PS2
-    #include <eekernel.h>
+#include <eekernel.h>
 #endif
 #ifdef RAD_GAMECUBE
-    #include <os.h>
-#endif 
+#include <os.h>
+#endif
 
 #include <radthread.hpp>
 #include <radmemorymonitor.hpp>
@@ -70,17 +71,16 @@
 //------------------------------------------------------------------------------
 
 void radThreadCreateSemaphore
-( 
-    IRadThreadSemaphore** ppSemaphore,
-    unsigned int count,
-    radMemoryAllocator allocator
-)
-{
+        (
+                IRadThreadSemaphore **ppSemaphore,
+                unsigned int count,
+                radMemoryAllocator allocator
+        ) {
     //
     // Simply new up the object. The object sets its reference count to 1 so
     // we need not add ref it here.
     //
-    *ppSemaphore = new( allocator ) radThreadSemaphore( count );
+    *ppSemaphore = new(allocator) radThreadSemaphore(count);
 }
 
 //=============================================================================
@@ -100,18 +100,17 @@ void radThreadCreateSemaphore
 // Notes:
 //------------------------------------------------------------------------------
 
-radThreadSemaphore::radThreadSemaphore( unsigned int count )
-    :
-    m_ReferenceCount( 1 )
-{ 
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radThreadSemaphore" );
+radThreadSemaphore::radThreadSemaphore(unsigned int count)
+        :
+        m_ReferenceCount(1) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radThreadSemaphore");
 
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
 
     //
     // Under Win32 and XBOX simply create a semaphore object.
     //
-    m_Semaphore = CreateSemaphore( NULL, count, 32000, NULL );
+    m_Semaphore = CreateSemaphore(NULL, count, 32000, NULL);
 
 #endif
 
@@ -119,11 +118,11 @@ radThreadSemaphore::radThreadSemaphore( unsigned int count )
     //
     // Under PS2, we use a semaphore.
     //
-  	struct SemaParam semaphoreParam;
+      struct SemaParam semaphoreParam;
     semaphoreParam.maxCount = 32000;
     semaphoreParam.initCount = count;
 
-    m_Semaphore = CreateSema( &semaphoreParam );
+    m_Semaphore = CreateSema(&semaphoreParam);
 
 #endif
 
@@ -133,8 +132,8 @@ radThreadSemaphore::radThreadSemaphore( unsigned int count )
     // a mutex. We manage the count ourselff.
     //       
     m_Count = count;
-    OSInitMutex( &m_Mutex );
-    OSInitCond( &m_Condition );   
+    OSInitMutex(&m_Mutex);
+    OSInitCond(&m_Condition);
 
 #endif
 
@@ -153,15 +152,14 @@ radThreadSemaphore::radThreadSemaphore( unsigned int count )
 // Notes:
 //------------------------------------------------------------------------------
 
-radThreadSemaphore::~radThreadSemaphore( void )
-{
+radThreadSemaphore::~radThreadSemaphore(void) {
     //
     // Under the Windows operation system, we simply delete the semaphore
     // section.
     //
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
-    
-    CloseHandle( m_Semaphore );
+
+    CloseHandle(m_Semaphore);
 
 #endif
 
@@ -169,8 +167,8 @@ radThreadSemaphore::~radThreadSemaphore( void )
     // Under the PS2EE delete the semaphore
     //
 #ifdef RAD_PS2
-    
-    DeleteSema( m_Semaphore );
+
+    DeleteSema(m_Semaphore);
 
 #endif
 
@@ -196,36 +194,35 @@ radThreadSemaphore::~radThreadSemaphore( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void radThreadSemaphore::Wait( void )
-{ 
+void radThreadSemaphore::Wait(void) {
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
     //
     // Under Win32 and XBOX simply wait for the semaphore to be signaled.
     //
-    WaitForSingleObject( m_Semaphore, INFINITE );
+    WaitForSingleObject(m_Semaphore, INFINITE);
 #endif
 
 #ifdef RAD_PS2
     //
     // Under PS2, wait also
     //
-    WaitSema( m_Semaphore );
+    WaitSema(m_Semaphore);
 
 #endif
 
 #ifdef RAD_GAMECUBE
-    
+
     //
     // Obtain mutex to protect our counter.
     //
-    OSLockMutex( &m_Mutex );
+    OSLockMutex(&m_Mutex);
 
     m_Count--;
 
     //
     // Enter a while loop waiting for condition to be meet.
     //
-    while( m_Count < 0 )
+    while(m_Count <0)
     {
         //
         // This operation release mutex and suspends thread. When
@@ -234,7 +231,7 @@ void radThreadSemaphore::Wait( void )
         OSWaitCond(&m_Condition, &m_Mutex);
     }
 
-    OSUnlockMutex(&m_Mutex);      
+    OSUnlockMutex(&m_Mutex);
 
 #endif
 }
@@ -251,21 +248,20 @@ void radThreadSemaphore::Wait( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void radThreadSemaphore::Signal( void )
-{ 
+void radThreadSemaphore::Signal(void) {
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
     //
     // Under Win32 and XBOX simply release semaphore
     //
-    ReleaseSemaphore( m_Semaphore, 1, NULL );
+    ReleaseSemaphore(m_Semaphore, 1, NULL);
 
 #endif
 
-#ifdef RAD_PS2   
+#ifdef RAD_PS2
     //
     // Under PS2, just signal semaphore
     //
-    SignalSema( m_Semaphore );
+    SignalSema(m_Semaphore);
 
 #endif
 
@@ -274,16 +270,16 @@ void radThreadSemaphore::Signal( void )
     //
     // Obtain mutex to protect our counter.
     //
-    OSLockMutex( &m_Mutex );
+    OSLockMutex(&m_Mutex);
 
     m_Count++;
 
     //
     // Wake up any threads waiting on the condition.
     //
-    OSSignalCond( &m_Condition );
+    OSSignalCond(&m_Condition);
 
-    OSUnlockMutex( &m_Mutex );
+    OSUnlockMutex(&m_Mutex);
 
 #endif
 
@@ -302,17 +298,16 @@ void radThreadSemaphore::Signal( void )
 //------------------------------------------------------------------------------
 
 void radThreadSemaphore::AddRef
-(
-	void
-)
-{
+        (
+                void
+        ) {
     //
     // Protect this operation with mutex as this is not guarenteed to be thread
     // safe.
     //
-    radThreadInternalLock( );
-	m_ReferenceCount++;
-    radThreadInternalUnlock( );
+    radThreadInternalLock();
+    m_ReferenceCount++;
+    radThreadInternalUnlock();
 }
 
 //=============================================================================
@@ -328,26 +323,22 @@ void radThreadSemaphore::AddRef
 //------------------------------------------------------------------------------
 
 void radThreadSemaphore::Release
-(
-	void
-)
-{
+        (
+                void
+        ) {
     //
     // Protect this operation with mutex as this is not guarenteed to be thread
     // safe.
     //
-    radThreadInternalLock( );
+    radThreadInternalLock();
 
-	m_ReferenceCount--;
+    m_ReferenceCount--;
 
-	if ( m_ReferenceCount == 0 )
-	{
-        radThreadInternalUnlock( );
-		delete this;
-	}
-    else
-    {
-        radThreadInternalUnlock( );
+    if (m_ReferenceCount == 0) {
+        radThreadInternalUnlock();
+        delete this;
+    } else {
+        radThreadInternalUnlock();
     }
 }
 
@@ -365,9 +356,9 @@ void radThreadSemaphore::Release
 
 #ifdef RAD_DEBUG
 
-void radThreadSemaphore::Dump( char* pStringBuffer, unsigned int bufferSize )
+void radThreadSemaphore::Dump(char* pStringBuffer, unsigned int bufferSize)
 {
-    sprintf( pStringBuffer, "Object: [radThreadSemaphore] At Memory Location:[0x%x]\n", (unsigned int) this );
+    sprintf(pStringBuffer, "Object: [radThreadSemaphore] At Memory Location:[0x%x]\n", (unsigned int) this);
 }
 
 #endif

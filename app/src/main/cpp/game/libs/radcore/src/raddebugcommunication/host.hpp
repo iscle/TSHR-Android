@@ -56,63 +56,63 @@ class rDbgComHost : public IRadDbgComTargetTable
     //
     // Contructor. Nothing too interesting.
     //
-    rDbgComHost( void );
+    rDbgComHost(void);
 
     //
     // Member functions implemented for the bIDebugHost interface.
     //
-    virtual bool AddTargetDefinition( const radDbgComTargetName pName, 
+    virtual bool AddTargetDefinition(const radDbgComTargetName pName,
                                       const radDbgComIPAddress pIpAddress,
-                                      unsigned short port );
+                                      unsigned short port);
 
-    virtual bool DeleteTargetDefinition( const radDbgComTargetName pName );
+    virtual bool DeleteTargetDefinition(const radDbgComTargetName pName);
   
-    virtual void EnumerateTargets( void* context, void (*pEnumerationCallback)( void* context, const radDbgComTargetName pName,
-                                   const radDbgComIPAddress pIpAddress, unsigned short port, bool InUse ) );
+    virtual void EnumerateTargets(void* context, void (*pEnumerationCallback)(void* context, const radDbgComTargetName pName,
+                                   const radDbgComIPAddress pIpAddress, unsigned short port, bool InUse));
  
-    virtual bool SetDefaultTarget( const radDbgComTargetName pName );
-    virtual bool GetDefaultTarget( radDbgComTargetName pName );
+    virtual bool SetDefaultTarget(const radDbgComTargetName pName);
+    virtual bool GetDefaultTarget(radDbgComTargetName pName);
  
     //
     // Member functions implemented for bIRefCount
     //
-    virtual void AddRef( void );
-    virtual void Release( void );
+    virtual void AddRef(void);
+    virtual void Release(void);
 
-    virtual void CreateChannel( const radDbgComTargetName pName, unsigned short protocol, 
-                                IRadDbgComChannel** ppHostChannel );
+    virtual void CreateChannel(const radDbgComTargetName pName, unsigned short protocol,
+                                IRadDbgComChannel** ppHostChannel);
 
     //
     // This member is used by the client host channels to construct a window
     // for them.
     //
-    HWND CreateWindowHelper( rDbgComHostChannel* pChannel );
-    void DestroyWindowHelper( HWND hWnd );
+    HWND CreateWindowHelper(rDbgComHostChannel* pChannel);
+    void DestroyWindowHelper(HWND hWnd);
 
     //
     // Members used to retrieve the IP address and the port.
     //
-    const char* GetIpAddress( unsigned int targetIndex );
-    unsigned short GetPort( unsigned int targetIndex );
+    const char* GetIpAddress(unsigned int targetIndex);
+    unsigned short GetPort(unsigned int targetIndex);
 
     //
     // Member used to release a protocol.
     //
-    void FreeProtocol( unsigned int targetIndex, unsigned short protocol );
+    void FreeProtocol(unsigned int targetIndex, unsigned short protocol);
 
-    void Service( void );
+    void Service(void);
 
     private:
     
     //
     // Destruction done through release.
     //
-    ~rDbgComHost( void );
+    ~rDbgComHost(void);
  
     //
     // This static is used to field windows messages.
     //
-    static LRESULT CALLBACK WindowProcedure( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+    static LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     //
     // This member maintains the reference count of this object.

@@ -17,7 +17,7 @@
 //
 //=============================================================================
 
-#ifndef	MEMORYMONITOR_HPP
+#ifndef    MEMORYMONITOR_HPP
 #define MEMORYMONITOR_HPP
 
 //=============================================================================
@@ -33,7 +33,7 @@
 #include <radmemorymonitor.hpp>
 #include <radmemory.hpp>
 #include <radthread.hpp>
-#include "..\radprotocols\memorymonitorprotocol.hpp"
+#include "../radprotocols/memorymonitorprotocol.hpp"
 
 //=============================================================================
 // Forward Class Declarations
@@ -63,11 +63,11 @@ extern unsigned int _stackend;
 // __ArenaLo etc are symbols defined in Linker, and placed inside large data
 // section. If we just declare __ArenaLo as extern unsigned int, by default,
 // those symbols will be placed under the small data section. Hence, it will
-// cause linker to fail.( you don't want to decypt those messages :) )
+// cause linker to fail.(you don't want to decypt those messages :))
 // 
 // One solution is to declare those linker symbol as a array instead of 
 // unsigned int. And those symbol will be referenced to large data section.
-// ( what a interesting solution :) )
+// (what a interesting solution :))
 //
 // Size of the array doesn't matter, it is there to force become a large data
 // section.
@@ -105,34 +105,34 @@ extern unsigned int _stack_end[ 100 ];     // stack
 //
 #define MM_RX_BUFFER_SIZE   2 * 1024
 
-#define MM_DECLARE_TX_PROTOCAL( ProtocalData ) \
-    void AllocateMemoryForSendProtocal( ProtocalData ** pData ); \
+#define MM_DECLARE_TX_PROTOCAL(ProtocalData) \
+    void AllocateMemoryForSendProtocal(ProtocalData ** pData); \
 
-#define MM_IMPLEMENT_TX_PROTOCOL( ProtocalType, ProtocalData ) \
-void radMemoryMonitorClient::AllocateMemoryForSendProtocal( ProtocalData ** pData ) \
+#define MM_IMPLEMENT_TX_PROTOCOL(ProtocalType, ProtocalData) \
+void radMemoryMonitorClient::AllocateMemoryForSendProtocal(ProtocalData ** pData) \
 { \
-    *pData = (ProtocalData *)GetNextFillBufferStart( sizeof( ProtocalData ) ); \
-    memset( *pData, 0, sizeof( ProtocalData ) ); \
-    (*pData)->header = (MM_DataHeader)::radPlatformEndian32( ProtocalType ); \
-    AdvanceBufferBy( sizeof( ProtocalData ) ); \
+    *pData = (ProtocalData *)GetNextFillBufferStart(sizeof(ProtocalData)); \
+    memset(*pData, 0, sizeof(ProtocalData)); \
+    (*pData)->header = (MM_DataHeader)::radPlatformEndian32(ProtocalType); \
+    AdvanceBufferBy(sizeof(ProtocalData)); \
 }
 
-#define MM_DECLARE_RX_PROTOCAL( ProtocalData ) \
-    void OnRecieveProtocal( ProtocalData * pData );
+#define MM_DECLARE_RX_PROTOCAL(ProtocalData) \
+    void OnRecieveProtocal(ProtocalData * pData);
 
-#define MM_IMPLEMENT_RX_PROTOCAL( ProtocalType, ProtocalData, pRxDataPacket, bEndOfBuffer, uRxBytesProcessed, uRxBytesQueued, bOnRecieveProtocal ) \
+#define MM_IMPLEMENT_RX_PROTOCAL(ProtocalType, ProtocalData, pRxDataPacket, bEndOfBuffer, uRxBytesProcessed, uRxBytesQueued, bOnRecieveProtocal) \
     case ProtocalType : \
     { \
-        if ( uRxBytesQueued >= sizeof( ProtocalData ) ) \
+        if (uRxBytesQueued>= sizeof(ProtocalData)) \
         { \
-            ProtocalData * pData = reinterpret_cast< ProtocalData * >( pRxDataPacket ); \
-            if ( bOnRecieveProtocal ) \
+            ProtocalData * pData = reinterpret_cast<ProtocalData *>(pRxDataPacket); \
+            if (bOnRecieveProtocal) \
             { \
-                OnRecieveProtocal( ( ProtocalData * )pData ); \
+                OnRecieveProtocal((ProtocalData *)pData); \
             } \
-            pRxDataPacket = reinterpret_cast< MM_DataPacket * >( (unsigned char *)( pRxDataPacket ) + sizeof( ProtocalData ) ); \
-            uRxBytesProcessed += sizeof( ProtocalData ); \
-            uRxBytesQueued -= sizeof( ProtocalData ); \
+            pRxDataPacket = reinterpret_cast<MM_DataPacket *>((unsigned char *)(pRxDataPacket) + sizeof(ProtocalData)); \
+            uRxBytesProcessed += sizeof(ProtocalData); \
+            uRxBytesQueued -= sizeof(ProtocalData); \
         } \
         else \
         { \
@@ -174,7 +174,7 @@ class radMemoryMonitorClient :
 {
 public:
 
-	IMPLEMENT_REFCOUNTED( "radMemoryMonitor" )
+    IMPLEMENT_REFCOUNTED("radMemoryMonitor")
 
     enum MM_InitState
     {
@@ -186,163 +186,163 @@ public:
     //
     // IRadMemoryMonitor Interfaces
     //
-    radMemoryMonitorClient( radMemoryAllocator alloc );
+    radMemoryMonitorClient(radMemoryAllocator alloc);
 
-    virtual ~radMemoryMonitorClient( );
-    
-    virtual void Lock( );
+    virtual ~radMemoryMonitorClient();
 
-    virtual void Unlock( );
+    virtual void Lock();
 
-    virtual void Initialize( unsigned int BufferSize, bool SyncMode, bool ReportRefCount );
+    virtual void Unlock();
 
-    virtual void Terminate( void );
+    virtual void Initialize(unsigned int BufferSize, bool SyncMode, bool ReportRefCount);
 
-    virtual void Service( void );
+    virtual void Terminate(void);
 
-    virtual void Suspend( void );
+    virtual void Service(void);
 
-    virtual void DeclareSection( void* address, unsigned int size, MemorySectionType sectionType, 
-                                 radMemorySpace memorySpace, IRadMemoryTraverse* traverse );
+    virtual void Suspend(void);
 
-    virtual void RescindSection( void* address, radMemorySpace memorySpace );
+    virtual void DeclareSection(void* address, unsigned int size, MemorySectionType sectionType,
+                                 radMemorySpace memorySpace, IRadMemoryTraverse* traverse);
 
-    virtual void IdentifySection( void* address, const char* name, radMemorySpace memorySpace );
+    virtual void RescindSection(void* address, radMemorySpace memorySpace);
 
-    virtual void DeclareAllocation( void* address, unsigned int size, unsigned int callStackDepth,
-                                    radMemorySpace memorySpace );
+    virtual void IdentifySection(void* address, const char* name, radMemorySpace memorySpace);
 
-    virtual void RescindAllocation( void* address, radMemorySpace memorySpace );
+    virtual void DeclareAllocation(void* address, unsigned int size, unsigned int callStackDepth,
+                                    radMemorySpace memorySpace);
 
-    virtual void IdentifyAllocation( void* address, const char* group, const char* name,
-                                     unsigned int* pReferenceCount, radMemorySpace memorySpace );
+    virtual void RescindAllocation(void* address, radMemorySpace memorySpace);
 
-    virtual void IssueFlag( const char* flag );
+    virtual void IdentifyAllocation(void* address, const char* group, const char* name,
+                                     unsigned int* pReferenceCount, radMemorySpace memorySpace);
 
-    virtual void ReportAddRef( void* pObject, void* pReference, radMemorySpace memorySpaceObject );
+    virtual void IssueFlag(const char* flag);
 
-    virtual void ReportRelease( void* pObject, void* pReference, radMemorySpace memorySpaceObject );
+    virtual void ReportAddRef(void* pObject, void* pReference, radMemorySpace memorySpaceObject);
 
-    virtual void SetStackInitialFillChar( char c );
+    virtual void ReportRelease(void* pObject, void* pReference, radMemorySpace memorySpaceObject);
+
+    virtual void SetStackInitialFillChar(char c);
 
     //
     // Callbacks from the communication system
     //
-    virtual void OnStatusChange( IRadDbgComChannel::ConnectionState connectionState,
-                                 const char* Message );
-    virtual void OnReceiveComplete( bool successful, unsigned int bytesReceived );
+    virtual void OnStatusChange(IRadDbgComChannel::ConnectionState connectionState,
+                                 const char* Message);
+    virtual void OnReceiveComplete(bool successful, unsigned int bytesReceived);
 
-    virtual void OnSendComplete( bool successful );
+    virtual void OnSendComplete(bool successful);
 
 protected:
 
     //
     // declare Tx protocal
     //
-    MM_DECLARE_TX_PROTOCAL( MM_DeclarePlatformData )
-    MM_DECLARE_TX_PROTOCAL( MM_DeclareSpaceData )
+    MM_DECLARE_TX_PROTOCAL(MM_DeclarePlatformData)
+    MM_DECLARE_TX_PROTOCAL(MM_DeclareSpaceData)
 
-    MM_DECLARE_TX_PROTOCAL( MM_DeclareSectionData )
-    MM_DECLARE_TX_PROTOCAL( MM_RescindSectionData )
-    MM_DECLARE_TX_PROTOCAL( MM_IdenitfySectionData )
+    MM_DECLARE_TX_PROTOCAL(MM_DeclareSectionData)
+    MM_DECLARE_TX_PROTOCAL(MM_RescindSectionData)
+    MM_DECLARE_TX_PROTOCAL(MM_IdenitfySectionData)
 
-    MM_DECLARE_TX_PROTOCAL( MM_DeclareAllocationData )
-    MM_DECLARE_TX_PROTOCAL( MM_RescindAllocationData )
-    MM_DECLARE_TX_PROTOCAL( MM_IdentifyAllocationData )
+    MM_DECLARE_TX_PROTOCAL(MM_DeclareAllocationData)
+    MM_DECLARE_TX_PROTOCAL(MM_RescindAllocationData)
+    MM_DECLARE_TX_PROTOCAL(MM_IdentifyAllocationData)
 
-    MM_DECLARE_TX_PROTOCAL( MM_ReportRefCountData )
-    MM_DECLARE_TX_PROTOCAL( MM_ReportAddRefData )
-    MM_DECLARE_TX_PROTOCAL( MM_ReportReleaseData )
+    MM_DECLARE_TX_PROTOCAL(MM_ReportRefCountData)
+    MM_DECLARE_TX_PROTOCAL(MM_ReportAddRefData)
+    MM_DECLARE_TX_PROTOCAL(MM_ReportReleaseData)
 
-    MM_DECLARE_TX_PROTOCAL( MM_IssueFlagData )
+    MM_DECLARE_TX_PROTOCAL(MM_IssueFlagData)
 
-    MM_DECLARE_TX_PROTOCAL( MM_SendMemoryBlockData )
+    MM_DECLARE_TX_PROTOCAL(MM_SendMemoryBlockData)
 
-    MM_DECLARE_TX_PROTOCAL( MM_ReportSuspend )
-    MM_DECLARE_TX_PROTOCAL( MM_ReportStackUsageData )
+    MM_DECLARE_TX_PROTOCAL(MM_ReportSuspend)
+    MM_DECLARE_TX_PROTOCAL(MM_ReportStackUsageData)
 
-    MM_DECLARE_TX_PROTOCAL( MM_Acknowledgement )
+    MM_DECLARE_TX_PROTOCAL(MM_Acknowledgement)
 
     //
     // declare Rx protocal
     //
-    MM_DECLARE_RX_PROTOCAL( MM_RequestRefCountData )
+    MM_DECLARE_RX_PROTOCAL(MM_RequestRefCountData)
 
-    MM_DECLARE_RX_PROTOCAL( MM_RequestMemoryBlockData );
+    MM_DECLARE_RX_PROTOCAL(MM_RequestMemoryBlockData);
 
-    MM_DECLARE_RX_PROTOCAL( MM_RequestStackUsageData );
+    MM_DECLARE_RX_PROTOCAL(MM_RequestStackUsageData);
 
-    MM_DECLARE_RX_PROTOCAL( MM_RequestSuspendedData );
+    MM_DECLARE_RX_PROTOCAL(MM_RequestSuspendedData);
 
-    MM_DECLARE_RX_PROTOCAL( MM_RequestResumedData );
+    MM_DECLARE_RX_PROTOCAL(MM_RequestResumedData);
 
-    MM_DECLARE_RX_PROTOCAL( MM_Acknowledgement );
+    MM_DECLARE_RX_PROTOCAL(MM_Acknowledgement);
 
     //
     // Rx/Tx related function
     //
-    void InitiateTransmission( );
+    void InitiateTransmission();
 
     // get starting position of fill buffer for next item
-    unsigned char * GetNextFillBufferStart( unsigned int sizeToAdd );
+    unsigned char * GetNextFillBufferStart(unsigned int sizeToAdd);
 
-    void AdvanceBufferBy( unsigned int sizeToAdd );
+    void AdvanceBufferBy(unsigned int sizeToAdd);
 
-    void PreProcessRxData( );
+    void PreProcessRxData();
 
-    void ProcessRxData( );
+    void ProcessRxData();
 
-    void ReSyncDataIfNeeded( );
+    void ReSyncDataIfNeeded();
 
-    void SendAck( );
+    void SendAck();
 
     //
     // internal client information declaration
     //
-	void DeclareMemSpaceInfo( radMemorySpace memSpace, unsigned int startAddr, unsigned int size );
+    void DeclareMemSpaceInfo(radMemorySpace memSpace, unsigned int startAddr, unsigned int size);
 
-    void DeclareMemSpaceInfo( );
+    void DeclareMemSpaceInfo();
 
-    void DeclarePlatform( );
+    void DeclarePlatform();
 
-    void DeclarePreDefinedMemorySection( );
-    
-    void DeclareStoredMemorySection( );
+    void DeclarePreDefinedMemorySection();
 
-    void SendSuspendState( );
-    
-    void SendStackUsageData( radMemorySpace memSpace, unsigned int uAddress );
+    void DeclareStoredMemorySection();
+
+    void SendSuspendState();
+
+    void SendStackUsageData(radMemorySpace memSpace, unsigned int uAddress);
 
     // used for DeclareSection()
-    void DecalareAllocationFromTraverse( radMemorySpace memorySpace, IRadMemoryTraverse* traverse );
+    void DecalareAllocationFromTraverse(radMemorySpace memorySpace, IRadMemoryTraverse* traverse);
 
-    void InsertSection( radMemoryMonitorSectionData & sectionData );
+    void InsertSection(radMemoryMonitorSectionData & sectionData);
 
-    void RemoveSection( void* address, radMemorySpace memorySpace );
+    void RemoveSection(void* address, radMemorySpace memorySpace);
 
-    void NameSection( void* address, radMemorySpace memorySpace, const char * name );
+    void NameSection(void* address, radMemorySpace memorySpace, const char * name);
 
-    void SendMemoryBlock128Byte( radMemorySpace memorySpace, unsigned int memStartPos, unsigned int memLength );
+    void SendMemoryBlock128Byte(radMemorySpace memorySpace, unsigned int memStartPos, unsigned int memLength);
 
-    void SendMemoryBlock( radMemorySpace memorySpace, unsigned int memStartPos, unsigned int memLength );
+    void SendMemoryBlock(radMemorySpace memorySpace, unsigned int memStartPos, unsigned int memLength);
 
-    void SendObjectRefount( radMemorySpace memorySpace, void * pObjectPtr, unsigned int * pRefCount );
+    void SendObjectRefount(radMemorySpace memorySpace, void * pObjectPtr, unsigned int * pRefCount);
 
     //
     // miscillous function
     //
-    unsigned int GetTimeFrame( );
+    unsigned int GetTimeFrame();
 
-    MM_ClientMemorySpace ConvertMemSpc2ClientMemSpc( radMemorySpace memorySpace );
+    MM_ClientMemorySpace ConvertMemSpc2ClientMemSpc(radMemorySpace memorySpace);
 
-    radMemorySpace ConvertClientMemSpc2MemSpc( MM_ClientMemorySpace memorySpace );
+    radMemorySpace ConvertClientMemSpc2MemSpc(MM_ClientMemorySpace memorySpace);
 
-    // resume the console operation, in pair with Suspend( )
-    void Resume( );
+    // resume the console operation, in pair with Suspend()
+    void Resume();
 
-    bool IsMemoryBlockValid( radMemorySpace memorySpace, unsigned int memStartPos, unsigned int memLength );
+    bool IsMemoryBlockValid(radMemorySpace memorySpace, unsigned int memStartPos, unsigned int memLength);
 
-    bool RemoveCorrespondingAddRefInBuffer( void* pObject, void* pReference, radMemorySpace memorySpaceObject );
+    bool RemoveCorrespondingAddRefInBuffer(void* pObject, void* pReference, radMemorySpace memorySpaceObject);
 
 private:
 
@@ -358,10 +358,10 @@ private:
 
     char                        m_cStackInitFillChar;
 
-	//
-	// debug communication channel stuff
-	//
-    ref< IRadDbgComChannel >    m_pChannel;
+    //
+    // debug communication channel stuff
+    //
+    ref<IRadDbgComChannel>    m_pChannel;
     bool                        m_bAttached;
     bool                        m_bSuspended;
     bool                        m_bSendSuspendedState;
@@ -384,7 +384,7 @@ private:
     //
     // Buffer used to receive/transfer messages from/to host. Fixed size.
     // When data is recieved, it just put recieved data into m_pRxProcessBuffer,
-    // set m_bRxProcessBufferQueued flag and wait until Service( ) to process the
+    // set m_bRxProcessBufferQueued flag and wait until Service() to process the
     // data
     //
     unsigned char               m_pRxBuffer[ MM_RX_BUFFER_SIZE ];

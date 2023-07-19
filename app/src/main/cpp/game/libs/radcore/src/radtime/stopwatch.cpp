@@ -44,18 +44,17 @@
 //===========================================================================
 
 void radTimeCreateStopwatch
-( 
-    IRadStopwatch** pNewWatch, 
-    radTimeUnit timeUnit, 
-    radMemoryAllocator alloc
-)
-{
-    rAssert( pNewWatch != NULL );
+        (
+                IRadStopwatch **pNewWatch,
+                radTimeUnit timeUnit,
+                radMemoryAllocator alloc
+        ) {
+    rAssert(pNewWatch != NULL);
 
-    *pNewWatch = new( alloc ) radStopwatch;
-    rAssert( *pNewWatch != NULL );
+    *pNewWatch = new(alloc) radStopwatch;
+    rAssert(*pNewWatch != NULL);
 
-    ( *pNewWatch )->SetTimeUnits( timeUnit );
+    (*pNewWatch)->SetTimeUnits(timeUnit);
 }
 
 //=============================================================================
@@ -69,50 +68,40 @@ void radTimeCreateStopwatch
 // Returns:     pName - buffer to write the name string into.
 //------------------------------------------------------------------------------
 
-void radTimeGetUnitName( radTimeUnit timeUnit, char* pName )
-{
-    rAssert( pName != NULL );
+void radTimeGetUnitName(radTimeUnit timeUnit, char *pName) {
+    rAssert(pName != NULL);
 
-    switch( timeUnit )
-    {
-        case radTimeUnit_Nanosecond:
-        {
-            strcpy( pName, "nS" );
+    switch (timeUnit) {
+        case radTimeUnit_Nanosecond: {
+            strcpy(pName, "nS");
             break;
         }
-        case radTimeUnit_Microsecond:
-        {
-            strcpy( pName, "uS" );
+        case radTimeUnit_Microsecond: {
+            strcpy(pName, "uS");
             break;
         }
-        case radTimeUnit_Millisecond:
-        {
-            strcpy( pName, "mS" );
+        case radTimeUnit_Millisecond: {
+            strcpy(pName, "mS");
             break;
         }
-        case radTimeUnit_Second:
-        {
-            strcpy( pName, "s" );
+        case radTimeUnit_Second: {
+            strcpy(pName, "s");
             break;
         }
-        case radTimeUnit_Minute:
-        {
-            strcpy( pName, "m" );
+        case radTimeUnit_Minute: {
+            strcpy(pName, "m");
             break;
         }
-        case radTimeUnit_Hour:
-        {
-            strcpy( pName, "h" );
+        case radTimeUnit_Hour: {
+            strcpy(pName, "h");
             break;
         }
-        case radTimeUnit_Day:
-        {
-            strcpy( pName, "d" );
+        case radTimeUnit_Day: {
+            strcpy(pName, "d");
             break;
         }
-        default:
-        {
-            strcpy( pName, "" );
+        default: {
+            strcpy(pName, "");
             break;
         }
     }
@@ -131,16 +120,15 @@ void radTimeGetUnitName( radTimeUnit timeUnit, char* pName )
 // Returns:     None.
 //------------------------------------------------------------------------------
 
-radStopwatch::radStopwatch( void ) 
-    :
-    m_ReferenceCount( 0 ),
-    m_TotalTime( 0 ),
-    m_StartTime( 0 ),
-    m_StopTime( 0 ),
-    m_TimeUnit( radTimeUnit_Second ),
-    m_Running( false )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radStopwatch" );
+radStopwatch::radStopwatch(void)
+        :
+        m_ReferenceCount(0),
+        m_TotalTime(0),
+        m_StartTime(0),
+        m_StopTime(0),
+        m_TimeUnit(radTimeUnit_Second),
+        m_Running(false) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radStopwatch");
 }
 
 
@@ -155,8 +143,7 @@ radStopwatch::radStopwatch( void )
 // Returns:     None.
 //------------------------------------------------------------------------------
 
-radStopwatch::~radStopwatch( void ) 
-{
+radStopwatch::~radStopwatch(void) {
 }
 
 
@@ -170,8 +157,7 @@ radStopwatch::~radStopwatch( void )
 // Returns:     None.
 //------------------------------------------------------------------------------
 
-void radStopwatch::AddRef( void )
-{
+void radStopwatch::AddRef(void) {
     m_ReferenceCount++;
 }
 
@@ -187,11 +173,9 @@ void radStopwatch::AddRef( void )
 // Returns:     None.
 //------------------------------------------------------------------------------
 
-void radStopwatch::Release( void )
-{
+void radStopwatch::Release(void) {
     m_ReferenceCount--;
-    if( m_ReferenceCount < 1 )
-    {
+    if (m_ReferenceCount < 1) {
         delete this;
     }
 }
@@ -213,14 +197,12 @@ void radStopwatch::Release( void )
 //
 //------------------------------------------------------------------------------
 
-void radStopwatch::Start( void ) 
-{ 
-    if( m_Running )
-    {
-        Stop( );
+void radStopwatch::Start(void) {
+    if (m_Running) {
+        Stop();
     }
-    m_StartTime = GetTime( );
-    m_Running = true; 
+    m_StartTime = GetTime();
+    m_Running = true;
 }
 
 
@@ -242,15 +224,11 @@ void radStopwatch::Start( void )
 //
 //------------------------------------------------------------------------------
 
-void radStopwatch::Stop( void ) 
-{ 
-    if( m_Running )
-    {
-        m_StopTime = GetTime( );
+void radStopwatch::Stop(void) {
+    if (m_Running) {
+        m_StopTime = GetTime();
         m_Running = false;
-    }
-    else
-    {
+    } else {
         m_StopTime = m_StartTime;
     }
     m_TotalTime += m_StopTime - m_StartTime;
@@ -277,15 +255,11 @@ void radStopwatch::Stop( void )
 //
 //------------------------------------------------------------------------------
 
-unsigned int radStopwatch::GetElapsedTime ( void ) const
-{ 
-    if( m_Running ) 
-    {
-        return( GetTime( ) - m_StartTime + m_TotalTime );
-    }
-    else
-    {
-        return( m_TotalTime );
+unsigned int radStopwatch::GetElapsedTime(void) const {
+    if (m_Running) {
+        return (GetTime() - m_StartTime + m_TotalTime);
+    } else {
+        return (m_TotalTime);
     }
 }
 
@@ -313,25 +287,21 @@ unsigned int radStopwatch::GetElapsedTime ( void ) const
 //
 //------------------------------------------------------------------------------
 
-unsigned int radStopwatch::GetElapsedTime ( radTimeUnit timeUnit ) const
-{ 
+unsigned int radStopwatch::GetElapsedTime(radTimeUnit timeUnit) const {
     unsigned int ret = 0;
-    if( m_Running ) 
-    {
-        ret = GetTime( ) - m_StartTime + m_TotalTime;
-    }
-    else
-    {
+    if (m_Running) {
+        ret = GetTime() - m_StartTime + m_TotalTime;
+    } else {
         ret = m_TotalTime;
     }
 
     unsigned int num, denom;
-    GetConversionFactor( m_TimeUnit, timeUnit, &num, &denom );
+    GetConversionFactor(m_TimeUnit, timeUnit, &num, &denom);
 
-    rWarningMsg( ret * num >= ret, "WARNING: radStopwath overflow GetElapsedTime\n" );
+    rWarningMsg(ret * num >= ret, "WARNING: radStopwath overflow GetElapsedTime\n");
 
-    ret = ( ret * num ) / denom;
-    return( ret );
+    ret = (ret * num) / denom;
+    return (ret);
 }
 
 
@@ -347,9 +317,8 @@ unsigned int radStopwatch::GetElapsedTime ( radTimeUnit timeUnit ) const
 //
 //------------------------------------------------------------------------------
 
-bool radStopwatch::IsRunning( void ) const
-{
-    return( m_Running );
+bool radStopwatch::IsRunning(void) const {
+    return (m_Running);
 }
 
 
@@ -364,8 +333,7 @@ bool radStopwatch::IsRunning( void ) const
 // Returns:     None.
 //------------------------------------------------------------------------------
 
-void radStopwatch::Reset( void )
-{
+void radStopwatch::Reset(void) {
     m_TotalTime = 0;
     m_Running = false;
 }
@@ -383,16 +351,15 @@ void radStopwatch::Reset( void )
 // Notes:       Cannot be called when the watch is running.
 //------------------------------------------------------------------------------
 
-void radStopwatch::SetTimeUnits( radTimeUnit timeUnit )
-{
-    rAssert( !m_Running );
+void radStopwatch::SetTimeUnits(radTimeUnit timeUnit) {
+    rAssert(!m_Running);
 
     unsigned int num, denom;
-    GetConversionFactor( m_TimeUnit, timeUnit, &num, &denom );
+    GetConversionFactor(m_TimeUnit, timeUnit, &num, &denom);
 
-    rWarningMsg( m_TotalTime * num >= m_TotalTime, "WARNING: radStopwath overflow SetTimeUnits\n" );
+    rWarningMsg(m_TotalTime * num >= m_TotalTime, "WARNING: radStopwath overflow SetTimeUnits\n");
 
-    m_TotalTime = ( m_TotalTime * num ) / denom;
+    m_TotalTime = (m_TotalTime * num) / denom;
     m_TimeUnit = timeUnit;
 }
 
@@ -407,9 +374,8 @@ void radStopwatch::SetTimeUnits( radTimeUnit timeUnit )
 // Returns:     The time unit size this watch is currently using.
 //------------------------------------------------------------------------------
 
-radTimeUnit radStopwatch::GetTimeUnits( void ) const
-{
-    return( m_TimeUnit );
+radTimeUnit radStopwatch::GetTimeUnits(void) const {
+    return (m_TimeUnit);
 }
 
 
@@ -429,27 +395,26 @@ radTimeUnit radStopwatch::GetTimeUnits( void ) const
 //------------------------------------------------------------------------------
 
 void radStopwatch::GetConversionFactor
-( 
-    radTimeUnit fromUnit, 
-    radTimeUnit toUnit,                       
-    unsigned int* pNumerator, 
-    unsigned int* pDenominator
-)
-{
-    rAssert( pNumerator != NULL );
-    rAssert( pDenominator != NULL );
+        (
+                radTimeUnit fromUnit,
+                radTimeUnit toUnit,
+                unsigned int *pNumerator,
+                unsigned int *pDenominator
+        ) {
+    rAssert(pNumerator != NULL);
+    rAssert(pDenominator != NULL);
 
-    radTimeUnit index[ 7 ] = {
-        radTimeUnit_Nanosecond,
-        radTimeUnit_Microsecond,
-        radTimeUnit_Millisecond,
-        radTimeUnit_Second,
-        radTimeUnit_Minute,
-        radTimeUnit_Hour,
-        radTimeUnit_Day
+    radTimeUnit index[7] = {
+            radTimeUnit_Nanosecond,
+            radTimeUnit_Microsecond,
+            radTimeUnit_Millisecond,
+            radTimeUnit_Second,
+            radTimeUnit_Minute,
+            radTimeUnit_Hour,
+            radTimeUnit_Day
     };
 
-    unsigned int factors[ 7 ] = { 1, 1000, 1000, 1000, 60, 60, 24 };
+    unsigned int factors[7] = {1, 1000, 1000, 1000, 60, 60, 24};
 
     unsigned int num = 1;
     unsigned int denom = 1;
@@ -458,14 +423,11 @@ void radStopwatch::GetConversionFactor
     //
     // Convert the enums to indeces.
     //
-    for( int i = 0; i < 7; i++ )
-    {
-        if( index[i] == fromUnit )
-        {
+    for (int i = 0; i < 7; i++) {
+        if (index[i] == fromUnit) {
             fromIndex = i;
         }
-        if( index[i] == toUnit )
-        {
+        if (index[i] == toUnit) {
             toIndex = i;
         }
     }
@@ -473,15 +435,13 @@ void radStopwatch::GetConversionFactor
     //
     // Iteratively bring the two indeces closer together.
     //
-    while( fromIndex < toIndex )
-    {
+    while (fromIndex < toIndex) {
         fromIndex++;
-        denom *= factors[ fromIndex ];
+        denom *= factors[fromIndex];
     }
 
-    while( fromIndex > toIndex )
-    {
-        num *= factors[ fromIndex ];
+    while (fromIndex > toIndex) {
+        num *= factors[fromIndex];
         fromIndex--;
     }
 
@@ -504,50 +464,40 @@ void radStopwatch::GetConversionFactor
 // Returns:     The current time in the watch's native units.
 //------------------------------------------------------------------------------
 
-unsigned int radStopwatch::GetTime( void ) const
-{
-    switch( m_TimeUnit )
-    {
-        case radTimeUnit_Nanosecond:
-        {
-            unsigned int nowMicro = radTimeGetMicroseconds( );
-            rWarningMsg( nowMicro < 4294968, "WARNING: radStopwatch overflowing nanoseconds\n" );
-            return( 1000 * nowMicro );
+unsigned int radStopwatch::GetTime(void) const {
+    switch (m_TimeUnit) {
+        case radTimeUnit_Nanosecond: {
+            unsigned int nowMicro = radTimeGetMicroseconds();
+            rWarningMsg(nowMicro < 4294968, "WARNING: radStopwatch overflowing nanoseconds\n");
+            return (1000 * nowMicro);
             break;
         }
-        case radTimeUnit_Microsecond:
-        {
-            return( radTimeGetMicroseconds( ) );
+        case radTimeUnit_Microsecond: {
+            return (radTimeGetMicroseconds());
             break;
         }
-        case radTimeUnit_Millisecond:
-        {
-            return( radTimeGetMilliseconds( ) );
+        case radTimeUnit_Millisecond: {
+            return (radTimeGetMilliseconds());
             break;
         }
-        case radTimeUnit_Second:
-        {
-            return( radTimeGetSeconds( ) );
+        case radTimeUnit_Second: {
+            return (radTimeGetSeconds());
             break;
         }
-        case radTimeUnit_Minute:
-        {
-            return( radTimeGetSeconds( ) / 60 );
+        case radTimeUnit_Minute: {
+            return (radTimeGetSeconds() / 60);
             break;
         }
-        case radTimeUnit_Hour:
-        {
-            return( radTimeGetSeconds( ) / 3600 );
+        case radTimeUnit_Hour: {
+            return (radTimeGetSeconds() / 3600);
             break;
         }
-        case radTimeUnit_Day:
-        {
-            return( radTimeGetSeconds( ) / ( 24 * 3600 ) );
+        case radTimeUnit_Day: {
+            return (radTimeGetSeconds() / (24 * 3600));
             break;
         }
-        default:
-        {
-            return( radTimeGetSeconds( ) );
+        default: {
+            return (radTimeGetSeconds());
             break;
         }
     }
@@ -569,9 +519,9 @@ unsigned int radStopwatch::GetTime( void ) const
 
 #ifdef RAD_DEBUG
 
-void radStopwatch::Dump( char * pStringBuffer, unsigned int bufferSize )
+void radStopwatch::Dump(char * pStringBuffer, unsigned int bufferSize)
 {
-    sprintf( pStringBuffer, "Object: [radStopwatch] At Memory Location:[0x%x]\n", (unsigned int) this );
+    sprintf(pStringBuffer, "Object: [radStopwatch] At Memory Location:[0x%x]\n", (unsigned int) this);
 }
 
 #endif

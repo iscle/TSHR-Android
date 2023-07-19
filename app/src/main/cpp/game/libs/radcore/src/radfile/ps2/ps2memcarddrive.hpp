@@ -16,7 +16,7 @@
 //
 //=============================================================================
 
-#ifndef	PS2MEMCARDDDRIVE_HPP
+#ifndef    PS2MEMCARDDDRIVE_HPP
 #define PS2MEMCARDDDRIVE_HPP
 
 //=============================================================================
@@ -32,7 +32,7 @@
 // Statics
 //=============================================================================
 
-static const char s_PS2MemcardDrive[ ] = "MEMCARD??:";
+static const char s_PS2MemcardDrive[] = "MEMCARD??:";
 #define PS2MEMCARDDRIVE_PORT_LOC    7
 #define PS2MEMCARDDRIVE_SLOT_LOC    8
 
@@ -56,7 +56,7 @@ static const char s_PS2MemcardDrive[ ] = "MEMCARD??:";
 // changed to handle the proxies.
 //
 
-void radPs2MemcardDriveFactory( radDrive** ppDrive, const char* driveSpec, radMemoryAllocator alloc );
+void radPs2MemcardDriveFactory(radDrive **ppDrive, const char *driveSpec, radMemoryAllocator alloc);
 
 //=============================================================================
 // Class Declarations
@@ -64,114 +64,134 @@ void radPs2MemcardDriveFactory( radDrive** ppDrive, const char* driveSpec, radMe
 
 class radPs2MemcardDrive : public radDrive,
                            public radSignedReader,
-                           public radSignedWriter
-{
+                           public radSignedWriter {
 public:
 
     //
     // Constructor / destructor.
     //
-    radPs2MemcardDrive( const char* pdrivespec, radMemoryAllocator alloc );
-    virtual ~radPs2MemcardDrive( void );
+    radPs2MemcardDrive(const char *pdrivespec, radMemoryAllocator alloc);
 
-    void Lock( void );
-    void Unlock( void );
+    virtual ~radPs2MemcardDrive(void);
 
-    unsigned int GetCapabilities( void );
+    void Lock(void);
 
-    const char* GetDriveName( void );
+    void Unlock(void);
 
-    unsigned int GetCreationSize( radMemcardInfo* memcardInfo, unsigned int size );
+    unsigned int GetCapabilities(void);
 
-    CompletionStatus Initialize( void );
+    const char *GetDriveName(void);
 
-    CompletionStatus OpenSaveGame( const char*      fileName, 
-                                   radFileOpenFlags flags, 
-                                   bool             writeAccess,
-                                   radMemcardInfo*  memcardInfo,
-                                   unsigned int     maxSize,
-                                   radFileHandle*   pHandle, 
-                                   unsigned int*    pSize );
+    unsigned int GetCreationSize(radMemcardInfo *memcardInfo, unsigned int size);
 
-    CompletionStatus CloseFile( radFileHandle handle, const char* fileName );
+    CompletionStatus Initialize(void);
 
-    CompletionStatus CommitFile( radFileHandle  handle, const char* fileName );
+    CompletionStatus OpenSaveGame(const char *fileName,
+                                  radFileOpenFlags flags,
+                                  bool writeAccess,
+                                  radMemcardInfo *memcardInfo,
+                                  unsigned int maxSize,
+                                  radFileHandle *pHandle,
+                                  unsigned int *pSize);
 
-    CompletionStatus ReadSignedBlock( radFileHandle  handle,
-                                      const char*    fileName,
-                                      unsigned int   block,
-                                      unsigned int   position,
-                                      unsigned int   numBytes,
-                                      void*          pData, 
-                                      radMemorySpace pDataSpace );
+    CompletionStatus CloseFile(radFileHandle handle, const char *fileName);
 
-    unsigned int GetReadBlockSize( void );
-    unsigned int GetReadHeaderSize( radFileHandle handle );
+    CompletionStatus CommitFile(radFileHandle handle, const char *fileName);
 
-    CompletionStatus WriteSignedBlock( radFileHandle handle,
-                                       const char* fileName,
-                                       unsigned int block,
-                                       unsigned int position,
-                                       unsigned int numBytes,
-                                       const void* pData,
-                                       unsigned int* size,
-                                       radMemorySpace pDataSpace );
+    CompletionStatus ReadSignedBlock(radFileHandle handle,
+                                     const char *fileName,
+                                     unsigned int block,
+                                     unsigned int position,
+                                     unsigned int numBytes,
+                                     void *pData,
+                                     radMemorySpace pDataSpace);
 
-    unsigned int GetWriteBlockSize( void );
-    unsigned int GetWriteHeaderSize( radFileHandle handle );
+    unsigned int GetReadBlockSize(void);
 
-    CompletionStatus DestroyFile( const char* fileName ); 
+    unsigned int GetReadHeaderSize(radFileHandle handle);
 
-    CompletionStatus Format( void );
+    CompletionStatus WriteSignedBlock(radFileHandle handle,
+                                      const char *fileName,
+                                      unsigned int block,
+                                      unsigned int position,
+                                      unsigned int numBytes,
+                                      const void *pData,
+                                      unsigned int *size,
+                                      radMemorySpace pDataSpace);
 
-    CompletionStatus FindFirst( const char*                 searchSpec, 
-                                IRadDrive::DirectoryInfo*   pDirectoryInfo, 
-                                radFileDirHandle*           pHandle,
-                                bool                        firstSearch );
+    unsigned int GetWriteBlockSize(void);
 
-    CompletionStatus FindNext( radFileDirHandle* pHandle, IRadDrive::DirectoryInfo* pDirectoryInfo );
+    unsigned int GetWriteHeaderSize(radFileHandle handle);
 
-    CompletionStatus FindClose( radFileDirHandle* pHandle );
+    CompletionStatus DestroyFile(const char *fileName);
+
+    CompletionStatus Format(void);
+
+    CompletionStatus FindFirst(const char *searchSpec,
+                               IRadDrive::DirectoryInfo *pDirectoryInfo,
+                               radFileDirHandle *pHandle,
+                               bool firstSearch);
+
+    CompletionStatus FindNext(radFileDirHandle *pHandle, IRadDrive::DirectoryInfo *pDirectoryInfo);
+
+    CompletionStatus FindClose(radFileDirHandle *pHandle);
 
     IMPLEMENT_SIGNED_READ;
+
     IMPLEMENT_SIGNED_WRITE;
 
 private:
     //
     // Helper functions.
     //
-    void SetMediaInfo( void );
-    bool GetPort( int* port, int* slot );
-    bool DeleteFiles( const char* subDir, int port, int slot );
-    void BuildFileSpec( const char* fileName, char* fullName, unsigned int size, char** pName );
-    int WaitForResult( void );
-    bool SyncFunction( int result );
-    bool ProcessError( int result );
-    bool Open( radFileHandle* pHandle, unsigned int* pSize, char* pName, int port, int slot, int mode, bool create );
-    bool CreateIcons( radMemcardInfo* memcardInfo, char* pName, int port, int slot );
-    bool ReadIcons( radMemcardInfo* memcardInfo, char* pName, int port, int slot );
+    void SetMediaInfo(void);
 
-    char    m_DriveName[ sizeof( s_PS2MemcardDrive ) + 1 ];
+    bool GetPort(int *port, int *slot);
+
+    bool DeleteFiles(const char *subDir, int port, int slot);
+
+    void BuildFileSpec(const char *fileName, char *fullName, unsigned int size, char **pName);
+
+    int WaitForResult(void);
+
+    bool SyncFunction(int result);
+
+    bool ProcessError(int result);
+
+    bool
+    Open(radFileHandle *pHandle, unsigned int *pSize, char *pName, int port, int slot, int mode,
+         bool create);
+
+    bool CreateIcons(radMemcardInfo *memcardInfo, char *pName, int port, int slot);
+
+    bool ReadIcons(radMemcardInfo *memcardInfo, char *pName, int port, int slot);
+
+    char m_DriveName[sizeof(s_PS2MemcardDrive) + 1];
 
     //
     // Need to keep the directory info block aligned to 64. 
     //
-    unsigned char     m_DirSpace[ sizeof( sceMcTblGetDir ) + PS2MEMCARDDRIVE_TABLE_ALIGN ];
-    sceMcTblGetDir*   m_pDirInfo;    
-    radFileDirHandle* m_pDirHandle; // cache who did a find last
+    unsigned char m_DirSpace[sizeof(sceMcTblGetDir) + PS2MEMCARDDRIVE_TABLE_ALIGN];
+    sceMcTblGetDir *m_pDirInfo;
+    radFileDirHandle *m_pDirHandle; // cache who did a find last
 
     unsigned int m_OpenFiles;
-    bool         m_CardChanged;
+    bool m_CardChanged;
 
     //
     // Helper function for block caching.
     //
-    bool LoadBlock( radFileHandle handle, unsigned int block );
-    bool FlushBlock( void );
-    unsigned int GetTableSize( unsigned int fileSize );
-    radCrc CalculateCRC( unsigned int fileSize );
-    bool GetSizeFromHandle( radFileHandle handle, unsigned int* size );
-    bool InitializeFile( radFileHandle handle, unsigned int size );
+    bool LoadBlock(radFileHandle handle, unsigned int block);
+
+    bool FlushBlock(void);
+
+    unsigned int GetTableSize(unsigned int fileSize);
+
+    radCrc CalculateCRC(unsigned int fileSize);
+
+    bool GetSizeFromHandle(radFileHandle handle, unsigned int *size);
+
+    bool InitializeFile(radFileHandle handle, unsigned int size);
 };
 
 #endif // PS2MEMCARDDDRIVE_HPP

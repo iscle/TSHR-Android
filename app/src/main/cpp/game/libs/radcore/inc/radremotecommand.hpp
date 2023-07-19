@@ -23,8 +23,8 @@
 // Build Configuration Check
 //=============================================================================
 
-#if !defined(RAD_DEBUG) && !defined(RAD_TUNE) && !defined(RAD_RELEASE) 
-    #error 'FTech requires definition of RAD_DEBUG, RAD_TUNE, or RAD_RELEASE'
+#if !defined(RAD_DEBUG) && !defined(RAD_TUNE) && !defined(RAD_RELEASE)
+#error 'FTech requires definition of RAD_DEBUG, RAD_TUNE, or RAD_RELEASE'
 #endif
 
 //=============================================================================
@@ -50,13 +50,12 @@ struct IRadRemoteCommand;
 // for example, use the userData argument to determine which instance of a class
 // must react to the function call.
 //
-enum HrcsResultCode
-{
-	HrcsSuccess,
-	HrcsFail
+enum HrcsResultCode {
+    HrcsSuccess,
+    HrcsFail
 };
 
-typedef HrcsResultCode (*RemoteFunction)( int argc, char* argv[], void* userData );
+typedef HrcsResultCode (*RemoteFunction)(int argc, char *argv[], void *userData);
 
 //=============================================================================
 // Functions
@@ -68,32 +67,33 @@ typedef HrcsResultCode (*RemoteFunction)( int argc, char* argv[], void* userData
 // should use the inline definitions of these functions as they compile to nothing
 // in a release build. 	
 // 
-void radRemoteCommandInitialize( radMemoryAllocator alloc );
-void radRemoteCommandTerminate( void );
+void radRemoteCommandInitialize(radMemoryAllocator alloc);
+
+void radRemoteCommandTerminate(void);
 
 //
 // Use this member to obtain the iterface to the remote functions. The inlines defintions
 // should normally be used. If you hold the pointer returned, remember to add ref it. 
 //
-IRadRemoteCommand* radRemoteCommandGet( void );
+IRadRemoteCommand *radRemoteCommandGet(void);
 
 //=============================================================================
 // Interface: bIRemoteCommmand
 //=============================================================================
 
-struct IRadRemoteCommand : public IRefCount
-{
-	//
-	// The functionName will be used for identification purposes.
-	// The UserData will be stored witht the function pointer and passed to the 
-	// function when the function is called.
-	//
-	virtual void RegisterRemoteFunction( char* functionName, RemoteFunction rfptr, void* userData ) = 0;
-	
-	//
-	// This is self-explanatory.  Clients are responsible for UnRegistering
-	//
-	virtual void UnRegisterRemoteFunction( char* functionName ) = 0;
+struct IRadRemoteCommand : public IRefCount {
+    //
+    // The functionName will be used for identification purposes.
+    // The UserData will be stored witht the function pointer and passed to the
+    // function when the function is called.
+    //
+    virtual void
+    RegisterRemoteFunction(char *functionName, RemoteFunction rfptr, void *userData) = 0;
+
+    //
+    // This is self-explanatory.  Clients are responsible for UnRegistering
+    //
+    virtual void UnRegisterRemoteFunction(char *functionName) = 0;
 };
 
 
@@ -110,10 +110,9 @@ struct IRadRemoteCommand : public IRefCount
 // Inline Function:    RcsRemoteCommandInitialize
 //=============================================================================
 
-inline void RcsRemoteCommandInitialize( radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT )
-{
+inline void RcsRemoteCommandInitialize(radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT) {
 #ifdef RAD_DEBUG
-    radRemoteCommandInitialize( alloc );    
+    radRemoteCommandInitialize(alloc);
 #else
     (void) alloc;
 #endif
@@ -123,10 +122,9 @@ inline void RcsRemoteCommandInitialize( radMemoryAllocator alloc = RADMEMORY_ALL
 // Inline Function:    RcsRemoteCommandTerminate
 //=============================================================================
 
-inline void RcsRemoteCommandTerminate( void )
-{
+inline void RcsRemoteCommandTerminate(void) {
 #ifdef RAD_DEBUG
-    radRemoteCommandTerminate( );
+    radRemoteCommandTerminate();
 #endif
 }
 
@@ -135,14 +133,13 @@ inline void RcsRemoteCommandTerminate( void )
 //
 // Description: Inline function function for registering remote functions
 //=============================================================================
-inline void RcsRegisterRemoteFunction( char* functionName, RemoteFunction rfptr, void* userData )
-{
+inline void RcsRegisterRemoteFunction(char *functionName, RemoteFunction rfptr, void *userData) {
 #ifdef RAD_DEBUG
-    radRemoteCommandGet( )->RegisterRemoteFunction( functionName, rfptr, userData );
+    radRemoteCommandGet()->RegisterRemoteFunction(functionName, rfptr, userData);
 #else
-	(void) functionName;
-	(void) rfptr;
-	(void) userData;
+    (void) functionName;
+    (void) rfptr;
+    (void) userData;
 #endif
 }
 
@@ -151,13 +148,12 @@ inline void RcsRegisterRemoteFunction( char* functionName, RemoteFunction rfptr,
 //
 // Description: Inline function function for unregistering remote functions
 //=============================================================================
-inline void RcsUnRegisterRemoteFunction( char* functionName )
-{
+inline void RcsUnRegisterRemoteFunction(char *functionName) {
 #ifdef RAD_DEBUG
-	radRemoteCommandGet( )->UnRegisterRemoteFunction( functionName );
+    radRemoteCommandGet()->UnRegisterRemoteFunction(functionName);
 #else
-	(void) functionName;
-#endif 
+    (void) functionName;
+#endif
 }
 
 #endif

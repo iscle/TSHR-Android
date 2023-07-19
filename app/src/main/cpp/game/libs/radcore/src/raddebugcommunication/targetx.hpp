@@ -18,7 +18,7 @@
 //
 //=============================================================================
 
-#ifndef	TARGET_HPP
+#ifndef    TARGET_HPP
 #define TARGET_HPP
 
 //=============================================================================
@@ -35,10 +35,10 @@
 
 #ifdef RAD_WIN32
 #include <windows.h>
-#endif 
+#endif
 #ifdef RAD_XBOX
 #include <xtl.h>
-#endif 
+#endif
 
 #include "protocol.hpp"
 #include "socket.hpp"
@@ -48,13 +48,14 @@
 //=============================================================================
 
 class rDbgComTargetConnection;
+
 class rDbgComSocketTargetChannel;
 
 //=============================================================================
 // Defintions
 //=============================================================================
 
-#if defined( RAD_PS2) || defined( RAD_GAMECUBE )
+#if defined(RAD_PS2) || defined(RAD_GAMECUBE)
 #define SOCKET int
 #endif
 
@@ -63,20 +64,18 @@ class rDbgComSocketTargetChannel;
 // is only used when we are using sockets on the target as opposed to 
 // the DECI system.
 //
-struct ProtocolInfoEntry
-{
-    enum State
-    {
+struct ProtocolInfoEntry {
+    enum State {
         Free,                   // Entry, free
         ChannelPending,         // Protocol valid, target channel valid, computer name invalid
         ConnectionPending,      // Protocol valid, connection valid, computer name valid.
         Connected               // Protocol valid, name valid.
     };
-    State                       m_State;
-    unsigned short              m_Protocol;
-    char                        m_HostComputerName[ MaxComputerName + 1 ];
-    rDbgComTargetConnection*    m_pConnection;      
-    rDbgComSocketTargetChannel* m_pChannel;
+    State m_State;
+    unsigned short m_Protocol;
+    char m_HostComputerName[MaxComputerName + 1];
+    rDbgComTargetConnection *m_pConnection;
+    rDbgComSocketTargetChannel *m_pChannel;
 };
 
 //=============================================================================
@@ -89,105 +88,111 @@ struct ProtocolInfoEntry
 //
 class rDbgComTarget : public IRadTimerCallback,
                       public radObject,
-                      public IRadThreadMutex
-{
-    public:
+                      public IRadThreadMutex {
+public:
 
     //
     // Constructor. Nothing too interesting.
     //
-    rDbgComTarget( void );
+    rDbgComTarget(void);
 
     //
     // Destruction done through release.
     //
-    ~rDbgComTarget( void );
+    ~rDbgComTarget(void);
 
 
-    void Initialize( radDbgComType targetType, unsigned short port, void* InitInfo, radMemoryAllocator alloc );
-    void Terminate( void );
-    void CreateChannel( unsigned short protocol, IRadDbgComChannel** ppChannel, radMemoryAllocator alloc );
-    void Service( void );
+    void Initialize(radDbgComType targetType, unsigned short port, void *InitInfo,
+                    radMemoryAllocator alloc);
+
+    void Terminate(void);
+
+    void
+    CreateChannel(unsigned short protocol, IRadDbgComChannel **ppChannel, radMemoryAllocator alloc);
+
+    void Service(void);
 
     //
     // Members implemented for the timer event handler
     //
-    virtual void OnTimerDone( unsigned int elapsedtime, void* pUserData );
+    virtual void OnTimerDone(unsigned int elapsedtime, void *pUserData);
 
     //
     // lock/unlock the mutex
     //
-    virtual void Lock( );
+    virtual void Lock();
 
-    virtual void Unlock( );
+    virtual void Unlock();
 
-    #ifdef RAD_DEBUG
-    virtual void Dump( char* pStringBuffer, unsigned int bufferSize );
-    #endif
+#ifdef RAD_DEBUG
+    virtual void Dump(char* pStringBuffer, unsigned int bufferSize);
+#endif
 
     //
     // Member functions implemented for IRefCount
     //
-    virtual void AddRef( void );
-    virtual void Release( void );
+    virtual void AddRef(void);
+
+    virtual void Release(void);
 
     //  
     // Members to assist in managing protocol information.
     //
-    ProtocolInfoEntry* FindProtocol( unsigned short protocol );
-    ProtocolInfoEntry* FindFreeProtocol( void );
+    ProtocolInfoEntry *FindProtocol(unsigned short protocol);
+
+    ProtocolInfoEntry *FindFreeProtocol(void);
 
     //
     // This member our local dispatcher.
     //
-    IRadDispatcher*         m_Dispatcher;
-    IRadTimerList*          m_TimerList;
+    IRadDispatcher *m_Dispatcher;
+    IRadTimerList *m_TimerList;
 
-    private:
-    
+private:
+
     //
     // This member maintains the reference count of this object.
     //
-    unsigned int m_ReferenceCount;    
+    unsigned int m_ReferenceCount;
 
     //
     // Maintains current target type and port.
     //
-    radDbgComType   m_TargetType;
-    unsigned short  m_Port;
+    radDbgComType m_TargetType;
+    unsigned short m_Port;
 
     //
     // The remaining members are used when we are initialized using
     // sockets. We use these to emulate behavior similar to that done
     // by the PS2 Deci System.
-  
+
     //
     // Holds the socket we use to listen for connections on.
     //
-    SOCKET                  m_ListeningSocket;
+    SOCKET m_ListeningSocket;
 
     //
     // This timer is used for check for socket events.
     //
-    IRadTimer*              m_Timer;
+    IRadTimer *m_Timer;
 
     //
     // Used for memory management;
     //
-    radMemoryAllocator      m_Allocator;
+    radMemoryAllocator m_Allocator;
 
     //
     // This data structure is used to manage allocated protocols on this target. If is
     // manipulated by both connection and channel objects.
     //
-    ProtocolInfoEntry       m_ProtocolTable[ MaxProtocols ];
+    ProtocolInfoEntry m_ProtocolTable[MaxProtocols];
 
     //
     // This member holds our socket implementation abstraction.
     //
-    public:
-    struct radSocket*     m_SocketImp;
-     
+public:
+    struct radSocket *m_SocketImp;
+
 };
 
 #endif

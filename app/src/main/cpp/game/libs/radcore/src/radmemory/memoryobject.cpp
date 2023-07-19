@@ -58,21 +58,21 @@
 //------------------------------------------------------------------------------
 
 MemoryObject::MemoryObject
-(
-	unsigned int    size,
-	void*           memoryAddress,
-	IRadMemoryHeap* pMemoryHeap
-)
-    :
-		m_Size( size ),
-		m_MemoryAddress( memoryAddress ),
-		m_MemoryHeap( pMemoryHeap ),
-        m_ReferenceCount( 1 )                  // Initial reference count
+        (
+                unsigned int size,
+                void *memoryAddress,
+                IRadMemoryHeap *pMemoryHeap
+        )
+        :
+        m_Size(size),
+        m_MemoryAddress(memoryAddress),
+        m_MemoryHeap(pMemoryHeap),
+        m_ReferenceCount(1)                  // Initial reference count
 {
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "MemoryObject" );
-	rAssert( size > 0 );
-	rAssert( memoryAddress != NULL );
-	rAssert( pMemoryHeap != NULL );
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "MemoryObject");
+    rAssert(size > 0);
+    rAssert(memoryAddress != NULL);
+    rAssert(pMemoryHeap != NULL);
 }
 
 //=============================================================================
@@ -91,14 +91,13 @@ MemoryObject::MemoryObject
 // Notes:
 //------------------------------------------------------------------------------
 
-void* MemoryObject::GetMemoryAddress
-( 
-	void 
-)
-{
-	return( m_MemoryAddress );
+void *MemoryObject::GetMemoryAddress
+        (
+                void
+        ) {
+    return (m_MemoryAddress);
 }
-    
+
 //=============================================================================
 // Function:    MemoryObject::GetMemorySize
 //=============================================================================
@@ -113,11 +112,10 @@ void* MemoryObject::GetMemoryAddress
 //------------------------------------------------------------------------------
 
 unsigned int MemoryObject::GetMemorySize
-( 
-	void 
-)
-{
-	return( m_Size );
+        (
+                void
+        ) {
+    return (m_Size);
 }
 
 //=============================================================================
@@ -135,10 +133,9 @@ unsigned int MemoryObject::GetMemorySize
 //------------------------------------------------------------------------------
 
 void MemoryObject::AddRef
-( 
-	void 
-)
-{
+        (
+                void
+        ) {
     m_ReferenceCount++;
 }
 
@@ -155,10 +152,9 @@ void MemoryObject::AddRef
 //------------------------------------------------------------------------------
 
 MemoryObject::~MemoryObject
-(
-)
-{
-	rAssert( m_ReferenceCount == 0 );
+        (
+        ) {
+    rAssert(m_ReferenceCount == 0);
 }
 
 //=============================================================================
@@ -175,24 +171,22 @@ MemoryObject::~MemoryObject
 //------------------------------------------------------------------------------
 
 void MemoryObject::Release
-( 
-	void 
-)   
-{
+        (
+                void
+        ) {
     // Decrement the reference count. If zero, delete the object.
-	rAssert( m_ReferenceCount != 0 );
+    rAssert(m_ReferenceCount != 0);
     m_ReferenceCount--;
-        
-    if( m_ReferenceCount == 0 )
-    {
-		// Save pointer to parent heap
-		IRadMemoryHeap* memoryHeap = m_MemoryHeap;
 
-		// Destruct this object
-		this->~MemoryObject( );
+    if (m_ReferenceCount == 0) {
+        // Save pointer to parent heap
+        IRadMemoryHeap *memoryHeap = m_MemoryHeap;
 
-		// Free memory associated with this object
-		memoryHeap->FreeMemory( this );
+        // Destruct this object
+        this->~MemoryObject();
+
+        // Free memory associated with this object
+        memoryHeap->FreeMemory(this);
     }
 }
 

@@ -12,7 +12,7 @@
 //
 //=============================================================================
 
-#ifndef	RAD1394QPNP_H
+#ifndef    RAD1394QPNP_H
 #define RAD1394QPNP_H
 
 //=============================================================================
@@ -27,7 +27,9 @@
 // Public Funcitons
 //=============================================================================
 
-NTSTATUS rad1394_PnpAddDevice( IN PDRIVER_OBJECT DriverObject, IN PDEVICE_OBJECT PhysicalDeviceObject );
-NTSTATUS rad1394_Pnp( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp );
+NTSTATUS
+rad1394_PnpAddDevice(IN PDRIVER_OBJECT DriverObject, IN PDEVICE_OBJECT PhysicalDeviceObject);
+
+NTSTATUS rad1394_Pnp(IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp);
 
 #endif

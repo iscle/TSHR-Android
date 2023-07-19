@@ -30,29 +30,27 @@
 // radMemoryTwoWayAllocator::radMemoryTwoWayAllocator
 //=============================================================================
 
-radMemoryTwoWayAllocator::radMemoryTwoWayAllocator( void )
-    :
-    radRefCount( 0 ),
-    m_pTop( NULL ),
-    m_pBottom( NULL ),
-    m_pCurrentTop( NULL ),
-    m_pCurrentBottom( NULL ),
-    m_NumTopAllocations( NULL ),
-    m_NumBottomAllocations( NULL ),
-    m_Direction( IRadMemoryTwoWayAllocator::TopDown )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radMemoryTwoWayAllocator" );    
+radMemoryTwoWayAllocator::radMemoryTwoWayAllocator(void)
+        :
+        radRefCount(0),
+        m_pTop(NULL),
+        m_pBottom(NULL),
+        m_pCurrentTop(NULL),
+        m_pCurrentBottom(NULL),
+        m_NumTopAllocations(NULL),
+        m_NumBottomAllocations(NULL),
+        m_Direction(IRadMemoryTwoWayAllocator::TopDown) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radMemoryTwoWayAllocator");
 }
 
 //=============================================================================
 // radMemoryTwoWayAllocator::~radMemoryTwoWayAllocator
 //=============================================================================
 
-radMemoryTwoWayAllocator::~radMemoryTwoWayAllocator( void )
-{
-    rAssert( m_NumTopAllocations == 0 && m_NumBottomAllocations == 0 );
+radMemoryTwoWayAllocator::~radMemoryTwoWayAllocator(void) {
+    rAssert(m_NumTopAllocations == 0 && m_NumBottomAllocations == 0);
 
-    ::radMemoryFree( m_pTop );   
+    ::radMemoryFree(m_pTop);
     m_pTop = NULL;
     m_pBottom = NULL;
     m_pCurrentTop = NULL;
@@ -63,18 +61,17 @@ radMemoryTwoWayAllocator::~radMemoryTwoWayAllocator( void )
 // radMemoryTwoWayAllocator::Initialize
 //=============================================================================
 
-void radMemoryTwoWayAllocator::Initialize( unsigned int size )
-{
-    rAssert( m_pTop == NULL );
+void radMemoryTwoWayAllocator::Initialize(unsigned int size) {
+    rAssert(m_pTop == NULL);
 
     // Allocate some memory to work with
 
-    m_pTop = ( char * ) ::radMemoryAlloc( GetThisAllocator( ), size );
+    m_pTop = (char *) ::radMemoryAlloc(GetThisAllocator(), size);
 
     // Identify the allocation
 
     radMemoryMonitorIdentifyAllocation(
-        m_pTop, g_nameFTech, "radMemoryTwoWayAllocator footprint", NULL, radMemorySpace_Local );
+            m_pTop, g_nameFTech, "radMemoryTwoWayAllocator footprint", NULL, radMemorySpace_Local);
 
     // Initialize members
 
@@ -87,62 +84,56 @@ void radMemoryTwoWayAllocator::Initialize( unsigned int size )
 // radMemoryTwoWayAllocator::GetMemory
 //=============================================================================
 
-void * radMemoryTwoWayAllocator::GetMemory( unsigned int size )
-{
-    return InternalAllocate( size, STANDARD_ALIGNMENT );
+void *radMemoryTwoWayAllocator::GetMemory(unsigned int size) {
+    return InternalAllocate(size, STANDARD_ALIGNMENT);
 }
 
 //=============================================================================
 // radMemoryTwoWayAllocator::FreeMemory
 //=============================================================================
 
-void radMemoryTwoWayAllocator::FreeMemory( void * pMemory )
-{
-    InternalFree( pMemory );
+void radMemoryTwoWayAllocator::FreeMemory(void *pMemory) {
+    InternalFree(pMemory);
 }
 
 //=============================================================================
 // radMemoryTwoWayAllocator::CanFreeMemory 
 //=============================================================================
 
-bool radMemoryTwoWayAllocator::CanFreeMemory( void * pMemory )
-{
-    return InternalCanFree( pMemory ); 
+bool radMemoryTwoWayAllocator::CanFreeMemory(void *pMemory) {
+    return InternalCanFree(pMemory);
 }
 
 //=============================================================================
 // radMemoryTwoWayAllocator::GetMemoryAligned
 //=============================================================================
 
-void * radMemoryTwoWayAllocator::GetMemoryAligned( unsigned int size, unsigned int alignment )
-{
-    return InternalAllocate( size, ( alignment > STANDARD_ALIGNMENT ) ? alignment : STANDARD_ALIGNMENT );
+void *radMemoryTwoWayAllocator::GetMemoryAligned(unsigned int size, unsigned int alignment) {
+    return InternalAllocate(size,
+                            (alignment > STANDARD_ALIGNMENT) ? alignment : STANDARD_ALIGNMENT);
 }
 
 //=============================================================================
 // radMemoryTwoWayAllocator::FreeMemoryAligned 
 //=============================================================================
 
-void radMemoryTwoWayAllocator::FreeMemoryAligned( void * pMemory )
-{
-    InternalFree( pMemory );
+void radMemoryTwoWayAllocator::FreeMemoryAligned(void *pMemory) {
+    InternalFree(pMemory);
 }
 
 //=============================================================================
 // radMemoryTwoWayAllocator::CanFreeMemoryAligned
 //=============================================================================
 
-bool radMemoryTwoWayAllocator::CanFreeMemoryAligned( void * pMemory )
-{
-    return InternalCanFree( pMemory );
+bool radMemoryTwoWayAllocator::CanFreeMemoryAligned(void *pMemory) {
+    return InternalCanFree(pMemory);
 }
 
 //=============================================================================
 // radMemoryTwoWayAllocator::SetDirection
 //=============================================================================
 
-void radMemoryTwoWayAllocator::SetDirection( Direction direction )
-{
+void radMemoryTwoWayAllocator::SetDirection(Direction direction) {
     m_Direction = direction;
 }
 
@@ -150,8 +141,7 @@ void radMemoryTwoWayAllocator::SetDirection( Direction direction )
 // radMemoryTwoWayAllocator::GetDirection
 //=============================================================================
 
-IRadMemoryTwoWayAllocator::Direction radMemoryTwoWayAllocator::GetDirection( void )
-{
+IRadMemoryTwoWayAllocator::Direction radMemoryTwoWayAllocator::GetDirection(void) {
     return m_Direction;
 }
 
@@ -159,18 +149,14 @@ IRadMemoryTwoWayAllocator::Direction radMemoryTwoWayAllocator::GetDirection( voi
 // radMemoryTwoWayAllocator::Reset
 //=============================================================================
 
-void radMemoryTwoWayAllocator::Reset( Direction direction )
-{
-    if( direction == TopDown )
-    {   
-        rAssert( m_NumTopAllocations == 0 );
+void radMemoryTwoWayAllocator::Reset(Direction direction) {
+    if (direction == TopDown) {
+        rAssert(m_NumTopAllocations == 0);
 
         m_pCurrentTop = m_pTop;
         m_NumTopAllocations = 0;
-    }
-    else
-    {
-        rAssert( m_NumBottomAllocations == 0 );
+    } else {
+        rAssert(m_NumBottomAllocations == 0);
 
         m_pCurrentBottom = m_pBottom;
         m_NumBottomAllocations = 0;
@@ -182,21 +168,21 @@ void radMemoryTwoWayAllocator::Reset( Direction direction )
 //=============================================================================
 
 void radMemoryTwoWayAllocatorCreate
-( 
-    IRadMemoryTwoWayAllocator** ppTwoWayAllocator, 
-    unsigned int size,
-    radMemoryAllocator allocator,
-    const char * pName
-)
-{
-    radMemoryTwoWayAllocator * pRadMemoryTwoWayAllocator = new( allocator )radMemoryTwoWayAllocator( );
-    rAssert( pRadMemoryTwoWayAllocator != NULL );
+        (
+                IRadMemoryTwoWayAllocator **ppTwoWayAllocator,
+                unsigned int size,
+                radMemoryAllocator allocator,
+                const char *pName
+        ) {
+    radMemoryTwoWayAllocator *pRadMemoryTwoWayAllocator = new(allocator)radMemoryTwoWayAllocator();
+    rAssert(pRadMemoryTwoWayAllocator != NULL);
 
     radMemoryMonitorIdentifyAllocation(
-        pRadMemoryTwoWayAllocator, g_nameFTech, "radMemoryTwoWayAllocator", NULL, radMemorySpace_Local );
-    radAddRef( pRadMemoryTwoWayAllocator, ppTwoWayAllocator );
+            pRadMemoryTwoWayAllocator, g_nameFTech, "radMemoryTwoWayAllocator", NULL,
+            radMemorySpace_Local);
+    radAddRef(pRadMemoryTwoWayAllocator, ppTwoWayAllocator);
 
-    pRadMemoryTwoWayAllocator->Initialize( size );
+    pRadMemoryTwoWayAllocator->Initialize(size);
 
-    * ppTwoWayAllocator = pRadMemoryTwoWayAllocator;
+    *ppTwoWayAllocator = pRadMemoryTwoWayAllocator;
 }

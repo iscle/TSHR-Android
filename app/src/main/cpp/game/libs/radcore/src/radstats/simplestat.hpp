@@ -30,7 +30,7 @@
 // Compare function for use with qsort.
 // It won't work if it is a member of the class.
 //
-int FloatCompare( const void* arg1, const void* arg2 );
+int FloatCompare(const void *arg1, const void *arg2);
 
 
 //===========================================================================
@@ -50,55 +50,67 @@ int FloatCompare( const void* arg1, const void* arg2 );
 //===========================================================================
 
 class radSimpleStatistic : public IRadSimpleStatistic,
-                           public radObject
-{
-    public:
+                           public radObject {
+public:
 
     //
     // Constructor. 
     //
-    radSimpleStatistic( void );
-    radSimpleStatistic( unsigned int bufferSize );
+    radSimpleStatistic(void);
+
+    radSimpleStatistic(unsigned int bufferSize);
 
     //
     // Destructor.
     // The destructor is public because the stats mananger needs to
     // create and delete arrays of these objects.
     //
-    ~radSimpleStatistic( void );
+    ~radSimpleStatistic(void);
 
     //
     // IRefCount stuff.
     //
-    virtual void AddRef( void );
-    virtual void Release( void );
+    virtual void AddRef(void);
+
+    virtual void Release(void);
 
     //
     // Reset and resize method.
     //
-    virtual void Reset( void );
-    virtual void Reset( unsigned int bufferSize );
+    virtual void Reset(void);
+
+    virtual void Reset(unsigned int bufferSize);
 
     //
     // IRadSimpleStatistic stuff.
     //
-    virtual void SetName( const char* name );
-    virtual void GetName( char* pName ) const;
-    virtual void AddSample( float sample );
-    virtual void AddSample( int sample );
-    virtual float GetTotal( void ) const;
-    virtual unsigned int GetNumSamples( void ) const;
-    virtual float GetMax( void ) const;
-    virtual float GetMin( void ) const;
-    virtual float GetMean( void );
-    virtual float GetStandardDeviation( void );
-    virtual float GetPercentile( unsigned int percent );
+    virtual void SetName(const char *name);
 
-    #ifdef RAD_DEBUG
-    virtual void Dump( char * pStringBuffer, unsigned int bufferSize );
-    #endif
+    virtual void GetName(char *pName) const;
 
-    private:
+    virtual void AddSample(float sample);
+
+    virtual void AddSample(int sample);
+
+    virtual float GetTotal(void) const;
+
+    virtual unsigned int GetNumSamples(void) const;
+
+    virtual float GetMax(void) const;
+
+    virtual float GetMin(void) const;
+
+    virtual float GetMean(void);
+
+    virtual float GetStandardDeviation(void);
+
+    virtual float GetPercentile(unsigned int percent);
+
+#ifdef RAD_DEBUG
+    virtual void Dump(char * pStringBuffer, unsigned int bufferSize);
+#endif
+
+private:
 
     //
     // Reference counting member.
@@ -108,14 +120,14 @@ class radSimpleStatistic : public IRadSimpleStatistic,
     //
     // Register name.
     //
-    char m_Name[ 256 ];
+    char m_Name[256];
 
     // 
     // Source data.
     // These items are updated each time a new sample is added.
     //
-    float* m_Samples;          // Sample history buffer.
-    float* m_SortedSamples;    // Sorted sample data.
+    float *m_Samples;          // Sample history buffer.
+    float *m_SortedSamples;    // Sorted sample data.
     unsigned int m_BufferSize; // Size of buffer.
     unsigned int m_NextIndex;  // Next available slot in buffer.
     unsigned int m_BufferFill; // Number of slots used in the buffer.

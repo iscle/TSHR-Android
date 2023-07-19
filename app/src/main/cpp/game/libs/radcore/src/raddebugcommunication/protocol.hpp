@@ -20,7 +20,7 @@
 //
 //=============================================================================
 
-#ifndef	PROTOCOL_HPP
+#ifndef    PROTOCOL_HPP
 #define PROTOCOL_HPP
 
 //=============================================================================
@@ -59,8 +59,7 @@ const unsigned int rDbgComMaxDataPacketSize = 31 * 1024;
 //
 // This enumeration is used to define the packet idenifiers used in our protocol,
 //
-enum rDbgComCommand
-{
+enum rDbgComCommand {
     CmdConnectRequest,                     // Indentifies a connect request packet
     CmdConnectReply,                       // Identifies a connent reply packet
     CmdReconnect,                          // Reconnect
@@ -71,36 +70,31 @@ enum rDbgComCommand
 //
 // Packet defintions
 //
-struct rDbgComConnectRequestPacket
-{
-    rDbgComCommand  m_Command;
-};
-   
-struct rDbgComConnectReplyPacket
-{
-    rDbgComCommand  m_Command;
+struct rDbgComConnectRequestPacket {
+    rDbgComCommand m_Command;
 };
 
-struct rDbgComReconnectPacket
-{
-    rDbgComCommand  m_Command;
+struct rDbgComConnectReplyPacket {
+    rDbgComCommand m_Command;
 };
 
-struct rDbgComDisconnectRequestPacket
-{
-    rDbgComCommand  m_Command;
+struct rDbgComReconnectPacket {
+    rDbgComCommand m_Command;
+};
+
+struct rDbgComDisconnectRequestPacket {
+    rDbgComCommand m_Command;
 };
 
 
 //
 // Data packet defintion
 //
-struct rDbgComDataPacket
-{
-    rDbgComCommand  m_Command;
-    unsigned int    m_DataSize;         // Actual amount of data
-    unsigned char   m_Data[ rDbgComMaxDataPacketSize ];
-};     
+struct rDbgComDataPacket {
+    rDbgComCommand m_Command;
+    unsigned int m_DataSize;         // Actual amount of data
+    unsigned char m_Data[rDbgComMaxDataPacketSize];
+};
 
 #endif
 

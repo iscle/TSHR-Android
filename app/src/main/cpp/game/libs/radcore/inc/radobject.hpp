@@ -9,7 +9,7 @@
 //
 // Subsystem:	Foundation Technologies - Reference Count Inteface
 //                                      - RadObject
-//                                      - ref (smart pointer template ).
+//                                      - ref (smart pointer template).
 //
 // Description:	This file contains interface definitions associated with 
 //              reference counting. It also provided a bass class definition
@@ -21,7 +21,7 @@
 //
 //=============================================================================
 
-#ifndef	RADOBJECT_HPP
+#ifndef    RADOBJECT_HPP
 #define RADOBJECT_HPP
 
 #include <memory/classsizetracker.h>
@@ -31,14 +31,14 @@
 //=============================================================================
 
 #if !defined(RAD_GAMECUBE) && !defined(RAD_PS2) && !defined(RAD_XBOX) && !defined(RAD_WIN32)
-    #error 'FTech requires definition of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, or RAD_WIN32'
+#error 'FTech requires definition of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, or RAD_WIN32'
 #endif
-#if !defined(RAD_DEBUG) && !defined(RAD_TUNE) && !defined(RAD_RELEASE) 
-    #error 'FTech requires definition of RAD_DEBUG, RAD_TUNE, or RAD_RELEASE'
+#if !defined(RAD_DEBUG) && !defined(RAD_TUNE) && !defined(RAD_RELEASE)
+#error 'FTech requires definition of RAD_DEBUG, RAD_TUNE, or RAD_RELEASE'
 #endif
 
 #if defined (RAD_WIN32) || defined (RAD_XBOX)
-#pragma warning ( disable : 4291 )      // Get rid of delete warning
+#pragma warning (disable : 4291)      // Get rid of delete warning
 #endif
 
 //=============================================================================
@@ -56,21 +56,25 @@ struct IRefCount;
 //
 // global name used to name all FTech objects.
 //
-extern const char * const g_nameFTech;
+extern const char *const g_nameFTech;
 
 typedef int radMemoryAllocator;
-extern void* radMemoryAlloc( radMemoryAllocator allocator, unsigned int numberOfBytes );
-extern void  radMemoryFree( radMemoryAllocator allocator, void* pMemory );
-extern void  radMemoryFree( void* pMemory );
+
+extern void *radMemoryAlloc(radMemoryAllocator allocator, unsigned int numberOfBytes);
+
+extern void radMemoryFree(radMemoryAllocator allocator, void *pMemory);
+
+extern void radMemoryFree(void *pMemory);
 
 #if defined RADMEMORYMONITOR
-extern void radMemoryMonitorIdentifyAllocationAdaptor( void * address, const char * group, const char * name, unsigned int* pReferenceCount );
-extern void radMemoryMonitorReportAddRefAdaptor( void* pReference, void* pObject );
-extern void radMemoryMonitorReportReleaseAdaptor( void* pReference, void* pObject );
+extern void radMemoryMonitorIdentifyAllocationAdaptor(void * address, const char * group, const char * name, unsigned int* pReferenceCount);
+extern void radMemoryMonitorReportAddRefAdaptor(void* pReference, void* pObject);
+extern void radMemoryMonitorReportReleaseAdaptor(void* pReference, void* pObject);
 #endif
 
-void radAddRef( IRefCount * pRefObject, void * pParentObject );
-void radRelease( IRefCount * pRefObject, void * pParentObject );
+void radAddRef(IRefCount *pRefObject, void *pParentObject);
+
+void radRelease(IRefCount *pRefObject, void *pParentObject);
 
 //=============================================================================
 // Intefaces
@@ -80,39 +84,38 @@ void radRelease( IRefCount * pRefObject, void * pParentObject );
 // This interface is defines the reference counting system. Implemented by 
 // most Foundation Tech Objects.
 //
-struct IRefCount 
-{
-    friend void radAddRef( IRefCount * pRefObject, void * pParentObject );
-    friend void radRelease( IRefCount * pRefObject, void * pParentObject );
+struct IRefCount {
+    friend void radAddRef(IRefCount *pRefObject, void *pParentObject);
+
+    friend void radRelease(IRefCount *pRefObject, void *pParentObject);
+
     //
     // Invoke this member anytime another object is given a pointer to this object.
     // Simply updates the reference count.
     //
-    virtual void AddRef( void ) = 0;
+    virtual void AddRef(void) = 0;
 
     //
     // This member should be used instead of delete. It will ensure correct management
     // of the objects lifetime.
     //
-    virtual void Release( void ) = 0;   
+    virtual void Release(void) = 0;
 };
 
-inline void radAddRef( IRefCount * pRefObject, void * pParentObject )
-{
+inline void radAddRef(IRefCount *pRefObject, void *pParentObject) {
 #if defined RADMEMORYMONITOR
-    radMemoryMonitorReportAddRefAdaptor( pParentObject, pRefObject );
+    radMemoryMonitorReportAddRefAdaptor(pParentObject, pRefObject);
 #endif
-    (void)pParentObject;
-    pRefObject->AddRef( );
+    (void) pParentObject;
+    pRefObject->AddRef();
 }
 
-inline void radRelease( IRefCount * pRefObject, void * pParentObject )
-{
+inline void radRelease(IRefCount *pRefObject, void *pParentObject) {
 #if defined RADMEMORYMONITOR
-    radMemoryMonitorReportReleaseAdaptor( const_cast< void *>( pParentObject ), pRefObject );
+    radMemoryMonitorReportReleaseAdaptor(const_cast<void *>(pParentObject), pRefObject);
 #endif
-    (void)pParentObject;
-    pRefObject->Release( );
+    (void) pParentObject;
+    pRefObject->Release();
 }
 
 //============================================================================
@@ -128,84 +131,83 @@ inline void radRelease( IRefCount * pRefObject, void * pParentObject )
 
 #ifdef RAD_DEBUG
 
-#define IMPLEMENT_REFCOUNTED_NOSIZE( pClassName ) \
-	virtual void AddRef( void ) { radRefCount::Implement_AddRef(); } \
-	virtual void Release( void ) { radRefCount::Implement_Release(); } \
-	virtual void Dump( char * pStringBuffer, unsigned int bufferSize ) { \
-					  sprintf( pStringBuffer, "Object: [%s] At Memory Location:[0x%x]\n", pClassName, (unsigned int) this ); \
-					  }
+#define IMPLEMENT_REFCOUNTED_NOSIZE(pClassName) \
+    virtual void AddRef(void) { radRefCount::Implement_AddRef(); } \
+    virtual void Release(void) { radRefCount::Implement_Release(); } \
+    virtual void Dump(char * pStringBuffer, unsigned int bufferSize) { \
+                      sprintf(pStringBuffer, "Object: [%s] At Memory Location:[0x%x]\n", pClassName, (unsigned int) this); \
+                      }
 
 
-#define IMPLEMENT_REFCOUNTED( pClassName ) \
-	virtual void AddRef( void ) { radRefCount::Implement_AddRef(); } \
-	virtual void Release( void ) { radRefCount::Implement_Release(); } \
-	virtual unsigned int GetObjectSize( void ) { return sizeof( *this); } \
-	virtual void Dump( char * pStringBuffer, unsigned int bufferSize ) { \
-					  sprintf( pStringBuffer, "Object: [%s] At Memory Location:[0x%x]\n", pClassName, (unsigned int) this ); \
-					  }
+#define IMPLEMENT_REFCOUNTED(pClassName) \
+    virtual void AddRef(void) { radRefCount::Implement_AddRef(); } \
+    virtual void Release(void) { radRefCount::Implement_Release(); } \
+    virtual unsigned int GetObjectSize(void) { return sizeof(*this); } \
+    virtual void Dump(char * pStringBuffer, unsigned int bufferSize) { \
+                      sprintf(pStringBuffer, "Object: [%s] At Memory Location:[0x%x]\n", pClassName, (unsigned int) this); \
+                      }
 
 
 
-#define IMPLEMENT_BASEOBJECT( pClassName ) virtual void Dump( char * pStringBuffer, unsigned int bufferSize ) { \
-                                                              sprintf( pStringBuffer, "Object: [%s] At Memory Location:[0x%x]\n", pClassName, (unsigned int) this ); \
+#define IMPLEMENT_BASEOBJECT(pClassName) virtual void Dump(char * pStringBuffer, unsigned int bufferSize) { \
+                                                              sprintf(pStringBuffer, "Object: [%s] At Memory Location:[0x%x]\n", pClassName, (unsigned int) this); \
                                                               } \
-										   virtual unsigned int GetObjectSize( void ) { return sizeof( *this); }
+                                           virtual unsigned int GetObjectSize(void) { return sizeof(*this); }
 #else
-#define IMPLEMENT_REFCOUNTED_NOSIZE( pClassName ) \
-	virtual void AddRef( void ) { radRefCount::Implement_AddRef(); } \
-	virtual void Release( void ) { radRefCount::Implement_Release(); }
+#define IMPLEMENT_REFCOUNTED_NOSIZE(pClassName) \
+    virtual void AddRef(void) { radRefCount::Implement_AddRef(); } \
+    virtual void Release(void) { radRefCount::Implement_Release(); }
 
-#define IMPLEMENT_REFCOUNTED( pClassName ) \
-	virtual void AddRef( void ) { radRefCount::Implement_AddRef(); } \
-	virtual void Release( void ) { radRefCount::Implement_Release(); }
+#define IMPLEMENT_REFCOUNTED(pClassName) \
+    virtual void AddRef(void) { radRefCount::Implement_AddRef(); } \
+    virtual void Release(void) { radRefCount::Implement_Release(); }
 
-#define IMPLEMENT_BASEOBJECT( pClassName )
+#define IMPLEMENT_BASEOBJECT(pClassName)
 #endif
 
 //============================================================================
 // Class: radBaseObject
 //============================================================================
 
-class radBaseObject
-{
-	public:
+class radBaseObject {
+public:
 
-		inline radBaseObject( void );
-		inline virtual ~radBaseObject( void );
+    inline radBaseObject(void);
 
-		#ifdef RAD_DEBUG
-			virtual unsigned int GetObjectSize( void );
-			virtual void Dump( char* pStringBuffer, unsigned int bufferSize );
-			static  void DumpObjects( void );
-		#endif
-		
-		#ifdef RAD_DEBUG
-			radBaseObject * m_pRadBaseObjectNext;
-			radBaseObject * m_pRadBaseObjectPrev;
-			static radBaseObject * s_pRadBaseObjectHead;
-		#endif
-		
-	private:
-			
-		void AddToList( void );
-		void RemoveFromList( void );
+    inline virtual ~radBaseObject(void);
+
+#ifdef RAD_DEBUG
+    virtual unsigned int GetObjectSize(void);
+    virtual void Dump(char* pStringBuffer, unsigned int bufferSize);
+    static  void DumpObjects(void);
+#endif
+
+#ifdef RAD_DEBUG
+    radBaseObject * m_pRadBaseObjectNext;
+    radBaseObject * m_pRadBaseObjectPrev;
+    static radBaseObject * s_pRadBaseObjectHead;
+#endif
+
+private:
+
+    void AddToList(void);
+
+    void RemoveFromList(void);
 };
 
-inline radBaseObject::radBaseObject( void )
-{
-    CLASSTRACKER_CREATE( radBaseObject );
-    #ifdef RAD_DEBUG
-		AddToList( );
-   
-	#endif	
+inline radBaseObject::radBaseObject(void) {
+    CLASSTRACKER_CREATE(radBaseObject);
+#ifdef RAD_DEBUG
+    AddToList();
+
+#endif
 };
 
-inline radBaseObject::~radBaseObject( void )
-{
-    CLASSTRACKER_DESTROY( radBaseObject );
-    #ifdef RAD_DEBUG
-		RemoveFromList( );
-    #endif
+inline radBaseObject::~radBaseObject(void) {
+    CLASSTRACKER_DESTROY(radBaseObject);
+#ifdef RAD_DEBUG
+    RemoveFromList();
+#endif
 }
 
 //============================================================================
@@ -213,92 +215,86 @@ inline radBaseObject::~radBaseObject( void )
 //============================================================================
 
 class radObject // This should be called radHeapObject
-	:
-	public radBaseObject
-{
-	public:
+        :
+                public radBaseObject {
+public:
 
-		inline radObject( void );
+    inline radObject(void);
 
-        inline virtual ~radObject ( void );
+    inline virtual ~radObject(void);
 
-        inline void* operator new( size_t size, void* p );
-      	inline void* operator new( size_t size, radMemoryAllocator allocator );
-        inline void* operator new[]( size_t size, void* p );	
-      	inline void* operator new[]( size_t size, radMemoryAllocator allocator );
-		inline void operator delete( void * pMemory );
-		inline void operator delete[]( void * pMemory );
+    inline void *operator new(size_t size, void *p);
 
-        inline radMemoryAllocator GetAllocator( void );
+    inline void *operator new(size_t size, radMemoryAllocator allocator);
 
-    protected:
+    inline void *operator new[](size_t size, void *p);
 
-        inline radMemoryAllocator GetThisAllocator( void );
+    inline void *operator new[](size_t size, radMemoryAllocator allocator);
 
-    private:
+    inline void operator delete(void *pMemory);
+
+    inline void operator delete[](void *pMemory);
+
+    inline radMemoryAllocator GetAllocator(void);
+
+protected:
+
+    inline radMemoryAllocator GetThisAllocator(void);
+
+private:
 
 
-        radMemoryAllocator m_ThisAllocator;
+    radMemoryAllocator m_ThisAllocator;
 
-        static radMemoryAllocator s_Allocator;
+    static radMemoryAllocator s_Allocator;
 };
 
-inline void* radObject::operator new( size_t size, void* p )
-{
+inline void *radObject::operator new(size_t size, void *p) {
     (void) size;
-    return( p );
-}    	
+    return (p);
+}
 
-inline void* radObject::operator new[ ]( size_t size, void* p )
-{
+inline void *radObject::operator new[](size_t size, void *p) {
     (void) size;
-    return( p );
-}    	
+    return (p);
+}
 
-inline void* radObject::operator new( size_t size, radMemoryAllocator allocator )
-{
+inline void *radObject::operator new(size_t size, radMemoryAllocator allocator) {
     s_Allocator = allocator;
-	return radMemoryAlloc( allocator, size );
+    return radMemoryAlloc(allocator, size);
 }
 
-inline void* radObject::operator new[ ]( size_t size, radMemoryAllocator allocator )
-{
+inline void *radObject::operator new[](size_t size, radMemoryAllocator allocator) {
     s_Allocator = allocator;
-	return radMemoryAlloc( allocator, size );
+    return radMemoryAlloc(allocator, size);
 }
 
-inline void radObject::operator delete( void * pMemory )
-{
-	radMemoryFree( pMemory );
+inline void radObject::operator delete(void *pMemory) {
+    radMemoryFree(pMemory);
 }
 
-inline void radObject::operator delete[ ]( void * pMemory )
-{
-	radMemoryFree( pMemory );
+inline void radObject::operator delete[](void *pMemory) {
+    radMemoryFree(pMemory);
 }
 
-inline radMemoryAllocator radObject::GetThisAllocator( void )
-{
+inline radMemoryAllocator radObject::GetThisAllocator(void) {
     return m_ThisAllocator;
 }
 
-inline radMemoryAllocator radObject::GetAllocator( void )
-{
-    return GetThisAllocator( );
+inline radMemoryAllocator radObject::GetAllocator(void) {
+    return GetThisAllocator();
 }
 
-inline radObject::radObject( void ) :
-    m_ThisAllocator( s_Allocator )
-{
-    CLASSTRACKER_CREATE( radObject );
+inline radObject::radObject(void) :
+        m_ThisAllocator(s_Allocator) {
+    CLASSTRACKER_CREATE(radObject);
 #if defined RADMEMORYMONITOR
-    radMemoryMonitorIdentifyAllocationAdaptor( this, g_nameFTech, "radObject", NULL );
+    radMemoryMonitorIdentifyAllocationAdaptor(this, g_nameFTech, "radObject", NULL);
 #endif
 }
 
-inline radObject::~radObject ( void )
-{
-    CLASSTRACKER_DESTROY( radObject );
+inline radObject::~radObject(void) {
+    CLASSTRACKER_DESTROY(radObject);
     s_Allocator = m_ThisAllocator;
 }
 
@@ -306,191 +302,162 @@ inline radObject::~radObject ( void )
 // class: radRefCount
 //============================================================================
 
-class radRefCount : public radObject
-{
+class radRefCount : public radObject {
     friend class radObject;
-    public:
 
-    radRefCount( unsigned int refCount = 1 )
-        :
-        radObject( ),
-        m_RefCount( (int) refCount )
-    {
-        CLASSTRACKER_CREATE( radRefCount );
+public:
+
+    radRefCount(unsigned int refCount = 1)
+            :
+            radObject(),
+            m_RefCount((int) refCount) {
+        CLASSTRACKER_CREATE(radRefCount);
 #if defined RADMEMORYMONITOR
-        radMemoryMonitorIdentifyAllocationAdaptor( this, g_nameFTech, "radRefCount", (unsigned int*)(& m_RefCount) );
+        radMemoryMonitorIdentifyAllocationAdaptor(this, g_nameFTech, "radRefCount", (unsigned int*)(& m_RefCount));
 #endif
     }
 
-    virtual ~radRefCount( void )
-    {
-        CLASSTRACKER_DESTROY( radRefCount );
+    virtual ~radRefCount(void) {
+        CLASSTRACKER_DESTROY(radRefCount);
     }
 
-    void Implement_AddRef( void )
-    {
-        rAssert( m_RefCount < MAX_REFCOUNT );
+    void Implement_AddRef(void) {
+        rAssert(m_RefCount < MAX_REFCOUNT);
         m_RefCount++;
     }
 
-    void Implement_Release( void )
-    {
-        rAssert( m_RefCount > 0 && m_RefCount <  MAX_REFCOUNT );
+    void Implement_Release(void) {
+        rAssert(m_RefCount > 0 && m_RefCount < MAX_REFCOUNT);
         m_RefCount--;
-        if (m_RefCount == 0 )
-        {
-			// Must avoid recursive destruction, set refcount to some high
-			// value.
+        if (m_RefCount == 0) {
+            // Must avoid recursive destruction, set refcount to some high
+            // value.
 
-			m_RefCount = MAX_REFCOUNT / 2;
+            m_RefCount = MAX_REFCOUNT / 2;
 
             delete this;
         }
     }
 
-	int GetRefCount ( void ) { return m_RefCount; }
-    
-    private:
-    
-        int m_RefCount;    
+    int GetRefCount(void) { return m_RefCount; }
+
+private:
+
+    int m_RefCount;
 };
 
 //============================================================================
 // Template: ref 
 //============================================================================
 
-template < class T > class ref
-{
-	public:
+template<class T>
+class ref {
+public:
 
-        void * operator new[]( size_t size, radMemoryAllocator allocator )
-        {
-            return ::radMemoryAlloc( allocator, size );
+    void *operator new[](size_t size, radMemoryAllocator allocator) {
+        return ::radMemoryAlloc(allocator, size);
+    }
+
+    void operator delete[](void *pMemory) {
+        ::radMemoryFree(pMemory);
+    }
+
+    void *operator new(size_t size, radMemoryAllocator allocator) {
+        return ::radMemoryAlloc(allocator, size);
+    }
+
+    void operator delete(void *pMemory) {
+        ::radMemoryFree(pMemory);
+    }
+
+    ref() {
+        m_pInterface = NULL;
+    }
+
+    ref(T *pInterface) {
+        m_pInterface = pInterface;
+
+        if (m_pInterface != NULL) {
+            m_pInterface->AddRef();
         }
+    }
 
-        void operator delete[]( void * pMemory )
-        {
-            ::radMemoryFree( pMemory );
+    ref(const ref<T> &copy) {
+        m_pInterface = copy.m_pInterface;
+
+        if (m_pInterface != NULL) {
+            m_pInterface->AddRef();
         }
-        
-        void * operator new( size_t size, radMemoryAllocator allocator )
-        {
-            return ::radMemoryAlloc( allocator, size );
+    }
+
+    ~ref() {
+        if (m_pInterface != NULL) {
+            T *pIOld = m_pInterface;
+            m_pInterface = NULL;
+            pIOld->Release();
         }
+    }
 
-        void operator delete( void * pMemory )
-        {
-            ::radMemoryFree( pMemory );
-        }
 
-		ref( )
-		{
-			m_pInterface = NULL;
-		}
+    operator T *() { return m_pInterface; }
 
-		ref( T * pInterface )
-		{
-			m_pInterface = pInterface;
+    T &operator*() {
+        rAssert(m_pInterface != NULL);
+        return *m_pInterface;
+    }
 
-			if ( m_pInterface != NULL )
-			{
-				m_pInterface->AddRef( );
-			}
-		}
+    T **operator&() {
+        rAssert(m_pInterface == NULL);
+        return &m_pInterface;
+    }
 
-        ref( const ref< T > & copy )
-        { 
+    T *operator->() const {
+        rAssert(m_pInterface != NULL);
+        return m_pInterface;
+    }
+
+    ref<T> &operator=(const ref<T> &copy) {
+        if (copy != *this) {
+            if (m_pInterface != NULL) {
+                m_pInterface->Release();
+            }
+
             m_pInterface = copy.m_pInterface;
 
-            if ( m_pInterface != NULL )
-            {
-                m_pInterface->AddRef( );
+            if (m_pInterface != NULL) {
+                m_pInterface->AddRef();
             }
         }
 
-		~ref( )
-		{
-			if ( m_pInterface != NULL )
-			{
-				T * pIOld = m_pInterface;
-				m_pInterface = NULL;
-				pIOld->Release( );
-			}
-		}
+        return *this;
+    }
 
+    T *operator=(T *pInterface) {
+        if (m_pInterface != pInterface) {
+            T *pOld = m_pInterface;
+            m_pInterface = pInterface;
 
-		operator T*( ) { return m_pInterface; }
-
-		T &  operator *( )
-        {
-            rAssert( m_pInterface != NULL );
-            return *m_pInterface;
-        }
-
-		T ** operator &( )
-        {
-            rAssert( m_pInterface == NULL );
-            return &m_pInterface;
-        }
-
-		T *  operator->( ) const
-        {
-            rAssert( m_pInterface != NULL );
-            return m_pInterface;
-        }
-
-        ref< T > & operator = ( const ref< T > & copy )
-        {
-            if ( copy != *this )
-            {
-                if ( m_pInterface != NULL )
-                {
-                    m_pInterface->Release( );
-                }
-                
-                m_pInterface = copy.m_pInterface;
-                
-                if ( m_pInterface != NULL )
-                {
-                    m_pInterface->AddRef( );
-                }
+            if (m_pInterface != NULL) {
+                m_pInterface->AddRef();
             }
-            
-            return *this;
-        }
-                     
-		T* operator=( T * pInterface )
-		{
-			if ( m_pInterface != pInterface )
-			{
-                T * pOld = m_pInterface;
-                m_pInterface = pInterface;
 
-                if ( m_pInterface != NULL )
-                {
-                    m_pInterface->AddRef( );
-                }
-
-				if ( pOld != NULL )
-				{
-					pOld->Release( );
-				}
-			}
-
-			return m_pInterface;
-		}
-
-        bool operator != ( T * pInterface ) const
-        {
-            return ( m_pInterface != pInterface );
+            if (pOld != NULL) {
+                pOld->Release();
+            }
         }
 
-        bool operator == ( T * pInterface ) const
-        {
-            return ( m_pInterface == pInterface );
-        }
+        return m_pInterface;
+    }
 
-		T * m_pInterface;
+    bool operator!=(T *pInterface) const {
+        return (m_pInterface != pInterface);
+    }
+
+    bool operator==(T *pInterface) const {
+        return (m_pInterface == pInterface);
+    }
+
+    T *m_pInterface;
 };
 
 #if defined RADMEMORYMONITOR
@@ -498,132 +465,132 @@ template < class T > class ref
 // Template specialization on IRefCount
 //============================================================================
 template<>
-class ref< IRefCount >
+class ref<IRefCount>
 {
-	public:
+    public:
 
-		ref( )
-		{
-			m_pInterface = NULL;
-		}
-
-        void operator delete( void * pMemory )
+        ref()
         {
-            ::radMemoryFree( pMemory );
+            m_pInterface = NULL;
         }
 
-		ref( IRefCount * pInterface )
-		{
-			m_pInterface = pInterface;
+        void operator delete(void * pMemory)
+        {
+            ::radMemoryFree(pMemory);
+        }
 
-			if ( m_pInterface != NULL )
-			{
-		        radAddRef( m_pInterface, this );
-			}
-		}
+        ref(IRefCount * pInterface)
+        {
+            m_pInterface = pInterface;
 
-        ref( const ref< IRefCount > & copy )
-        { 
-            m_pInterface = copy.m_pInterface;
-
-            if ( m_pInterface != NULL )
+            if (m_pInterface != NULL)
             {
-        		radAddRef( m_pInterface, this );
+                radAddRef(m_pInterface, this);
             }
         }
 
-		~ref( )
-		{
-			if ( m_pInterface != NULL )
-			{
-				IRefCount * pIOld = m_pInterface;
-				m_pInterface = NULL;
-                radRelease( pIOld, this );
-			}
-		}
-
-
-		operator IRefCount*( ) { return m_pInterface; }
-
-		IRefCount &  operator *( )
+        ref(const ref<IRefCount> & copy)
         {
-            rAssert( m_pInterface != NULL );
+            m_pInterface = copy.m_pInterface;
+
+            if (m_pInterface != NULL)
+            {
+                radAddRef(m_pInterface, this);
+            }
+        }
+
+        ~ref()
+        {
+            if (m_pInterface != NULL)
+            {
+                IRefCount * pIOld = m_pInterface;
+                m_pInterface = NULL;
+                radRelease(pIOld, this);
+            }
+        }
+
+
+        operator IRefCount*() { return m_pInterface; }
+
+        IRefCount &  operator *()
+        {
+            rAssert(m_pInterface != NULL);
             return *m_pInterface;
         }
 
-		IRefCount ** operator &( )
+        IRefCount ** operator &()
         {
-            rAssert( m_pInterface == NULL );
+            rAssert(m_pInterface == NULL);
             return &m_pInterface;
         }
 
-		IRefCount *  operator->( ) const
+        IRefCount *  operator->() const
         {
-            rAssert( m_pInterface != NULL );
+            rAssert(m_pInterface != NULL);
             return m_pInterface;
         }
 
-        ref< IRefCount > & operator = ( const ref< IRefCount > & copy )
+        ref<IRefCount> & operator = (const ref<IRefCount> & copy)
         {
-            if ( m_pInterface != NULL )
+            if (m_pInterface != NULL)
             {
-                radRelease( m_pInterface, this );
+                radRelease(m_pInterface, this);
             }
-            
+
             m_pInterface = copy.m_pInterface;
-            
-            if ( m_pInterface != NULL )
+
+            if (m_pInterface != NULL)
             {
-        		radAddRef( m_pInterface, this );
+                radAddRef(m_pInterface, this);
             }
-            
+
             return *this;
         }
-                     
-		IRefCount* operator=( IRefCount * pInterface )
-		{
+
+        IRefCount* operator=(IRefCount * pInterface)
+        {
             IRefCount * pOld = m_pInterface;
             m_pInterface = pInterface;
 
-            if ( m_pInterface != NULL )
+            if (m_pInterface != NULL)
             {
-        		radAddRef( m_pInterface, this );
+                radAddRef(m_pInterface, this);
             }
 
-			if ( pOld != NULL )
-			{
-                radRelease( pOld, this );
-			}
+            if (pOld != NULL)
+            {
+                radRelease(pOld, this);
+            }
 
-			return m_pInterface;
-		}
-
-        bool operator != ( IRefCount * pInterface ) const
-        {
-            return ( m_pInterface != pInterface );
+            return m_pInterface;
         }
 
-        bool operator == ( IRefCount * pInterface ) const
+        bool operator != (IRefCount * pInterface) const
         {
-            return ( m_pInterface == pInterface );
+            return (m_pInterface != pInterface);
         }
 
-        void * operator new[]( size_t size, radMemoryAllocator allocator )
+        bool operator == (IRefCount * pInterface) const
         {
-            return ::radMemoryAlloc( allocator, size );
+            return (m_pInterface == pInterface);
         }
 
-        void operator delete[]( void * pMemory )
+        void * operator new[](size_t size, radMemoryAllocator allocator)
         {
-            ::radMemoryFree( pMemory );
-        }
-        
-        void * operator new( size_t size, radMemoryAllocator allocator )
-        {
-            return ::radMemoryAlloc( allocator, size );
+            return ::radMemoryAlloc(allocator, size);
         }
 
-		IRefCount * m_pInterface;
+        void operator delete[](void * pMemory)
+        {
+            ::radMemoryFree(pMemory);
+        }
+
+        void * operator new(size_t size, radMemoryAllocator allocator)
+        {
+            return ::radMemoryAlloc(allocator, size);
+        }
+
+        IRefCount * m_pInterface;
 };
 #endif // RADMEMORYMONITOR
 

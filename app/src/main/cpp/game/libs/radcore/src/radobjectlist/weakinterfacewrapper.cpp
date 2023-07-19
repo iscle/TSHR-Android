@@ -32,47 +32,42 @@
 //============================================================================
 
 struct radWeakInterfaceWrapper
-	:
-	public IRadWeakInterfaceWrapper,
-    public radRefCount
-{
-    IMPLEMENT_REFCOUNTED( "radWeakInterfaceWrapper" )
+        :
+                public IRadWeakInterfaceWrapper,
+                public radRefCount {
+    IMPLEMENT_REFCOUNTED("radWeakInterfaceWrapper")
 
     //========================================================================
     // bWeakInterfaceWrapper::SetWeakInterface
     //========================================================================
 
-	virtual void SetWeakInterface( void * pWeakInterface )
-	{
-		m_pWeakInterface = pWeakInterface;
-	}
+    virtual void SetWeakInterface(void *pWeakInterface) {
+        m_pWeakInterface = pWeakInterface;
+    }
 
     //========================================================================
     // bWeakInterfaceWrapper::GetWeakInterface
     //========================================================================
 
-    virtual void * GetWeakInterface( void )
-	{
-		return m_pWeakInterface;
-	}
+    virtual void *GetWeakInterface(void) {
+        return m_pWeakInterface;
+    }
 
     //========================================================================
     // bWeakInterfaceWrapper::bWeakInterfaceWrapper
     //========================================================================
 
-	radWeakInterfaceWrapper( void )
-		:
-		m_pWeakInterface( NULL )
-	{
-        radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "radWeakInterfaceWrapper" );
-	}
+    radWeakInterfaceWrapper(void)
+            :
+            m_pWeakInterface(NULL) {
+        radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "radWeakInterfaceWrapper");
+    }
 
-	void * m_pWeakInterface;
+    void *m_pWeakInterface;
 };
 
-void radWeakInterfaceWrapperCreate( IRadWeakInterfaceWrapper** ppWI , radMemoryAllocator allocator )
-{
-    *ppWI = new ( allocator ) radWeakInterfaceWrapper( );
+void radWeakInterfaceWrapperCreate(IRadWeakInterfaceWrapper **ppWI, radMemoryAllocator allocator) {
+    *ppWI = new(allocator) radWeakInterfaceWrapper();
 }
 
 

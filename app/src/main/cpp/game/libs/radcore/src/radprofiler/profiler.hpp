@@ -41,31 +41,31 @@ class radProfiler :
     public IRadProfiler
 {
 public:
-    IMPLEMENT_REFCOUNTED( "radProfiler" )
+    IMPLEMENT_REFCOUNTED("radProfiler")
 
-    radProfiler( radMemoryAllocator alloc );
+    radProfiler(radMemoryAllocator alloc);
 
-    virtual ~radProfiler( );
+    virtual ~radProfiler();
 
-    virtual void Initialize( unsigned int InitReserveProfileSamplesMemory, unsigned int MaxProfileSamples, radMemoryAllocator alloc );
+    virtual void Initialize(unsigned int InitReserveProfileSamplesMemory, unsigned int MaxProfileSamples, radMemoryAllocator alloc);
 
-    virtual void Terminate( );
+    virtual void Terminate();
 
-    virtual void BeginProfile( const char * pProfileName );
+    virtual void BeginProfile(const char * pProfileName);
 
-    virtual void EndProfile( const char * pProfileName );
+    virtual void EndProfile(const char * pProfileName);
 
-    virtual void BeginFrame( );
+    virtual void BeginFrame();
 
-    virtual void EndFrame( );
+    virtual void EndFrame();
 
-    virtual IRadProfileSample * GetRootProfileSample( );
+    virtual IRadProfileSample * GetRootProfileSample();
 
-    virtual IRadProfileSample * GetProfileSample( const char * pName );
+    virtual IRadProfileSample * GetProfileSample(const char * pName);
 
 #ifdef RAD_DEBUG
 
-    virtual void DebugDump( );
+    virtual void DebugDump();
 
 #endif // RAD_DEBUG
 
@@ -73,32 +73,32 @@ protected:
     //
     // Event handler
     //
-    virtual void OnInsertNewProfileSample( radProfileSample * pProfile );
+    virtual void OnInsertNewProfileSample(radProfileSample * pProfile);
 
-    virtual void OnInitializeFrameCounter( float * fAveFrameTime, float * fMaxFrameTime, float * fMinFrameTime, float * fFramePerSec );
+    virtual void OnInitializeFrameCounter(float * fAveFrameTime, float * fMaxFrameTime, float * fMinFrameTime, float * fFramePerSec);
 
 protected:
 
-    radProfileSample * GetLastUnClosedProfile( );
+    radProfileSample * GetLastUnClosedProfile();
 
-    radProfileSample * FindProfileSample( const char * pProfileName );
+    radProfileSample * FindProfileSample(const char * pProfileName);
 
-    radProfileSample * InsertChildProfileSample( const char * pProfileName, radProfileSample * pParentProfileSample );
+    radProfileSample * InsertChildProfileSample(const char * pProfileName, radProfileSample * pParentProfileSample);
 
-    void EndFrameForAllProfileNode( radTime64 uTotalFrameTimeInMicroSec, radTime64 uAveFrameTimeInMicroSec, radTime64 uThisFrameTimeInMicroSec, unsigned int uFrameCount );
+    void EndFrameForAllProfileNode(radTime64 uTotalFrameTimeInMicroSec, radTime64 uAveFrameTimeInMicroSec, radTime64 uThisFrameTimeInMicroSec, unsigned int uFrameCount);
 
 private:
 
-    void SortSampleProfileArrayByHashedName( );
+    void SortSampleProfileArrayByHashedName();
 
     //
     // return the profile sample from sorted list by index,
     // see m_pProfileSampleArrayByHashedName and m_uProfileSampleArraySize.
     // if return -1 then no entry is found.
     //
-    int BinarySearchSampleProfileArrayByHashedName( radKey HashedName );
+    int BinarySearchSampleProfileArrayByHashedName(radKey HashedName);
 
-    void AllocateMemoryForProfileSampleArrayAndCopyOldData( unsigned int uSize );
+    void AllocateMemoryForProfileSampleArrayAndCopyOldData(unsigned int uSize);
 
 private:
 
@@ -107,22 +107,22 @@ private:
     //
     radMemoryAllocator          m_alloc;
 
-    ref< IRadMemoryPool >       m_pProfileSamplesPool;
+    ref<IRadMemoryPool>       m_pProfileSamplesPool;
 
     //
     // hierarchy tree for all profile samples
     //
-    ref< radProfileSample >     m_pRootProfileSample;
+    ref<radProfileSample>     m_pRootProfileSample;
 
     //
     // last unclosed profile sample
     //
-    ref< radProfileSample >     m_pLastUnClosedProfile;
+    ref<radProfileSample>     m_pLastUnClosedProfile;
 
     //
     // last closed profile sample
     //
-    ref< radProfileSample >     m_pLastClosedProfile;
+    ref<radProfileSample>     m_pLastClosedProfile;
 
     //
     // sorted profile sample list by name
@@ -154,22 +154,22 @@ class radWatcherEnabledProfiler :
     public radProfiler
 {
 public:
-    radWatcherEnabledProfiler( radMemoryAllocator alloc ):
-        radProfiler( alloc )
+    radWatcherEnabledProfiler(radMemoryAllocator alloc):
+        radProfiler(alloc)
     { }
 
-    virtual ~radWatcherEnabledProfiler( ) { };
+    virtual ~radWatcherEnabledProfiler() { };
 
 protected:
 
     //
     // Event handler
     //
-    virtual void OnInsertNewProfileSample( radProfileSample * pProfile );
+    virtual void OnInsertNewProfileSample(radProfileSample * pProfile);
 
-    virtual void OnInitializeFrameCounter( float * fAveFrameTime, float * fMaxFrameTime, float * fMinFrameTime, float * fFramePerSec );
+    virtual void OnInitializeFrameCounter(float * fAveFrameTime, float * fMaxFrameTime, float * fMinFrameTime, float * fFramePerSec);
 
-    void BuildNameSpace( radProfileSample * pProfile, char * szNameSpace );
+    void BuildNameSpace(radProfileSample * pProfile, char * szNameSpace);
 
 private:
 

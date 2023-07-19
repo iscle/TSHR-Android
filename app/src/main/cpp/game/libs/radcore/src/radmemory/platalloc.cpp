@@ -10,20 +10,20 @@
 
 #if defined RAD_PS2
 
-    #include <malloc.h>
+#include <malloc.h>
 
 #elif defined RAD_WIN32 || defined RAD_XBOX
-    
-    #include <stdlib.h>
-    
-    #if defined MALLOC_DEBUG
-        #include <crtdbg.h>
-    #endif
+
+#include <stdlib.h>
+
+#if defined MALLOC_DEBUG
+#include <crtdbg.h>
+#endif
 
 #elif defined RAD_GAMECUBE
 
-    #include <dolphin.h>
-    #include <dolphin/vm.h>
+#include <dolphin.h>
+#include <dolphin/vm.h>
 
 static bool sVMMInitialized = false;
 OSHeapHandle gGCHeap = -1;
@@ -35,7 +35,7 @@ OSHeapHandle gGCHeap = -1;
 //============================================================================
 
 #ifdef RAD_GAMECUBE
-void radMemoryPlatInitialize( unsigned int sizeVMMainMemory, unsigned int sizeVMARAM)
+void radMemoryPlatInitialize(unsigned int sizeVMMainMemory, unsigned int sizeVMARAM)
 {
     // Looking for some VMM?
     sVMMInitialized = false;
@@ -47,40 +47,41 @@ void radMemoryPlatInitialize( unsigned int sizeVMMainMemory, unsigned int sizeVM
         sVMMInitialized = true;
     }
 
-	// Initializes the Dolphin OS memory allocator and ensures that
-	// new and delete will work properly.
+    // Initializes the Dolphin OS memory allocator and ensures that
+    // new and delete will work properly.
 
-	void *pArenaLo = OSGetArenaLo( );
-	void *pArenaHi = OSGetArenaHi( );
+    void *pArenaLo = OSGetArenaLo();
+    void *pArenaHi = OSGetArenaHi();
 
-	// Create a heap
-	// OSInitAlloc should only ever be invoked once.
+    // Create a heap
+    // OSInitAlloc should only ever be invoked once.
 
-	pArenaLo = OSInitAlloc( pArenaLo, pArenaHi, 1); // 1 heap size
-	OSSetArenaLo( pArenaLo );
+    pArenaLo = OSInitAlloc(pArenaLo, pArenaHi, 1); // 1 heap size
+    OSSetArenaLo(pArenaLo);
 
-	// Ensure boundaries are 32B aligned
+    // Ensure boundaries are 32B aligned
 
-	pArenaLo = (void*) OSRoundUp32B( pArenaLo );
-	pArenaHi = (void*) OSRoundDown32B( pArenaHi );
+    pArenaLo = (void*) OSRoundUp32B(pArenaLo);
+    pArenaHi = (void*) OSRoundDown32B(pArenaHi);
 
-	// The boundaries given to OSCreateHeap should be 32B aligned
-    gGCHeap = OSCreateHeap( pArenaLo, pArenaHi );
-    rAssert( gGCHeap != -1 );
-	OSSetCurrentHeap( gGCHeap );
+    // The boundaries given to OSCreateHeap should be 32B aligned
+    gGCHeap = OSCreateHeap(pArenaLo, pArenaHi);
+    rAssert(gGCHeap != -1);
+    OSSetCurrentHeap(gGCHeap);
 
-	//
-	// From here on out, OSAlloc and OSFree behave like malloc and free
-	// respectively.
-	//
-	OSSetArenaLo( pArenaLo = pArenaHi );
+    //
+    // From here on out, OSAlloc and OSFree behave like malloc and free
+    // respectively.
+    //
+    OSSetArenaLo(pArenaLo = pArenaHi);
 }
 #else
+
 // ---Non-GameCube Memory Plat init --------------------------------------------------
-void radMemoryPlatInitialize( void )
-{
+void radMemoryPlatInitialize(void) {
 
 }
+
 #endif
 
 
@@ -88,8 +89,7 @@ void radMemoryPlatInitialize( void )
 // ::radMemoryPlatTerminate
 //============================================================================
 
-void radMemoryPlatTerminate( void )
-{
+void radMemoryPlatTerminate(void) {
 #ifdef RAD_GAMECUBE
     if (sVMMInitialized)
     {
@@ -104,14 +104,12 @@ void radMemoryPlatTerminate( void )
 // ::radMemoryPlatAlloc
 //============================================================================
 
-void * radMemoryPlatAlloc( unsigned int numberOfBytes )
-{
-    void * pMemory;
+void *radMemoryPlatAlloc(unsigned int numberOfBytes) {
+    void *pMemory;
     //
     // C++ standard says you can allocate 0 byte memory object.
     //
-    if ( numberOfBytes == 0 )
-    {
+    if (numberOfBytes == 0) {
         numberOfBytes = 1;
     }
 
@@ -122,14 +120,15 @@ void * radMemoryPlatAlloc( unsigned int numberOfBytes )
 
 #ifdef RAD_GAMECUBE
 #define MALLOC_OK
-    pMemory = OSAlloc( numberOfBytes );
+    pMemory = OSAlloc(numberOfBytes);
 #endif
 
-#if ! defined( MALLOC_OK )
-    pMemory = malloc( numberOfBytes );
+#if !defined(MALLOC_OK)
+    pMemory = malloc(numberOfBytes);
 #endif
-    
-    rWarningMsg( pMemory != NULL, "radMemory: Platform (malloc) allocator failed to allocate memory\n" );
+
+    rWarningMsg(pMemory != NULL,
+                "radMemory: Platform (malloc) allocator failed to allocate memory\n");
     return pMemory;
 }
 
@@ -137,21 +136,20 @@ void * radMemoryPlatAlloc( unsigned int numberOfBytes )
 // ::radMemoryPlatFree
 //============================================================================
 
-void radMemoryPlatFree( void * pMemory )
-{
+void radMemoryPlatFree(void *pMemory) {
 #if defined MALLOC_DEBUG
     _free_dbg(pMemory, _NORMAL_BLOCK);
 #endif
 
 #ifdef RAD_GAMECUBE
-    if ( pMemory != NULL )
+    if (pMemory != NULL)
     {	
-        OSFree( pMemory );
+        OSFree(pMemory);
     }
 #endif
 
-#if ! defined( MALLOC_OK )
-	free( pMemory );
+#if !defined(MALLOC_OK)
+    free(pMemory);
 #endif
 }
 
@@ -159,51 +157,48 @@ void radMemoryPlatFree( void * pMemory )
 // ::radMemoryPlatAllocAligned
 //============================================================================
 
-void * radMemoryPlatAllocAligned( unsigned int numberOfBytes, unsigned int alignment )
-{
-	#ifdef RAD_PS2
+void *radMemoryPlatAllocAligned(unsigned int numberOfBytes, unsigned int alignment) {
+#ifdef RAD_PS2
 
-		return ::memalign( alignment, numberOfBytes );
+    return ::memalign(alignment, numberOfBytes);
 
-	#else
+#else
 
-		//
-		// Roll our own with Os allocator
-		//
+    //
+    // Roll our own with Os allocator
+    //
 
-		unsigned int pMemory = (unsigned int ) radMemoryPlatAlloc( numberOfBytes + alignment );
-		rAssert( numberOfBytes == 0 || pMemory != 0 ); 
+    unsigned int pMemory = (unsigned int) radMemoryPlatAlloc(numberOfBytes + alignment);
+    rAssert(numberOfBytes == 0 || pMemory != 0);
 
-		unsigned int pAlignedMemory = pMemory + ( alignment - ( pMemory % alignment ) );
+    unsigned int pAlignedMemory = pMemory + (alignment - (pMemory % alignment));
 
-		((unsigned int*)pAlignedMemory)[ -1 ] = pMemory;   
+    ((unsigned int *) pAlignedMemory)[-1] = pMemory;
 
-		return (void*) pAlignedMemory;
+    return (void *) pAlignedMemory;
 
-	#endif
+#endif
 }
 
 //============================================================================
 // ::radMemoryPlatFreeAligned
 //============================================================================
 
-void radMemoryPlatFreeAligned( void * pAlignedMemory )
-{
+void radMemoryPlatFreeAligned(void *pAlignedMemory) {
 
-	#ifdef RAD_PS2
-		
-		free( pAlignedMemory );
-	
-	#else
+#ifdef RAD_PS2
 
-        if ( pAlignedMemory != NULL )
-        {
-		    //
-		    // UnRoll our own using Os allocator
-		    //
+    free(pAlignedMemory);
 
-		    radMemoryPlatFree( (void*) ((unsigned int*)pAlignedMemory)[ -1 ] );
-        }
+#else
 
-	#endif
+    if (pAlignedMemory != NULL) {
+        //
+        // UnRoll our own using Os allocator
+        //
+
+        radMemoryPlatFree((void *) ((unsigned int *) pAlignedMemory)[-1]);
+    }
+
+#endif
 }

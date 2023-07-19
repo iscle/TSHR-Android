@@ -23,51 +23,50 @@
 //-----------------------------------------------------------------------------
 
 radDrive::CompletionStatus radBufferedReader::BufferedReadFile
-(
-    radDrive* pDrive,
-    radFileHandle handle, 
-    const char* fileName,
-    IRadFile::BufferedReadState buffState,
-    unsigned int position, 
-    void* pData, 
-    unsigned int bytesToRead, 
-    unsigned int* bytesRead, 
-    radMemorySpace pDataSpace 
-)
-{
-    unsigned int sectorSize = pDrive->GetMediaInfo( )->m_SectorSize;
+        (
+                radDrive *pDrive,
+                radFileHandle handle,
+                const char *fileName,
+                IRadFile::BufferedReadState buffState,
+                unsigned int position,
+                void *pData,
+                unsigned int bytesToRead,
+                unsigned int *bytesRead,
+                radMemorySpace pDataSpace
+        ) {
+    unsigned int sectorSize = pDrive->GetMediaInfo()->m_SectorSize;
 
 #if defined RAD_DEBUG && defined RADFILE_DEBUG_WARNINGS
     //
     // Print warning about non-optimal reads. Asserts if buffered read is off.
     //
-    if ( buffState != IRadFile::BufferedReadOn )
+    if (buffState != IRadFile::BufferedReadOn)
     {
-        if( !radMemoryIsAligned( ( unsigned int ) pData, radFileOptimalMemoryAlignment ) )
+        if(!radMemoryIsAligned((unsigned int) pData, radFileOptimalMemoryAlignment))
         {
-            rDebugPrintf( "Warning: File reads on file [%s%s] are occuring non-optimally.\n"
+            rDebugPrintf("Warning: File reads on file [%s%s] are occuring non-optimally.\n"
                 "Warning: Memory at [%X] should be aligned to radFileOptimalMemoryAlignment (%u).\n", 
-                pDrive->GetDriveName( ), fileName, pData, radFileOptimalMemoryAlignment );
+                pDrive->GetDriveName(), fileName, pData, radFileOptimalMemoryAlignment);
 
-            rAssertMsg( buffState != IRadFile::BufferedReadOff, "Buffered reading is off" );
+            rAssertMsg(buffState != IRadFile::BufferedReadOff, "Buffered reading is off");
         }
 
-        if( position % sectorSize != 0 )
+        if(position % sectorSize != 0)
         {
-            rDebugPrintf( "Warning: File reads on drive [%s%s] are occuring non-optimally.\n"
+            rDebugPrintf("Warning: File reads on drive [%s%s] are occuring non-optimally.\n"
                 "Warning: File offset [%X] should be aligned to the sector size (%u).\n", 
-                pDrive->GetDriveName( ), fileName, position, sectorSize );
+                pDrive->GetDriveName(), fileName, position, sectorSize);
 
-            rAssertMsg( buffState != IRadFile::BufferedReadOff, "Buffered reading is off" );
+            rAssertMsg(buffState != IRadFile::BufferedReadOff, "Buffered reading is off");
         }
 
-        if( bytesToRead % sectorSize != 0 )
+        if(bytesToRead % sectorSize != 0)
         {
-            rDebugPrintf( "Warning: File reads on drive [%s%s] are occuring non-optimally.\n"
+            rDebugPrintf("Warning: File reads on drive [%s%s] are occuring non-optimally.\n"
                 "Warning: Read size [%u] should be aligned to the sector size (%u).\n", 
-                pDrive->GetDriveName( ), fileName, bytesToRead, sectorSize );
+                pDrive->GetDriveName(), fileName, bytesToRead, sectorSize);
 
-            rAssertMsg( buffState != IRadFile::BufferedReadOff, "Buffered reading is off" );
+            rAssertMsg(buffState != IRadFile::BufferedReadOff, "Buffered reading is off");
         }
     }
 #endif // RADFILE_DEBUG_WARNINGS
@@ -78,33 +77,31 @@ radDrive::CompletionStatus radBufferedReader::BufferedReadFile
     radDrive::CompletionStatus result = radDrive::Complete;
     unsigned int lsn = position / sectorSize;
     unsigned int size = bytesToRead;
-    char* pBuffer = (char*) pData;
+    char *pBuffer = (char *) pData;
 
     //
     // If the disk or memory are not aligned, we might need to buffer everything.
     //
-    if( 
-        !radMemoryIsAligned( ( unsigned int ) pData, radFileOptimalMemoryAlignment ) ||
-        position % sectorSize != 0
-      )
-    {
+    if (
+            !radMemoryIsAligned((unsigned int) pData, radFileOptimalMemoryAlignment) ||
+            position % sectorSize != 0
+            ) {
         //
         // If the memory alignment and position alignment are off by the same amount
         // then things aren't so bad, and we can just go to the next case. But if this
         // isn't the case, we must buffer everything.
         //
-        if ( (unsigned int) pData % radFileOptimalMemoryAlignment != position % sectorSize )
-        {
+        if ((unsigned int) pData % radFileOptimalMemoryAlignment != position % sectorSize) {
             //
             // Find how much extra we are reading before position
             //
-            unsigned int extraBytes = position - ::radMemoryRoundDown( position, sectorSize );
+            unsigned int extraBytes = position - ::radMemoryRoundDown(position, sectorSize);
 
             //
             // Pick the smaller of the actual disc aligned read size, and our buffer size
             //
-            unsigned int userSectors = GetReadBufferSectors( );
-            unsigned int numSectors = ( size + extraBytes + sectorSize - 1 ) / sectorSize;
+            unsigned int userSectors = GetReadBufferSectors();
+            unsigned int numSectors = (size + extraBytes + sectorSize - 1) / sectorSize;
             numSectors = numSectors < userSectors ? numSectors : userSectors;
 
             //
@@ -117,13 +114,13 @@ radDrive::CompletionStatus radBufferedReader::BufferedReadFile
             //
             // Do the buffered read.
             //
-            result = ReadBuffered( handle, fileName, lsn, numSectors, extraBytes, userBytes, pBuffer, pDataSpace );
+            result = ReadBuffered(handle, fileName, lsn, numSectors, extraBytes, userBytes, pBuffer,
+                                  pDataSpace);
 
             //
             // Check if we succeeded.
             //
-            if ( result != radDrive::Complete )
-            {
+            if (result != radDrive::Complete) {
                 return result;
             }
 
@@ -135,15 +132,14 @@ radDrive::CompletionStatus radBufferedReader::BufferedReadFile
             // Read the disc aligned data until only the tail is left
             //
             userBytes = userSectors * sectorSize;
-            while ( size >= userBytes )
-            {
-                result = ReadBuffered( handle, fileName, lsn, userSectors, 0, userBytes, pBuffer, pDataSpace );
+            while (size >= userBytes) {
+                result = ReadBuffered(handle, fileName, lsn, userSectors, 0, userBytes, pBuffer,
+                                      pDataSpace);
 
                 //
                 // Check if we succeeded.
                 //
-                if ( result != radDrive::Complete )
-                {
+                if (result != radDrive::Complete) {
                     return result;
                 }
 
@@ -155,16 +151,15 @@ radDrive::CompletionStatus radBufferedReader::BufferedReadFile
             //
             // Finally the tail is left
             //
-            if ( size > 0 )
-            {
-                numSectors = ( size + sectorSize - 1 ) / sectorSize;
-                result = ReadBuffered( handle, fileName, lsn, numSectors, 0, size, pBuffer, pDataSpace );
+            if (size > 0) {
+                numSectors = (size + sectorSize - 1) / sectorSize;
+                result = ReadBuffered(handle, fileName, lsn, numSectors, 0, size, pBuffer,
+                                      pDataSpace);
 
                 //
                 // Check if we succeeded.
                 //
-                if ( result != radDrive::Complete )
-                {
+                if (result != radDrive::Complete) {
                     return result;
                 }
             }
@@ -174,9 +169,7 @@ radDrive::CompletionStatus radBufferedReader::BufferedReadFile
             //
             *bytesRead = bytesToRead;
             return radDrive::Complete;
-        }
-        else
-        {
+        } else {
             // position is not aligned, so go to that case.
         }
     }
@@ -185,35 +178,32 @@ radDrive::CompletionStatus radBufferedReader::BufferedReadFile
     // If the read is non-optimal, and small enough to fit into our transfer buffer, 
     // then do so.
     //
-    if ( radMemoryRoundUp( size, sectorSize ) <= ( GetReadBufferSectors( ) * sectorSize ) && 
-        ( position % sectorSize != 0 || size % sectorSize != 0 )
-       )
-    {
+    if (radMemoryRoundUp(size, sectorSize) <= (GetReadBufferSectors() * sectorSize) &&
+        (position % sectorSize != 0 || size % sectorSize != 0)
+            ) {
         //
         // Find how much extra we are reading before position
         //
-        unsigned int extraBytes = position - ::radMemoryRoundDown( position, sectorSize );
+        unsigned int extraBytes = position - ::radMemoryRoundDown(position, sectorSize);
 
         //
         // Pick the smaller of the actual disc aligned read size, and our buffer size
         //
-        unsigned int numSectors = ( size + extraBytes + sectorSize - 1 ) / sectorSize;
-        rAssert( numSectors < GetReadBufferSectors( ) );
+        unsigned int numSectors = (size + extraBytes + sectorSize - 1) / sectorSize;
+        rAssert(numSectors < GetReadBufferSectors());
 
         //
         // Do the buffered read.
         //
-        result = ReadBuffered( handle, fileName, lsn, numSectors, extraBytes, size, pBuffer, pDataSpace );
+        result = ReadBuffered(handle, fileName, lsn, numSectors, extraBytes, size, pBuffer,
+                              pDataSpace);
 
         //
         // Check if we succeeded.
         //
-        if ( result != radDrive::Complete )
-        {
+        if (result != radDrive::Complete) {
             return result;
-        }
-        else
-        {
+        } else {
             *bytesRead = bytesToRead;
             return radDrive::Complete;
         }
@@ -223,13 +213,12 @@ radDrive::CompletionStatus radBufferedReader::BufferedReadFile
     // Here we either have an optimal read, or only need to buffer the beginning.
     // Read the initial non-aligned part.
     //
-    if ( position % sectorSize != 0 )
-    {
+    if (position % sectorSize != 0) {
         //
         // Find how much extra we are reading before position
         //
-        unsigned int extraBytes = 
-            position - ::radMemoryRoundDown( position, sectorSize );
+        unsigned int extraBytes =
+                position - ::radMemoryRoundDown(position, sectorSize);
 
         //
         // Number of sectors to read, which is 1
@@ -246,13 +235,13 @@ radDrive::CompletionStatus radBufferedReader::BufferedReadFile
         //
         // Do the buffered read.
         //
-        result = ReadBuffered( handle, fileName, lsn, numSectors, extraBytes, userBytes, pBuffer, pDataSpace );
+        result = ReadBuffered(handle, fileName, lsn, numSectors, extraBytes, userBytes, pBuffer,
+                              pDataSpace);
 
         //
         // Check if we succeeded.
         //
-        if ( result != radDrive::Complete )
-        {
+        if (result != radDrive::Complete) {
             return result;
         }
 
@@ -264,13 +253,11 @@ radDrive::CompletionStatus radBufferedReader::BufferedReadFile
     //
     // Read the aligned part if there's at least one sector to read.
     //
-    if ( size >= sectorSize )
-    {
+    if (size >= sectorSize) {
         unsigned int numSectors = size / sectorSize;
-        result = ReadAligned( handle, fileName, lsn, numSectors, pBuffer, pDataSpace );
-    
-        if ( result != radDrive::Complete )
-        {
+        result = ReadAligned(handle, fileName, lsn, numSectors, pBuffer, pDataSpace);
+
+        if (result != radDrive::Complete) {
             return result;
         }
 
@@ -282,22 +269,20 @@ radDrive::CompletionStatus radBufferedReader::BufferedReadFile
     //
     // Read trailing non-aligned part
     //
-    if ( size > 0 )
-    {
-        rAssert( size % sectorSize != 0 );
-        rAssert( size < sectorSize );
+    if (size > 0) {
+        rAssert(size % sectorSize != 0);
+        rAssert(size < sectorSize);
 
         //
         // Should have only part of a sector left to read
         //
-        result = ReadBuffered( handle, fileName, lsn, 1, 0, size, pBuffer, pDataSpace );
+        result = ReadBuffered(handle, fileName, lsn, 1, 0, size, pBuffer, pDataSpace);
 
-        if ( result != radDrive::Complete )
-        {
+        if (result != radDrive::Complete) {
             return result;
         }
     }
-    
+
     *bytesRead = bytesToRead;
     return radDrive::Complete;
 }

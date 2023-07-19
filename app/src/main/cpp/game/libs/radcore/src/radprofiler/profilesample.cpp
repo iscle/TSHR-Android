@@ -21,66 +21,66 @@
 #ifdef RADPROFILER
 
 #if defined RAD_PS2 && !defined RAD_MW
-extern "C" unsigned long __udivdi3( unsigned long, unsigned long );
-extern "C" float __floatdisf( unsigned long );
-extern "C" double fptodp( float );
+extern "C" unsigned long __udivdi3(unsigned long, unsigned long);
+extern "C" float __floatdisf(unsigned long);
+extern "C" double fptodp(float);
 #endif
 
 IRadMemoryAllocator * radProfileSample::s_pProfileSampleAllocator = NULL;
 
-ref< radProfileSample > radProfileSampleCreate( radMemoryAllocator alloc )
+ref<radProfileSample> radProfileSampleCreate(radMemoryAllocator alloc)
 {
-    return new( alloc ) radProfileSample( alloc );
+    return new(alloc) radProfileSample(alloc);
 }
 
 
-void radProfileSample::SetProfileSampleMemoryAllocator( IRadMemoryAllocator * pAllocator )
+void radProfileSample::SetProfileSampleMemoryAllocator(IRadMemoryAllocator * pAllocator)
 {
-    if( s_pProfileSampleAllocator == NULL )
+    if(s_pProfileSampleAllocator == NULL)
     {
         s_pProfileSampleAllocator = pAllocator;
     }
     else
     {
-        rAssertMsg( false, "radProfiler: Error: Cannot change memory allocator for profile samples.\n" );
+        rAssertMsg(false, "radProfiler: Error: Cannot change memory allocator for profile samples.\n");
     }
 }
 
-radProfileSample::radProfileSample( radMemoryAllocator alloc ) :
-    radRefCount( 0 ),
-    m_alloc( alloc ),
-    m_uStartTime( 0 ),
-    m_uTotalTime( 0 ),
-    m_uTotalTimeAllFrame( 0 ),
-    m_uTotalTimeThisFrame( 0 ),
-    m_uSampleCount( 0 ),
-    m_uSampleCountAllFrame( 0 ),
-    m_uSampleCountThisFrame( 0 ),
-    m_fAveTimeInMSec( 0.0f ),
-    m_fMinTimeInMSec( 999999.0f ),
-    m_fMaxTimeInMSec( 0.0f ),
-    m_fAveTimePerFrameInPercent( 0.0f ),
-    m_fMinTimePerFrameInPercent( 999999.0f ),
-    m_fMaxTimePerFrameInPercent( 0.0f ),
-    m_uExecutionCountPerFrame( 0 ),
-    m_pParentProfileSample( NULL ),
-    m_pFirstChildProfileSample( NULL ),
-    m_pNextSiblingProfileSample( NULL ),
-    m_pPrevSiblingProfileSample( NULL )
+radProfileSample::radProfileSample(radMemoryAllocator alloc) :
+    radRefCount(0),
+    m_alloc(alloc),
+    m_uStartTime(0),
+    m_uTotalTime(0),
+    m_uTotalTimeAllFrame(0),
+    m_uTotalTimeThisFrame(0),
+    m_uSampleCount(0),
+    m_uSampleCountAllFrame(0),
+    m_uSampleCountThisFrame(0),
+    m_fAveTimeInMSec(0.0f),
+    m_fMinTimeInMSec(999999.0f),
+    m_fMaxTimeInMSec(0.0f),
+    m_fAveTimePerFrameInPercent(0.0f),
+    m_fMinTimePerFrameInPercent(999999.0f),
+    m_fMaxTimePerFrameInPercent(0.0f),
+    m_uExecutionCountPerFrame(0),
+    m_pParentProfileSample(NULL),
+    m_pFirstChildProfileSample(NULL),
+    m_pNextSiblingProfileSample(NULL),
+    m_pPrevSiblingProfileSample(NULL)
 {
     m_szName[0] = '\0';
 }
 
-radProfileSample::~radProfileSample( )
+radProfileSample::~radProfileSample()
 {
 
 }
 
-void radProfileSample::Initialize( const char * szName, radProfileSample * pParent, radProfileSample * pPrevSibling )
+void radProfileSample::Initialize(const char * szName, radProfileSample * pParent, radProfileSample * pPrevSibling)
 {
-    rAssert( szName != NULL && strlen( szName ) > 0 );
+    rAssert(szName != NULL && strlen(szName)> 0);
 
-    strcpy( m_szName, szName );
+    strcpy(m_szName, szName);
     m_uStartTime                = 0;
     m_uTotalTime                = 0;
     m_uTotalTimeAllFrame        = 0;
@@ -100,9 +100,9 @@ void radProfileSample::Initialize( const char * szName, radProfileSample * pPare
     m_pNextSiblingProfileSample = NULL;
     m_pPrevSiblingProfileSample = NULL;
 
-    if ( pParent != NULL )
+    if (pParent != NULL)
     {
-        pParent->AddChildNode( this, pPrevSibling );
+        pParent->AddChildNode(this, pPrevSibling);
         this->m_pParentProfileSample = pParent;
     }
     else
@@ -110,32 +110,32 @@ void radProfileSample::Initialize( const char * szName, radProfileSample * pPare
         //
         // if sample don't have parent, then there's no sibling as well.
         //
-        rAssert( pParent == NULL && pPrevSibling == NULL );
+        rAssert(pParent == NULL && pPrevSibling == NULL);
     }
 }
 
-void radProfileSample::AddChildNode( radProfileSample * pChildNode, radProfileSample * pPrevSibling )
+void radProfileSample::AddChildNode(radProfileSample * pChildNode, radProfileSample * pPrevSibling)
 {
     //
     // search if pChildNode is already in
     //
     radProfileSample * pIterator = m_pFirstChildProfileSample;
 
-    if ( m_pFirstChildProfileSample == NULL )
+    if (m_pFirstChildProfileSample == NULL)
     {
         //
         // if current node has no child node yet, add pChildNode as the first,
         //
 
         // make sure parameter pPrevSibling is NULL.
-        rAssert( pPrevSibling == NULL );
+        rAssert(pPrevSibling == NULL);
         m_pFirstChildProfileSample = pChildNode;
         m_pFirstChildProfileSample->m_pPrevSiblingProfileSample = NULL;
         m_pFirstChildProfileSample->m_pNextSiblingProfileSample = NULL;
     }
     else
     {
-        if ( pPrevSibling == NULL )
+        if (pPrevSibling == NULL)
         {
             pChildNode->m_pNextSiblingProfileSample = m_pFirstChildProfileSample;
             m_pFirstChildProfileSample = pChildNode;
@@ -143,7 +143,7 @@ void radProfileSample::AddChildNode( radProfileSample * pChildNode, radProfileSa
         else
         {
             // make sure pPrevSibling specified is infact a child node.
-            rAssert( IsChildNode( pPrevSibling ) );
+            rAssert(IsChildNode(pPrevSibling));
 
             //
             // insert pChildNode in between of the pPrevSibling and pPrevSibling->m_pNextSiblingProfileSample.
@@ -157,16 +157,16 @@ void radProfileSample::AddChildNode( radProfileSample * pChildNode, radProfileSa
     }
 }
 
-bool radProfileSample::IsChildNode( radProfileSample * pChildNode )
+bool radProfileSample::IsChildNode(radProfileSample * pChildNode)
 {
     radProfileSample * pIterator = m_pFirstChildProfileSample;
 
     //
     // go through entire list and check every node
     //
-    while( pIterator != NULL )
+    while(pIterator != NULL)
     {
-        if ( pIterator == pChildNode )
+        if (pIterator == pChildNode)
         {
             return true;
         }
@@ -176,72 +176,72 @@ bool radProfileSample::IsChildNode( radProfileSample * pChildNode )
     return false;
 }
 
-const char * radProfileSample::GetName( )
+const char * radProfileSample::GetName()
 {
     return m_szName;
 }
 
-IRadProfileSample * radProfileSample::GetParentNode( )
+IRadProfileSample * radProfileSample::GetParentNode()
 {
     return m_pParentProfileSample;
 }
 
-IRadProfileSample * radProfileSample::GetFirstChildNode( )
+IRadProfileSample * radProfileSample::GetFirstChildNode()
 {
     return m_pFirstChildProfileSample;
 }
 
-IRadProfileSample * radProfileSample::GetNextSilbingNode( )
+IRadProfileSample * radProfileSample::GetNextSilbingNode()
 {
     return m_pNextSiblingProfileSample;
 }
 
-IRadProfileSample * radProfileSample::GetPrevSiblingNode( )
+IRadProfileSample * radProfileSample::GetPrevSiblingNode()
 {
     return m_pPrevSiblingProfileSample;
 }
 
-void radProfileSample::GetSampleResult( float * pAveTimeInMSec, float * pMinTimeInMSec, float * pMaxTimeInMSec, unsigned int * pExecutionCount )
+void radProfileSample::GetSampleResult(float * pAveTimeInMSec, float * pMinTimeInMSec, float * pMaxTimeInMSec, unsigned int * pExecutionCount)
 {
-    if ( pAveTimeInMSec != NULL )
+    if (pAveTimeInMSec != NULL)
     {
         *pAveTimeInMSec = 0.0f;
     }
 
-    if ( pMinTimeInMSec != NULL )
+    if (pMinTimeInMSec != NULL)
     {
         *pMinTimeInMSec = 0.0f;
     }
 
-    if ( pMaxTimeInMSec != NULL )
+    if (pMaxTimeInMSec != NULL)
     {
         *pMaxTimeInMSec = 0.0f;
     }
 
-    if ( pExecutionCount != NULL )
+    if (pExecutionCount != NULL)
     {
         *pExecutionCount = 0;
     }
 }
 
-void radProfileSample::GetSampleResultPerFrame( float * pAveTimePerFrameInPercent, float * pMinTimePerFrameInPercent, float * pMaxTimePerFrameInPercent, unsigned int * pExecutionCountPerFrame )
+void radProfileSample::GetSampleResultPerFrame(float * pAveTimePerFrameInPercent, float * pMinTimePerFrameInPercent, float * pMaxTimePerFrameInPercent, unsigned int * pExecutionCountPerFrame)
 {
-    if ( pAveTimePerFrameInPercent != NULL )
+    if (pAveTimePerFrameInPercent != NULL)
     {
         *pAveTimePerFrameInPercent = 0.0f;
     }
 
-    if ( pMinTimePerFrameInPercent != NULL )
+    if (pMinTimePerFrameInPercent != NULL)
     {
         *pMinTimePerFrameInPercent = 0.0f;
     }
 
-    if ( pMaxTimePerFrameInPercent != NULL )
+    if (pMaxTimePerFrameInPercent != NULL)
     {
         *pMaxTimePerFrameInPercent = 0.0f;
     }
 
-    if ( pExecutionCountPerFrame != NULL )
+    if (pExecutionCountPerFrame != NULL)
     {
         *pExecutionCountPerFrame = 0;
     }
@@ -250,22 +250,22 @@ void radProfileSample::GetSampleResultPerFrame( float * pAveTimePerFrameInPercen
 //
 // measurements start
 //
-void radProfileSample::BegineMeasure( )
+void radProfileSample::BegineMeasure()
 {
-    rAssert( m_uStartTime == 0 );
+    rAssert(m_uStartTime == 0);
     //
     // Get Current time, and record it
     //
-    m_uStartTime = radTimeGetMicroseconds64( );
+    m_uStartTime = radTimeGetMicroseconds64();
 
     m_uSampleCount ++;
     m_uSampleCountThisFrame ++;
     m_uSampleCountAllFrame ++;
 }
 
-void radProfileSample::EndMeasure( radTime64 * puTotalTimeInMicroSec, radTime64 * puAveTimeInMicroSec, radTime64 * puThisTimeInMicroSec, unsigned int * puExecutionCount )
+void radProfileSample::EndMeasure(radTime64 * puTotalTimeInMicroSec, radTime64 * puAveTimeInMicroSec, radTime64 * puThisTimeInMicroSec, unsigned int * puExecutionCount)
 {
-    radTime64 uDeltaTime = radTimeGetMicroseconds64( ) - m_uStartTime;
+    radTime64 uDeltaTime = radTimeGetMicroseconds64() - m_uStartTime;
     m_uTotalTime += uDeltaTime;
     m_uTotalTimeAllFrame += uDeltaTime;
     m_uTotalTimeThisFrame += uDeltaTime;
@@ -275,17 +275,17 @@ void radProfileSample::EndMeasure( radTime64 * puTotalTimeInMicroSec, radTime64 
     // #if defined are used for remove warning in ps2ee build
     //
 #if defined RAD_PS2 && ! defined RAD_MW
-    float fCurrentTimeInMSec = __floatdisf( uDeltaTime ) / 1000.0f;
+    float fCurrentTimeInMSec = __floatdisf(uDeltaTime) / 1000.0f;
 #else
     float fCurrentTimeInMSec = (float)uDeltaTime / 1000.0f;
 #endif
 
-    if ( m_fMinTimeInMSec > fCurrentTimeInMSec )
+    if (m_fMinTimeInMSec> fCurrentTimeInMSec)
     {
         m_fMinTimeInMSec = fCurrentTimeInMSec;
     }
 
-    if ( m_fMaxTimeInMSec < fCurrentTimeInMSec )
+    if (m_fMaxTimeInMSec <fCurrentTimeInMSec)
     {
         m_fMaxTimeInMSec = fCurrentTimeInMSec;
     }
@@ -294,74 +294,74 @@ void radProfileSample::EndMeasure( radTime64 * puTotalTimeInMicroSec, radTime64 
     // #if defined are used for remove warning in ps2ee build
     //
 #if defined RAD_PS2 && ! defined RAD_MW
-    m_fAveTimeInMSec = __floatdisf( __udivdi3( m_uTotalTime, m_uSampleCount ) ) / 1000.0f;
+    m_fAveTimeInMSec = __floatdisf(__udivdi3(m_uTotalTime, m_uSampleCount)) / 1000.0f;
 #else
-    m_fAveTimeInMSec = (float)( m_uTotalTime / m_uSampleCount ) / 1000.0f;
+    m_fAveTimeInMSec = (float)(m_uTotalTime / m_uSampleCount) / 1000.0f;
 #endif
 
     //
     // return parameter for some simple stats
     //
-    if ( puTotalTimeInMicroSec != NULL )
+    if (puTotalTimeInMicroSec != NULL)
     {
         *puTotalTimeInMicroSec = (unsigned int)m_uTotalTimeAllFrame;
     }
 
-    if ( puAveTimeInMicroSec != NULL )
+    if (puAveTimeInMicroSec != NULL)
     {
         //
         // #if defined are used for remove warning in ps2ee build
         //
 #if defined RAD_PS2 && ! defined RAD_MW
-        *puAveTimeInMicroSec = __udivdi3( m_uTotalTimeAllFrame, m_uSampleCount );
+        *puAveTimeInMicroSec = __udivdi3(m_uTotalTimeAllFrame, m_uSampleCount);
 #else
-        *puAveTimeInMicroSec = (unsigned int)( m_uTotalTimeAllFrame / m_uSampleCount );
+        *puAveTimeInMicroSec = (unsigned int)(m_uTotalTimeAllFrame / m_uSampleCount);
 #endif
     }
 
-    if ( puThisTimeInMicroSec != NULL )
+    if (puThisTimeInMicroSec != NULL)
     {
         *puThisTimeInMicroSec = (unsigned int)uDeltaTime;
     }
 
-    if ( puExecutionCount != NULL )
+    if (puExecutionCount != NULL)
     {
         *puExecutionCount = (unsigned int)m_uSampleCount;
     }
 }
 
-void radProfileSample::StartFrame( )
+void radProfileSample::StartFrame()
 {
     m_uSampleCountThisFrame = 0;
     m_uTotalTimeThisFrame = 0;
 }
 
-void radProfileSample::EndFrame( radTime64 uTotalFrameTimeInMicroSec, radTime64 uAveFrameTimeInMicroSec, radTime64 uThisFrameTimeInMicroSec, unsigned int uFrameCount )
+void radProfileSample::EndFrame(radTime64 uTotalFrameTimeInMicroSec, radTime64 uAveFrameTimeInMicroSec, radTime64 uThisFrameTimeInMicroSec, unsigned int uFrameCount)
 {
     //
     // #if defined are used for remove warning in ps2ee build
     //
 #if defined RAD_PS2 && ! defined RAD_MW
-    float fTimeThisFrameInPercent = __floatdisf( __udivdi3( m_uTotalTimeThisFrame, m_uSampleCountThisFrame ) ) / __floatdisf( uThisFrameTimeInMicroSec );
+    float fTimeThisFrameInPercent = __floatdisf(__udivdi3(m_uTotalTimeThisFrame, m_uSampleCountThisFrame)) / __floatdisf(uThisFrameTimeInMicroSec);
 #else
-    float fTimeThisFrameInPercent = (float)( m_uTotalTimeThisFrame / m_uSampleCountThisFrame ) / (float)uThisFrameTimeInMicroSec;
+    float fTimeThisFrameInPercent = (float)(m_uTotalTimeThisFrame / m_uSampleCountThisFrame) / (float)uThisFrameTimeInMicroSec;
 #endif
 
     //
     // #if defined are used for remove warning in ps2ee build
     //
 #if defined RAD_PS2 && ! defined RAD_MW
-    m_fAveTimePerFrameInPercent = __floatdisf( __udivdi3( m_uTotalTimeAllFrame, m_uSampleCountAllFrame ) ) / __floatdisf( uAveFrameTimeInMicroSec );
+    m_fAveTimePerFrameInPercent = __floatdisf(__udivdi3(m_uTotalTimeAllFrame, m_uSampleCountAllFrame)) / __floatdisf(uAveFrameTimeInMicroSec);
 #else
-    m_fAveTimePerFrameInPercent = (float)( m_uTotalTimeAllFrame / m_uSampleCountAllFrame ) / (float)( uAveFrameTimeInMicroSec );
+    m_fAveTimePerFrameInPercent = (float)(m_uTotalTimeAllFrame / m_uSampleCountAllFrame) / (float)(uAveFrameTimeInMicroSec);
 #endif
 
-    if ( fTimeThisFrameInPercent < m_fMinTimePerFrameInPercent )
+    if (fTimeThisFrameInPercent <m_fMinTimePerFrameInPercent)
     {
         m_fMinTimePerFrameInPercent = fTimeThisFrameInPercent;
     }
 
-    if ( fTimeThisFrameInPercent > m_fMaxTimePerFrameInPercent )
+    if (fTimeThisFrameInPercent> m_fMaxTimePerFrameInPercent)
     {
         m_fMaxTimePerFrameInPercent = fTimeThisFrameInPercent;
     }
@@ -371,54 +371,54 @@ void radProfileSample::EndFrame( radTime64 uTotalFrameTimeInMicroSec, radTime64 
 
 #ifdef RAD_DEBUG
 
-void radProfileSample::DebugDump( )
+void radProfileSample::DebugDump()
 {
-    DebugDumpNode( this, 0 );
+    DebugDumpNode(this, 0);
 }
 
-void radProfileSample::DebugDumpNode( radProfileSample * pNode, unsigned int uLevel )
+void radProfileSample::DebugDumpNode(radProfileSample * pNode, unsigned int uLevel)
 {
-    if ( pNode == NULL )
+    if (pNode == NULL)
     {
         return;
     }
 
-    for ( unsigned int i = 0; i < uLevel; i++ )
+    for (unsigned int i = 0; i <uLevel; i++)
     {
-        rDebugString( "\t" );
+        rDebugString("\t");
     }
     
 #if defined RAD_PS2 && ! defined RAD_MW
-    rDebugPrintf( "[%s] Ave[%.6f][%.2f%%], Min[%.6f][%.2f%%], Max[%.6f][%.2f%%], Count[%d]", 
-                  pNode->GetName( ),
-                  fptodp( pNode->m_fAveTimeInMSec ),
-                  fptodp( pNode->m_fAveTimePerFrameInPercent * 100.0f ),
-                  fptodp( pNode->m_fMinTimeInMSec ),
-                  fptodp( pNode->m_fMinTimePerFrameInPercent * 100.0f ),
-                  fptodp( pNode->m_fMaxTimeInMSec ),
-                  fptodp( pNode->m_fMaxTimePerFrameInPercent * 100.0f ),
-                  fptodp( pNode->m_uSampleCount ) );
+    rDebugPrintf("[%s] Ave[%.6f][%.2f%%], Min[%.6f][%.2f%%], Max[%.6f][%.2f%%], Count[%d]",
+                  pNode->GetName(),
+                  fptodp(pNode->m_fAveTimeInMSec),
+                  fptodp(pNode->m_fAveTimePerFrameInPercent * 100.0f),
+                  fptodp(pNode->m_fMinTimeInMSec),
+                  fptodp(pNode->m_fMinTimePerFrameInPercent * 100.0f),
+                  fptodp(pNode->m_fMaxTimeInMSec),
+                  fptodp(pNode->m_fMaxTimePerFrameInPercent * 100.0f),
+                  fptodp(pNode->m_uSampleCount));
 #else
-    rDebugPrintf( "[%s] Ave[%.6f][%.2f%%], Min[%.6f][%.2f%%], Max[%.6f][%.2f%%], Count[%d]", 
-                  pNode->GetName( ),
+    rDebugPrintf("[%s] Ave[%.6f][%.2f%%], Min[%.6f][%.2f%%], Max[%.6f][%.2f%%], Count[%d]",
+                  pNode->GetName(),
                   pNode->m_fAveTimeInMSec,
                   pNode->m_fAveTimePerFrameInPercent * 100.0f,
                   pNode->m_fMinTimeInMSec,
                   pNode->m_fMinTimePerFrameInPercent * 100.0f,
                   pNode->m_fMaxTimeInMSec,
                   pNode->m_fMaxTimePerFrameInPercent * 100.0f,
-                  pNode->m_uSampleCount );
+                  pNode->m_uSampleCount);
 #endif
 
-    rDebugString( "\n" );
+    rDebugString("\n");
 
     //
     // Dump all children
     //
     radProfileSample * pIterator = pNode->m_pFirstChildProfileSample;
-    while ( pIterator )
+    while (pIterator)
     {
-        DebugDumpNode( pIterator, uLevel + 1 );
+        DebugDumpNode(pIterator, uLevel + 1);
         pIterator = pIterator->m_pNextSiblingProfileSample;
     }
 }

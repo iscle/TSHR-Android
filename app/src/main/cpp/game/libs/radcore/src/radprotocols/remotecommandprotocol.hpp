@@ -16,7 +16,7 @@
 //
 //=============================================================================
 
-#ifndef	RREMOTECOMMANDPROTO_HPP
+#ifndef    RREMOTECOMMANDPROTO_HPP
 #define RREMOTECOMMANDPROTO_HPP
 
 //=============================================================================
@@ -32,7 +32,7 @@
 //
 // This is the protocol number we use for connect with the host via the IOP
 //
-#define HOST_REMOTE_COMMAND_PROTOCOL (0xE666)         
+#define HOST_REMOTE_COMMAND_PROTOCOL (0xE666)
 
 //
 // This constant govers the size of the buffer used for transfering data.
@@ -49,44 +49,38 @@
 // This enumeration defines the various commands we use in the protocol, The
 // protocol is very simple. Simple packets are used.
 //
-enum HrcsCommand
-{
+enum HrcsCommand {
     HrcsList,
-	HrcsListReply,
-	HrcsListItem,
-	HrcsRemoteFunction,
-	HrcsResult
+    HrcsListReply,
+    HrcsListItem,
+    HrcsRemoteFunction,
+    HrcsResult
 };
 
-struct HrcsListCommand
-{
-    HrcsCommand     m_Command; 
-};	
-
-struct HrcsRemoteFunctionCommand
-{
-	HrcsCommand		m_Command;
-	char			m_FunctionName[40];
-	int				m_argc;
-	char			m_argv[RCS_MAX_ARG_LENGTH];
+struct HrcsListCommand {
+    HrcsCommand m_Command;
 };
 
-struct HrcsResultCommand
-{
-	HrcsCommand		m_Command;
-	HrcsResultCode  m_ResultCode;
+struct HrcsRemoteFunctionCommand {
+    HrcsCommand m_Command;
+    char m_FunctionName[40];
+    int m_argc;
+    char m_argv[RCS_MAX_ARG_LENGTH];
 };
 
-struct HrcsListReplyCommand
-{
-	HrcsCommand		m_Command;
-	unsigned int	m_NumItems;
+struct HrcsResultCommand {
+    HrcsCommand m_Command;
+    HrcsResultCode m_ResultCode;
 };
 
-struct HrcsListItemCommand
-{
-	HrcsCommand		m_Command;
-	char			m_FunctionName[40];
+struct HrcsListReplyCommand {
+    HrcsCommand m_Command;
+    unsigned int m_NumItems;
+};
+
+struct HrcsListItemCommand {
+    HrcsCommand m_Command;
+    char m_FunctionName[40];
 };
 
 

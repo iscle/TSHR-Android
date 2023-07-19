@@ -22,7 +22,7 @@
 //              All interfaces must be implemented.
 //=============================================================================
 
-#ifndef	SOCKET_HPP
+#ifndef    SOCKET_HPP
 #define SOCKET_HPP
 
 //=============================================================================
@@ -39,91 +39,91 @@
 // Interface
 //=============================================================================
 
-#if defined( SN_TCPIP ) || defined( RAD_WIN32 ) || defined( RAD_XBOX )
+#if defined(SN_TCPIP) || defined(RAD_WIN32) || defined(RAD_XBOX)
 //
 // Game cubes socket is a pure abstract interface. The other platfroms should
 // be as well and this should be cleaned up.
 //
 struct radSocket 
 {
-    virtual int socket( int af, int type, int protocol)
+    virtual int socket(int af, int type, int protocol)
     {
-        return( ::socket( af, type, protocol ) );
+        return(::socket(af, type, protocol));
     }
-    virtual int closesocket( int sock )
+    virtual int closesocket(int sock)
     {
-        return( ::closesocket( sock ) );
+        return(::closesocket(sock));
     }
-    virtual int setsockopt( int sock, int level, int optname, const char* optval, int optlen)
+    virtual int setsockopt(int sock, int level, int optname, const char* optval, int optlen)
     {
-        return( ::setsockopt( sock, level, optname, optval, optlen ) );
+        return(::setsockopt(sock, level, optname, optval, optlen));
     }
-    virtual int accept( int sock, struct sockaddr* addr, int* addrlen)
+    virtual int accept(int sock, struct sockaddr* addr, int* addrlen)
     {
-        return( ::accept( sock, addr, addrlen) );
+        return(::accept(sock, addr, addrlen));
     }
-    virtual int bind( int sock, struct sockaddr* addr, int addrlen)
+    virtual int bind(int sock, struct sockaddr* addr, int addrlen)
     {
-        return( ::bind( sock, addr, addrlen ) );
+        return(::bind(sock, addr, addrlen));
     }
-    virtual int connect( int sock, const struct sockaddr* addr, int addrlen)
+    virtual int connect(int sock, const struct sockaddr* addr, int addrlen)
     {
-        return( ::connect( sock, addr, addrlen ) );
+        return(::connect(sock, addr, addrlen));
     }
-    virtual int listen( int sock, int backlog)
+    virtual int listen(int sock, int backlog)
     {
-        return( ::listen( sock, backlog) );
+        return(::listen(sock, backlog));
     }
-    virtual int recv( int sock, char* buf, int len, int flags)
+    virtual int recv(int sock, char* buf, int len, int flags)
     {
-        return( ::recv( sock, buf, len, flags) );
+        return(::recv(sock, buf, len, flags));
     }
-    virtual int send( int sock, const char* buf, int len, int flags)
+    virtual int send(int sock, const char* buf, int len, int flags)
     {
-        return( ::send( sock, buf, len, flags) );
+        return(::send(sock, buf, len, flags));
     }
-    virtual int lasterror( int sock )
+    virtual int lasterror(int sock)
     {
-        #if defined( RAD_WIN32 ) || defined( RAD_XBOX )
-        return( WSAGetLastError( ) );
-        #endif
-        #ifdef RAD_PS2
-        return( sn_errno( sock ) );
-        #endif
+#if defined(RAD_WIN32) || defined(RAD_XBOX)
+        return(WSAGetLastError());
+#endif
+#ifdef RAD_PS2
+        return(sn_errno(sock));
+#endif
     }
-    virtual ~radSocket( void ) 
+    virtual ~radSocket(void)
     {
-        
-    } 
-    #if defined( RAD_WIN32 ) || defined( RAD_XBOX )
-    virtual int ioctlsocket( SOCKET s, long cmd, u_long *argp )
-    {
-        return( ::ioctlsocket( s,  cmd,  argp ) );
+
     }
-    #ifndef RAD_XBOX
-    virtual int AsyncSelect( SOCKET s, HWND Wnd, unsigned int wMsg, long levent )
+#if defined(RAD_WIN32) || defined(RAD_XBOX)
+    virtual int ioctlsocket(SOCKET s, long cmd, u_long *argp)
     {
-        return( ::WSAAsyncSelect( s, Wnd, wMsg, levent ) );
+        return(::ioctlsocket(s,  cmd,  argp));
     }
-    #endif
-    #endif
+#ifndef RAD_XBOX
+    virtual int AsyncSelect(SOCKET s, HWND Wnd, unsigned int wMsg, long levent)
+    {
+        return(::WSAAsyncSelect(s, Wnd, wMsg, levent));
+    }
+#endif
+#endif
 
     //
     // This placement operator is used by the host side only
     //
-    void* operator new( size_t size, void* p )
+    void* operator new(size_t size, void* p)
     {
-        return( p );
-    }    
+        return(p);
+    }
 
-    void* operator new( size_t size, radMemoryAllocator alloc )
+    void* operator new(size_t size, radMemoryAllocator alloc)
     {
-        return( radMemoryAlloc( alloc, size ) );
-    }    
+        return(radMemoryAlloc(alloc, size));
+    }
 
-    void operator delete( void * pMemory )
+    void operator delete(void * pMemory)
     {
-	    radMemoryFree( pMemory );
+        radMemoryFree(pMemory);
     }
 
 };
@@ -134,23 +134,21 @@ struct radSocket
 // GameCube does not have real socket implementation. Define a bunch of socket definitions
 // normally found on platforms that have sockets. 
 //
-struct linger
-{
+struct linger {
     int l_onoff;                   /* option on/off */
     int l_linger;                  /* linger time */
 };
 #define SOL_SOCKET      0               /* options for socket level */
 #define SO_LINGER       0x0080          /* linger on close if data present */
 #define SO_KEEPALIVE    0x0008          /* keep connections alive */
-#define WSAEWOULDBLOCK  6       
+#define WSAEWOULDBLOCK  6
 #define AF_INET         2               /* internetwork: UDP, TCP, etc. */
 #define SO_REUSEADDR    0x0004          /* allow local address reuse */
 #define SOCK_STREAM     1               /* stream socket */
 #define WSAENOTCONN     9
 
-struct in_addr
-{
-    unsigned int       s_addr;             /* IP address */
+struct in_addr {
+    unsigned int s_addr;             /* IP address */
 };
 
 #define INADDR_ANY      0               /* Match any internet address */
@@ -159,43 +157,46 @@ struct in_addr
 
 #define INVALID_SOCKET -1
 
-struct sockaddr_in
-{
-    unsigned short       sin_family;         /* Address family = AF_INET */
-    unsigned short       sin_port;           /* TCP: protocol port */
-    struct in_addr  sin_addr;           /* TCP: IP address */
-    char         sin_zero[8];        /* TCP: unused (0) */
+struct sockaddr_in {
+    unsigned short sin_family;         /* Address family = AF_INET */
+    unsigned short sin_port;           /* TCP: protocol port */
+    struct in_addr sin_addr;           /* TCP: IP address */
+    char sin_zero[8];        /* TCP: unused (0) */
 };
 
 #define htonl(l)        ((unsigned int)(l))
 #define htons(s)        ((unsigned short)(s))
 
-struct radSocket 
-{
-    virtual int socket( int af, int type, int protocol) = 0;
-    virtual int closesocket( int sock ) = 0;
-    virtual int setsockopt( int sock, int level, int optname, const char* optval, int optlen) = 0;
-    virtual int accept( int sock, struct sockaddr* addr, int* addrlen) = 0;
-    virtual int bind( int sock, struct sockaddr* addr, int addrlen)= 0;
-    virtual int listen( int sock, int backlog)= 0;
-    virtual int recv( int sock, char* buf, int len, int flags)= 0;
-    virtual int send( int sock, const char* buf, int len, int flags)= 0;
-    virtual int lasterror( int sock )= 0;
+struct radSocket {
+    virtual int socket(int af, int type, int protocol) = 0;
 
-    void* operator new( size_t size, radMemoryAllocator alloc )
-    {
-        return( radMemoryAlloc( alloc, size ) );
-    }    
+    virtual int closesocket(int sock) = 0;
 
-    void operator delete( void * pMemory )
-    {
-	    radMemoryFree( pMemory );
+    virtual int setsockopt(int sock, int level, int optname, const char *optval, int optlen) = 0;
+
+    virtual int accept(int sock, struct sockaddr *addr, int *addrlen) = 0;
+
+    virtual int bind(int sock, struct sockaddr *addr, int addrlen) = 0;
+
+    virtual int listen(int sock, int backlog) = 0;
+
+    virtual int recv(int sock, char *buf, int len, int flags) = 0;
+
+    virtual int send(int sock, const char *buf, int len, int flags) = 0;
+
+    virtual int lasterror(int sock) = 0;
+
+    void *operator new(size_t size, radMemoryAllocator alloc) {
+        return (radMemoryAlloc(alloc, size));
     }
 
-    virtual ~radSocket( void ) 
-    {
-        
-    } 
+    void operator delete(void *pMemory) {
+        radMemoryFree(pMemory);
+    }
+
+    virtual ~radSocket(void) {
+
+    }
 
 };
 

@@ -32,8 +32,8 @@
 // Static Data Definitions
 //=============================================================================
 
-static IRadMemoryPool*  s_DrivePool = NULL;
-static IRadThreadMutex* s_Mutex = NULL;
+static IRadMemoryPool *s_DrivePool = NULL;
+static IRadThreadMutex *s_Mutex = NULL;
 
 //=============================================================================
 // Functions
@@ -51,21 +51,21 @@ static IRadThreadMutex* s_Mutex = NULL;
 //------------------------------------------------------------------------------
 
 void radDrivePoolInitialize
-( 
-    unsigned int        maxDrives, 
-    radMemoryAllocator  alloc
-)
-{
-    rAssertMsg( s_DrivePool == NULL, "radFileSystem: drive pool already initialized" );
+        (
+                unsigned int maxDrives,
+                radMemoryAllocator alloc
+        ) {
+    rAssertMsg(s_DrivePool == NULL, "radFileSystem: drive pool already initialized");
 
-    radThreadCreateMutex( &s_Mutex, alloc );
-    rAssert( s_Mutex != NULL );
+    radThreadCreateMutex(&s_Mutex, alloc);
+    rAssert(s_Mutex != NULL);
 
     //
     // Create a memory pool for allocating drive objects.
     //
-    radMemoryCreatePool( &s_DrivePool, sizeof( radInstanceDrive ), maxDrives, 0, false, None, alloc, "radInstanceDrive" );
-    rAssert( s_DrivePool != NULL );
+    radMemoryCreatePool(&s_DrivePool, sizeof(radInstanceDrive), maxDrives, 0, false, None, alloc,
+                        "radInstanceDrive");
+    rAssert(s_DrivePool != NULL);
 }
 
 //=============================================================================
@@ -78,21 +78,20 @@ void radDrivePoolInitialize
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radDrivePoolTerminate( void )
-{
-    rAssertMsg( s_DrivePool, "radFileSystem: drive pool not initialized");
+void radDrivePoolTerminate(void) {
+    rAssertMsg(s_DrivePool, "radFileSystem: drive pool not initialized");
 
-    radRelease( s_Mutex, NULL );
+    radRelease(s_Mutex, NULL);
     s_Mutex = NULL;
 
     unsigned int elementSize;
     unsigned int numberAllocated;
     unsigned int numberFree;
-   
-    s_DrivePool->GetStatus( &elementSize, &numberFree, &numberAllocated );
-    rAssertMsg( numberAllocated == 0, "radFileSystem: not all drives were destroyed." );
 
-    radRelease( s_DrivePool, NULL );
+    s_DrivePool->GetStatus(&elementSize, &numberFree, &numberAllocated);
+    rAssertMsg(numberAllocated == 0, "radFileSystem: not all drives were destroyed.");
+
+    radRelease(s_DrivePool, NULL);
     s_DrivePool = NULL;
 }
 
@@ -111,20 +110,19 @@ void radDrivePoolTerminate( void )
 // Returns:     address 
 //------------------------------------------------------------------------------
 
-void* radInstanceDrive::operator new( size_t size )
-{
+void *radInstanceDrive::operator new(size_t size) {
     (void) size;
 
-    rAssertMsg( s_DrivePool, "radFileSystem: drive pool not initialized");
-    
-    s_Mutex->Lock( );
+    rAssertMsg(s_DrivePool, "radFileSystem: drive pool not initialized");
 
-    void* p = s_DrivePool->GetMemory( );
-    rAssertMsg( p != NULL, "radFileSystem: increase maximum number of drives" );
+    s_Mutex->Lock();
 
-    s_Mutex->Unlock( );
+    void *p = s_DrivePool->GetMemory();
+    rAssertMsg(p != NULL, "radFileSystem: increase maximum number of drives");
 
-    return( p );
+    s_Mutex->Unlock();
+
+    return (p);
 }
 
 //=============================================================================
@@ -137,15 +135,14 @@ void* radInstanceDrive::operator new( size_t size )
 // Returns:    
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::operator delete( void* p )
-{
-    rAssertMsg( s_DrivePool, "radFileSystem: drive pool not initialized");
+void radInstanceDrive::operator delete(void *p) {
+    rAssertMsg(s_DrivePool, "radFileSystem: drive pool not initialized");
 
-    s_Mutex->Lock( );
+    s_Mutex->Lock();
 
-    s_DrivePool->FreeMemory( p );
+    s_DrivePool->FreeMemory(p);
 
-    s_Mutex->Unlock( );
+    s_Mutex->Unlock();
 }
 
 //=============================================================================
@@ -159,28 +156,27 @@ void radInstanceDrive::operator delete( void* p )
 // Returns:     
 //------------------------------------------------------------------------------
 
-radInstanceDrive::radInstanceDrive( radDrive* pDrive, radFilePriority priority )
-    :
-    m_RefCount( (int) 1 ),
-    m_pDrive( pDrive ),
-    m_Priority( priority ),
-    m_OutstandingRequests( 0 ),
-    m_DirSearch( false )
-{
-    rAssert( m_pDrive != NULL );
-    m_pDrive->AddRef( );
+radInstanceDrive::radInstanceDrive(radDrive *pDrive, radFilePriority priority)
+        :
+        m_RefCount((int) 1),
+        m_pDrive(pDrive),
+        m_Priority(priority),
+        m_OutstandingRequests(0),
+        m_DirSearch(false) {
+    rAssert(m_pDrive != NULL);
+    m_pDrive->AddRef();
 
-    rAssert( priority <= LowPriority );
+    rAssert(priority <= LowPriority);
 
 #ifdef RAD_DEBUG
     m_FirstRemoval = true;
-    m_pDrive->AddDriveReference( );
+    m_pDrive->AddDriveReference();
 #endif
 
     //
     // Lets construct an init drive request and queue to the drive. 
     //
-    m_pDrive->QueueRequest( new DriveOpenRequest( this ),  m_Priority );
+    m_pDrive->QueueRequest(new DriveOpenRequest(this), m_Priority);
 }
 
 //=============================================================================
@@ -193,9 +189,8 @@ radInstanceDrive::radInstanceDrive( radDrive* pDrive, radFilePriority priority )
 // Returns:     
 //------------------------------------------------------------------------------
 
-radInstanceDrive::~radInstanceDrive( void )
-{
-    m_pDrive->Release( );
+radInstanceDrive::~radInstanceDrive(void) {
+    m_pDrive->Release();
 }
 
 //=============================================================================
@@ -208,12 +203,11 @@ radInstanceDrive::~radInstanceDrive( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::AddRef( void )
-{
-    Lock( );
-    rAssert( m_RefCount < MAX_REFCOUNT );
+void radInstanceDrive::AddRef(void) {
+    Lock();
+    rAssert(m_RefCount < MAX_REFCOUNT);
     m_RefCount++;
-    Unlock( );
+    Unlock();
 }
 
 //=============================================================================
@@ -226,53 +220,46 @@ void radInstanceDrive::AddRef( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::Release( void )
-{
-    Lock( );
-    rAssert( m_RefCount > 0 && m_RefCount <  MAX_REFCOUNT );
+void radInstanceDrive::Release(void) {
+    Lock();
+    rAssert(m_RefCount > 0 && m_RefCount < MAX_REFCOUNT);
     m_RefCount--;
-    if (m_RefCount == 0 )
-    {
-        if ( m_DirSearch )
-        {
+    if (m_RefCount == 0) {
+        if (m_DirSearch) {
             m_DirSearch = false;
-            Unlock( );
+            Unlock();
 
 #      ifdef RAD_DEBUG
             //
             // We only remove the reference the FIRST time the ref count hits 0.
             //
-            if ( m_FirstRemoval )
+            if (m_FirstRemoval)
             {
-                m_pDrive->RemoveDriveReference( );
+                m_pDrive->RemoveDriveReference();
                 m_FirstRemoval = false;
             }
 #     endif
 
-            m_pDrive->QueueRequest( new DriveFindCloseRequest( this ), m_Priority );
-        }
-        else
-        {
+            m_pDrive->QueueRequest(new DriveFindCloseRequest(this), m_Priority);
+        } else {
             m_RefCount = MAX_REFCOUNT / 2;
-            Unlock( );
+            Unlock();
 
 #      ifdef RAD_DEBUG
             //
             // We only remove the reference the FIRST time the ref count hits 0.
             //
-            if ( m_FirstRemoval )
+            if (m_FirstRemoval)
             {
-                m_pDrive->RemoveDriveReference( );
+                m_pDrive->RemoveDriveReference();
                 m_FirstRemoval = false;
             }
 #     endif
 
             delete this;
         }
-    }
-    else
-    {
-        Unlock( );
+    } else {
+        Unlock();
     }
 }
 
@@ -286,10 +273,9 @@ void radInstanceDrive::Release( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::Lock( void )
-{
-    rAssert( s_Mutex != NULL );
-    s_Mutex->Lock( );
+void radInstanceDrive::Lock(void) {
+    rAssert(s_Mutex != NULL);
+    s_Mutex->Lock();
 }
 
 //=============================================================================
@@ -302,10 +288,9 @@ void radInstanceDrive::Lock( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::Unlock( void )
-{
-    rAssert( s_Mutex != NULL );
-    s_Mutex->Unlock( );
+void radInstanceDrive::Unlock(void) {
+    rAssert(s_Mutex != NULL);
+    s_Mutex->Unlock();
 }
 
 //=============================================================================
@@ -319,9 +304,8 @@ void radInstanceDrive::Unlock( void )
 // Returns:     drive capabilities
 //------------------------------------------------------------------------------
 
-unsigned int radInstanceDrive::GetCapabilities( void )
-{
-    return m_pDrive->GetCapabilities( );
+unsigned int radInstanceDrive::GetCapabilities(void) {
+    return m_pDrive->GetCapabilities();
 }
 
 //=============================================================================
@@ -334,10 +318,9 @@ unsigned int radInstanceDrive::GetCapabilities( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::GetMediaInfoAsync( MediaInfo* pMediaInfo )
-{
-    rAssert( pMediaInfo != NULL );
-    m_pDrive->QueueRequest( new DriveMediaRequest( this, pMediaInfo ),  m_Priority );
+void radInstanceDrive::GetMediaInfoAsync(MediaInfo *pMediaInfo) {
+    rAssert(pMediaInfo != NULL);
+    m_pDrive->QueueRequest(new DriveMediaRequest(this, pMediaInfo), m_Priority);
 }
 
 //=============================================================================
@@ -350,9 +333,8 @@ void radInstanceDrive::GetMediaInfoAsync( MediaInfo* pMediaInfo )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::FormatAsync( void )
-{
-    m_pDrive->QueueRequest( new DriveFormatRequest( this ),  m_Priority );
+void radInstanceDrive::FormatAsync(void) {
+    m_pDrive->QueueRequest(new DriveFormatRequest(this), m_Priority);
 }
 
 //=============================================================================
@@ -365,19 +347,18 @@ void radInstanceDrive::FormatAsync( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::CreateDirectoryAsync( const char* pDirectoryName )
-{
-    rAssert( pDirectoryName != NULL );
+void radInstanceDrive::CreateDirectoryAsync(const char *pDirectoryName) {
+    rAssert(pDirectoryName != NULL);
 
     //
     // Process the filename to get the file name in canonical form
     //
-    char fullFilename[ radFileFilenameMax + 1 ];
-    char driveSpec[ radFileDrivenameMax + 1 ];
-    char* filePart = NULL;
-    radFileSystem::ProcessFileName( pDirectoryName, fullFilename, driveSpec, &filePart );
+    char fullFilename[radFileFilenameMax + 1];
+    char driveSpec[radFileDrivenameMax + 1];
+    char *filePart = NULL;
+    radFileSystem::ProcessFileName(pDirectoryName, fullFilename, driveSpec, &filePart);
 
-    m_pDrive->QueueRequest( new DriveCreateDirectoryRequest( this, filePart ), m_Priority );
+    m_pDrive->QueueRequest(new DriveCreateDirectoryRequest(this, filePart), m_Priority);
 }
 
 //=============================================================================
@@ -390,19 +371,18 @@ void radInstanceDrive::CreateDirectoryAsync( const char* pDirectoryName )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::DestroyDirectoryAsync( const char* pDirectoryName )
-{
-    rAssert( pDirectoryName != NULL );
+void radInstanceDrive::DestroyDirectoryAsync(const char *pDirectoryName) {
+    rAssert(pDirectoryName != NULL);
 
     //
     // Process the filename to get the file name in canonical form
     //
-    char fullFilename[ radFileFilenameMax + 1 ];
-    char driveSpec[ radFileDrivenameMax + 1 ];
-    char* filePart = NULL;
-    radFileSystem::ProcessFileName( pDirectoryName, fullFilename, driveSpec, &filePart );
+    char fullFilename[radFileFilenameMax + 1];
+    char driveSpec[radFileDrivenameMax + 1];
+    char *filePart = NULL;
+    radFileSystem::ProcessFileName(pDirectoryName, fullFilename, driveSpec, &filePart);
 
-    m_pDrive->QueueRequest( new DriveDestroyDirectoryRequest( this, filePart ), m_Priority );
+    m_pDrive->QueueRequest(new DriveDestroyDirectoryRequest(this, filePart), m_Priority);
 }
 
 //=============================================================================
@@ -416,20 +396,19 @@ void radInstanceDrive::DestroyDirectoryAsync( const char* pDirectoryName )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::FindFirstAsync( const char* searchspec, DirectoryInfo* pDirectoryInfo )
-{
-    rAssert( searchspec != NULL );
-    rAssert( pDirectoryInfo != NULL );
+void radInstanceDrive::FindFirstAsync(const char *searchspec, DirectoryInfo *pDirectoryInfo) {
+    rAssert(searchspec != NULL);
+    rAssert(pDirectoryInfo != NULL);
 
     //
     // Process the filename to get the file name in canonical form
     //
-    char fullFilename[ radFileFilenameMax + 1 ];
-    char driveSpec[ radFileDrivenameMax + 1 ];
-    char* filePart = NULL;
-    radFileSystem::ProcessFileName( searchspec, fullFilename, driveSpec, &filePart );
+    char fullFilename[radFileFilenameMax + 1];
+    char driveSpec[radFileDrivenameMax + 1];
+    char *filePart = NULL;
+    radFileSystem::ProcessFileName(searchspec, fullFilename, driveSpec, &filePart);
 
-    m_pDrive->QueueRequest( new DriveFindFirstRequest( this, filePart, pDirectoryInfo ), m_Priority );
+    m_pDrive->QueueRequest(new DriveFindFirstRequest(this, filePart, pDirectoryInfo), m_Priority);
 
 }
 
@@ -444,10 +423,9 @@ void radInstanceDrive::FindFirstAsync( const char* searchspec, DirectoryInfo* pD
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::FindNextAsync( DirectoryInfo* pDirectoryInfo )
-{
-    rAssert( pDirectoryInfo != NULL );
-    m_pDrive->QueueRequest( new DriveFindNextRequest( this, pDirectoryInfo ), m_Priority );
+void radInstanceDrive::FindNextAsync(DirectoryInfo *pDirectoryInfo) {
+    rAssert(pDirectoryInfo != NULL);
+    m_pDrive->QueueRequest(new DriveFindNextRequest(this, pDirectoryInfo), m_Priority);
 }
 
 //=============================================================================
@@ -460,65 +438,57 @@ void radInstanceDrive::FindNextAsync( DirectoryInfo* pDirectoryInfo )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::DestroyFileAsync( const char* pFileName, bool simpleName )
-{
-    rAssert( pFileName != NULL );
+void radInstanceDrive::DestroyFileAsync(const char *pFileName, bool simpleName) {
+    rAssert(pFileName != NULL);
 
     //
     // Process the filename to get the file name in canonical form
     //
-    char fullFilename[ radFileFilenameMax + 1 ];
-    char driveSpec[ radFileDrivenameMax + 1 ];
-    char* filePart = NULL;
-    radFileSystem::ProcessFileName( pFileName, fullFilename, driveSpec, &filePart, simpleName );
+    char fullFilename[radFileFilenameMax + 1];
+    char driveSpec[radFileDrivenameMax + 1];
+    char *filePart = NULL;
+    radFileSystem::ProcessFileName(pFileName, fullFilename, driveSpec, &filePart, simpleName);
 
-    m_pDrive->QueueRequest( new DriveFileDestroyRequest( this, filePart ), m_Priority );
+    m_pDrive->QueueRequest(new DriveFileDestroyRequest(this, filePart), m_Priority);
 }
 
 //=============================================================================
 // Synchronous versions of the above functions.
 //=============================================================================
 
-void radInstanceDrive::GetMediaInfoSync( MediaInfo* pMediaInfo )
-{
-    GetMediaInfoAsync( pMediaInfo );
-    WaitForCompletion( );
+void radInstanceDrive::GetMediaInfoSync(MediaInfo *pMediaInfo) {
+    GetMediaInfoAsync(pMediaInfo);
+    WaitForCompletion();
 }
 
-void radInstanceDrive::FormatSync( void )
-{
-    FormatAsync( );
-    WaitForCompletion( );
+void radInstanceDrive::FormatSync(void) {
+    FormatAsync();
+    WaitForCompletion();
 }
 
-void radInstanceDrive::CreateDirectorySync( const char* pDirectoryName )
-{
-    CreateDirectoryAsync( pDirectoryName );
-    WaitForCompletion( );
+void radInstanceDrive::CreateDirectorySync(const char *pDirectoryName) {
+    CreateDirectoryAsync(pDirectoryName);
+    WaitForCompletion();
 }
 
-void radInstanceDrive::DestroyDirectorySync( const char* pDirectoryName )
-{
-    DestroyDirectoryAsync( pDirectoryName );
-    WaitForCompletion( );
+void radInstanceDrive::DestroyDirectorySync(const char *pDirectoryName) {
+    DestroyDirectoryAsync(pDirectoryName);
+    WaitForCompletion();
 }
 
-void radInstanceDrive::FindFirstSync( const char* searchspec, DirectoryInfo* pDirectoryInfo )
-{
-    FindFirstAsync( searchspec, pDirectoryInfo );
-    WaitForCompletion( );
+void radInstanceDrive::FindFirstSync(const char *searchspec, DirectoryInfo *pDirectoryInfo) {
+    FindFirstAsync(searchspec, pDirectoryInfo);
+    WaitForCompletion();
 }
 
-void radInstanceDrive::FindNextSync( DirectoryInfo* pDirectoryInfo )
-{
-    FindNextAsync( pDirectoryInfo );
-    WaitForCompletion( );
+void radInstanceDrive::FindNextSync(DirectoryInfo *pDirectoryInfo) {
+    FindNextAsync(pDirectoryInfo);
+    WaitForCompletion();
 }
 
-void radInstanceDrive::DestroyFileSync( const char* pFileName, bool simpleName )
-{
-    DestroyFileAsync( pFileName, simpleName );
-    WaitForCompletion( );
+void radInstanceDrive::DestroyFileSync(const char *pFileName, bool simpleName) {
+    DestroyFileAsync(pFileName, simpleName);
+    WaitForCompletion();
 }
 
 //=============================================================================
@@ -535,9 +505,8 @@ void radInstanceDrive::DestroyFileSync( const char* pFileName, bool simpleName )
 //              will not be cancelled.
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::CancelAsync( void )
-{
-    m_pDrive->QueueRequest( new DriveCancelRequest( this ), m_Priority, true );
+void radInstanceDrive::CancelAsync(void) {
+    m_pDrive->QueueRequest(new DriveCancelRequest(this), m_Priority, true);
 
 }
 
@@ -552,10 +521,12 @@ void radInstanceDrive::CancelAsync( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::AddCompletionCallback( IRadDriveCompletionCallback* pCallback, void* pUserData )
-{
-    rAssert( pCallback != NULL );
-    m_pDrive->QueueRequest( new DriveCompletionRequest( ::radThreadGetActiveThread( ), this, pCallback, pUserData ), m_Priority, false );
+void
+radInstanceDrive::AddCompletionCallback(IRadDriveCompletionCallback *pCallback, void *pUserData) {
+    rAssert(pCallback != NULL);
+    m_pDrive->QueueRequest(
+            new DriveCompletionRequest(::radThreadGetActiveThread(), this, pCallback, pUserData),
+            m_Priority, false);
 }
 
 //=============================================================================
@@ -568,10 +539,9 @@ void radInstanceDrive::AddCompletionCallback( IRadDriveCompletionCallback* pCall
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::AddCompletionEvent( IRadThreadSemaphore* pSemaphore )
-{
-    rAssert( pSemaphore != NULL );
-    m_pDrive->QueueRequest( new CompletionEventRequest( pSemaphore, m_pDrive ), m_Priority, false );
+void radInstanceDrive::AddCompletionEvent(IRadThreadSemaphore *pSemaphore) {
+    rAssert(pSemaphore != NULL);
+    m_pDrive->QueueRequest(new CompletionEventRequest(pSemaphore, m_pDrive), m_Priority, false);
 }
 
 //=============================================================================
@@ -584,11 +554,10 @@ void radInstanceDrive::AddCompletionEvent( IRadThreadSemaphore* pSemaphore )
 // Returns:     true if there are no outstanding requests  
 //------------------------------------------------------------------------------
 
-bool radInstanceDrive::CheckForCompletion( void )
-{
-    Lock( );
-    bool result = ( m_OutstandingRequests == 0 );
-    Unlock( );
+bool radInstanceDrive::CheckForCompletion(void) {
+    Lock();
+    bool result = (m_OutstandingRequests == 0);
+    Unlock();
 
     return result;
 }
@@ -603,11 +572,9 @@ bool radInstanceDrive::CheckForCompletion( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::WaitForCompletion( void )
-{
-    while ( !CheckForCompletion( ) )
-    {
-        m_pDrive->Service( );
+void radInstanceDrive::WaitForCompletion(void) {
+    while (!CheckForCompletion()) {
+        m_pDrive->Service();
         radThreadSleep(0);
     }
 }
@@ -624,14 +591,10 @@ void radInstanceDrive::WaitForCompletion( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-radFileError radInstanceDrive::GetLastError( void )
-{
-    if ( m_pDrive->CheckForErrorState( ) )
-    {
-        return m_pDrive->GetLastError( );
-    }
-    else
-    {
+radFileError radInstanceDrive::GetLastError(void) {
+    if (m_pDrive->CheckForErrorState()) {
+        return m_pDrive->GetLastError();
+    } else {
         return Success;
     }
 }
@@ -647,10 +610,9 @@ radFileError radInstanceDrive::GetLastError( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::RegisterErrorHandler( IRadDriveErrorCallback* callback, void* pUserData )
-{
-    rAssert( callback != NULL );
-    m_pDrive->RegisterErrorHandler( callback, pUserData );
+void radInstanceDrive::RegisterErrorHandler(IRadDriveErrorCallback *callback, void *pUserData) {
+    rAssert(callback != NULL);
+    m_pDrive->RegisterErrorHandler(callback, pUserData);
 }
 
 //=============================================================================
@@ -663,9 +625,8 @@ void radInstanceDrive::RegisterErrorHandler( IRadDriveErrorCallback* callback, v
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::UnregisterErrorHandler( IRadDriveErrorCallback* callback )
-{
-    m_pDrive->UnregisterErrorHandler( callback );
+void radInstanceDrive::UnregisterErrorHandler(IRadDriveErrorCallback *callback) {
+    m_pDrive->UnregisterErrorHandler(callback);
 }
 
 //=============================================================================
@@ -678,10 +639,9 @@ void radInstanceDrive::UnregisterErrorHandler( IRadDriveErrorCallback* callback 
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::RegisterErrorEvent( IRadThreadSemaphore* pSemaphore )
-{
-    rAssert( pSemaphore != NULL );
-    m_pDrive->RegisterErrorEvent( pSemaphore );
+void radInstanceDrive::RegisterErrorEvent(IRadThreadSemaphore *pSemaphore) {
+    rAssert(pSemaphore != NULL);
+    m_pDrive->RegisterErrorEvent(pSemaphore);
 }
 
 //=============================================================================
@@ -694,10 +654,9 @@ void radInstanceDrive::RegisterErrorEvent( IRadThreadSemaphore* pSemaphore )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::UnregisterErrorEvent( IRadThreadSemaphore* pSemaphore )
-{
-    rAssert( pSemaphore != NULL );
-    m_pDrive->RegisterErrorEvent( pSemaphore );
+void radInstanceDrive::UnregisterErrorEvent(IRadThreadSemaphore *pSemaphore) {
+    rAssert(pSemaphore != NULL);
+    m_pDrive->RegisterErrorEvent(pSemaphore);
 }
 
 //=============================================================================
@@ -711,9 +670,8 @@ void radInstanceDrive::UnregisterErrorEvent( IRadThreadSemaphore* pSemaphore )
 // Returns:     true if there is an error state
 //------------------------------------------------------------------------------
 
-bool radInstanceDrive::CheckForErrorState( void )
-{
-    return m_pDrive->CheckForErrorState( );
+bool radInstanceDrive::CheckForErrorState(void) {
+    return m_pDrive->CheckForErrorState();
 }
 
 //=============================================================================
@@ -728,9 +686,8 @@ bool radInstanceDrive::CheckForErrorState( void )
 // Notes:       this must be called if an error event is used.
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::ResumeRequest( bool retry )
-{
-    m_pDrive->ResumeRequest( retry );
+void radInstanceDrive::ResumeRequest(bool retry) {
+    m_pDrive->ResumeRequest(retry);
 }
 
 //=============================================================================
@@ -743,9 +700,8 @@ void radInstanceDrive::ResumeRequest( bool retry )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::SetDefaultErrorBehaviour( ErrorBehaviour behaviour )
-{
-    m_pDrive->SetDefaultErrorBehaviour( behaviour );
+void radInstanceDrive::SetDefaultErrorBehaviour(ErrorBehaviour behaviour) {
+    m_pDrive->SetDefaultErrorBehaviour(behaviour);
 }
 
 //=============================================================================
@@ -759,17 +715,14 @@ void radInstanceDrive::SetDefaultErrorBehaviour( ErrorBehaviour behaviour )
 // Returns:     
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::SetErrorClearReporting( bool notifyOnErrorClear )
-{
-    m_pDrive->SetErrorClearReporting( notifyOnErrorClear );
+void radInstanceDrive::SetErrorClearReporting(bool notifyOnErrorClear) {
+    m_pDrive->SetErrorClearReporting(notifyOnErrorClear);
 }
 
-void radInstanceDrive::SetReadWriteGranularity( unsigned int Size )
-{
+void radInstanceDrive::SetReadWriteGranularity(unsigned int Size) {
 }
 
-unsigned int radInstanceDrive::GetReadWriteGranularity( void )
-{
+unsigned int radInstanceDrive::GetReadWriteGranularity(void) {
     return 0xFFFFF;
 }
 
@@ -784,45 +737,45 @@ unsigned int radInstanceDrive::GetReadWriteGranularity( void )
 //------------------------------------------------------------------------------
 
 void radInstanceDrive::FileOpenAsync
-( 
-    IRadFile**          pIRadFile, 
-    const char*         pFileName,
-    bool                writeAccess,
-    radFileOpenFlags    flags,
-    radFilePriority     priority, 
-    unsigned int        cacheSize,
-    radMemoryAllocator  alloc,
-    radMemorySpace      cacheSpace 
-)
-{
-	rAssert( pFileName != NULL );
-    rAssert( pIRadFile != NULL );
+        (
+                IRadFile **pIRadFile,
+                const char *pFileName,
+                bool writeAccess,
+                radFileOpenFlags flags,
+                radFilePriority priority,
+                unsigned int cacheSize,
+                radMemoryAllocator alloc,
+                radMemorySpace cacheSpace
+        ) {
+    rAssert(pFileName != NULL);
+    rAssert(pIRadFile != NULL);
 
-    rAssertMsg( strchr( pFileName, ':' ) == NULL, "radFileSystem: drive name included in IRadFile::FileOpen( )" );
-    
+    rAssertMsg(strchr(pFileName, ':') == NULL,
+               "radFileSystem: drive name included in IRadFile::FileOpen()");
+
     //
     // Process the filename to get the file name in canonical form
     //
-    char fullFilename[ radFileFilenameMax + 1 ];
-    char driveSpec[ radFileDrivenameMax + 1 ];
-    char* filePart = NULL;
-    radFileSystem::ProcessFileName( pFileName, fullFilename, driveSpec, &filePart );
+    char fullFilename[radFileFilenameMax + 1];
+    char driveSpec[radFileDrivenameMax + 1];
+    char *filePart = NULL;
+    radFileSystem::ProcessFileName(pFileName, fullFilename, driveSpec, &filePart);
 
     //
     // Lets new up the file object.
     //
     *pIRadFile =
-        new radFile
-        (
-            m_pDrive,
-            filePart,
-            writeAccess,
-            flags,
-            priority,
-            cacheSize,
-            alloc,
-            cacheSpace
-        );
+            new radFile
+                    (
+                            m_pDrive,
+                            filePart,
+                            writeAccess,
+                            flags,
+                            priority,
+                            cacheSize,
+                            alloc,
+                            cacheSpace
+                    );
 }
 
 //=============================================================================
@@ -836,76 +789,75 @@ void radInstanceDrive::FileOpenAsync
 //------------------------------------------------------------------------------
 
 void radInstanceDrive::FileOpenSync
-( 
-    IRadFile**          pIRadFile, 
-    const char*         pFileName,
-    bool                writeAccess,
-    radFileOpenFlags    flags,
-    radFilePriority     priority, 
-    unsigned int        cacheSize,
-    radMemoryAllocator  alloc,
-    radMemorySpace      cacheSpace 
-)
-{
-    FileOpenAsync( pIRadFile, pFileName, writeAccess, flags, priority, cacheSize, alloc, cacheSpace );
-    (*pIRadFile)->WaitForCompletion( );
+        (
+                IRadFile **pIRadFile,
+                const char *pFileName,
+                bool writeAccess,
+                radFileOpenFlags flags,
+                radFilePriority priority,
+                unsigned int cacheSize,
+                radMemoryAllocator alloc,
+                radMemorySpace cacheSpace
+        ) {
+    FileOpenAsync(pIRadFile, pFileName, writeAccess, flags, priority, cacheSize, alloc, cacheSpace);
+    (*pIRadFile)->WaitForCompletion();
 }
 
 void radInstanceDrive::SaveGameOpenAsync
-( 
-    IRadFile**       pIRadFile, 
-    const char*      pFileName,
-    bool             writeAccess,
-    radFileOpenFlags flags,
-    radMemcardInfo*  memcardInfo,
-    unsigned int     maxSize,
-	bool			 simpleName,
-    radFilePriority  priority
-)
-{
-	rAssert( pFileName != NULL );
-    rAssert( pIRadFile != NULL );
+        (
+                IRadFile **pIRadFile,
+                const char *pFileName,
+                bool writeAccess,
+                radFileOpenFlags flags,
+                radMemcardInfo *memcardInfo,
+                unsigned int maxSize,
+                bool simpleName,
+                radFilePriority priority
+        ) {
+    rAssert(pFileName != NULL);
+    rAssert(pIRadFile != NULL);
 
-	if (simpleName==false)
-	    rAssertMsg( strchr( pFileName, ':' ) == NULL, "radFileSystem: drive name included in IRadFile::FileOpen( )" );
+    if (simpleName == false)
+        rAssertMsg(strchr(pFileName, ':') == NULL,
+                   "radFileSystem: drive name included in IRadFile::FileOpen()");
     //
     // Process the filename to get the file name in canonical form
     //
-    char fullFilename[ radFileFilenameMax + 1 ];
-    char driveSpec[ radFileDrivenameMax + 1 ];
-    char* filePart = NULL;
-    radFileSystem::ProcessFileName( pFileName, fullFilename, driveSpec, &filePart, simpleName );
+    char fullFilename[radFileFilenameMax + 1];
+    char driveSpec[radFileDrivenameMax + 1];
+    char *filePart = NULL;
+    radFileSystem::ProcessFileName(pFileName, fullFilename, driveSpec, &filePart, simpleName);
 
     //
     // Lets new up the file object.
     //
     *pIRadFile =
-        new radFile
-        (
-            m_pDrive,
-            filePart,
-            writeAccess,
-            flags,
-            memcardInfo,
-            maxSize,
-            priority
-        );
+            new radFile
+                    (
+                            m_pDrive,
+                            filePart,
+                            writeAccess,
+                            flags,
+                            memcardInfo,
+                            maxSize,
+                            priority
+                    );
 }
 
 void radInstanceDrive::SaveGameOpenSync
-( 
-    IRadFile**       pIRadFile, 
-    const char*      pFileName,
-    bool             writeAccess,
-    radFileOpenFlags flags,
-    radMemcardInfo*  memcardInfo,
-    unsigned int     maxSize,
-	bool			 simpleName,
-    radFilePriority  priority
-)
-{
-    SaveGameOpenAsync( pIRadFile, pFileName, writeAccess, flags, memcardInfo, maxSize, simpleName ,priority );
-    (*pIRadFile)->WaitForCompletion( );
+        (
+                IRadFile **pIRadFile,
+                const char *pFileName,
+                bool writeAccess,
+                radFileOpenFlags flags,
+                radMemcardInfo *memcardInfo,
+                unsigned int maxSize,
+                bool simpleName,
+                radFilePriority priority
+        ) {
+    SaveGameOpenAsync(pIRadFile, pFileName, writeAccess, flags, memcardInfo, maxSize, simpleName,
+                      priority);
+    (*pIRadFile)->WaitForCompletion();
 }
 
 //=============================================================================
@@ -918,11 +870,10 @@ void radInstanceDrive::SaveGameOpenSync
 // Returns:  
 //------------------------------------------------------------------------------
 
-void radInstanceDrive::SetPriority( radFilePriority priority )
-{
-    rAssert( priority <= LowPriority );
-    rWarningMsg( m_OutstandingRequests == 0,
-        "radFileSystem: changing the priority of a drive while there are outstanding requests." );
+void radInstanceDrive::SetPriority(radFilePriority priority) {
+    rAssert(priority <= LowPriority);
+    rWarningMsg(m_OutstandingRequests == 0,
+                "radFileSystem: changing the priority of a drive while there are outstanding requests.");
 
     m_Priority = m_Priority;
 }
@@ -937,8 +888,7 @@ void radInstanceDrive::SetPriority( radFilePriority priority )
 // Returns:     priority
 //------------------------------------------------------------------------------
 
-radFilePriority radInstanceDrive::GetPriority( void )
-{
+radFilePriority radInstanceDrive::GetPriority(void) {
     return m_Priority;
 }
 
@@ -952,9 +902,8 @@ radFilePriority radInstanceDrive::GetPriority( void )
 // Returns:     drive name
 //------------------------------------------------------------------------------
 
-const char* radInstanceDrive::GetDriveName( void )
-{
-    return m_pDrive->GetDriveName( );
+const char *radInstanceDrive::GetDriveName(void) {
+    return m_pDrive->GetDriveName();
 }
 
 //=============================================================================
@@ -967,7 +916,6 @@ const char* radInstanceDrive::GetDriveName( void )
 // Returns:     
 //------------------------------------------------------------------------------
 
-unsigned int radInstanceDrive::GetCreationSize( radMemcardInfo* memcardInfo, unsigned int size )
-{
-    return m_pDrive->GetCreationSize( memcardInfo, size );
+unsigned int radInstanceDrive::GetCreationSize(radMemcardInfo *memcardInfo, unsigned int size) {
+    return m_pDrive->GetCreationSize(memcardInfo, size);
 }

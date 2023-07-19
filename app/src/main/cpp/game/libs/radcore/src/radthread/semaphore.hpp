@@ -17,7 +17,7 @@
 // Notes:       
 //=============================================================================
 
-#ifndef	SEMAPHORE_HPP
+#ifndef    SEMAPHORE_HPP
 #define SEMAPHORE_HPP
 
 //=============================================================================
@@ -25,17 +25,17 @@
 //=============================================================================
 
 #ifdef RAD_WIN32
-    #include <windows.h>
+#include <windows.h>
 #endif
 #ifdef RAD_XBOX
-    #include <xtl.h>
+#include <xtl.h>
 #endif
 #ifdef RAD_PS2
-    #include <eekernel.h>
+#include <eekernel.h>
 #endif
 #ifdef RAD_GAMECUBE
-    #include <os.h>
-#endif 
+#include <os.h>
+#endif
 
 #include <radobject.hpp>
 #include <radmemory.hpp>
@@ -58,41 +58,43 @@
 // implementations.
 //
 class radThreadSemaphore : public IRadThreadSemaphore,
-                           public radObject
-{
-    public:
+                           public radObject {
+public:
 
     //
     // Constructor, destructor. Constructor gets initial semaphore count
     //
-    radThreadSemaphore( unsigned int count );
-    ~radThreadSemaphore( void );
+    radThreadSemaphore(unsigned int count);
+
+    ~radThreadSemaphore(void);
 
     //
     // Members of the IRadThreadSemaphore
     //
-    virtual void Wait( void );
-    virtual void Signal( void );
+    virtual void Wait(void);
+
+    virtual void Signal(void);
 
     //
     // Members of IRefCount
     //
-    virtual void AddRef( void );
-    virtual void Release( void );
+    virtual void AddRef(void);
+
+    virtual void Release(void);
 
     //
     // Used for tracking active objects.
     //
-    #ifdef RAD_DEBUG
-    virtual void Dump( char* pStringBuffer, unsigned int bufferSize );
-    #endif
+#ifdef RAD_DEBUG
+    virtual void Dump(char* pStringBuffer, unsigned int bufferSize);
+#endif
 
-    private:
+private:
 
     //
     // This member maintains the reference count of this object.
     //
-    unsigned int m_ReferenceCount;    
+    unsigned int m_ReferenceCount;
 
     //
     // Windows and XBOX this is implemented using the a semaphore
@@ -105,7 +107,7 @@ class radThreadSemaphore : public IRadThreadSemaphore,
     // PS2 uses semaphore object
     //
 #ifdef RAD_PS2
-    int       m_Semaphore;        
+    int       m_Semaphore;
 #endif
 
     //

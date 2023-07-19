@@ -38,7 +38,7 @@
 #include "rad1394master.hpp"
 #include <radplatform.hpp>
 #include <radtime.hpp>
-#include "..\win32driver\rad1394driver.h"
+#include "../win32driver/rad1394driver.h"
 
 //=============================================================================
 // Local Definitions
@@ -50,7 +50,7 @@
 // Statics
 //=============================================================================
 
-static rad1394Master*  s_the1394Master = NULL;
+static rad1394Master *s_the1394Master = NULL;
 
 //=============================================================================
 // Public Functions
@@ -70,26 +70,22 @@ static rad1394Master*  s_the1394Master = NULL;
 //------------------------------------------------------------------------------
 
 void rad1394Initialize
-( 
-    unsigned int sharedMemorySize
-)
-{
+        (
+                unsigned int sharedMemorySize
+        ) {
     //
     // See if this subsystem has not allready been initialized.
     //
-    if( s_the1394Master == NULL )
-    {
+    if (s_the1394Master == NULL) {
         //
         // Construct the object.
         //
-        s_the1394Master = new rad1394Master( sharedMemorySize );
-    }
-    else
-    {
+        s_the1394Master = new rad1394Master(sharedMemorySize);
+    } else {
         //
         // Initailize and terminate must be balanced. Add ref the existing on.
         //
-        s_the1394Master->AddRef( );
+        s_the1394Master->AddRef();
     }
 }
 
@@ -105,14 +101,13 @@ void rad1394Initialize
 // Notes:       
 //------------------------------------------------------------------------------
 
-void rad1394Terminate( void )
-{
+void rad1394Terminate(void) {
     //
     // Make sure has been initailzed. Release reference.
     //
-    rAssertMsg( s_the1394Master != NULL, "rad1394 master not initialized\n");
-    
-    s_the1394Master->Release( );
+    rAssertMsg(s_the1394Master != NULL, "rad1394 master not initialized\n");
+
+    s_the1394Master->Release();
 }
 
 //=============================================================================
@@ -129,10 +124,9 @@ void rad1394Terminate( void )
 //              pointer.
 //------------------------------------------------------------------------------
 
-IRad1394Master* rad1394Get( void )
-{
-    rAssertMsg( s_the1394Master != NULL, "rad1394 master not initialized\n");
-    return( s_the1394Master );
+IRad1394Master *rad1394Get(void) {
+    rAssertMsg(s_the1394Master != NULL, "rad1394 master not initialized\n");
+    return (s_the1394Master);
 };
 
 //=============================================================================
@@ -151,40 +145,38 @@ IRad1394Master* rad1394Get( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-rad1394Master::rad1394Master( unsigned int sharedSize )
-    :
-    m_DeviceMonitorWindow( NULL ),
-    m_ReferenceCount( 1 ),
-    m_SharedMemorySize( sharedSize )
-{
-    radTimeInitialize( );
+rad1394Master::rad1394Master(unsigned int sharedSize)
+        :
+        m_DeviceMonitorWindow(NULL),
+        m_ReferenceCount(1),
+        m_SharedMemorySize(sharedSize) {
+    radTimeInitialize();
 
     //
     // Clear the device info table to all invalid.
     //
-    for( unsigned int i = 0 ; i < sizeof( m_DeviceInfo ) / sizeof( DeviceInfo ) ; i++ )
-    {
-        m_DeviceInfo[ i ].m_IsValid = false;
+    for (unsigned int i = 0; i < sizeof(m_DeviceInfo) / sizeof(DeviceInfo); i++) {
+        m_DeviceInfo[i].m_IsValid = false;
     }
 
-    m_LastWriteTime = radTimeGetMicroseconds( );
+    m_LastWriteTime = radTimeGetMicroseconds();
 
     //
     // Lets create a critical section to serialize access to the proceeding table.
     //
-    InitializeCriticalSection( &m_ExclusionObject );
+    InitializeCriticalSection(&m_ExclusionObject);
 
     //
     // Update the status of the device info.
     //
-    UpdateDeviceInfo( );
+    UpdateDeviceInfo();
 
     //
     // Create a thread to monitor device changes.
     //
-    m_ThreadHandle = CreateThread( NULL, 0, (LPTHREAD_START_ROUTINE) DeviceMontiorThread, 
-                                   this, 0, NULL ); 
-        
+    m_ThreadHandle = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) DeviceMontiorThread,
+                                  this, 0, NULL);
+
 }
 
 //=============================================================================
@@ -197,36 +189,34 @@ rad1394Master::rad1394Master( unsigned int sharedSize )
 // Notes:
 //------------------------------------------------------------------------------
 
-rad1394Master::~rad1394Master( void )
-{
+rad1394Master::~rad1394Master(void) {
     //
     // Here we are shutting down. First kill the device monitor thread by 
     // posting it a quit message. There is a window where the thread may not have 
     // created its window and we are shutdown immediately. Deal with this.
     //
-    while( m_DeviceMonitorWindow == NULL )
-    {
-        Sleep( 0 );
+    while (m_DeviceMonitorWindow == NULL) {
+        Sleep(0);
     }
 
     //
     // Post the quit message.
     //
-    PostMessage( m_DeviceMonitorWindow, WM_QUIT, 0, 0 );
+    PostMessage(m_DeviceMonitorWindow, WM_QUIT, 0, 0);
 
     //
     // Now wait for the thread to terminate.
     //
-    WaitForSingleObject( m_ThreadHandle, INFINITE );
-    
+    WaitForSingleObject(m_ThreadHandle, INFINITE);
+
     //
     // Close thread handle and the critical section.       
     //
-    CloseHandle( m_ThreadHandle );
+    CloseHandle(m_ThreadHandle);
 
-    DeleteCriticalSection( &m_ExclusionObject );
+    DeleteCriticalSection(&m_ExclusionObject);
 
-    radTimeTerminate( );
+    radTimeTerminate();
 
     s_the1394Master = NULL;
 }
@@ -243,20 +233,19 @@ rad1394Master::~rad1394Master( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-unsigned int rad1394Master::DeviceMontiorThread( rad1394Master* pMaster )
-{
+unsigned int rad1394Master::DeviceMontiorThread(rad1394Master *pMaster) {
     //
     // First lets create a window to register with the device notifcaiton function.
     // Start by registering window class, which requires the module handle of
     // this process.
     //
-    char Filename[ 256 ];
-    GetModuleFileName( NULL, Filename, sizeof(Filename) );
-    HINSTANCE hInstance = GetModuleHandle( Filename );
+    char Filename[256];
+    GetModuleFileName(NULL, Filename, sizeof(Filename));
+    HINSTANCE hInstance = GetModuleHandle(Filename);
 
     WNDCLASSEX WindowClass;
-    
-    WindowClass.cbSize = sizeof( WNDCLASSEX );
+
+    WindowClass.cbSize = sizeof(WNDCLASSEX);
     WindowClass.style = 0;
     WindowClass.lpfnWndProc = DeviceMonitorWindowProcedure;
     WindowClass.cbClsExtra = 0;
@@ -269,67 +258,65 @@ unsigned int rad1394Master::DeviceMontiorThread( rad1394Master* pMaster )
     WindowClass.lpszClassName = WINDOW_CLASSNAME;
     WindowClass.hIconSm = NULL;
 
-    RegisterClassEx( &WindowClass );    
- 
+    RegisterClassEx(&WindowClass);
+
     //
     // Create a window 
     //
-    pMaster->m_DeviceMonitorWindow = CreateWindowEx( WS_EX_NOPARENTNOTIFY, WINDOW_CLASSNAME, "", WS_POPUP, 0, 0, 0, 0, 
-                                                     NULL, NULL, hInstance, (void*) pMaster );
+    pMaster->m_DeviceMonitorWindow = CreateWindowEx(WS_EX_NOPARENTNOTIFY, WINDOW_CLASSNAME, "",
+                                                    WS_POPUP, 0, 0, 0, 0,
+                                                    NULL, NULL, hInstance, (void *) pMaster);
 
     //
     // Register the device notification routine.
     //
     DEV_BROADCAST_DEVICEINTERFACE notificationFilter;
 
-    notificationFilter.dbcc_size = sizeof( DEV_BROADCAST_DEVICEINTERFACE );
+    notificationFilter.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
     notificationFilter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-    notificationFilter.dbcc_name[ 0 ] = 0;
+    notificationFilter.dbcc_name[0] = 0;
     notificationFilter.dbcc_classguid = rad1394DriverGUID;
 
-    HDEVNOTIFY hDeviceNotifyHandle = RegisterDeviceNotification( pMaster->m_DeviceMonitorWindow,
-                                                                 &notificationFilter,   
-                                                                 DEVICE_NOTIFY_WINDOW_HANDLE );
+    HDEVNOTIFY hDeviceNotifyHandle = RegisterDeviceNotification(pMaster->m_DeviceMonitorWindow,
+                                                                &notificationFilter,
+                                                                DEVICE_NOTIFY_WINDOW_HANDLE);
 
     //
     // Enter the message loop. Will fall out on receipt of a quit message.
     //
     MSG msg;
 
-    while( GetMessage( &msg, pMaster->m_DeviceMonitorWindow, 0, 0 ) )
-    {
-        DispatchMessage( &msg );
+    while (GetMessage(&msg, pMaster->m_DeviceMonitorWindow, 0, 0)) {
+        DispatchMessage(&msg);
     }
-    
+
     //
     // Unregister our notification routine.
     //
-    UnregisterDeviceNotification( hDeviceNotifyHandle );
-    
+    UnregisterDeviceNotification(hDeviceNotifyHandle);
+
     //
     // We are done. Destroy window and unregisted class
     //
-    DestroyWindow( pMaster->m_DeviceMonitorWindow );
+    DestroyWindow(pMaster->m_DeviceMonitorWindow);
 
-    UnregisterClass( WINDOW_CLASSNAME, hInstance );
+    UnregisterClass(WINDOW_CLASSNAME, hInstance);
 
     //
     // Finally lets close all devices that are still open. Grab exc
     //
-    EnterCriticalSection( &pMaster->m_ExclusionObject );
+    EnterCriticalSection(&pMaster->m_ExclusionObject);
 
-    for( unsigned int i = 0 ; i < sizeof( pMaster->m_DeviceInfo ) / sizeof( DeviceInfo ) ; i++ )
-    {
-        if( pMaster->m_DeviceInfo[ i ].m_IsValid )
-        {
-            pMaster->m_DeviceInfo[ i ].m_IsValid = false;
-            CloseHandle( pMaster->m_DeviceInfo[ i ].m_DeviceHandle );
+    for (unsigned int i = 0; i < sizeof(pMaster->m_DeviceInfo) / sizeof(DeviceInfo); i++) {
+        if (pMaster->m_DeviceInfo[i].m_IsValid) {
+            pMaster->m_DeviceInfo[i].m_IsValid = false;
+            CloseHandle(pMaster->m_DeviceInfo[i].m_DeviceHandle);
         }
     }
-    
-    LeaveCriticalSection( &pMaster->m_ExclusionObject );
 
-    return( 0 );
+    LeaveCriticalSection(&pMaster->m_ExclusionObject);
+
+    return (0);
 }
 
 //=============================================================================
@@ -345,42 +332,51 @@ unsigned int rad1394Master::DeviceMontiorThread( rad1394Master* pMaster )
 // Notes:
 //------------------------------------------------------------------------------
 
-LRESULT CALLBACK rad1394Master::DeviceMonitorWindowProcedure
-( 
-    HWND    hwnd, 
-    UINT    uMsg, 
-    WPARAM  wParam,
-    LPARAM  lParam
+LRESULT CALLBACK
+rad1394Master::DeviceMonitorWindowProcedure
+(
+        HWND
+hwnd,
+UINT uMsg,
+        WPARAM
+wParam,
+LPARAM lParam
 )
 {
-    //
-    // Check if create messaage. If so, save the "this: pointer.
-    //
-    if( uMsg == WM_NCCREATE )
-    {
-        //
-        // Set the windows instance data.
-        //
-        SetWindowLong( hwnd, 0, (long) (((CREATESTRUCT*) lParam)->lpCreateParams) );
+//
+// Check if create messaage. If so, save the "this: pointer.
+//
+if(uMsg == WM_NCCREATE)
+{
+//
+// Set the windows instance data.
+//
+SetWindowLong(hwnd,
+0, (long) (((CREATESTRUCT*) lParam)->lpCreateParams));
 
-    }
-    else if( uMsg == WM_DEVICECHANGE )
-    {
-        if( (wParam == DBT_DEVICEARRIVAL) || (wParam == DBT_DEVICEREMOVECOMPLETE) )
-        {
-            //
-            // Get the this pointer 
-            //
-            rad1394Master* pMaster = (rad1394Master*) GetWindowLong( hwnd, 0 );
+}
+else if(uMsg == WM_DEVICECHANGE)
+{
+if((wParam == DBT_DEVICEARRIVAL) || (wParam == DBT_DEVICEREMOVECOMPLETE))
+{
+//
+// Get the this pointer
+//
+rad1394Master *pMaster = (rad1394Master *) GetWindowLong(hwnd, 0);
 
-            //
-            // Update our device list.
-            //
-            pMaster->UpdateDeviceInfo( );           
-        }
-    }
+//
+// Update our device list.
+//
+pMaster->
 
-    return( DefWindowProc(hwnd, uMsg, wParam, lParam) );
+UpdateDeviceInfo();
+
+}
+}
+
+return(
+DefWindowProc(hwnd, uMsg, wParam, lParam
+));
 }
 
 //=============================================================================
@@ -396,140 +392,137 @@ LRESULT CALLBACK rad1394Master::DeviceMonitorWindowProcedure
 // Notes:
 //------------------------------------------------------------------------------
 
-void rad1394Master::UpdateDeviceInfo( void )
-{
+void rad1394Master::UpdateDeviceInfo(void) {
     //
     // Protect modification of this table.
     //
-    EnterCriticalSection( &m_ExclusionObject );
+    EnterCriticalSection(&m_ExclusionObject);
 
     //
     // First lets close any open devices. This is probably not the most
     // efficient method but device changes normally will be quite rare.
     //
-    for( unsigned int i = 0 ; i < sizeof( m_DeviceInfo ) / sizeof( DeviceInfo ) ; i++ )
-    {
-        if( m_DeviceInfo[ i ].m_IsValid )
-        {
-            CloseHandle( m_DeviceInfo[ i ].m_DeviceHandle );
-            m_DeviceInfo[ i ].m_IsValid = false;        
+    for (unsigned int i = 0; i < sizeof(m_DeviceInfo) / sizeof(DeviceInfo); i++) {
+        if (m_DeviceInfo[i].m_IsValid) {
+            CloseHandle(m_DeviceInfo[i].m_DeviceHandle);
+            m_DeviceInfo[i].m_IsValid = false;
         }
     }
 
     //
     // Now lets interogate what devices are present.
     //
-    GUID    deviceClass = rad1394DriverGUID;
-    HDEVINFO hDevInfo = SetupDiGetClassDevs( &deviceClass, NULL, NULL, DIGCF_PRESENT | DIGCF_INTERFACEDEVICE );
-    
-    if( hDevInfo != NULL )
-    {
-        bool moreDevices = true;           
+    GUID deviceClass = rad1394DriverGUID;
+    HDEVINFO hDevInfo = SetupDiGetClassDevs(&deviceClass, NULL, NULL,
+                                            DIGCF_PRESENT | DIGCF_INTERFACEDEVICE);
+
+    if (hDevInfo != NULL) {
+        bool moreDevices = true;
         unsigned int memberIndex = 0;
 
-        while( moreDevices )
-        {
+        while (moreDevices) {
             SP_DEVICE_INTERFACE_DATA deviceInterfaceData;
 
-            deviceInterfaceData.cbSize = sizeof( SP_DEVICE_INTERFACE_DATA );
+            deviceInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
 
-            if( SetupDiEnumDeviceInterfaces( hDevInfo, 0, &deviceClass, memberIndex, &deviceInterfaceData) )
-            {
+            if (SetupDiEnumDeviceInterfaces(hDevInfo, 0, &deviceClass, memberIndex,
+                                            &deviceInterfaceData)) {
                 unsigned long requiredSize;
-                SP_DEVICE_INTERFACE_DETAIL_DATA*  pDeviceInterfaceDetailData;
+                SP_DEVICE_INTERFACE_DETAIL_DATA *pDeviceInterfaceDetailData;
                 // 
                 // Find out how much space we need to allocate to obtain driver interface datail.
                 //
-                SetupDiGetDeviceInterfaceDetail( hDevInfo, &deviceInterfaceData, NULL, 0, &requiredSize, NULL );
-        
-                pDeviceInterfaceDetailData = (SP_DEVICE_INTERFACE_DETAIL_DATA*) new unsigned char[ requiredSize ];
+                SetupDiGetDeviceInterfaceDetail(hDevInfo, &deviceInterfaceData, NULL, 0,
+                                                &requiredSize, NULL);
+
+                pDeviceInterfaceDetailData = (SP_DEVICE_INTERFACE_DETAIL_DATA * )
+                new unsigned char[requiredSize];
                 pDeviceInterfaceDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
 
-                SetupDiGetDeviceInterfaceDetail( hDevInfo, &deviceInterfaceData,  pDeviceInterfaceDetailData,
-                                                 requiredSize, NULL, NULL );
+                SetupDiGetDeviceInterfaceDetail(hDevInfo, &deviceInterfaceData,
+                                                pDeviceInterfaceDetailData,
+                                                requiredSize, NULL, NULL);
                 //
                 // Here we have the name of the device. Copy it into our local structure for prosperity.
                 // and free the device interface datail memory.
                 //
-                strcpy( m_DeviceInfo[ memberIndex ].m_DeviceName, pDeviceInterfaceDetailData->DevicePath );
+                strcpy(m_DeviceInfo[memberIndex].m_DeviceName,
+                       pDeviceInterfaceDetailData->DevicePath);
 
-                delete[ ] (unsigned char*) pDeviceInterfaceDetailData;
+                delete[] (unsigned char *) pDeviceInterfaceDetailData;
 
                 //
                 // Lets try and open the device. If successful, save handle and get the bus and node
                 // number for this device.
                 //
-                m_DeviceInfo[ memberIndex ].m_DeviceHandle = CreateFile(  m_DeviceInfo[ memberIndex ].m_DeviceName,
-                                                                          GENERIC_WRITE | GENERIC_READ,
-                                                                          FILE_SHARE_WRITE | FILE_SHARE_READ,
-                                                                          NULL,
-                                                                          OPEN_EXISTING,
-                                                                          0,
-                                                                          NULL );
+                m_DeviceInfo[memberIndex].m_DeviceHandle = CreateFile(
+                        m_DeviceInfo[memberIndex].m_DeviceName,
+                        GENERIC_WRITE | GENERIC_READ,
+                        FILE_SHARE_WRITE | FILE_SHARE_READ,
+                        NULL,
+                        OPEN_EXISTING,
+                        0,
+                        NULL);
 
-                if( m_DeviceInfo[ memberIndex ].m_DeviceHandle != INVALID_HANDLE_VALUE )
-                {
+                if (m_DeviceInfo[memberIndex].m_DeviceHandle != INVALID_HANDLE_VALUE) {
                     //
                     // Successfully openned the device. Lets get the bus and node numbers.
                     //
                     GET_1394_ADDRESS Address;
                     unsigned long bytesReturned;
-                  
-                    if( DeviceIoControl( m_DeviceInfo[ memberIndex ].m_DeviceHandle,
-                                         RAD1394_IOCTL_GET_ADDRESS_FROM_DEVICE,
-                                         &Address,
-                                         sizeof(GET_1394_ADDRESS),
-                                         &Address,
-                                         sizeof(GET_1394_ADDRESS),
-                                         &bytesReturned,
-                                         NULL ) )
-                    {
+
+                    if (DeviceIoControl(m_DeviceInfo[memberIndex].m_DeviceHandle,
+                                        RAD1394_IOCTL_GET_ADDRESS_FROM_DEVICE,
+                                        &Address,
+                                        sizeof(GET_1394_ADDRESS),
+                                        &Address,
+                                        sizeof(GET_1394_ADDRESS),
+                                        &bytesReturned,
+                                        NULL)) {
                         //
                         // Life is good. Save the address and set as valid.   
                         //
-                        m_DeviceInfo[ memberIndex ].m_busNumber = Address.NodeAddress.NA_Bus_Number;
-                        m_DeviceInfo[ memberIndex ].m_nodeNumber = Address.NodeAddress.NA_Node_Number;
-                        m_DeviceInfo[ memberIndex ].m_IsValid = true;
-    
+                        m_DeviceInfo[memberIndex].m_busNumber = Address.NodeAddress.NA_Bus_Number;
+                        m_DeviceInfo[memberIndex].m_nodeNumber = Address.NodeAddress.NA_Node_Number;
+                        m_DeviceInfo[memberIndex].m_IsValid = true;
+
                         //
                         // If we have shared memory, set size now.
                         //
-                        if( m_SharedMemorySize != 0 )
-                        {
-                            SET_1394_ADDRESS_RANGE_SIZE* pAddressRangeSize;
-                            pAddressRangeSize = (SET_1394_ADDRESS_RANGE_SIZE*) LocalAlloc(LPTR, sizeof( SET_1394_ADDRESS_RANGE_SIZE ) );
+                        if (m_SharedMemorySize != 0) {
+                            SET_1394_ADDRESS_RANGE_SIZE *pAddressRangeSize;
+                            pAddressRangeSize = (SET_1394_ADDRESS_RANGE_SIZE *) LocalAlloc(LPTR,
+                                                                                           sizeof(SET_1394_ADDRESS_RANGE_SIZE));
                             pAddressRangeSize->Size = m_SharedMemorySize;
                             pAddressRangeSize->fulFlags = 0;
-                 
-                            DeviceIoControl( m_DeviceInfo[ memberIndex ].m_DeviceHandle,
-                                             RAD1394_IOCTL_SET_ADDRESS_RANGE_SIZE,
-                                             pAddressRangeSize,
-                                             sizeof(SET_1394_ADDRESS_RANGE_SIZE),
-                                             pAddressRangeSize,
-                                             sizeof(SET_1394_ADDRESS_RANGE_SIZE),
-                                             &bytesReturned,
-                                             NULL );
-    
-                            LocalFree( pAddressRangeSize );
+
+                            DeviceIoControl(m_DeviceInfo[memberIndex].m_DeviceHandle,
+                                            RAD1394_IOCTL_SET_ADDRESS_RANGE_SIZE,
+                                            pAddressRangeSize,
+                                            sizeof(SET_1394_ADDRESS_RANGE_SIZE),
+                                            pAddressRangeSize,
+                                            sizeof(SET_1394_ADDRESS_RANGE_SIZE),
+                                            &bytesReturned,
+                                            NULL);
+
+                            LocalFree(pAddressRangeSize);
                         }
                     }
                 }
-            }
-            else 
-            {
+            } else {
                 moreDevices = false;
             }
-                        
+
             memberIndex++;
-        } 
-    
+        }
+
         //
         // Free up the device info list
         //
-        SetupDiDestroyDeviceInfoList( hDevInfo );
+        SetupDiDestroyDeviceInfoList(hDevInfo);
     }
 
-    LeaveCriticalSection( &m_ExclusionObject );
+    LeaveCriticalSection(&m_ExclusionObject);
 }
 
 //=============================================================================
@@ -551,31 +544,29 @@ void rad1394Master::UpdateDeviceInfo( void )
 //------------------------------------------------------------------------------
 
 bool rad1394Master::ReadMemory
-( 
-    unsigned int busNumber,
-    unsigned int nodeNumber,
-    unsigned int address,
-    unsigned int size,
-    void*        dest,
-    bool         localRead
-)
-{
+        (
+                unsigned int busNumber,
+                unsigned int nodeNumber,
+                unsigned int address,
+                unsigned int size,
+                void *dest,
+                bool localRead
+        ) {
     //
     // First we must see if we have a valid device that matches the bus and node numbers.
     //
-    HANDLE  devHandle = FindDevice( busNumber, nodeNumber );
-       
-    if( devHandle == NULL )
-    {
+    HANDLE devHandle = FindDevice(busNumber, nodeNumber);
+
+    if (devHandle == NULL) {
         //
         // This was added to update devices as sometimes windows would not
         // inform us correctly.
         //
-        UpdateDeviceInfo( );
+        UpdateDeviceInfo();
 
-        Sleep( 0 );
+        Sleep(0);
 
-        return( false );
+        return (false);
     }
 
     //
@@ -583,9 +574,9 @@ bool rad1394Master::ReadMemory
     // worked substancially faster than allowing the 1394 driver to do it. Not sure why
     // but it works.
     //
-    ASYNC_READ  AsyncRead;
+    ASYNC_READ AsyncRead;
     unsigned long bytesReturned;
-    
+
     AsyncRead.bRawMode = false;
     AsyncRead.bGetGeneration = true;
     AsyncRead.DestinationAddress.IA_Destination_ID.NA_Bus_Number = busNumber;
@@ -600,47 +591,44 @@ bool rad1394Master::ReadMemory
     //
     // Loop, breaking up the read into the partition. 
     //
-    while( size )
-    {
-        if( size > RAD1394_MAX_READ_SIZE )
-        {
-           AsyncRead.nNumberOfBytesToRead = RAD1394_MAX_READ_SIZE;
-        }
-        else
-        {
-           AsyncRead.nNumberOfBytesToRead = size;
+    while (size) {
+        if (size > RAD1394_MAX_READ_SIZE) {
+            AsyncRead.nNumberOfBytesToRead = RAD1394_MAX_READ_SIZE;
+        } else {
+            AsyncRead.nNumberOfBytesToRead = size;
         }
 
         //
         // Issue the write request.
         //
-        unsigned int result = DeviceIoControl( devHandle,
-                                               RAD1394_IOCTL_READ,
-                                               &AsyncRead,
-                                               sizeof( ASYNC_READ ) + AsyncRead.nNumberOfBytesToRead - RAD1394_MAX_READ_SIZE,
-                                               &AsyncRead,
-                                               sizeof( ASYNC_READ ) + AsyncRead.nNumberOfBytesToRead - RAD1394_MAX_READ_SIZE,
-                                               &bytesReturned,
-                                               NULL );
-        if( result == 0 )
-        {
-            return( false );
+        unsigned int result = DeviceIoControl(devHandle,
+                                              RAD1394_IOCTL_READ,
+                                              &AsyncRead,
+                                              sizeof(ASYNC_READ) + AsyncRead.nNumberOfBytesToRead -
+                                              RAD1394_MAX_READ_SIZE,
+                                              &AsyncRead,
+                                              sizeof(ASYNC_READ) + AsyncRead.nNumberOfBytesToRead -
+                                              RAD1394_MAX_READ_SIZE,
+                                              &bytesReturned,
+                                              NULL);
+        if (result == 0) {
+            return (false);
         }
-        
+
         //
         // Copy the data
         //
-        memcpy( dest, AsyncRead.Data, AsyncRead.nNumberOfBytesToRead );
+        memcpy(dest, AsyncRead.Data, AsyncRead.nNumberOfBytesToRead);
 
         //
         // Update things and see if more to do.
         //
         size -= AsyncRead.nNumberOfBytesToRead;
         AsyncRead.DestinationAddress.IA_Destination_Offset.Off_Low += AsyncRead.nNumberOfBytesToRead;
-        dest = (unsigned char*) dest + AsyncRead.nNumberOfBytesToRead;
+        dest = (unsigned char *) dest + AsyncRead.nNumberOfBytesToRead;
     }
-  
-    return( true ); 
+
+    return (true);
 
 }
 
@@ -663,30 +651,28 @@ bool rad1394Master::ReadMemory
 
 
 bool rad1394Master::WriteMemory
-( 
-    unsigned int busNumber,
-    unsigned int nodeNumber,
-    unsigned int address,
-    unsigned int size,
-    void*        source
-)
-{
+        (
+                unsigned int busNumber,
+                unsigned int nodeNumber,
+                unsigned int address,
+                unsigned int size,
+                void *source
+        ) {
     //
     // First we must see if we have a valid device that matches the bus and node numbers.
     //
-    HANDLE  devHandle = FindDevice( busNumber, nodeNumber );
-       
-    if( devHandle == NULL )
-    {
+    HANDLE devHandle = FindDevice(busNumber, nodeNumber);
+
+    if (devHandle == NULL) {
         //
         // This was added to update devices as sometimes windows would not
         // inform us correctly.
         //
-        UpdateDeviceInfo( );
+        UpdateDeviceInfo();
 
-        Sleep( 0 );
+        Sleep(0);
 
-        return( false );
+        return (false);
     }
 
     //
@@ -694,9 +680,9 @@ bool rad1394Master::WriteMemory
     // worked substancially faster than allowing the 1394 driver to do it. Not sure why
     // but it works.
     //
-    ASYNC_WRITE  AsyncWrite;
+    ASYNC_WRITE AsyncWrite;
     unsigned long bytesReturned;
-    
+
     AsyncWrite.bRawMode = false;
     AsyncWrite.bGetGeneration = true;
     AsyncWrite.DestinationAddress.IA_Destination_ID.NA_Bus_Number = busNumber;
@@ -710,45 +696,43 @@ bool rad1394Master::WriteMemory
     //
     // Loop, breaking up the write into the partition.
     //
-    while( size )
-    {
-        if( size > RAD1394_MAX_WRITE_SIZE )
-        {
-           AsyncWrite.nNumberOfBytesToWrite = RAD1394_MAX_WRITE_SIZE;
-        }
-        else
-        {
-           AsyncWrite.nNumberOfBytesToWrite = size;
+    while (size) {
+        if (size > RAD1394_MAX_WRITE_SIZE) {
+            AsyncWrite.nNumberOfBytesToWrite = RAD1394_MAX_WRITE_SIZE;
+        } else {
+            AsyncWrite.nNumberOfBytesToWrite = size;
         }
 
-        memcpy( AsyncWrite.Data, source, AsyncWrite.nNumberOfBytesToWrite );
+        memcpy(AsyncWrite.Data, source, AsyncWrite.nNumberOfBytesToWrite);
 
         //
         // Make sure we are not issueing writes too frequently. I found that I 
         // had to ensure 900 mircoseconds elasped between sends for optimal performance.
         // No idea as to why.
         //
-        while( (radTimeGetMicroseconds( ) - m_LastWriteTime) < 900 )
-        {
+        while ((radTimeGetMicroseconds() - m_LastWriteTime) < 900) {
         }
-        
+
         //
         // Issue the write request.
         //
-        unsigned int result = DeviceIoControl( devHandle,
-                                               RAD1394_IOCTL_WRITE,
-                                               &AsyncWrite,
-                                               sizeof( ASYNC_WRITE ) + AsyncWrite.nNumberOfBytesToWrite - RAD1394_MAX_WRITE_SIZE ,
-                                               &AsyncWrite,
-                                               sizeof( ASYNC_WRITE ) + AsyncWrite.nNumberOfBytesToWrite - RAD1394_MAX_WRITE_SIZE ,
-                                               &bytesReturned,
-                                               NULL );
+        unsigned int result = DeviceIoControl(devHandle,
+                                              RAD1394_IOCTL_WRITE,
+                                              &AsyncWrite,
+                                              sizeof(ASYNC_WRITE) +
+                                              AsyncWrite.nNumberOfBytesToWrite -
+                                              RAD1394_MAX_WRITE_SIZE,
+                                              &AsyncWrite,
+                                              sizeof(ASYNC_WRITE) +
+                                              AsyncWrite.nNumberOfBytesToWrite -
+                                              RAD1394_MAX_WRITE_SIZE,
+                                              &bytesReturned,
+                                              NULL);
 
-        m_LastWriteTime = radTimeGetMicroseconds( );
+        m_LastWriteTime = radTimeGetMicroseconds();
 
-        if( result == 0 )
-        {
-            return( false );
+        if (result == 0) {
+            return (false);
         }
 
         //
@@ -756,9 +740,9 @@ bool rad1394Master::WriteMemory
         //
         size -= AsyncWrite.nNumberOfBytesToWrite;
         AsyncWrite.DestinationAddress.IA_Destination_Offset.Off_Low += AsyncWrite.nNumberOfBytesToWrite;
-        source = (unsigned char*) source + AsyncWrite.nNumberOfBytesToWrite;
+        source = (unsigned char *) source + AsyncWrite.nNumberOfBytesToWrite;
     }
-    return( true ); 
+    return (true);
 }
 
 //=============================================================================
@@ -777,21 +761,18 @@ bool rad1394Master::WriteMemory
 //------------------------------------------------------------------------------
 
 HANDLE rad1394Master::FindDevice
-( 
-    unsigned int busNumber, 
-    unsigned int nodeNumber
-)
-{
-    for( unsigned int i = 0 ; i < sizeof( m_DeviceInfo ) / sizeof( DeviceInfo ) ; i++ )
-    {
-        if( m_DeviceInfo[ i ].m_IsValid )
-        {
-            if( (m_DeviceInfo[ i ].m_busNumber == busNumber) && (m_DeviceInfo[ i ].m_nodeNumber == nodeNumber) )
-            {
+        (
+                unsigned int busNumber,
+                unsigned int nodeNumber
+        ) {
+    for (unsigned int i = 0; i < sizeof(m_DeviceInfo) / sizeof(DeviceInfo); i++) {
+        if (m_DeviceInfo[i].m_IsValid) {
+            if ((m_DeviceInfo[i].m_busNumber == busNumber) &&
+                (m_DeviceInfo[i].m_nodeNumber == nodeNumber)) {
                 //
                 // We have a match. Return device handle.
                 //
-                return( m_DeviceInfo[ i ].m_DeviceHandle );
+                return (m_DeviceInfo[i].m_DeviceHandle);
             }
         }
     }
@@ -799,7 +780,7 @@ HANDLE rad1394Master::FindDevice
     //
     // Here we failed. Return NULL.
     //
-    return( NULL );
+    return (NULL);
 }
 
 //=============================================================================
@@ -815,11 +796,10 @@ HANDLE rad1394Master::FindDevice
 //------------------------------------------------------------------------------
 
 void rad1394Master::AddRef
-(
-	void
-)
-{
-	m_ReferenceCount++;
+        (
+                void
+        ) {
+    m_ReferenceCount++;
 }
 
 //=============================================================================
@@ -835,15 +815,13 @@ void rad1394Master::AddRef
 //------------------------------------------------------------------------------
 
 void rad1394Master::Release
-(
-	void
-)
-{
-	m_ReferenceCount--;
+        (
+                void
+        ) {
+    m_ReferenceCount--;
 
-	if ( m_ReferenceCount == 0 )
-	{
-		delete this;
-	}
+    if (m_ReferenceCount == 0) {
+        delete this;
+    }
 }
 

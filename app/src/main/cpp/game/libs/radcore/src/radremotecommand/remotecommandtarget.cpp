@@ -40,20 +40,19 @@
 // Notes:
 //------------------------------------------------------------------------------
 
-RemoteCommandTarget::RemoteCommandTarget( radMemoryAllocator alloc )
-    :
-	radRefCount( 0 ),
-    m_Channel( NULL ),
-    m_Attached( false ),
-    m_TxOutstanding( false ),
-    m_TxBytesQueued( 0 ),
-    m_CurrentTxAddress( m_TxBuffer1 ),
-    m_Buffer1Active( true ),
-    m_OverflowReported( false ),
-    m_PendingDetach( false ),
-    m_Allocator( alloc )
-{
-    radMemoryMonitorIdentifyAllocation( this, g_nameFTech, "RemoteCommandTarget" );
+RemoteCommandTarget::RemoteCommandTarget(radMemoryAllocator alloc)
+        :
+        radRefCount(0),
+        m_Channel(NULL),
+        m_Attached(false),
+        m_TxOutstanding(false),
+        m_TxBytesQueued(0),
+        m_CurrentTxAddress(m_TxBuffer1),
+        m_Buffer1Active(true),
+        m_OverflowReported(false),
+        m_PendingDetach(false),
+        m_Allocator(alloc) {
+    radMemoryMonitorIdentifyAllocation(this, g_nameFTech, "RemoteCommandTarget");
 }
 
 //=============================================================================
@@ -66,15 +65,13 @@ RemoteCommandTarget::RemoteCommandTarget( radMemoryAllocator alloc )
 // Notes:
 //------------------------------------------------------------------------------
 
-RemoteCommandTarget::~RemoteCommandTarget( void )
-{	
-    if( m_Channel != NULL )
-    {
-        m_Channel->RegisterStatusCallback( NULL );
+RemoteCommandTarget::~RemoteCommandTarget(void) {
+    if (m_Channel != NULL) {
+        m_Channel->RegisterStatusCallback(NULL);
         m_Channel = NULL;
     }
 
-}            
+}
 
 //=============================================================================
 // Function:    RemoteCommandTarget::OnStatusChange
@@ -89,28 +86,24 @@ RemoteCommandTarget::~RemoteCommandTarget( void )
 //------------------------------------------------------------------------------
 
 void RemoteCommandTarget::OnStatusChange
-( 
-    IRadDbgComChannel::ConnectionState connectionState,
-    const char* Message 
-)
-{
+        (
+                IRadDbgComChannel::ConnectionState connectionState,
+                const char *Message
+        ) {
     //
     // Switch on status message.
     //  
-    switch( connectionState )
-    {
-        case IRadDbgComChannel::Attached :
-        {   
+    switch (connectionState) {
+        case IRadDbgComChannel::Attached : {
             //
             // Simply issue a receive to wait for data.
             //
-            m_Channel->ReceiveAsync( m_RxBuffer, sizeof( m_RxBuffer ), this );
+            m_Channel->ReceiveAsync(m_RxBuffer, sizeof(m_RxBuffer), this);
             m_Attached = true;
             break;
         }
 
-        case IRadDbgComChannel::Detached :
-        {   
+        case IRadDbgComChannel::Detached : {
             //
             // Set flag inidicating not attached and do a little housekeeping
             //
@@ -121,14 +114,12 @@ void RemoteCommandTarget::OnStatusChange
             m_TxOutstanding = false;
             break;
         }
-    
-        case IRadDbgComChannel::Attaching :
-        {
+
+        case IRadDbgComChannel::Attaching : {
             //
             // If we are attached, do a little housekeeping.
             //
-            if( m_Attached )
-            {
+            if (m_Attached) {
 
                 m_Attached = false;
 
@@ -139,11 +130,10 @@ void RemoteCommandTarget::OnStatusChange
             }
             break;
         }
-        default:
-	    {
-			//
-			// Detaching (or something else).  Nothing to do.
-			//
+        default: {
+            //
+            // Detaching (or something else).  Nothing to do.
+            //
             break;
         }
     }
@@ -162,75 +152,68 @@ void RemoteCommandTarget::OnStatusChange
 //------------------------------------------------------------------------------
 
 void RemoteCommandTarget::OnReceiveComplete
-( 
-    bool            successful, 
-    unsigned int    bytesReceived
-)
-{
-    if( successful )
-    {
+        (
+                bool successful,
+                unsigned int bytesReceived
+        ) {
+    if (successful) {
         //
         // Here we have received a buffer. Process the data. Simply process each packet
         // of data in the buffer. 
         //
-        unsigned char* pRxAddress = m_RxBuffer;
+        unsigned char *pRxAddress = m_RxBuffer;
 
-        while( bytesReceived != 0 )
-        {
+        while (bytesReceived != 0) {
             //
             // Switch on the command code of the buffer.
             // 
-            switch( radPlatformEndian32( *((HrcsCommand*) pRxAddress) ) )
-            {
-				case HrcsList:
-				{
-					//
-					// Ask the RemoteCommandServer to list its registered functions
-					//
-					m_RemoteCommandServer->ListFunctions();
-									
+            switch (radPlatformEndian32(*((HrcsCommand *) pRxAddress))) {
+                case HrcsList: {
+                    //
+                    // Ask the RemoteCommandServer to list its registered functions
+                    //
+                    m_RemoteCommandServer->ListFunctions();
+
                     //
                     // Update receive pointer and bytes to process.
                     //
-                    bytesReceived -= sizeof( HrcsListCommand );
-                    pRxAddress += sizeof( HrcsListCommand );
-					break;
-				}
-				case HrcsRemoteFunction:
-				{
-					// Cast this into something readable
-					HrcsRemoteFunctionCommand* pCommand = (HrcsRemoteFunctionCommand*) pRxAddress;
-					
-					//
-					// Ask the RemoteCommandServer to call the function.
-					//
-					m_RemoteCommandServer->CallFunction
-					( 
-						pCommand->m_FunctionName,
-						radPlatformEndian32( pCommand->m_argc ),
-						pCommand->m_argv
-					);
-														
-                    //
-                    // Update receive pointer and bytes to process.
-                    //
-                    bytesReceived -= sizeof( HrcsRemoteFunctionCommand );
-                    pRxAddress += sizeof( HrcsRemoteFunctionCommand );
-					break;
-				}
-                default:
-                {
-                    rAssertMsg( false, "Bad packet received from target");
-					break;
+                    bytesReceived -= sizeof(HrcsListCommand);
+                    pRxAddress += sizeof(HrcsListCommand);
+                    break;
                 }
-       
+                case HrcsRemoteFunction: {
+                    // Cast this into something readable
+                    HrcsRemoteFunctionCommand *pCommand = (HrcsRemoteFunctionCommand *) pRxAddress;
+
+                    //
+                    // Ask the RemoteCommandServer to call the function.
+                    //
+                    m_RemoteCommandServer->CallFunction
+                            (
+                                    pCommand->m_FunctionName,
+                                    radPlatformEndian32(pCommand->m_argc),
+                                    pCommand->m_argv
+                            );
+
+                    //
+                    // Update receive pointer and bytes to process.
+                    //
+                    bytesReceived -= sizeof(HrcsRemoteFunctionCommand);
+                    pRxAddress += sizeof(HrcsRemoteFunctionCommand);
+                    break;
+                }
+                default: {
+                    rAssertMsg(false, "Bad packet received from target");
+                    break;
+                }
+
             }
         }
 
         //
         // Re-issue the receive buffer.
         //
-        m_Channel->ReceiveAsync( m_RxBuffer, sizeof( m_RxBuffer ), this );
+        m_Channel->ReceiveAsync(m_RxBuffer, sizeof(m_RxBuffer), this);
     }
 }
 
@@ -248,27 +231,24 @@ void RemoteCommandTarget::OnReceiveComplete
 //------------------------------------------------------------------------------
 
 void RemoteCommandTarget::OnSendComplete
-( 
-    bool successful
-)
-{
+        (
+                bool successful
+        ) {
     m_TxOutstanding = false;
 
-    if( successful )
-    {
+    if (successful) {
         //
         // Initiate send possible,
         //
-        InitiateTransmission( );
-    }      
+        InitiateTransmission();
+    }
 
-    if( m_PendingDetach && !m_TxOutstanding )
-    {
+    if (m_PendingDetach && !m_TxOutstanding) {
         //
         // Attached false.
         //
         m_Attached = false;
-        m_Channel->Detach( );
+        m_Channel->Detach();
     }
 }
 
@@ -285,28 +265,23 @@ void RemoteCommandTarget::OnSendComplete
 // Notes:
 //------------------------------------------------------------------------------
 
-void RemoteCommandTarget::InitiateTransmission( void )
-{
+void RemoteCommandTarget::InitiateTransmission(void) {
     //
     // Check if attached, and no transmit outstanding and that we have data to send.,
     //
-    if( m_Attached && !m_TxOutstanding && (m_TxBytesQueued != 0) )
-    {
-        if( m_Buffer1Active )
-        {
+    if (m_Attached && !m_TxOutstanding && (m_TxBytesQueued != 0)) {
+        if (m_Buffer1Active) {
             //
             // We will send buffer1 and reset things for buffer 2
             //
-            m_Channel->SendAsync( m_TxBuffer1, m_TxBytesQueued, this );
-            m_CurrentTxAddress = m_TxBuffer2;                
-        }
-        else
-        {
+            m_Channel->SendAsync(m_TxBuffer1, m_TxBytesQueued, this);
+            m_CurrentTxAddress = m_TxBuffer2;
+        } else {
             //
             // We will send buffer2 and reset things for buffer 1
             //
-            m_Channel->SendAsync( m_TxBuffer2, m_TxBytesQueued, this );
-            m_CurrentTxAddress = m_TxBuffer1;                
+            m_Channel->SendAsync(m_TxBuffer2, m_TxBytesQueued, this);
+            m_CurrentTxAddress = m_TxBuffer1;
 
         }
         m_Buffer1Active = !m_Buffer1Active;
@@ -329,27 +304,23 @@ void RemoteCommandTarget::InitiateTransmission( void )
 // Notes:
 //------------------------------------------------------------------------------
 
-void RemoteCommandTarget::SendListReply( unsigned int numItems )
-{
+void RemoteCommandTarget::SendListReply(unsigned int numItems) {
     //
     // Check if room in the active buffer to add 
     //
-    if( m_TxBytesQueued + sizeof( HrcsListReply ) <= RCS_BUFFER_SIZE )
-    {
+    if (m_TxBytesQueued + sizeof(HrcsListReply) <= RCS_BUFFER_SIZE) {
         //
         // We have room. Add the data,
         //
-        HrcsListReplyCommand* pCommand = (HrcsListReplyCommand*) m_CurrentTxAddress;
-		pCommand->m_Command = (HrcsCommand) radPlatformEndian32( HrcsListReply );
-		pCommand->m_NumItems = radPlatformEndian32( numItems );
+        HrcsListReplyCommand *pCommand = (HrcsListReplyCommand *) m_CurrentTxAddress;
+        pCommand->m_Command = (HrcsCommand) radPlatformEndian32(HrcsListReply);
+        pCommand->m_NumItems = radPlatformEndian32(numItems);
 
-        m_CurrentTxAddress += sizeof( HrcsListReplyCommand );
-        m_TxBytesQueued += sizeof( HrcsListReplyCommand );
+        m_CurrentTxAddress += sizeof(HrcsListReplyCommand);
+        m_TxBytesQueued += sizeof(HrcsListReplyCommand);
 
-        InitiateTransmission( );
-    }
-    else if( !m_OverflowReported )
-    {
+        InitiateTransmission();
+    } else if (!m_OverflowReported) {
         //
         // Here we don't have room. Print warning message and return.
         //
@@ -370,27 +341,23 @@ void RemoteCommandTarget::SendListReply( unsigned int numItems )
 //
 // Notes:
 //------------------------------------------------------------------------------
-void RemoteCommandTarget::SendListItemCommand( char* name )
-{
+void RemoteCommandTarget::SendListItemCommand(char *name) {
     //
     // Check if room in the active buffer to add 
     //
-    if( m_TxBytesQueued + sizeof( HrcsListItemCommand ) <= RCS_BUFFER_SIZE )
-    {
+    if (m_TxBytesQueued + sizeof(HrcsListItemCommand) <= RCS_BUFFER_SIZE) {
         //
         // We have room. Add the data,
         //
-        HrcsListItemCommand* pCommand = (HrcsListItemCommand*) m_CurrentTxAddress;
-		pCommand->m_Command = (HrcsCommand) radPlatformEndian32( HrcsListItem );
-		strcpy( pCommand->m_FunctionName, name );
+        HrcsListItemCommand *pCommand = (HrcsListItemCommand *) m_CurrentTxAddress;
+        pCommand->m_Command = (HrcsCommand) radPlatformEndian32(HrcsListItem);
+        strcpy(pCommand->m_FunctionName, name);
 
-        m_CurrentTxAddress += sizeof( HrcsListItemCommand );
-        m_TxBytesQueued += sizeof( HrcsListItemCommand );
+        m_CurrentTxAddress += sizeof(HrcsListItemCommand);
+        m_TxBytesQueued += sizeof(HrcsListItemCommand);
 
-        InitiateTransmission( );
-    }
-    else if( !m_OverflowReported )
-    {
+        InitiateTransmission();
+    } else if (!m_OverflowReported) {
         //
         // Here we don't have room. Print warning message and return.
         //
@@ -410,27 +377,23 @@ void RemoteCommandTarget::SendListItemCommand( char* name )
 //
 // Notes:
 //------------------------------------------------------------------------------
-void RemoteCommandTarget::SendRemoteFunctionReply( HrcsResultCode result )
-{
+void RemoteCommandTarget::SendRemoteFunctionReply(HrcsResultCode result) {
     //
     // Check if room in the active buffer to add 
     //
-    if( m_TxBytesQueued + sizeof( HrcsResultCommand ) <= RCS_BUFFER_SIZE )
-    {
+    if (m_TxBytesQueued + sizeof(HrcsResultCommand) <= RCS_BUFFER_SIZE) {
         //
         // We have room. Add the data,
         //
-        HrcsResultCommand* pCommand = (HrcsResultCommand*) m_CurrentTxAddress;
-		pCommand->m_Command = (HrcsCommand) radPlatformEndian32( HrcsResult );
-		pCommand->m_ResultCode = (HrcsResultCode) radPlatformEndian32( result );
+        HrcsResultCommand *pCommand = (HrcsResultCommand *) m_CurrentTxAddress;
+        pCommand->m_Command = (HrcsCommand) radPlatformEndian32(HrcsResult);
+        pCommand->m_ResultCode = (HrcsResultCode) radPlatformEndian32(result);
 
-        m_CurrentTxAddress += sizeof( HrcsResultCommand );
-        m_TxBytesQueued += sizeof( HrcsResultCommand );
+        m_CurrentTxAddress += sizeof(HrcsResultCommand);
+        m_TxBytesQueued += sizeof(HrcsResultCommand);
 
-        InitiateTransmission( );
-    }
-    else if( !m_OverflowReported )
-    {
+        InitiateTransmission();
+    } else if (!m_OverflowReported) {
         //
         // Here we don't have room. Print warning message and return.
         //
@@ -450,59 +413,52 @@ void RemoteCommandTarget::SendRemoteFunctionReply( HrcsResultCode result )
 //
 // Notes:
 //------------------------------------------------------------------------------
-void RemoteCommandTarget::SetRemoteCommandServer( RemoteCommandServer * rcs )
-{
-	//
-	// Need to keep this reference
-	//
-	m_RemoteCommandServer = rcs;
+void RemoteCommandTarget::SetRemoteCommandServer(RemoteCommandServer *rcs) {
+    //
+    // Need to keep this reference
+    //
+    m_RemoteCommandServer = rcs;
 
-	//
-	// Get an rDebugComTarget interface.  Initialize the target and create a channel.
-	// After we have a channel, we are finished with target reference.
-	//
-    radDbgComTargetCreateChannel( HOST_REMOTE_COMMAND_PROTOCOL, &m_Channel, m_Allocator );
+    //
+    // Get an rDebugComTarget interface.  Initialize the target and create a channel.
+    // After we have a channel, we are finished with target reference.
+    //
+    radDbgComTargetCreateChannel(HOST_REMOTE_COMMAND_PROTOCOL, &m_Channel, m_Allocator);
 
-	//
-	// Verify that the channel actually exists
-	//
-    if( m_Channel == NULL )
-    {        
-        rDebugString( "Debug Console Failed: Make sure debug communication system initialized\n");
+    //
+    // Verify that the channel actually exists
+    //
+    if (m_Channel == NULL) {
+        rDebugString("Debug Console Failed: Make sure debug communication system initialized\n");
         return;
     }
 
-	//
-	// Register this class as a status callback and try to attach to the channel
-	//
-    m_Channel->RegisterStatusCallback( this );
-	m_Channel->Attach( );
-	
-	//
-	// Now we wait for the RemoteCommandConsole to connect...
-	//
+    //
+    // Register this class as a status callback and try to attach to the channel
+    //
+    m_Channel->RegisterStatusCallback(this);
+    m_Channel->Attach();
+
+    //
+    // Now we wait for the RemoteCommandConsole to connect...
+    //
 }
 
 
-void RemoteCommandTarget::UnSetRemoteCommandServer( void )
-{
-	//
-	// No more server
-	//
-	m_RemoteCommandServer = NULL;
+void RemoteCommandTarget::UnSetRemoteCommandServer(void) {
+    //
+    // No more server
+    //
+    m_RemoteCommandServer = NULL;
 
-	//
-	// Detach the channel
-	//
-    if( m_Channel != NULL )
-    {
-		if( m_TxOutstanding )
-		{
-			m_PendingDetach = true;
-		}
-		else
-		{
-			m_Channel->Detach();
-		}
+    //
+    // Detach the channel
+    //
+    if (m_Channel != NULL) {
+        if (m_TxOutstanding) {
+            m_PendingDetach = true;
+        } else {
+            m_Channel->Detach();
+        }
     }
 }

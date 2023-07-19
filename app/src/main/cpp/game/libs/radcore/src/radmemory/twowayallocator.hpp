@@ -38,93 +38,90 @@ class radMemoryTwoWayAllocator;
 //============================================================================
 
 class radMemoryTwoWayAllocator
-	:
-	public IRadMemoryTwoWayAllocator,
-	public radRefCount
+        :
+                public IRadMemoryTwoWayAllocator,
+                public radRefCount {
+public:
 
-{
-    public:
+    IMPLEMENT_REFCOUNTED("radMemoryTwoWayAllocator")
 
-		IMPLEMENT_REFCOUNTED( "radMemoryTwoWayAllocator" )
+    radMemoryTwoWayAllocator(void);
 
-        radMemoryTwoWayAllocator( void );
-        virtual ~radMemoryTwoWayAllocator( void );
+    virtual ~radMemoryTwoWayAllocator(void);
 
-        void Initialize( unsigned int size );
+    void Initialize(unsigned int size);
 
-	    // IRadMemoryAllocator
+    // IRadMemoryAllocator
 
-	    virtual void * GetMemory( unsigned int size );
-	    virtual void FreeMemory( void* pMemory );
-        virtual bool CanFreeMemory( void * pMemory );
+    virtual void *GetMemory(unsigned int size);
 
-        virtual void * GetMemoryAligned( unsigned int size, unsigned int alignment );
-	    virtual void FreeMemoryAligned( void * pMemory );
-        virtual bool CanFreeMemoryAligned( void * pMemory );
+    virtual void FreeMemory(void *pMemory);
 
-        // IRadMemoryTwoWayAllocator
+    virtual bool CanFreeMemory(void *pMemory);
 
-        virtual void SetDirection( Direction direction );
-        virtual Direction GetDirection( void );
-        virtual void Reset( Direction direction );
+    virtual void *GetMemoryAligned(unsigned int size, unsigned int alignment);
 
-    private:
+    virtual void FreeMemoryAligned(void *pMemory);
 
-        inline void * InternalAllocate( unsigned int size, unsigned int alignment );
-        inline void InternalFree( void * pMemory );
-        inline bool InternalCanFree( void * pMemory );
+    virtual bool CanFreeMemoryAligned(void *pMemory);
 
-        char * m_pTop;
-        char * m_pBottom;
-        char * m_pCurrentTop;
-        char * m_pCurrentBottom;
-        unsigned int m_NumTopAllocations;
-        unsigned int m_NumBottomAllocations;
-        Direction m_Direction;
+    // IRadMemoryTwoWayAllocator
+
+    virtual void SetDirection(Direction direction);
+
+    virtual Direction GetDirection(void);
+
+    virtual void Reset(Direction direction);
+
+private:
+
+    inline void *InternalAllocate(unsigned int size, unsigned int alignment);
+
+    inline void InternalFree(void *pMemory);
+
+    inline bool InternalCanFree(void *pMemory);
+
+    char *m_pTop;
+    char *m_pBottom;
+    char *m_pCurrentTop;
+    char *m_pCurrentBottom;
+    unsigned int m_NumTopAllocations;
+    unsigned int m_NumBottomAllocations;
+    Direction m_Direction;
 };
 
 //=============================================================================
 // radMemoryTwoWayAllocator::InternalAllocate
 //=============================================================================
 
-void * radMemoryTwoWayAllocator::InternalAllocate( unsigned int size, unsigned int alignment )
-{
-    char * pMemory = NULL;
+void *radMemoryTwoWayAllocator::InternalAllocate(unsigned int size, unsigned int alignment) {
+    char *pMemory = NULL;
 
-    if( m_Direction == TopDown )
-    {
-        pMemory = ( char * ) ::radMemoryRoundUp( ( unsigned int )  m_pCurrentTop, alignment );
+    if (m_Direction == TopDown) {
+        pMemory = (char *) ::radMemoryRoundUp((unsigned int) m_pCurrentTop, alignment);
 
-        if( pMemory + size < m_pCurrentBottom )
-        {
+        if (pMemory + size < m_pCurrentBottom) {
             m_pCurrentTop = pMemory + size;
             m_NumTopAllocations++;
-        }
-        else
-        {
-            rReleasePrintf( "radMemoryTwoWayAllocator: Out of memory.\n" );
-            rAssert( pMemory + size < m_pCurrentBottom );
+        } else {
+            rReleasePrintf("radMemoryTwoWayAllocator: Out of memory.\n");
+            rAssert(pMemory + size < m_pCurrentBottom);
             pMemory = NULL;
         }
-    }
-    else
-    {
-        pMemory = ( char * ) ::radMemoryRoundDown( ( unsigned int ) m_pCurrentBottom - size, alignment );
+    } else {
+        pMemory = (char *) ::radMemoryRoundDown((unsigned int) m_pCurrentBottom - size, alignment);
 
-        if( pMemory > m_pCurrentTop )
-        {
+        if (pMemory > m_pCurrentTop) {
             m_pCurrentBottom = pMemory;
             m_NumBottomAllocations++;
-        }
-        else
-        {
-            rReleasePrintf( "radMemoryTwoWayAllocator: Out of memory.\n" );
-            rAssert( pMemory > m_pCurrentTop );
+        } else {
+            rReleasePrintf("radMemoryTwoWayAllocator: Out of memory.\n");
+            rAssert(pMemory > m_pCurrentTop);
             pMemory = NULL;
         }
     }
 
-    radMemoryMonitorDeclareAllocation( pMemory, size );
+    radMemoryMonitorDeclareAllocation(pMemory, size);
 
     return pMemory;
 }
@@ -133,38 +130,31 @@ void * radMemoryTwoWayAllocator::InternalAllocate( unsigned int size, unsigned i
 // radMemoryTwoWayAllocator::InternalCanFree
 //=============================================================================
 
-bool radMemoryTwoWayAllocator::InternalCanFree( void * pMemory )
-{
-    return( pMemory >= m_pTop && pMemory < m_pBottom );
+bool radMemoryTwoWayAllocator::InternalCanFree(void *pMemory) {
+    return (pMemory >= m_pTop && pMemory < m_pBottom);
 }
 
 //=============================================================================
 // radMemoryTwoWayAllocator::InternalFree
 //=============================================================================
 
-void radMemoryTwoWayAllocator::InternalFree( void * pMemory )
-{
-    if( pMemory != NULL )
-    {
-        rAssert( InternalCanFree( pMemory ) == true );
+void radMemoryTwoWayAllocator::InternalFree(void *pMemory) {
+    if (pMemory != NULL) {
+        rAssert(InternalCanFree(pMemory) == true);
 
         // Decrement appropriate counter
 
-        if( pMemory < m_pCurrentBottom )
-        {
-            rAssert( m_NumTopAllocations > 0 );
+        if (pMemory < m_pCurrentBottom) {
+            rAssert(m_NumTopAllocations > 0);
             m_NumTopAllocations--;
-        }
-        else
-        {
-            rAssert( m_NumBottomAllocations > 0 );
+        } else {
+            rAssert(m_NumBottomAllocations > 0);
             m_NumBottomAllocations--;
         }
 
-        radMemoryMonitorRescindAllocation( pMemory );
+        radMemoryMonitorRescindAllocation(pMemory);
     }
 }
-
 
 
 #endif // TWOWAYALLOCATOR_HPP

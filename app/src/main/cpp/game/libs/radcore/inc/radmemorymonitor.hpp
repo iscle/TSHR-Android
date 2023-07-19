@@ -23,7 +23,7 @@
 //
 //=============================================================================
 
-#ifndef	RADMEMORYMONITOR_HPP
+#ifndef    RADMEMORYMONITOR_HPP
 #define RADMEMORYMONITOR_HPP
 
 //=============================================================================
@@ -59,20 +59,23 @@ struct IRadMemoryTraverse;
 // ReportRefCount - should system send reference count information, it will slow
 //                  transmission down a lot. But if information is useful, then
 //                  you need to enable it.
-void radMemoryMonitorInitialize( unsigned int bufferSize, radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT, bool SyncMode = false, bool ReportRefCount = false );
-void radMemoryMonitorTerminate( void );
+void radMemoryMonitorInitialize(unsigned int bufferSize,
+                                radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT,
+                                bool SyncMode = false, bool ReportRefCount = false);
+
+void radMemoryMonitorTerminate(void);
 
 //
 // Use this function to obtain a reference to the memory monitor. This function
 // should not be used directly by applications. They should use the inline functions
 // instead as they will vanish in a release build.
 //
-IRadMemoryMonitor* radMemoryMonitorGet( void );
+IRadMemoryMonitor *radMemoryMonitorGet(void);
 
 //
 // call this function to service the memory monitor
 //
-void radMemoryMonitorService( void );
+void radMemoryMonitorService(void);
 
 //=============================================================================
 // Interfaces
@@ -83,24 +86,22 @@ void radMemoryMonitorService( void );
 // is recommended that this interface definition not be used directly by applications.
 // They should use the inline functions following this definition.
 //
-struct IRadMemoryMonitor : public IRefCount
-{
+struct IRadMemoryMonitor : public IRefCount {
     //
     // This routine must be invoked before any memory allocation is started, and
-    // must be called right after radMemoryInitialize( ). Otherwise assert will happen.
+    // must be called right after radMemoryInitialize(). Otherwise assert will happen.
     //
-    virtual void Initialize( unsigned int bufferSize, bool SyncMode, bool ReportRefCount ) = 0;
+    virtual void Initialize(unsigned int bufferSize, bool SyncMode, bool ReportRefCount) = 0;
 
     //
     // This routine should be invoked when the game as finished with the memory monitor.
     //
-    virtual void Terminate( void ) = 0;
+    virtual void Terminate(void) = 0;
 
     //
     // The following enumeration is used to specify the type of memory section.
     //
-    enum MemorySectionType
-    {
+    enum MemorySectionType {
         MemorySectionType_Code,                     // Code, 
         MemorySectionType_StaticData,               // Initialized and uninitialized data
         MemorySectionType_DynamicData,              // Heaps
@@ -114,39 +115,40 @@ struct IRadMemoryMonitor : public IRefCount
     // memory type and name of the section. Caller can also provide (if dynamic memory heap) an
     // memory traverser which allows contection after the fact.
     //
-    virtual void DeclareSection( void* address, unsigned int size, MemorySectionType sectionType, 
-                                 radMemorySpace memorySpace, IRadMemoryTraverse* traverse ) = 0;
+    virtual void DeclareSection(void *address, unsigned int size, MemorySectionType sectionType,
+                                radMemorySpace memorySpace, IRadMemoryTraverse *traverse) = 0;
 
-    virtual void RescindSection( void* address, radMemorySpace memorySpace ) = 0;
+    virtual void RescindSection(void *address, radMemorySpace memorySpace) = 0;
 
-    virtual void IdentifySection( void* address, const char* name, radMemorySpace memorySpace ) = 0;
+    virtual void IdentifySection(void *address, const char *name, radMemorySpace memorySpace) = 0;
+
     //
     // These services are used to declare and rescind memory allcations. Basically, these functions
     // should be invoked anytime and allocation or free of memory occurs. Caller needs to specify
     // address, size of allocation, and depth of call statck to transfer. If more detailed memory
-    // information is required, such as group( used for display purposes ), name, address of
-    // reference count, IdentifyAllocation( ) should be called.
+    // information is required, such as group(used for display purposes), name, address of
+    // reference count, IdentifyAllocation() should be called.
     //
-    virtual void DeclareAllocation( void* address, unsigned int size, unsigned int callStackDepth,
-                                    radMemorySpace memorySpace ) = 0;
-       
-    virtual void RescindAllocation( void* address, radMemorySpace memorySpace ) = 0;
+    virtual void DeclareAllocation(void *address, unsigned int size, unsigned int callStackDepth,
+                                   radMemorySpace memorySpace) = 0;
 
-    virtual void IdentifyAllocation( void* address, const char* group, const char* name,
-                                     unsigned int* pReferenceCount, radMemorySpace memorySpace ) = 0;
+    virtual void RescindAllocation(void *address, radMemorySpace memorySpace) = 0;
+
+    virtual void IdentifyAllocation(void *address, const char *group, const char *name,
+                                    unsigned int *pReferenceCount, radMemorySpace memorySpace) = 0;
 
     //
     // This member can be used by the game to flag memory states. These flags show up in the host
     // memory monitor tool and the user can "go to" these flags. Call just specifies a string to
     // idenify his flag.
     //
-    virtual void IssueFlag( const char* flag ) = 0;
-    
+    virtual void IssueFlag(const char *flag) = 0;
+
     //
     // The member allows the game to be suspended and the memory monitor put into a suspended state.
     // To resume the game, the user of the host memory monitor is required to intervene.
     //
-    virtual void Suspend( void ) = 0;
+    virtual void Suspend(void) = 0;
 
     //
     // These two members can be used by reference counted objects to report which objects are holding
@@ -154,14 +156,17 @@ struct IRadMemoryMonitor : public IRefCount
     // methods should be invoked. Caller must provide the address of where the reference is stored and
     // the address of the referenced object.
     //
-    virtual void ReportAddRef( void* pReference, void* pObject, radMemorySpace memorySpaceObject ) = 0;
-    virtual void ReportRelease( void* pReference, void* pObject, radMemorySpace memorySpaceObject ) = 0;
+    virtual void
+    ReportAddRef(void *pReference, void *pObject, radMemorySpace memorySpaceObject) = 0;
+
+    virtual void
+    ReportRelease(void *pReference, void *pObject, radMemorySpace memorySpaceObject) = 0;
 
     //
     // To track stack usage, stack should be filled initally with a specific character,
     // so memory monitor can identify the stack high water mark later.
     //
-    virtual void SetStackInitialFillChar( char c ) = 0;
+    virtual void SetStackInitialFillChar(char c) = 0;
 };
 
 //
@@ -170,13 +175,12 @@ struct IRadMemoryMonitor : public IRefCount
 // defined, the memory monitor can obtain a picture of memory even if the memory monitor is 
 // started after the game has run.
 //
-struct IRadMemoryTraverse
-{
+struct IRadMemoryTraverse {
     //
     // This member will be invoked by the monitor to inform the memory system that it 
     // should ready itself for a new memory traversal.
     //
-    virtual void Reset( void ) = 0; 
+    virtual void Reset(void) = 0;
 
     //
     // This member is invoked by the monitor to get the next memory block defined in a 
@@ -184,159 +188,173 @@ struct IRadMemoryTraverse
     // no more blocks. Implementer can return the group and name if have maintains it.
     // Can return null if not.
     //
-    virtual bool GetNext( void** address, unsigned int* size, unsigned int* group, char* name ) = 0;
+    virtual bool GetNext(void **address, unsigned int *size, unsigned int *group, char *name) = 0;
 };
 
 //=============================================================================
 // Inline Functions
 //=============================================================================
-inline void radMemoryMonitorDeclareSection( void* address, unsigned int size, IRadMemoryMonitor::MemorySectionType sectionType,
-                                            radMemorySpace memorySpace = radMemorySpace_Local,
-                                            IRadMemoryTraverse* traverse = NULL )
-{
+inline void radMemoryMonitorDeclareSection(void *address, unsigned int size,
+                                           IRadMemoryMonitor::MemorySectionType sectionType,
+                                           radMemorySpace memorySpace = radMemorySpace_Local,
+                                           IRadMemoryTraverse *traverse = NULL) {
 #if defined RADMEMORYMONITOR
-    if ( radMemoryMonitorGet( ) != NULL )
+    if (radMemoryMonitorGet() != NULL)
     {
-        radMemoryMonitorGet( )->DeclareSection( address, size, sectionType, memorySpace, traverse );
+        radMemoryMonitorGet()->DeclareSection(address, size, sectionType, memorySpace, traverse);
     }
 #else
-    (void) address; (void) size; (void) sectionType; (void) memorySpace; (void) traverse;
+    (void) address;
+    (void) size;
+    (void) sectionType;
+    (void) memorySpace;
+    (void) traverse;
 #endif
 }
 
-inline void radMemoryMonitorRescindSection( void* address, radMemorySpace memorySpace = radMemorySpace_Local )
-{
+inline void
+radMemoryMonitorRescindSection(void *address, radMemorySpace memorySpace = radMemorySpace_Local) {
 #if defined RADMEMORYMONITOR
-    if ( radMemoryMonitorGet( ) != NULL )
+    if (radMemoryMonitorGet() != NULL)
     {
-        radMemoryMonitorGet( )->RescindSection( address, memorySpace );
+        radMemoryMonitorGet()->RescindSection(address, memorySpace);
     }
 #else
-    (void) address; (void) memorySpace;
+    (void) address;
+    (void) memorySpace;
 #endif
 }
 
-inline void radMemoryMonitorIdentifySection( void* address, const char* name, radMemorySpace memorySpace = radMemorySpace_Local )
-{
+inline void radMemoryMonitorIdentifySection(void *address, const char *name,
+                                            radMemorySpace memorySpace = radMemorySpace_Local) {
 #if defined RADMEMORYMONITOR
-    if ( radMemoryMonitorGet( ) != NULL )
+    if (radMemoryMonitorGet() != NULL)
     {
-        radMemoryMonitorGet( )->IdentifySection( address, name, memorySpace );
+        radMemoryMonitorGet()->IdentifySection(address, name, memorySpace);
     }
 #else
-    (void) address; (void) name; (void) memorySpace;
+    (void) address;
+    (void) name;
+    (void) memorySpace;
 #endif
 }
 
-inline void radMemoryMonitorDeclareAllocation( void* address, unsigned int size, unsigned int callStackDepth = MM_MAX_CALLSTACK_DEPTH,
-                                               radMemorySpace memorySpace = radMemorySpace_Local )
-{
+inline void radMemoryMonitorDeclareAllocation(void *address, unsigned int size,
+                                              unsigned int callStackDepth = MM_MAX_CALLSTACK_DEPTH,
+                                              radMemorySpace memorySpace = radMemorySpace_Local) {
 #if defined RADMEMORYMONITOR
-    if ( radMemoryMonitorGet( ) != NULL )
+    if (radMemoryMonitorGet() != NULL)
     {
-        radMemoryMonitorGet( )->DeclareAllocation( address, size, callStackDepth, memorySpace );
+        radMemoryMonitorGet()->DeclareAllocation(address, size, callStackDepth, memorySpace);
     }
 #else
-    (void) address; (void) size; (void) callStackDepth, (void) memorySpace;
+    (void) address;
+    (void) size;
+    (void) callStackDepth, (void) memorySpace;
 #endif
 }
 
-inline void radMemoryMonitorRescindAllocation( void* address, radMemorySpace memorySpace = radMemorySpace_Local )
-{
+inline void radMemoryMonitorRescindAllocation(void *address,
+                                              radMemorySpace memorySpace = radMemorySpace_Local) {
 #if defined RADMEMORYMONITOR
-    if ( radMemoryMonitorGet( ) != NULL )
+    if (radMemoryMonitorGet() != NULL)
     {
-        radMemoryMonitorGet( )->RescindAllocation( address, memorySpace );
+        radMemoryMonitorGet()->RescindAllocation(address, memorySpace);
     }
 #else
-    (void) address; (void) memorySpace;
+    (void) address;
+    (void) memorySpace;
 #endif
 }
 
-inline void radMemoryMonitorIdentifyAllocation( void* address, const char * group = NULL, const char* name = NULL,
-                         unsigned int* pReferenceCount = NULL, radMemorySpace memorySpace = radMemorySpace_Local )
-{
+inline void
+radMemoryMonitorIdentifyAllocation(void *address, const char *group = NULL, const char *name = NULL,
+                                   unsigned int *pReferenceCount = NULL,
+                                   radMemorySpace memorySpace = radMemorySpace_Local) {
 #if defined RADMEMORYMONITOR
-    if ( radMemoryMonitorGet( ) != NULL )
+    if (radMemoryMonitorGet() != NULL)
     {
-        radMemoryMonitorGet( )->IdentifyAllocation( address, group, name, pReferenceCount, memorySpace );
+        radMemoryMonitorGet()->IdentifyAllocation(address, group, name, pReferenceCount, memorySpace);
     }
 #else
-    (void) address; (void) group; (void) name, (void) pReferenceCount, (void) memorySpace;
+    (void) address;
+    (void) group;
+    (void) name, (void) pReferenceCount, (void) memorySpace;
 #endif
 }
 
-inline void radMemoryMonitorIssueFlag( const char* flag )
-{
+inline void radMemoryMonitorIssueFlag(const char *flag) {
 #if defined RADMEMORYMONITOR
-    if ( radMemoryMonitorGet( ) != NULL )
+    if (radMemoryMonitorGet() != NULL)
     {
-        radMemoryMonitorGet( )->IssueFlag( flag );
+        radMemoryMonitorGet()->IssueFlag(flag);
     }
 #else
     (void) flag;
 #endif
 }
 
-inline void radMemoryMonitorSuspend( void )
-{
+inline void radMemoryMonitorSuspend(void) {
 #if defined RADMEMORYMONITOR
-    if ( radMemoryMonitorGet( ) != NULL )
+    if (radMemoryMonitorGet() != NULL)
     {
-    	radMemoryMonitorGet( )->Suspend( );
+        radMemoryMonitorGet()->Suspend();
     }
 #endif
 }
 
-inline void radMemoryMonitorReportAddRef( void* pReference, void* pObject, radMemorySpace memorySpaceObject = radMemorySpace_Local )
-{
+inline void radMemoryMonitorReportAddRef(void *pReference, void *pObject,
+                                         radMemorySpace memorySpaceObject = radMemorySpace_Local) {
 #if defined RADMEMORYMONITOR
-    if ( radMemoryMonitorGet( ) != NULL )
+    if (radMemoryMonitorGet() != NULL)
     {
-        radMemoryMonitorGet( )->ReportAddRef( pReference, pObject, memorySpaceObject );
+        radMemoryMonitorGet()->ReportAddRef(pReference, pObject, memorySpaceObject);
     }
 #else
-    (void) pReference; (void) pObject;
+    (void) pReference;
+    (void) pObject;
 #endif
 }
 
-inline void radMemoryMonitorReportRelease( void* pReference, void* pObject, radMemorySpace memorySpaceObject = radMemorySpace_Local )
-{
+inline void radMemoryMonitorReportRelease(void *pReference, void *pObject,
+                                          radMemorySpace memorySpaceObject = radMemorySpace_Local) {
 #if defined RADMEMORYMONITOR
-    if ( radMemoryMonitorGet( ) != NULL )
+    if (radMemoryMonitorGet() != NULL)
     {
-        radMemoryMonitorGet( )->ReportRelease( pReference, pObject, memorySpaceObject );
+        radMemoryMonitorGet()->ReportRelease(pReference, pObject, memorySpaceObject);
     }
 #else
-    (void) pReference; (void) pObject;
+    (void) pReference;
+    (void) pObject;
 #endif
 }
 
 
 #if !defined RADMEMORYMONITOR
+
 //
 // if RADMEMORYMONITOR is not defined, radMemoryMonitorInitialize does nothing
 //
-inline void radMemoryMonitorInitialize( unsigned int bufferSize, radMemoryAllocator alloc, bool SyncMode, bool ReportRefCount )
-{
-    (void)bufferSize;
-    (void)alloc;
-    (void)SyncMode;
+inline void
+radMemoryMonitorInitialize(unsigned int bufferSize, radMemoryAllocator alloc, bool SyncMode,
+                           bool ReportRefCount) {
+    (void) bufferSize;
+    (void) alloc;
+    (void) SyncMode;
 }
 
 //
 // if RADMEMORYMONITOR is not defined, radMemoryMonitorTerminate does nothing
 //
-inline void radMemoryMonitorTerminate( void )
-{
+inline void radMemoryMonitorTerminate(void) {
 }
 
 //
 // if RADMEMORYMONITOR is not defined, radMemoryMonitorService does nothing
 //
-inline void radMemoryMonitorService( void )
-{
+inline void radMemoryMonitorService(void) {
 }
+
 #endif
 
 

@@ -50,8 +50,8 @@ struct IRadTextDisplay;
 // Use this global function to initialize the debug output system and obtain
 // a handle on it. The output screen is a singleton.
 //
-void radTextDisplayGet( IRadTextDisplay** pDisplay, 
-                        radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT );
+void radTextDisplayGet(IRadTextDisplay **pDisplay,
+                       radMemoryAllocator alloc = RADMEMORY_ALLOC_DEFAULT);
 
 
 //=============================================================================
@@ -61,20 +61,24 @@ void radTextDisplayGet( IRadTextDisplay** pDisplay,
 //
 // This is the main iterface used to print debug text on the TV screen.
 //
-struct IRadTextDisplay : public IRefCount
-{
-    virtual void SetAutoSwap( bool on ) = 0;
-    virtual void SwapBuffers( void ) = 0;
+struct IRadTextDisplay : public IRefCount {
+    virtual void SetAutoSwap(bool on) = 0;
 
-    virtual void SetBackgroundColor( unsigned int color ) = 0;  
-	virtual void SetTextColor( unsigned int color ) = 0;
-    virtual void Clear( void ) = 0;
+    virtual void SwapBuffers(void) = 0;
 
-    virtual void GetDimensions( unsigned int* pWidth, unsigned int* pHeight ) const = 0;
-    virtual void SetCursorPosition( unsigned int x, unsigned int y ) = 0;
+    virtual void SetBackgroundColor(unsigned int color) = 0;
 
-    virtual void TextOutAt( const char* pText, int x, int y ) = 0;
-    virtual void TextOut( const char*  pText ) = 0;
+    virtual void SetTextColor(unsigned int color) = 0;
+
+    virtual void Clear(void) = 0;
+
+    virtual void GetDimensions(unsigned int *pWidth, unsigned int *pHeight) const = 0;
+
+    virtual void SetCursorPosition(unsigned int x, unsigned int y) = 0;
+
+    virtual void TextOutAt(const char *pText, int x, int y) = 0;
+
+    virtual void TextOut(const char *pText) = 0;
 };
 
 #endif 

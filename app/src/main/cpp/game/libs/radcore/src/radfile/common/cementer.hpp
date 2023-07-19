@@ -25,14 +25,14 @@
 //      * FileWriteRequest (assert).
 //
 
-#ifndef	CEMENTER_HPP
+#ifndef    CEMENTER_HPP
 #define CEMENTER_HPP
 
 //=============================================================================
 // Include Files
 //=============================================================================
 
-#include <radobject.hpp> 
+#include <radobject.hpp>
 #include <radfile.hpp>
 #include "saferefobject.hpp"
 #include "cementLibrary.hpp"
@@ -42,6 +42,7 @@
 //=============================================================================
 
 class radFile;
+
 class radDrive;
 
 //=============================================================================
@@ -53,15 +54,15 @@ class radDrive;
 // drive object.
 //
 void radCementLibraryCreate
-(
-    IRadCementLibrary** pIRadCementLibrary,
-    radDrive* pDrive,
-    const char* cementLibraryFileName,
-    radCementLibraryPriority priority,
-    unsigned int cacheSize,
-    radMemoryAllocator alloc,
-    radMemorySpace cacheSpace
-);
+        (
+                IRadCementLibrary **pIRadCementLibrary,
+                radDrive *pDrive,
+                const char *cementLibraryFileName,
+                radCementLibraryPriority priority,
+                unsigned int cacheSize,
+                radMemoryAllocator alloc,
+                radMemorySpace cacheSpace
+        );
 
 
 //=============================================================================
@@ -74,55 +75,57 @@ void radCementLibraryCreate
 class radCementLibrary : public IRadCementLibrary,
                          public IRadFileCompletionCallback,
                          public radObject,
-                         public radSafeRefCount
-{
+                         public radSafeRefCount {
 public:
     //
     // Constructor and destructor
     //
-    radCementLibrary( radDrive* pDrive, radFile* pDataFile, radCementLibraryPriority priority );
-    virtual ~radCementLibrary( );
+    radCementLibrary(radDrive *pDrive, radFile *pDataFile, radCementLibraryPriority priority);
+
+    virtual ~radCementLibrary();
 
     IMPLEMENT_SAFEREFCOUNTED;
 
     //
     // IRadMutable
     //
-    void Lock( void );
-    void Unlock( void );
+    void Lock(void);
+
+    void Unlock(void);
 
     //
     // IRadCementLibrary
-    CementLibraryStatus GetStatus( void );
-    void WaitForCompletion( void );
+    CementLibraryStatus GetStatus(void);
+
+    void WaitForCompletion(void);
 
     //
     // IRadFileCompletionCallback
     //
-    void OnFileOperationsComplete( void* pUserData );
+    void OnFileOperationsComplete(void *pUserData);
 
     //
     // Open a file. Return NULL if it doesn't exist.
     //
-    radFile* OpenFile( const char* fileName,
-                       unsigned int* pOffset,
-                       unsigned int* pSize );
+    radFile *OpenFile(const char *fileName,
+                      unsigned int *pOffset,
+                      unsigned int *pSize);
 
     //
     // Put in the callback
     //
-    void SetCompletionCallback( IRadCementLibraryCompletionCallback* pCallback,
-                                void* pUserData );
+    void SetCompletionCallback(IRadCementLibraryCompletionCallback *pCallback,
+                               void *pUserData);
 
     //
     // Used for backward compatibility
     //
-    bool IsOpen( void );
+    bool IsOpen(void);
 
     //
     // Return the priority of this library.
     //
-    radCementLibraryPriority GetPriority( void ) const;
+    radCementLibraryPriority GetPriority(void) const;
 
 private:
     friend class radCementLibraryList;
@@ -130,12 +133,12 @@ private:
     // 
     // A pointer to the drive object with which this library is registered
     //
-    radDrive*   m_pDrive;
+    radDrive *m_pDrive;
 
     //
     // A pointer to the data file
     //
-    radFile*    m_pDataFile;
+    radFile *m_pDataFile;
 
     //
     // Use this to remember the libary's state
@@ -145,12 +148,12 @@ private:
     //
     // Store the header info and hash table.
     //
-    radCFHeader*        m_Header;
+    radCFHeader *m_Header;
 
     //
     // Pointer to the next library. Used by the library list.
     //
-    radCementLibrary*   m_pNext;
+    radCementLibrary *m_pNext;
 
     //
     // Remeber our priority
@@ -160,18 +163,18 @@ private:
     //
     // User's callback.
     //
-    IRadCementLibraryCompletionCallback* m_pCallback;
-    void*                                m_pUserData;
+    IRadCementLibraryCompletionCallback *m_pCallback;
+    void *m_pUserData;
 
     //
     // Temp buffer
     //
-    char*   m_TmpBuffer;
+    char *m_TmpBuffer;
 
     //
     // Finish the registration with the given status.
     //
-    void CompleteRegister( IRadCementLibrary::CementLibraryStatus status );
+    void CompleteRegister(IRadCementLibrary::CementLibraryStatus status);
 };
 
 
@@ -179,36 +182,37 @@ private:
 // This class is used to control a linked list (FIFO) of cement libraries.
 // This is an internal object and is not reference counted.
 //
-class radCementLibraryList
-{
+class radCementLibraryList {
 public:
     //
     // Constructor and destructor
     //
-    radCementLibraryList( void );
-    ~radCementLibraryList( void );
+    radCementLibraryList(void);
+
+    ~radCementLibraryList(void);
 
     //
     // Add an element to cement a library list
     //
-    void AddLibrary( radCementLibrary* pCementLibrary );
+    void AddLibrary(radCementLibrary *pCementLibrary);
 
     //
     // Remove a library from a library list
     //
-    void RemoveLibrary( const radCementLibrary* pCementLibrary );
+    void RemoveLibrary(const radCementLibrary *pCementLibrary);
 
     //
     // Iterations.
     //
-    void BeginIteration( radCementLibraryPriority priority );
-    radCementLibrary* GetNext( void );
+    void BeginIteration(radCementLibraryPriority priority);
+
+    radCementLibrary *GetNext(void);
 
 private:
-    radCementLibrary*   m_pHead[ radCementLibraryNumPriorities ];
-    radCementLibrary*   m_pTail[ radCementLibraryNumPriorities ];
+    radCementLibrary *m_pHead[radCementLibraryNumPriorities];
+    radCementLibrary *m_pTail[radCementLibraryNumPriorities];
 
-    radCementLibrary*   m_pIter;
+    radCementLibrary *m_pIter;
 };
 
 
