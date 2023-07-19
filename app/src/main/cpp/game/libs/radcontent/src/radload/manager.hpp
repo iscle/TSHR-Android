@@ -10,56 +10,68 @@
 #include <radload/loader.hpp>
 #include <radthread.hpp>
 
-template <class T> class RefHashTable;
-template <class T> class RefQueue;
+template<class T>
+class RefHashTable;
 
-class radLoadManager : public ILoadManager
-{
+template<class T>
+class RefQueue;
+
+class radLoadManager : public ILoadManager {
 public:
-    radLoadManager( radLoadInit& init );
-    
-    void Load( radLoadOptions* options, radLoadRequest** request );
-    void Load( const char* filename, radLoadRequest** request );
+    radLoadManager(radLoadInit &init);
 
-    void SetSyncLoading( bool sync );
+    void Load(radLoadOptions *options, radLoadRequest **request);
+
+    void Load(const char *filename, radLoadRequest **request);
+
+    void SetSyncLoading(bool sync);
+
     bool IsSyncLoading();
 
-    void AddFileLoader( radLoadFileLoader* fileLoader, const char* extension );
-    void AddDataLoader( radLoadDataLoader* dataLoader, radLoadClassID id );
+    void AddFileLoader(radLoadFileLoader *fileLoader, const char *extension);
 
-    radLoadFileLoader* GetFileLoader( const char* extension );
-    radLoadDataLoader* GetDataLoader( radLoadClassID id );
+    void AddDataLoader(radLoadDataLoader *dataLoader, radLoadClassID id);
 
-    void RemoveFileLoader( const char* extension );
-    void RemoveDataLoader( radLoadClassID id );
-    void RemoveFileLoader( radLoadFileLoader* loader );
-    void RemoveDataLoader( radLoadDataLoader* loader );
+    radLoadFileLoader *GetFileLoader(const char *extension);
+
+    radLoadDataLoader *GetDataLoader(radLoadClassID id);
+
+    void RemoveFileLoader(const char *extension);
+
+    void RemoveDataLoader(radLoadClassID id);
+
+    void RemoveFileLoader(radLoadFileLoader *loader);
+
+    void RemoveDataLoader(radLoadDataLoader *loader);
 
     bool IsLoadPending();
+
     float PercentDone();
-    
+
     void Service();
+
     void Terminate();
 
-    void AddCallback( radLoadCallback* callback );
-    
+    void AddCallback(radLoadCallback *callback);
+
     void Cancel();
 
     void PrintStats();
 
     void SwitchTasks();
 
-    class QueueItem : public radLoadUpdatableRequest
-    {
+    class QueueItem : public radLoadUpdatableRequest {
     public:
-        QueueItem( radLoadOptions& options ) : m_options( options ) {}
-        radLoadOptions* GetOptions() { return &m_options; }
+        QueueItem(radLoadOptions &options) : m_options(options) {}
+
+        radLoadOptions *GetOptions() { return &m_options; }
+
     protected:
         radLoadOptions m_options;
     };
 
-    static unsigned int LoadThreadEntry( void* data );
-    
+    static unsigned int LoadThreadEntry(void *data);
+
 protected:
     ~radLoadManager();
 
@@ -84,17 +96,17 @@ protected:
     unsigned int m_avgQueuedTime;
 #endif
 
-    QueueItem* m_pCurrent;
+    QueueItem *m_pCurrent;
 
-    RefHashTable<radLoadFileLoader>* m_pFileLoaders;
-    RefHashTable<radLoadDataLoader>* m_pDataLoaders;
+    RefHashTable<radLoadFileLoader> *m_pFileLoaders;
+    RefHashTable<radLoadDataLoader> *m_pDataLoaders;
 
-    RefQueue<radLoadObject>* m_pLoadQueue;
-    RefQueue<radLoadCallback>* m_pCallbacks;
-    
-    IRadThread* m_pThread;
-    IRadThreadSemaphore* m_pSemaphore;
-    IRadThreadMutex* m_pMutex;
+    RefQueue<radLoadObject> *m_pLoadQueue;
+    RefQueue<radLoadCallback> *m_pCallbacks;
+
+    IRadThread *m_pThread;
+    IRadThreadSemaphore *m_pSemaphore;
+    IRadThreadMutex *m_pMutex;
 };
 
 #endif

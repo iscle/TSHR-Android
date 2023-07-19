@@ -12,7 +12,7 @@
 //@{
 /// Define the memory allocators that radLoad will use internally
 #define RADLOAD_ALLOC_DEFAULT RADMEMORY_ALLOC_DEFAULT
-#define RADLOAD_ALLOC_TEMP RADMEMORY_ALLOC_TEMP 
+#define RADLOAD_ALLOC_TEMP RADMEMORY_ALLOC_TEMP
 //@}
 
 /// Do checking on AddRef's and Releases on objects to make sure they are valid
