@@ -11,17 +11,15 @@
 #define POSER_CONSTANTS_HPP
 
 
-namespace poser
-{
-    
-    
-enum Space
-{
-    SPACE_OBJECT = 0,
-    SPACE_WORLD
-};
-    
-    
+namespace poser {
+
+
+    enum Space {
+        SPACE_OBJECT = 0,
+        SPACE_WORLD
+    };
+
+
 } // namespace poser
 
 

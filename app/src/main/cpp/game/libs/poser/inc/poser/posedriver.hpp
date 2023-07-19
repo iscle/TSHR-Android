@@ -15,41 +15,38 @@
 #include <poser/priority.hpp>
 
 
-namespace poser
-{
+namespace poser {
 
 
-class Pose;
+    class Pose;
 
 
-class PoseDriver: public tEntity
-{
-public:
+    class PoseDriver : public tEntity {
+    public:
 
-    PoseDriver();
-    
-    virtual int GetMinimumJointIndex() const
-        { return 0; }
-    virtual int GetPriority() const
-        { return PRIORITY_DEFAULT; }
-    
-    bool IsEnabled() const
-        { return m_IsEnabled; }
-    virtual void SetIsEnabled(bool isEnabled)
-        { m_IsEnabled = isEnabled; }
-    
-    // deltaTime in seconds
-    virtual void Advance(float deltaTime) = 0;
-    virtual void Update(Pose* pose) = 0;
-    
-protected:
-    
-    virtual ~PoseDriver();
-    
-private:
-    
-    bool m_IsEnabled;
-};
+        PoseDriver();
+
+        virtual int GetMinimumJointIndex() const { return 0; }
+
+        virtual int GetPriority() const { return PRIORITY_DEFAULT; }
+
+        bool IsEnabled() const { return m_IsEnabled; }
+
+        virtual void SetIsEnabled(bool isEnabled) { m_IsEnabled = isEnabled; }
+
+        // deltaTime in seconds
+        virtual void Advance(float deltaTime) = 0;
+
+        virtual void Update(Pose *pose) = 0;
+
+    protected:
+
+        virtual ~PoseDriver();
+
+    private:
+
+        bool m_IsEnabled;
+    };
 
 
 } // namespace poser

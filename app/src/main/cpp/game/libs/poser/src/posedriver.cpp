@@ -10,18 +10,15 @@
 #include <poser/posedriver.hpp>
 
 
-namespace poser
-{
+namespace poser {
 
 
-PoseDriver::PoseDriver():
-    m_IsEnabled(true)
-{
-}
+    PoseDriver::PoseDriver() :
+            m_IsEnabled(true) {
+    }
 
-PoseDriver::~PoseDriver()
-{
-}
+    PoseDriver::~PoseDriver() {
+    }
 
 
 } // namespace poser

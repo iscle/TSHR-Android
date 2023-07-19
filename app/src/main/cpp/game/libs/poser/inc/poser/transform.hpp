@@ -10,64 +10,64 @@
 #include <raddebug.hpp>
 
 
-namespace poser
-{
+namespace poser {
 
 
-class Transform
-{
-public:
+    class Transform {
+    public:
 
-    Transform();
-    Transform(const rmt::Matrix& m);
-    Transform(const rmt::Quaternion& q,
-              const rmt::Vector& v = rmt::Vector(0.0f, 0.0f, 0.0f));
-    Transform(const rmt::Vector& v);
-    
-    void Identity();
-    
-    const rmt::Matrix& GetMatrix() const
-    {
-        rAssert(m_Dirty != DIRTY_MATRIX);
-        return m_Matrix;
-    }
+        Transform();
 
-    void SetMatrix(const rmt::Matrix& m);
-    // only sets rotation part of matrix
-    void SetMatrixRotation(const rmt::Matrix& m);
-    
-    const rmt::Vector& GetTranslation() const
-        { return const_cast<Transform*>(this)->m_Matrix.Row(3); }
-    void SetTranslation(const rmt::Vector& v)
-        { m_Matrix.FillTranslate(v); }
-    
-    const rmt::Quaternion& GetQuaternion() const;
-    void SetQuaternion(const rmt::Quaternion& q);
-    
-    void Blend(float alpha, const Transform& xForm);
-    
-    void Mult(const Transform& xForm) 
-    {
-        m_Matrix.Mult(xForm.GetMatrix());
-        m_Dirty = DIRTY_QUATERNION;
-    }
+        Transform(const rmt::Matrix &m);
 
-    void Invert();
-    
-private:
-    
-    rmt::Matrix m_Matrix;
-    rmt::Quaternion m_Quaternion;
-    
-    enum Dirty
-    {
-        DIRTY_NONE,
-        DIRTY_MATRIX,
-        DIRTY_QUATERNION
+        Transform(const rmt::Quaternion &q,
+                  const rmt::Vector &v = rmt::Vector(0.0f, 0.0f, 0.0f));
+
+        Transform(const rmt::Vector &v);
+
+        void Identity();
+
+        const rmt::Matrix &GetMatrix() const {
+            rAssert(m_Dirty != DIRTY_MATRIX);
+            return m_Matrix;
+        }
+
+        void SetMatrix(const rmt::Matrix &m);
+
+        // only sets rotation part of matrix
+        void SetMatrixRotation(const rmt::Matrix &m);
+
+        const rmt::Vector &
+        GetTranslation() const { return const_cast<Transform *>(this)->m_Matrix.Row(3); }
+
+        void SetTranslation(const rmt::Vector &v) { m_Matrix.FillTranslate(v); }
+
+        const rmt::Quaternion &GetQuaternion() const;
+
+        void SetQuaternion(const rmt::Quaternion &q);
+
+        void Blend(float alpha, const Transform &xForm);
+
+        void Mult(const Transform &xForm) {
+            m_Matrix.Mult(xForm.GetMatrix());
+            m_Dirty = DIRTY_QUATERNION;
+        }
+
+        void Invert();
+
+    private:
+
+        rmt::Matrix m_Matrix;
+        rmt::Quaternion m_Quaternion;
+
+        enum Dirty {
+            DIRTY_NONE,
+            DIRTY_MATRIX,
+            DIRTY_QUATERNION
+        };
+
+        Dirty m_Dirty;
     };
-    
-    Dirty m_Dirty;
-};
 
 
 } // namespace poser
