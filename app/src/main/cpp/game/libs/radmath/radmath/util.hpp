@@ -362,7 +362,7 @@ namespace RadicalMathLibrary {
     inline int IsNan(const float n) {
 #ifdef RAD_PS2
         return isnanf(n);
-#elif defined(RAD_GAMECUBE)
+#elif defined(RAD_GAMECUBE) || defined(RAD_ANDROID)
         return isnan(n);
 #else //RAD_XBOX
         return _isnan(n);

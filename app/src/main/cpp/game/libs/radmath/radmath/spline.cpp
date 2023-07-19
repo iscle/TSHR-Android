@@ -228,8 +228,8 @@ Spline::Evaluate(const float t) {
     float tt = t;
 #ifdef RAD_RELEASE
     // in release, make sure you can't step out of interval
-    if (tt <0.0f) tt = 0.0f;
-    if (tt> 1.0f) tt = 1.0f;
+    if (tt < 0.0f) tt = 0.0f;
+    if (tt > 1.0f) tt = 1.0f;
 #endif
 
     assert(t >= 0.0f && t <= 1.0f);
@@ -528,8 +528,8 @@ SplineCurve::Evaluate(const float t) {
     float tt = t;
 #ifdef RAD_RELEASE
     // in release, make sure you can't step out of interval
-    if (tt <0.0f) tt = 0.0f;
-    if (tt> GetEndParam()) tt = GetEndParam();
+    if (tt < 0.0f) tt = 0.0f;
+    if (tt > GetEndParam()) tt = GetEndParam();
 #endif
 
     assert(numCVs >= 4 || closed == true);
@@ -544,7 +544,7 @@ Vector
 SplineCurve::InitForwardDifferencing(unsigned int ns, unsigned int sk) {
 #ifdef RAD_RELEASE
     // in release, make sure you can't step out of interval
-    if (sk> GetEndParam()) sk = unsigned(GetEndParam());
+    if (sk > GetEndParam()) sk = unsigned(GetEndParam());
 #endif
 
     assert(numCVs >= 4 || closed == true);
@@ -569,8 +569,8 @@ SplineCurve::Forward() {
 
 #ifdef RAD_RELEASE
     // in release, make sure you can't step out of interval
-    if (t <0.0f) t = 0.0f;
-    if (t> GetEndParam()) t = GetEndParam();
+    if (t < 0.0f) t = 0.0f;
+    if (t > GetEndParam()) t = GetEndParam();
 #endif
 
     assert(t >= 0.0f &&
@@ -654,8 +654,8 @@ SplineCurve::GetLength(const float t) {
     float tt = t;
 #ifdef RAD_RELEASE
     // in release, make sure you can't step out of interval
-    if (tt <0.0f) tt = 0.0f;
-    if (tt> GetEndParam()) tt = GetEndParam();
+    if (tt < 0.0f) tt = 0.0f;
+    if (tt > GetEndParam()) tt = GetEndParam();
 #endif
 
     assert(numCVs >= 4 || closed == true);
@@ -680,8 +680,8 @@ float
 SplineCurve::ArcConvert(float s) {
 #ifdef RAD_RELEASE
     // in release, make sure you can't step out of interval
-    if (s <0.0f) s = 0.0f;
-    if (s> GetLength()) s = GetLength();
+    if (s < 0.0f) s = 0.0f;
+    if (s > GetLength()) s = GetLength();
 #endif
 
     assert(numCVs >= 4 || closed == true);
