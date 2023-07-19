@@ -8,29 +8,28 @@
 
 
 #ifndef RAD_RELEASE
+
 #include <math.h>
 #include <assert.h>
 
 #define RMT_MAX_ERROR 0.001
 
-int RadmathSanityCheck()
-{
-    for(int i=0;i<1024;i++)
-    {
+int RadmathSanityCheck() {
+    for (int i = 0; i < 1024; i++) {
         float theta = (i / 128.0f) - 4.0f;
         float s = rmt::Sin(theta);
         float c = rmt::Cos(theta);
 
-        assert( fabs(s-sinf(theta)) < RMT_MAX_ERROR );
-        assert( fabs(c-cosf(theta)) < RMT_MAX_ERROR );
+        assert(fabs(s - sinf(theta)) < RMT_MAX_ERROR);
+        assert(fabs(c - cosf(theta)) < RMT_MAX_ERROR);
 
-        rmt::SinCos(theta,&s,&c);
+        rmt::SinCos(theta, &s, &c);
 
-        assert( fabs(s-sinf(theta)) < RMT_MAX_ERROR );
-        assert( fabs(c-cosf(theta)) < RMT_MAX_ERROR );
+        assert(fabs(s - sinf(theta)) < RMT_MAX_ERROR);
+        assert(fabs(c - cosf(theta)) < RMT_MAX_ERROR);
 
         float t = rmt::Tan(theta);
-        assert( fabs(t-tanf(theta)) < RMT_MAX_ERROR );
+        assert(fabs(t - tanf(theta)) < RMT_MAX_ERROR);
     }
 
     return 0;
@@ -49,26 +48,26 @@ bool g_rmtInitialized = false;
 
 int radMathInitialize()
 {
-    #ifndef RAD_RELEASE
+#ifndef RAD_RELEASE
     int ucodeSize = (unsigned)vu0_end - (unsigned)vu0_begin;
     printf("RadMath : VU0 ucode size = %d bytes\n", ucodeSize);
-    assert(ucodeSize < 4096 && "VU0 code too big!");    
-    #endif
+    assert(ucodeSize <4096 && "VU0 code too big!");
+#endif
 
-    sceDmaChan* dmaVif0; 
+    sceDmaChan* dmaVif0;
 
     // upload the VU0 ucode
     dmaVif0 = sceDmaGetChan(SCE_DMA_VIF0);
-    dmaVif0->chcr.TTE = 0;	
+    dmaVif0->chcr.TTE = 0;
 
-	sceDmaSend( dmaVif0,vu0_ucode );
-	sceDmaSync( dmaVif0,0,0 );
+    sceDmaSend(dmaVif0,vu0_ucode);
+    sceDmaSync(dmaVif0,0,0);
 
-    #ifndef RAD_RELEASE
+#ifndef RAD_RELEASE
     g_rmtInitialized = true;
     RadmathSanityCheck();
     printf("RadmathSanityCheck() - passed!\n");
-    #endif
+#endif
 
     return 0;
 }
@@ -76,11 +75,10 @@ int radMathInitialize()
 #else
 
 // todo - add radMathInitiliaze() for other platforms if needed
-int radMathInitialize()
-{
-    #ifndef RAD_RELEASE
+int radMathInitialize() {
+#ifndef RAD_RELEASE
     RadmathSanityCheck();
-    #endif
+#endif
 
     return 0;
 }

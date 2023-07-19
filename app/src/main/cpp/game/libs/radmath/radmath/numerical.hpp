@@ -17,34 +17,34 @@
 #ifndef _RADMATH_NUMERICAL_HPP
 #define _RADMATH_NUMERICAL_HPP
 
-namespace RadicalMathLibrary
-{
+namespace RadicalMathLibrary {
 
 // This code is adapted from code released by Magic Software, Inc.
 // Copyright (c) 2000-2002 Magic Software, Inc.  All Rights Reserved.
 // http://www.magic-software.com/License/free.pdf
 
-class Integrate
-{
-public:
-    Integrate();
-    ~Integrate();
+    class Integrate {
+    public:
+        Integrate();
 
-    // last parameter is for user-defined data
-    typedef float (*Function)(float,void*);
+        ~Integrate();
 
-    // Romberg integration
-    void SetOrder (unsigned int iOrder);
-    float RombergIntegral (float fA, float fB, Function oF, void* pvUserData = 0);
+        // last parameter is for user-defined data
+        typedef float (*Function)(float, void *);
 
-    // Gaussian quadrature
-    float GaussianQuadrature (float fA, float fB, Function oF, void* pvUserData = 0);
+        // Romberg integration
+        void SetOrder(unsigned int iOrder);
 
-protected:
-    // parameters for Romberg integration
-    unsigned int    ms_iOrder;
-    float*          ms_apfRom[2];
-};
+        float RombergIntegral(float fA, float fB, Function oF, void *pvUserData = 0);
+
+        // Gaussian quadrature
+        float GaussianQuadrature(float fA, float fB, Function oF, void *pvUserData = 0);
+
+    protected:
+        // parameters for Romberg integration
+        unsigned int ms_iOrder;
+        float *ms_apfRom[2];
+    };
 
 }// end namespace
 

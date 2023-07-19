@@ -20,19 +20,25 @@
 #define _RADMATH_HPP
 
 // all the types defined by this library
-namespace RadicalMathLibrary
-{
+namespace RadicalMathLibrary {
     class Vector;     // A standard 3-compnent vector
     class Vector4;    // A 4-element homogenous vector
     class Vector2;    // A 2 element vector
     class Matrix;     // A 4x4 homogenous matrix
-    class Quaternion; 
+    class Quaternion;
+
     class Sphere;
+
     class Box3D;
+
     class Plane;
+
     class Triangle;
+
     class Randomizer;
+
     class Spline;
+
     class SplineCurve;
 }
 

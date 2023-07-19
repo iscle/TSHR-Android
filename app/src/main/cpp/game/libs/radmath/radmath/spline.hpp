@@ -32,8 +32,7 @@
 
 #include <radmath/matrix.hpp>
 
-namespace RadicalMathLibrary
-{
+namespace RadicalMathLibrary {
 
 // This class evaluates a single spline segment using several basis functions.
 // It does not attempt to manage control vertices for curves with more than 
@@ -61,128 +60,151 @@ namespace RadicalMathLibrary
 // by repeatedly calling GetLength().
 
 
-class Spline // this class evaluates a single uniform cubic non-rational spline segment
-{
-public:
-    Spline()  { /**/ }
-    Spline(const Spline&);
-    ~Spline() { /**/ }
+    class Spline // this class evaluates a single uniform cubic non-rational spline segment
+    {
+    public:
+        Spline() { /**/ }
 
-    Spline& operator=(const Spline&);
-    
-    // Spline basis to use for curve evaluation
-    enum Basis { 
+        Spline(const Spline &);
+
+        ~Spline() { /**/ }
+
+        Spline &operator=(const Spline &);
+
+        // Spline basis to use for curve evaluation
+        enum Basis {
+            // basis functions
+            BSpline,
+            Bezier,
+            Hermite,  // Order is P0, D0 (derivative at P0), P1, D1 (derivative at P1)
+
+            // first derivative
+            DBSpline,
+            DBezier,
+            DHermite,  // Order is P0, D0 (derivative at P0), P1, D1 (derivative at P1)
+
+            // second derivative
+            DDBSpline,
+            DDBezier,
+            DDHermite  // Order is P0, D0 (derivative at P0), P1, D1 (derivative at P1)
+        };
+
+        // initialization
+        void
+        SetCntrlMesh(const Basis basis, const Vector &cv0, const Vector &cv1, const Vector &cv2,
+                     const Vector &cv3);
+
+        void
+        SetCntrlMesh(const Basis basis, const Vector4 &cv0, const Vector4 &cv1, const Vector4 &cv2,
+                     const Vector4 &cv3);
+
+        void SetCntrlMesh(const Basis basis, const Matrix &cv);
+
+        // evaluation
+        Vector Evaluate(const float t);  // t in [0, 1]
+        Vector InitForwardDifferencing(unsigned int numSteps);
+
+        Vector Forward();
+
+    private:
         // basis functions
-        BSpline, 
-        Bezier,
-        Hermite,  // Order is P0, D0 (derivative at P0), P1, D1 (derivative at P1)
+        static const Matrix MBSpline;
+        static const Matrix MBezier;
+        static const Matrix MHermite;
 
-        // first derivative
-        DBSpline, 
-        DBezier,
-        DHermite,  // Order is P0, D0 (derivative at P0), P1, D1 (derivative at P1)
+        // first derivative of basis functions
+        static const Matrix MBSplineD1;
+        static const Matrix MBezierD1;
+        static const Matrix MHermiteD1;
 
-        // second derivative
-        DDBSpline, 
-        DDBezier,
-        DDHermite  // Order is P0, D0 (derivative at P0), P1, D1 (derivative at P1)
-    };
+        // second derivative of basis functions
+        static const Matrix MBSplineD2;
+        static const Matrix MBezierD2;
+        static const Matrix MHermiteD2;
 
-    // initialization
-    void SetCntrlMesh(const Basis basis, const Vector&  cv0, const Vector&  cv1, const Vector&  cv2, const Vector&  cv3);
-    void SetCntrlMesh(const Basis basis, const Vector4& cv0, const Vector4& cv1, const Vector4& cv2, const Vector4& cv3);
-    void SetCntrlMesh(const Basis basis, const Matrix&  cv);
-    
-    // evaluation
-    Vector Evaluate(const float t);  // t in [0, 1]
-    Vector InitForwardDifferencing(unsigned int numSteps);
-    Vector Forward();
+        Matrix pm;           // cache for Basis * CVs
 
-private:
-    // basis functions
-    static const Matrix MBSpline;
-    static const Matrix MBezier;
-    static const Matrix MHermite;
-    
-    // first derivative of basis functions
-    static const Matrix MBSplineD1;
-    static const Matrix MBezierD1;
-    static const Matrix MHermiteD1;
-
-    // second derivative of basis functions
-    static const Matrix MBSplineD2;
-    static const Matrix MBezierD2;
-    static const Matrix MHermiteD2;
-
-    Matrix pm;           // cache for Basis * CVs
-
-    Vector4 Q;           // Value of previous evaluation
-    Vector4 Dx, Dy, Dz;  // Delta vectors for fwd differencing
-}; // Spline
+        Vector4 Q;           // Value of previous evaluation
+        Vector4 Dx, Dy, Dz;  // Delta vectors for fwd differencing
+    }; // Spline
 
 
 
 
 // This class is similar to the one above, except that it handles curves with multiple segments
 // and manages the state of the spline evaluator automatically to avoid reloading it unecessarily
-class SplineCurve
-{
-public:
-    SplineCurve(int numCVs=0, Spline::Basis basis=Spline::BSpline, bool closed=false);
-    SplineCurve(const SplineCurve&);
-    ~SplineCurve();
+    class SplineCurve {
+    public:
+        SplineCurve(int numCVs = 0, Spline::Basis basis = Spline::BSpline, bool closed = false);
 
-    SplineCurve& operator=(const SplineCurve&);
+        SplineCurve(const SplineCurve &);
 
-    // initialization
-    void SetBasis(Spline::Basis b);
-    void SetClosed(bool c);             // whether the spline is open or closed 
-    void SetNumVertices(unsigned int numCVs);
-    void SetCntrlVertex(unsigned int i, const Vector& cv);
-    void SetCntrlVertex(unsigned int i, const Vector4& cv);
+        ~SplineCurve();
 
-    const Vector& GetCntrlVertex(unsigned int i) const;
+        SplineCurve &operator=(const SplineCurve &);
 
-    // curve properties
-    Spline::Basis GetBasis() const { return basis; }
-    bool          GetClosed() const { return closed; }
-    unsigned int  GetNumVertices() const { return numCVs; }
-    float         GetEndParam() const;    // max value of t at which curve is defined (different for open and closed curves)
-    unsigned int  GetNumSegments() const; // number of segments along the curve
-    const Vector& GetCntrlVertex(unsigned int i);
+        // initialization
+        void SetBasis(Spline::Basis b);
 
-    // evaluation
-    Vector GetKnot(unsigned int i);  // i in [0, GetNumSegments()]
-    Vector Evaluate(const float t);  // t in [0, GetCurveEndParam()]
-    Vector InitForwardDifferencing(unsigned int numSteps, unsigned int startKnot = 0);
-    Vector Forward();
+        void SetClosed(bool c);             // whether the spline is open or closed
+        void SetNumVertices(unsigned int numCVs);
 
-    // arc length (these functions are very expensive -- see comments above)
-    float  GetLength();                     // arc length of the whole curve
-    float  GetLength(const float t);        // arc length up to an arbitrary position along the curve
-    float  GetSegmentLength(unsigned int i);// arc length of the ith segment
-    float  ArcConvert(const float s);       // converts arc parameter s to natural parameter t
+        void SetCntrlVertex(unsigned int i, const Vector &cv);
 
-private:  
+        void SetCntrlVertex(unsigned int i, const Vector4 &cv);
 
-    // there are two evaluators for SplineCurve: one that is used for Evaluate() -- and hence GetLength() and ArcConvert() --
-    // and another one dedicated exclusively to forward differencing.  The reason is that the first three calls only need their
-    // state until the call returns, while forward differencing needs its state preserved until the end of the Forward() loop.
-    // To have only one evaluator would preclude calling any of the above functions inside the Forward() loop, a common source of errors.
-    typedef enum { CURVE, FORWARD_DIFFERENCING } Evaluator;
-    bool  LoadEvaluator(Evaluator idx, const float t);
-    int     start[2];    // first vertex (of 4) stored in evaluator
-    Spline  Q[2];        // segment evaluator
+        const Vector &GetCntrlVertex(unsigned int i) const;
 
-    bool closed;         // whether to loop at the end of the segment   
-    Spline::Basis basis; // spline basis to be used
-    unsigned int numCVs; // number of control vertices
-    Vector4 *CVs;        // array of control vertices
-    float *segLengths;   // segment lengths
+        // curve properties
+        Spline::Basis GetBasis() const { return basis; }
 
-    int steps;           // steps taken by forward differencing
-    int numSteps;        // steps per segment in forward differencing
-}; // SplineCurve
+        bool GetClosed() const { return closed; }
+
+        unsigned int GetNumVertices() const { return numCVs; }
+
+        float
+        GetEndParam() const;    // max value of t at which curve is defined (different for open and closed curves)
+        unsigned int GetNumSegments() const; // number of segments along the curve
+        const Vector &GetCntrlVertex(unsigned int i);
+
+        // evaluation
+        Vector GetKnot(unsigned int i);  // i in [0, GetNumSegments()]
+        Vector Evaluate(const float t);  // t in [0, GetCurveEndParam()]
+        Vector InitForwardDifferencing(unsigned int numSteps, unsigned int startKnot = 0);
+
+        Vector Forward();
+
+        // arc length (these functions are very expensive -- see comments above)
+        float GetLength();                     // arc length of the whole curve
+        float
+        GetLength(const float t);        // arc length up to an arbitrary position along the curve
+        float GetSegmentLength(unsigned int i);// arc length of the ith segment
+        float ArcConvert(const float s);       // converts arc parameter s to natural parameter t
+
+    private:
+
+        // there are two evaluators for SplineCurve: one that is used for Evaluate() -- and hence GetLength() and ArcConvert() --
+        // and another one dedicated exclusively to forward differencing.  The reason is that the first three calls only need their
+        // state until the call returns, while forward differencing needs its state preserved until the end of the Forward() loop.
+        // To have only one evaluator would preclude calling any of the above functions inside the Forward() loop, a common source of errors.
+        typedef enum {
+            CURVE, FORWARD_DIFFERENCING
+        } Evaluator;
+
+        bool LoadEvaluator(Evaluator idx, const float t);
+
+        int start[2];    // first vertex (of 4) stored in evaluator
+        Spline Q[2];        // segment evaluator
+
+        bool closed;         // whether to loop at the end of the segment
+        Spline::Basis basis; // spline basis to be used
+        unsigned int numCVs; // number of control vertices
+        Vector4 *CVs;        // array of control vertices
+        float *segLengths;   // segment lengths
+
+        int steps;           // steps taken by forward differencing
+        int numSteps;        // steps per segment in forward differencing
+    }; // SplineCurve
 
 
 }
