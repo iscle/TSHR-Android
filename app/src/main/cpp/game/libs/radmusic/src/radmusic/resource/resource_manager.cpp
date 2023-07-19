@@ -43,7 +43,7 @@ namespace radmusic {
 #if defined RAD_GAMECUBE
 #include <radsound_gcn.hpp>
 #define PLATFORM_AUDIO_FORMAT IRadSoundHalAudioFormat::PCM_BIGENDIAN
-#elif defined RAD_WIN32 || defined RAD_XBOX
+#elif defined RAD_WIN32 || defined RAD_XBOX || defined RAD_ANDROID
 #define PLATFORM_AUDIO_FORMAT IRadSoundHalAudioFormat::PCM
 #elif defined RAD_PS2
 #define PLATFORM_AUDIO_FORMAT IRadSoundHalAudioFormat::VAG

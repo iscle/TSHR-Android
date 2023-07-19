@@ -688,7 +688,7 @@ namespace radmusic {
             const tempo_track &ptr_tempo_track,
             unsigned int int_current_sample,
             unsigned int int_sampling_rate) {
-#if defined RAD_WIN32
+#if defined RAD_WIN32 || defined(RAD_ANDROID)
         static float game_loop_latency_ms = 60.0f;
 #elif defined RAD_XBOX
         static float game_loop_latency_ms = 10.0f;

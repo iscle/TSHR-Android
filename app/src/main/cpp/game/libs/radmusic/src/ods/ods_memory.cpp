@@ -1048,11 +1048,11 @@ namespace ods {
     stream_functions debug_printf_stream_functions = {debug_printf_write, debug_printf_read};
 
     int VsnPrintf(char *buffer, size_t count, const char *format, va_list argptr) {
-#if defined (RAD_WIN32) || defined (RAD_XBOX)
+#if defined(RAD_WIN32) || defined(RAD_XBOX)
         return _vsnprintf(buffer, count, format, argptr);
-#elif defined (RAD_GAMECUBE)
+#elif defined(RAD_GAMECUBE)
         return vsnprintf(buffer, count, format, argptr);
-#elif defined (RAD_PS2)
+#elif defined(RAD_PS2) || defined(RAD_ANDROID)
         return vsprintf(buffer, format, argptr);
 #endif
     }
