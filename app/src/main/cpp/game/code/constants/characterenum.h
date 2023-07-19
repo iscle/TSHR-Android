@@ -1,11 +1,9 @@
 #ifndef CHARACTER_ENUM
 #define CHARACTER_ENUM
 
-namespace CharacterEnum
-{
+namespace CharacterEnum {
 
-    enum WalkerID
-    {
+    enum WalkerID {
         HOMER,
         MARGE,
         APU,
@@ -14,7 +12,7 @@ namespace CharacterEnum
         LISA,
         RALPH,
         MILHOUSE,
-        
+
         NUM_WALKERS,
         INVALID
     };

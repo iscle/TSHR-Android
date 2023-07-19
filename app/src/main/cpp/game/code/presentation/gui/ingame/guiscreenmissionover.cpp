@@ -59,62 +59,60 @@ const int NUM_ATTEMPTS_REQUIRED_FOR_SKIPPING = 7;
 //
 //===========================================================================
 CGuiScreenMissionOver::CGuiScreenMissionOver
-(
-	Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-)
-:   CGuiScreen( pScreen, pParent, GUI_SCREEN_ID_MISSION_OVER ),
-    m_pMenu( NULL ),
-    m_failureReason( NULL ),
-    m_failureHint( NULL )
-{
-MEMTRACK_PUSH_GROUP( "CGUIScreenMissionOver" );
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        : CGuiScreen(pScreen, pParent, GUI_SCREEN_ID_MISSION_OVER),
+          m_pMenu(NULL),
+          m_failureReason(NULL),
+          m_failureHint(NULL) {
+    MEMTRACK_PUSH_GROUP("CGUIScreenMissionOver");
     // Retrieve the Scrooby drawing elements.
     //
-    Scrooby::Page* pPage;
-	pPage = m_pScroobyScreen->GetPage( "MissionOver" );
-	rAssert( pPage );
+    Scrooby::Page *pPage;
+    pPage = m_pScroobyScreen->GetPage("MissionOver");
+    rAssert(pPage);
 
-    Scrooby::Layer* foreground = pPage->GetLayer( "Foreground" );
-    rAssert( foreground != NULL );
+    Scrooby::Layer *foreground = pPage->GetLayer("Foreground");
+    rAssert(foreground != NULL);
 
     // get 'mission failed' text bible string
     //
-    P3D_UNICODE* text = GetTextBibleString( "MISSION_FAILED" );
-    rAssert( text != NULL );
-    int textLength = p3d::UnicodeStrLen( text ) + 1;
+    P3D_UNICODE *text = GetTextBibleString("MISSION_FAILED");
+    rAssert(text != NULL);
+    int textLength = p3d::UnicodeStrLen(text) + 1;
 
-    Scrooby::Sprite* missionFailedText = foreground->GetSprite( "MissionFailed" );
-    if( missionFailedText != NULL )
-    {
-        missionFailedText->SetSpriteMode( Scrooby::SPRITE_BITMAP_TEXT );
-        missionFailedText->CreateBitmapTextBuffer( textLength );
-        missionFailedText->SetBitmapText( text );
-        missionFailedText->SetBitmapTextLineSpacing( 10 );
+    Scrooby::Sprite *missionFailedText = foreground->GetSprite("MissionFailed");
+    if (missionFailedText != NULL) {
+        missionFailedText->SetSpriteMode(Scrooby::SPRITE_BITMAP_TEXT);
+        missionFailedText->CreateBitmapTextBuffer(textLength);
+        missionFailedText->SetBitmapText(text);
+        missionFailedText->SetBitmapTextLineSpacing(10);
 #ifdef RAD_WIN32
         missionFailedText->ResetTransformation();
-        missionFailedText->ScaleAboutCenter( 0.5f );
+        missionFailedText->ScaleAboutCenter(0.5f);
 #endif
     }
 
-    m_failureReason = foreground->GetText( "MissionFailureReason" );
-    rAssert( m_failureReason != NULL );
-    m_failureReason->SetTextMode( Scrooby::TEXT_WRAP );
+    m_failureReason = foreground->GetText("MissionFailureReason");
+    rAssert(m_failureReason != NULL);
+    m_failureReason->SetTextMode(Scrooby::TEXT_WRAP);
 
-    m_failureHint = foreground->GetText( "MissionFailureHint" );
-    rAssert( m_failureHint != NULL );
-    m_failureHint->SetTextMode( Scrooby::TEXT_WRAP );
+    m_failureHint = foreground->GetText("MissionFailureHint");
+    rAssert(m_failureHint != NULL);
+    m_failureHint->SetTextMode(Scrooby::TEXT_WRAP);
 
     // Create a menu.
     //
-    m_pMenu = new CGuiMenuPrompt( this, pPage, 3 );
-    rAssert( m_pMenu != NULL );
+    m_pMenu = new CGuiMenuPrompt(this, pPage, 3);
+    rAssert(m_pMenu != NULL);
 
     // register events to listen for
     //
-    GetEventManager()->AddListener( this, EVENT_MISSION_FAILURE );
+    GetEventManager()->AddListener(this, EVENT_MISSION_FAILURE);
 
-MEMTRACK_POP_GROUP("CGUIScreenMissionOver");
+    MEMTRACK_POP_GROUP("CGUIScreenMissionOver");
 }
 
 
@@ -130,14 +128,12 @@ MEMTRACK_POP_GROUP("CGUIScreenMissionOver");
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenMissionOver::~CGuiScreenMissionOver()
-{
+CGuiScreenMissionOver::~CGuiScreenMissionOver() {
     // unregister events
     //
-    GetEventManager()->RemoveListener( this, EVENT_MISSION_FAILURE );
+    GetEventManager()->RemoveListener(this, EVENT_MISSION_FAILURE);
 
-    if( m_pMenu != NULL )
-    {
+    if (m_pMenu != NULL) {
         delete m_pMenu;
         m_pMenu = NULL;
     }
@@ -157,98 +153,84 @@ CGuiScreenMissionOver::~CGuiScreenMissionOver()
 //
 //===========================================================================
 void CGuiScreenMissionOver::HandleMessage
-(
-	eGuiMessage message, 
-	unsigned int param1,
-	unsigned int param2 
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        switch( message )
-        {
-            case GUI_MSG_MENU_SELECTION_MADE:
-            {
-                if( param1 == 0 ) // 'yes' response
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        switch (message) {
+            case GUI_MSG_MENU_SELECTION_MADE: {
+                if (param1 == 0) // 'yes' response
                 {
                     // restart mission
                     //
-                    m_pParent->HandleMessage( GUI_MSG_RESUME_INGAME,
-                                              ON_HUD_ENTER_RESTART_MISSION );
-                }
-                else if( param1 == 1 ) // 'no' response
+                    m_pParent->HandleMessage(GUI_MSG_RESUME_INGAME,
+                                             ON_HUD_ENTER_RESTART_MISSION);
+                } else if (param1 == 1) // 'no' response
                 {
                     // abort mission
                     //
-                    m_pParent->HandleMessage( GUI_MSG_RESUME_INGAME,
-                                              ON_HUD_ENTER_ABORT_MISSION );
-                }
-                else if( param1 == 2 ) // 'skip' response
+                    m_pParent->HandleMessage(GUI_MSG_RESUME_INGAME,
+                                             ON_HUD_ENTER_ABORT_MISSION);
+                } else if (param1 == 2) // 'skip' response
                 {
                     // skip to next mission
                     //
-                    m_pParent->HandleMessage( GUI_MSG_RESUME_INGAME,
-                                              ON_HUD_ENTER_SKIP_MISSION );
+                    m_pParent->HandleMessage(GUI_MSG_RESUME_INGAME,
+                                             ON_HUD_ENTER_SKIP_MISSION);
 /*
                     CurrentMissionStruct currentMission = GetCharacterSheetManager()->QueryCurrentMission();
 
                     unsigned int nextLevel = currentMission.mLevel;
                     unsigned int nextMission = currentMission.mMissionNumber + 1;
 
-                    if( currentMission.mMissionNumber == RenderEnums::M7 ) // last mission
+                    if(currentMission.mMissionNumber == RenderEnums::M7) // last mission
                     {
                         // go to next level's first mission
                         //
                         nextLevel++;
                         nextMission = RenderEnums::M1;
 
-                        rAssert( nextLevel < RenderEnums::numLevels );
+                        rAssert(nextLevel <RenderEnums::numLevels);
                     }
 */
-                }
-                else
-                {
-                    rAssertMsg( 0, "WARNING: *** Unexpected response!\n" );
+                } else {
+                    rAssertMsg(0, "WARNING: *** Unexpected response!\n");
                 }
 
                 break;
             }
 
-            default:
-            {
+            default: {
                 break;
             }
         }
 
         // relay message to menu
-        if( m_pMenu != NULL )
-        {
-            m_pMenu->HandleMessage( message, param1, param2 );
+        if (m_pMenu != NULL) {
+            m_pMenu->HandleMessage(message, param1, param2);
         }
     }
 
-	// Propogate the message up the hierarchy.
-	//
-	CGuiScreen::HandleMessage( message, param1, param2 );
+    // Propogate the message up the hierarchy.
+    //
+    CGuiScreen::HandleMessage(message, param1, param2);
 }
 
 void
-CGuiScreenMissionOver::HandleEvent( EventEnum id, void* pEventData )
-{
-    switch( id )
-    {
-        case EVENT_MISSION_FAILURE:
-        {
-            MissionCondition* failureCondition = reinterpret_cast<MissionCondition*>( pEventData );
-            rAssert( failureCondition != NULL );
+CGuiScreenMissionOver::HandleEvent(EventEnum id, void *pEventData) {
+    switch (id) {
+        case EVENT_MISSION_FAILURE: {
+            MissionCondition *failureCondition = reinterpret_cast<MissionCondition *>(pEventData);
+            rAssert(failureCondition != NULL);
 
-            this->SetFailureMessage( failureCondition->GetType() );
+            this->SetFailureMessage(failureCondition->GetType());
 
             break;
         }
-        default:
-        {
-            rWarningMsg( false, "Unhandled event ID!" );
+        default: {
+            rWarningMsg(false, "Unhandled event ID!");
 
             break;
         }
@@ -268,9 +250,8 @@ CGuiScreenMissionOver::HandleEvent( EventEnum id, void* pEventData )
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMissionOver::InitIntro()
-{
-    rAssert( m_pMenu != NULL );
+void CGuiScreenMissionOver::InitIntro() {
+    rAssert(m_pMenu != NULL);
 
     // reset menu to "Yes" selection
     //
@@ -279,11 +260,12 @@ void CGuiScreenMissionOver::InitIntro()
     // show/hide 'skip' menu response
     //
     CurrentMissionStruct currentMission = GetCharacterSheetManager()->QueryCurrentMission();
-    int numAttemps = GetCharacterSheetManager()->QueryNumberOfAttempts( currentMission.mLevel, currentMission.mMissionNumber );
+    int numAttemps = GetCharacterSheetManager()->QueryNumberOfAttempts(currentMission.mLevel,
+                                                                       currentMission.mMissionNumber);
     bool isSkipAllowed = (numAttemps >= NUM_ATTEMPTS_REQUIRED_FOR_SKIPPING);
 
-    if( currentMission.mLevel == RenderEnums::L7 && static_cast<int>( currentMission.mMissionNumber ) >= RenderEnums::M5 )
-    {
+    if (currentMission.mLevel == RenderEnums::L7 &&
+        static_cast<int>(currentMission.mMissionNumber) >= RenderEnums::M5) {
         // can't skip the last mission of the game
         //
         isSkipAllowed = false;
@@ -295,9 +277,9 @@ void CGuiScreenMissionOver::InitIntro()
     isSkipAllowed = false;
 #endif
 
-    m_pMenu->SetMenuItemEnabled( 2, isSkipAllowed, true );
+    m_pMenu->SetMenuItemEnabled(2, isSkipAllowed, true);
 
-    GetSoundManager()->OnStoreScreenStart( false );
+    GetSoundManager()->OnStoreScreenStart(false);
 }
 
 
@@ -313,8 +295,7 @@ void CGuiScreenMissionOver::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMissionOver::InitRunning()
-{
+void CGuiScreenMissionOver::InitRunning() {
 }
 
 
@@ -330,9 +311,8 @@ void CGuiScreenMissionOver::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMissionOver::InitOutro()
-{
-    GetEventManager()->TriggerEvent( EVENT_DIALOG_SHUTUP );
+void CGuiScreenMissionOver::InitOutro() {
+    GetEventManager()->TriggerEvent(EVENT_DIALOG_SHUTUP);
     GetSoundManager()->OnStoreScreenEnd();
 }
 
@@ -342,109 +322,94 @@ void CGuiScreenMissionOver::InitOutro()
 //---------------------------------------------------------------------
 
 void
-CGuiScreenMissionOver::SetFailureMessage( MissionCondition::ConditionTypeEnum conditionType )
-{
+CGuiScreenMissionOver::SetFailureMessage(MissionCondition::ConditionTypeEnum conditionType) {
     int failureMessageIndex = 0;
 
-    switch( conditionType )
-    {
-        case MissionCondition::COND_VEHICLE_DAMAGE:
-        {
+    switch (conditionType) {
+        case MissionCondition::COND_VEHICLE_DAMAGE: {
             failureMessageIndex = 1;
 
             break;
         }
-        case MissionCondition::COND_PLAYER_HIT:
-        {
+        case MissionCondition::COND_PLAYER_HIT: {
             failureMessageIndex = 2;
 
             break;
         }
-        case MissionCondition::COND_TIME_OUT:
-        {
+        case MissionCondition::COND_TIME_OUT: {
             failureMessageIndex = 3;
 
             break;
         }
-        case MissionCondition::COND_PLAYER_OUT_OF_VEHICLE:
-        {
+        case MissionCondition::COND_PLAYER_OUT_OF_VEHICLE: {
             failureMessageIndex = 4;
 
             break;
         }
-        case MissionCondition::COND_FOLLOW_DISTANCE:
-        {
+        case MissionCondition::COND_FOLLOW_DISTANCE: {
             failureMessageIndex = 5;
 
             break;
         }
-        case MissionCondition::COND_OUT_OF_BOUNDS:
-        {
+        case MissionCondition::COND_OUT_OF_BOUNDS: {
             failureMessageIndex = 6;
 
             break;
         }
-        case MissionCondition::COND_RACE:
-        {
+        case MissionCondition::COND_RACE: {
             failureMessageIndex = 7;
 
             break;
         }
-        case MissionCondition::COND_NOT_ABDUCTED:
-        {
+        case MissionCondition::COND_NOT_ABDUCTED: {
             failureMessageIndex = 8;
 
             break;
         }
-        case MissionCondition::COND_POSITION:
-        {
+        case MissionCondition::COND_POSITION: {
             failureMessageIndex = 9;
 
             break;
         }
-        case MissionCondition::COND_HIT_AND_RUN_CAUGHT:
-        {
+        case MissionCondition::COND_HIT_AND_RUN_CAUGHT: {
             failureMessageIndex = 10;
 
             break;
         }
-        case MissionCondition::COND_GET_COLLECTIBLES:
-        {
+        case MissionCondition::COND_GET_COLLECTIBLES: {
             failureMessageIndex = 11;
 
             break;
         }
-        default:
-        {
-            rAssertMsg( false, "Unknown failure reason!" );
+        default: {
+            rAssertMsg(false, "Unknown failure reason!");
 
             break;
         }
     }
 
-    rAssert( m_failureReason != NULL );
-    m_failureReason->SetIndex( failureMessageIndex );
+    rAssert(m_failureReason != NULL);
+    m_failureReason->SetIndex(failureMessageIndex);
 
     // set associated mission failure hint (randomly chosen)
     //
     int hintMessageIndex = 0;
 
-    if( failureMessageIndex > 0 )
-    {
-        rAssert( GetGameplayManager()->GetCurrentMission() != NULL );
+    if (failureMessageIndex > 0) {
+        rAssert(GetGameplayManager()->GetCurrentMission() != NULL);
 
         int numValidFailureHints = GetGameplayManager()->GetCurrentMission()->GetNumValidFailureHints();
-        if( numValidFailureHints < 0 )
-        {
+        if (numValidFailureHints < 0) {
             numValidFailureHints = MAX_NUM_HINTS_PER_FAILURE;
         }
 
         int randomHintIndex = rand() % numValidFailureHints;
 
-        hintMessageIndex = (failureMessageIndex - 1) * MAX_NUM_HINTS_PER_FAILURE + 1 + randomHintIndex;
+        hintMessageIndex =
+                (failureMessageIndex - 1) * MAX_NUM_HINTS_PER_FAILURE + 1 + randomHintIndex;
     }
 
-    rAssert( m_failureHint != NULL );
-    m_failureHint->SetIndex( hintMessageIndex );
+    rAssert(m_failureHint != NULL);
+    m_failureHint->SetIndex(hintMessageIndex);
 }
 

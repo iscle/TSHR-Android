@@ -49,11 +49,11 @@
 //      None
 //  //===========================================================================
 ParticleSystemDSG::ParticleSystemDSG()
-: mpSystem( NULL ), 
-mpController( NULL )
-{
-	IEntityDSG::mTranslucent = true;
+        : mpSystem(NULL),
+          mpController(NULL) {
+    IEntityDSG::mTranslucent = true;
 }
+
 //===========================================================================
 // ParticleSystemDSG::~ParticleSystemDSG
 //===========================================================================
@@ -70,28 +70,26 @@ mpController( NULL )
 //      None
 //
 //===========================================================================
-ParticleSystemDSG::~ParticleSystemDSG()
-{
-BEGIN_PROFILE( "ParticleSystemDSG Destroy" );
-    if( mpController != NULL )
-    {
+ParticleSystemDSG::~ParticleSystemDSG() {
+    BEGIN_PROFILE("ParticleSystemDSG Destroy");
+    if (mpController != NULL) {
         // Releasing the controller will release its attached effect
         mpController->Release();
-		mpController = NULL;
-		mpSystem = NULL;
+        mpController = NULL;
+        mpSystem = NULL;
     }
-END_PROFILE( "ParticleSystemDSG Destroy" );
+    END_PROFILE("ParticleSystemDSG Destroy");
 }
-void ParticleSystemDSG::Init( tParticleSystemFactory* pFactory, tEffectController* pController )
-{
-    mpController = static_cast< tEffectController* >( pController->Clone() );
-	rAssert( mpController != NULL );
+
+void ParticleSystemDSG::Init(tParticleSystemFactory *pFactory, tEffectController *pController) {
+    mpController = static_cast<tEffectController *>(pController->Clone());
+    rAssert(mpController != NULL);
     mpController->AddRef();
 
-    mpSystem = static_cast< tParticleSystem*> ( pFactory->CreateEffect( mpController ) );
+    mpSystem = static_cast<tParticleSystem *>(pFactory->CreateEffect(mpController));
     mpSystem->SetCycleMode(FORCE_CYCLIC);
-    rAssert( mpSystem != NULL );
-   
+    rAssert(mpSystem != NULL);
+
 };
 
 //===========================================================================
@@ -111,9 +109,8 @@ void ParticleSystemDSG::Init( tParticleSystemFactory* pFactory, tEffectControlle
 //      None.
 //
 //===========================================================================
-void ParticleSystemDSG::SetBias(unsigned bias, float b)
-{
-    mpSystem->SetBias( bias, b );
+void ParticleSystemDSG::SetBias(unsigned bias, float b) {
+    mpSystem->SetBias(bias, b);
 }
 
 //===========================================================================
@@ -132,8 +129,7 @@ void ParticleSystemDSG::SetBias(unsigned bias, float b)
 //      integer with the number of active particles
 //
 //===========================================================================
-int ParticleSystemDSG::GetNumLiveParticles()const
-{
+int ParticleSystemDSG::GetNumLiveParticles() const {
     return mpSystem->GetNumLiveParticles();
 }
 
@@ -153,10 +149,10 @@ int ParticleSystemDSG::GetNumLiveParticles()const
 //      int
 //
 //===========================================================================
-int ParticleSystemDSG::LastFrameReached()const
-{
+int ParticleSystemDSG::LastFrameReached() const {
     return mpController->LastFrameReached();
 }
+
 //===========================================================================
 // ParticleSystemDSG::Display
 //===========================================================================
@@ -173,8 +169,7 @@ int ParticleSystemDSG::LastFrameReached()const
 //      None
 //
 //===========================================================================
-void ParticleSystemDSG::Display() 
-{
+void ParticleSystemDSG::Display() {
 #ifdef PROFILER_ENABLED
     char profileName[] = "  ParticleSystemDSG Display";
 #endif
@@ -199,64 +194,64 @@ void ParticleSystemDSG::Display()
 //
 //===========================================================================
 
-void ParticleSystemDSG::DisplayBoundingBox( tColour colour )
-{
+void ParticleSystemDSG::DisplayBoundingBox(tColour colour) {
 #ifndef RAD_RELEASE
-	rmt::Box3D mBBox;
-	GetBoundingBox( &mBBox );
-	pddiPrimStream* stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.low.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.low.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.low.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
-	p3d::pddi->EndPrims(stream);
+    rmt::Box3D mBBox;
+    GetBoundingBox(&mBBox);
+    pddiPrimStream *stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
+    p3d::pddi->EndPrims(stream);
 
-	stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.high.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.high.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
-	p3d::pddi->EndPrims(stream);
+    stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
+    p3d::pddi->EndPrims(stream);
 
-	stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.high.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.low.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.low.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
-	p3d::pddi->EndPrims(stream);
+    stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
+    p3d::pddi->EndPrims(stream);
 
-	stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.high.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.low.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
-	p3d::pddi->EndPrims(stream);
+    stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
+    p3d::pddi->EndPrims(stream);
 #endif
 }
+
 //===========================================================================
 // ParticleSystemDSG::Update
 //===========================================================================
@@ -273,13 +268,13 @@ void ParticleSystemDSG::DisplayBoundingBox( tColour colour )
 //      None
 //
 //===========================================================================
-void ParticleSystemDSG::Update( float deltaTime )
-{
-    mpController->Advance( deltaTime );
-	rmt::Matrix ident;
-	ident.Identity();
-	mpSystem->Update( &ident );
+void ParticleSystemDSG::Update(float deltaTime) {
+    mpController->Advance(deltaTime);
+    rmt::Matrix ident;
+    ident.Identity();
+    mpSystem->Update(&ident);
 }
+
 //===========================================================================
 // ParticleSystemDSG::SetTransform
 //===========================================================================
@@ -296,11 +291,11 @@ void ParticleSystemDSG::Update( float deltaTime )
 //      None
 //
 //===========================================================================
-void ParticleSystemDSG::SetTransform( const rmt::Matrix& transform )
-{
-    mpSystem->SetMatrix( transform );
+void ParticleSystemDSG::SetTransform(const rmt::Matrix &transform) {
+    mpSystem->SetMatrix(transform);
     mPosition = transform.Row(3);
 }
+
 //===========================================================================
 // ParticleSystemDSG::Reset
 //===========================================================================
@@ -317,40 +312,37 @@ void ParticleSystemDSG::SetTransform( const rmt::Matrix& transform )
 //      None
 //
 //===========================================================================
-void ParticleSystemDSG::Reset()
-{
+void ParticleSystemDSG::Reset() {
     mpController->Reset();
 }
 
-void ParticleSystemDSG::GetPosition( rmt::Vector* ipPosn )
-{
-    //mpSystem->GetPosition( ipPosn );
+void ParticleSystemDSG::GetPosition(rmt::Vector *ipPosn) {
+    //mpSystem->GetPosition(ipPosn);
     *ipPosn = mPosition;
 }
-const rmt::Vector& ParticleSystemDSG::rPosition()
-{
-    return mPosition;//mpSystem->GetMatrix().Row( 3 );
+
+const rmt::Vector &ParticleSystemDSG::rPosition() {
+    return mPosition;//mpSystem->GetMatrix().Row(3);
 }
-void ParticleSystemDSG::GetBoundingBox( rmt::Box3D* box )
-{
-	// Bounding Boxes not overloaded for tParticleSystems!!!!!!!!
-	// Use a BB that is 2 m^3
-	rmt::Vector position = rPosition();
-	rmt::Vector low = position - rmt::Vector( 1.0f, 1.0f, 1.0f );
-	rmt::Vector high = position + rmt::Vector( 1.0f, 1.0f, 1.0f );
-	box->Set( low, high );	
+
+void ParticleSystemDSG::GetBoundingBox(rmt::Box3D *box) {
+    // Bounding Boxes not overloaded for tParticleSystems!!!!!!!!
+    // Use a BB that is 2 m^3
+    rmt::Vector position = rPosition();
+    rmt::Vector low = position - rmt::Vector(1.0f, 1.0f, 1.0f);
+    rmt::Vector high = position + rmt::Vector(1.0f, 1.0f, 1.0f);
+    box->Set(low, high);
 
 }
-void ParticleSystemDSG::GetBoundingSphere( rmt::Sphere* sphere )
-{
+
+void ParticleSystemDSG::GetBoundingSphere(rmt::Sphere *sphere) {
     sphere->centre = rPosition();
     sphere->radius = 1.0f;
 }
 
-void ParticleSystemDSG::SetVelocity( const rmt::Vector& velocity )
-{
-    rAssert( mpSystem != NULL );
-    mpSystem->SetVelocity( velocity );
+void ParticleSystemDSG::SetVelocity(const rmt::Vector &velocity) {
+    rAssert(mpSystem != NULL);
+    mpSystem->SetVelocity(velocity);
 }
 
 

@@ -39,14 +39,12 @@
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenHasTransitions::CGuiScreenHasTransitions():
-    mDoneAddingTransitions( false )
-{
+CGuiScreenHasTransitions::CGuiScreenHasTransitions() :
+        mDoneAddingTransitions(false) {
     // zero out the array of transitions (use a memset instead)?
     int i;
-    for( i = 0; i < MAX_TRANSITIONS; ++i )
-    {
-        m_Transitions[ i ] = NULL;
+    for (i = 0; i < MAX_TRANSITIONS; ++i) {
+        m_Transitions[i] = NULL;
     }
 }
 
@@ -62,18 +60,15 @@ CGuiScreenHasTransitions::CGuiScreenHasTransitions():
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenHasTransitions::AddTransition( GuiSFX::Transition* transition )
-{
+void CGuiScreenHasTransitions::AddTransition(GuiSFX::Transition *transition) {
     int i;
-    for( i = 0; i < MAX_TRANSITIONS; ++i )
-    {
-        if( m_Transitions[ i ] == NULL )
-        {
-            m_Transitions[ i ] = transition;
+    for (i = 0; i < MAX_TRANSITIONS; ++i) {
+        if (m_Transitions[i] == NULL) {
+            m_Transitions[i] = transition;
             return;
         }
     }
-    rAssertMsg( false, "Need to bump up the size of the array of transitions" );
+    rAssertMsg(false, "Need to bump up the size of the array of transitions");
 }
 
 //===========================================================================
@@ -88,18 +83,15 @@ void CGuiScreenHasTransitions::AddTransition( GuiSFX::Transition* transition )
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenHasTransitions::AddTransition( GuiSFX::Transition& transition )
-{
+void CGuiScreenHasTransitions::AddTransition(GuiSFX::Transition &transition) {
     int i;
-    for( i = 0; i < MAX_TRANSITIONS; ++i )
-    {
-        if( m_Transitions[ i ] == NULL )
-        {
-            m_Transitions[ i ] = &transition;
+    for (i = 0; i < MAX_TRANSITIONS; ++i) {
+        if (m_Transitions[i] == NULL) {
+            m_Transitions[i] = &transition;
             return;
         }
     }
-    rAssertMsg( false, "Need to bump up the size of the array of transitions" );
+    rAssertMsg(false, "Need to bump up the size of the array of transitions");
 }
 
 //===========================================================================
@@ -115,8 +107,7 @@ void CGuiScreenHasTransitions::AddTransition( GuiSFX::Transition& transition )
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenHasTransitions::DoneAddingTransitions()
-{
+void CGuiScreenHasTransitions::DoneAddingTransitions() {
     mDoneAddingTransitions = true;
 }
 
@@ -132,23 +123,17 @@ void CGuiScreenHasTransitions::DoneAddingTransitions()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenHasTransitions::ResetMovableObjects()
-{
+void CGuiScreenHasTransitions::ResetMovableObjects() {
     int i;
-    for( i = 0; i < MAX_TRANSITIONS; ++i )
-    {
-        GuiSFX::Transition* t = m_Transitions[ i ];
-        if( t != NULL )
-        {
+    for (i = 0; i < MAX_TRANSITIONS; ++i) {
+        GuiSFX::Transition *t = m_Transitions[i];
+        if (t != NULL) {
             bool active = t->IsActive();
-            if( active )
-            {
+            if (active) {
                 bool movable = t->MovesDrawable();
-                if( movable )
-                {
-                    Scrooby::Drawable* drawable = t->GetDrawable();
-                    if( drawable != NULL )
-                    {
+                if (movable) {
+                    Scrooby::Drawable *drawable = t->GetDrawable();
+                    if (drawable != NULL) {
                         drawable->ResetTransformation();
                     }
                 }
@@ -169,17 +154,14 @@ void CGuiScreenHasTransitions::ResetMovableObjects()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenHasTransitions::ResetTransitions()
-{
-    rAssert( mDoneAddingTransitions );
+void CGuiScreenHasTransitions::ResetTransitions() {
+    rAssert(mDoneAddingTransitions);
     int i;
-    for( i = 0; i < MAX_TRANSITIONS; ++i )
-    {
-        if( m_Transitions[ i ] == NULL )
-        {
+    for (i = 0; i < MAX_TRANSITIONS; ++i) {
+        if (m_Transitions[i] == NULL) {
             return;
         }
-        m_Transitions[ i ]->Reset();
+        m_Transitions[i]->Reset();
     }
 }
 
@@ -195,19 +177,15 @@ void CGuiScreenHasTransitions::ResetTransitions()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenHasTransitions::UpdateTransitions( const float deltaT )
-{
-    rAssert( mDoneAddingTransitions );
+void CGuiScreenHasTransitions::UpdateTransitions(const float deltaT) {
+    rAssert(mDoneAddingTransitions);
     int i;
-    for( i = 0; i < MAX_TRANSITIONS; ++i )
-    {
-        if( m_Transitions[ i ] == NULL )
-        {
+    for (i = 0; i < MAX_TRANSITIONS; ++i) {
+        if (m_Transitions[i] == NULL) {
             return;
         }
-        if( m_Transitions[ i ]->IsActive() )
-        {
-            m_Transitions[ i ]->Update( deltaT );
+        if (m_Transitions[i]->IsActive()) {
+            m_Transitions[i]->Update(deltaT);
         }
     }
 }

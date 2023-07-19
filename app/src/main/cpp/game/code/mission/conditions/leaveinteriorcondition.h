@@ -27,25 +27,27 @@
 //
 //=============================================================================
 
-class LeaveInteriorCondition : public MissionCondition
-{
+class LeaveInteriorCondition : public MissionCondition {
 public:
     LeaveInteriorCondition();
+
     virtual ~LeaveInteriorCondition();
 
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
     bool IsClose();
 
 protected:
     virtual void OnInitialize();
+
     virtual void OnFinalize();
 
 private:
 
     //Prevent wasteful constructor creation.
-    LeaveInteriorCondition( const LeaveInteriorCondition& leaveinteriorcondition );
-    LeaveInteriorCondition& operator=( const LeaveInteriorCondition& leaveinteriorcondition );
+    LeaveInteriorCondition(const LeaveInteriorCondition &leaveinteriorcondition);
+
+    LeaveInteriorCondition &operator=(const LeaveInteriorCondition &leaveinteriorcondition);
 };
 
 

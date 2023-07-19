@@ -29,24 +29,26 @@ struct IRadSoundEffectStdReverbGcn;
 //
 //=============================================================================
 
-class GCReverbController : public ReverbController
-{
-    public:
-        GCReverbController();
-        virtual ~GCReverbController();
+class GCReverbController : public ReverbController {
+public:
+    GCReverbController();
 
-        void SetReverbOn( reverbSettings* settings );
-        void SetReverbOff();
+    virtual ~GCReverbController();
 
-    private:
-        //Prevent wasteful constructor creation.
-        GCReverbController( const GCReverbController& original );
-        GCReverbController& operator=( const GCReverbController& rhs );
+    void SetReverbOn(reverbSettings *settings);
 
-        //
-        // Radsound's GC reverb interface
-        //
-        IRadSoundEffectStdReverbGcn* m_reverbInterface;
+    void SetReverbOff();
+
+private:
+    //Prevent wasteful constructor creation.
+    GCReverbController(const GCReverbController &original);
+
+    GCReverbController &operator=(const GCReverbController &rhs);
+
+    //
+    // Radsound's GC reverb interface
+    //
+    IRadSoundEffectStdReverbGcn *m_reverbInterface;
 };
 
 

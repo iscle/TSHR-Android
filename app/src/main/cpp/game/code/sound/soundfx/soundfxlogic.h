@@ -32,8 +32,7 @@
 // we can kill the sound effect for something higher priority
 //
 //=============================================================================
-struct SFXPlayer
-{
+struct SFXPlayer {
     SimpsonsSoundPlayer soundPlayer;
     bool isKillable;
 };
@@ -45,45 +44,48 @@ struct SFXPlayer
 //=============================================================================
 
 class SoundFXLogic : public EventListener,
-                     public SimpsonsSoundPlayerCallback
-{
-    public:
-        SoundFXLogic();
-        virtual ~SoundFXLogic();
+                     public SimpsonsSoundPlayerCallback {
+public:
+    SoundFXLogic();
 
-        virtual void RegisterEventListeners() = 0;
-        void UnregisterEventListeners();
+    virtual ~SoundFXLogic();
 
-        SFXPlayer* GetAvailableSFXPlayer( unsigned int* index = NULL );
+    virtual void RegisterEventListeners() = 0;
 
-        virtual void ServiceOncePerFrame( unsigned int elapsedTime );
+    void UnregisterEventListeners();
 
-        virtual void Cleanup();
+    SFXPlayer *GetAvailableSFXPlayer(unsigned int *index = NULL);
 
-        //
-        // SimpsonsSoundPlayerCallback functions
-        //
-        void OnSoundReady();
-        virtual void OnPlaybackComplete();
+    virtual void ServiceOncePerFrame(unsigned int elapsedTime);
 
-    protected:
-        // Number of SFXPlayers
-        static const unsigned int s_numSFXPlayers = 6;
+    virtual void Cleanup();
 
-        //
-        // Sound players
-        //
-        SFXPlayer m_soundPlayers[s_numSFXPlayers];
+    //
+    // SimpsonsSoundPlayerCallback functions
+    //
+    void OnSoundReady();
 
-        bool playSFXSound( const char* resource, bool killable, bool useCallback = false,
-                           unsigned int* index = NULL, float trim = 1.0f, float pitch = 1.0f );
+    virtual void OnPlaybackComplete();
 
-        void playCreditLine( int lineNumber );
+protected:
+    // Number of SFXPlayers
+    static const unsigned int s_numSFXPlayers = 6;
 
-    private:
-        //Prevent wasteful constructor creation.
-        SoundFXLogic( const SoundFXLogic& original );
-        SoundFXLogic& operator=( const SoundFXLogic& rhs );
+    //
+    // Sound players
+    //
+    SFXPlayer m_soundPlayers[s_numSFXPlayers];
+
+    bool playSFXSound(const char *resource, bool killable, bool useCallback = false,
+                      unsigned int *index = NULL, float trim = 1.0f, float pitch = 1.0f);
+
+    void playCreditLine(int lineNumber);
+
+private:
+    //Prevent wasteful constructor creation.
+    SoundFXLogic(const SoundFXLogic &original);
+
+    SoundFXLogic &operator=(const SoundFXLogic &rhs);
 };
 
 

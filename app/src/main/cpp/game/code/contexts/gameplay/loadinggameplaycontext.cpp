@@ -36,7 +36,7 @@
 //******************************************************************************
 
 // Static pointer to instance of singleton.
-LoadingGameplayContext* LoadingGameplayContext::spInstance = NULL;
+LoadingGameplayContext *LoadingGameplayContext::spInstance = NULL;
 
 //******************************************************************************
 //
@@ -58,14 +58,12 @@ LoadingGameplayContext* LoadingGameplayContext::spInstance = NULL;
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-LoadingGameplayContext* LoadingGameplayContext::GetInstance()
-{
-    if( spInstance == NULL )
-    {
+LoadingGameplayContext *LoadingGameplayContext::GetInstance() {
+    if (spInstance == NULL) {
         spInstance = new(GMA_PERSISTENT) LoadingGameplayContext;
-        rAssert( spInstance );
+        rAssert(spInstance);
     }
-    
+
     return spInstance;
 }
 
@@ -79,8 +77,7 @@ LoadingGameplayContext* LoadingGameplayContext::GetInstance()
 // Return:      N/A.
 //
 //==============================================================================
-LoadingGameplayContext::LoadingGameplayContext()
-{
+LoadingGameplayContext::LoadingGameplayContext() {
 }
 
 //==============================================================================
@@ -93,8 +90,7 @@ LoadingGameplayContext::LoadingGameplayContext()
 // Return:      N/A.
 //
 //==============================================================================
-LoadingGameplayContext::~LoadingGameplayContext()
-{
+LoadingGameplayContext::~LoadingGameplayContext() {
 }
 
 //******************************************************************************
@@ -108,18 +104,17 @@ LoadingGameplayContext::~LoadingGameplayContext()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ContextEnum previousContext )
+// Parameters:  (ContextEnum previousContext)
 //
 // Return:      void 
 //
 //=============================================================================
-void LoadingGameplayContext::OnStart( ContextEnum previousContext )
-{
+void LoadingGameplayContext::OnStart(ContextEnum previousContext) {
     GetGameplayManager()->mIsDemo = false;
 
     // Common to all loading contexts.
     //
-    LoadingContext::OnStart( previousContext );
+    LoadingContext::OnStart(previousContext);
 
 /*****************************************************************************
  *	Start inserting stuff below ...
@@ -127,7 +122,7 @@ void LoadingGameplayContext::OnStart( ContextEnum previousContext )
 
     // NOTE: 
     // Assumes we never start a level in the car
-    GetVehicleCentral()->ActivateVehicleTriggers( true ); 
+    GetVehicleCentral()->ActivateVehicleTriggers(true);
 
     GetPCM();  //Start the parked car manager
 
@@ -135,9 +130,9 @@ void LoadingGameplayContext::OnStart( ContextEnum previousContext )
 
     // initialize GUI in-game mode (and load resources)
     //
-    GetGuiSystem()->HandleMessage( GUI_MSG_INIT_INGAME );
+    GetGuiSystem()->HandleMessage(GUI_MSG_INIT_INGAME);
 
-    GetLoadingManager()->AddCallback( this );
+    GetLoadingManager()->AddCallback(this);
 }
 
 //=============================================================================
@@ -145,16 +140,15 @@ void LoadingGameplayContext::OnStart( ContextEnum previousContext )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ContextEnum nextContext )
+// Parameters:  (ContextEnum nextContext)
 //
 // Return:      void 
 //
 //=============================================================================
-void LoadingGameplayContext::OnStop( ContextEnum nextContext )
-{
+void LoadingGameplayContext::OnStop(ContextEnum nextContext) {
     // Common to all loading contexts.
     //
-    LoadingContext::OnStop( nextContext );
+    LoadingContext::OnStop(nextContext);
 }
 
 //=============================================================================
@@ -162,18 +156,17 @@ void LoadingGameplayContext::OnStop( ContextEnum nextContext )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void LoadingGameplayContext::OnUpdate( unsigned int elapsedTime )
-{
-    GetGameplayManager()->Update( elapsedTime );
+void LoadingGameplayContext::OnUpdate(unsigned int elapsedTime) {
+    GetGameplayManager()->Update(elapsedTime);
 
     // Common to all loading contexts.
     //
-    LoadingContext::OnUpdate( elapsedTime );
+    LoadingContext::OnUpdate(elapsedTime);
 }
 
 //=============================================================================
@@ -186,8 +179,7 @@ void LoadingGameplayContext::OnUpdate( unsigned int elapsedTime )
 // Return:      void 
 //
 //=============================================================================
-void LoadingGameplayContext::OnSuspend()
-{
+void LoadingGameplayContext::OnSuspend() {
     // Common to all loading contexts.
     //
     LoadingContext::OnSuspend();
@@ -203,8 +195,7 @@ void LoadingGameplayContext::OnSuspend()
 // Return:      void 
 //
 //=============================================================================
-void LoadingGameplayContext::OnResume()
-{
+void LoadingGameplayContext::OnResume() {
     // Common to all loading contexts.
     //
     LoadingContext::OnResume();
@@ -220,8 +211,7 @@ void LoadingGameplayContext::OnResume()
 // Return:      void 
 //
 //=============================================================================
-void LoadingGameplayContext::PrepareNewHeaps()
-{
+void LoadingGameplayContext::PrepareNewHeaps() {
     HeapMgr()->PrepareHeapsInGame();
 }
 
@@ -230,13 +220,12 @@ void LoadingGameplayContext::PrepareNewHeaps()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( void* pUserData )
+// Parameters:  (void* pUserData)
 //
 // Return:      void 
 //
 //=============================================================================
-void LoadingGameplayContext::OnProcessRequestsComplete( void* pUserData )
-{
+void LoadingGameplayContext::OnProcessRequestsComplete(void *pUserData) {
     GetGameplayManager()->LevelLoaded();
 
     //
@@ -246,5 +235,5 @@ void LoadingGameplayContext::OnProcessRequestsComplete( void* pUserData )
 
     // Common to all loading contexts.
     //
-    LoadingContext::OnProcessRequestsComplete( pUserData );
+    LoadingContext::OnProcessRequestsComplete(pUserData);
 }

@@ -54,9 +54,8 @@
 //
 //===========================================================================
 
-SurveillanceCam::SurveillanceCam():
-mTarget( NULL )
-{
+SurveillanceCam::SurveillanceCam() :
+        mTarget(NULL) {
 }
 //===========================================================================
 // SurveillanceCam::~SurveillanceCam
@@ -73,10 +72,10 @@ mTarget( NULL )
 //
 //===========================================================================
 
-SurveillanceCam::~SurveillanceCam()
-{
+SurveillanceCam::~SurveillanceCam() {
 
 }
+
 //===========================================================================
 // SurveillanceCam::Update
 //===========================================================================
@@ -93,22 +92,18 @@ SurveillanceCam::~SurveillanceCam()
 //      None
 //
 //===========================================================================
-void 
-SurveillanceCam::Update( unsigned int milliseconds )
-{
-    if ( mTarget != NULL )
-    {
-        //SetFOV( FOV );
-        
-        rmt::Vector targetPos;
-        
-        mTarget->GetPosition( &targetPos );
-        
-        SetCameraValues( milliseconds, mPosition, targetPos );
+void
+SurveillanceCam::Update(unsigned int milliseconds) {
+    if (mTarget != NULL) {
+        //SetFOV(FOV);
 
-    }
-    else
-    {
+        rmt::Vector targetPos;
+
+        mTarget->GetPosition(&targetPos);
+
+        SetCameraValues(milliseconds, mPosition, targetPos);
+
+    } else {
 
     }
 }
@@ -129,11 +124,11 @@ SurveillanceCam::Update( unsigned int milliseconds )
 //      
 //
 //===========================================================================
-const char* const 
-SurveillanceCam::GetName() const
-{
+const char *const
+SurveillanceCam::GetName() const {
     return "Surveillance Camera";
 }
+
 //===========================================================================
 // SurveillanceCam::GetType
 //===========================================================================
@@ -149,11 +144,11 @@ SurveillanceCam::GetName() const
 //      
 //
 //===========================================================================
-SuperCam::Type 
-SurveillanceCam::GetType()
-{
+SuperCam::Type
+SurveillanceCam::GetType() {
     return SURVEILLANCE_CAM;
 }
+
 //===========================================================================
 // SurveillanceCam::SetTarget
 //===========================================================================
@@ -169,11 +164,11 @@ SurveillanceCam::GetType()
 //      None
 //
 //===========================================================================
-void 
-SurveillanceCam::SetTarget( ISuperCamTarget* target )
-{
+void
+SurveillanceCam::SetTarget(ISuperCamTarget *target) {
     mTarget = target;
 }
+
 //===========================================================================
 // SurveillanceCam::SetPosition
 //===========================================================================
@@ -189,9 +184,8 @@ SurveillanceCam::SetTarget( ISuperCamTarget* target )
 //      None
 //
 //===========================================================================
-void 
-SurveillanceCam::SetPosition( const rmt::Vector& position )
-{
+void
+SurveillanceCam::SetPosition(const rmt::Vector &position) {
     mPosition = position;
 }
 
@@ -205,15 +199,14 @@ SurveillanceCam::SetPosition( const rmt::Vector& position )
 // Return:      void 
 //
 //=============================================================================
-void SurveillanceCam::OnRegisterDebugControls()
-{
+void SurveillanceCam::OnRegisterDebugControls() {
 #ifdef RAD_GAMECUBE
-    GCManager::GetInstance()->ChangeResolution( WindowSizeX / 8, WindowSizeY / 8, WindowBPP );
+    GCManager::GetInstance()->ChangeResolution(WindowSizeX / 8, WindowSizeY / 8, WindowBPP);
 #endif
 
     // Hide the HUD Map.
     //
-    GetGuiSystem()->HandleMessage( GUI_MSG_HIDE_HUD_OVERLAY, HUD_MAP );
+    GetGuiSystem()->HandleMessage(GUI_MSG_HIDE_HUD_OVERLAY, HUD_MAP);
 }
 
 //=============================================================================
@@ -226,14 +219,13 @@ void SurveillanceCam::OnRegisterDebugControls()
 // Return:      void 
 //
 //=============================================================================
-void SurveillanceCam::OnUnregisterDebugControls()
-{
+void SurveillanceCam::OnUnregisterDebugControls() {
 #ifdef RAD_GAMECUBE
-    GCManager::GetInstance()->ChangeResolution( WindowSizeX, WindowSizeY, WindowBPP );
+    GCManager::GetInstance()->ChangeResolution(WindowSizeX, WindowSizeY, WindowBPP);
 #endif
 
     // Show the HUD Map.
     //
-    GetGuiSystem()->HandleMessage( GUI_MSG_SHOW_HUD_OVERLAY, HUD_MAP );
+    GetGuiSystem()->HandleMessage(GUI_MSG_SHOW_HUD_OVERLAY, HUD_MAP);
 }
 

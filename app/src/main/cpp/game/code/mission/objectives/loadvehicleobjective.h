@@ -51,52 +51,56 @@
 //      steady state.
 //
 //===========================================================================
-class LoadVehicleObjective : public MissionObjective
-{
+class LoadVehicleObjective : public MissionObjective {
+public:
+    LoadVehicleObjective();
+
+    virtual ~LoadVehicleObjective();
+
+    void SetFilename(const char *filename) { strcpy(m_Filename, filename); }
+
+    void SetVehicleName(const char *vehicleName) { strcpy(m_VehicleName, vehicleName); }
+
+    void SetLocatorName(const char *locatorName) { strcpy(m_LocatorName, locatorName); }
+
+protected:
+
+    virtual void OnInitialize();
+
+    virtual void OnFinalize();
+
+    struct CallbackData {
+        char vehicleName[256];
+        char fileName[256];
+        char locatorName[256];
+        LoadVehicleObjective *objective;
+    };
+
+    class LoadDisposableCarAsyncCallback : public LoadingManager::ProcessRequestsCallback {
     public:
-        LoadVehicleObjective();
-        virtual ~LoadVehicleObjective();
+        LoadDisposableCarAsyncCallback(void) {}
 
-        void SetFilename( const char* filename ) { strcpy( m_Filename, filename ); }
-        void SetVehicleName( const char* vehicleName ) { strcpy( m_VehicleName, vehicleName ); }
-        void SetLocatorName( const char* locatorName ) { strcpy( m_LocatorName, locatorName ); }
+        ~LoadDisposableCarAsyncCallback(void) {}
 
-    protected:
-        
-        virtual void OnInitialize();
-        virtual void OnFinalize();
+        void OnProcessRequestsComplete(void *pUserData);
+    };
 
-        struct CallbackData
-        {
-            char vehicleName[256];
-            char fileName[256];
-            char locatorName[256];
-            LoadVehicleObjective* objective;
-        };
-
-        class LoadDisposableCarAsyncCallback : public LoadingManager::ProcessRequestsCallback
-        {
-        public:
-            LoadDisposableCarAsyncCallback( void ){}
-            ~LoadDisposableCarAsyncCallback( void ){}
-            void OnProcessRequestsComplete( void* pUserData );
-        };
-
-        char m_VehicleName[256];
-        char m_Filename[256];
-        char m_LocatorName[256];
-        LoadDisposableCarAsyncCallback m_Callback;
-        CallbackData m_CallbackData;
+    char m_VehicleName[256];
+    char m_Filename[256];
+    char m_LocatorName[256];
+    LoadDisposableCarAsyncCallback m_Callback;
+    CallbackData m_CallbackData;
 
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow LoadVehicleObjective from being copied and assigned.
-        LoadVehicleObjective( const LoadVehicleObjective& );
-        LoadVehicleObjective& operator=( const LoadVehicleObjective& );
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow LoadVehicleObjective from being copied and assigned.
+    LoadVehicleObjective(const LoadVehicleObjective &);
 
-        friend class LoadDisposableCarAsyncCallback;
+    LoadVehicleObjective &operator=(const LoadVehicleObjective &);
+
+    friend class LoadDisposableCarAsyncCallback;
 };
 
 #endif

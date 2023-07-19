@@ -28,24 +28,26 @@
 //
 //=============================================================================
 
-class CarStartLocator : public Locator
-{
+class CarStartLocator : public Locator {
 public:
     CarStartLocator();
+
     virtual ~CarStartLocator();
-    
+
     virtual LocatorType::Type GetDataType() const;
 
     float GetRotation() const;
-    void SetRotation( float rot );
+
+    void SetRotation(float rot);
 
 private:
 
     float mYRotation;
 
     //Prevent wasteful constructor creation.
-    CarStartLocator( const CarStartLocator& carstartlocator );
-    CarStartLocator& operator=( const CarStartLocator& carstartlocator );
+    CarStartLocator(const CarStartLocator &carstartlocator);
+
+    CarStartLocator &operator=(const CarStartLocator &carstartlocator);
 };
 
 //******************************************************************************
@@ -64,9 +66,8 @@ private:
 // Return:      inline 
 //
 //=============================================================================
-inline LocatorType::Type CarStartLocator::GetDataType() const
-{
-    return( LocatorType::CAR_START );
+inline LocatorType::Type CarStartLocator::GetDataType() const {
+    return (LocatorType::CAR_START);
 }
 
 //=============================================================================
@@ -79,8 +80,7 @@ inline LocatorType::Type CarStartLocator::GetDataType() const
 // Return:      float 
 //
 //=============================================================================
-inline float CarStartLocator::GetRotation() const
-{
+inline float CarStartLocator::GetRotation() const {
     return mYRotation;
 }
 
@@ -89,13 +89,12 @@ inline float CarStartLocator::GetRotation() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float rot )
+// Parameters:  (float rot)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void CarStartLocator::SetRotation( float rot )
-{
+inline void CarStartLocator::SetRotation(float rot) {
     mYRotation = rot;
 }
 

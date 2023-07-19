@@ -51,12 +51,10 @@
 // Return:      N/A.
 //
 //==============================================================================
-AvatarSoundPlayer::AvatarSoundPlayer()
-{
+AvatarSoundPlayer::AvatarSoundPlayer() {
     int i;
 
-    for( i = 0; i < MAX_PLAYERS; i++ )
-    {
+    for (i = 0; i < MAX_PLAYERS; i++) {
         m_avatars[i] = NULL;
     }
 }
@@ -71,14 +69,11 @@ AvatarSoundPlayer::AvatarSoundPlayer()
 // Return:      N/A.
 //
 //==============================================================================
-AvatarSoundPlayer::~AvatarSoundPlayer()
-{
+AvatarSoundPlayer::~AvatarSoundPlayer() {
     int i;
 
-    for( i = 0; i < MAX_PLAYERS; i++ )
-    {
-        if( m_avatars[i] != NULL )
-        {
+    for (i = 0; i < MAX_PLAYERS; i++) {
+        if (m_avatars[i] != NULL) {
             delete m_avatars[i];
         }
     }
@@ -94,13 +89,13 @@ AvatarSoundPlayer::~AvatarSoundPlayer()
 // Return:      void 
 //
 //=============================================================================
-void AvatarSoundPlayer::Initialize()
-{
+void AvatarSoundPlayer::Initialize() {
     //
     // Must register the carSoundParameters factory method with RadScript before
     // the script creating these objects gets run
     //
-    ::radFactoryRegister( "carSoundParameters", (radFactoryOutParamProc*) ::CarSoundParameterObjCreate );
+    ::radFactoryRegister("carSoundParameters", (radFactoryOutParamProc * )
+    ::CarSoundParameterObjCreate);
 }
 
 //=============================================================================
@@ -114,15 +109,12 @@ void AvatarSoundPlayer::Initialize()
 // Return:      void 
 //
 //=============================================================================
-void AvatarSoundPlayer::UpdateOncePerFrame( unsigned int elapsedTime )
-{
+void AvatarSoundPlayer::UpdateOncePerFrame(unsigned int elapsedTime) {
     int i;
 
-    for( i = 0; i < MAX_PLAYERS; i++ )
-    {
-        if( m_avatars[i] != NULL )
-        {
-            m_avatars[i]->UpdateOncePerFrame( elapsedTime );
+    for (i = 0; i < MAX_PLAYERS; i++) {
+        if (m_avatars[i] != NULL) {
+            m_avatars[i]->UpdateOncePerFrame(elapsedTime);
         }
     }
 }
@@ -137,19 +129,17 @@ void AvatarSoundPlayer::UpdateOncePerFrame( unsigned int elapsedTime )
 // Return:      true if player 0 in car, false otherwise 
 //
 //=============================================================================
-bool AvatarSoundPlayer::OnBeginGameplay()
-{
+bool AvatarSoundPlayer::OnBeginGameplay() {
     unsigned int i;
     unsigned int numPlayers = GetGameplayManager()->GetNumPlayers();
 
-    for( i = 0; i < numPlayers; i++ )
-    {
-        rAssert( m_avatars[i] == NULL );
+    for (i = 0; i < numPlayers; i++) {
+        rAssert(m_avatars[i] == NULL);
 
-        m_avatars[i] = new(GMA_LEVEL_AUDIO) SoundAvatar( GetAvatarManager()->GetAvatarForPlayer( i ) );
+        m_avatars[i] = new(GMA_LEVEL_AUDIO) SoundAvatar(GetAvatarManager()->GetAvatarForPlayer(i));
     }
 
-    return( GetAvatarManager()->GetAvatarForPlayer( 0 )->IsInCar() );
+    return (GetAvatarManager()->GetAvatarForPlayer(0)->IsInCar());
 }
 
 //=============================================================================
@@ -162,18 +152,15 @@ bool AvatarSoundPlayer::OnBeginGameplay()
 // Return:      void 
 //
 //=============================================================================
-void AvatarSoundPlayer::OnEndGameplay()
-{
+void AvatarSoundPlayer::OnEndGameplay() {
     int i;
 
     //
     // Destroy the avatar trackers, since we won't have avatars anymore until
     // gameplay restarts
     //
-    for( i = 0; i < MAX_PLAYERS; i++ )
-    {
-        if( m_avatars[i] != NULL )
-        {
+    for (i = 0; i < MAX_PLAYERS; i++) {
+        if (m_avatars[i] != NULL) {
             delete m_avatars[i];
             m_avatars[i] = NULL;
         }

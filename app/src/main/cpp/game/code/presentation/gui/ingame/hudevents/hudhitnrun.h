@@ -24,10 +24,11 @@
 // Forward References
 //===========================================================================
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Page;
+
     class Text;
+
     class Sprite;
 }
 
@@ -35,29 +36,29 @@ namespace Scrooby
 // Interface Definitions
 //===========================================================================
 
-class HudHitNRun : public HudEventHandler
-{
+class HudHitNRun : public HudEventHandler {
 public:
-    HudHitNRun( Scrooby::Page* pPage );
+    HudHitNRun(Scrooby::Page *pPage);
+
     virtual ~HudHitNRun();
 
     virtual void Start();
-    virtual void Stop();
-    virtual void Update( float elapsedTime );
 
-    enum eMessage
-    {
+    virtual void Stop();
+
+    virtual void Update(float elapsedTime);
+
+    enum eMessage {
         MSG_HIT_N_RUN,
         MSG_BUSTED,
 
         NUM_MESSAGES
     };
 
-    void SetMessage( eMessage message );
+    void SetMessage(eMessage message);
 
 private:
-    enum eSubState
-    {
+    enum eSubState {
         STATE_MESSAGE_TRANSITION_IN,
         STATE_MESSAGE_DISPLAY_HOLD,
         STATE_MESSAGE_TRANSITION_OUT,
@@ -68,8 +69,8 @@ private:
     unsigned int m_currentSubState;
 
     eMessage m_currentMessage;
-    Scrooby::Text* m_hnrMessage;
-    Scrooby::Sprite* m_hnrTicket;
+    Scrooby::Text *m_hnrMessage;
+    Scrooby::Sprite *m_hnrTicket;
 
     int m_messageTranslateX;
     int m_messageTranslateY;

@@ -44,9 +44,8 @@
 //
 //==============================================================================
 VehicleCondition::VehicleCondition() :
-    mpVehicle( NULL )
-{
-    //this->SetType( COND_PLAYER_OUT_OF_VEHICLE );
+        mpVehicle(NULL) {
+    //this->SetType(COND_PLAYER_OUT_OF_VEHICLE);
 }
 
 //==============================================================================
@@ -59,8 +58,7 @@ VehicleCondition::VehicleCondition() :
 // Return:      N/A.
 //
 //==============================================================================
-VehicleCondition::~VehicleCondition()
-{
+VehicleCondition::~VehicleCondition() {
 }
 
 //******************************************************************************

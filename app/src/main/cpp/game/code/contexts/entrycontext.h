@@ -31,42 +31,46 @@
 //           do anything!    
 //
 //=============================================================================
-class EntryContext : public Context
-{
-    public:
+class EntryContext : public Context {
+public:
 
-        // Static Methods for accessing this singleton.
-        static EntryContext* GetInstance();
+    // Static Methods for accessing this singleton.
+    static EntryContext *GetInstance();
 
-    protected:
+protected:
 
-        virtual void OnStart( ContextEnum previousContext );
-        virtual void OnStop( ContextEnum nextContext );
-        virtual void OnUpdate( unsigned int elapsedTime );
-        
-        virtual void OnSuspend();
-        virtual void OnResume();
+    virtual void OnStart(ContextEnum previousContext);
 
-        virtual void OnHandleEvent( EventEnum id, void* pEventData );
+    virtual void OnStop(ContextEnum nextContext);
 
-    private:
+    virtual void OnUpdate(unsigned int elapsedTime);
 
-        // constructor and destructor are protected to force singleton implementation
-        EntryContext();
-        virtual ~EntryContext();
+    virtual void OnSuspend();
 
-        // Declared but not defined to prevent copying and assignment.
-        EntryContext( const EntryContext& );
-        EntryContext& operator=( const EntryContext& );
+    virtual void OnResume();
 
-        // Pointer to the one and only instance of this singleton.
-        static EntryContext* spInstance;
+    virtual void OnHandleEvent(EventEnum id, void *pEventData);
+
+private:
+
+    // constructor and destructor are protected to force singleton implementation
+    EntryContext();
+
+    virtual ~EntryContext();
+
+    // Declared but not defined to prevent copying and assignment.
+    EntryContext(const EntryContext &);
+
+    EntryContext &operator=(const EntryContext &);
+
+    // Pointer to the one and only instance of this singleton.
+    static EntryContext *spInstance;
 };
 
 //
 // A little syntactic sugar for getting at this singleton.
 //
-inline EntryContext* GetEntryContext() { return( EntryContext::GetInstance() ); }
+inline EntryContext *GetEntryContext() { return (EntryContext::GetInstance()); }
 
 
 #endif // ENTRYCONTEXT_H

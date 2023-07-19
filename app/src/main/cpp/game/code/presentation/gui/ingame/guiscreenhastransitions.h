@@ -26,8 +26,7 @@
 //===========================================================================
 #define MAX_TRANSITIONS 64
 
-namespace GuiSFX
-{
+namespace GuiSFX {
     class Transition;
 }
 
@@ -35,19 +34,25 @@ namespace GuiSFX
 // Interface Definitions
 //===========================================================================
 
-class CGuiScreenHasTransitions
-{
+class CGuiScreenHasTransitions {
 public:
     CGuiScreenHasTransitions();
+
 protected:
-    void AddTransition( GuiSFX::Transition* transition );
-    void AddTransition( GuiSFX::Transition& transition );
+    void AddTransition(GuiSFX::Transition *transition);
+
+    void AddTransition(GuiSFX::Transition &transition);
+
     void DoneAddingTransitions();
+
     void ResetMovableObjects();
+
     void ResetTransitions();
-    void UpdateTransitions( const float deltaT );
+
+    void UpdateTransitions(const float deltaT);
+
 private:
-    GuiSFX::Transition*  m_Transitions[ MAX_TRANSITIONS ];
+    GuiSFX::Transition *m_Transitions[MAX_TRANSITIONS];
     bool mDoneAddingTransitions;
 };
 

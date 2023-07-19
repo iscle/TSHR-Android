@@ -92,40 +92,39 @@ const float MIN_FORCE_DETACH_COLLECTIBLES = 30000.0f;
 //
 //=============================================================================
 Vehicle::Vehicle() :
-    mGeometryVehicle( NULL ),
-    mName( NULL ),
-    mVehicleID( VehicleEnum::INVALID ),
-    mTerrainType( TT_Road),
-    mInterior( false ),
-    mpEventLocator( NULL ),
-    mCharacterSheetCarIndex( -1 ),
-    m_IsSimpleShadow( true )
-{
+        mGeometryVehicle(NULL),
+        mName(NULL),
+        mVehicleID(VehicleEnum::INVALID),
+        mTerrainType(TT_Road),
+        mInterior(false),
+        mpEventLocator(NULL),
+        mCharacterSheetCarIndex(-1),
+        m_IsSimpleShadow(true) {
     mTranslucent = true;
     mDrawVehicle = true;
 
     mTransform.Identity();
-    
+
     mVehicleCentralIndex = -1;
 
     // wtf?    
     mInitialPosition.Set(0.0f, 8.0f, 20.0f);
     mResetFacingRadians = 0.0f;
-    
+
     mVehicleFacing.Set(0.0f, 0.0f, 1.0f);
     mVehicleUp.Set(0.0f, 1.0f, 0.0f);
-    
+
 #ifdef RAD_GAMECUBE
-    HeapMgr()->PushHeap( GMA_GC_VMM );
+    HeapMgr()->PushHeap(GMA_GC_VMM);
 #else
     GameMemoryAllocator allocator = GetGameplayManager()->GetCurrentMissionHeap();
-    HeapMgr()->PushHeap( allocator );
+    HeapMgr()->PushHeap(allocator);
 #endif
     mGeometryVehicle = new GeometryVehicle;
 #ifdef RAD_GAMECUBE
-    HeapMgr()->PopHeap( GMA_GC_VMM );
+    HeapMgr()->PopHeap(GMA_GC_VMM);
 #else
-    HeapMgr()->PopHeap( allocator );
+    HeapMgr()->PopHeap(allocator);
 #endif
 
 
@@ -141,11 +140,11 @@ Vehicle::Vehicle() :
     mSimStateArticulated = 0;
     mPoseEngine = 0;
     mRootMatrixDriver = 0;
-    
+
     //mPoseEngineOutOfCar = 0;
     //mRootMatrixDriverOutOfCar = 0;
-    
-    
+
+
     mSimStateArticulatedOutOfCar = 0;
     mSimStateArticulatedInCar = 0;
 
@@ -177,7 +176,7 @@ Vehicle::Vehicle() :
     mRPM = 0.0f;
     mBaseRPM = 500.0f;
     mMaxRpm = 6500.0f;
-    
+
     mRPMUpRate = 10.0f;
     mRPMDownRate = 50.0f;
     //mShiftPointHigh = 3500.0f;
@@ -200,8 +199,7 @@ Vehicle::Vehicle() :
     mSlipGasModifier = 1.0f;
 
     int i;
-    for(i = 0; i < 4; i++)
-    {
+    for (i = 0; i < 4; i++) {
         mInertialJointDrivers[i] = 0;
         mPhysicsJointMatrixModifiers[i] = 0;
     }
@@ -243,7 +241,7 @@ Vehicle::Vehicle() :
     mIsADestroyObjective = false;
 
     mHitPoints = 2.0f;
-    
+
     mDamageOutResetTimer = 0.0f;
 
     mSmokeOffset.Set(0.0f, -0.5f, 1.5f);
@@ -257,7 +255,7 @@ Vehicle::Vehicle() :
     mUserDrivingCar = false;
 
     mDesiredDoorPosition[0] = mDesiredDoorPosition[1] = 0.0f;
-    mDesiredDoorAction[0] = mDesiredDoorAction[1]  = DOORACTION_NONE;
+    mDesiredDoorAction[0] = mDesiredDoorAction[1] = DOORACTION_NONE;
 
     mpTriggerVolume = NULL;
 
@@ -267,23 +265,23 @@ Vehicle::Vehicle() :
     mDoingWheelie = false;
 
 
-    strcpy(mDriverName,"phantom");
+    strcpy(mDriverName, "phantom");
 //    mDriverName[0] = 0;
     mPhantomDriver = false;
 
 
     // vehicle event stuff
     mVehicleEventListener = 0;
-    
+
     mDoingJumpBoost = false;
-    
+
     mNoSkid = false;    // only true for frink's hovering vehicles (also the ghost ship)
     mNoFrontSkid = false; // only true for the rocket car
 
     mBrakeLightsOn = false;
     mReverseLightsOn = false;
-    mDontShowBrakeLights = false;   
-    
+    mDontShowBrakeLights = false;
+
     mCMOffsetSetToOriginal = false;
 
     mOutOfControl = false;
@@ -297,22 +295,22 @@ Vehicle::Vehicle() :
     mDamperShouldNotPullDown[1] = false;
     mDamperShouldNotPullDown[2] = false;
     mDamperShouldNotPullDown[3] = false;
-    
+
 
     mNumTurbos = 3; // default to 3 for now
     mSecondsTillNextTurbo = 0.0f;
 
     mUsingInCarPhysics = true;
-    
+
     //mWaitingToSwitchToOutOfCar = false;
     //mOutOfCarSwitchTimer = 0.0f; // brutal fucking hack
-    
+
     mNoDamageTimer = 0.0f;
-    
+
     mAlreadyPlayedExplosion = false;
-    
+
     mEBrakeTimer = 0.0f;
-    
+
     mWheelTurnAngleInputValue = 0.0f;
 
     mDrawWireFrame = false;
@@ -321,29 +319,28 @@ Vehicle::Vehicle() :
     mHijackedByUser = false;
 
 
-
-    mDesignerParams.mDpGamblingOdds= 1.0f; //Chuck: set the Gambling Odds to 1.0 or 1:1 by default.
+    mDesignerParams.mDpGamblingOdds = 1.0f; //Chuck: set the Gambling Odds to 1.0 or 1:1 by default.
     mbPlayerCar = false;
 
     mOurRestSeatingPosition.Set(0.0f, 0.0f, 0.0f);
     mNPCRestSeatingPosition.Set(0.0f, 0.0f, 0.0f);
     mYAccelForSeatingOffset = 0.0f;
-    
+
     mVelocityCMLag.Set(0.0f, 0.0f, 0.0f);
     mPositionCMLag.Set(0.0f, 0.0f, 0.0f);
-    
+
     // value... fresh from my ass:
     //mBounceLimit = 0.5f;
     //mBounceLimit = 0.25f;
     mBounceLimit = 0.11f;
-    
-    
+
+
     //mMaxBounceDisplacementPerSecond = 1.0f;
     mMaxBounceDisplacementPerSecond = 2.0f;
-    
+
     mBounceAccelThreshold = 1.0f;    // below this value just try and move back to rest
     //mBounceAccelThreshold = 2.0f;    // below this value just try and move back to rest
-    
+
 
     mForceToDetachCollectible = MIN_FORCE_DETACH_COLLECTIBLES;
 
@@ -359,23 +356,23 @@ Vehicle::Vehicle() :
     s_DamageFromExplosion = 0.5f;
     // And no damage on player vehicles
     s_DamageFromExplosionPlayer = 0;
-    
+
     mStuckOnSideTimer = 0.0f;
     mAlreadyCalledAutoResetOnSpot = false;
-    
-    
+
+
     mOriginalCMOffset.x = 0.0f;
     mOriginalCMOffset.y = 0.0f;
     mOriginalCMOffset.z = 0.0f;
-    
+
     mBottomOutSpeedMaintenance = 0.0f;
 
     mTriggerActive = false;
-    
+
     mAtRestAsFarAsTriggersAreConcerned = true;
-    
+
     mLocoSwitchedToPhysicsThisFrame = false;
-    
+
     mCreatedByParkedCarManager = false;
 }
 
@@ -390,27 +387,24 @@ Vehicle::Vehicle() :
 // Return:      bool 
 //
 //=============================================================================
-bool Vehicle::Init( const char* name, SimEnvironment* se, VehicleLocomotionType loco, VehicleType vt, bool startoutofcar)
-{
-    if(mbPlayerCar ==true)
-    {
-        mCharacterSheetCarIndex = GetCharacterSheetManager()->GetCarIndex( name );
-    }
-    else
-    {
+bool Vehicle::Init(const char *name, SimEnvironment *se, VehicleLocomotionType loco, VehicleType vt,
+                   bool startoutofcar) {
+    if (mbPlayerCar == true) {
+        mCharacterSheetCarIndex = GetCharacterSheetManager()->GetCarIndex(name);
+    } else {
         mCharacterSheetCarIndex = -1;
     }
 
-    mDrawVehicle = true;   
+    mDrawVehicle = true;
 
     mVehicleType = vt;
 
-    rAssert( mName == NULL );
+    rAssert(mName == NULL);
     GameMemoryAllocator gma = GetGameplayManager()->GetCurrentMissionHeap();
-    mName = new(gma)char[strlen(name)+1];
-    strcpy( mName, name );
-    
-    CollisionEntityDSG::SetName(mName);    
+    mName = new(gma)char[strlen(name) + 1];
+    strcpy(mName, name);
+
+    CollisionEntityDSG::SetName(mName);
 
     mLoco = loco;
 
@@ -421,72 +415,72 @@ bool Vehicle::Init( const char* name, SimEnvironment* se, VehicleLocomotionType 
     //++++++++++++++++++++
 
 
-        //mDesignerParams.mDpGasScale = 8.0f;     // proportional to mass
-        //mDesignerParams.mDpGasScale = 6.0f;     // proportional to mass
-        //mDesignerParams.mDpGasScale = 3.0f;     // proportional to mass
-        mDesignerParams.mDpGasScale = 4.0f;     // proportional to mass
+    //mDesignerParams.mDpGasScale = 8.0f;     // proportional to mass
+    //mDesignerParams.mDpGasScale = 6.0f;     // proportional to mass
+    //mDesignerParams.mDpGasScale = 3.0f;     // proportional to mass
+    mDesignerParams.mDpGasScale = 4.0f;     // proportional to mass
 
-        mDesignerParams.mDpSlipGasScale = 4.0f;
+    mDesignerParams.mDpSlipGasScale = 4.0f;
 
-        mDesignerParams.mDpHighSpeedGasScale = 2.0f;
-        //mDesignerParams.mDpGasScaleSpeedThreshold = 0.5f;
-        mDesignerParams.mDpGasScaleSpeedThreshold = 1.0f;   // make this the default so it is not used for the time being
-        
+    mDesignerParams.mDpHighSpeedGasScale = 2.0f;
+    //mDesignerParams.mDpGasScaleSpeedThreshold = 0.5f;
+    mDesignerParams.mDpGasScaleSpeedThreshold = 1.0f;   // make this the default so it is not used for the time being
 
-        mDesignerParams.mDpBrakeScale = 3.0f;   // proportional to mass
 
-        //mDesignerParams.mDpTopSpeedKmh = 300.0f;
-        //mDesignerParams.mDpTopSpeedKmh = 250.0f;
-        mDesignerParams.mDpTopSpeedKmh = 220.0f;
+    mDesignerParams.mDpBrakeScale = 3.0f;   // proportional to mass
 
-        mDesignerParams.mDpMass = 1000.0f;      // think of it as kg
+    //mDesignerParams.mDpTopSpeedKmh = 300.0f;
+    //mDesignerParams.mDpTopSpeedKmh = 250.0f;
+    mDesignerParams.mDpTopSpeedKmh = 220.0f;
 
-        mDesignerParams.mDpMaxWheelTurnAngle = 35.0f;     //  in degrees
-        //mDesignerParams.mDpMaxWheelTurnAngle = 30.0f;     //  in degrees
-        //mDesignerParams.mDpMaxWheelTurnAngle = 24.0f;     //  in degrees
-        //mDesignerParams.mDpHighSpeedSteeringDrop = 0.25f;       // 0.0 to 1.0
-        mDesignerParams.mDpHighSpeedSteeringDrop = 0.0f;       // 0.0 to 1.0
+    mDesignerParams.mDpMass = 1000.0f;      // think of it as kg
 
-        // for wheel
-        //mDesignerParams.mDpTireLateralStaticGrip = 2.5f;
-        //mDesignerParams.mDpTireLateralStaticGrip = 5.0f;
-        mDesignerParams.mDpTireLateralStaticGrip = 4.0f;
-        
-           
-        mDesignerParams.mDpTireLateralResistanceNormal = 110.0f;
-        mDesignerParams.mDpTireLateralResistanceSlip = 35.0f;
+    mDesignerParams.mDpMaxWheelTurnAngle = 35.0f;     //  in degrees
+    //mDesignerParams.mDpMaxWheelTurnAngle = 30.0f;     //  in degrees
+    //mDesignerParams.mDpMaxWheelTurnAngle = 24.0f;     //  in degrees
+    //mDesignerParams.mDpHighSpeedSteeringDrop = 0.25f;       // 0.0 to 1.0
+    mDesignerParams.mDpHighSpeedSteeringDrop = 0.0f;       // 0.0 to 1.0
 
-        mDesignerParams.mDpEBrakeEffect = 0.5f;        
+    // for wheel
+    //mDesignerParams.mDpTireLateralStaticGrip = 2.5f;
+    //mDesignerParams.mDpTireLateralStaticGrip = 5.0f;
+    mDesignerParams.mDpTireLateralStaticGrip = 4.0f;
 
-        //mDesignerParams.mDpTireLateralResistanceSlipNoEBrake = 20.0f; // this one's for more out of control driving
-        mDesignerParams.mDpTireLateralResistanceSlipNoEBrake = 50.0f; // this one's for more out of control driving
-        mDesignerParams.mDpSlipEffectNoEBrake = 0.1f;
 
-        mDesignerParams.mDpCMOffset.x = 0.0f;
-        mDesignerParams.mDpCMOffset.y = 0.0f;
-        mDesignerParams.mDpCMOffset.z = 0.0f;
+    mDesignerParams.mDpTireLateralResistanceNormal = 110.0f;
+    mDesignerParams.mDpTireLateralResistanceSlip = 35.0f;
 
-        // don't think they need to touch these for now
-        mDesignerParams.mDpSuspensionLimit = 0.4f;
-        mDesignerParams.mDpSpringk = 0.5f; 
-        mDesignerParams.mDpDamperc = 0.2f; 
+    mDesignerParams.mDpEBrakeEffect = 0.5f;
 
-        mDesignerParams.mDpSuspensionYOffset = 0.0f;
+    //mDesignerParams.mDpTireLateralResistanceSlipNoEBrake = 20.0f; // this one's for more out of control driving
+    mDesignerParams.mDpTireLateralResistanceSlipNoEBrake = 50.0f; // this one's for more out of control driving
+    mDesignerParams.mDpSlipEffectNoEBrake = 0.1f;
 
-        mDesignerParams.mHitPoints = 2.0f;
-        //mDesignerParams.mHitPoints = 0.5f;
+    mDesignerParams.mDpCMOffset.x = 0.0f;
+    mDesignerParams.mDpCMOffset.y = 0.0f;
+    mDesignerParams.mDpCMOffset.z = 0.0f;
 
-        //mDesignerParams.mDpBurnoutRange = 0.2f;
-        mDesignerParams.mDpBurnoutRange = 0.3f;
+    // don't think they need to touch these for now
+    mDesignerParams.mDpSuspensionLimit = 0.4f;
+    mDesignerParams.mDpSpringk = 0.5f;
+    mDesignerParams.mDpDamperc = 0.2f;
 
-        mDesignerParams.mDpWheelieRange = 0.0f;
-        mDesignerParams.mDpWheelieYOffset = 0.0f;
-        mDesignerParams.mDpWheelieZOffset = 0.0f;
+    mDesignerParams.mDpSuspensionYOffset = 0.0f;
 
-        mDesignerParams.mDpMaxSpeedBurstTime = 1.0f;
-        mDesignerParams.mDpDonutTorque = 10.0f;
+    mDesignerParams.mHitPoints = 2.0f;
+    //mDesignerParams.mHitPoints = 0.5f;
 
-        mDesignerParams.mDpWeebleOffset = -1.0f;
+    //mDesignerParams.mDpBurnoutRange = 0.2f;
+    mDesignerParams.mDpBurnoutRange = 0.3f;
+
+    mDesignerParams.mDpWheelieRange = 0.0f;
+    mDesignerParams.mDpWheelieYOffset = 0.0f;
+    mDesignerParams.mDpWheelieZOffset = 0.0f;
+
+    mDesignerParams.mDpMaxSpeedBurstTime = 1.0f;
+    mDesignerParams.mDpDonutTorque = 10.0f;
+
+    mDesignerParams.mDpWeebleOffset = -1.0f;
 
 
     mVehicleState = VS_NORMAL;
@@ -499,51 +493,46 @@ bool Vehicle::Init( const char* name, SimEnvironment* se, VehicleLocomotionType 
     bool localizedDamage;
     //localizedDamage = mGeometryVehicle->Init(name, this, num);
     localizedDamage = mGeometryVehicle->Init(name, this, 0);
-    
+
     // change the logic so that localizedDamage is true if there as at 
     // least one localized damage texture
 
 
-    if(!localizedDamage)
-    {
+    if (!localizedDamage) {
         //mDamageType = 3;    // traffic
         mDamageType = VDT_TRAFFIC;
     }
 
-    InitSimState(se); 
+    InitSimState(se);
 
     InitGroundPlane();
 
     FetchWheelMapping();
     InitWheelsAndLinkSuspensionJointDrivers();
 
-    
+
     mGeometryVehicle->InitParticles();
     //if(mVehicleType == VT_USER)
-    if(1)// mVehicleType == VT_USER || mVehicleType == VT_AI)  change this to init for all, only draw for USER - that way it is totally safe to switch vehicle type on the fly
+    if (1)// mVehicleType == VT_USER || mVehicleType == VT_AI)  change this to init for all, only draw for USER - that way it is totally safe to switch vehicle type on the fly
     {
-        mGeometryVehicle->InitSkidMarks();  
+        mGeometryVehicle->InitSkidMarks();
     }
 
 
-
     bool flappingJointPresent = InitFlappingJoints();
-    if(flappingJointPresent)
-    {
+    if (flappingJointPresent) {
         //if(mDamageType == 3)    
-        if(mDamageType == VDT_TRAFFIC)    
-        {
+        if (mDamageType == VDT_TRAFFIC) {
             //rAssertMsg(0, "Fink, what are you doing?");
-           
+
         }
-        
+
         // else
 
         //mDamageType = 1;
         mDamageType = VDT_USER;
 
-    }
-    else if(mDamageType == VDT_UNSET)   // still unset
+    } else if (mDamageType == VDT_UNSET)   // still unset
     {
         mDamageType = VDT_AI;
     }
@@ -553,13 +542,13 @@ bool Vehicle::Init( const char* name, SimEnvironment* se, VehicleLocomotionType 
 
     InitGears();
 
-        //CalculateDragCoeffBasedOnTopSpeed();
+    //CalculateDragCoeffBasedOnTopSpeed();
 
     CalculateValuesBasedOnDesignerParams();
-        // does this:
-        // SetupPhysicsProperties();
-        // CalculatedDragCoeffBasedOnTopSpeed
-        // SetDesignerParams on Wheels
+    // does this:
+    // SetupPhysicsProperties();
+    // CalculatedDragCoeffBasedOnTopSpeed
+    // SetDesignerParams on Wheels
 
 
     CreateLocomotions();
@@ -568,14 +557,14 @@ bool Vehicle::Init( const char* name, SimEnvironment* se, VehicleLocomotionType 
 
 
     // need this call here?
-    Reset( false );
+    Reset(false);
 
     SetupRadDebugWatchStuff();
 
     // moved here from VehicleCentral
     InitEventLocator();
- 
-  
+
+
     // vehicle event stuff
     mVehicleEventListener = new VehicleEventListener(this);
 
@@ -583,19 +572,18 @@ bool Vehicle::Init( const char* name, SimEnvironment* se, VehicleLocomotionType 
 
 
     //mUsingInCarPhysics
-    
+
     // default at this point in creation is to be using the incar physics.
     //
     // perhaps there should be a paramter to say which, passed into
-    
-    
-    if(startoutofcar)
-    {
+
+
+    if (startoutofcar) {
         SetOutOfCarSimState();
     }
 
     /*
-    if( GetGameFlow()->GetCurrentContext() == CONTEXT_DEMO )
+    if(GetGameFlow()->GetCurrentContext() == CONTEXT_DEMO)
     {
         mWaitingToSwitchToOutOfCar = true;
     }
@@ -612,7 +600,6 @@ bool Vehicle::Init( const char* name, SimEnvironment* se, VehicleLocomotionType 
 }
 
 
-
 //=============================================================================
 // Vehicle::InitEventLocator
 //=============================================================================
@@ -623,45 +610,45 @@ bool Vehicle::Init( const char* name, SimEnvironment* se, VehicleLocomotionType 
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::InitEventLocator()
-{
+void Vehicle::InitEventLocator() {
     GameMemoryAllocator gma = GetGameplayManager()->GetCurrentMissionHeap();
 
     mpEventLocator = new(gma)EventLocator();
-    mpEventLocator->SetName( mName );
+    mpEventLocator->SetName(mName);
     mpEventLocator->AddRef();
-    mpEventLocator->SetEventType( LocatorEvent::CAR_DOOR );
+    mpEventLocator->SetEventType(LocatorEvent::CAR_DOOR);
     int id = -1;
 
-    ActionButton::GetInCar* pABHandler = static_cast<ActionButton::GetInCar*>( ActionButton::GetInCar::NewAction( mpEventLocator ) ); 
-    rAssert( dynamic_cast<ActionButton::GetInCar*>( pABHandler ) != NULL  );   
-    rAssert( pABHandler );
-    bool bResult = GetActionButtonManager()->AddAction( pABHandler, id );
-    rAssert( bResult );
-    
-    // this part is done in VehicleCentral::AddVehicleToActiveList
-    //pABHandler->SetVehicleId( mNumActiveVehicles );
+    ActionButton::GetInCar *pABHandler = static_cast<ActionButton::GetInCar *>(ActionButton::GetInCar::NewAction(
+            mpEventLocator));
+    rAssert(dynamic_cast<ActionButton::GetInCar *>(pABHandler) != NULL);
+    rAssert(pABHandler);
+    bool bResult = GetActionButtonManager()->AddAction(pABHandler, id);
+    rAssert(bResult);
 
-    mpEventLocator->SetData( id );
+    // this part is done in VehicleCentral::AddVehicleToActiveList
+    //pABHandler->SetVehicleId(mNumActiveVehicles);
+
+    mpEventLocator->SetData(id);
 
     // grab the car bounding box 
     mExtents = GetSimState()->GetCollisionObject()->GetCollisionVolume()->mBoxSize;
-    
+
     // slap down a trigger volume for getting intop car
     const float edge = 1.0f; // how big?  TODO : tunable?
-    mpTriggerVolume = new(gma) RectTriggerVolume( mTransform.Row(3), 
-                                                                    mTransform.Row(0), 
-                                                                    mTransform.Row(1), 
-                                                                    mTransform.Row(2), 
-                                                                    mExtents.x + edge, 
-                                                                    mExtents.y + edge, 
-                                                                    mExtents.z + edge);
+    mpTriggerVolume = new(gma) RectTriggerVolume(mTransform.Row(3),
+                                                 mTransform.Row(0),
+                                                 mTransform.Row(1),
+                                                 mTransform.Row(2),
+                                                 mExtents.x + edge,
+                                                 mExtents.y + edge,
+                                                 mExtents.z + edge);
 
     // add volume to event trigger
-    mpEventLocator->SetNumTriggers( 1, gma ); 
-    mpEventLocator->AddTriggerVolume( mpTriggerVolume );
-    mpTriggerVolume->SetLocator( mpEventLocator );
-    mpTriggerVolume->SetName( "get_in" );
+    mpEventLocator->SetNumTriggers(1, gma);
+    mpEventLocator->AddTriggerVolume(mpTriggerVolume);
+    mpTriggerVolume->SetLocator(mpEventLocator);
+    mpTriggerVolume->SetName("get_in");
 
 }
 
@@ -675,8 +662,7 @@ void Vehicle::InitEventLocator()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::AssignEnumBasedOnName()
-{
+void Vehicle::AssignEnumBasedOnName() {
     /*
         enum VehicleID
         {
@@ -813,484 +799,391 @@ void Vehicle::AssignEnumBasedOnName()
         };
 
     */
-    
-    if(strcmp(mName, "bart_v") == 0)
-    {
+
+    if (strcmp(mName, "bart_v") == 0) {
         mVehicleID = VehicleEnum::BART_V;
-    }    
+    }
 
-    if(strcmp(mName, "apu_v") == 0)
-    {
+    if (strcmp(mName, "apu_v") == 0) {
         mVehicleID = VehicleEnum::APU_V;
-    }    
+    }
 
-    if(strcmp(mName, "snake_v") == 0)
-        {
+    if (strcmp(mName, "snake_v") == 0) {
         mVehicleID = VehicleEnum::SNAKE_V;
-    }    
+    }
 
-    if(strcmp(mName, "homer_v") == 0)
-    {
+    if (strcmp(mName, "homer_v") == 0) {
         mVehicleID = VehicleEnum::HOMER_V;
-    }    
+    }
 
-    if(strcmp(mName, "famil_v") == 0)
-    {
+    if (strcmp(mName, "famil_v") == 0) {
         mVehicleID = VehicleEnum::FAMIL_V;
-    }    
+    }
 
-    if(strcmp(mName, "gramp_v") == 0)
-    {
+    if (strcmp(mName, "gramp_v") == 0) {
         mVehicleID = VehicleEnum::GRAMP_V;
-    }    
-    
-    if(strcmp(mName, "cletu_v") == 0)
-    {
+    }
+
+    if (strcmp(mName, "cletu_v") == 0) {
         mVehicleID = VehicleEnum::CLETU_V;
-    }    
-    
-    if(strcmp(mName, "wiggu_v") == 0)
-    {
+    }
+
+    if (strcmp(mName, "wiggu_v") == 0) {
         mVehicleID = VehicleEnum::WIGGU_V;
-    }    
-    
-    if(strcmp(mName, "marge_v") == 0)
-    {
+    }
+
+    if (strcmp(mName, "marge_v") == 0) {
         mVehicleID = VehicleEnum::MARGE_V;
     }
 
-    if(strcmp(mName, "smith_v") == 0)
-    {
+    if (strcmp(mName, "smith_v") == 0) {
         mVehicleID = VehicleEnum::SMITH_V;
     }
 
-    if(strcmp(mName, "zombi_v") == 0)
-    {
+    if (strcmp(mName, "zombi_v") == 0) {
         mVehicleID = VehicleEnum::ZOMBI_V;
-    }    
-    
-    if(strcmp(mName, "cVan") == 0)
-    {
+    }
+
+    if (strcmp(mName, "cVan") == 0) {
         mVehicleID = VehicleEnum::CVAN;
-    }    
+    }
 
-    if(strcmp(mName, "compactA") == 0)
-    {
+    if (strcmp(mName, "compactA") == 0) {
         mVehicleID = VehicleEnum::COMPACTA;
-    }    
+    }
 
-    if(strcmp(mName, "comic_v") == 0)
-    {
+    if (strcmp(mName, "comic_v") == 0) {
         mVehicleID = VehicleEnum::COMIC_V;
-    }    
+    }
 
-    if(strcmp(mName, "skinn_v") == 0)
-    {
+    if (strcmp(mName, "skinn_v") == 0) {
         mVehicleID = VehicleEnum::SKINN_V;
-    }    
+    }
 
-    if(strcmp(mName, "cCola") == 0)
-    {
+    if (strcmp(mName, "cCola") == 0) {
         mVehicleID = VehicleEnum::CCOLA;
-    }    
-    
-    if(strcmp(mName, "cSedan") == 0)
-    {
+    }
+
+    if (strcmp(mName, "cSedan") == 0) {
         mVehicleID = VehicleEnum::CSEDAN;
-    }    
+    }
 
-    if(strcmp(mName, "cPolice") == 0)
-    {
+    if (strcmp(mName, "cPolice") == 0) {
         mVehicleID = VehicleEnum::CPOLICE;
-    }    
+    }
 
-    if(strcmp(mName, "cCellA") == 0)
-    {
+    if (strcmp(mName, "cCellA") == 0) {
         mVehicleID = VehicleEnum::CCELLA;
-    }    
-    
-    if(strcmp(mName, "cCellB") == 0)
-    {
+    }
+
+    if (strcmp(mName, "cCellB") == 0) {
         mVehicleID = VehicleEnum::CCELLB;
-    }    
+    }
 
-    if(strcmp(mName, "cCellC") == 0)
-    {
+    if (strcmp(mName, "cCellC") == 0) {
         mVehicleID = VehicleEnum::CCELLC;
-    }    
+    }
 
-    if(strcmp(mName, "cCellD") == 0)
-    {
+    if (strcmp(mName, "cCellD") == 0) {
         mVehicleID = VehicleEnum::CCELLD;
-    }    
+    }
 
-    if(strcmp(mName, "minivanA") == 0)
-    {
+    if (strcmp(mName, "minivanA") == 0) {
         mVehicleID = VehicleEnum::MINIVANA;
-    }    
+    }
 
-    if(strcmp(mName, "pickupA") == 0)
-    {
+    if (strcmp(mName, "pickupA") == 0) {
         mVehicleID = VehicleEnum::PICKUPA;
-    }    
+    }
 
-    if(strcmp(mName, "taxiA") == 0)
-    {
+    if (strcmp(mName, "taxiA") == 0) {
         mVehicleID = VehicleEnum::TAXIA;
-    }    
-    
-    if(strcmp(mName, "sportsA") == 0)
-    {
+    }
+
+    if (strcmp(mName, "sportsA") == 0) {
         mVehicleID = VehicleEnum::SPORTSA;
-    }    
+    }
 
-    if(strcmp(mName, "sportsB") == 0)
-    {
+    if (strcmp(mName, "sportsB") == 0) {
         mVehicleID = VehicleEnum::SPORTSB;
-    }    
+    }
 
-    if(strcmp(mName, "SUVA") == 0)
-    {
+    if (strcmp(mName, "SUVA") == 0) {
         mVehicleID = VehicleEnum::SUVA;
-    }    
+    }
 
-    if(strcmp(mName, "wagonA") == 0)
-    {
+    if (strcmp(mName, "wagonA") == 0) {
         mVehicleID = VehicleEnum::WAGONA;
-    }    
+    }
 
-    if(strcmp(mName, "hbike_v") == 0)
-    {
+    if (strcmp(mName, "hbike_v") == 0) {
         mVehicleID = VehicleEnum::HBIKE_V;
         mNoSkid = true;
-    }    
+    }
 
 
-    if(strcmp(mName, "burns_v") == 0)
-    {
+    if (strcmp(mName, "burns_v") == 0) {
         mVehicleID = VehicleEnum::BURNS_V;
-    }    
-            
-    if(strcmp(mName, "honor_v") == 0)
-    {
+    }
+
+    if (strcmp(mName, "honor_v") == 0) {
         mVehicleID = VehicleEnum::HONOR_V;
         mNoFrontSkid = true;
-    }    
+    }
 
-    if(strcmp(mName, "cArmor") == 0)
-    {
+    if (strcmp(mName, "cArmor") == 0) {
         mVehicleID = VehicleEnum::CARMOR;
-    }    
+    }
 
-    if(strcmp(mName, "cCurator") == 0)
-    {
+    if (strcmp(mName, "cCurator") == 0) {
         mVehicleID = VehicleEnum::CCURATOR;
-    }    
+    }
 
-    if(strcmp(mName, "cHears") == 0)
-    {
+    if (strcmp(mName, "cHears") == 0) {
         mVehicleID = VehicleEnum::CHEARS;
-    }    
+    }
 
-    if(strcmp(mName, "cKlimo") == 0)
-    {
+    if (strcmp(mName, "cKlimo") == 0) {
         mVehicleID = VehicleEnum::CKLIMO;
     }
 
-    if(strcmp(mName, "cLimo") == 0)
-    {
+    if (strcmp(mName, "cLimo") == 0) {
         mVehicleID = VehicleEnum::CLIMO;
     }
 
-    if(strcmp(mName, "cNerd") == 0)
-    {
+    if (strcmp(mName, "cNerd") == 0) {
         mVehicleID = VehicleEnum::CNERD;
     }
 
-    if(strcmp(mName, "frink_v") == 0)
-    {
+    if (strcmp(mName, "frink_v") == 0) {
         mVehicleID = VehicleEnum::FRINK_V;
         mNoSkid = true;
     }
 
-    if(strcmp(mName, "cMilk") == 0)
-    {
+    if (strcmp(mName, "cMilk") == 0) {
         mVehicleID = VehicleEnum::CMILK;
     }
 
-    if(strcmp(mName, "cDonut") == 0)
-    {
+    if (strcmp(mName, "cDonut") == 0) {
         mVehicleID = VehicleEnum::CDONUT;
     }
 
-    if(strcmp(mName, "bbman_v") == 0)
-    {
+    if (strcmp(mName, "bbman_v") == 0) {
         mVehicleID = VehicleEnum::BBMAN_V;
     }
 
-    if(strcmp(mName, "bookb_v") == 0)
-    {
+    if (strcmp(mName, "bookb_v") == 0) {
         mVehicleID = VehicleEnum::BOOKB_V;
     }
-    
-    if(strcmp(mName, "carhom_v") == 0)
-    {
+
+    if (strcmp(mName, "carhom_v") == 0) {
         mVehicleID = VehicleEnum::CARHOM_V;
     }
-    
-    if(strcmp(mName, "elect_v") == 0)
-    {
+
+    if (strcmp(mName, "elect_v") == 0) {
         mVehicleID = VehicleEnum::ELECT_V;
     }
 
-    if(strcmp(mName, "fone_v") == 0)
-    {
+    if (strcmp(mName, "fone_v") == 0) {
         mVehicleID = VehicleEnum::FONE_V;
     }
 
-    if(strcmp(mName, "gramR_v") == 0)
-    {
+    if (strcmp(mName, "gramR_v") == 0) {
         mVehicleID = VehicleEnum::GRAMR_V;
     }
-    
-    if(strcmp(mName, "moe_v") == 0)
-    {
+
+    if (strcmp(mName, "moe_v") == 0) {
         mVehicleID = VehicleEnum::MOE_V;
     }
 
-    if(strcmp(mName, "mrplo_v") == 0)
-    {
+    if (strcmp(mName, "mrplo_v") == 0) {
         mVehicleID = VehicleEnum::MRPLO_V;
     }
 
-    if(strcmp(mName, "otto_v") == 0)
-    {
+    if (strcmp(mName, "otto_v") == 0) {
         mVehicleID = VehicleEnum::OTTO_V;
     }
-    
-    if(strcmp(mName, "plowk_v") == 0)
-    {
+
+    if (strcmp(mName, "plowk_v") == 0) {
         mVehicleID = VehicleEnum::PLOWK_V;
     }
-    
-    if(strcmp(mName, "scorp_v") == 0)
-    {
+
+    if (strcmp(mName, "scorp_v") == 0) {
         mVehicleID = VehicleEnum::SCORP_V;
     }
-    
-    if(strcmp(mName, "willi_v") == 0)
-    {
+
+    if (strcmp(mName, "willi_v") == 0) {
         mVehicleID = VehicleEnum::WILLI_V;
     }
 
-    if(strcmp(mName, "sedanA") == 0)
-    {
+    if (strcmp(mName, "sedanA") == 0) {
         mVehicleID = VehicleEnum::SEDANA;
     }
 
-    if(strcmp(mName, "sedanB") == 0)
-    {
+    if (strcmp(mName, "sedanB") == 0) {
         mVehicleID = VehicleEnum::SEDANB;
     }
 
-    if(strcmp(mName, "cBlbart") == 0)
-    {
+    if (strcmp(mName, "cBlbart") == 0) {
         mVehicleID = VehicleEnum::CBLBART;
     }
 
-    if(strcmp(mName, "cCube") == 0)
-    {
+    if (strcmp(mName, "cCube") == 0) {
         mVehicleID = VehicleEnum::CCUBE;
     }
 
-    if(strcmp(mName, "cDuff") == 0)
-    {
+    if (strcmp(mName, "cDuff") == 0) {
         mVehicleID = VehicleEnum::CDUFF;
     }
 
-    if(strcmp(mName, "cNonup") == 0)
-    {
+    if (strcmp(mName, "cNonup") == 0) {
         mVehicleID = VehicleEnum::CNONUP;
     }
 
-    if(strcmp(mName, "lisa_v") == 0)
-    {
+    if (strcmp(mName, "lisa_v") == 0) {
         mVehicleID = VehicleEnum::LISA_V;
     }
 
-    if(strcmp(mName, "krust_v") == 0)
-    {
+    if (strcmp(mName, "krust_v") == 0) {
         mVehicleID = VehicleEnum::KRUST_V;
     }
-                
-    if(strcmp(mName, "coffin") == 0)
-    {
+
+    if (strcmp(mName, "coffin") == 0) {
         mVehicleID = VehicleEnum::COFFIN;
     }
 
-    if(strcmp(mName, "hallo") == 0)
-    {
+    if (strcmp(mName, "hallo") == 0) {
         mVehicleID = VehicleEnum::HALLO;
     }
 
-    if(strcmp(mName, "ship") == 0)
-    {
+    if (strcmp(mName, "ship") == 0) {
         mVehicleID = VehicleEnum::SHIP;
         m_IsSimpleShadow = false;
         mNoSkid = true;
     }
 
-    if(strcmp(mName, "witchcar") == 0)
-    {
+    if (strcmp(mName, "witchcar") == 0) {
         mVehicleID = VehicleEnum::WITCHCAR;
         mNoSkid = true;
     }
 
-    if(strcmp(mName, "huskA") == 0)
-    {
-        mVehicleID = VehicleEnum::HUSKA;        
+    if (strcmp(mName, "huskA") == 0) {
+        mVehicleID = VehicleEnum::HUSKA;
     }
 
-    if(strcmp(mName, "atv_v") == 0)
-    {
+    if (strcmp(mName, "atv_v") == 0) {
         mVehicleID = VehicleEnum::ATV_V;
     }
 
-    if(strcmp(mName, "dune_v") == 0)
-    {
+    if (strcmp(mName, "dune_v") == 0) {
         mVehicleID = VehicleEnum::DUNE_V;
     }
 
-    if(strcmp(mName, "hype_v") == 0)
-    {
+    if (strcmp(mName, "hype_v") == 0) {
         mVehicleID = VehicleEnum::HYPE_V;
     }
 
-    if(strcmp(mName, "knigh_v") == 0)
-    {
+    if (strcmp(mName, "knigh_v") == 0) {
         mVehicleID = VehicleEnum::KNIGH_V;
     }
 
-    if(strcmp(mName, "mono_v") == 0)
-    {
+    if (strcmp(mName, "mono_v") == 0) {
         mVehicleID = VehicleEnum::MONO_V;
         mNoSkid = true;
     }
 
-    if(strcmp(mName, "oblit_v") == 0)
-    {
+    if (strcmp(mName, "oblit_v") == 0) {
         mVehicleID = VehicleEnum::OBLIT_V;
     }
 
-    if(strcmp(mName, "rocke_v") == 0)
-    {
+    if (strcmp(mName, "rocke_v") == 0) {
         mVehicleID = VehicleEnum::ROCKE_V;
         mNoFrontSkid = true;
     }
 
-    if(strcmp(mName, "ambul") == 0)
-    {
+    if (strcmp(mName, "ambul") == 0) {
         mVehicleID = VehicleEnum::AMBUL;
     }
 
-    if(strcmp(mName, "burnsarm") == 0)
-    {
+    if (strcmp(mName, "burnsarm") == 0) {
         mVehicleID = VehicleEnum::BURNSARM;
     }
 
-    if(strcmp(mName, "fishtruc") == 0)
-    {
+    if (strcmp(mName, "fishtruc") == 0) {
         mVehicleID = VehicleEnum::FISHTRUC;
     }
 
-    if(strcmp(mName, "garbage") == 0)
-    {
+    if (strcmp(mName, "garbage") == 0) {
         mVehicleID = VehicleEnum::GARBAGE;
     }
 
-    if(strcmp(mName, "icecream") == 0)
-    {
+    if (strcmp(mName, "icecream") == 0) {
         mVehicleID = VehicleEnum::ICECREAM;
     }
 
-    if(strcmp(mName, "IStruck") == 0)
-    {
+    if (strcmp(mName, "IStruck") == 0) {
         mVehicleID = VehicleEnum::ISTRUCK;
     }
 
-    if(strcmp(mName, "nuctruck") == 0)
-    {
+    if (strcmp(mName, "nuctruck") == 0) {
         mVehicleID = VehicleEnum::NUCTRUCK;
     }
 
-    if(strcmp(mName, "pizza") == 0)
-    {
+    if (strcmp(mName, "pizza") == 0) {
         mVehicleID = VehicleEnum::PIZZA;
     }
 
-    if(strcmp(mName, "schoolbu") == 0)
-    {
+    if (strcmp(mName, "schoolbu") == 0) {
         mVehicleID = VehicleEnum::SCHOOLBU;
     }
 
-    if(strcmp(mName, "votetruc") == 0)
-    {
+    if (strcmp(mName, "votetruc") == 0) {
         mVehicleID = VehicleEnum::VOTETRUC;
     }
-    
-    if(strcmp(mName, "glastruc") == 0)
-    {
+
+    if (strcmp(mName, "glastruc") == 0) {
         mVehicleID = VehicleEnum::GLASTRUC;
     }
-        
-    if(strcmp(mName, "cFire_v") == 0)
-    {
+
+    if (strcmp(mName, "cFire_v") == 0) {
         mVehicleID = VehicleEnum::CFIRE_V;
     }
-    
-    if(strcmp(mName, "cBone") == 0)
-    {
+
+    if (strcmp(mName, "cBone") == 0) {
         mVehicleID = VehicleEnum::CBONE;
     }
-    
-    
+
+
     // the best for last!
-    if(strcmp(mName, "redbrick") == 0)
-    {
+    if (strcmp(mName, "redbrick") == 0) {
         mVehicleID = VehicleEnum::REDBRICK;
     }
-    
-    
-}
 
+
+}
 
 
 // call back for debug watcher:
-//typedef void (*RADDEBUGWATCH_CALLBACK)( void* userData );
-void DebugWatchVehicleTuningCallback(void* userData)
-{
-    ((Vehicle*)userData)->CalculateValuesBasedOnDesignerParams();
-}   
-
-
-void InflictDamageHoodCallback(void* userData)
-{
-    ((Vehicle*)userData)->DebugInflictDamageHood();
+//typedef void (*RADDEBUGWATCH_CALLBACK)(void* userData);
+void DebugWatchVehicleTuningCallback(void *userData) {
+    ((Vehicle *) userData)->CalculateValuesBasedOnDesignerParams();
 }
 
-void InflictDamageBackCallback(void* userData)
-{
-    ((Vehicle*)userData)->DebugInflictDamageBack();
+
+void InflictDamageHoodCallback(void *userData) {
+    ((Vehicle *) userData)->DebugInflictDamageHood();
 }
 
-void InflictDamageDriverSideCallback(void* userData)
-{
-    ((Vehicle*)userData)->DebugInflictDamageDriverSide();
+void InflictDamageBackCallback(void *userData) {
+    ((Vehicle *) userData)->DebugInflictDamageBack();
 }
 
-void InflictDamagePassengerSideCallback(void* userData)
-{
-    ((Vehicle*)userData)->DebugInflictDamagePassengerSide();
+void InflictDamageDriverSideCallback(void *userData) {
+    ((Vehicle *) userData)->DebugInflictDamageDriverSide();
+}
+
+void InflictDamagePassengerSideCallback(void *userData) {
+    ((Vehicle *) userData)->DebugInflictDamagePassengerSide();
 }
 
 
@@ -1304,64 +1197,98 @@ void InflictDamagePassengerSideCallback(void* userData)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetupRadDebugWatchStuff()
-{
-    radDbgWatchAddFloat(&mSpeedKmh, "speed kmh", mName, NULL, (void*)this, 0.0f, 1000.0f);   // just want to observe this
-    radDbgWatchAddFloat(&mForceToDetachCollectible, "Detach Collectible Force", mName, DebugWatchVehicleTuningCallback, (void*)this, 5000.0f, 50000.0f );
+void Vehicle::SetupRadDebugWatchStuff() {
+    radDbgWatchAddFloat(&mSpeedKmh, "speed kmh", mName, NULL, (void *) this, 0.0f,
+                        1000.0f);   // just want to observe this
+    radDbgWatchAddFloat(&mForceToDetachCollectible, "Detach Collectible Force", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 5000.0f, 50000.0f);
 
     // Add the static explosion damage variables to the watcher. Make sure to only add them once
     // under group "Vehicle"
     static bool staticVariablesInitialized = false;
-    if ( !staticVariablesInitialized)
-    {
-        radDbgWatchAddFloat(&Vehicle::s_DamageFromExplosion, "Damage from Explosion (other)", "Vehicle", NULL, NULL, 0, 10.0f );
-        radDbgWatchAddFloat(&Vehicle::s_DamageFromExplosionPlayer, "Damage from Explosion (player)", "Vehicle", NULL, NULL, 0, 10.0f );
+    if (!staticVariablesInitialized) {
+        radDbgWatchAddFloat(&Vehicle::s_DamageFromExplosion, "Damage from Explosion (other)",
+                            "Vehicle", NULL, NULL, 0, 10.0f);
+        radDbgWatchAddFloat(&Vehicle::s_DamageFromExplosionPlayer, "Damage from Explosion (player)",
+                            "Vehicle", NULL, NULL, 0, 10.0f);
         staticVariablesInitialized = true;
     }
 
-    radDbgWatchAddFloat(&(mDesignerParams.mDpMass), "mass", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 10000.0f );   
-    radDbgWatchAddFloat(&(mDesignerParams.mDpGasScale), "gas scale", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 30.0f ); 
-    radDbgWatchAddFloat(&(mDesignerParams.mDpSlipGasScale), "slip gas scale", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 30.0f ); 
-    
-    radDbgWatchAddFloat(&(mDesignerParams.mDpHighSpeedGasScale), "high speed gas scale", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 30.0f ); 
-    radDbgWatchAddFloat(&(mDesignerParams.mDpGasScaleSpeedThreshold), "gas scale threshold", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 1.0f ); 
-        
-    radDbgWatchAddFloat(&(mDesignerParams.mDpBrakeScale), "brake scale", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 30.0f );
-    radDbgWatchAddFloat(&(mDesignerParams.mDpTopSpeedKmh), "top speed kmh", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 300.0f );
-    radDbgWatchAddFloat(&(mDesignerParams.mDpMaxWheelTurnAngle), "max wheel turn angle", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 55.0f );
-    radDbgWatchAddFloat(&(mDesignerParams.mDpHighSpeedSteeringDrop), "high speed steering drop", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 1.0f );
-    radDbgWatchAddFloat(&(mDesignerParams.mDpTireLateralStaticGrip), "tire grip", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 15.0f );
-    radDbgWatchAddFloat(&(mDesignerParams.mDpTireLateralResistanceNormal), "normal steering", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 500.0f );
-    radDbgWatchAddFloat(&(mDesignerParams.mDpTireLateralResistanceSlip), "slip steering", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 500.0f );
-    radDbgWatchAddFloat(&(mDesignerParams.mDpEBrakeEffect), "ebrake effect", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 1.0f );
+    radDbgWatchAddFloat(&(mDesignerParams.mDpMass), "mass", mName, DebugWatchVehicleTuningCallback,
+                        (void *) this, 0.0f, 10000.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpGasScale), "gas scale", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 30.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpSlipGasScale), "slip gas scale", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 30.0f);
 
-    radDbgWatchAddFloat(&(mDesignerParams.mDpTireLateralResistanceSlipNoEBrake), "slip steering without ebrake", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 500.0f );
-    radDbgWatchAddFloat(&(mDesignerParams.mDpSlipEffectNoEBrake), "slip effect without ebrake", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 1.0f );
+    radDbgWatchAddFloat(&(mDesignerParams.mDpHighSpeedGasScale), "high speed gas scale", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 30.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpGasScaleSpeedThreshold), "gas scale threshold", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 1.0f);
 
-    radDbgWatchAddFloat(&(mDesignerParams.mDpCMOffset.x), "cmoffset x", mName, DebugWatchVehicleTuningCallback, (void*)this, -1.0f, 1.0f );
-    radDbgWatchAddFloat(&(mDesignerParams.mDpCMOffset.y), "cmoffset y", mName, DebugWatchVehicleTuningCallback, (void*)this, -1.0f, 1.0f );
-    radDbgWatchAddFloat(&(mDesignerParams.mDpCMOffset.z), "cmoffset z", mName, DebugWatchVehicleTuningCallback, (void*)this, -1.0f, 1.0f );
+    radDbgWatchAddFloat(&(mDesignerParams.mDpBrakeScale), "brake scale", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 30.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpTopSpeedKmh), "top speed kmh", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 300.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpMaxWheelTurnAngle), "max wheel turn angle", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 55.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpHighSpeedSteeringDrop), "high speed steering drop",
+                        mName, DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 1.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpTireLateralStaticGrip), "tire grip", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 15.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpTireLateralResistanceNormal), "normal steering", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 500.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpTireLateralResistanceSlip), "slip steering", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 500.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpEBrakeEffect), "ebrake effect", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 1.0f);
 
-    radDbgWatchAddFloat(&(mDesignerParams.mDpSuspensionLimit), "suspension limit", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 1.0f );
-    radDbgWatchAddFloat(&(mDesignerParams.mDpSpringk), "spring k", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 1.0f );
-    radDbgWatchAddFloat(&(mDesignerParams.mDpDamperc), "damper c", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 1.0f );
-    
-    radDbgWatchAddFloat(&(mDesignerParams.mDpSuspensionYOffset), "suspension Y Offset", mName, DebugWatchVehicleTuningCallback, (void*)this, -1.0f, 1.0f );
+    radDbgWatchAddFloat(&(mDesignerParams.mDpTireLateralResistanceSlipNoEBrake),
+                        "slip steering without ebrake", mName, DebugWatchVehicleTuningCallback,
+                        (void *) this, 0.0f, 500.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpSlipEffectNoEBrake), "slip effect without ebrake",
+                        mName, DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 1.0f);
 
-    radDbgWatchAddFloat(&(mDesignerParams.mDpBurnoutRange), "burnout range", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 1.0f );
-    radDbgWatchAddFloat(&(mDesignerParams.mDpMaxSpeedBurstTime), "max speed burst time", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 10.0f );
-    radDbgWatchAddFloat(&(mDesignerParams.mDpDonutTorque), "donut torque", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 20.0f );
+    radDbgWatchAddFloat(&(mDesignerParams.mDpCMOffset.x), "cmoffset x", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, -1.0f, 1.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpCMOffset.y), "cmoffset y", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, -1.0f, 1.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpCMOffset.z), "cmoffset z", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, -1.0f, 1.0f);
 
-    radDbgWatchAddFloat(&(mDesignerParams.mDpWeebleOffset), "weeble offset", mName, DebugWatchVehicleTuningCallback, (void*)this, -3.0f, 3.0f );
+    radDbgWatchAddFloat(&(mDesignerParams.mDpSuspensionLimit), "suspension limit", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 1.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpSpringk), "spring k", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 1.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpDamperc), "damper c", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 1.0f);
 
-    radDbgWatchAddFloat(&(mDesignerParams.mDpWheelieRange), "wheelie range", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 1.0f );
-    radDbgWatchAddFloat(&(mDesignerParams.mDpWheelieYOffset), "wheelie Y offset", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, 2.0f );
-    radDbgWatchAddFloat(&(mDesignerParams.mDpWheelieZOffset), "wheelie Z offset", mName, DebugWatchVehicleTuningCallback, (void*)this, 0.0f, -2.0f );
+    radDbgWatchAddFloat(&(mDesignerParams.mDpSuspensionYOffset), "suspension Y Offset", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, -1.0f, 1.0f);
 
-    radDbgWatchAddFunction( "Inflict Damage Hood", &InflictDamageHoodCallback, (void*)this, mName );
-    radDbgWatchAddFunction( "Inflict Damage Back", &InflictDamageBackCallback, (void*)this, mName );
-    radDbgWatchAddFunction( "Inflict Damage Driver Side", &InflictDamageDriverSideCallback, (void*)this, mName );
-    radDbgWatchAddFunction( "Inflict Damage Passenger Side", &InflictDamagePassengerSideCallback, (void*)this, mName );
+    radDbgWatchAddFloat(&(mDesignerParams.mDpBurnoutRange), "burnout range", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 1.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpMaxSpeedBurstTime), "max speed burst time", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 10.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpDonutTorque), "donut torque", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 20.0f);
+
+    radDbgWatchAddFloat(&(mDesignerParams.mDpWeebleOffset), "weeble offset", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, -3.0f, 3.0f);
+
+    radDbgWatchAddFloat(&(mDesignerParams.mDpWheelieRange), "wheelie range", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 1.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpWheelieYOffset), "wheelie Y offset", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, 2.0f);
+    radDbgWatchAddFloat(&(mDesignerParams.mDpWheelieZOffset), "wheelie Z offset", mName,
+                        DebugWatchVehicleTuningCallback, (void *) this, 0.0f, -2.0f);
+
+    radDbgWatchAddFunction("Inflict Damage Hood", &InflictDamageHoodCallback, (void *) this, mName);
+    radDbgWatchAddFunction("Inflict Damage Back", &InflictDamageBackCallback, (void *) this, mName);
+    radDbgWatchAddFunction("Inflict Damage Driver Side", &InflictDamageDriverSideCallback,
+                           (void *) this, mName);
+    radDbgWatchAddFunction("Inflict Damage Passenger Side", &InflictDamagePassengerSideCallback,
+                           (void *) this, mName);
 
 }
 
@@ -1375,31 +1302,26 @@ void Vehicle::SetupRadDebugWatchStuff()
 // Return:      Vehicle
 //
 //=============================================================================
-Vehicle::~Vehicle()
-{
-    if(GetGameplayManager()->GetCurrentVehicle() == this)
-    {
+Vehicle::~Vehicle() {
+    if (GetGameplayManager()->GetCurrentVehicle() == this) {
         GetGameplayManager()->UnregisterVehicleHUDIcon();
     }
 
     delete mGeometryVehicle;
-    
+
     delete mPhysicsLocomotion;
     delete mTrafficLocomotion;
 
     int i;
-    for(i = 0; i < 4; i++)
-    {
+    for (i = 0; i < 4; i++) {
         delete mWheels[i];
         mSuspensionJointDrivers[i]->Release();
 
         // TODO - need to wrap these somehow in case they don't exist?
-        if(mInertialJointDrivers[i])
-        {
+        if (mInertialJointDrivers[i]) {
             mInertialJointDrivers[i]->Release();
         }
-        if(mPhysicsJointMatrixModifiers[i])
-        {
+        if (mPhysicsJointMatrixModifiers[i]) {
             mPhysicsJointMatrixModifiers[i]->Release();
         }
 
@@ -1407,11 +1329,10 @@ Vehicle::~Vehicle()
 
     delete[] mGearRatios;
     delete[] mJointIndexToWheelMapping;
-    if(mJointIndexToInertialJointDriverMapping)
-    {
-        delete[] mJointIndexToInertialJointDriverMapping;        
-    }     
-      
+    if (mJointIndexToInertialJointDriverMapping) {
+        delete[] mJointIndexToInertialJointDriverMapping;
+    }
+
     // these moved to a method that can be called from VehicleCentral::RemoveVehicleFromActiveList    
     //RemoveSelfFromCollisionManager();
     //GetWorldPhysicsManager()->FreeCollisionAreaIndex(mCollisionAreaIndex);
@@ -1420,14 +1341,13 @@ Vehicle::~Vehicle()
     mGroundPlaneWallVolume->Release();
     mGroundPlanePhysicsProperties->Release();
     mPhysicsProperties->Release();
-    
-    if(mRootMatrixDriver)
-    {
+
+    if (mRootMatrixDriver) {
         mRootMatrixDriver->Release();
     }
-    
+
     mPoseEngine->Release();
-    
+
     mGroundPlaneSimState->Release();
 
     //p3d::inventory->SelectSection("Level");
@@ -1439,34 +1359,30 @@ Vehicle::~Vehicle()
     tRefCounted::Release(mSimStateArticulatedOutOfCar);
 
 
-    int id = mpEventLocator->GetData();    
-    GetActionButtonManager()->RemoveActionByIndex( id );
-    
+    int id = mpEventLocator->GetData();
+    GetActionButtonManager()->RemoveActionByIndex(id);
+
 
     mpEventLocator->Release();
 
-    if(mpDriver)
-    {
+    if (mpDriver) {
         // DO NOT remove a pedestrian manually! 
         // We need them for recycling within the level. 
-        if( mpDriver->GetRole() != Character::ROLE_PEDESTRIAN )
-        {
-           GetCharacterManager()->RemoveCharacter(mpDriver);
+        if (mpDriver->GetRole() != Character::ROLE_PEDESTRIAN) {
+            GetCharacterManager()->RemoveCharacter(mpDriver);
         }
         tRefCounted::Release(mpDriver);
     }
 
     GetCharacterManager()->ClearTargetVehicle(this);
 
-    rAssert( mName != NULL );
+    rAssert(mName != NULL);
     delete[] mName;
 
-    if(mVehicleEventListener)
-    {
+    if (mVehicleEventListener) {
         delete mVehicleEventListener;
     }
 }
-
 
 
 //=============================================================================
@@ -1479,20 +1395,17 @@ Vehicle::~Vehicle()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::CreateLocomotions()
-{    
-MEMTRACK_PUSH_GROUP( "Vehicle" );
+void Vehicle::CreateLocomotions() {
+    MEMTRACK_PUSH_GROUP("Vehicle");
     // is this vehicle being setup for A or B?  
     GameMemoryAllocator gma = GetGameplayManager()->GetCurrentMissionHeap();
     mPhysicsLocomotion = new(gma)PhysicsLocomotion(this);
     mTrafficLocomotion = new(gma)TrafficLocomotion(this);
 
     //?
-    SetLocomotion( mLoco );
-MEMTRACK_POP_GROUP( "Vehicle" );
+    SetLocomotion(mLoco);
+    MEMTRACK_POP_GROUP("Vehicle");
 }
-
-
 
 
 //=============================================================================
@@ -1505,45 +1418,43 @@ MEMTRACK_POP_GROUP( "Vehicle" );
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::InitWheelsAndLinkSuspensionJointDrivers()
-{
-MEMTRACK_PUSH_GROUP( "Vehicle" );
-    CollisionObject* collObj = mSimStateArticulated->GetCollisionObject();        
-    CollisionVolume* collVol = collObj->GetCollisionVolume();
+void Vehicle::InitWheelsAndLinkSuspensionJointDrivers() {
+    MEMTRACK_PUSH_GROUP("Vehicle");
+    CollisionObject *collObj = mSimStateArticulated->GetCollisionObject();
+    CollisionVolume *collVol = collObj->GetCollisionVolume();
     rAssert(collVol);
 
     GameMemoryAllocator gma = GetGameplayManager()->GetCurrentMissionHeap();
 
     int i;
-    for(i = 0; i < 4; i++)
-    {
-        CollisionVolume* sub = collVol->GetSubCollisionVolume(mWheelToJointIndexMapping[i], true);  // true because we only care about the local sub volume
+    for (i = 0; i < 4; i++) {
+        CollisionVolume *sub = collVol->GetSubCollisionVolume(mWheelToJointIndexMapping[i],
+                                                              true);  // true because we only care about the local sub volume
 
         // sub should be of type SphereVolumeType
         rAssert(sub->Type() == SphereVolumeType);
-    
-        float radius = ((SphereVolume*)sub)->GetRadius();
+
+        float radius = ((SphereVolume *) sub)->GetRadius();
 
         mWheels[i] = new(gma)Wheel;
 
         // now we can init the goddamn wheel
-        if(i < 2)   // todo - way to NOT hardcode this for 4 wheels????
+        if (i < 2)   // todo - way to NOT hardcode this for 4 wheels????
         {
             mWheels[i]->Init(this, i, radius, false, true);
-        }
-        else
-        {            
+        } else {
             mWheels[i]->Init(this, i, radius, true, false);
             // try all wheel drive
             //mWheels[i]->Init(this, i, radius, true, true);
         }
 
-        mSuspensionJointDrivers[i] = new(gma)SuspensionJointDriver(mWheels[i], mWheelToJointIndexMapping[i]);
+        mSuspensionJointDrivers[i] = new(gma)SuspensionJointDriver(mWheels[i],
+                                                                   mWheelToJointIndexMapping[i]);
 
         mSuspensionJointDrivers[i]->AddRef();
         mPoseEngine->AddPoseDriver(1, mSuspensionJointDrivers[i]);
     }
-MEMTRACK_POP_GROUP("Vehicle");
+    MEMTRACK_POP_GROUP("Vehicle");
 }
 
 
@@ -1557,22 +1468,21 @@ MEMTRACK_POP_GROUP("Vehicle");
 // Return:      void 
 //
 //=============================================================================
-bool Vehicle::InitFlappingJoints()
-{
-  
-    tPose* p3dPose = mGeometryVehicle->GetP3DPose();
-    rAssert(p3dPose);    
+bool Vehicle::InitFlappingJoints() {
 
-    GameMemoryAllocator gma = GetGameplayManager()->GetCurrentMissionHeap(); 
+    tPose *p3dPose = mGeometryVehicle->GetP3DPose();
+    rAssert(p3dPose);
+
+    GameMemoryAllocator gma = GetGameplayManager()->GetCurrentMissionHeap();
     mJointIndexToInertialJointDriverMapping = new(gma) int[p3dPose->GetNumJoint()];
 
     // TODO ?
     // ok to use memset?
-    memset(mJointIndexToInertialJointDriverMapping, -1, (sizeof(int) * p3dPose->GetNumJoint()) );
+    memset(mJointIndexToInertialJointDriverMapping, -1, (sizeof(int) * p3dPose->GetNumJoint()));
 
 
     int count = 0;
-    
+
     rmt::Vector axis;
     rmt::Vector rotAxis;
 
@@ -1584,8 +1494,7 @@ bool Vehicle::InitFlappingJoints()
     //-----------------
     axis.Set(0.0f, 0.0f, -1.0f);
     rotAxis.Set(0.0f, 1.0f, 0.0f);
-    if(AddFlappingJoint("DoorDTrans", "DoorDRot", axis, rotAxis, count, &mDoorDJoint))
-    {         
+    if (AddFlappingJoint("DoorDTrans", "DoorDRot", axis, rotAxis, count, &mDoorDJoint)) {
         // override default settings
 
         mInertialJointDrivers[count]->SetSpeedRate(15.0f);
@@ -1601,8 +1510,7 @@ bool Vehicle::InitFlappingJoints()
     //--------------------
     count++;
     rotAxis.Set(0.0f, -1.0f, 0.0f);
-    if(AddFlappingJoint("DoorPTrans", "DoorPRot", axis, rotAxis, count, &mDoorPJoint))
-    {       
+    if (AddFlappingJoint("DoorPTrans", "DoorPRot", axis, rotAxis, count, &mDoorPJoint)) {
         mInertialJointDrivers[count]->SetSpeedRate(15.0f);
         mInertialJointDrivers[count]->SetAccelRate(180.0f);
         mInertialJointDrivers[count]->SetGravityRate(0.5f);
@@ -1617,8 +1525,7 @@ bool Vehicle::InitFlappingJoints()
     count++;
     axis.Set(0.0f, 0.0f, 1.0f);
     rotAxis.Set(-1.0f, 0.0f, 0.0f);
-    if(AddFlappingJoint("HoodTrans", "HoodRot", axis, rotAxis, count, &mHoodJoint))
-    {        
+    if (AddFlappingJoint("HoodTrans", "HoodRot", axis, rotAxis, count, &mHoodJoint)) {
         mInertialJointDrivers[count]->SetSpeedRate(3.0f);
         mInertialJointDrivers[count]->SetAccelRate(300.0f);
         mInertialJointDrivers[count]->SetGravityRate(1.0f);
@@ -1633,8 +1540,7 @@ bool Vehicle::InitFlappingJoints()
     count++;
     axis.Set(0.0f, 0.0f, -1.0f);
     rotAxis.Set(1.0f, 0.0f, 0.0f);
-    if(AddFlappingJoint("TrunkTrans", "TrunkRot", axis, rotAxis, count, &mTrunkJoint))
-    {
+    if (AddFlappingJoint("TrunkTrans", "TrunkRot", axis, rotAxis, count, &mTrunkJoint)) {
         mInertialJointDrivers[count]->SetSpeedRate(12.0f);
         mInertialJointDrivers[count]->SetAccelRate(180.0f);
         mInertialJointDrivers[count]->SetGravityRate(1.0f);
@@ -1658,27 +1564,27 @@ bool Vehicle::InitFlappingJoints()
 // Return:      void 
 //
 //=============================================================================
-bool Vehicle::AddFlappingJoint(const char* transJointName, const char* rotJointName, rmt::Vector& axis, rmt::Vector& rotAxis, int count, int* collisionJointIndex)
-{
-MEMTRACK_PUSH_GROUP( "Vehicle" );
+bool
+Vehicle::AddFlappingJoint(const char *transJointName, const char *rotJointName, rmt::Vector &axis,
+                          rmt::Vector &rotAxis, int count, int *collisionJointIndex) {
+    MEMTRACK_PUSH_GROUP("Vehicle");
 
     //SkeletonInfo* skelInfo = p3d::find<SkeletonInfo>(mName);
-    SkeletonInfo* skelInfo = mPhObj->GetSkeletonInfo ();
+    SkeletonInfo *skelInfo = mPhObj->GetSkeletonInfo();
     rAssert(skelInfo);
 
     // release debugging:
-    if(skelInfo == 0)
-    {
+    if (skelInfo == 0) {
         char buffy[64];
         sprintf(buffy, "can't find skelInfo for %s\n", mName);
         rReleaseString(buffy);
     }
 
-    
-    tPose* p3dPose = mGeometryVehicle->GetP3DPose();
+
+    tPose *p3dPose = mGeometryVehicle->GetP3DPose();
     rAssert(p3dPose);
 
-    
+
     int indexTrans;
     int indexRot;
 
@@ -1687,17 +1593,16 @@ MEMTRACK_PUSH_GROUP( "Vehicle" );
 
     *collisionJointIndex = indexRot;
 
-    if(indexTrans == -1 || indexRot == -1)
-    {
-        MEMTRACK_POP_GROUP( "Vehicle" );
+    if (indexTrans == -1 || indexRot == -1) {
+        MEMTRACK_POP_GROUP("Vehicle");
         return false;
     }
 
-    #ifdef RAD_DEBUG    // wrap in define?
+#ifdef RAD_DEBUG    // wrap in define?
     tPose::Joint* transJoint = p3dPose->GetJoint(indexTrans);
     tPose::Joint* rotJoint = p3dPose->GetJoint(indexRot);
     rAssert(rotJoint->parent == transJoint);
-    #endif
+#endif
 
     skelInfo->SetJointAxis(indexTrans, axis, 1.0f);
     skelInfo->SetJointAxis(indexRot, axis, 1.0f);
@@ -1706,8 +1611,8 @@ MEMTRACK_PUSH_GROUP( "Vehicle" );
 
     // add new driver...
     mJointIndexToInertialJointDriverMapping[indexRot] = count;
-    
-    PhysicsJoint* phizJoint = mPhObj->GetJoint(indexRot);
+
+    PhysicsJoint *phizJoint = mPhObj->GetJoint(indexRot);
     rAssert(phizJoint);
 
     // test
@@ -1715,28 +1620,28 @@ MEMTRACK_PUSH_GROUP( "Vehicle" );
 
 
 
-    GameMemoryAllocator gma = GetGameplayManager()->GetCurrentMissionHeap(); 
+    GameMemoryAllocator gma = GetGameplayManager()->GetCurrentMissionHeap();
     mInertialJointDrivers[count] = new(gma) PhysicsJointInertialEffector(phizJoint);
-    
+
     mInertialJointDrivers[count]->AddRef();
 
     // defaults
     // override shortly after this...
-    
+
     mInertialJointDrivers[count]->SetSpeedRate(15.0f);
     //mInertialJointDrivers[count]->SetAccelRate(20.0f);
     mInertialJointDrivers[count]->SetAccelRate(180.0f);
     mInertialJointDrivers[count]->SetGravityRate(1.0f);
     mInertialJointDrivers[count]->SetCentrifugalRate(2.0f);
-    
+
     // new
     // start out disabled
-    
+
     mPhObj->GetJoint(indexRot)->SetInvStiffness(0.0f);
     mPhObj->GetJoint(indexRot)->ResetDeformation();
 
-    mInertialJointDrivers[count]->SetIsEnabled(false); 
-    
+    mInertialJointDrivers[count]->SetIsEnabled(false);
+
     // debug
     //mInertialJointDrivers[count]->SetIsEnabled(true); 
 
@@ -1755,7 +1660,7 @@ MEMTRACK_PUSH_GROUP( "Vehicle" );
 
     // also need this other jointmatrixmodifier thing...
     mPhysicsJointMatrixModifiers[count] = new(gma) PhysicsJointMatrixModifier(phizJoint);
-    
+
     mPhysicsJointMatrixModifiers[count]->AddRef();
 
     mPoseEngine->AddPoseDriver(2, mPhysicsJointMatrixModifiers[count]);
@@ -1763,7 +1668,6 @@ MEMTRACK_PUSH_GROUP( "Vehicle" );
     MEMTRACK_POP_GROUP("Vehicle");
     return true;
 }
-
 
 
 //=============================================================================
@@ -1776,16 +1680,15 @@ MEMTRACK_PUSH_GROUP( "Vehicle" );
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::InitGears()
-{
+void Vehicle::InitGears() {
     mNumGears = 6;  // TODO - not sure we actually want designers to worry about this?
-                    // maybe, they can just choose number of gears and there will be pre-defined ratios??
-                    //
-                    // recall: all this gear shit is just for sound and does not affect performance
+    // maybe, they can just choose number of gears and there will be pre-defined ratios??
+    //
+    // recall: all this gear shit is just for sound and does not affect performance
 
     GameMemoryAllocator gma = GetGameplayManager()->GetCurrentMissionHeap();
     mGearRatios = new(gma) float[mNumGears];
-    
+
     mFinalDriveRatio = 3.42f;
 
     mGearRatios[0] = 2.97f; // 1st
@@ -1811,7 +1714,7 @@ void Vehicle::InitGears()
     VI..........0.56..........39.2..........155 mph (4000 rpm)
 
 */
-    
+
 
 }
 
@@ -1826,17 +1729,17 @@ void Vehicle::InitGears()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetupPhysicsProperties()
-{
+void Vehicle::SetupPhysicsProperties() {
     // called when we first create the sim state, as well as when 
     // we set new designer paramters.
 
     //float volume = mPhObj->GetVolume();
-    
-    float volume = ((ArticulatedPhysicsObject*)(mSimStateArticulatedInCar->GetSimulatedObject(-1)))->GetVolume();
-    
+
+    float volume = ((ArticulatedPhysicsObject * )(
+            mSimStateArticulatedInCar->GetSimulatedObject(-1)))->GetVolume();
+
     // TODO - verify this is coming back in the correct units
-    
+
     // can't set mass directly
     float density = mDesignerParams.mDpMass / volume;
 
@@ -1844,36 +1747,35 @@ void Vehicle::SetupPhysicsProperties()
     //mPhysicsProperties->SetFrictCoeffCGS(0.8f);
     //mPhysicsProperties->SetRestCoeffCGS(1.05f);
     //mPhysicsProperties->SetTangRestCoeffCGS(0.0f);
-    
+
     // these values slide you along walls a little nicer
     mPhysicsProperties->SetFrictCoeffCGS(0.3f);
     mPhysicsProperties->SetRestCoeffCGS(1.15f);
     mPhysicsProperties->SetTangRestCoeffCGS(-0.6f);
-    
-    
+
+
     //mPhysicsProperties->SetDensityCGS(density / 1000000.0f); // our density is in g / m^3
     mPhysicsProperties->SetDensityCGS(density); // our density is in g / m^3
 
     //mSimStateArticulated->SetPhysicsProperties(mPhysicsProperties);
-    
+
     mSimStateArticulatedInCar->SetPhysicsProperties(mPhysicsProperties);
-    if(mSimStateArticulatedOutOfCar)
-    {
+    if (mSimStateArticulatedOutOfCar) {
         mSimStateArticulatedOutOfCar->SetPhysicsProperties(mPhysicsProperties);
     }
 
-    mPhObj->SetInvTWDissip(0);    
+    mPhObj->SetInvTWDissip(0);
     mPhObj->SetDissipationInternalRate(0);
     mPhObj->SetDissipationDeformationRate(0); //no good Martin
 
-    
+
     // TODO - where to put this!
     // should i even use it?
-    
+
     // TODO
     // temp hack to fix lack of phizsim
 
-    const rmt::Vector& gravity = GetWorldPhysicsManager()->mSimEnvironment->Gravity();// this or CGS ?
+    const rmt::Vector &gravity = GetWorldPhysicsManager()->mSimEnvironment->Gravity();// this or CGS ?
 
     //float gravity_y = 9.81f;
     float gravity_y = -1.0f * gravity.y;
@@ -1884,17 +1786,19 @@ void Vehicle::SetupPhysicsProperties()
 
     // new thing aimed at minimizing strage whipping effects on the car when the wheels bottom out
     // and you get insane values calculated for suspension force
-    mSuspensionMaxValue = mDesignerParams.mDpMass * gravity_y * 2.5f;   // TODO - find the right value
+    mSuspensionMaxValue =
+            mDesignerParams.mDpMass * gravity_y * 2.5f;   // TODO - find the right value
 
-    
+
     mCMOffset = mOriginalCMOffset;
 
     mCMOffset.Add(mDesignerParams.mDpCMOffset);
-   
-    ((ArticulatedPhysicsObject*)(mSimStateArticulatedInCar->GetSimulatedObject(-1)))->SetExternalCMOffset(mCMOffset);
-    
+
+    ((ArticulatedPhysicsObject * )(
+            mSimStateArticulatedInCar->GetSimulatedObject(-1)))->SetExternalCMOffset(mCMOffset);
+
     //mPhObj->SetExternalCMOffset(mCMOffset);
-    
+
 
 }
 
@@ -1909,45 +1813,45 @@ void Vehicle::SetupPhysicsProperties()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::InitGroundPlane()
-{
-MEMTRACK_PUSH_GROUP( "Vehicle" );
+void Vehicle::InitGroundPlane() {
+    MEMTRACK_PUSH_GROUP("Vehicle");
 
     GameMemoryAllocator gma = GetGameplayManager()->GetCurrentMissionHeap();
-    
+
     rmt::Vector p(0.0f, 0.0f, 0.0f);
     rmt::Vector n(0.0f, 1.0f, 0.0f);
 
-    HeapMgr()->PushHeap (gma);
+    HeapMgr()->PushHeap(gma);
 
     mGroundPlaneWallVolume = new WallVolume(p, n);
     mGroundPlaneWallVolume->AddRef();
 
-    mGroundPlaneSimState = (sim::ManualSimState*)(SimState::CreateManualSimState(mGroundPlaneWallVolume));
-    mGroundPlaneSimState->AddRef(); 
+    mGroundPlaneSimState = (sim::ManualSimState * )(
+            SimState::CreateManualSimState(mGroundPlaneWallVolume));
+    mGroundPlaneSimState->AddRef();
 
     mGroundPlaneSimState->GetCollisionObject()->SetManualUpdate(true);
     mGroundPlaneSimState->GetCollisionObject()->SetAutoPair(false);
     mGroundPlaneSimState->GetCollisionObject()->SetIsStatic(true);
-    
+
     char buffy[128];
     sprintf(buffy, "%s_groundplane", mName);
 
     mGroundPlaneSimState->GetCollisionObject()->SetName(buffy);
 
     mGroundPlaneSimState->mAIRefIndex = this->GetGroundPlaneAIRef();
-    mGroundPlaneSimState->mAIRefPointer = (void*)this;
-   
+    mGroundPlaneSimState->mAIRefPointer = (void *) this;
+
     mGroundPlanePhysicsProperties = new PhysicsProperties;
     mGroundPlanePhysicsProperties->AddRef();
 
     mGroundPlanePhysicsProperties->SetFrictCoeffCGS(0.8f);
     mGroundPlanePhysicsProperties->SetRestCoeffCGS(1.15f);
     mGroundPlanePhysicsProperties->SetTangRestCoeffCGS(0.0f);
-   
+
     mGroundPlaneSimState->SetPhysicsProperties(mGroundPlanePhysicsProperties);
-    
-    HeapMgr()->PopHeap (gma);
+
+    HeapMgr()->PopHeap(gma);
 
 /*
 
@@ -1987,14 +1891,12 @@ MEMTRACK_PUSH_GROUP( "Vehicle" );
     mGroundPlaneSimState->SetPhysicsProperties(mGroundPlanePhysicsProperties);
     
     
-*/  
-    
-    
-    
-MEMTRACK_POP_GROUP("Vehicle");
+*/
+
+
+
+    MEMTRACK_POP_GROUP("Vehicle");
 }
-
-
 
 
 //=============================================================================
@@ -2007,21 +1909,20 @@ MEMTRACK_POP_GROUP("Vehicle");
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::FetchWheelMapping()
-{
+void Vehicle::FetchWheelMapping() {
     // should have already done these asserts, but just in case things
     // get moved around a bit...
 
     rAssert(mGeometryVehicle);
 
-    tPose* p3dPose = mGeometryVehicle->GetP3DPose();
+    tPose *p3dPose = mGeometryVehicle->GetP3DPose();
     rAssert(p3dPose);
 
-    GameMemoryAllocator gma = GetGameplayManager()->GetCurrentMissionHeap();  
+    GameMemoryAllocator gma = GetGameplayManager()->GetCurrentMissionHeap();
     mJointIndexToWheelMapping = new(gma) int[p3dPose->GetNumJoint()];
-   
-    memset(mJointIndexToWheelMapping, -1, (sizeof(int) * p3dPose->GetNumJoint()) );
-    
+
+    memset(mJointIndexToWheelMapping, -1, (sizeof(int) * p3dPose->GetNumJoint()));
+
     //
     // naming convention so far:
     //
@@ -2034,8 +1935,7 @@ void Vehicle::FetchWheelMapping()
 
 
     int i;
-    for(i = 0; i < 4; i++)
-    {
+    for (i = 0; i < 4; i++) {
         // TODO!
         // safe to use sprintf ??
         sprintf(buffy, "w%d", i);
@@ -2044,7 +1944,7 @@ void Vehicle::FetchWheelMapping()
         // for convenience we can look up either way....
         mJointIndexToWheelMapping[mWheelToJointIndexMapping[i]] = i;
 
-        tPose::Joint* joint = p3dPose->GetJoint(mWheelToJointIndexMapping[i]);
+        tPose::Joint *joint = p3dPose->GetJoint(mWheelToJointIndexMapping[i]);
 
         // fill mSuspensionRestPoints[4] with the transform row of the joint object space
         // matrix
@@ -2061,39 +1961,32 @@ void Vehicle::FetchWheelMapping()
 
     // passenger/driver locations
 
-    int passengerIndex = p3dPose->FindJointIndex( "pl" ); 
-    int driverIndex = p3dPose->FindJointIndex( "dl" ); 
+    int passengerIndex = p3dPose->FindJointIndex("pl");
+    int driverIndex = p3dPose->FindJointIndex("dl");
 
-    if(passengerIndex != -1)
-    {
-        tPose::Joint* joint = p3dPose->GetJoint( passengerIndex );
+    if (passengerIndex != -1) {
+        tPose::Joint *joint = p3dPose->GetJoint(passengerIndex);
         mPassengerLocation = joint->objectMatrix.Row(3);
-    }
-    else
-    {
-        mPassengerLocation.Set( 0.5f, -0.6f, 0.01f );
+    } else {
+        mPassengerLocation.Set(0.5f, -0.6f, 0.01f);
     }
 
-    if(driverIndex != -1)
-    {
-        tPose::Joint* joint = p3dPose->GetJoint( driverIndex );
+    if (driverIndex != -1) {
+        tPose::Joint *joint = p3dPose->GetJoint(driverIndex);
         mDriverLocation = joint->objectMatrix.Row(3);
+    } else {
+        mDriverLocation.Set(-0.5f, -0.6f, 0.01f);
     }
-    else
-    {
-        mDriverLocation.Set( -0.5f, -0.6f, 0.01f );
-    }
-    
-      
+
+
     mWheelBase = mSuspensionRestPoints[3].z - mSuspensionRestPoints[1].z;
-        
+
     // smoke location
 
     //int smokeIndex = p3dPose->FindJointIndex("smoke");
     int smokeIndex = p3dPose->FindJointIndex("sl");
-    tPose::Joint* joint = p3dPose->GetJoint(smokeIndex);
-    if (joint)
-    {
+    tPose::Joint *joint = p3dPose->GetJoint(smokeIndex);
+    if (joint) {
         mSmokeOffset = joint->objectMatrix.Row(3);
     }
 
@@ -2110,12 +2003,11 @@ void Vehicle::FetchWheelMapping()
 // Return:      rmt
 //
 //=============================================================================
-rmt::Vector Vehicle::GetWheel0Offset()
-{
+rmt::Vector Vehicle::GetWheel0Offset() {
     // this is not accurate as wheel is lurching around but should be close enough for smoke effects?
     rmt::Vector temp = mSuspensionRestPoints[0];
     temp.y -= mWheels[0]->mRadius;
-    return temp;   
+    return temp;
 }
 
 
@@ -2129,11 +2021,10 @@ rmt::Vector Vehicle::GetWheel0Offset()
 // Return:      rmt
 //
 //=============================================================================
-rmt::Vector Vehicle::GetWheel1Offset()
-{
+rmt::Vector Vehicle::GetWheel1Offset() {
     rmt::Vector temp = mSuspensionRestPoints[1];
     temp.y -= mWheels[1]->mRadius;
-    return temp;   
+    return temp;
 }
 
 //=============================================================================
@@ -2146,32 +2037,35 @@ rmt::Vector Vehicle::GetWheel1Offset()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::InitSimState(SimEnvironment* se)
-{
-MEMTRACK_PUSH_GROUP( "Vehicle" );
+void Vehicle::InitSimState(SimEnvironment *se) {
+    MEMTRACK_PUSH_GROUP("Vehicle");
     CreatePoseEngine();
     rAssert(mPoseEngine);
 
     // The section stuff here is a hack.
     // Tracked to ATG as bug 1259.
     //
-    p3d::inventory->PushSection ();
-    p3d::inventory->AddSection (SKELCACHE);
-    p3d::inventory->SelectSection (SKELCACHE);
+    p3d::inventory->PushSection();
+    p3d::inventory->AddSection(SKELCACHE);
+    p3d::inventory->SelectSection(SKELCACHE);
     //mSimStateArticulated  = SimStateArticulated::CreateSimStateArticulated(mName, mPoseEngine->GetPose(), SimStateAttribute_Default, NULL);
-    
-    SimStateArticulated* newSimState = SimStateArticulated::CreateSimStateArticulated(mName, mPoseEngine->GetPose(), SimStateAttribute_Default, NULL);
-    rAssert( mSimStateArticulatedInCar == NULL );
-    tRefCounted::Assign( mSimStateArticulatedInCar, newSimState );
-    rAssert( mSimStateArticulatedInCar != NULL );
+
+    SimStateArticulated *newSimState = SimStateArticulated::CreateSimStateArticulated(mName,
+                                                                                      mPoseEngine->GetPose(),
+                                                                                      SimStateAttribute_Default,
+                                                                                      NULL);
+    rAssert(mSimStateArticulatedInCar == NULL);
+    tRefCounted::Assign(mSimStateArticulatedInCar, newSimState);
+    rAssert(mSimStateArticulatedInCar != NULL);
 
 
     mSimStateArticulatedInCar->mAIRefIndex = PhysicsAIRef::redBrickVehicle;
 
-    mSimStateArticulatedInCar->mAIRefPointer = (void*)this;
+    mSimStateArticulatedInCar->mAIRefPointer = (void *) this;
 
 
-    ((ArticulatedPhysicsObject*)(mSimStateArticulatedInCar->GetSimulatedObject(-1)))->SetSimEnvironment(se);    
+    ((ArticulatedPhysicsObject * )(
+            mSimStateArticulatedInCar->GetSimulatedObject(-1)))->SetSimEnvironment(se);
 
 
 
@@ -2179,45 +2073,44 @@ MEMTRACK_PUSH_GROUP( "Vehicle" );
     // new test:    
     char buffy[128];
     sprintf(buffy, "%sBV", mName);
-    rAssert( mSimStateArticulatedOutOfCar == NULL );
-    mSimStateArticulatedOutOfCar = SimStateArticulated::CreateSimStateArticulated(buffy, mPoseEngine->GetPose(), SimStateAttribute_Default, NULL);
+    rAssert(mSimStateArticulatedOutOfCar == NULL);
+    mSimStateArticulatedOutOfCar = SimStateArticulated::CreateSimStateArticulated(buffy,
+                                                                                  mPoseEngine->GetPose(),
+                                                                                  SimStateAttribute_Default,
+                                                                                  NULL);
 
-    if(mSimStateArticulatedOutOfCar)
-    {
+    if (mSimStateArticulatedOutOfCar) {
 
         mSimStateArticulatedOutOfCar->AddRef();
         mSimStateArticulatedOutOfCar->mAIRefIndex = PhysicsAIRef::redBrickVehicle;
 
-        mSimStateArticulatedOutOfCar->mAIRefPointer = (void*)this;
-        ((ArticulatedPhysicsObject*)(mSimStateArticulatedOutOfCar->GetSimulatedObject(-1)))->SetSimEnvironment(se);    
-        
+        mSimStateArticulatedOutOfCar->mAIRefPointer = (void *) this;
+        ((ArticulatedPhysicsObject * )(
+                mSimStateArticulatedOutOfCar->GetSimulatedObject(-1)))->SetSimEnvironment(se);
+
     }
-    
-    
-    p3d::inventory->PopSection ();
+
+
+    p3d::inventory->PopSection();
 
     // finish initialization with this... then switch back
     mSimStateArticulated = mSimStateArticulatedInCar;
 
 
+    mPhObj = (ArticulatedPhysicsObject * )(mSimStateArticulated->GetSimulatedObject(-1));
 
-
-
-
-    mPhObj = (ArticulatedPhysicsObject*)(mSimStateArticulated->GetSimulatedObject(-1));
-    
     // fetch once only ever    
     // seven fucking days
     //mOriginalCMOffset = mPhObj->GetExternalCMOffset();
-    
+
     mOriginalCMOffset.x = 0.0f;
     mOriginalCMOffset.y = 0.0f;
     mOriginalCMOffset.z = 0.0f;
-      
 
 
     GameMemoryAllocator gma = GetGameplayManager()->GetCurrentMissionHeap();
-    mPhysicsProperties = new(gma) PhysicsProperties; // TODO - who owns - ie. who is responsible to delete
+    mPhysicsProperties = new(
+            gma) PhysicsProperties; // TODO - who owns - ie. who is responsible to delete
 
     mPhysicsProperties->AddRef();
 
@@ -2231,7 +2124,7 @@ MEMTRACK_PUSH_GROUP( "Vehicle" );
 
     sim::PhysicsJointMatrixModifier mPhysicsJointMatrixModifiers[4];
 */
-MEMTRACK_POP_GROUP( "Vehicle" );
+    MEMTRACK_POP_GROUP("Vehicle");
 }
 
 
@@ -2248,7 +2141,7 @@ MEMTRACK_POP_GROUP( "Vehicle" );
 /*
 void Vehicle::CreatePoseEngineOutOfCar()
 {
-MEMTRACK_PUSH_GROUP( "Vehicle" );
+MEMTRACK_PUSH_GROUP("Vehicle");
     // TODO - wtf?
     //const int PoseEngineSimPass = 1;
     const int PoseEngineSimPass = 2;
@@ -2282,28 +2175,27 @@ MEMTRACK_POP_GROUP();
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::CreatePoseEngine()
-{
-MEMTRACK_PUSH_GROUP( "Vehicle" );
+void Vehicle::CreatePoseEngine() {
+    MEMTRACK_PUSH_GROUP("Vehicle");
     // TODO - wtf?
     //const int PoseEngineSimPass = 1;
     const int PoseEngineSimPass = 2;
 
     rAssert(mGeometryVehicle);
 
-    
 
-    tPose* p3dPose = mGeometryVehicle->GetP3DPose();
+    tPose *p3dPose = mGeometryVehicle->GetP3DPose();
     rAssert(p3dPose);
 
     GameMemoryAllocator gma = GetGameplayManager()->GetCurrentMissionHeap();
-    mPoseEngine = new(gma) poser::PoseEngine(p3dPose, PoseEngineSimPass+1, p3dPose->GetNumJoint());
+    mPoseEngine = new(gma) poser::PoseEngine(p3dPose, PoseEngineSimPass + 1,
+                                             p3dPose->GetNumJoint());
     mRootMatrixDriver = new(gma) RootMatrixDriver(&mTransform);
 
-    mPoseEngine->AddRef();    
+    mPoseEngine->AddRef();
     mRootMatrixDriver->AddRef();
     //mPoseEngine->AddPoseDriver(1, mRootMatrixDriver);   // 0 is the pass
     mPoseEngine->AddPoseDriver(0, mRootMatrixDriver);   // 0 is the pass
 
-MEMTRACK_POP_GROUP("Vehicle");
+    MEMTRACK_POP_GROUP("Vehicle");
 }

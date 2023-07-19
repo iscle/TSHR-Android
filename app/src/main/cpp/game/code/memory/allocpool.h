@@ -28,87 +28,83 @@
 //
 //=============================================================================
 
-template <class T> class AllocPool
-{
-    public:
-        AllocPool( GameMemoryAllocator heap, unsigned int iPoolSize );
-        virtual ~AllocPool();
+template<class T>
+class AllocPool {
+public:
+    AllocPool(GameMemoryAllocator heap, unsigned int iPoolSize);
 
-        T* AllocateFromPool();
-        void ReturnToPool( unsigned int pItem );
-        
-    protected:
-        // override initialize if you have a different constructor
-        virtual void Initialize();
-        void Finalize();
+    virtual ~AllocPool();
 
-        GameMemoryAllocator GetHeap() { return( mHeap ); }
+    T *AllocateFromPool();
 
-    private:
+    void ReturnToPool(unsigned int pItem);
 
-        //Prevent wasteful constructor creation.
-        AllocPool( const AllocPool& pAllocPool );
-        AllocPool& operator=( const AllocPool& pAllocPool );
+protected:
+    // override initialize if you have a different constructor
+    virtual void Initialize();
 
-        GameMemoryAllocator mHeap;
+    void Finalize();
 
-        unsigned int mPoolIndex;
-        unsigned int miPoolSize;
+    GameMemoryAllocator GetHeap() { return (mHeap); }
 
-        T* mPool;
-        bool* mUsed;
+private:
+
+    //Prevent wasteful constructor creation.
+    AllocPool(const AllocPool &pAllocPool);
+
+    AllocPool &operator=(const AllocPool &pAllocPool);
+
+    GameMemoryAllocator mHeap;
+
+    unsigned int mPoolIndex;
+    unsigned int miPoolSize;
+
+    T *mPool;
+    bool *mUsed;
 };
 
-template <class T>
-AllocPool<T>::AllocPool( GameMemoryAllocator heap, unsigned int iPoolSize )
-{
+template<class T>
+AllocPool<T>::AllocPool(GameMemoryAllocator heap, unsigned int iPoolSize) {
     mHeap = heap;
     miPoolSize = iPoolSize;
     mPoolIndex = 0;
 
-    mPool = new(mHeap) T[ miPoolSize ];
-    mUsed = new(mHeap) bool[ miPoolSize ];
-    
+    mPool = new(mHeap) T[miPoolSize];
+    mUsed = new(mHeap) bool[miPoolSize];
+
     Initialize();
-   
+
 }
 
-template <class T>
-AllocPool<T>::~AllocPool()
-{
+template<class T>
+AllocPool<T>::~AllocPool() {
     Finalize();
-    
-    delete[] ( mHeap, mPool );
-    delete[] ( mHeap, mUsed );
+
+    delete[] (mHeap, mPool);
+    delete[] (mHeap, mUsed);
 }
 
-template <class T>
-T* AllocPool<T>::AllocateFromPool()
-{
+template<class T>
+T *AllocPool<T>::AllocateFromPool() {
     // if you hit this assert then your pool is too small
-    rAssert( mPoolIndex < miPoolSize );
+    rAssert(mPoolIndex < miPoolSize);
 
-    T* pItem = &mPool[ mPoolIndex ];
-    mUsed[ mPoolIndex ] = true;
+    T *pItem = &mPool[mPoolIndex];
+    mUsed[mPoolIndex] = true;
 
-    while(( mPoolIndex < miPoolSize ) && ( mUsed[ mPoolIndex ] ))
-    {
+    while ((mPoolIndex < miPoolSize) && (mUsed[mPoolIndex])) {
         mPoolIndex++;
     }
 
-    return( pItem );
+    return (pItem);
 }
 
-template <class T>
-void AllocPool<T>::ReturnToPool( unsigned int pItem )
-{
-    for( unsigned int i = 0; i < miPoolSize; i++ )
-    {
-        if( (unsigned int)&mPool[ i ] == pItem )
-        {
-            mUsed[ i ] = false;
-            if( i < mPoolIndex )
-            {
+template<class T>
+void AllocPool<T>::ReturnToPool(unsigned int pItem) {
+    for (unsigned int i = 0; i < miPoolSize; i++) {
+        if ((unsigned int) &mPool[i] == pItem) {
+            mUsed[i] = false;
+            if (i < mPoolIndex) {
                 mPoolIndex = i;
                 return;
             }
@@ -117,23 +113,20 @@ void AllocPool<T>::ReturnToPool( unsigned int pItem )
 
 }
 
-template <class T>
-void AllocPool<T>::Initialize()
-{
-    for( unsigned int i = 0; i < miPoolSize; i++ )
-    {
-        mUsed[ i ] = false;
+template<class T>
+void AllocPool<T>::Initialize() {
+    for (unsigned int i = 0; i < miPoolSize; i++) {
+        mUsed[i] = false;
     }
 }
 
-template <class T>
-void AllocPool<T>::Finalize()
-{
-/*    for( unsigned int i = 0; i < miPoolSize; i++ )
+template<class T>
+void AllocPool<T>::Finalize() {
+/*    for(unsigned int i = 0; i <miPoolSize; i++)
     {
-        if( mPool[ i ] == NULL )
+        if(mPool[ i ] == NULL)
         {
-            delete( mHeap, mPool[ i ] );
+            delete(mHeap, mPool[ i ]);
             mPool[ i ] = NULL;
         }
     }*/

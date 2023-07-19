@@ -7,52 +7,62 @@
 
 #include <render/culling/ISpatialProxy.h>
 
-class BoxPts : public ISpatialProxyAA
-{
+class BoxPts : public ISpatialProxyAA {
 public:
-   BoxPts(){}
-   ~BoxPts(){}
+    BoxPts() {}
 
-   // ISpatialProxyAA
-   // <0.0   -   Inside Spatial Proxy
-   // =0.0   -   On Spatial Proxy Surface
-   // >0.0   -   Outside Spatial Proxy
-	virtual float CompareTo( AAPlane3f&       irPlane );
-   virtual float CompareTo( const Vector3f& irPoint );
-   virtual float CompareToXZ( const Vector3f& irPoint );
+    ~BoxPts() {}
 
-   virtual float  TestNotOutside( ISpatialProxyAA& irSpatialProxy );
+    // ISpatialProxyAA
+    // <0.0   -   Inside Spatial Proxy
+    // =0.0   -   On Spatial Proxy Surface
+    //>0.0   -   Outside Spatial Proxy
+    virtual float CompareTo(AAPlane3f &irPlane);
 
-   virtual int       nPts();
-   virtual Vector3f  mPt( int iIndex );
+    virtual float CompareTo(const Vector3f &irPoint);
 
-   virtual bool DoesIntersect(     AAPlane3f& irClipPlane );
-   virtual bool DoesntIntersect(   AAPlane3f& irClipPlane );
+    virtual float CompareToXZ(const Vector3f &irPoint);
 
-   //Get a point representing some point within the SpatialProxy
-   virtual Vector3f GetPoint();
+    virtual float TestNotOutside(ISpatialProxyAA &irSpatialProxy);
 
-   void CutOffGT( AAPlane3f& irPlane3f );
-   void CutOffLT( AAPlane3f& irPlane3f );
+    virtual int nPts();
 
-   virtual void SetTo( Bounds3f& irBounds );
+    virtual Vector3f mPt(int iIndex);
 
-   Vector3f operator[]( int i );
+    virtual bool DoesIntersect(AAPlane3f &irClipPlane);
+
+    virtual bool DoesntIntersect(AAPlane3f &irClipPlane);
+
+    //Get a point representing some point within the SpatialProxy
+    virtual Vector3f GetPoint();
+
+    void CutOffGT(AAPlane3f &irPlane3f);
+
+    void CutOffLT(AAPlane3f &irPlane3f);
+
+    virtual void SetTo(Bounds3f &irBounds);
+
+    Vector3f operator[](int i);
 
 
-   float TestNotOutsideMinX( ISpatialProxyAA& irSpatialProxy );
-   float TestNotOutsideMinY( ISpatialProxyAA& irSpatialProxy );
-   float TestNotOutsideMinZ( ISpatialProxyAA& irSpatialProxy );
-   float TestNotOutsideMaxX( ISpatialProxyAA& irSpatialProxy );
-   float TestNotOutsideMaxY( ISpatialProxyAA& irSpatialProxy );
-   float TestNotOutsideMaxZ( ISpatialProxyAA& irSpatialProxy );
+    float TestNotOutsideMinX(ISpatialProxyAA &irSpatialProxy);
 
-   enum
-   {
-      msPtCount = 8
-   };
+    float TestNotOutsideMinY(ISpatialProxyAA &irSpatialProxy);
 
-   Bounds3f mBounds;
+    float TestNotOutsideMinZ(ISpatialProxyAA &irSpatialProxy);
+
+    float TestNotOutsideMaxX(ISpatialProxyAA &irSpatialProxy);
+
+    float TestNotOutsideMaxY(ISpatialProxyAA &irSpatialProxy);
+
+    float TestNotOutsideMaxZ(ISpatialProxyAA &irSpatialProxy);
+
+    enum {
+        msPtCount = 8
+    };
+
+    Bounds3f mBounds;
 protected:
 };
+
 #endif

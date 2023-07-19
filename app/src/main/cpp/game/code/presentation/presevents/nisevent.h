@@ -28,38 +28,39 @@
 //
 //=============================================================================
 
-class NISEvent : public PresentationEvent
-{
-    public:
-        NISEvent();
-        ~NISEvent();
+class NISEvent : public PresentationEvent {
+public:
+    NISEvent();
 
-        enum NISType
-        {
-            NIS_CAMERA,
-            NIS_SCENEGRAPH,
-            NUM_NIS_TYPES
-        };
+    ~NISEvent();
 
-        NISType type;
+    enum NISType {
+        NIS_CAMERA,
+        NIS_SCENEGRAPH,
+        NUM_NIS_TYPES
+    };
 
-        char controller[32];
-        char camera[32];
-        char animation[32];
+    NISType type;
 
-        void LoadNow();
-        void LoadFromInventory();
+    char controller[32];
+    char camera[32];
+    char animation[32];
 
-        AnimationPlayer* GetPlayer();
+    void LoadNow();
 
-        virtual void Init();
+    void LoadFromInventory();
 
-        virtual void Start();
-    protected:
-    private:
-        void SetNames();
+    AnimationPlayer *GetPlayer();
 
-        bool mbHasSetNames;
+    virtual void Init();
+
+    virtual void Start();
+
+protected:
+private:
+    void SetNames();
+
+    bool mbHasSetNames;
 };
 
 #endif //NISEVENT_H

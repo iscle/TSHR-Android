@@ -29,24 +29,26 @@
 //
 //=============================================================================
 
-class RoadDataSegmentLoader : public tChunkHandler
-{
+class RoadDataSegmentLoader : public tChunkHandler {
 public:
     RoadDataSegmentLoader();
+
     virtual ~RoadDataSegmentLoader();
 
     // P3D chunk loader.
-    virtual tLoadStatus Load(tChunkFile* f, tEntityStore* store);
+    virtual tLoadStatus Load(tChunkFile *f, tEntityStore *store);
 
     // P3D chunk id.
     virtual bool CheckChunkID(unsigned id);
+
     virtual unsigned int GetChunkID();
 
 private:
 
     //Prevent wasteful constructor creation.
-    RoadDataSegmentLoader( const RoadDataSegmentLoader& roaddatasegmentloader );
-    RoadDataSegmentLoader& operator=( const RoadDataSegmentLoader& roaddatasegmentloader );
+    RoadDataSegmentLoader(const RoadDataSegmentLoader &roaddatasegmentloader);
+
+    RoadDataSegmentLoader &operator=(const RoadDataSegmentLoader &roaddatasegmentloader);
 };
 
 

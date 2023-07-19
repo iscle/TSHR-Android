@@ -33,9 +33,8 @@ class Character;
 // Table entry structure for mapping between event strings in filenames
 // and events responded to in dialog system
 //
-struct EventTableEntry
-{
-    const char* eventString;
+struct EventTableEntry {
+    const char *eventString;
     radKey32 eventKey;
     EventEnum event;
     unsigned int lifeInMsecs;
@@ -45,12 +44,11 @@ struct EventTableEntry
 // Table entry structure for mapping between character strings in filenames
 // and tUIDs that we pull out of the Character objects.
 //
-struct CharacterTableEntry
-{
+struct CharacterTableEntry {
     radInt64 realCharacterUID;
-    const char* characterString;
+    const char *characterString;
     radKey32 characterKey;
-    const char* realCharacterName;
+    const char *realCharacterName;
 };
 
 const char ROLE_NONE = 0;
@@ -67,104 +65,124 @@ typedef char DialogRole;
 //
 //=============================================================================
 
-class DialogLine : public PlayableDialog
-{
-    public:
-        DialogLine( IDaSoundResource* resource );
-        virtual ~DialogLine();
+class DialogLine : public PlayableDialog {
+public:
+    DialogLine(IDaSoundResource *resource);
 
-        static const int NOT_CONVERSATION_LINE = -1;
+    virtual ~DialogLine();
 
-        static const int BONUS_MISSION_NUMBER = 8;
-        static const int FIRST_RACE_MISSION_NUMBER = 9;
-        static const int TUTORIAL_MISSION_NUMBER = 12;
+    static const int NOT_CONVERSATION_LINE = -1;
 
-        int GetConversationPosition() { return( m_conversationPosition ); }
-        tUID GetCharacterUID();
-        tUID GetDialogLineCharacterUID( unsigned int lineNum );
-        bool IsVillainLine() { return( m_role == ROLE_VILLAIN ); }
+    static const int BONUS_MISSION_NUMBER = 8;
+    static const int FIRST_RACE_MISSION_NUMBER = 9;
+    static const int TUTORIAL_MISSION_NUMBER = 12;
 
-        inline radKey32 GetConversationName( );
+    int GetConversationPosition() { return (m_conversationPosition); }
 
-        //
-        // Pure virtual functions from SelectableDialog
-        //
-        void PlayLine( unsigned int lineIndex,
-                       SimpsonsSoundPlayer& player,
-                       SimpsonsSoundPlayerCallback* callback );
-        void QueueLine( unsigned int lineIndex,
-                        SimpsonsSoundPlayer& player );
-        void PlayQueuedLine( SimpsonsSoundPlayer& player,
-                             SimpsonsSoundPlayerCallback* callback );
+    tUID GetCharacterUID();
 
-        unsigned int GetNumDialogLines() const { return( 1 ); }
-        bool UsesCharacter( tUID characterUID );
-        void AddMatchingDialog( SelectableDialog& newDialog, SelectableDialogList& list );
+    tUID GetDialogLineCharacterUID(unsigned int lineNum);
 
-        static bool IsFoodCharacter( Character* theGuy );
-        static unsigned int GetLifeInMsecsForEvent( EventEnum eventID );
-        
-        //
-        // Utility for stripping the directory crud off of filenames
-        //
-        static void StripDirectoryCrud( const char* filename, char* buffer, int bufferLen );
+    bool IsVillainLine() { return (m_role == ROLE_VILLAIN); }
 
-        //
-        // Accessors for tables
-        //
-        static const EventTableEntry* GetEventTableEntry( unsigned int index );
-        static unsigned int GetEventTableSize();
-        
-        static const CharacterTableEntry* GetCharacterTableEntry( unsigned int index );
-        static unsigned int GetCharacterTableSize();
+    inline radKey32 GetConversationName();
 
-        static void FillEventName( char* buffer, unsigned int bufferSize, EventEnum eventID );
-        static void FillCharacterName( char* buffer, unsigned int bufferSize, tUID characterUID );
+    //
+    // Pure virtual functions from SelectableDialog
+    //
+    void PlayLine(unsigned int lineIndex,
+                  SimpsonsSoundPlayer &player,
+                  SimpsonsSoundPlayerCallback *callback);
 
-        //
-        // For debugging
-        //
-        void PrintResourceName();
+    void QueueLine(unsigned int lineIndex,
+                   SimpsonsSoundPlayer &player);
 
-    private:
-        //Prevent wasteful constructor creation.
-        DialogLine();
-        DialogLine( const DialogLine& original );
-        DialogLine& operator=( const DialogLine& rhs );
+    void PlayQueuedLine(SimpsonsSoundPlayer &player,
+                        SimpsonsSoundPlayerCallback *callback);
 
-        void parseResourceFilename();
-        bool getNameField( const char* filename, int field, char* buffer, int bufferLen );
-        void initializeTables();
+    unsigned int GetNumDialogLines() const { return (1); }
 
-        void matchRoleField( const char* filename, int field );
-        void matchOrderField( const char* filename, int field );
-        void matchEventField( const char* filename, int field );
-        void matchCharacterField( const char* filename, int field );
-        void matchLevelField( const char* filename, int field );
-        void parseConversationName( );
-        //
-        // Sound resource to play
-        //
-        IDaSoundResource* m_resource;
+    bool UsesCharacter(tUID characterUID);
 
-        radKey32 m_ConversationName;
+    void AddMatchingDialog(SelectableDialog &newDialog, SelectableDialogList &list);
 
-        DialogRole /* (char)*/ m_role;
+    static bool IsFoodCharacter(Character *theGuy);
 
-        //
-        // Position within conversation if this is a conversation line
-        //
-        
-        char m_conversationPosition;
-        
-        //
-        // Character that this line belongs to
-        //
-        char m_characterIndex;        
+    static unsigned int GetLifeInMsecsForEvent(EventEnum eventID);
+
+    //
+    // Utility for stripping the directory crud off of filenames
+    //
+    static void StripDirectoryCrud(const char *filename, char *buffer, int bufferLen);
+
+    //
+    // Accessors for tables
+    //
+    static const EventTableEntry *GetEventTableEntry(unsigned int index);
+
+    static unsigned int GetEventTableSize();
+
+    static const CharacterTableEntry *GetCharacterTableEntry(unsigned int index);
+
+    static unsigned int GetCharacterTableSize();
+
+    static void FillEventName(char *buffer, unsigned int bufferSize, EventEnum eventID);
+
+    static void FillCharacterName(char *buffer, unsigned int bufferSize, tUID characterUID);
+
+    //
+    // For debugging
+    //
+    void PrintResourceName();
+
+private:
+    //Prevent wasteful constructor creation.
+    DialogLine();
+
+    DialogLine(const DialogLine &original);
+
+    DialogLine &operator=(const DialogLine &rhs);
+
+    void parseResourceFilename();
+
+    bool getNameField(const char *filename, int field, char *buffer, int bufferLen);
+
+    void initializeTables();
+
+    void matchRoleField(const char *filename, int field);
+
+    void matchOrderField(const char *filename, int field);
+
+    void matchEventField(const char *filename, int field);
+
+    void matchCharacterField(const char *filename, int field);
+
+    void matchLevelField(const char *filename, int field);
+
+    void parseConversationName();
+
+    //
+    // Sound resource to play
+    //
+    IDaSoundResource *m_resource;
+
+    radKey32 m_ConversationName;
+
+    DialogRole /* (char)*/ m_role;
+
+    //
+    // Position within conversation if this is a conversation line
+    //
+
+    char m_conversationPosition;
+
+    //
+    // Character that this line belongs to
+    //
+    char m_characterIndex;
 };
 
-inline radKey32 DialogLine::GetConversationName( )
-{
+inline radKey32 DialogLine::GetConversationName() {
     return m_ConversationName;
 }
 

@@ -50,9 +50,8 @@
 //
 //==============================================================================
 NISPlayer::NISPlayer() :
-    mpSceneGraph( NULL )
-{
-    SetExclusive( false );    
+        mpSceneGraph(NULL) {
+    SetExclusive(false);
 }
 
 //==============================================================================
@@ -65,9 +64,8 @@ NISPlayer::NISPlayer() :
 // Return:      N/A.
 //
 //==============================================================================
-NISPlayer::~NISPlayer()
-{
-    
+NISPlayer::~NISPlayer() {
+
 }
 
 
@@ -81,13 +79,11 @@ NISPlayer::~NISPlayer()
 // Return:      void 
 //
 //=============================================================================
-void NISPlayer::ClearData()
-{
+void NISPlayer::ClearData() {
     SimpleAnimationPlayer::ClearData();
 
-    if( mpSceneGraph != NULL )
-    {
-        GetRenderManager()->mEntityDeletionList.Add((tRefCounted*&)mpSceneGraph);
+    if (mpSceneGraph != NULL) {
+        GetRenderManager()->mEntityDeletionList.Add((tRefCounted *&) mpSceneGraph);
         mpSceneGraph = NULL;
     }
 }
@@ -109,15 +105,15 @@ void NISPlayer::ClearData()
 // Return:      void 
 //
 //=============================================================================
-void NISPlayer::DoLoaded()
-{
+void NISPlayer::DoLoaded() {
     SimpleAnimationPlayer::DoLoaded();
 
     tRefCounted::Release(mpSceneGraph);
-    tRefCounted::Assign(mpSceneGraph, (tDrawable*)p3d::find<Scenegraph::Scenegraph>( GetAnimationName() ));
-    if(!mpSceneGraph)
-    {
-        tRefCounted::Assign(mpSceneGraph, (tDrawable*)p3d::find<tCompositeDrawable>( GetAnimationName() ));
+    tRefCounted::Assign(mpSceneGraph,
+                        (tDrawable *) p3d::find<Scenegraph::Scenegraph>(GetAnimationName()));
+    if (!mpSceneGraph) {
+        tRefCounted::Assign(mpSceneGraph,
+                            (tDrawable *) p3d::find<tCompositeDrawable>(GetAnimationName()));
     }
 }
 
@@ -131,11 +127,10 @@ void NISPlayer::DoLoaded()
 // Return:      void 
 //
 //=============================================================================
-void NISPlayer::DoRender()
-{
+void NISPlayer::DoRender() {
     SimpleAnimationPlayer::DoRender();
-    
-    if(mpSceneGraph)
+
+    if (mpSceneGraph)
         mpSceneGraph->Display();
 }
 
@@ -144,20 +139,18 @@ void NISPlayer::DoRender()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Box3D* box )
+// Parameters:  (rmt::Box3D* box)
 //
 // Return:      true if box filled out, false otherwise 
 //
 //=============================================================================
-bool NISPlayer::GetBoundingBox( rmt::Box3D* box )
-{
+bool NISPlayer::GetBoundingBox(rmt::Box3D *box) {
     bool retval = false;
 
-    if( mpSceneGraph )
-    {
-        mpSceneGraph->GetBoundingBox( box );
+    if (mpSceneGraph) {
+        mpSceneGraph->GetBoundingBox(box);
         retval = true;
     }
 
-    return( retval );
+    return (retval);
 }

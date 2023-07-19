@@ -47,8 +47,7 @@
 // Return:      NISEvent
 //
 //=============================================================================
-NISEvent::NISEvent()
-{
+NISEvent::NISEvent() {
     type = NIS_SCENEGRAPH;
 }
 
@@ -62,8 +61,7 @@ NISEvent::NISEvent()
 // Return:      NISEvent
 //
 //=============================================================================
-NISEvent::~NISEvent()
-{
+NISEvent::~NISEvent() {
 }
 
 //=============================================================================
@@ -76,17 +74,16 @@ NISEvent::~NISEvent()
 // Return:      void 
 //
 //=============================================================================
-void NISEvent::LoadNow()
-{
-    AnimationPlayer* player = GetPlayer();
+void NISEvent::LoadNow() {
+    AnimationPlayer *player = GetPlayer();
 
     SetNames();
-    
-    player->LoadData( fileName, false, GetUserData() );
 
-    player->SetPlayAfterLoad( false );
+    player->LoadData(fileName, false, GetUserData());
 
-    SetLoaded( true );
+    player->SetPlayAfterLoad(false);
+
+    SetLoaded(true);
 }
 
 //=============================================================================
@@ -99,16 +96,15 @@ void NISEvent::LoadNow()
 // Return:      void 
 //
 //=============================================================================
-void NISEvent::LoadFromInventory()
-{
-    AnimationPlayer* player = GetPlayer();
+void NISEvent::LoadFromInventory() {
+    AnimationPlayer *player = GetPlayer();
 
     SetNames();
-    
-    player->LoadData( fileName, true, GetUserData() );
 
-    SetClearWhenDone( false );
-    SetLoaded( true );
+    player->LoadData(fileName, true, GetUserData());
+
+    SetClearWhenDone(false);
+    SetLoaded(true);
 }
 
 //=============================================================================
@@ -121,8 +117,7 @@ void NISEvent::LoadFromInventory()
 // Return:      void 
 //
 //=============================================================================
-void NISEvent::Init()
-{
+void NISEvent::Init() {
     PresentationEvent::Init();
 
     mbHasSetNames = false;
@@ -138,10 +133,9 @@ void NISEvent::Init()
 // Return:      void 
 //
 //=============================================================================
-void NISEvent::Start()
-{
+void NISEvent::Start() {
     SetNames();
-    
+
     PresentationEvent::Start();
 }
 
@@ -156,36 +150,31 @@ void NISEvent::Start()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-AnimationPlayer* NISEvent::GetPlayer()
-{
-    AnimationPlayer* player = NULL;
+AnimationPlayer *NISEvent::GetPlayer() {
+    AnimationPlayer *player = NULL;
 
-    switch( type )
-    {
-    case NIS_CAMERA:
-        {
+    switch (type) {
+        case NIS_CAMERA: {
             player = GetPresentationManager()->GetCameraPlayer();
             break;
         }
-    case NIS_SCENEGRAPH:
-        {
+        case NIS_SCENEGRAPH: {
             player = GetPresentationManager()->GetNISPlayer();
             break;
         }
-    default:
-        {
+        default: {
             // trouble!
-            rAssert( false );
+            rAssert(false);
             break;
         }
     }
 
-    return( player );
+    return (player);
 }
 
 //=============================================================================
@@ -198,30 +187,24 @@ AnimationPlayer* NISEvent::GetPlayer()
 // Return:      void 
 //
 //=============================================================================
-void NISEvent::SetNames()
-{
-    if( !mbHasSetNames )
-    {
+void NISEvent::SetNames() {
+    if (!mbHasSetNames) {
         mbHasSetNames = true;
 
-        switch( type )
-        {
-        case NIS_CAMERA:
-            {
-                CameraPlayer* player = GetPresentationManager()->GetCameraPlayer();
-                player->SetNameData( controller, camera, animation );
+        switch (type) {
+            case NIS_CAMERA: {
+                CameraPlayer *player = GetPresentationManager()->GetCameraPlayer();
+                player->SetNameData(controller, camera, animation);
                 break;
             }
-        case NIS_SCENEGRAPH:
-            {
-                NISPlayer* player = GetPresentationManager()->GetNISPlayer();
-                player->SetNameData( controller, camera, animation );
+            case NIS_SCENEGRAPH: {
+                NISPlayer *player = GetPresentationManager()->GetNISPlayer();
+                player->SetNameData(controller, camera, animation);
                 break;
             }
-        default:
-            {
+            default: {
                 // trouble!
-                rAssert( false );
+                rAssert(false);
                 break;
             }
         }

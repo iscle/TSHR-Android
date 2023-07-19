@@ -22,9 +22,9 @@
 // Forward References
 //===========================================================================
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Page;
+
     class Text;
 }
 
@@ -32,18 +32,20 @@ namespace Scrooby
 // Interface Definitions
 //===========================================================================
 
-class HudMissionProgress : public HudEventHandler
-{
+class HudMissionProgress : public HudEventHandler {
 public:
-    HudMissionProgress( Scrooby::Page* pPage );
+    HudMissionProgress(Scrooby::Page *pPage);
+
     virtual ~HudMissionProgress();
 
     virtual void Start();
+
     virtual void Stop();
-    virtual void Update( float elapsedTime );
+
+    virtual void Update(float elapsedTime);
 
 private:
-    Scrooby::Text* m_stageComplete;
+    Scrooby::Text *m_stageComplete;
 
 };
 

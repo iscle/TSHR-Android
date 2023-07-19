@@ -43,8 +43,7 @@
 //
 //=============================================================================
 ActorPlayer::ActorPlayer() :
-    m_actor( NULL )
-{
+        m_actor(NULL) {
 }
 
 //=============================================================================
@@ -57,8 +56,7 @@ ActorPlayer::ActorPlayer() :
 // Return:      N/A.
 //
 //=============================================================================
-ActorPlayer::~ActorPlayer()
-{
+ActorPlayer::~ActorPlayer() {
 }
 
 //=============================================================================
@@ -71,12 +69,11 @@ ActorPlayer::~ActorPlayer()
 // Return:      void 
 //
 //=============================================================================
-void ActorPlayer::GetPosition( radSoundVector& position )
-{
+void ActorPlayer::GetPosition(radSoundVector &position) {
     rmt::Vector actorPosn;
 
-    m_actor->GetPosition( &actorPosn );
-    position.SetElements( actorPosn.x, actorPosn.y, actorPosn.z );
+    m_actor->GetPosition(&actorPosn);
+    position.SetElements(actorPosn.x, actorPosn.y, actorPosn.z);
 }
 
 //=============================================================================
@@ -89,12 +86,11 @@ void ActorPlayer::GetPosition( radSoundVector& position )
 // Return:      void 
 //
 //=============================================================================
-void ActorPlayer::GetVelocity( radSoundVector& velocity )
-{
+void ActorPlayer::GetVelocity(radSoundVector &velocity) {
     //
     // No doppler for actors, therefore make velocity zero
     //
-    velocity.SetElements( 0.0f, 0.0f, 0.0f );
+    velocity.SetElements(0.0f, 0.0f, 0.0f);
 }
 
 //=============================================================================
@@ -107,8 +103,7 @@ void ActorPlayer::GetVelocity( radSoundVector& velocity )
 // Return:      void 
 //
 //=============================================================================
-void ActorPlayer::ServiceOncePerFrame()
-{
+void ActorPlayer::ServiceOncePerFrame() {
     m_player.ServiceOncePerFrame();
 }
 
@@ -123,8 +118,7 @@ void ActorPlayer::ServiceOncePerFrame()
 // Return:      void 
 //
 //=============================================================================
-void ActorPlayer::OnPlaybackComplete()
-{
+void ActorPlayer::OnPlaybackComplete() {
 }
 
 //=============================================================================
@@ -138,8 +132,7 @@ void ActorPlayer::OnPlaybackComplete()
 // Return:      void 
 //
 //=============================================================================
-void ActorPlayer::OnSoundReady()
-{
+void ActorPlayer::OnSoundReady() {
 }
 
 //=============================================================================
@@ -154,21 +147,20 @@ void ActorPlayer::OnSoundReady()
 // Return:      void 
 //
 //=============================================================================
-void ActorPlayer::playSound( positionalSoundSettings* settings, 
-                             const char* resourceName,
-                             Actor* theActor )
-{
+void ActorPlayer::playSound(positionalSoundSettings *settings,
+                            const char *resourceName,
+                            Actor *theActor) {
     rmt::Vector posn;
 
     m_actor = theActor;
 
-    m_player.SetPositionCarrier( *this );
-    m_player.SetParameters( settings );
+    m_player.SetPositionCarrier(*this);
+    m_player.SetParameters(settings);
 
-    theActor->GetPosition( &posn );
-    m_player.SetPosition( posn.x, posn.y, posn.z );
+    theActor->GetPosition(&posn);
+    m_player.SetPosition(posn.x, posn.y, posn.z);
 
-    m_player.PlaySound( resourceName, this );
+    m_player.PlaySound(resourceName, this);
 }
 
 //=============================================================================
@@ -181,8 +173,7 @@ void ActorPlayer::playSound( positionalSoundSettings* settings,
 // Return:      void 
 //
 //=============================================================================
-void ActorPlayer::deactivate()
-{
+void ActorPlayer::deactivate() {
     m_actor = NULL;
     m_player.Stop();
 }

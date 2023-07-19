@@ -43,18 +43,17 @@
 //
 //===========================================================================
 CGuiWindow::CGuiWindow
-(
-    eGuiWindowID id,    
-    CGuiEntity* pParent
-)
-:
-    CGuiEntity( pParent ),
-    m_state( GUI_WINDOW_STATE_UNITIALIZED ),
-    m_ID( id ),
-    m_numTransitionsPending( 0 ),
-    m_firstTimeEntered( true )
-{
-    CLASSTRACKER_CREATE( CGuiWindow );
+        (
+                eGuiWindowID id,
+                CGuiEntity *pParent
+        )
+        :
+        CGuiEntity(pParent),
+        m_state(GUI_WINDOW_STATE_UNITIALIZED),
+        m_ID(id),
+        m_numTransitionsPending(0),
+        m_firstTimeEntered(true) {
+    CLASSTRACKER_CREATE(CGuiWindow);
 }
 
 
@@ -70,9 +69,8 @@ CGuiWindow::CGuiWindow
 // Return:      N/A.
 //
 //===========================================================================
-CGuiWindow::~CGuiWindow()
-{
-    CLASSTRACKER_CREATE( CGuiWindow );
+CGuiWindow::~CGuiWindow() {
+    CLASSTRACKER_CREATE(CGuiWindow);
 }
 
 
@@ -89,20 +87,17 @@ CGuiWindow::~CGuiWindow()
 //
 //===========================================================================
 void CGuiWindow::HandleMessage
-(
-    eGuiMessage message, 
-    unsigned int param1,
-    unsigned int param2
-)
-{
-    switch( message )
-    {
-        case GUI_MSG_WINDOW_ENTER:
-        {
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    switch (message) {
+        case GUI_MSG_WINDOW_ENTER: {
 /*
             // Ignore multiple enter requests.
             //
-            if( GUI_WINDOW_STATE_UNITIALIZED != m_state )
+            if(GUI_WINDOW_STATE_UNITIALIZED != m_state)
             {
                 break;
             }
@@ -113,11 +108,10 @@ void CGuiWindow::HandleMessage
             break;
         }
 
-        case GUI_MSG_WINDOW_EXIT:
-        {
+        case GUI_MSG_WINDOW_EXIT: {
 /*
-            if( GUI_WINDOW_STATE_OUTRO == m_state ||
-                GUI_WINDOW_STATE_UNITIALIZED == m_state )
+            if(GUI_WINDOW_STATE_OUTRO == m_state ||
+                GUI_WINDOW_STATE_UNITIALIZED == m_state)
             {
                 // Ignore multiple exit requests.
                 //
@@ -130,36 +124,29 @@ void CGuiWindow::HandleMessage
             break;
         }
 
-        case GUI_MSG_WINDOW_PAUSE:
-        {
+        case GUI_MSG_WINDOW_PAUSE: {
             m_prevState = m_state;
             m_state = GUI_WINDOW_STATE_PAUSED;
             break;
         }
 
-        case GUI_MSG_WINDOW_RESUME:
-        {
+        case GUI_MSG_WINDOW_RESUME: {
             m_state = m_prevState;
             break;
         }
 
-        case GUI_MSG_UPDATE:
-        {
-            if( GUI_WINDOW_STATE_UNITIALIZED == m_state 
-                || GUI_WINDOW_STATE_PAUSED == m_state )
-            {
+        case GUI_MSG_UPDATE: {
+            if (GUI_WINDOW_STATE_UNITIALIZED == m_state
+                || GUI_WINDOW_STATE_PAUSED == m_state) {
                 return;
             }
 
-            switch( m_state )
-            {
-                case GUI_WINDOW_STATE_INTRO:
-                {
+            switch (m_state) {
+                case GUI_WINDOW_STATE_INTRO: {
                     // The intro transition is complete if there are no more
                     // non-persistent sequencers running.
                     //
-                    if( m_numTransitionsPending == 0 )
-                    {
+                    if (m_numTransitionsPending == 0) {
                         m_state = GUI_WINDOW_STATE_RUNNING;
                         this->InitRunning();
                     }
@@ -167,40 +154,34 @@ void CGuiWindow::HandleMessage
                     break;
                 }
 
-                case GUI_WINDOW_STATE_OUTRO:
-                {
+                case GUI_WINDOW_STATE_OUTRO: {
                     // The outro transition is complete if there are no more
                     // non-persistent sequencers running.
                     //
-                    if( m_numTransitionsPending == 0 )
-                    {
+                    if (m_numTransitionsPending == 0) {
                         // wait one more frame for last transition update to get rendered
                         //
                         m_numTransitionsPending--;
                         CleanUp();
-                    }
-                    else if( m_numTransitionsPending < 0 )
-                    {
+                    } else if (m_numTransitionsPending < 0) {
                         m_state = GUI_WINDOW_STATE_UNITIALIZED;
                         m_firstTimeEntered = false;
 
-                        m_pParent->HandleMessage( GUI_MSG_WINDOW_FINISHED );
+                        m_pParent->HandleMessage(GUI_MSG_WINDOW_FINISHED);
                     }
 
                     break;
                 }
 
-                default:
-                {
+                default: {
                     break;
                 }
             }
-           
+
             break;
         }
 
-        default:
-        {
+        default: {
             break;
         }
     }
@@ -218,8 +199,7 @@ void CGuiWindow::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiWindow::CleanUp()
-{
+void CGuiWindow::CleanUp() {
     //do nothing
 }
 
@@ -235,7 +215,6 @@ void CGuiWindow::CleanUp()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiWindow::ForceClearTransitions()
-{
+void CGuiWindow::ForceClearTransitions() {
     m_numTransitionsPending = 0;
 }

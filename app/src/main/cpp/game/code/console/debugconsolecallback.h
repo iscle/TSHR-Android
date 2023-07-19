@@ -30,45 +30,58 @@
 //
 //==============================================================================
 class DebugConsoleCallback : public IRadDebugConsoleKeyboardInputCallback,
-                             public IRadDebugConsolePointerInputCallback
-{
-	public:
+                             public IRadDebugConsolePointerInputCallback {
+public:
 
-		DebugConsoleCallback();
-		~DebugConsoleCallback();
+    DebugConsoleCallback();
 
-        // Implement IRadDebugConsoleKeyboardInputCallback
-        void OnChar( int asciiKey );
-        void OnVKey( int virtualKey, bool ctrl, bool shift, bool alt );
-		
-		// Implement IRadDebugConsolePointerInputCallback
-        void OnButtonClick( int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl, bool shift, bool alt );
-        void OnButtonDown( int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl, bool shift, bool alt );
-        void OnButtonUp( int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl, bool shift, bool alt );
-        void OnButtonMove( int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl, bool shift, bool alt, bool bottondown );
+    ~DebugConsoleCallback();
 
-		const char* GetConsoleEntry( int* cursorPosition )
-		{
-			*cursorPosition = mCursorPosition;
-			return( mConsoleHistory[0] );
-		}
+    // Implement IRadDebugConsoleKeyboardInputCallback
+    void OnChar(int asciiKey);
 
-	private:
-		
-        enum{ CONSOLE_HISTORY_SIZE = 64 };
-		
-        char mConsoleHistory[CONSOLE_HISTORY_SIZE][Console::MAX_STRING_LENGTH];
-		int mFirstHistoryIndex;
-		int mLastHistoryIndex;
-		int mGetHistoryIndex;
-		int mCursorPosition;
-		
-		// Used to let events not handled by OnVKey() be passed to OnChar()
-		bool mInputHandled;
+    void OnVKey(int virtualKey, bool ctrl, bool shift, bool alt);
 
-		// Tab completion vars
-		tNameInsensitive mTabCompleteString;
-		tNameInsensitive mTabCurrentFunction ;
+    // Implement IRadDebugConsolePointerInputCallback
+    void
+    OnButtonClick(int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl,
+                  bool shift, bool alt);
+
+    void
+    OnButtonDown(int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl,
+                 bool shift, bool alt);
+
+    void
+    OnButtonUp(int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl,
+               bool shift, bool alt);
+
+    void
+    OnButtonMove(int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl,
+                 bool shift, bool alt, bool bottondown);
+
+    const char *GetConsoleEntry(int *cursorPosition) {
+        *cursorPosition = mCursorPosition;
+        return (mConsoleHistory[0]);
+    }
+
+private:
+
+    enum {
+        CONSOLE_HISTORY_SIZE = 64
+    };
+
+    char mConsoleHistory[CONSOLE_HISTORY_SIZE][Console::MAX_STRING_LENGTH];
+    int mFirstHistoryIndex;
+    int mLastHistoryIndex;
+    int mGetHistoryIndex;
+    int mCursorPosition;
+
+    // Used to let events not handled by OnVKey() be passed to OnChar()
+    bool mInputHandled;
+
+    // Tab completion vars
+    tNameInsensitive mTabCompleteString;
+    tNameInsensitive mTabCurrentFunction;
 };
 
 #endif // DEBUG_CONSOLE_CALLBACK_H

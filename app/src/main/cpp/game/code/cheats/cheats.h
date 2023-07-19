@@ -27,10 +27,9 @@
 
 typedef unsigned int CHEATBITMASK;
 
-const unsigned int MAX_NUM_CHEATS = sizeof( CHEATBITMASK ) * 8;
+const unsigned int MAX_NUM_CHEATS = sizeof(CHEATBITMASK) * 8;
 
-enum eCheatID
-{
+enum eCheatID {
     CHEAT_ID_UNREGISTERED = -1,
 
     CHEAT_ID_MOTHER_OF_ALL_CHEATS,  // display all cheats on screen
@@ -70,32 +69,32 @@ enum eCheatID
     NUM_CHEATS
 };
 
-struct Cheat
-{
+struct Cheat {
     eCheatID m_cheatID;
-    eCheatInput m_cheatInputs[ NUM_CHEAT_SEQUENCE_INPUTS ];
-    const char* m_cheatName;
+    eCheatInput m_cheatInputs[NUM_CHEAT_SEQUENCE_INPUTS];
+    const char *m_cheatName;
 };
 
 //===========================================================================
 // Interface Definitions
 //===========================================================================
 
-class CheatsDB
-{
+class CheatsDB {
 public:
-	CheatsDB();
+    CheatsDB();
+
     virtual ~CheatsDB();
 
-    eCheatID GetCheatID( unsigned int cheatIndex ) const;
+    eCheatID GetCheatID(unsigned int cheatIndex) const;
 
     unsigned int GetNumRegisteredCheats() const;
-    const Cheat* GetCheat( eCheatID cheatID ) const;
 
-    static unsigned int ConvertSequenceToIndex( const eCheatInput* cheatInputs,
-                                                int numInputs = NUM_CHEAT_SEQUENCE_INPUTS );
+    const Cheat *GetCheat(eCheatID cheatID) const;
 
-    static void PrintCheatInfo( const Cheat* cheat, char* buffer );
+    static unsigned int ConvertSequenceToIndex(const eCheatInput *cheatInputs,
+                                               int numInputs = NUM_CHEAT_SEQUENCE_INPUTS);
+
+    static void PrintCheatInfo(const Cheat *cheat, char *buffer);
 
 private:
     //---------------------------------------------------------------------
@@ -104,15 +103,16 @@ private:
 
     // No copying or assignment. Declare but don't define.
     //
-    CheatsDB( const CheatsDB& );
-    CheatsDB& operator= ( const CheatsDB& );
+    CheatsDB(const CheatsDB &);
+
+    CheatsDB &operator=(const CheatsDB &);
 
     //---------------------------------------------------------------------
     // Private Data
     //---------------------------------------------------------------------
 
     static unsigned int s_maxNumPossibleCheats;
-    eCheatID* m_cheats;
+    eCheatID *m_cheats;
 
 };
 

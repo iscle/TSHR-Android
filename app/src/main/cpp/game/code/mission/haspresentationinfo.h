@@ -30,41 +30,54 @@ class tName;
 //
 //=============================================================================
 
-class HasPresentationInfo
-{
+class HasPresentationInfo {
 public:
     HasPresentationInfo();
+
     ~HasPresentationInfo();
-    void AmbientCharacterAnimationSetRandom( const unsigned int character, const bool random );
-    void AddAmbientCharacterAnimation( const unsigned int character, const tName& animationName );
-    void CharacterIsChild( const int index );
+
+    void AmbientCharacterAnimationSetRandom(const unsigned int character, const bool random);
+
+    void AddAmbientCharacterAnimation(const unsigned int character, const tName &animationName);
+
+    void CharacterIsChild(const int index);
+
     void ClearAmbientAnimations();
+
     void GoToPattyAndSelmaScreenWhenDone();
+
     void OnStageCompleteSuccessful() const;
-    void Reset(); 
-    void SetCameraForDialogLine   ( const unsigned int dialogLine, const tName& camera );
-    void SetConversationCamName   ( const tName& name );
-    void SetConversationCamPcName ( const tName& name );
-    void SetConversationCamNpcName( const tName& name );
-    void SetBestSideLocator       ( const tName& name );
+
+    void Reset();
+
+    void SetCameraForDialogLine(const unsigned int dialogLine, const tName &camera);
+
+    void SetConversationCamName(const tName &name);
+
+    void SetConversationCamPcName(const tName &name);
+
+    void SetConversationCamNpcName(const tName &name);
+
+    void SetBestSideLocator(const tName &name);
 
 protected:
 private:
     //Prevent wasteful constructor creation.
-	HasPresentationInfo( const HasPresentationInfo& bonusmissioninfo );
-	HasPresentationInfo& operator=( const HasPresentationInfo& bonusmissioninfo );
+    HasPresentationInfo(const HasPresentationInfo &bonusmissioninfo);
+
+    HasPresentationInfo &operator=(const HasPresentationInfo &bonusmissioninfo);
 
     tName mConversationCamName;
     tName mConversationCamNpcName;
     tName mConversationCamPcName;
-    typedef std::vector< tName, s2alloc<tName> > TNAMEVECTOR;
+    typedef std::vector <tName, s2alloc<tName>> TNAMEVECTOR;
     bool mAmbientPcAnimationsRandom;
     bool mAmbientNpcAnimationsRandom;
     TNAMEVECTOR mAmbientPcAnimations;
     TNAMEVECTOR mAmbientNpcAnimations;
-    bool mPcIsChild : 1;
-    bool mNpcIsChild : 1;
-    bool mGoToPattyAndSelmaScreenWhenDone : 1;
+    bool mPcIsChild: 1;
+    bool mNpcIsChild: 1;
+    bool mGoToPattyAndSelmaScreenWhenDone: 1;
     TNAMEVECTOR mCamerasForLinesOfDialog;
     tName mBestSideLocator;
 };

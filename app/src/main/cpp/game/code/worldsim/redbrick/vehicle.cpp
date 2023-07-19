@@ -112,7 +112,7 @@ using namespace sim;
 // In what radius the vehicle explosion will affect objects
 const float EXPLOSION_EFFECT_RADIUS = 20.0f;
 // How much force to apply to objects within this radius
-const float EXPLOSION_FORCE = 20000.0f; 
+const float EXPLOSION_FORCE = 20000.0f;
 // Set the center of the explosion so be below that car position so that objects get hurled upwards
 const float EXPLOSION_Y_OFFSET = -5.0f;
 
@@ -128,70 +128,56 @@ float Vehicle::s_DamageFromExplosionPlayer = HITPOINTS_REMOVED_FROM_VEHICLE_EXPL
 
 bool Vehicle::sDoBounce = false;
 
-void Vehicle::ActivateTriggers( bool activate )
-{
-    if(activate == mTriggerActive)
-    {
+void Vehicle::ActivateTriggers(bool activate) {
+    if (activate == mTriggerActive) {
         return;
     }
 
-    if( mVehicleType == VT_AI && activate )
-    {
+    if (mVehicleType == VT_AI && activate) {
         // NOT OK to add triggers for AI car doors, but OK to remove...
         // AI triggers remain as they are (so you can't get into the cars)
-        //rAssert( false, "FALSE, Chuck, FALSE!" );
+        //rAssert(false, "FALSE, Chuck, FALSE!");
         return;
     }
 
-    if(mVehicleDestroyed && activate)
-    {
+    if (mVehicleDestroyed && activate) {
         return;
     }
 
-    if(!GetVehicleCentral()->GetVehicleTriggersActive() && activate)
-    {
+    if (!GetVehicleCentral()->GetVehicleTriggersActive() && activate) {
         return;
     }
 
-    if( mpEventLocator == NULL )
-    {
+    if (mpEventLocator == NULL) {
         return;
     }
 
     mTriggerActive = activate;
 
-    if( activate )
-    {
-        for( unsigned j = 0; j < mpEventLocator->GetNumTriggers(); j++ )
-        {
-            GetTriggerVolumeTracker()->AddTrigger( mpEventLocator->GetTriggerVolume( j ) );
+    if (activate) {
+        for (unsigned j = 0; j < mpEventLocator->GetNumTriggers(); j++) {
+            GetTriggerVolumeTracker()->AddTrigger(mpEventLocator->GetTriggerVolume(j));
         }
-    }
-    else
-    {
-        for( unsigned j = 0; j < mpEventLocator->GetNumTriggers(); j++ )
-        {
-            GetTriggerVolumeTracker()->RemoveTrigger( mpEventLocator->GetTriggerVolume( j ) );
+    } else {
+        for (unsigned j = 0; j < mpEventLocator->GetNumTriggers(); j++) {
+            GetTriggerVolumeTracker()->RemoveTrigger(mpEventLocator->GetTriggerVolume(j));
         }
     }
 }
 
-void Vehicle::SetUserDrivingCar( bool b ) 
-{
+void Vehicle::SetUserDrivingCar(bool b) {
     // chooka set's this when a character get's in or out.
-    mUserDrivingCar = b;  
-    if( mVehicleType != VT_AI && mUserDrivingCar ) 
-    {
+    mUserDrivingCar = b;
+    if (mVehicleType != VT_AI && mUserDrivingCar) {
         mVehicleType = VT_USER;
     }
-}   
+}
 
 
-void Vehicle::TransitToAI()
-{
+void Vehicle::TransitToAI() {
     mVehicleType = VT_AI;
-    ActivateTriggers( false );
-    GetEventManager()->TriggerEvent( EVENT_USER_VEHICLE_REMOVED_FROM_WORLD, this );
+    ActivateTriggers(false);
+    GetEventManager()->TriggerEvent(EVENT_USER_VEHICLE_REMOVED_FROM_WORLD, this);
 }
 
 //=============================================================================
@@ -204,26 +190,25 @@ void Vehicle::TransitToAI()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::EnteringJumpBoostVolume()
-{
-    mDoingJumpBoost = true; 
+void Vehicle::EnteringJumpBoostVolume() {
+    mDoingJumpBoost = true;
 }
 
 /*
 void Vehicle::AddRef()
 {
-    if( mVehicleType == VT_TRAFFIC && TrafficManager::GetInstance()->IsVehicleTrafficVehicle(this) )
+    if(mVehicleType == VT_TRAFFIC && TrafficManager::GetInstance()->IsVehicleTrafficVehicle(this))
     {
-        rDebugPrintf( "Booya!\n" );
+        rDebugPrintf("Booya!\n");
     }
     tRefCounted::AddRef();
 }
 
 void Vehicle::Release()
 {
-    if( mVehicleType == VT_TRAFFIC && TrafficManager::GetInstance()->IsVehicleTrafficVehicle(this) )
+    if(mVehicleType == VT_TRAFFIC && TrafficManager::GetInstance()->IsVehicleTrafficVehicle(this))
     {
-        rDebugPrintf( "Yaaaboo!\n" );
+        rDebugPrintf("Yaaaboo!\n");
     }
     tRefCounted::Release();
 }
@@ -239,108 +224,93 @@ void Vehicle::Release()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::ExitingJumpBoostVolume()
-{
-    if(mDoingJumpBoost)
-    {
+void Vehicle::ExitingJumpBoostVolume() {
+    if (mDoingJumpBoost) {
         // if we were doing one, now might be a good time for this event: 
-        if(mVehicleType == VT_USER)
-        {       
-            GetEventManager()->TriggerEvent(EVENT_BIG_AIR, (void*)(this->mpDriver));       
+        if (mVehicleType == VT_USER) {
+            GetEventManager()->TriggerEvent(EVENT_BIG_AIR, (void *) (this->mpDriver));
         }
-    
+
     }
 
     mDoingJumpBoost = false;
 }
-    
-int Vehicle::CastsShadow()
-{
+
+int Vehicle::CastsShadow() {
     int retVal;
     // Casts a shadow in the 2nd pass, if this vehicle has one (witch and ship don't)
-    if ( m_IsSimpleShadow )
-    {
+    if (m_IsSimpleShadow) {
         retVal = 989;
-    }
-    else
-    {
+    } else {
         retVal = 0;
     }
     return retVal;
 }
+
 //=============================================================================
 // Vehicle::DisplayShadow
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( )
+// Parameters:  ()
 //
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::DisplayShadow()
-{
-    if( !mOkToDrawSelf || !mDrawVehicle )
-    {
+void Vehicle::DisplayShadow() {
+    if (!mOkToDrawSelf || !mDrawVehicle) {
         return;
     }
 
     BEGIN_PROFILE("Vehicle::DisplayShadow")
-    if( !IsSimpleShadow() )
-	{
-		p3d::stack->Push();
-		p3d::stack->Multiply(mTransform);
+    if (!IsSimpleShadow()) {
+        p3d::stack->Push();
+        p3d::stack->Multiply(mTransform);
 
-		mGeometryVehicle->DisplayShadow();
+        mGeometryVehicle->DisplayShadow();
 
-		p3d::stack->Pop();
-	}
+        p3d::stack->Pop();
+    }
     END_PROFILE("Vehicle::DisplayShadow")
 }
 
-void Vehicle::DisplaySimpleShadow( void )
-{
-    if( !mOkToDrawSelf || !mDrawVehicle )
-    {
+void Vehicle::DisplaySimpleShadow(void) {
+    if (!mOkToDrawSelf || !mDrawVehicle) {
         return;
     }
 
     BEGIN_PROFILE("Vehicle::DisplaySimpleShadow")
     p3d::pddi->SetZWrite(false);
-	if( IsSimpleShadow() )
-	{
+    if (IsSimpleShadow()) {
         const float HeightRatio = 1.0f / 4.0f;
-        rmt::Vector pos = mTransform.Row( 3 );
+        rmt::Vector pos = mTransform.Row(3);
         float carY = pos.y;
         pos.y = GetGroundY();
-		rmt::Vector norm;
-		rmt::Vector forward;
-    	forward = mTransform.Row( 2 );
+        rmt::Vector norm;
+        rmt::Vector forward;
+        forward = mTransform.Row(2);
 
-        if( GetLocomotionType() == VL_TRAFFIC )
-        {
+        if (GetLocomotionType() == VL_TRAFFIC) {
             // We'll assume the traffic doesn't go jumping through the air...although they
             //could theorically get knocked through the air I guess. When that happens however
             //they are under physics control and Greg says they aren't VL_TRAFFIC any more.
-    		norm = mTransform.Row( 1 );
-        }
-        else
-        {
+            norm = mTransform.Row(1);
+        } else {
             //const rmt::Matrix& groundTrans = mGroundPlaneSimState->GetTransform();
-    		//norm = groundTrans.Row( 2 );
-    		
-    		norm = this->mGroundPlaneWallVolume->mNormal;
+            //norm = groundTrans.Row(2);
+
+            norm = this->mGroundPlaneWallVolume->mNormal;
         }
 
-        BlobShadowParams p( pos, norm, forward );
-        p.ShadowScale = rmt::Clamp( 1.0f - ( ( carY - ( pos.y + GetRestHeightAboveGround() ) ) * HeightRatio ), 0.0f, 1.0f );
-        p.ShadowAlpha = p.ShadowScale * ( mInterior ? 0.5f : 1.0f );
-        mGeometryVehicle->DisplayShadow( &p );
-	}
+        BlobShadowParams p(pos, norm, forward);
+        p.ShadowScale = rmt::Clamp(
+                1.0f - ((carY - (pos.y + GetRestHeightAboveGround())) * HeightRatio), 0.0f, 1.0f);
+        p.ShadowAlpha = p.ShadowScale * (mInterior ? 0.5f : 1.0f);
+        mGeometryVehicle->DisplayShadow(&p);
+    }
     p3d::pddi->SetZWrite(true);
     END_PROFILE("Vehicle::DisplaySimpleShadow")
 }
-
 
 
 //=============================================================================
@@ -353,45 +323,38 @@ void Vehicle::DisplaySimpleShadow( void )
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetInCarSimState()
-{
-    if(mSimStateArticulatedOutOfCar)
-    {
-        if(!mUsingInCarPhysics)
-        {
-            if(mCollisionAreaIndex != -1)
-            {
-                GetWorldPhysicsManager()->RemoveFromAnyOtherCurrentDynamicsListAndCollisionArea(this);
-            
+void Vehicle::SetInCarSimState() {
+    if (mSimStateArticulatedOutOfCar) {
+        if (!mUsingInCarPhysics) {
+            if (mCollisionAreaIndex != -1) {
+                GetWorldPhysicsManager()->RemoveFromAnyOtherCurrentDynamicsListAndCollisionArea(
+                        this);
+
                 RemoveSelfFromCollisionManager();   // deals with our own index        
                 GetWorldPhysicsManager()->EmptyCollisionAreaIndex(this->mCollisionAreaIndex);
-                
+
             }
-        
-            mSimStateArticulatedOutOfCar->ResetVelocities();        
+
+            mSimStateArticulatedOutOfCar->ResetVelocities();
             mSimStateArticulatedInCar->ResetVelocities();
-            
+
             rmt::Matrix transform = mSimStateArticulatedOutOfCar->GetTransform();
-            
+
             mSimStateArticulatedInCar->SetControl(sim::simAICtrl);
             mSimStateArticulatedInCar->SetTransform(transform);
             mSimStateArticulatedInCar->SetControl(sim::simSimulationCtrl);
-            
-    
-            
+
+
             mSimStateArticulated = mSimStateArticulatedInCar;
-        
+
             mUsingInCarPhysics = true;
-            
-            if(mCollisionAreaIndex != -1)
-            {
+
+            if (mCollisionAreaIndex != -1) {
                 AddSelfToCollisionManager();
             }
         }
-           
-    }       
-    else
-    {
+
+    } else {
         // please God let this be the last fucking hack in this game...
         mSimStateArticulated->ResetVelocities();
 
@@ -406,7 +369,7 @@ void Vehicle::SetInCarSimState()
 
 
     }
-    
+
 
 }
 
@@ -421,60 +384,54 @@ void Vehicle::SetInCarSimState()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetOutOfCarSimState()
-{    
-    if(mSimStateArticulatedOutOfCar)
-    {
-        if(mUsingInCarPhysics)
-        {    
-            if(mCollisionAreaIndex != -1)
-            {
-                GetWorldPhysicsManager()->RemoveFromAnyOtherCurrentDynamicsListAndCollisionArea(this);
-            
+void Vehicle::SetOutOfCarSimState() {
+    if (mSimStateArticulatedOutOfCar) {
+        if (mUsingInCarPhysics) {
+            if (mCollisionAreaIndex != -1) {
+                GetWorldPhysicsManager()->RemoveFromAnyOtherCurrentDynamicsListAndCollisionArea(
+                        this);
+
                 RemoveSelfFromCollisionManager();   // deals with our own index     
-                
+
                 GetWorldPhysicsManager()->EmptyCollisionAreaIndex(this->mCollisionAreaIndex);
-                
+
                 // hmmm
                 // this is probably at init.
                 //
                 // we need to do something to try and make the normal physics update loop run once
                 // so that the cars settles into place with suspensionYOffset set by designers...
-                
+
                 // try this:
                 //this->PreSubstepUpdate();
                 //this->PreCollisionPrep(0.016f, true);
                 //this->Update(0.016f);   
                 //this->PostSubstepUpdate();
-                
-            
-            }              
-                
-            mSimStateArticulatedOutOfCar->ResetVelocities();        
+
+
+            }
+
+            mSimStateArticulatedOutOfCar->ResetVelocities();
             mSimStateArticulatedInCar->ResetVelocities();
-        
-            
+
+
             rmt::Matrix transform = mSimStateArticulatedInCar->GetTransform();
-            
+
             mSimStateArticulatedOutOfCar->SetControl(sim::simAICtrl);
             mSimStateArticulatedOutOfCar->SetTransform(transform);
             mSimStateArticulatedOutOfCar->SetControl(sim::simSimulationCtrl);
-        
-            mSimStateArticulated = mSimStateArticulatedOutOfCar;        
-        
+
+            mSimStateArticulated = mSimStateArticulatedOutOfCar;
+
             CalculateSuspensionLocationAndVelocity();   // just in case
-            
-            mUsingInCarPhysics = false; 
-            
-            if(mCollisionAreaIndex != -1)
-            {
-                AddSelfToCollisionManager(); 
+
+            mUsingInCarPhysics = false;
+
+            if (mCollisionAreaIndex != -1) {
+                AddSelfToCollisionManager();
             }
         }
 
-    }
-    else
-    {
+    } else {
         // please God let this be the last fucking hack in this game...
         mSimStateArticulated->ResetVelocities();
 
@@ -489,11 +446,8 @@ void Vehicle::SetOutOfCarSimState()
 
 
     }
-    
-}
-  
-  
 
+}
 
 
 //=============================================================================
@@ -501,25 +455,22 @@ void Vehicle::SetOutOfCarSimState()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( VehicleLocomotionType loco )
+// Parameters:  (VehicleLocomotionType loco)
 //
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetLocomotion( VehicleLocomotionType loco )
-{
+void Vehicle::SetLocomotion(VehicleLocomotionType loco) {
 
-    switch(loco)
-    {
+    switch (loco) {
         case VL_PHYSICS:
-    
-            if(mLoco == VL_TRAFFIC)
-            {
+
+            if (mLoco == VL_TRAFFIC) {
                 // this is a traffic car that has just been hit
                 // deactivate the AI so that when we get to a rest state
                 // and return to AI control the car won't move
-                ::GetEventManager()->TriggerEvent( EVENT_TRAFFIC_GOT_HIT, this );
-                TrafficManager::GetInstance()->Deactivate( this );
+                ::GetEventManager()->TriggerEvent(EVENT_TRAFFIC_GOT_HIT, this);
+                TrafficManager::GetInstance()->Deactivate(this);
             }
 
             mVehicleLocomotion = mPhysicsLocomotion;
@@ -529,17 +480,17 @@ void Vehicle::SetLocomotion( VehicleLocomotionType loco )
 
             //mSimStateArticulated->StoreJointState(0.016f);
             mSimStateArticulated->SetControl(simSimulationCtrl);
-    
+
             mLocoSwitchedToPhysicsThisFrame = true;
-            
+
             // hmm....
             // safe to set velocity of vehicle to mVelocityCM?
             //mSimStateArticulated->ResetVelocities();
 
-            break; 
+            break;
 
         case VL_TRAFFIC:
-      
+
             mVehicleLocomotion = mTrafficLocomotion;
             mSimStateArticulated->SetControl(simAICtrl);
 
@@ -555,7 +506,6 @@ void Vehicle::SetLocomotion( VehicleLocomotionType loco )
 }
 
 
-
 //=============================================================================
 // Vehicle::IsAFlappingJoint
 //=============================================================================
@@ -566,13 +516,11 @@ void Vehicle::SetLocomotion( VehicleLocomotionType loco )
 // Return:      bool 
 //
 //=============================================================================
-bool Vehicle::IsAFlappingJoint(int index)
-{
-    if( index == mDoorDJoint ||
+bool Vehicle::IsAFlappingJoint(int index) {
+    if (index == mDoorDJoint ||
         index == mDoorPJoint ||
         index == mHoodJoint ||
-        index == mTrunkJoint)
-    {
+        index == mTrunkJoint) {
         return true;
     }
 
@@ -591,8 +539,7 @@ bool Vehicle::IsAFlappingJoint(int index)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::CalculateDragCoeffBasedOnTopSpeed()
-{
+void Vehicle::CalculateDragCoeffBasedOnTopSpeed() {
     // this will also have to be called again whenever the desginer params are reloaded
 
 
@@ -603,29 +550,27 @@ void Vehicle::CalculateDragCoeffBasedOnTopSpeed()
     // for now we know the max engine force - 2 * 1.0f * mDpGasScale
 
     float topspeedmps = mDesignerParams.mDpTopSpeedKmh / 3.6f;
-    
+
     // * 2 because this is what we apply at each wheel
     // also need to subtract rolling friction for this to be accurate
     //float terminalForce = 2.0f * mDesignerParams.mDpGasScale * mDesignerParams.mDpMass - mRollingFrictionForce;
-    
-    float terminalForce = 0.0f;
-    if(mDesignerParams.mDpGasScaleSpeedThreshold == 1.0f)
-    {
-        terminalForce = 2.0f * mDesignerParams.mDpGasScale * mDesignerParams.mDpMass;        //) - (mRollingFrictionForce * mDesignerParams.mDpMass);
-    }
-    else
-    {
-        // else threhold is < 1.0 so it is used
-    
-        terminalForce = 2.0f * mDesignerParams.mDpHighSpeedGasScale * mDesignerParams.mDpMass;        //) - (mRollingFrictionForce * mDesignerParams.mDpMass);
-    }
-    
 
-    mDragCoeff = 2.0f* terminalForce / (topspeedmps * topspeedmps);
+    float terminalForce = 0.0f;
+    if (mDesignerParams.mDpGasScaleSpeedThreshold == 1.0f) {
+        terminalForce = 2.0f * mDesignerParams.mDpGasScale *
+                        mDesignerParams.mDpMass;        //) - (mRollingFrictionForce * mDesignerParams.mDpMass);
+    } else {
+        // else threhold is <1.0 so it is used
+
+        terminalForce = 2.0f * mDesignerParams.mDpHighSpeedGasScale *
+                        mDesignerParams.mDpMass;        //) - (mRollingFrictionForce * mDesignerParams.mDpMass);
+    }
+
+
+    mDragCoeff = 2.0f * terminalForce / (topspeedmps * topspeedmps);
 
 
 }
-
 
 
 //=============================================================================
@@ -638,14 +583,10 @@ void Vehicle::CalculateDragCoeffBasedOnTopSpeed()
 // Return:      bool 
 //
 //=============================================================================
-bool Vehicle::IsJointAWheel(int jointIndex)
-{
-    if(mJointIndexToWheelMapping[jointIndex] >= 0)
-    {
+bool Vehicle::IsJointAWheel(int jointIndex) {
+    if (mJointIndexToWheelMapping[jointIndex] >= 0) {
         return true;
-    }   
-    else
-    {
+    } else {
         return false;
     }
 }
@@ -661,19 +602,21 @@ bool Vehicle::IsJointAWheel(int jointIndex)
 // Return:      bool 
 //
 //=============================================================================
-bool Vehicle::SetWheelCorrectionOffset(int jointNum, float objectSpaceYOffsetFromCurrentPosition, rmt::Vector& normalPointingAtCar, rmt::Vector& groundContactPoint)
-{
+bool Vehicle::SetWheelCorrectionOffset(int jointNum, float objectSpaceYOffsetFromCurrentPosition,
+                                       rmt::Vector &normalPointingAtCar,
+                                       rmt::Vector &groundContactPoint) {
     //bool bottomedOut = mWheels[mJointIndexToWheelMapping[jointNum]]->SetYOffsetFromCurrentPosition(objectSpaceYOffsetFromCurrentPosition);
-    float bottomedOut = mWheels[mJointIndexToWheelMapping[jointNum]]->SetYOffsetFromCurrentPosition(objectSpaceYOffsetFromCurrentPosition);
+    float bottomedOut = mWheels[mJointIndexToWheelMapping[jointNum]]->SetYOffsetFromCurrentPosition(
+            objectSpaceYOffsetFromCurrentPosition);
 
-    if(mLoco == VL_PHYSICS) // is this method even called if it's not?
+    if (mLoco == VL_PHYSICS) // is this method even called if it's not?
     {
-        mVehicleLocomotion->CompareNormalAndHeight(mJointIndexToWheelMapping[jointNum], normalPointingAtCar, groundContactPoint);
+        mVehicleLocomotion->CompareNormalAndHeight(mJointIndexToWheelMapping[jointNum],
+                                                   normalPointingAtCar, groundContactPoint);
     }
 
 
-    if(bottomedOut > 0.0f)
-    {
+    if (bottomedOut > 0.0f) {
         // if any wheel bottoms out we want to set this
 
         // currently this is just used by the parent Vehicle to do some debug rendering
@@ -690,7 +633,6 @@ bool Vehicle::SetWheelCorrectionOffset(int jointNum, float objectSpaceYOffsetFro
 }
 
 
-
 //=============================================================================
 // Vehicle::SetVehicleSimEnvironment
 //=============================================================================
@@ -701,8 +643,7 @@ bool Vehicle::SetWheelCorrectionOffset(int jointNum, float objectSpaceYOffsetFro
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetVehicleSimEnvironment(sim::SimEnvironment* se)
-{    
+void Vehicle::SetVehicleSimEnvironment(sim::SimEnvironment *se) {
     mPhObj->SetSimEnvironment(se);
 }
 
@@ -717,13 +658,12 @@ void Vehicle::SetVehicleSimEnvironment(sim::SimEnvironment* se)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::GetCollisionAreaIndexAndAddSelf()
-{
+void Vehicle::GetCollisionAreaIndexAndAddSelf() {
     mCollisionAreaIndex = GetWorldPhysicsManager()->GetVehicleCollisionAreaIndex();
     rAssert(mCollisionAreaIndex != -1);
 
     AddSelfToCollisionManager();
-    
+
 }
 
 
@@ -737,8 +677,7 @@ void Vehicle::GetCollisionAreaIndexAndAddSelf()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::RemoveSelfAndFreeCollisionAreaIndex()
-{
+void Vehicle::RemoveSelfAndFreeCollisionAreaIndex() {
     RemoveSelfFromCollisionManager();
 
     GetWorldPhysicsManager()->FreeCollisionAreaIndex(mCollisionAreaIndex);
@@ -756,11 +695,14 @@ void Vehicle::RemoveSelfAndFreeCollisionAreaIndex()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::AddSelfToCollisionManager()
-{
-    GetWorldPhysicsManager()->mCollisionManager->AddCollisionObject(mSimStateArticulated->GetCollisionObject(), mCollisionAreaIndex);
-    GetWorldPhysicsManager()->mCollisionManager->AddCollisionObject(mGroundPlaneSimState->GetCollisionObject(), mCollisionAreaIndex);
-    GetWorldPhysicsManager()->mCollisionManager->AddPair(mGroundPlaneSimState->GetCollisionObject(), mSimStateArticulated->GetCollisionObject(), mCollisionAreaIndex);
+void Vehicle::AddSelfToCollisionManager() {
+    GetWorldPhysicsManager()->mCollisionManager->AddCollisionObject(
+            mSimStateArticulated->GetCollisionObject(), mCollisionAreaIndex);
+    GetWorldPhysicsManager()->mCollisionManager->AddCollisionObject(
+            mGroundPlaneSimState->GetCollisionObject(), mCollisionAreaIndex);
+    GetWorldPhysicsManager()->mCollisionManager->AddPair(mGroundPlaneSimState->GetCollisionObject(),
+                                                         mSimStateArticulated->GetCollisionObject(),
+                                                         mCollisionAreaIndex);
 }
 
 
@@ -774,11 +716,12 @@ void Vehicle::AddSelfToCollisionManager()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::RemoveSelfFromCollisionManager()
-{
+void Vehicle::RemoveSelfFromCollisionManager() {
     rAssert(mCollisionAreaIndex != -1);
-    GetWorldPhysicsManager()->mCollisionManager->RemoveCollisionObject(mSimStateArticulated->GetCollisionObject(), mCollisionAreaIndex);
-    GetWorldPhysicsManager()->mCollisionManager->RemoveCollisionObject(mGroundPlaneSimState->GetCollisionObject(), mCollisionAreaIndex);
+    GetWorldPhysicsManager()->mCollisionManager->RemoveCollisionObject(
+            mSimStateArticulated->GetCollisionObject(), mCollisionAreaIndex);
+    GetWorldPhysicsManager()->mCollisionManager->RemoveCollisionObject(
+            mGroundPlaneSimState->GetCollisionObject(), mCollisionAreaIndex);
 }
 
 //=============================================================================
@@ -791,9 +734,9 @@ void Vehicle::RemoveSelfFromCollisionManager()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::AddToOtherCollisionArea(int index)
-{
-    GetWorldPhysicsManager()->mCollisionManager->AddCollisionObject(mSimStateArticulated->GetCollisionObject(), index);
+void Vehicle::AddToOtherCollisionArea(int index) {
+    GetWorldPhysicsManager()->mCollisionManager->AddCollisionObject(
+            mSimStateArticulated->GetCollisionObject(), index);
 }
 
 //=============================================================================
@@ -806,8 +749,7 @@ void Vehicle::AddToOtherCollisionArea(int index)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::CalculateValuesBasedOnDesignerParams()
-{
+void Vehicle::CalculateValuesBasedOnDesignerParams() {
     // in the future, reload from file or something?
     //
     // right now, this method can just be called when a gamepad button is hit, to
@@ -819,8 +761,7 @@ void Vehicle::CalculateValuesBasedOnDesignerParams()
     // 
     //mPhysicsVehicle->SetDesignerParams(&mDesignerParams);
 
-    if(GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_HIGH_ACCELERATION))
-    {
+    if (GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_HIGH_ACCELERATION)) {
         //mDesignerParams.mDpGasScale *= 3.0f;
     }
 
@@ -834,8 +775,7 @@ void Vehicle::CalculateValuesBasedOnDesignerParams()
 
 
     int i;
-    for(i = 0; i < 4; i++)
-    {
+    for (i = 0; i < 4; i++) {
         mSuspensionRestPoints[i] = mSuspensionRestPointsFromFile[i];
         mSuspensionRestPoints[i].y += mDesignerParams.mDpSuspensionYOffset;
 
@@ -845,11 +785,10 @@ void Vehicle::CalculateValuesBasedOnDesignerParams()
     // reset hitpoints to full
     mHitPoints = mDesignerParams.mHitPoints;
 
-    float health = GetCharacterSheetManager()->GetCarHealth( mCharacterSheetCarIndex );
-    if( ( health >= 0.0f ) && ( health < 1.0f ) )
-    {
+    float health = GetCharacterSheetManager()->GetCarHealth(mCharacterSheetCarIndex);
+    if ((health >= 0.0f) && (health < 1.0f)) {
         mHitPoints *= health;
-        SyncVisualDamage( health );
+        SyncVisualDamage(health);
     }
 }
 
@@ -864,24 +803,23 @@ void Vehicle::CalculateValuesBasedOnDesignerParams()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::TrafficSetTransform(rmt::Matrix &m)
-{
+void Vehicle::TrafficSetTransform(rmt::Matrix &m) {
     // should already be under simAICtrl
     rAssert(mSimStateArticulated->GetControl() == simAICtrl);
-    
+
     // the position in the incoming matrix is on the road surface
     //
     // need to figure out how much to bump this up along vup
 
-    // ( I think the wheels settling a bit on the suspension will have to be 
+    // (I think the wheels settling a bit on the suspension will have to be
     // handled elsewhere.. eg. suspensionjointdriver)
-    
+
     float restHeightAboveGround = GetRestHeightAboveGround();
     //restHeightAboveGround = 2.0f;
     rmt::Vector fudge = mVehicleUp;
-    
+
     const float hacktest = 0.1f;
-    
+
     fudge.Scale(restHeightAboveGround - hacktest);
 
     rmt::Vector currentTrans = m.Row(3);
@@ -893,7 +831,7 @@ void Vehicle::TrafficSetTransform(rmt::Matrix &m)
     mSimStateArticulated->SetTransform(m);
     mTransform = m;
 
-    
+
 }
 
 
@@ -907,8 +845,7 @@ void Vehicle::TrafficSetTransform(rmt::Matrix &m)
 // Return:      float 
 //
 //=============================================================================
-float Vehicle::GetRestHeightAboveGround()
-{
+float Vehicle::GetRestHeightAboveGround() {
     // ie. height above ground for skeleton in rest pose
     //
     // assume all the wheels have same radius and same suspension point y
@@ -926,23 +863,19 @@ float Vehicle::GetRestHeightAboveGround()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Matrix* m )
+// Parameters:  (rmt::Matrix* m)
 //
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetTransform( rmt::Matrix &m )
-{
-    if(mSimStateArticulated->GetControl() == simAICtrl)
-    {
+void Vehicle::SetTransform(rmt::Matrix &m) {
+    if (mSimStateArticulated->GetControl() == simAICtrl) {
         mSimStateArticulated->SetTransform(m);
 
         // TODO
         // MS7 HACK
         //mSimStateArticulated->SetControl(simSimulationCtrl);
-    }
-    else
-    {
+    } else {
         mSimStateArticulated->SetControl(simAICtrl);
         mSimStateArticulated->SetTransform(m);
         mSimStateArticulated->SetControl(simSimulationCtrl);
@@ -951,12 +884,11 @@ void Vehicle::SetTransform( rmt::Matrix &m )
     mSimStateArticulated->ResetVelocities();
 
     mTransform = mSimStateArticulated->GetTransform(-1);
- 
+
     mPoseEngine->Begin(true);   // TODO - should this be true or false
 
     int i;
-    for (i = 0; i < mPoseEngine->GetPassCount(); i++)
-    {
+    for (i = 0; i < mPoseEngine->GetPassCount(); i++) {
         mPoseEngine->Advance(i, 0);
         mPoseEngine->Update(i);
     }
@@ -966,7 +898,7 @@ void Vehicle::SetTransform( rmt::Matrix &m )
     // TODO - reset other state variables
     // TODO - need to touch pose engine here?
 
-    
+
     mVelocityCM.Set(0.0f, 0.0f, 0.0f);
     mSpeed = 0.0f;
     mSpeedKmh = 0.0f;
@@ -983,11 +915,9 @@ void Vehicle::SetTransform( rmt::Matrix &m )
     mGear = 0;  // neutral?
 
     // redundant, but just in case   
-    for(i = 0; i < 4; i++)
-    {
+    for (i = 0; i < 4; i++) {
         mWheels[i]->Reset();
     }
-
 
 
     CalculateSuspensionLocationAndVelocity();
@@ -995,8 +925,7 @@ void Vehicle::SetTransform( rmt::Matrix &m )
     mPhysicsLocomotion->SetTerrainIntersectCachePointsForNewTransform();
 
     //Only do this if the car is actually IN the DSG
-    if ( mVehicleCentralIndex > -1 )
-    {
+    if (mVehicleCentralIndex > -1) {
         DSGUpdateAndMove();
     }
 }
@@ -1011,14 +940,13 @@ void Vehicle::SetTransform( rmt::Matrix &m )
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetPosition(rmt::Vector* newPos)
-{
+void Vehicle::SetPosition(rmt::Vector *newPos) {
     rmt::Matrix m;
     m.Identity();
 
     m.FillTranslate(*newPos);
 
-    SetTransform( m );
+    SetTransform(m);
 }
 
 //
@@ -1028,8 +956,7 @@ void Vehicle::SetPosition(rmt::Vector* newPos)
 // to the car's center of mass, the car will start half-sunken into the ground..
 // that is unless we can do the auto adjustment here... 
 // 
-void Vehicle::SetInitialPositionGroundOffsetAutoAdjust( rmt::Vector* newPos )
-{
+void Vehicle::SetInitialPositionGroundOffsetAutoAdjust(rmt::Vector *newPos) {
     mInitialPosition = *newPos;
     mInitialPosition.y += GetRestHeightAboveGround();
 }
@@ -1039,13 +966,12 @@ void Vehicle::SetInitialPositionGroundOffsetAutoAdjust( rmt::Vector* newPos )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* newPos )
+// Parameters:  (rmt::Vector* newPos)
 //
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetInitialPosition( rmt::Vector* newPos ) 
-{ 
+void Vehicle::SetInitialPosition(rmt::Vector *newPos) {
     mInitialPosition = *newPos;
 }
 
@@ -1054,14 +980,13 @@ void Vehicle::SetInitialPosition( rmt::Vector* newPos )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float rotation )
+// Parameters:  (float rotation)
 //
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetResetFacingInRadians( float rotation ) 
-{ 
-    mResetFacingRadians = rotation; 
+void Vehicle::SetResetFacingInRadians(float rotation) {
+    mResetFacingRadians = rotation;
 }
 
 //=============================================================================
@@ -1074,52 +999,45 @@ void Vehicle::SetResetFacingInRadians( float rotation )
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::Reset( bool resetDamage, bool clearTraffic )
-{
+void Vehicle::Reset(bool resetDamage, bool clearTraffic) {
     //SetPosition(&mInitialPosition);
 
     rmt::Matrix m;
 
     m.Identity();
-    m.FillRotateXYZ( 0.0f, mResetFacingRadians, 0.0f );
-    m.FillTranslate( mInitialPosition );
+    m.FillRotateXYZ(0.0f, mResetFacingRadians, 0.0f);
+    m.FillTranslate(mInitialPosition);
     int i;
-    for(i = 0; i < 4; i++)
-    {
+    for (i = 0; i < 4; i++) {
         mWheels[i]->Reset();
     }
 
-    SetTransform( m );
+    SetTransform(m);
 
     /*
     // FORCE UPDATE THE AVATAR'S LAST PATH INFO 
-    Avatar* avatar = GetAvatarManager()->GetAvatarForVehicle( this );
-    if( avatar )
+    Avatar* avatar = GetAvatarManager()->GetAvatarForVehicle(this);
+    if(avatar)
     {
         RoadManager::PathElement elem;
         RoadSegment* seg;
         float segT, roadT;
-        avatar->GetLastPathInfo( elem, seg, segT, roadT );
+        avatar->GetLastPathInfo(elem, seg, segT, roadT);
     }
     */
 
     // if clearTraffic is set to true, we want to use the functionality of ResetOnSpot
     // but use the position that was filled into mInitialPosition
-    if(clearTraffic)
-    {
+    if (clearTraffic) {
         this->ResetOnSpot(resetDamage, false);
-    }
-    else
-    {
-        
+    } else {
 
 
-        ResetFlagsOnly( resetDamage );
+        ResetFlagsOnly(resetDamage);
 
-        Avatar* playerAvatar = GetAvatarManager()->GetAvatarForVehicle( this );
-        if ( playerAvatar )
-        {
-            GetSuperCamManager()->GetSCC( playerAvatar->GetPlayerId() )->DoCameraCut();
+        Avatar *playerAvatar = GetAvatarManager()->GetAvatarForVehicle(this);
+        if (playerAvatar) {
+            GetSuperCamManager()->GetSCC(playerAvatar->GetPlayerId())->DoCameraCut();
         }
     }
 }
@@ -1135,9 +1053,8 @@ void Vehicle::Reset( bool resetDamage, bool clearTraffic )
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::ResetFlagsOnly(bool resetDamage)
-{
-    mOkToDrawSelf = true;    
+void Vehicle::ResetFlagsOnly(bool resetDamage) {
+    mOkToDrawSelf = true;
 
     mDoingBurnout = false;
     //mOkToCrashLand = false;
@@ -1154,35 +1071,33 @@ void Vehicle::ResetFlagsOnly(bool resetDamage)
     mCMOffsetSetToOriginal = false;
     mStuckOnSideTimer = 0.0f;
 
-    if( resetDamage )
-    {
+    if (resetDamage) {
         mVehicleDestroyed = false;
         ResetDamageState();
         mAlreadyPlayedExplosion = false;
 
     }
-   
-   
+
+
     mDesiredDoorPosition[0] = mDesiredDoorPosition[1] = 0.0f;
-    mDesiredDoorAction[0] = mDesiredDoorAction[1]  = DOORACTION_NONE;
-    
+    mDesiredDoorAction[0] = mDesiredDoorAction[1] = DOORACTION_NONE;
+
     mDrawWireFrame = false;
-    
+
     mWasAirborn = false;
     mWasAirbornTimer = 0.0f;
-    
+
     mBottomOutSpeedMaintenance = 0.0f;
 
     // reset the AI pathfinding information, if we're an AI vehicle
-    if( mVehicleType == VT_AI && mVehicleCentralIndex != -1 )
-    {
+    if (mVehicleType == VT_AI && mVehicleCentralIndex != -1) {
         // if we're an AI car, dump our pathfinding data
-        VehicleAI* vAI = dynamic_cast<VehicleAI*>( GetVehicleCentral()->GetVehicleController( mVehicleCentralIndex ) );
-        if( vAI )
-        {
+        VehicleAI *vAI = dynamic_cast<VehicleAI *>(GetVehicleCentral()->GetVehicleController(
+                mVehicleCentralIndex));
+        if (vAI) {
             vAI->Reset();
         }
-    } 
+    }
 }
 
 //=============================================================================
@@ -1195,70 +1110,61 @@ void Vehicle::ResetFlagsOnly(bool resetDamage)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::ResetOnSpot( bool resetDamage /*=true*/ , bool moveCarOntoRoad)
-{
+void Vehicle::ResetOnSpot(bool resetDamage /*=true*/ , bool moveCarOntoRoad) {
 
     // find road segment and put them on it
-    
+
     // one branch or the other will fill these up
     rmt::Vector newVehiclePosition(0.0f, 0.0f, 0.0f);
     float ang = 0.0f;
-    
-    
+
+
     rmt::Vector currentVehiclePosition = this->rPosition();
     float radius = 100.0f; // this is the radius of query for nearest road
 
-    RoadSegment* roadSeg = NULL;
+    RoadSegment *roadSeg = NULL;
     float dummy;
 
     bool useIntersection = false;
-    Intersection* in = NULL;
+    Intersection *in = NULL;
 
 
     // We need to do something special for street races because they have race props, 
     // meaning that resetting onto the "nearest road" can take you outside the race
     // bounds. For normal race missions, we just find the closest road.
     //
-    if( GetGameplayManager()->GetCurrentMission() != NULL && 
-        GetGameplayManager()->GetCurrentMission()->IsRaceMission() )
-    {
+    if (GetGameplayManager()->GetCurrentMission() != NULL &&
+        GetGameplayManager()->GetCurrentMission()->IsRaceMission()) {
         RoadManager::PathElement elem;
-        RoadSegment* seg = 0;
+        RoadSegment *seg = 0;
         float segT;
         float roadT;
-    
-        if( mVehicleType == VT_USER )
-        {
+
+        if (mVehicleType == VT_USER) {
             //// Use my UBER-search algorithm only when desperate times call for it.
             //RoadManager::PathfindingOptions options = RoadManager::PO_SEARCH_INTERSECTIONS | RoadManager::PO_SEARCH_ROADS;
-            //RoadManager::GetInstance()->FindClosestPathElement( currentVehiclePosition, radius, options, elem, roadSeg, segT, roadT );
+            //RoadManager::GetInstance()->FindClosestPathElement(currentVehiclePosition, radius, options, elem, roadSeg, segT, roadT);
 
             GetAvatarManager()->GetAvatarForPlayer(0)->GetLastPathInfo(elem, roadSeg, segT, roadT);
-            if( elem.type == RoadManager::ET_INTERSECTION )
-            {
+            if (elem.type == RoadManager::ET_INTERSECTION) {
                 useIntersection = true;
-                in = (Intersection*) elem.elem;
+                in = (Intersection *) elem.elem;
             }
-        }
-        else 
-        {
-            rAssert( mVehicleType == VT_AI );
-            VehicleAI* vAI = GetVehicleCentral()->GetVehicleAI( this );
-            rAssert( vAI );
-            
-            vAI->GetLastPathInfo( elem, roadSeg, segT, roadT );
-        }
-    }
-    else
-    {
-        GetIntersectManager()->FindClosestRoad( currentVehiclePosition, radius, roadSeg, dummy );
-    }
-    
+        } else {
+            rAssert(mVehicleType == VT_AI);
+            VehicleAI *vAI = GetVehicleCentral()->GetVehicleAI(this);
+            rAssert(vAI);
 
-    if( useIntersection )
-    {
-        rAssert( in );
-        in->GetLocation( newVehiclePosition );
+            vAI->GetLastPathInfo(elem, roadSeg, segT, roadT);
+        }
+    } else {
+        GetIntersectManager()->FindClosestRoad(currentVehiclePosition, radius, roadSeg, dummy);
+    }
+
+
+    if (useIntersection) {
+        rAssert(in);
+        in->GetLocation(newVehiclePosition);
 
         // bump up position
         float h = this->GetRestHeightAboveGround();
@@ -1267,69 +1173,62 @@ void Vehicle::ResetOnSpot( bool resetDamage /*=true*/ , bool moveCarOntoRoad)
 
         ang = FacingIntoRad(mVehicleFacing);
 
-    }
-    else
-    {
-        if(roadSeg)
-        {
+    } else {
+        if (roadSeg) {
             // from the road
             // want two points - centre of baseline and center of top
-            
+
             rmt::Vector corner0, corner1, corner2, corner3;
-            
+
             roadSeg->GetCorner(0, corner0);
             roadSeg->GetCorner(1, corner1);
             roadSeg->GetCorner(2, corner2);
             roadSeg->GetCorner(3, corner3);
-                    
+
             rmt::Vector base = corner0;
             base.Add(corner3);
             base.Scale(0.5f);
-            
+
             rmt::Vector top = corner1;
             top.Add(corner2);
             top.Scale(0.5f);
-            
+
             rmt::Vector centerline = top;
             centerline.Sub(base);
-            
+
             // we want the vehicle's new orientation to be along this vector, and the position
             // to be the projection (shortest distance) of vehicle's position onto this line
-            
+
             rmt::Vector centerlineDir = centerline;
-            
+
             rAssert(centerline.Magnitude() > 0.0f);
-            
+
             centerlineDir.NormalizeSafe();
-            
+
             rmt::Vector newVehicleFacing = centerlineDir;
 
             //If this is NOT SuperSprint, do this test.  Otherwise the car will
             //always face along the road.
-            if ( !GetGameplayManager()->GetGameType() == GameplayManager::GT_SUPERSPRINT )
-            {
-                if(mVehicleFacing.DotProduct(centerlineDir) > 0.0f)
-                {
+            if (!GetGameplayManager()->GetGameType() == GameplayManager::GT_SUPERSPRINT) {
+                if (mVehicleFacing.DotProduct(centerlineDir) > 0.0f) {
                     // leave as is
-                }
-                else
-                {
+                } else {
                     newVehicleFacing.Scale(-1.0f);
                 }
             }
 
             ang = FacingIntoRad(newVehicleFacing);
-            
+
 
             // for position, we just use Dusit's magical function
-            
+
             // the line segment at which this closest point occurs
-            //float FindClosestPointOnLine( const rmt::Vector& start,
+            //float FindClosestPointOnLine(const rmt::Vector& start,
             //                              const rmt::Vector& end,
             //                              const rmt::Vector& p,
-            //                              rmt::Vector& closestPt );
-            
-            
+            //                              rmt::Vector& closestPt);
+
+
             FindClosestPointOnLine(base, top, currentVehiclePosition, newVehiclePosition);
 
 
@@ -1340,72 +1239,65 @@ void Vehicle::ResetOnSpot( bool resetDamage /*=true*/ , bool moveCarOntoRoad)
             s.centre = newVehiclePosition;
             //s.radius = 10.0f;
             s.radius = this->mWheelBase * 2.0f;
-            
+
             TrafficManager::GetInstance()->ClearTrafficInSphere(s);
-            
+
 
 
 
             // bump up position
             float h = this->GetRestHeightAboveGround();
             h += 1.0f;
-            
+
             newVehiclePosition.y += h;
-            
-            
+
+
             //GetVehicleCentral()->ClearSpot(newVehiclePosition, this->mWheelBase * 2.0f, this);
-            
-        }
-        else
-        {    
+
+        } else {
 
             // this is the old debug version 
             //
             // literally resets on spot.
             newVehiclePosition = currentVehiclePosition;
             newVehiclePosition.y += 1.0f;
-            
+
             ang = FacingIntoRad(mVehicleFacing);
         }
     }
 
-    if(moveCarOntoRoad)
-    {
-        
+    if (moveCarOntoRoad) {
+
         rmt::Matrix m;
-        
+
         m.Identity();
 
-        if ( GetGameplayManager()->GetGameType() == GameplayManager::GT_SUPERSPRINT )
-        {
-            if ( GetSSM()->IsTrackReversed() )
-            {
+        if (GetGameplayManager()->GetGameType() == GameplayManager::GT_SUPERSPRINT) {
+            if (GetSSM()->IsTrackReversed()) {
                 ang += rmt::PI;  //Turn, turn around
             }
         }
-            
-        //m.FillRotateXYZ( 0.0f, mResetFacingRadians, 0.0f );
-        m.FillRotateXYZ( 0.0f, ang, 0.0f );
-        
+
+        //m.FillRotateXYZ(0.0f, mResetFacingRadians, 0.0f);
+        m.FillRotateXYZ(0.0f, ang, 0.0f);
+
         m.FillTranslate(newVehiclePosition);
         int i;
-        for(i = 0; i < 4; i++)
-        {
+        for (i = 0; i < 4; i++) {
             mWheels[i]->Reset();
         }
 
-        SetTransform( m );
+        SetTransform(m);
     }
-       
+
     ResetFlagsOnly(resetDamage);
-    
-    Avatar* playerAvatar = GetAvatarManager()->GetAvatarForVehicle( this );
-    if ( playerAvatar )
-    {
-        GetSuperCamManager()->GetSCC( playerAvatar->GetPlayerId() )->DoCameraCut();
+
+    Avatar *playerAvatar = GetAvatarManager()->GetAvatarForVehicle(this);
+    if (playerAvatar) {
+        GetSuperCamManager()->GetSCC(playerAvatar->GetPlayerId())->DoCameraCut();
     }
-    
-     mAlreadyCalledAutoResetOnSpot = false;
+
+    mAlreadyCalledAutoResetOnSpot = false;
 }
 
 
@@ -1419,8 +1311,7 @@ void Vehicle::ResetOnSpot( bool resetDamage /*=true*/ , bool moveCarOntoRoad)
 // Return:      float 
 //
 //=============================================================================
-float Vehicle::GetFacingInRadians()
-{
+float Vehicle::GetFacingInRadians() {
     return FacingIntoRad(mVehicleFacing);
 }
 
@@ -1435,15 +1326,13 @@ float Vehicle::GetFacingInRadians()
 // Return:      float 
 //
 //=============================================================================
-float Vehicle::FacingIntoRad(rmt::Vector facing)
-{
+float Vehicle::FacingIntoRad(rmt::Vector facing) {
     float test = rmt::ATan2(facing.x, facing.z);
-    
-    if(rmt::IsNan(test))
-    {
+
+    if (rmt::IsNan(test)) {
         return 0.0f;
     }
-    
+
     return test;
     //return 0.0f;
 }
@@ -1458,19 +1347,15 @@ float Vehicle::FacingIntoRad(rmt::Vector facing)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetGas(float gas)
-{    
+void Vehicle::SetGas(float gas) {
 
-    if(!mVehicleDestroyed && !mGasBrakeDisabled)
-    {
+    if (!mVehicleDestroyed && !mGasBrakeDisabled) {
         mGas = gas;
-        //if(mGas > 0.8f)
+        //if(mGas> 0.8f)
         //{
         //    mGas = 1.0f;
         //}
-    }
-    else
-    {
+    } else {
         mGas = 0.0f;
     }
 }
@@ -1486,55 +1371,45 @@ void Vehicle::SetGas(float gas)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetBrake(float brake)
-{
+void Vehicle::SetBrake(float brake) {
 
-    if(!mVehicleDestroyed && !mGasBrakeDisabled)
-    {   
+    if (!mVehicleDestroyed && !mGasBrakeDisabled) {
         // normal setting of value
-               
+
         // the max we will set brake to is inverse of percentage of top speed
-        
+
         float proj = mVelocityCM.DotProduct(mVehicleFacing);
-        if(proj > 0.0f)
-        {
+        if (proj > 0.0f) {
             // only do all this crap if going forward, and using brake to slow down, not go in reverse
-                
+
 
             float maxbrake = 1.0f - this->mPercentOfTopSpeed;
-            if(maxbrake < 0.0f)
-            {
+            if (maxbrake < 0.0f) {
                 maxbrake = 0.0f;
             }
-            
-            if(brake > maxbrake)
-            {
+
+            if (brake > maxbrake) {
                 brake = maxbrake;
             }
-            
-            if(mGas > 0.1f)
-            {       
-                if(brake > mGas)
-                {
+
+            if (mGas > 0.1f) {
+                if (brake > mGas) {
                     brake = mGas - 0.1f;
                 }
             }
-            if(brake < 0.0f)
-            {
+            if (brake < 0.0f) {
                 brake = 0.0f;
             }
         }
-           
-    
+
+
         mBrake = brake;
-    }
-    else
-    {
+    } else {
         mBrake = 0.0f;
     }
-    
+
     /*
-    if(mBrake > 0.0f && !mBrakeLightsOn)    
+    if(mBrake> 0.0f && !mBrakeLightsOn)
     {
         mGeometryVehicle->ShowBrakeLights();
         mBrakeLightsOn  = true;
@@ -1546,54 +1421,43 @@ void Vehicle::SetBrake(float brake)
         mBrakeLightsOn  = false;
     }
     */
-    
-    if(mBrake > 0.0f && !mDontShowBrakeLights)
-    {
-        if(IsInReverse())
-        {
-            if(!mReverseLightsOn)
-            {
+
+    if (mBrake > 0.0f && !mDontShowBrakeLights) {
+        if (IsInReverse()) {
+            if (!mReverseLightsOn) {
                 mGeometryVehicle->ShowReverseLights();
                 mReverseLightsOn = true;
-            }            
-            if(mBrakeLightsOn)
-            {
-                mGeometryVehicle->HideBrakeLights();
-                mBrakeLightsOn = false;                    
             }
-            
-        }
-        else
-        {
-            if(mReverseLightsOn)
-            {
+            if (mBrakeLightsOn) {
+                mGeometryVehicle->HideBrakeLights();
+                mBrakeLightsOn = false;
+            }
+
+        } else {
+            if (mReverseLightsOn) {
                 mGeometryVehicle->HideReverseLights();
                 mReverseLightsOn = false;
             }
-            
-            if(!mBrakeLightsOn)
-            {
+
+            if (!mBrakeLightsOn) {
                 mGeometryVehicle->ShowBrakeLights();
-                mBrakeLightsOn  = true;            
-            }        
+                mBrakeLightsOn = true;
+            }
         }
-        
+
     }
-    
-    if(mBrake == 0.0f || mDontShowBrakeLights)
-    {
-        if(mBrakeLightsOn)
-        {
+
+    if (mBrake == 0.0f || mDontShowBrakeLights) {
+        if (mBrakeLightsOn) {
             mGeometryVehicle->HideBrakeLights();
-            mBrakeLightsOn = false;        
+            mBrakeLightsOn = false;
         }
-        if(mReverseLightsOn)
-        {
+        if (mReverseLightsOn) {
             mGeometryVehicle->HideReverseLights();
             mReverseLightsOn = false;
-        }         
+        }
     }
-    
+
 }
 
 
@@ -1607,44 +1471,36 @@ void Vehicle::SetBrake(float brake)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetEBrake(float ebrake, float dt)
-{
+void Vehicle::SetEBrake(float ebrake, float dt) {
     const float magicEBrakeTimerLimit = 0.5f;   // seconds
 
-    if(ebrake > 0.0f)
-    {    
+    if (ebrake > 0.0f) {
         //mEBrake = ebrake;
-        
-        if(mEBrake == 0.0f)
-        {
+
+        if (mEBrake == 0.0f) {
             // ie. the button just went down, reset the timer
-            mEBrakeTimer = 0.0f;    
-        }        
-        
+            mEBrakeTimer = 0.0f;
+        }
+
         // hack for digital
         mEBrake = 1.0f;
 
-        
-    }
-    else if (mEBrakeTimer < magicEBrakeTimerLimit)
-    {
+
+    } else if (mEBrakeTimer < magicEBrakeTimerLimit) {
         // leave EBrake at last set value?
-    }
-    else
-    {
+    } else {
         mEBrake = 0.0f;
-        mEBrakeTimer = 0.0f;        
+        mEBrakeTimer = 0.0f;
 
     }
 
 
+    mEBrakeTimer += dt;
 
-    mEBrakeTimer += dt;        
 
-    
     //  mEBrake = ebrake;  old implementation of this method
-    
-    
+
+
 
 }
 
@@ -1659,8 +1515,7 @@ void Vehicle::SetEBrake(float ebrake, float dt)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetWheelTurnAngle(float wheelTurnAngle, bool doNotModifyInputValue, float dt)
-{
+void Vehicle::SetWheelTurnAngle(float wheelTurnAngle, bool doNotModifyInputValue, float dt) {
 
     mUnmodifiedInputWheelTurnAngle = wheelTurnAngle;  // just store for later use - things like doughnuts...
 
@@ -1668,10 +1523,10 @@ void Vehicle::SetWheelTurnAngle(float wheelTurnAngle, bool doNotModifyInputValue
 
     //char dbinfo[64];
     //sprintf(dbinfo, "input wheel turn angle: %.2f\n", wheelTurnAngle);    
-    //DEBUGINFO_ADDSCREENTEXT( dbinfo );
+    //DEBUGINFO_ADDSCREENTEXT(dbinfo);
 
     //doNotModifyInputValue = true;  //debug test
-    if(doNotModifyInputValue)   // please ignore the name of the param :)
+    if (doNotModifyInputValue)   // please ignore the name of the param :)
     {
         // this is a wheel
         // scale up input value
@@ -1679,27 +1534,22 @@ void Vehicle::SetWheelTurnAngle(float wheelTurnAngle, bool doNotModifyInputValue
         //const float magicWheelScaleUp = 10.2f;
         const float magicWheelScaleUp = 2.75f;
         //const float magicWheelScaleUp = 1.5f;
-        
+
         wheelTurnAngle *= magicWheelScaleUp;
-        
-        if(wheelTurnAngle < -1.0f)
-        {
+
+        if (wheelTurnAngle < -1.0f) {
             wheelTurnAngle = -1.0f;
         }
-        if(wheelTurnAngle > 1.0f)
-        {
+        if (wheelTurnAngle > 1.0f) {
             wheelTurnAngle = 1.0f;
         }
-    
-        
-    
-    
-    
+
+
     }
     if (1)  // plum wants high speed steering drop always
     {
         /*
-        if(rmt::Fabs(wheelTurnAngle) < mSteeringInputThreshold)
+        if(rmt::Fabs(wheelTurnAngle) <mSteeringInputThreshold)
         {
             wheelTurnAngle *= mSteeringPreSlope;
         }
@@ -1714,7 +1564,7 @@ void Vehicle::SetWheelTurnAngle(float wheelTurnAngle, bool doNotModifyInputValue
             wheelTurnAngle = wheelTurnAngleMag * rmt::Sign(wheelTurnAngle);
         }
         */
-        
+
         // factor in sensitivity drop as speed increases
         //
         // simple slope-intercept formula
@@ -1727,127 +1577,111 @@ void Vehicle::SetWheelTurnAngle(float wheelTurnAngle, bool doNotModifyInputValue
         // this should still be a positive number
         // use to scale the angle (ie. formulat initialy setup for input value of 1.0)
 
-        if(value < 0.0f)
-        {
+        if (value < 0.0f) {
             value = 0.0f;   // should never hit this
         }
 
         wheelTurnAngle *= value;
     }
-    
-    
-    
+
+
+
     //else
     //{
     //    float maxWheelTurnInRadians = rmt::DegToRadian(mDesignerParams.mDpMaxWheelTurnAngle);
     //    mWheelTurnAngle = wheelTurnAngle * maxWheelTurnInRadians;    
     //}
 
-    
+
     // if we're below some low speed.....??? 60 kmh... have a time lag to reach the desired angle to reduce twichyness
     const float thresholdLowSpeed = 90.0f; // kmh
     const float timeAtZero = 0.3f;
-    if(/*this->mSpeedKmh < thresholdLowSpeed && */ this->mVehicleType == VT_USER && !doNotModifyInputValue)
-    {
+    if (/*this->mSpeedKmh <thresholdLowSpeed && */ this->mVehicleType == VT_USER &&
+                                                   !doNotModifyInputValue) {
         // closer to zero, the longer the lag.
-                
+
         // at 60 it would take no time.
-        
+
         // standard linear drop:
         //float secondsToChangeOneUnitAtCurrentSpeed = (1.0f - mSpeedKmh / thresholdLowSpeed) * timeAtZero;
-        
+
         // parabolic drop:       
-        float secondsToChangeOneUnitAtCurrentSpeed = ((1.0f - rmt::Sqr(mSpeedKmh / thresholdLowSpeed))  * timeAtZero);
-        
+        float secondsToChangeOneUnitAtCurrentSpeed = (
+                (1.0f - rmt::Sqr(mSpeedKmh / thresholdLowSpeed)) * timeAtZero);
+
         // new cap for plum
-        if(secondsToChangeOneUnitAtCurrentSpeed < 0.15f)
-        {
+        if (secondsToChangeOneUnitAtCurrentSpeed < 0.15f) {
             secondsToChangeOneUnitAtCurrentSpeed = 0.15f;
         }
-        
+
         rAssert(secondsToChangeOneUnitAtCurrentSpeed > 0.0f);
-        if(secondsToChangeOneUnitAtCurrentSpeed > 0.0f)         // 2 lines of defense
+        if (secondsToChangeOneUnitAtCurrentSpeed > 0.0f)         // 2 lines of defense
         {
             float unitsPerSecond = 1.0f / secondsToChangeOneUnitAtCurrentSpeed;
-            
+
             // this is the max amount we can change in this frame
-            float unitsInThisFrame = unitsPerSecond * dt;   
-            
+            float unitsInThisFrame = unitsPerSecond * dt;
+
             // at this point wheelTurnAngle is still our 'target', between 0 and 1
-            
+
             // we can move a maximum of 'unitsInThisFrame' from mWheelTurnAngleInputValue (last value) towards our target, wheelTurnAngle
-            
-            if(wheelTurnAngle > mWheelTurnAngleInputValue)
-            {
-                if(wheelTurnAngle > (mWheelTurnAngleInputValue + unitsInThisFrame))
-                {
-                    mWheelTurnAngleInputValue += unitsInThisFrame;                
-                }
-                else
-                {
+
+            if (wheelTurnAngle > mWheelTurnAngleInputValue) {
+                if (wheelTurnAngle > (mWheelTurnAngleInputValue + unitsInThisFrame)) {
+                    mWheelTurnAngleInputValue += unitsInThisFrame;
+                } else {
                     mWheelTurnAngleInputValue = wheelTurnAngle;
                 }
-            
-            
-            }
-            else if(wheelTurnAngle < mWheelTurnAngleInputValue)
-            {
-                if(wheelTurnAngle < (mWheelTurnAngleInputValue - unitsInThisFrame))
-                {
+
+
+            } else if (wheelTurnAngle < mWheelTurnAngleInputValue) {
+                if (wheelTurnAngle < (mWheelTurnAngleInputValue - unitsInThisFrame)) {
                     mWheelTurnAngleInputValue -= unitsInThisFrame;
+                } else {
+                    mWheelTurnAngleInputValue = wheelTurnAngle;
                 }
-                else
-                {
-                   mWheelTurnAngleInputValue = wheelTurnAngle;
-                }
-            
+
             }
             // else if they're == do nothing
-            
+
         }
-        
-    }   
-    else
-    {
+
+    } else {
         mWheelTurnAngleInputValue = wheelTurnAngle;
     }
-    
-    
+
+
     // low speed uturn thingy    
-    if(this->mSpeedKmh < 50.0f && this->mVehicleType == VT_USER)
-    {
+    if (this->mSpeedKmh < 50.0f && this->mVehicleType == VT_USER) {
         // allow the max wheel turn angel to be higher
         // ?? try current + 10?
-            
+
         // normal case - use limit set by designers    
-        float maxWheelTurnInRadians = rmt::DegToRadian(mDesignerParams.mDpMaxWheelTurnAngle + 10.0f);        
+        float maxWheelTurnInRadians = rmt::DegToRadian(
+                mDesignerParams.mDpMaxWheelTurnAngle + 10.0f);
         //mWheelTurnAngle = wheelTurnAngle * maxWheelTurnInRadians;
         mWheelTurnAngle = mWheelTurnAngleInputValue * maxWheelTurnInRadians;
-       
-        
-    }
-    else
-    {
+
+
+    } else {
         // normal case - use limit set by designers    
-        float maxWheelTurnInRadians = rmt::DegToRadian(mDesignerParams.mDpMaxWheelTurnAngle);        
+        float maxWheelTurnInRadians = rmt::DegToRadian(mDesignerParams.mDpMaxWheelTurnAngle);
         //mWheelTurnAngle = wheelTurnAngle * maxWheelTurnInRadians;
         mWheelTurnAngle = mWheelTurnAngleInputValue * maxWheelTurnInRadians;
 
     }
-    
+
 
     int i;
-    for(i = 0; i < 4; i++)
-    {
-        if(mWheels[i]->mSteerWheel)
-        {
+    for (i = 0; i < 4; i++) {
+        if (mWheels[i]->mSteerWheel) {
             mWheels[i]->mWheelTurnAngle = mWheelTurnAngle;
         }
     }
-    
+
     //sprintf(dbinfo, "modified wheel turn angle: %.2f\n", mWheelTurnAngle);    
 
-    //DEBUGINFO_ADDSCREENTEXT( dbinfo );
+    //DEBUGINFO_ADDSCREENTEXT(dbinfo);
 
 }
 
@@ -1862,31 +1696,26 @@ void Vehicle::SetWheelTurnAngle(float wheelTurnAngle, bool doNotModifyInputValue
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetWheelTurnAngleDirectlyInRadiansForDusitOnly(float rad)
-{
+void Vehicle::SetWheelTurnAngleDirectlyInRadiansForDusitOnly(float rad) {
     float maxWheelTurnInRadians = rmt::DegToRadian(mDesignerParams.mDpMaxWheelTurnAngle);
-    
+
     mWheelTurnAngle = rad;
-    
-    if(rad > maxWheelTurnInRadians)
-    {
-        mWheelTurnAngle = maxWheelTurnInRadians;    
+
+    if (rad > maxWheelTurnInRadians) {
+        mWheelTurnAngle = maxWheelTurnInRadians;
     }
-    if(rad < -maxWheelTurnInRadians)
-    {
-        mWheelTurnAngle = -maxWheelTurnInRadians;    
+    if (rad < -maxWheelTurnInRadians) {
+        mWheelTurnAngle = -maxWheelTurnInRadians;
     }
-    
-  
+
+
     int i;
-    for(i = 0; i < 4; i++)
-    {
-        if(mWheels[i]->mSteerWheel)
-        {
+    for (i = 0; i < 4; i++) {
+        if (mWheels[i]->mSteerWheel) {
             mWheels[i]->mWheelTurnAngle = mWheelTurnAngle;
         }
     }
-       
+
 
 }
 
@@ -1900,16 +1729,13 @@ void Vehicle::SetWheelTurnAngleDirectlyInRadiansForDusitOnly(float rad)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetReverse(float reverse)
-{
+void Vehicle::SetReverse(float reverse) {
     mReverse = reverse;
-    if(mReverse > 0.0f)
-    {
+    if (mReverse > 0.0f) {
         //rAssertMsg(0, "see greg");
         //int stophere = 1;
     }
 }
-
 
 
 //=============================================================================
@@ -1922,9 +1748,9 @@ void Vehicle::SetReverse(float reverse)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::PreSubstepUpdate(float dt)
-{      
-    float dirSpeedKmh = mSpeedKmh * ( (mVelocityCM.DotProduct(mVehicleFacing) > 0.0f) ? 1.0f : -1.0f);
+void Vehicle::PreSubstepUpdate(float dt) {
+    float dirSpeedKmh =
+            mSpeedKmh * ((mVelocityCM.DotProduct(mVehicleFacing) > 0.0f) ? 1.0f : -1.0f);
     float deltaKmh = dirSpeedKmh - mLastSpeedKmh;
     mAccelMss = (deltaKmh / 3600.0f) / (dt / 1000.0f);
     mLastSpeedKmh = mSpeedKmh;
@@ -1935,7 +1761,7 @@ void Vehicle::PreSubstepUpdate(float dt)
     if(mWaitingToSwitchToOutOfCar && mCollisionAreaIndex != -1)
     {   
         mOutOfCarSwitchTimer += dt;
-        if(mOutOfCarSwitchTimer > 2.0f)
+        if(mOutOfCarSwitchTimer> 2.0f)
         {
             mOutOfCarSwitchTimer = 0.0f;
             mWaitingToSwitchToOutOfCar = false;
@@ -1949,10 +1775,9 @@ void Vehicle::PreSubstepUpdate(float dt)
 
     mVelocityCMLag = mVelocityCM;
     mPositionCMLag = this->rPosition();
-    
+
     mVehicleLocomotion->PreSubstepUpdate();
 }
-
 
 
 //=============================================================================
@@ -1965,8 +1790,7 @@ void Vehicle::PreSubstepUpdate(float dt)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::PreCollisionPrep(float dt, bool firstSubstep)
-{
+void Vehicle::PreCollisionPrep(float dt, bool firstSubstep) {
     BEGIN_PROFILE("mGeometryVehicle->Update")
     mGeometryVehicle->Update(dt);   // seems to work fine before
     END_PROFILE("mGeometryVehicle->Update")
@@ -2000,8 +1824,7 @@ void Vehicle::PreCollisionPrep(float dt, bool firstSubstep)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetNoDamperDownFlagOnWheel(int wheelIndex)
-{
+void Vehicle::SetNoDamperDownFlagOnWheel(int wheelIndex) {
     mDamperShouldNotPullDown[wheelIndex] = true;    // just for this frame    
 }
 
@@ -2016,48 +1839,39 @@ void Vehicle::SetNoDamperDownFlagOnWheel(int wheelIndex)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::CalculateSuspensionLocationAndVelocity()
-{
+void Vehicle::CalculateSuspensionLocationAndVelocity() {
     // TODO - is this ok to actually change what we call world space suspension point for this frame if we're airborn???
 
     // do airborn calculation here?
     // only look at wheels 2,3
-    
+
     // recall - right now this is getting called from physicslocomotion::update, after collision detection
 
 
-    //if( !(mWheels[2]->mWheelInCollision) && !(mWheels[3]->mWheelInCollision))
-    if( !(mWheels[2]->mWheelInCollision) || !(mWheels[3]->mWheelInCollision))
-    {
+    //if(!(mWheels[2]->mWheelInCollision) && !(mWheels[3]->mWheelInCollision))
+    if (!(mWheels[2]->mWheelInCollision) || !(mWheels[3]->mWheelInCollision)) {
         // consider this airbor
         // even if we're just cresting hill.
         mSteeringWheelsOutOfContact = true;
-    }
-    else
-    {
+    } else {
         mSteeringWheelsOutOfContact = false;
     }
 
 
     // air born test
     int i;
-    int count = 0;    
-    for(i = 0; i < 4; i++)
-    {
-        if(!(mWheels[i]->mWheelInCollision))
-        {
+    int count = 0;
+    for (i = 0; i < 4; i++) {
+        if (!(mWheels[i]->mWheelInCollision)) {
             count++;
         }
     }
 
-    if(count > 3)
-    {
+    if (count > 3) {
         mAirBorn = true;
         mWasAirborn = true;
         mWasAirbornTimer = 0.0f;
-    }
-    else
-    {
+    } else {
         mAirBorn = false;
     }
 
@@ -2067,16 +1881,15 @@ void Vehicle::CalculateSuspensionLocationAndVelocity()
 
 
     // TODO - how 'bout flipped?
-    
- 
-    for(i = 0; i < 4; i++)
-    {
+
+
+    for (i = 0; i < 4; i++) {
 
         mSuspensionWorldSpacePoints[i] = mSuspensionRestPoints[i];
-        
-        
+
+
         //if(1)//mSteeringWheelsOutOfContact)
-        if(mSteeringWheelsOutOfContact)// || mVehicleState == VS_NORMAL)
+        if (mSteeringWheelsOutOfContact)// || mVehicleState == VS_NORMAL)
         {
             // TODO - revisit this - I don't like it
 
@@ -2088,7 +1901,8 @@ void Vehicle::CalculateSuspensionLocationAndVelocity()
 
         mSuspensionWorldSpacePoints[i].Transform(mTransform);
 
-        mSimStateArticulated->GetVelocity(mSuspensionWorldSpacePoints[i], mSuspensionPointVelocities[i]);        
+        mSimStateArticulated->GetVelocity(mSuspensionWorldSpacePoints[i],
+                                          mSuspensionPointVelocities[i]);
 
     }
 
@@ -2101,9 +1915,9 @@ void Vehicle::CalculateSuspensionLocationAndVelocity()
     // this is the only place where mOkToCrashLand will get set to true
     //
     /*
-    if( !(mWheels[0]->mWheelInCollision) && !(mWheels[1]->mWheelInCollision) && 
+    if(!(mWheels[0]->mWheelInCollision) && !(mWheels[1]->mWheelInCollision) &&
         !(mWheels[2]->mWheelInCollision) && !(mWheels[3]->mWheelInCollision) &&
-        mVehicleUp.y > 0.0f)
+        mVehicleUp.y> 0.0f)
     {
         mOkToCrashLand = true;
     }
@@ -2112,7 +1926,6 @@ void Vehicle::CalculateSuspensionLocationAndVelocity()
     // TODO - around here somewhere is the place to calculate and set a big-air event
 
 }
-
 
 
 //=============================================================================
@@ -2125,57 +1938,49 @@ void Vehicle::CalculateSuspensionLocationAndVelocity()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::JumpOnHorn(float test)
-{
-    if(!(this->mAirBorn))
-    {
+void Vehicle::JumpOnHorn(float test) {
+    if (!(this->mAirBorn)) {
 
-        if(GetSimState()->GetControl() == sim::simAICtrl)
-        {
+        if (GetSimState()->GetControl() == sim::simAICtrl) {
             GetSimState()->SetControl(sim::simSimulationCtrl);
         }
 
         rmt::Vector boost = mVehicleFacing;
         boost.y += 2.0f;
-        
+
         static float hack = 5.0f;
         //const float hack = 2.0f;
-        
+
         boost.Scale(test * hack);
-        
-        rmt::Vector& linearVel = mSimStateArticulated->GetLinearVelocity();
+
+        rmt::Vector &linearVel = mSimStateArticulated->GetLinearVelocity();
         linearVel.Add(boost);
-        
-        if(GetSimState()->GetControl() == sim::simAICtrl)
-        {
+
+        if (GetSimState()->GetControl() == sim::simAICtrl) {
             GetSimState()->SetControl(sim::simSimulationCtrl);
         }
-    }    
+    }
 }
 
 
-void Vehicle::TurboOnHorn()
-{
+void Vehicle::TurboOnHorn() {
     /*static*/ const float SECONDS_TURBO_RECHARGE = 0.5f;
     /*static*/ const float TURBO_SPEED_MPS = 10.0f;
 
-    if( mSecondsTillNextTurbo <= 0.0f )
-    {
-        if( mNumTurbos > 0 )
-        {
+    if (mSecondsTillNextTurbo <= 0.0f) {
+        if (mNumTurbos > 0) {
             // apply turbo speed
-            if(GetSimState()->GetControl() == sim::simAICtrl)
-            {
+            if (GetSimState()->GetControl() == sim::simAICtrl) {
                 GetSimState()->SetControl(sim::simSimulationCtrl);
             }
             rmt::Vector turbo = mVehicleFacing * TURBO_SPEED_MPS;
-            rmt::Vector& linearVel = mSimStateArticulated->GetLinearVelocity();
-            linearVel.Add( turbo );
+            rmt::Vector &linearVel = mSimStateArticulated->GetLinearVelocity();
+            linearVel.Add(turbo);
 
             /*
             // TODO:
             // Maybe play a sound effect? Pass in the vehicle pointer? Ask Esan
-            ::GetEventManager()->TriggerEvent( EVENT_USE_NITRO, this );
+            ::GetEventManager()->TriggerEvent(EVENT_USE_NITRO, this);
             */
 
             // decrement number of turbos
@@ -2198,30 +2003,25 @@ void Vehicle::TurboOnHorn()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::Update(float dt)
-{
+void Vehicle::Update(float dt) {
     // Update gas, if the change in gas is significant
-    
-    if(mLocoSwitchedToPhysicsThisFrame)
-    {
+
+    if (mLocoSwitchedToPhysicsThisFrame) {
         this->PreCollisionPrep(dt, true);
     }
     mLocoSwitchedToPhysicsThisFrame = false;
-    
-    
-    
+
+
     mDeltaGas = (mGas - mLastGas) / dt;
     mLastGas = mGas;
 
     // update turbo wind down time
-    if( mSecondsTillNextTurbo > 0.0f )
-    {
+    if (mSecondsTillNextTurbo > 0.0f) {
         mSecondsTillNextTurbo -= dt;
     }
-    
+
     mNoDamageTimer -= dt;
-    if(mNoDamageTimer < 0.0f)
-    {
+    if (mNoDamageTimer < 0.0f) {
         mNoDamageTimer = 0.0f;
     }
 
@@ -2236,25 +2036,21 @@ void Vehicle::Update(float dt)
 
     // break up of work into pre and post update, outside of update, is a bit arbitrary 
     // I suppose
-    
-    mSimStateArticulated->StoreJointState(dt);  
+
+    mSimStateArticulated->StoreJointState(dt);
 
     mVehicleLocomotion->PreUpdate();
 
-    if(mVehicleType != VT_AI && GetGameplayManager()->GetGameType() != GameplayManager::GT_SUPERSPRINT)
-    {
-        if(mCollisionLateralResistanceDropFactor < 1.0f)
-        {
+    if (mVehicleType != VT_AI &&
+        GetGameplayManager()->GetGameType() != GameplayManager::GT_SUPERSPRINT) {
+        if (mCollisionLateralResistanceDropFactor < 1.0f) {
             mCollisionLateralResistanceDropFactor += dt;
-            if(mCollisionLateralResistanceDropFactor > 1.0f)
-            {
+            if (mCollisionLateralResistanceDropFactor > 1.0f) {
                 mCollisionLateralResistanceDropFactor = 1.0f;
             }
         }
-    }
-    else
-    {
-        mCollisionLateralResistanceDropFactor = 1.0f;     
+    } else {
+        mCollisionLateralResistanceDropFactor = 1.0f;
     }
 
     mVehicleLocomotion->Update(dt);
@@ -2263,11 +2059,11 @@ void Vehicle::Update(float dt)
     //
     // ?? maybe traffic should just set mTransform directly
     // also set mSpeed???
-    
+
 
     mVehicleLocomotion->PostUpdate();
-    
-       
+
+
     // TODO - trust these are normalized?
     mVehicleFacing = mTransform.Row(2);
     mVehicleUp = mTransform.Row(1);
@@ -2285,34 +2081,27 @@ void Vehicle::Update(float dt)
     // just have to make sure that mSuspensionPointVelocities are correct
     // and it will use mSteeringWheelAngle if set.
     UpdateWheelRenderingInfo(dt);
-   
+
     SetGeometryVehicleWheelSmokeLevel();
 
-    if(mBurnoutLevel > 0.0f)
-    {
-        if ( !mDoingBurnout )
-        {
-            GetEventManager()->TriggerEvent( EVENT_BURNOUT );
+    if (mBurnoutLevel > 0.0f) {
+        if (!mDoingBurnout) {
+            GetEventManager()->TriggerEvent(EVENT_BURNOUT);
             mDoingBurnout = true;
         }
-    }
-    else
-    {
-        if ( mDoingBurnout )
-        {
-            GetEventManager()->TriggerEvent( EVENT_BURNOUT_END );
+    } else {
+        if (mDoingBurnout) {
+            GetEventManager()->TriggerEvent(EVENT_BURNOUT_END);
             mDoingBurnout = false;
         }
     }
 
 
-
     mSpeedKmh = mSpeed * 3.6f;  // for watcher...
-        
-                       
+
+
     int i;
-    for (i = 0; i < mPoseEngine->GetPassCount(); i++)
-    {
+    for (i = 0; i < mPoseEngine->GetPassCount(); i++) {
         mPoseEngine->Advance(i, dt);
         mPoseEngine->Update(i);
     }
@@ -2324,29 +2113,28 @@ void Vehicle::Update(float dt)
 
     // cap on huge impulses
     const float hugeSpeed = 200.0f; // that's about 720 kmh
-    if(this->mSpeed > hugeSpeed)
-    {
+    if (this->mSpeed > hugeSpeed) {
         // this is really fucking bad
         //rAssertMsg(0,"tell greg how you did this");
         mSimStateArticulated->ResetVelocities();
         mSimStateArticulated->GetSimulatedObject()->ResetCache();
-        
-        this->ResetOnSpot(false);
-       // mVehicleLocomotion->PostUpdate();
-        
-        
-    } 
 
-    if(1)//mLoco == VL_PHYSICS)
-    {      
+        this->ResetOnSpot(false);
+        // mVehicleLocomotion->PostUpdate();
+
+
+    }
+
+    if (1)//mLoco == VL_PHYSICS)
+    {
         mSimStateArticulated->UpdateJointState(dt);
     }
- 
- 
+
+
     // for debugging:
     // we want the collision objects to draw in the correct places
     // TODO - want to call this here! every frame!!
-    CollisionObject* collObj = mSimStateArticulated->GetCollisionObject();
+    CollisionObject *collObj = mSimStateArticulated->GetCollisionObject();
     collObj->Update();
 
     DSGUpdateAndMove();
@@ -2358,28 +2146,25 @@ void Vehicle::Update(float dt)
     UpdateGearAndRPM();
 
     // Update the trigger volume.
-    mpTriggerVolume->SetTransform( mTransform);
-    
+    mpTriggerVolume->SetTransform(mTransform);
+
     mWasAirbornTimer += dt;
-    if(mWasAirbornTimer > 1.0f)
-    {
+    if (mWasAirbornTimer > 1.0f) {
         mWasAirborn = false;
     }
-    
-    if(mBottomedOutThisFrame && mWasAirborn)
-    {
+
+    if (mBottomedOutThisFrame && mWasAirborn) {
         // try this here for Esan
         mWasAirborn = false;
-        if( mTerrainType == TT_Road || mTerrainType == TT_Metal || mTerrainType == TT_Gravel )
-        {
-            GetSparkleManager()->AddBottomOut( GetPosition() );
+        if (mTerrainType == TT_Road || mTerrainType == TT_Metal || mTerrainType == TT_Gravel) {
+            GetSparkleManager()->AddBottomOut(GetPosition());
         }
-        GetEventManager()->TriggerEvent(EVENT_VEHICLE_SUSPENSION_BOTTOMED_OUT, (void*)this);
+        GetEventManager()->TriggerEvent(EVENT_VEHICLE_SUSPENSION_BOTTOMED_OUT, (void *) this);
         //rDebugPrintf("vehicle bottomed out this frame \n");
-        
-    
-    
-    }  
+
+
+
+    }
 
 }
 
@@ -2394,68 +2179,59 @@ void Vehicle::Update(float dt)
 // Return:      float 
 //
 //=============================================================================
-float Vehicle::GetGroundY()
-{
+float Vehicle::GetGroundY() {
     // for James, for the shadows...
 
-    if(this->mLoco == VL_PHYSICS)
-    {
+    if (this->mLoco == VL_PHYSICS) {
         // need this value for either case
-        
+
         float avg = 0.0f;
-        avg =   mPhysicsLocomotion->mTerrainIntersectCache[0].planePosn.y +
-                mPhysicsLocomotion->mTerrainIntersectCache[1].planePosn.y +
-                mPhysicsLocomotion->mTerrainIntersectCache[2].planePosn.y +
-                mPhysicsLocomotion->mTerrainIntersectCache[3].planePosn.y;
-            
-        avg *= 0.25;           
-    
-        if(mAirBorn)    // all four wheels out of contact
+        avg = mPhysicsLocomotion->mTerrainIntersectCache[0].planePosn.y +
+              mPhysicsLocomotion->mTerrainIntersectCache[1].planePosn.y +
+              mPhysicsLocomotion->mTerrainIntersectCache[2].planePosn.y +
+              mPhysicsLocomotion->mTerrainIntersectCache[3].planePosn.y;
+
+        avg *= 0.25;
+
+        if (mAirBorn)    // all four wheels out of contact
         {
             // in this situation, give the average of the terrain intersect caches?            
-            return avg;        
-        }
-        else
-        {
+            return avg;
+        } else {
             // here at least one wheel is in collision
             // so... give the average y of all the wheels that are in collision
             float wheelavg = 0.0f;
             float count = 0.0f;
-            
+
             int i;
-            for(i = 0; i < 4; i++)
-            {
-                if(mWheels[i]->mWheelInCollision)
-                {
+            for (i = 0; i < 4; i++) {
+                if (mWheels[i]->mWheelInCollision) {
                     count = count + 1.0f;
-                    
-                    poser::Pose* pose = mPoseEngine->GetPose();
-                    
-                    poser::Joint* joint = pose->GetJoint(mWheelToJointIndexMapping[i]);
+
+                    poser::Pose *pose = mPoseEngine->GetPose();
+
+                    poser::Joint *joint = pose->GetJoint(mWheelToJointIndexMapping[i]);
                     rmt::Vector trans = joint->GetWorldTranslation();
-                    
-                    wheelavg += ( trans.y - mWheels[ i ]->mRadius );
+
+                    wheelavg += (trans.y - mWheels[i]->mRadius);
                 }
             }
-            
-            if(count > 0.0f)
-            {
-                return wheelavg / count;                
+
+            if (count > 0.0f) {
+                return wheelavg / count;
             }
             return avg;
-            
+
         }
-    }
-    else
-    {
+    } else {
         float y = mTransform.m[3][1];
         float diff = GetRestHeightAboveGround();
-        
+
         y -= diff;
 
         return y;
     }
-    
+
     // should never get here
     return 0.0f;
 }
@@ -2475,8 +2251,7 @@ float Vehicle::GetGroundY()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::PostSubstepUpdate(float dt)
-{
+void Vehicle::PostSubstepUpdate(float dt) {
     //-------------------
     // reset input values
     //-------------------
@@ -2488,228 +2263,193 @@ void Vehicle::PostSubstepUpdate(float dt)
 
     // skid setting
 
-    if( mVehicleID == VehicleEnum::HUSKA )
-    {
+    if (mVehicleID == VehicleEnum::HUSKA) {
         rmt::Vector vel = mVelocityCM;
-        if( ( rmt::Abs( vel.x ) + rmt::Abs( vel.z ) > 0.5f ) && ( mPhysicsLocomotion ) )
-        {
+        if ((rmt::Abs(vel.x) + rmt::Abs(vel.z) > 0.5f) && (mPhysicsLocomotion)) {
             vel.y = 0.0f;
             vel.Normalize();
             // Make a sound effects call here.
-            for( int wi = 0; wi < 2; ++wi )
-            {
-                eTerrainType tt = mPhysicsLocomotion->mTerrainIntersectCache[ wi ].mTerrainType;
-                if( tt == TT_Road || tt == TT_Metal || tt == TT_Gravel )
-                {
-                    rmt::Vector pos = mSuspensionRestPoints[ wi ];
-                    pos.y -= mWheels[ wi ]->mRadius;
-                    pos.y += mWheels[ wi ]->mYOffset;
-                    GetTransform().Transform( pos, &pos );
-                    GetSparkleManager()->AddSparks( pos, vel, 0.1f );
+            for (int wi = 0; wi < 2; ++wi) {
+                eTerrainType tt = mPhysicsLocomotion->mTerrainIntersectCache[wi].mTerrainType;
+                if (tt == TT_Road || tt == TT_Metal || tt == TT_Gravel) {
+                    rmt::Vector pos = mSuspensionRestPoints[wi];
+                    pos.y -= mWheels[wi]->mRadius;
+                    pos.y += mWheels[wi]->mYOffset;
+                    GetTransform().Transform(pos, &pos);
+                    GetSparkleManager()->AddSparks(pos, vel, 0.1f);
                 }
             }
         }
     }
 
-    if(!mNoSkid)
-    {
-        //if(mSkidLevel > 0.0f)// && mVehicleType == VT_USER)
-        
-        if(mLoco == VL_PHYSICS)
-        {        
+    if (!mNoSkid) {
+        //if(mSkidLevel> 0.0f)// && mVehicleType == VT_USER)
+
+        if (mLoco == VL_PHYSICS) {
             int i;
-            if(mBurnoutLevel > 0.0f)
-            {
-                for(i = 0; i < 2; i++)
-                {
-                    if(mWheels[i]->mWheelInCollision)   // will this value still be valid here?
+            if (mBurnoutLevel > 0.0f) {
+                for (i = 0; i < 2; i++) {
+                    if (mWheels[i]->mWheelInCollision)   // will this value still be valid here?
                     {   // need to fetch ground plane normal also
                         rAssert(mPhysicsLocomotion);
                         rmt::Vector normal = mPhysicsLocomotion->mIntersectNormalUsed[i];
-                                     
-                        mGeometryVehicle->SetSkidValues(i, mSkidLevel, normal, mPhysicsLocomotion->mTerrainIntersectCache[i].mTerrainType );
-                        
+
+                        mGeometryVehicle->SetSkidValues(i, mSkidLevel, normal,
+                                                        mPhysicsLocomotion->mTerrainIntersectCache[i].mTerrainType);
+
                     }
                 }
-            }
-            else
-            {
+            } else {
                 int numWheels = mNoFrontSkid ? 2 : 4; // We want to determine how many wheels
                 // generate skids, taking advantage of the fact that wheels 0 and 1 are always the 
                 // back wheels.
-                for(i = 0; i < numWheels; i++)
-                {
-                    if(mWheels[i]->mWheelInCollision)   // will this value still be valid here?
+                for (i = 0; i < numWheels; i++) {
+                    if (mWheels[i]->mWheelInCollision)   // will this value still be valid here?
                     {
                         rAssert(mPhysicsLocomotion);
                         rmt::Vector normal = mPhysicsLocomotion->mIntersectNormalUsed[i];
-                        
-                        mGeometryVehicle->SetSkidValues(i, mSkidLevel, normal, mPhysicsLocomotion->mTerrainIntersectCache[i].mTerrainType );
+
+                        mGeometryVehicle->SetSkidValues(i, mSkidLevel, normal,
+                                                        mPhysicsLocomotion->mTerrainIntersectCache[i].mTerrainType);
                     }
                 }
-            }   
+            }
         }
-        
-        
+
+
         mGeometryVehicle->UpdateSkids();
 
     }
 
     int i;
     int count = 0;
-    for(i = 0; i < 4; i++)
-    {
-        if(mWheels[i]->mWheelInCollision)
-        {
+    for (i = 0; i < 4; i++) {
+        if (mWheels[i]->mWheelInCollision) {
             count++;
         }
     }
-    
-    
+
+
     // only want to do the following two tests if we are the avatar's car
     //
     // unless, we are supersprint, then we want to do it for all cars, with no fade to black...
-    if(GetAvatarManager()->GetAvatarForPlayer(0)->GetVehicle() == this ||
-       GetGameplayManager()->GetGameType() ==  GameplayManager::GT_SUPERSPRINT)
-    {    
-        
-        if(count == 0 && GetWorldPhysicsManager()->mWorldUp.DotProduct(mVehicleUp) < 0.0f)
-        {
+    if (GetAvatarManager()->GetAvatarForPlayer(0)->GetVehicle() == this ||
+        GetGameplayManager()->GetGameType() == GameplayManager::GT_SUPERSPRINT) {
+
+        if (count == 0 && GetWorldPhysicsManager()->mWorldUp.DotProduct(mVehicleUp) < 0.0f) {
             float linear = mPastLinear.Smooth(GetSimState()->GetLinearVelocity().Magnitude());
             float angular = mPastAngular.Smooth(GetSimState()->GetAngularVelocity().Magnitude());
-            
+
             // flipped
-            if(rmt::Fabs(linear) < REST_LINEAR_TOL * 3.0f && rmt::Fabs(angular) < REST_ANGULAR_TOL && !mAlreadyCalledAutoResetOnSpot)
-            {
+            if (rmt::Fabs(linear) < REST_LINEAR_TOL * 3.0f &&
+                rmt::Fabs(angular) < REST_ANGULAR_TOL && !mAlreadyCalledAutoResetOnSpot) {
                 // put it at rest
                 // reset
-                
-                if(GetGameplayManager()->GetGameType() ==  GameplayManager::GT_SUPERSPRINT)
-                {
-                    this->ResetOnSpot(false);                
+
+                if (GetGameplayManager()->GetGameType() == GameplayManager::GT_SUPERSPRINT) {
+                    this->ResetOnSpot(false);
+                } else {
+                    GetGuiSystem()->HandleMessage(GUI_MSG_MANUAL_RESET,
+                                                  reinterpret_cast<unsigned int>(this));
                 }
-                else
-                {
-                    GetGuiSystem()->HandleMessage( GUI_MSG_MANUAL_RESET, reinterpret_cast< unsigned int >(this) );                
-                }
-                 
+
                 mAlreadyCalledAutoResetOnSpot = true;
-                
+
             }
-        
+
         }
-        
+
         // other on side reset test:
         const float lowspeed = 1.0f;
-        if(mSpeed < lowspeed)
-        {
-        
+        if (mSpeed < lowspeed) {
+
             rmt::Vector up = GetWorldPhysicsManager()->mWorldUp;
             float tip = mVehicleUp.DotProduct(up);
 
             //float cos85 = 0.0872f;
             float test = 0.2f;
-            if(tip < test)
-            {            
-            
+            if (tip < test) {
+
                 // anytime we're in here we should incrememnt the timer
                 mStuckOnSideTimer += dt;
-                if(mStuckOnSideTimer > 1.0f && !mAlreadyCalledAutoResetOnSpot)  // yeah for magic numbers!
+                if (mStuckOnSideTimer > 1.0f &&
+                    !mAlreadyCalledAutoResetOnSpot)  // yeah for magic numbers!
                 {
                     mStuckOnSideTimer = 0.0f;     /// this is done in the reset anyway, but easier to see like this
-                                     
-                    if(GetGameplayManager()->GetGameType() ==  GameplayManager::GT_SUPERSPRINT)
-                    {
-                        this->ResetOnSpot(false);                
+
+                    if (GetGameplayManager()->GetGameType() == GameplayManager::GT_SUPERSPRINT) {
+                        this->ResetOnSpot(false);
+                    } else {
+                        GetGuiSystem()->HandleMessage(GUI_MSG_MANUAL_RESET,
+                                                      reinterpret_cast<unsigned int>(this));
                     }
-                    else
-                    {
-                        GetGuiSystem()->HandleMessage( GUI_MSG_MANUAL_RESET, reinterpret_cast< unsigned int >(this) );                
-                    }
-                   
+
                     mAlreadyCalledAutoResetOnSpot = true;
-                    
-                }            
-            }
-            else
-            {
+
+                }
+            } else {
                 // just in case
                 mStuckOnSideTimer = 0.0f;
             }
-        }
-        else
-        {
+        } else {
             // not satisfied the on-side test so reset stuckonsidetimer
             mStuckOnSideTimer = 0.0f;
-        }     
-            
+        }
+
     }
-    
-    
+
+
     // revisit this
     //
     // with new husk system all you have to do here for all types of cars is play an explosion
     //
     // that should probably move to where the event is fired - so that we don't swap out the car and replace with husk before this?    
-             
-    if(mVehicleID != VehicleEnum::HUSKA)
-    {
-        if( mVehicleDestroyed && !mAlreadyPlayedExplosion )
-        {
+
+    if (mVehicleID != VehicleEnum::HUSKA) {
+        if (mVehicleDestroyed && !mAlreadyPlayedExplosion) {
             // Lets detach any objects from this vehicle on explosion
-            DetachCollectible( rmt::Vector( 0, 0, 0 ), true );
-            if( this->mVehicleType == VT_USER || GetGameplayManager()->mIsDemo )
-            {
+            DetachCollectible(rmt::Vector(0, 0, 0), true);
+            if (this->mVehicleType == VT_USER || GetGameplayManager()->mIsDemo) {
                 mDamageOutResetTimer += dt;
-                if(mDamageOutResetTimer > 3.0f)
-                {
+                if (mDamageOutResetTimer > 3.0f) {
                     // kaboom
-                    PlayExplosionEffect();            
-                    
+                    PlayExplosionEffect();
+
                     mAlreadyPlayedExplosion = true; // this will get reset immediately in ResetOnSpot
-            
-                    if ( GetGameplayManager()->GetGameType() == GameplayManager::GT_SUPERSPRINT )
-                    {
-                        ResetOnSpot( true );
-                    }
-                    else
-                    {
+
+                    if (GetGameplayManager()->GetGameType() == GameplayManager::GT_SUPERSPRINT) {
+                        ResetOnSpot(true);
+                    } else {
                         // appropriate manager should catch this and swap in husk
-                        GetEventManager()->TriggerEvent(EVENT_VEHICLE_DESTROYED, (void*)this);
+                        GetEventManager()->TriggerEvent(EVENT_VEHICLE_DESTROYED, (void *) this);
                     }
                 }
-                
-            }
-            else
-            {
+
+            } else {
                 mDamageOutResetTimer += dt;
-                if( GetGameplayManager()->GetGameType() == GameplayManager::GT_NORMAL ||
-                    mDamageOutResetTimer > 3.0f )
-                {
+                if (GetGameplayManager()->GetGameType() == GameplayManager::GT_NORMAL ||
+                    mDamageOutResetTimer > 3.0f) {
                     // kaboom
-                    PlayExplosionEffect();            
+                    PlayExplosionEffect();
                     mAlreadyPlayedExplosion = true; // this will get reset immediately in ResetOnSpot
-            
-                    if ( GetGameplayManager()->GetGameType() == GameplayManager::GT_SUPERSPRINT )
-                    {
-                        ResetOnSpot( true );
-                    }
-                    else
-                    {
+
+                    if (GetGameplayManager()->GetGameType() == GameplayManager::GT_SUPERSPRINT) {
+                        ResetOnSpot(true);
+                    } else {
                         // appropriate manager should catch this and swap in husk
-                        GetEventManager()->TriggerEvent(EVENT_VEHICLE_DESTROYED, (void*)this);
-                        if(mWasHitByVehicleType != VT_AI)
-                        {
-                            GetEventManager()->TriggerEvent(EVENT_VEHICLE_DESTROYED_BY_USER, (void*)this);
+                        GetEventManager()->TriggerEvent(EVENT_VEHICLE_DESTROYED, (void *) this);
+                        if (mWasHitByVehicleType != VT_AI) {
+                            GetEventManager()->TriggerEvent(EVENT_VEHICLE_DESTROYED_BY_USER,
+                                                            (void *) this);
                         }
 
                     }
                 }
-            }           
+            }
         }
-    
+
     }
-    
+
     /*
     if(mDamageType == VDT_AI && mVehicleDestroyed && !mAlreadyPlayedExplosion)
     {
@@ -2731,19 +2471,18 @@ void Vehicle::PostSubstepUpdate(float dt)
         // So... if it's not a traffic car, we won't call SwapInTrafficHusk... It will
         // just sit there after explosions... for now... just like what's done for VDT_AI
         //
-        if( this->mVehicleType == VT_TRAFFIC )
+        if(this->mVehicleType == VT_TRAFFIC)
         {
             TrafficManager::GetInstance()->SwapInTrafficHusk(this);
         }
     }
     */
-    
+
 
     // hmm... this might be the place to try moving the characters?
     BounceCharacters(dt);
 
 
-    
 }
 
 
@@ -2757,40 +2496,36 @@ void Vehicle::PostSubstepUpdate(float dt)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::BounceCharacters(float dt)
-{
+void Vehicle::BounceCharacters(float dt) {
 
-    if(mVehicleType == VT_USER)
-    {                
-        Avatar* playerAvatar = GetAvatarManager()->GetAvatarForPlayer(0);
-        if(sDoBounce && (playerAvatar->GetCharacter()->GetStateManager()->GetState() == CharacterAi::INCAR) && playerAvatar->GetVehicle() == this)
-        {                     
+    if (mVehicleType == VT_USER) {
+        Avatar *playerAvatar = GetAvatarManager()->GetAvatarForPlayer(0);
+        if (sDoBounce &&
+            (playerAvatar->GetCharacter()->GetStateManager()->GetState() == CharacterAi::INCAR) &&
+            playerAvatar->GetVehicle() == this) {
             mYAccelForSeatingOffset = (mVelocityCM.y - mVelocityCMLag.y) / dt;
             // seems to hover around -1.0f to 1.0f a lot - goes up to 8 or 10 occassionally
-            
-            if(rmt::Fabs(mYAccelForSeatingOffset) > mBounceAccelThreshold)
-            {                       
+
+            if (rmt::Fabs(mYAccelForSeatingOffset) > mBounceAccelThreshold) {
                 // want to displace it opposite the accel dir, proportional to the amount?
                 //static float magicShitScale = 0.25f;
                 const float magicShitScale = 0.003f;
                 float amountToDisplace = mYAccelForSeatingOffset * magicShitScale * -1.0f;
-                if(rmt::Fabs(amountToDisplace) > mMaxBounceDisplacementPerSecond * dt)
-                {
-                    amountToDisplace = mMaxBounceDisplacementPerSecond * dt * rmt::Sign(amountToDisplace);
-                }                             
-                
+                if (rmt::Fabs(amountToDisplace) > mMaxBounceDisplacementPerSecond * dt) {
+                    amountToDisplace =
+                            mMaxBounceDisplacementPerSecond * dt * rmt::Sign(amountToDisplace);
+                }
+
                 ApplyDisplacementToCharacters(amountToDisplace);
-                
-            }
-            else
-            {
+
+            } else {
                 // want to move back to the middle               
                 MoveCharactersTowardsRestPosition(dt);
-            
-            }                                  
-            
-        }                   
-                
+
+            }
+
+        }
+
     }
 
 }
@@ -2806,130 +2541,108 @@ void Vehicle::BounceCharacters(float dt)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::MoveCharactersTowardsRestPosition(float dt)
-{
+void Vehicle::MoveCharactersTowardsRestPosition(float dt) {
     // let's say, for first try, move at half max diplacment speed
     float rate = 0.5f;
-    
-    Avatar* playerAvatar = GetAvatarManager()->GetAvatarForPlayer(0);
-    if( mpDriver && mpDriver != playerAvatar->GetCharacter() )
-    {
+
+    Avatar *playerAvatar = GetAvatarManager()->GetAvatarForPlayer(0);
+    if (mpDriver && mpDriver != playerAvatar->GetCharacter()) {
         // there is both a driver and us
         //
         // sort of clunky to set every frame but whatever...
         mNPCRestSeatingPosition = mDriverLocation;
         mOurRestSeatingPosition = mPassengerLocation;
-        
+
         // hackey, hackey - need to slide lisa up a little because of dress poking through car
-        if(mpDriver->IsLisa())
-        {
+        if (mpDriver->IsLisa()) {
             mNPCRestSeatingPosition.y += 0.12f;
         }
 
-        if(playerAvatar->GetCharacter()->IsLisa())
-        {
+        if (playerAvatar->GetCharacter()->IsLisa()) {
             mOurRestSeatingPosition.y += 0.12f;
         }
-        
+
         // us        
-        Character* us = playerAvatar->GetCharacter();
-        choreo::Puppet* ourPuppet = us->GetPuppet();
-        const rmt::Vector& ourPuppetPosition = ourPuppet->GetPosition();
+        Character *us = playerAvatar->GetCharacter();
+        choreo::Puppet *ourPuppet = us->GetPuppet();
+        const rmt::Vector &ourPuppetPosition = ourPuppet->GetPosition();
         rmt::Vector newOurPuppetPosition = ourPuppetPosition;
-        
+
         // compare rest pos
         float diff = newOurPuppetPosition.y - mOurRestSeatingPosition.y;
         float maxchange = rate * dt * mMaxBounceDisplacementPerSecond;
-        if(rmt::Fabs(diff) <= maxchange)
-        {
+        if (rmt::Fabs(diff) <= maxchange) {
             // easy - back at rest
             newOurPuppetPosition.y = mOurRestSeatingPosition.y;
             ourPuppet->SetPosition(newOurPuppetPosition);
-        }
-        else if(diff < 0.0f)
-        {
+        } else if (diff < 0.0f) {
             // add to it
             newOurPuppetPosition.y += maxchange;
             ourPuppet->SetPosition(newOurPuppetPosition);
-            
-        }
-        else
-        {
+
+        } else {
             // subtract 
             newOurPuppetPosition.y -= maxchange;
-            ourPuppet->SetPosition(newOurPuppetPosition);           
-            
-        }                                       
-            
-        
+            ourPuppet->SetPosition(newOurPuppetPosition);
+
+        }
+
+
         // driver    
-        choreo::Puppet* npcPuppet = mpDriver->GetPuppet();
-        const rmt::Vector& npcPuppetPosition = npcPuppet->GetPosition();
+        choreo::Puppet *npcPuppet = mpDriver->GetPuppet();
+        const rmt::Vector &npcPuppetPosition = npcPuppet->GetPosition();
         rmt::Vector newNPCPuppetPosition = npcPuppetPosition;
-                    
-        
+
+
         diff = newNPCPuppetPosition.y - mNPCRestSeatingPosition.y;
         //maxchange = rate * dt * mMaxBounceDisplacementPerSecond;
-        if(rmt::Fabs(diff) <= maxchange)
-        {
+        if (rmt::Fabs(diff) <= maxchange) {
             // easy - back at rest
             newNPCPuppetPosition.y = mNPCRestSeatingPosition.y;
             npcPuppet->SetPosition(newNPCPuppetPosition);
-        }
-        else if(diff < 0.0f)
-        {
+        } else if (diff < 0.0f) {
             // add to it
             newNPCPuppetPosition.y += maxchange;
             npcPuppet->SetPosition(newNPCPuppetPosition);
-            
-        }
-        else
-        {
+
+        } else {
             // subtract 
             newNPCPuppetPosition.y -= maxchange;
-            npcPuppet->SetPosition(newNPCPuppetPosition);           
-            
-        }                                       
-    }
-    else
-    {
+            npcPuppet->SetPosition(newNPCPuppetPosition);
+
+        }
+    } else {
         // if we're the driver... or if no driver (so we must be the driver)
 
         mOurRestSeatingPosition = mDriverLocation;
 
-        if(playerAvatar->GetCharacter()->IsLisa())
-        {
+        if (playerAvatar->GetCharacter()->IsLisa()) {
             mOurRestSeatingPosition.y += 0.12f;
         }
-    
+
         // just us drivign?
-        Character* us = playerAvatar->GetCharacter();
-        choreo::Puppet* ourPuppet = us->GetPuppet();
-        const rmt::Vector& ourPuppetPosition = ourPuppet->GetPosition();
+        Character *us = playerAvatar->GetCharacter();
+        choreo::Puppet *ourPuppet = us->GetPuppet();
+        const rmt::Vector &ourPuppetPosition = ourPuppet->GetPosition();
         rmt::Vector newOurPuppetPosition = ourPuppetPosition;
-        
+
         // compare rest pos
         float diff = newOurPuppetPosition.y - mOurRestSeatingPosition.y;
         float maxchange = rate * dt * mMaxBounceDisplacementPerSecond;
-        if(rmt::Fabs(diff) <= maxchange)
-        {
+        if (rmt::Fabs(diff) <= maxchange) {
             // easy - back at rest
             newOurPuppetPosition.y = mOurRestSeatingPosition.y;
             ourPuppet->SetPosition(newOurPuppetPosition);
-        }
-        else if(diff < 0.0f)
-        {
+        } else if (diff < 0.0f) {
             // add to it
             newOurPuppetPosition.y += maxchange;
             ourPuppet->SetPosition(newOurPuppetPosition);
-            
-        }
-        else
-        {
+
+        } else {
             // subtract 
             newOurPuppetPosition.y -= maxchange;
-            ourPuppet->SetPosition(newOurPuppetPosition);           
-            
+            ourPuppet->SetPosition(newOurPuppetPosition);
+
         }
     }
 }
@@ -2945,78 +2658,68 @@ void Vehicle::MoveCharactersTowardsRestPosition(float dt)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::ApplyDisplacementToCharacters(float displacement)
-{
+void Vehicle::ApplyDisplacementToCharacters(float displacement) {
     // now either we're driving alone or we're a passenger and there's a driver
-    Avatar* playerAvatar = GetAvatarManager()->GetAvatarForPlayer(0);
-    if( mpDriver && mpDriver != playerAvatar->GetCharacter() )
-    {
+    Avatar *playerAvatar = GetAvatarManager()->GetAvatarForPlayer(0);
+    if (mpDriver && mpDriver != playerAvatar->GetCharacter()) {
         // sort of clunky to set every frame but whatever...
         mNPCRestSeatingPosition = mDriverLocation;
         mOurRestSeatingPosition = mPassengerLocation;
-    
-    
+
+
         // there is both a driver and us
-        Character* us = playerAvatar->GetCharacter();
-        choreo::Puppet* ourPuppet = us->GetPuppet();
-        const rmt::Vector& ourPuppetPosition = ourPuppet->GetPosition();
+        Character *us = playerAvatar->GetCharacter();
+        choreo::Puppet *ourPuppet = us->GetPuppet();
+        const rmt::Vector &ourPuppetPosition = ourPuppet->GetPosition();
         rmt::Vector newOurPuppetPosition = ourPuppetPosition;
-        
+
         //newOurPuppetPosition.y += 0.001f;
         newOurPuppetPosition.y += displacement;
-        
+
         // test against limit
-        if(newOurPuppetPosition.y > mOurRestSeatingPosition.y + mBounceLimit)
-        {
+        if (newOurPuppetPosition.y > mOurRestSeatingPosition.y + mBounceLimit) {
             newOurPuppetPosition.y = mOurRestSeatingPosition.y + mBounceLimit;
         }
-        if(newOurPuppetPosition.y < mOurRestSeatingPosition.y - mBounceLimit)
-        {
+        if (newOurPuppetPosition.y < mOurRestSeatingPosition.y - mBounceLimit) {
             newOurPuppetPosition.y = mOurRestSeatingPosition.y - mBounceLimit;
         }
-        
+
         ourPuppet->SetPosition(newOurPuppetPosition);
-                                            
-            
-        choreo::Puppet* npcPuppet = mpDriver->GetPuppet();
-        const rmt::Vector& npcPuppetPosition = npcPuppet->GetPosition();
+
+
+        choreo::Puppet *npcPuppet = mpDriver->GetPuppet();
+        const rmt::Vector &npcPuppetPosition = npcPuppet->GetPosition();
         rmt::Vector newNPCPuppetPosition = npcPuppetPosition;
-                        
+
         newNPCPuppetPosition.y += displacement;
-        
+
         // test against limit
-        if(newNPCPuppetPosition.y > mNPCRestSeatingPosition.y + mBounceLimit)
-        {
+        if (newNPCPuppetPosition.y > mNPCRestSeatingPosition.y + mBounceLimit) {
             newNPCPuppetPosition.y = mNPCRestSeatingPosition.y + mBounceLimit;
         }
-        if(newNPCPuppetPosition.y < mNPCRestSeatingPosition.y - mBounceLimit)
-        {
+        if (newNPCPuppetPosition.y < mNPCRestSeatingPosition.y - mBounceLimit) {
             newNPCPuppetPosition.y = mNPCRestSeatingPosition.y - mBounceLimit;
         }
-        
+
         npcPuppet->SetPosition(newNPCPuppetPosition);
 
-    }
-    else
-    {
+    } else {
         // just us drivign?
         mOurRestSeatingPosition = mDriverLocation;
-                
-        Character* us = playerAvatar->GetCharacter();
-        choreo::Puppet* ourPuppet = us->GetPuppet();
-        const rmt::Vector& ourPuppetPosition = ourPuppet->GetPosition();
+
+        Character *us = playerAvatar->GetCharacter();
+        choreo::Puppet *ourPuppet = us->GetPuppet();
+        const rmt::Vector &ourPuppetPosition = ourPuppet->GetPosition();
         rmt::Vector newOurPuppetPosition = ourPuppetPosition;
-        
+
         //newOurPuppetPosition.y += 0.001f;
         newOurPuppetPosition.y += displacement;
-    
-    
-        if(newOurPuppetPosition.y > mOurRestSeatingPosition.y + mBounceLimit)
-        {
+
+
+        if (newOurPuppetPosition.y > mOurRestSeatingPosition.y + mBounceLimit) {
             newOurPuppetPosition.y = mOurRestSeatingPosition.y + mBounceLimit;
         }
-        if(newOurPuppetPosition.y < mOurRestSeatingPosition.y - mBounceLimit)
-        {
+        if (newOurPuppetPosition.y < mOurRestSeatingPosition.y - mBounceLimit) {
             newOurPuppetPosition.y = mOurRestSeatingPosition.y - mBounceLimit;
         }
         ourPuppet->SetPosition(newOurPuppetPosition);
@@ -3034,55 +2737,46 @@ void Vehicle::ApplyDisplacementToCharacters(float displacement)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::RecordRestSeatingPositionsOnEntry()
-{
+void Vehicle::RecordRestSeatingPositionsOnEntry() {
     // same logic as BounceCharacters to decide which of these we need
 
     return;
-    
-    if(mVehicleType == VT_USER)
-    {                
-        Avatar* playerAvatar = GetAvatarManager()->GetAvatarForPlayer(0);
-        if(playerAvatar->IsInCar() && playerAvatar->GetVehicle() == this)
-        {
+
+    if (mVehicleType == VT_USER) {
+        Avatar *playerAvatar = GetAvatarManager()->GetAvatarForPlayer(0);
+        if (playerAvatar->IsInCar() && playerAvatar->GetVehicle() == this) {
             // now either we're driving alone or we're a passenger and there's a driver
-            if(this->mpDriver)
-            {
+            if (this->mpDriver) {
                 // there is a driver
-                if(this->mpDriver == playerAvatar->GetCharacter())
-                {
+                if (this->mpDriver == playerAvatar->GetCharacter()) {
                     // don't think we should ever hit this - the mpDriver is an NPC driver
                     int stophere = 1;
-                }
-                else
-                {               
+                } else {
                     // there is both a driver and us
-                    Character* us = playerAvatar->GetCharacter();
-                    choreo::Puppet* ourPuppet = us->GetPuppet();
-                    const rmt::Vector& ourPuppetPosition = ourPuppet->GetPosition();
+                    Character *us = playerAvatar->GetCharacter();
+                    choreo::Puppet *ourPuppet = us->GetPuppet();
+                    const rmt::Vector &ourPuppetPosition = ourPuppet->GetPosition();
                     mOurRestSeatingPosition = ourPuppetPosition;
-                    
-                    choreo::Puppet* npcPuppet = mpDriver->GetPuppet();
-                    const rmt::Vector& npcPuppetPosition = npcPuppet->GetPosition();
+
+                    choreo::Puppet *npcPuppet = mpDriver->GetPuppet();
+                    const rmt::Vector &npcPuppetPosition = npcPuppet->GetPosition();
                     mNPCRestSeatingPosition = npcPuppetPosition;
-                                        
+
 
                 }
-            }
-            else
-            {
+            } else {
                 // just us drivign?
-                Character* us = playerAvatar->GetCharacter();
-                choreo::Puppet* ourPuppet = us->GetPuppet();
-                const rmt::Vector& ourPuppetPosition = ourPuppet->GetPosition();
+                Character *us = playerAvatar->GetCharacter();
+                choreo::Puppet *ourPuppet = us->GetPuppet();
+                const rmt::Vector &ourPuppetPosition = ourPuppet->GetPosition();
                 mOurRestSeatingPosition = ourPuppetPosition;
-            
+
 
             }
-        
+
         }
-                
-    }        
+
+    }
 }
 
 
@@ -3096,32 +2790,27 @@ void Vehicle::RecordRestSeatingPositionsOnEntry()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::RestTest(void)
-{
+void Vehicle::RestTest(void) {
     // only traffic rests
-    if(mVehicleType != VT_TRAFFIC)
-    {
+    if (mVehicleType != VT_TRAFFIC) {
         return;
     }
 
-    if(!GetSimState() || GetSimState()->GetControl() == sim::simAICtrl)
-    {
+    if (!GetSimState() || GetSimState()->GetControl() == sim::simAICtrl) {
         // already at rest
         return;
     }
 
     // check if smoothed velocities are below tolerance
-    if((mPastLinear.Smooth(GetSimState()->GetLinearVelocity().Magnitude()) < REST_LINEAR_TOL) &&
-       (mPastAngular.Smooth(GetSimState()->GetAngularVelocity().Magnitude()) < REST_ANGULAR_TOL))
-    {
+    if ((mPastLinear.Smooth(GetSimState()->GetLinearVelocity().Magnitude()) < REST_LINEAR_TOL) &&
+        (mPastAngular.Smooth(GetSimState()->GetAngularVelocity().Magnitude()) < REST_ANGULAR_TOL)) {
         // put it at rest
         // this is done inside the loco-switch
         //GetSimState()->SetControl(sim::simAICtrl);
         //GetSimState()->ResetVelocities();
-        
+
     }
 }
-
 
 
 //=============================================================================
@@ -3134,34 +2823,30 @@ void Vehicle::RestTest(void)
 // Return:      void 
 //
 //=============================================================================
-bool Vehicle::SelfRestTest(void)
-{
+bool Vehicle::SelfRestTest(void) {
     // new version of this for user and ai cars to call on themselves
     // during physicslocomotion updates so that at very low speeds they come to a complete stop
 
-    if(!GetSimState())
-    {        
+    if (!GetSimState()) {
         rAssert(0);
         return false;
     }
 
 
     int i;
-    int count = 0;    
-    for(i = 0; i < 4; i++)
-    {
-        if(mWheels[i]->mWheelInCollision)
-        {
+    int count = 0;
+    for (i = 0; i < 4; i++) {
+        if (mWheels[i]->mWheelInCollision) {
             count++;
         }
     }
-    
+
     /*
-    if(count == 0 && GetWorldPhysicsManager()->mWorldUp.DotProduct(mVehicleUp) < 0.0f)
+    if(count == 0 && GetWorldPhysicsManager()->mWorldUp.DotProduct(mVehicleUp) <0.0f)
     {
         // flipped
-        if((mPastLinear.Smooth(GetSimState()->GetLinearVelocity().Magnitude()) < REST_LINEAR_TOL) &&
-           (mPastAngular.Smooth(GetSimState()->GetAngularVelocity().Magnitude()) < REST_ANGULAR_TOL))
+        if((mPastLinear.Smooth(GetSimState()->GetLinearVelocity().Magnitude()) <REST_LINEAR_TOL) &&
+           (mPastAngular.Smooth(GetSimState()->GetAngularVelocity().Magnitude()) <REST_ANGULAR_TOL))
         {
             // put it at rest
             // reset
@@ -3172,109 +2857,91 @@ bool Vehicle::SelfRestTest(void)
     
     }
     */
-    Vehicle* playerVehicle = GetAvatarManager()->GetAvatarForPlayer(0)->GetVehicle();
+    Vehicle *playerVehicle = GetAvatarManager()->GetAvatarForPlayer(0)->GetVehicle();
     //Vehicle* playerVehicle = GetGameplayManager()->GetCurrentVehicle();
 
-    if(mGas < 0.1f && mBrake < 0.2f && count > 2)
-    {
-        
+    if (mGas < 0.1f && mBrake < 0.2f && count > 2) {
+
         float dot = this->mVehicleUp.DotProduct(GetWorldPhysicsManager()->mWorldUp);
-        
+
         float linear = mPastLinear.Smooth(GetSimState()->GetLinearVelocity().Magnitude());
-        float angular = mPastAngular.Smooth(GetSimState()->GetAngularVelocity().Magnitude());       
-        
+        float angular = mPastAngular.Smooth(GetSimState()->GetAngularVelocity().Magnitude());
+
         float ebrakefactor = 1.0f;
-        if(this->mEBrake == 1.0f)
-        {
+        if (this->mEBrake == 1.0f) {
             //ebrakefactor = 2.0f;
         }
 
-        if(mUsingInCarPhysics)
-        {
-            if(1)//dot < 0.995f)
+        if (mUsingInCarPhysics) {
+            if (1)//dot <0.995f)
             {
                 // steep, so more aggresive test
-                //if( linear < 2.0f * REST_LINEAR_TOL * ebrakefactor && angular < 2.0f * REST_ANGULAR_TOL * ebrakefactor)
-                if( linear < 3.0f * REST_LINEAR_TOL * ebrakefactor && angular < 3.0f * REST_ANGULAR_TOL * ebrakefactor)
-                {
+                //if(linear <2.0f * REST_LINEAR_TOL * ebrakefactor && angular <2.0f * REST_ANGULAR_TOL * ebrakefactor)
+                if (linear < 3.0f * REST_LINEAR_TOL * ebrakefactor &&
+                    angular < 3.0f * REST_ANGULAR_TOL * ebrakefactor) {
                     //GetSimState()->SetControl(sim::simAICtrl);
                     //GetSimState()->ResetVelocities();
-                                    
-                    
-                    if(this->mVehicleType == VT_TRAFFIC && this != playerVehicle && !mCreatedByParkedCarManager)
-                    {
+
+
+                    if (this->mVehicleType == VT_TRAFFIC && this != playerVehicle &&
+                        !mCreatedByParkedCarManager) {
                         GetSimState()->SetControl(sim::simAICtrl);
                         GetSimState()->ResetVelocities();
-                    }                       
-                    else
-                    {
+                    } else {
                         this->ZeroOutXZVelocity();
                     }
-                    
-                    
+
+
                     mAtRestAsFarAsTriggersAreConcerned = true;
                     return true;
                 }
-                
-            }        
-            else if( linear < REST_LINEAR_TOL * ebrakefactor && angular < REST_ANGULAR_TOL * ebrakefactor)
-            {
+
+            } else if (linear < REST_LINEAR_TOL * ebrakefactor &&
+                       angular < REST_ANGULAR_TOL * ebrakefactor) {
                 // put it at rest
                 //GetSimState()->SetControl(sim::simAICtrl);
                 //GetSimState()->ResetVelocities();
                 //this->ZeroOutXZVelocity();
-            
-            
-                if(this->mVehicleType == VT_TRAFFIC && this != playerVehicle && !mCreatedByParkedCarManager)
-                {
+
+
+                if (this->mVehicleType == VT_TRAFFIC && this != playerVehicle &&
+                    !mCreatedByParkedCarManager) {
                     GetSimState()->SetControl(sim::simAICtrl);
                     GetSimState()->ResetVelocities();
-                }                       
-                else
-                {
+                } else {
                     this->ZeroOutXZVelocity();
                 }
-                
-                    
-                
-                
+
+
                 mAtRestAsFarAsTriggersAreConcerned = true;
                 return true;
             }
-        }
-        else
-        {
+        } else {
             // more aggressive test
-            if( linear < 10.0f * REST_LINEAR_TOL * ebrakefactor && angular < 10.0f * REST_ANGULAR_TOL * ebrakefactor)
-            {
+            if (linear < 10.0f * REST_LINEAR_TOL * ebrakefactor &&
+                angular < 10.0f * REST_ANGULAR_TOL * ebrakefactor) {
                 //GetSimState()->SetControl(sim::simAICtrl);
                 //GetSimState()->ResetVelocities();
-                                
+
                 //this->ZeroOutXZVelocity();
-            
-            
-                if(this->mVehicleType == VT_TRAFFIC && this != playerVehicle && !mCreatedByParkedCarManager)
-                {
+
+
+                if (this->mVehicleType == VT_TRAFFIC && this != playerVehicle &&
+                    !mCreatedByParkedCarManager) {
                     GetSimState()->SetControl(sim::simAICtrl);
                     GetSimState()->ResetVelocities();
-                }                       
-                else
-                {
+                } else {
                     this->ZeroOutXZVelocity();
                 }
-                
-                
-                
-                
+
+
                 mAtRestAsFarAsTriggersAreConcerned = true;
                 return true;
-            }    
-        
+            }
+
         }
-    }
-    else
-    {
-        if(0)//this->mVehicleType == VT_TRAFFIC)
+    } else {
+        if (0)//this->mVehicleType == VT_TRAFFIC)
         {
             GetSimState()->SetControl(sim::simSimulationCtrl);
         }
@@ -3282,7 +2949,6 @@ bool Vehicle::SelfRestTest(void)
     mAtRestAsFarAsTriggersAreConcerned = false;
     return false;
 }
-
 
 
 //=============================================================================
@@ -3295,20 +2961,19 @@ bool Vehicle::SelfRestTest(void)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::ZeroOutXZVelocity()
-{
-    rmt::Vector& linear = mSimStateArticulated->GetLinearVelocity();
-    
-    rmt::Vector& angular = mSimStateArticulated->GetAngularVelocity();
-    
+void Vehicle::ZeroOutXZVelocity() {
+    rmt::Vector &linear = mSimStateArticulated->GetLinearVelocity();
+
+    rmt::Vector &angular = mSimStateArticulated->GetAngularVelocity();
+
     rmt::Vector newlinear = this->mVehicleUp;
     float linearProj = linear.DotProduct(newlinear);
-    
+
     newlinear.Scale(linearProj);
-     
+
     linear = newlinear;
-    
-    
+
+
     angular.Set(0.0f, 0.0f, 0.0f);
 }
 
@@ -3323,71 +2988,64 @@ void Vehicle::ZeroOutXZVelocity()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SetGeometryVehicleWheelSmokeLevel()
-{
+void Vehicle::SetGeometryVehicleWheelSmokeLevel() {
     // just based on burnout level for now
 
-    if(mBurnoutLevel > 0.0f)
-    {
-        if(this->mSpeedBurstTimer >= 2.5f)
-        {
+    if (mBurnoutLevel > 0.0f) {
+        if (this->mSpeedBurstTimer >= 2.5f) {
             // TODO
             // replace this with wheel flame
             // MKR - replaced. Greg, does this work ok?
             // -1 indicates apply to all wheel
-            mGeometryVehicle->SetWheelSmoke( -1, ParticleEnum::eFireSpray, mBurnoutLevel);
-        }
-        else
-        {
+            mGeometryVehicle->SetWheelSmoke(-1, ParticleEnum::eFireSpray, mBurnoutLevel);
+        } else {
             // TODO - if anyone notices or complains, switch this to 
             // set on a wheel by wheel basis
-            
+
             // for now, just base on James's overall value
-            
+
             //TT_Road,	// Default road terrain. Also used for sidewalk. This is default. If not set, it's this.
-	        //TT_Grass,	// Grass type terrain most everything else which isn't road or sidewalk.
-	        //TT_Sand,	// Sand type terrain.
-	        //TT_Gravel,	// Loose gravel type terrain.
-	        //TT_Water,	// Water on surface type terrain.
-	        //TT_Wood,	// Boardwalks, docks type terrain.
-	        //TT_Metal,  // Powerplant and other structures.
+            //TT_Grass,	// Grass type terrain most everything else which isn't road or sidewalk.
+            //TT_Sand,	// Sand type terrain.
+            //TT_Gravel,	// Loose gravel type terrain.
+            //TT_Water,	// Water on surface type terrain.
+            //TT_Wood,	// Boardwalks, docks type terrain.
+            //TT_Metal,  // Powerplant and other structures.
             //TT_Dirt,   // Dirt type terrain.
-	        //TT_NumTerrainTypes
-                      
-            for ( int i = 0 ; i < 2 ; i++)
-            {
-            
-                switch( mPhysicsLocomotion->mTerrainIntersectCache[i].mTerrainType )
-                {
-                    case TT_Grass:            
-                        mGeometryVehicle->SetWheelSmoke( i, ParticleEnum::eGrassSpray, mBurnoutLevel);                 
+            //TT_NumTerrainTypes
+
+            for (int i = 0; i < 2; i++) {
+
+                switch (mPhysicsLocomotion->mTerrainIntersectCache[i].mTerrainType) {
+                    case TT_Grass:
+                        mGeometryVehicle->SetWheelSmoke(i, ParticleEnum::eGrassSpray,
+                                                        mBurnoutLevel);
                         break;
-                        
+
                     case TT_Gravel:
                     case TT_Dirt:
                     case TT_Sand:
-                        mGeometryVehicle->SetWheelSmoke( i, ParticleEnum::eDirtSpray, mBurnoutLevel); 
-                        break;                    
-                        
+                        mGeometryVehicle->SetWheelSmoke(i, ParticleEnum::eDirtSpray, mBurnoutLevel);
+                        break;
+
                     case TT_Water:
-                        mGeometryVehicle->SetWheelSmoke( i, ParticleEnum::eWaterSpray, mBurnoutLevel); 
+                        mGeometryVehicle->SetWheelSmoke(i, ParticleEnum::eWaterSpray,
+                                                        mBurnoutLevel);
                         break;
-                        
+
                     default:
-                        mGeometryVehicle->SetWheelSmoke( i, ParticleEnum::eSmokeSpray, mBurnoutLevel); 
+                        mGeometryVehicle->SetWheelSmoke(i, ParticleEnum::eSmokeSpray,
+                                                        mBurnoutLevel);
                         break;
-                                    
+
                 }
             }
         }
-    }
-    else
-    {
-        mGeometryVehicle->SetWheelSmoke( -1, ParticleEnum::eNull, 0.0f);
+    } else {
+        mGeometryVehicle->SetWheelSmoke(-1, ParticleEnum::eNull, 0.0f);
     }
 
 }
-
 
 
 //=============================================================================
@@ -3400,8 +3058,7 @@ void Vehicle::SetGeometryVehicleWheelSmokeLevel()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::DSGUpdateAndMove()
-{
+void Vehicle::DSGUpdateAndMove() {
     /*    
     rmt::Box3D mBBox;
     rmt::Sphere mSphere;
@@ -3411,28 +3068,28 @@ void Vehicle::DSGUpdateAndMove()
 
     rmt::Box3D oldBox = mBBox;
 
-    mPosn = *((rmt::Vector*)mTransform.m[3]);     
+    mPosn = *((rmt::Vector *) mTransform.m[3]);
 
-    mBBox.low   = mPosn;
-    mBBox.high  = mPosn;
+    mBBox.low = mPosn;
+    mBBox.high = mPosn;
 
     // ?
     // I think the same code should work for vehicle...
     mBBox.high += mSimStateArticulated->GetCollisionObject()->GetCollisionVolume()->mBoxSize;
-    mBBox.low  -= mSimStateArticulated->GetCollisionObject()->GetCollisionVolume()->mBoxSize;
+    mBBox.low -= mSimStateArticulated->GetCollisionObject()->GetCollisionVolume()->mBoxSize;
 
-    mSphere.centre.Sub(mBBox.high,mBBox.low);
+    mSphere.centre.Sub(mBBox.high, mBBox.low);
     mSphere.centre *= 0.5f;
     mSphere.centre.Add(mBBox.low);
     mSphere.radius = mSimStateArticulated->GetCollisionObject()->GetCollisionVolume()->mSphereRadius;
 
-    
+
     // now move!
-    GetRenderManager()->pWorldScene()->Move(oldBox, (IEntityDSG*)this);
+    GetRenderManager()->pWorldScene()->Move(oldBox, (IEntityDSG * )
+    this);
 
 
 }
-
 
 
 //=============================================================================
@@ -3445,13 +3102,12 @@ void Vehicle::DSGUpdateAndMove()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::UpdateGearAndRPM()
-{
+void Vehicle::UpdateGearAndRPM() {
     // make sure this method can work on both
     // physics and traffic updated vehicles.
 
 
-    float speedAlongFacing;     
+    float speedAlongFacing;
 
     speedAlongFacing = mVehicleFacing.DotProduct(mVelocityCM);
 
@@ -3470,45 +3126,39 @@ void Vehicle::UpdateGearAndRPM()
     // first see if we're in neutral and just sitting there
     //static float smallRevPerTime = 0.1f;
     float smallRevPerTime = 0.1f;
-    if(mGas == 0.0f && revPerTime < smallRevPerTime)
-    {
+    if (mGas == 0.0f && revPerTime < smallRevPerTime) {
         mGear = 0;
         mRPM = mBaseRPM;
         return;
     }
-    
-    // otherwise let's move!
-    if(mGear == 0)
-    {
-        mGear = 1;
-    } 
 
-    if((mVehicleState == VS_NORMAL || mGas == 0) && mBurnoutLevel == 0.0f && !mDoSpeedBurst)
-    {
+    // otherwise let's move!
+    if (mGear == 0) {
+        mGear = 1;
+    }
+
+    if ((mVehicleState == VS_NORMAL || mGas == 0) && mBurnoutLevel == 0.0f && !mDoSpeedBurst) {
         //--------------------------
         // determine tentative value
         //--------------------------
-        float targetRPM = mGearRatios[mGear - 1] * mFinalDriveRatio * revPerTime * 60.0f;  // 60.0f to get to minutes instead of seconds
-    
-        
+        float targetRPM = mGearRatios[mGear - 1] * mFinalDriveRatio * revPerTime *
+                          60.0f;  // 60.0f to get to minutes instead of seconds
+
+
         //------------------------
         // only change by set rate
         //------------------------        
-        if(targetRPM > mRPM)
-        {   
+        if (targetRPM > mRPM) {
             // shouldn't be able to make arbitrary changes in rpm
             mRPM += mRPMUpRate;
-            if(mRPM > targetRPM)
-            {
+            if (mRPM > targetRPM) {
                 mRPM = targetRPM;
             }
         }
-        if(targetRPM < mRPM)
-        {   
+        if (targetRPM < mRPM) {
             // shouldn't be able to make arbitrary changes in rpm
             mRPM -= mRPMDownRate;
-            if(mRPM < targetRPM)
-            {
+            if (mRPM < targetRPM) {
                 mRPM = targetRPM;
             }
         }
@@ -3516,21 +3166,16 @@ void Vehicle::UpdateGearAndRPM()
         //--------------------------
         // change gears if necessary
         //--------------------------
-        if(mRPM > mShiftPointHigh)
-        {
+        if (mRPM > mShiftPointHigh) {
             // change gears and recalculate
             mGear++;
-            if(mGear > mNumGears)
-            {
+            if (mGear > mNumGears) {
                 mGear = mNumGears;
             }
 
-        }
-        else if(mRPM < mShiftPointLow)
-        {
+        } else if (mRPM < mShiftPointLow) {
             mGear--;
-            if(mGear < 1)
-            {
+            if (mGear < 1) {
                 mGear = 1;      // TODO - again - deal with reverse!
             }
 
@@ -3539,27 +3184,24 @@ void Vehicle::UpdateGearAndRPM()
         //-----------------------------------------
         // recalc target due to gear change - maybe
         //-----------------------------------------
-        targetRPM = mGearRatios[mGear - 1] * mFinalDriveRatio * revPerTime * 60.0f;  // 60.0f to get to minutes instead of seconds
+        targetRPM = mGearRatios[mGear - 1] * mFinalDriveRatio * revPerTime *
+                    60.0f;  // 60.0f to get to minutes instead of seconds
 
-        
+
         //------------------------
         // only change by set rate
         //------------------------        
-        if(targetRPM > mRPM)
-        {   
+        if (targetRPM > mRPM) {
             // shouldn't be able to make arbitrary changes in rpm
             mRPM += mRPMUpRate;
-            if(mRPM > targetRPM)
-            {
+            if (mRPM > targetRPM) {
                 mRPM = targetRPM;
             }
         }
-        if(targetRPM < mRPM)
-        {   
+        if (targetRPM < mRPM) {
             // shouldn't be able to make arbitrary changes in rpm
             mRPM -= mRPMDownRate;
-            if(mRPM < targetRPM)
-            {
+            if (mRPM < targetRPM) {
                 mRPM = targetRPM;
             }
         }
@@ -3568,32 +3210,25 @@ void Vehicle::UpdateGearAndRPM()
         // lock no lower than base
         //------------------------
 
-        if(mRPM < mBaseRPM)
-        {
+        if (mRPM < mBaseRPM) {
             mRPM = mBaseRPM;
         }
-    }
-    else    // VS_SLIP
+    } else    // VS_SLIP
     {
-        if(mGas > 0.0f)
-        {
+        if (mGas > 0.0f) {
             const float hack = 0.1f;
             //mRPM *= 1.0f + (hack * mGas);
-            
+
             const float hack2 = 3.1f;
-            if(mBurnoutLevel > 0.0f)
-            {
+            if (mBurnoutLevel > 0.0f) {
                 mRPM += mGas * mRPMUpRate * hack2;
-            }
-            else
-            {
+            } else {
                 mRPM += mGas * mRPMUpRate * hack;
             }
 
             // gear same
         }
-        if(mRPM > mShiftPointHigh)
-        {
+        if (mRPM > mShiftPointHigh) {
             mRPM = mShiftPointHigh;
         }
     }
@@ -3612,11 +3247,9 @@ void Vehicle::UpdateGearAndRPM()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::UpdateWheelRenderingInfo(float dt)
-{  
+void Vehicle::UpdateWheelRenderingInfo(float dt) {
     int i;
-    for(i = 0; i < 4; i++)
-    {
+    for (i = 0; i < 4; i++) {
         // setup this method such that it can be called to get the right info
         // cahced into the Wheel after either a physics or traffic update
         //
@@ -3637,12 +3270,27 @@ void Vehicle::UpdateWheelRenderingInfo(float dt)
 // Return:      const 
 //
 //=============================================================================
-const rmt::Matrix& Vehicle::GetTransform()
-{
+const rmt::Matrix &Vehicle::GetTransform() {
     return mTransform;
 }
 
 
+//========================================================================
+// vehicle::
+//========================================================================
+//
+// Description: 
+//
+// Parameters:  None.
+//
+// Return:      None.
+//
+// Constraints: None.
+//
+//========================================================================
+rmt::Vector *Vehicle::pPosition() {
+    return (rmt::Vector *) mTransform.m[3];
+}
 
 //========================================================================
 // vehicle::
@@ -3657,28 +3305,10 @@ const rmt::Matrix& Vehicle::GetTransform()
 // Constraints: None.
 //
 //========================================================================
-rmt::Vector*        Vehicle::pPosition()
-{
-    return (rmt::Vector*)mTransform.m[3];
-}
-//========================================================================
-// vehicle::
-//========================================================================
-//
-// Description: 
-//
-// Parameters:  None.
-//
-// Return:      None.
-//
-// Constraints: None.
-//
-//========================================================================
-const rmt::Vector&  Vehicle::rPosition()
-{
+const rmt::Vector &Vehicle::rPosition() {
 //    rAssert(false);
 //    return NULL;
-    return *((rmt::Vector*)mTransform.m[3]);
+    return *((rmt::Vector *) mTransform.m[3]);
 }
 
 //------------------------------------------------------------------------
@@ -3692,24 +3322,23 @@ const rmt::Vector&  Vehicle::rPosition()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::Display()
-{
-    ActivateTriggers(!(IsUnstable() || IsAirborn()) || (GetLocomotionType() == VL_TRAFFIC) || mAtRestAsFarAsTriggersAreConcerned);
+void Vehicle::Display() {
+    ActivateTriggers(!(IsUnstable() || IsAirborn()) || (GetLocomotionType() == VL_TRAFFIC) ||
+                     mAtRestAsFarAsTriggersAreConcerned);
 
-    if(IS_DRAW_LONG) return;
+    if (IS_DRAW_LONG) return;
 
     // not sure if these belong here?
     //p3d::stack->Push();
     //p3d::stack->Multiply(mTransform);  
- 
+
     //return;
-    
-    
+
+
     //DebugDisplay();
     //return;
-    
-    if( !mOkToDrawSelf || !mDrawVehicle )
-    {
+
+    if (!mOkToDrawSelf || !mDrawVehicle) {
         return;
     }
 
@@ -3721,11 +3350,11 @@ void Vehicle::Display()
     // little debug test
     //
     //if(!(mWheels[2]->mWheelInCollision) || !(mWheels[3]->mWheelInCollision))
-    if(0)//mWeebleOn)
-    //if(mDrawWireFrame)
-    //if(this->mAirBorn)
+    if (0)//mWeebleOn)
+        //if(mDrawWireFrame)
+        //if(this->mAirBorn)
     {
-        p3d::pddi->SetFillMode(PDDI_FILL_WIRE);        
+        p3d::pddi->SetFillMode(PDDI_FILL_WIRE);
     }
 
 
@@ -3733,7 +3362,7 @@ void Vehicle::Display()
 
     //p3d::pddi->SetFillMode(PDDI_FILL_WIRE);        
 
-      
+
     mPoseEngine->End();     // copy over what we're gonna render
     mGeometryVehicle->Display();
 
@@ -3742,16 +3371,16 @@ void Vehicle::Display()
     //p3d::stack->Pop();
 
     //if(!(mWheels[2]->mWheelInCollision) || !(mWheels[3]->mWheelInCollision))
-    if(0)//mWeebleOn)
-    //if(mDrawWireFrame)
-    //if(this->mAirBorn)
+    if (0)//mWeebleOn)
+        //if(mDrawWireFrame)
+        //if(this->mAirBorn)
     {
         p3d::pddi->SetFillMode(PDDI_FILL_SOLID);
     }
     // ugly, but just for debugging shit
     mDrawWireFrame = false;
     this->mLosingTractionDueToAccel = false;
-    
+
 
     BillboardQuadManager::Disable();
     DSG_END_PROFILE("  Vehicle::Display")
@@ -3768,9 +3397,9 @@ void Vehicle::Display()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::DebugDisplay()
-{
-    mSimStateArticulated->DebugDisplay(2);  // this one draws some sort of virtual centre of mass or something
+void Vehicle::DebugDisplay() {
+    mSimStateArticulated->DebugDisplay(
+            2);  // this one draws some sort of virtual centre of mass or something
     sim::DrawCollisionObject(mSimStateArticulated->GetCollisionObject());
 }
 
@@ -3785,10 +3414,9 @@ void Vehicle::DebugDisplay()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::CarDisplay(bool doit)
-{
+void Vehicle::CarDisplay(bool doit) {
     mOkToDrawSelf = doit;
-}    
+}
 
 
 //=============================================================================
@@ -3801,15 +3429,13 @@ void Vehicle::CarDisplay(bool doit)
 // Return:      float 
 //
 //=============================================================================
-float Vehicle::GetSpeedKmh()
-{
+float Vehicle::GetSpeedKmh() {
     //return mSpeed * 3.6f;
     return mSpeedKmh;
 }
 
 
-float Vehicle::GetAccelMss()
-{
+float Vehicle::GetAccelMss() {
     return mAccelMss;
 }
 
@@ -3823,8 +3449,7 @@ float Vehicle::GetAccelMss()
 // Return:      float 
 //
 //=============================================================================
-float Vehicle::GetRPM()
-{
+float Vehicle::GetRPM() {
     return mRPM;
 }
 
@@ -3839,8 +3464,7 @@ float Vehicle::GetRPM()
 // Return:      float 
 //
 //=============================================================================
-float Vehicle::GetSkidLevel()
-{
+float Vehicle::GetSkidLevel() {
     return mSkidLevel;
 }
 
@@ -3855,8 +3479,7 @@ float Vehicle::GetSkidLevel()
 // Return:      int 
 //
 //=============================================================================
-int Vehicle::GetGear()
-{
+int Vehicle::GetGear() {
     // TODO - how to do the gearshift interface?
 
     return mGear;
@@ -3872,14 +3495,13 @@ int Vehicle::GetGear()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* position )
+// Parameters:  (rmt::Vector* position)
 //
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::GetPosition( rmt::Vector* position )
-{
-    *position = *((rmt::Vector*)mTransform.m[3]);
+void Vehicle::GetPosition(rmt::Vector *position) {
+    *position = *((rmt::Vector *) mTransform.m[3]);
 }
 
 
@@ -3888,13 +3510,12 @@ void Vehicle::GetPosition( rmt::Vector* position )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* heading )
+// Parameters:  (rmt::Vector* heading)
 //
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::GetHeading( rmt::Vector* heading )
-{
+void Vehicle::GetHeading(rmt::Vector *heading) {
     *heading = mVehicleFacing;
 }
 
@@ -3904,13 +3525,12 @@ void Vehicle::GetHeading( rmt::Vector* heading )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* vup )
+// Parameters:  (rmt::Vector* vup)
 //
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::GetVUP( rmt::Vector* vup )
-{
+void Vehicle::GetVUP(rmt::Vector *vup) {
     *vup = mVehicleUp;
 }
 
@@ -3920,13 +3540,12 @@ void Vehicle::GetVUP( rmt::Vector* vup )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* velocity )
+// Parameters:  (rmt::Vector* velocity)
 //
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::GetVelocity( rmt::Vector* velocity )
-{
+void Vehicle::GetVelocity(rmt::Vector *velocity) {
     // TODO - make sure this holds the right thing when 
     // we are being traffic locomoted
     *velocity = mVelocityCM;
@@ -3942,8 +3561,7 @@ void Vehicle::GetVelocity( rmt::Vector* velocity )
 // Return:      unsigned 
 //
 //=============================================================================
-unsigned int Vehicle::GetID()
-{
+unsigned int Vehicle::GetID() {
     return mVehicleID;
 }
 
@@ -3957,8 +3575,7 @@ unsigned int Vehicle::GetID()
 // Return:      bool 
 //
 //=============================================================================
-bool Vehicle::IsCar() const
-{
+bool Vehicle::IsCar() const {
     return true;
 }
 
@@ -3973,8 +3590,7 @@ bool Vehicle::IsCar() const
 // Return:      bool 
 //
 //=============================================================================
-bool Vehicle::IsAirborn()
-{    
+bool Vehicle::IsAirborn() {
     //return mSteeringWheelsOutOfContact;
     return mAirBorn;
 }
@@ -3990,26 +3606,23 @@ bool Vehicle::IsAirborn()
 // Return:      bool 
 //
 //=============================================================================
-bool Vehicle::IsUnstable()
-{    
+bool Vehicle::IsUnstable() {
     // see how much it's tipped...   
     rmt::Vector up = GetWorldPhysicsManager()->mWorldUp;
     float tip = mVehicleUp.DotProduct(up);
 
     //float cos10 = 0.9848f;
     float cos30 = 0.866f;
-    if(tip < cos30)
-    {
+    if (tip < cos30) {
         return true;
     }
-    
-    if(mAirBorn)
-    {
+
+    if (mAirBorn) {
         return true;
     }
-    
+
     return false;
-    
+
     // quick test
     //return mWeebleOn;
 }
@@ -4025,26 +3638,23 @@ bool Vehicle::IsUnstable()
 // Return:      bool 
 //
 //=============================================================================
-bool Vehicle::IsSafeToUpShift()
-{
+bool Vehicle::IsSafeToUpShift() {
     // let's say if at least 1 wheel in contact with ground (ie. !airborn)
     // and the tip angle is less than 15 degrees, then ok.
-    
-    if(!mAirBorn)
-    {
+
+    if (!mAirBorn) {
         rmt::Vector up = GetWorldPhysicsManager()->mWorldUp;
         float tip = mVehicleUp.DotProduct(up);
-        
+
         //float cos15 = 0.9659f;
         float cos10 = 0.9848f;
-        
-        if( (tip > cos10) || (mVehicleFacing.DotProduct(up) <= 0.0f) )
-        {
+
+        if ((tip > cos10) || (mVehicleFacing.DotProduct(up) <= 0.0f)) {
             return true;
         }
-    
+
     }
-    
+
     return false;
 }
 
@@ -4059,8 +3669,7 @@ bool Vehicle::IsSafeToUpShift()
 // Return:      bool 
 //
 //=============================================================================
-bool Vehicle::IsQuickTurn()
-{
+bool Vehicle::IsQuickTurn() {
     // TODO
     return false;
 }
@@ -4075,8 +3684,7 @@ bool Vehicle::IsQuickTurn()
 // Return:      bool 
 //
 //=============================================================================
-bool Vehicle::IsInReverse()
-{
+bool Vehicle::IsInReverse() {
     //return false;
 
     // first heuristic
@@ -4087,8 +3695,7 @@ bool Vehicle::IsInReverse()
     // don't want just any slight backwards motion to trigger
     const float cos120 = -0.5f;
 
-    if(mBrake > 0.1f && proj < cos120)
-    {
+    if (mBrake > 0.1f && proj < cos120) {
         return true;
     }
 
@@ -4100,16 +3707,15 @@ bool Vehicle::IsInReverse()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector& pos, rmt::Vector& normal )
+// Parameters:  (rmt::Vector& pos, rmt::Vector& normal)
 //
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::GetTerrainIntersect( rmt::Vector& pos, rmt::Vector& normal ) const
-{
+void Vehicle::GetTerrainIntersect(rmt::Vector &pos, rmt::Vector &normal) const {
     //THIS IS A LIE!
     pos = mTransform.Row(3);
-    normal.Set( 0.0f, 1.0f, 0.0f );
+    normal.Set(0.0f, 1.0f, 0.0f);
 }
 
 //=============================================================================
@@ -4122,24 +3728,21 @@ void Vehicle::GetTerrainIntersect( rmt::Vector& pos, rmt::Vector& normal ) const
 // Return:      bool 
 //
 //=============================================================================
-bool Vehicle::IsMovingBackward()
-{
+bool Vehicle::IsMovingBackward() {
     // this one does not require the brake input to be held down
-    
-    if(this->mPercentOfTopSpeed > 0.05f)
-    {
+
+    if (this->mPercentOfTopSpeed > 0.05f) {
         float proj = mVelocityCM.DotProduct(mVehicleFacing);
-    
+
         const float cos120 = -0.5f;
 
-        if(proj < cos120)
-        {
+        if (proj < cos120) {
             return true;
         }
     }
-        
+
     return false;
-    
+
 
 }
 
@@ -4153,32 +3756,30 @@ bool Vehicle::IsMovingBackward()
 // Return:      const 
 //
 //=============================================================================
-const char* const Vehicle::GetName()
-{
-    return (const char*)mName;
+const char *const Vehicle::GetName() {
+    return (const char *) mName;
 }
 
-const rmt::Vector& Vehicle::GetPassengerLocation( void ) const
-{
+const rmt::Vector &Vehicle::GetPassengerLocation(void) const {
     return mPassengerLocation;
 }
 
-const rmt::Vector& Vehicle::GetDriverLocation( void ) const
-{
+const rmt::Vector &Vehicle::GetDriverLocation(void) const {
     return mDriverLocation;
 }
+
 //=============================================================================
 // Vehicle::PreReactToCollision
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( sim::SimState* pCollidedObj, sim::Collision& inCollision )
+// Parameters:  (sim::SimState* pCollidedObj, sim::Collision& inCollision)
 //
 // Return:      bool 
 //
 //=============================================================================
-sim::Solving_Answer Vehicle::PreReactToCollision( sim::SimState* pCollidedObj, sim::Collision& inCollision )
-{
+sim::Solving_Answer
+Vehicle::PreReactToCollision(sim::SimState *pCollidedObj, sim::Collision &inCollision) {
     // this is called from the generic worldcollisionsolveragentmanager
 
     // don't abort
@@ -4234,107 +3835,93 @@ void Vehicle::SetHitJoint(int hj)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::ResetDamageState()
-{
+void Vehicle::ResetDamageState() {
     mVehicleDestroyed = false;
-    mDontShowBrakeLights = false;   
+    mDontShowBrakeLights = false;
     mGeometryVehicle->SetLightsOffDueToDamage(false);
     mDamageOutResetTimer = 0.0f;
     mHitPoints = mDesignerParams.mHitPoints;
 
     mDesiredDoorPosition[0] = mDesiredDoorPosition[1] = 0.0f;
-    mDesiredDoorAction[0] = mDesiredDoorAction[1]  = DOORACTION_NONE;
+    mDesiredDoorAction[0] = mDesiredDoorAction[1] = DOORACTION_NONE;
 
     ActivateTriggers(true);
 
-    if (mbPlayerCar ==true)
-    {
-        GetCharacterSheetManager()->UpdateCarHealth( mCharacterSheetCarIndex, 1.0f );
+    if (mbPlayerCar == true) {
+        GetCharacterSheetManager()->UpdateCarHealth(mCharacterSheetCarIndex, 1.0f);
     }
 
-    switch(mDamageType)
-    {
+    switch (mDamageType) {
         //case 1:
-        case VDT_USER:
-        {            
+        case VDT_USER: {
             // reset flapping joints
-         
-            if(mHoodJoint != -1)
-            {
+
+            if (mHoodJoint != -1) {
                 int index = mJointIndexToInertialJointDriverMapping[mHoodJoint];
-                if(index != -1)
-                {
+                if (index != -1) {
                     mPhObj->GetJoint(mHoodJoint)->SetInvStiffness(0.0f);
                     mPhObj->GetJoint(mHoodJoint)->ResetDeformation();
                     mInertialJointDrivers[index]->SetIsEnabled(false);
-                } 
+                }
             }
 
 
-            if(mTrunkJoint != -1)
-            {
+            if (mTrunkJoint != -1) {
                 int index = mJointIndexToInertialJointDriverMapping[mTrunkJoint];
-                if(index != -1)
-                {
+                if (index != -1) {
                     mPhObj->GetJoint(mTrunkJoint)->SetInvStiffness(0.0f);
                     mPhObj->GetJoint(mTrunkJoint)->ResetDeformation();
                     mInertialJointDrivers[index]->SetIsEnabled(false);
-                } 
+                }
             }
-            
-            if(mDoorDJoint != -1)
-            {
+
+            if (mDoorDJoint != -1) {
                 int index = mJointIndexToInertialJointDriverMapping[mDoorDJoint];
-                if(index != -1)
-                {
+                if (index != -1) {
                     mPhObj->GetJoint(mDoorDJoint)->SetInvStiffness(0.0f);
                     mPhObj->GetJoint(mDoorDJoint)->ResetDeformation();
                     mInertialJointDrivers[index]->SetIsEnabled(false);
-                } 
+                }
             }
 
-            
-            if(mDoorPJoint != -1)
-            {
+
+            if (mDoorPJoint != -1) {
                 int index = mJointIndexToInertialJointDriverMapping[mDoorPJoint];
-                if(index != -1)
-                {
+                if (index != -1) {
                     mPhObj->GetJoint(mDoorPJoint)->SetInvStiffness(0.0f);
                     mPhObj->GetJoint(mDoorPJoint)->ResetDeformation();
                     mInertialJointDrivers[index]->SetIsEnabled(false);
-                } 
+                }
             }
 
             mGeometryVehicle->DamageTextureHood(false);
             mGeometryVehicle->DamageTextureTrunk(false);
             mGeometryVehicle->DamageTextureDoorD(false);
-            mGeometryVehicle->DamageTextureDoorP(false);       
+            mGeometryVehicle->DamageTextureDoorP(false);
             mGeometryVehicle->SetEngineSmoke(ParticleEnum::eNull);
 
-            mGeometryVehicle->HideFlappingPiece(mHoodJoint, false);     
-            
-        }
-        break;
+            mGeometryVehicle->HideFlappingPiece(mHoodJoint, false);
 
-        //case 2:
-        case VDT_AI:
-        {
+        }
+            break;
+
+            //case 2:
+        case VDT_AI: {
             mGeometryVehicle->DamageTextureHood(false);
             mGeometryVehicle->DamageTextureTrunk(false);
             mGeometryVehicle->DamageTextureDoorD(false);
-            mGeometryVehicle->DamageTextureDoorP(false);       
+            mGeometryVehicle->DamageTextureDoorP(false);
             mGeometryVehicle->SetEngineSmoke(ParticleEnum::eNull);
         }
-        break;
+            break;
 
-        //case 3:
-        case VDT_TRAFFIC:
-        {
+            //case 3:
+        case VDT_TRAFFIC: {
             //mGeometryVehicle->DamageTextureChassis(false);
             //mGeometryVehicle->SetEngineSmoke(ParticleEnum::eNull);
             mGeometryVehicle->SetEngineSmoke(ParticleEnum::eNull);
         }
-        break;
+            break;
 
         default:
             rAssertMsg(0, "what are you doing here?");
@@ -4353,37 +3940,32 @@ void Vehicle::ResetDamageState()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::DebugInflictDamageHood()
-{
+void Vehicle::DebugInflictDamageHood() {
     //int stophere = 1;
 
-    
+
 
     //float perc = GetVehicleLifePercentage();
     float perc = TriggerDamage(0.15f);
-    
-    switch(mDamageType)
-    {
+
+    switch (mDamageType) {
         //case 1: // user level - flaping joints etc...
-        case VDT_USER:
-        {            
+        case VDT_USER: {
             VisualDamageType1(1.0f - perc, dl_hood);
         }
-        break;
+            break;
 
-        //case 2: // ai - localized damage textures but no flapping
-        case VDT_AI:
-        {
+            //case 2: // ai - localized damage textures but no flapping
+        case VDT_AI: {
             VisualDamageType2(1.0f - perc, dl_hood);
         }
-        break;
+            break;
 
-        //case 3: // traffic - one big poof and texture
-        case VDT_TRAFFIC:
-        {           
-            VisualDamageType3(1.0f - perc);    
+            //case 3: // traffic - one big poof and texture
+        case VDT_TRAFFIC: {
+            VisualDamageType3(1.0f - perc);
         }
-        break;
+            break;
 
         default:
             rAssertMsg(0, "what are you doing here?");
@@ -4402,8 +3984,7 @@ void Vehicle::DebugInflictDamageHood()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::DebugInflictDamageBack()
-{
+void Vehicle::DebugInflictDamageBack() {
 
     //TriggerDamage(0.15f);
     //float perc = GetVehicleLifePercentage();
@@ -4412,29 +3993,25 @@ void Vehicle::DebugInflictDamageBack()
     //float perc = GetVehicleLifePercentage();
     float perc = TriggerDamage(0.15f);
 
-    
-    switch(mDamageType)
-    {
+
+    switch (mDamageType) {
         //case 1: // user level - flaping joints etc...
-        case VDT_USER:
-        {            
+        case VDT_USER: {
             VisualDamageType1(1.0f - perc, dl_trunk);
         }
-        break;
+            break;
 
-        //case 2: // ai - localized damage textures but no flapping
-        case VDT_AI:
-        {
+            //case 2: // ai - localized damage textures but no flapping
+        case VDT_AI: {
             VisualDamageType2(1.0f - perc, dl_trunk);
         }
-        break;
+            break;
 
-        //case 3: // traffic - one big poof and texture
-        case VDT_TRAFFIC:
-        {           
-            VisualDamageType3(1.0f - perc);    
+            //case 3: // traffic - one big poof and texture
+        case VDT_TRAFFIC: {
+            VisualDamageType3(1.0f - perc);
         }
-        break;
+            break;
 
         default:
             rAssertMsg(0, "what are you doing here?");
@@ -4451,39 +4028,34 @@ void Vehicle::DebugInflictDamageBack()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::DebugInflictDamageDriverSide()
-{
+void Vehicle::DebugInflictDamageDriverSide() {
 
     //TriggerDamage(0.15f);
     //float perc = GetVehicleLifePercentage();
-    
-    
+
+
     //float perc = GetVehicleLifePercentage();
     float perc = TriggerDamage(0.15f);
 
-    
-    switch(mDamageType)
-    {
+
+    switch (mDamageType) {
         //Case 1: // user level - flaping joints etc...
-        case VDT_USER:
-        {            
+        case VDT_USER: {
             VisualDamageType1(1.0f - perc, dl_driverside);
         }
-        break;
+            break;
 
-        //case 2: // ai - localized damage textures but no flapping
-        case VDT_AI:
-        {
+            //case 2: // ai - localized damage textures but no flapping
+        case VDT_AI: {
             VisualDamageType2(1.0f - perc, dl_driverside);
         }
-        break;
+            break;
 
-        //case 3: // traffic - one big poof and texture
-        case VDT_TRAFFIC:
-        {           
-            VisualDamageType3(1.0f - perc);    
+            //case 3: // traffic - one big poof and texture
+        case VDT_TRAFFIC: {
+            VisualDamageType3(1.0f - perc);
         }
-        break;
+            break;
 
         default:
             rAssertMsg(0, "what are you doing here?");
@@ -4501,39 +4073,34 @@ void Vehicle::DebugInflictDamageDriverSide()
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::DebugInflictDamagePassengerSide()
-{
+void Vehicle::DebugInflictDamagePassengerSide() {
     //TriggerDamage(0.15f);
 
     //float perc = GetVehicleLifePercentage();
-    
-    
+
+
     //float perc = GetVehicleLifePercentage();
     float perc = TriggerDamage(0.15f);
 
-    
-    switch(mDamageType)
-    {
+
+    switch (mDamageType) {
         //case 1: // user level - flaping joints etc...
-        case VDT_USER:
-        {            
+        case VDT_USER: {
             VisualDamageType1(1.0f - perc, dl_passengerside);
         }
-        break;
+            break;
 
-        //case 2: // ai - localized damage textures but no flapping
-        case VDT_AI:
-        {
+            //case 2: // ai - localized damage textures but no flapping
+        case VDT_AI: {
             VisualDamageType2(1.0f - perc, dl_passengerside);
         }
-        break;
+            break;
 
-        //case 3: // traffic - one big poof and texture
-        case VDT_TRAFFIC:
-        {           
-            VisualDamageType3(1.0f - perc);    
+            //case 3: // traffic - one big poof and texture
+        case VDT_TRAFFIC: {
+            VisualDamageType3(1.0f - perc);
         }
-        break;
+            break;
 
         default:
             rAssertMsg(0, "what are you doing here?");
@@ -4546,91 +4113,80 @@ void Vehicle::DebugInflictDamagePassengerSide()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( sim::SimState* pCollidedObj, sim::Collision& inCollision )
+// Parameters:  (sim::SimState* pCollidedObj, sim::Collision& inCollision)
 //
 // Return:      sim
 //
 //=============================================================================
-sim::Solving_Answer Vehicle::PostReactToCollision(rmt::Vector& impulse, sim::Collision& inCollision)
-{
+sim::Solving_Answer
+Vehicle::PostReactToCollision(rmt::Vector &impulse, sim::Collision &inCollision) {
 
     // this is called from the generic worldcollisionsolveragentmanager
 
     // don't abort
 
-    sim::CollisionObject* collObjA = inCollision.mCollisionObjectA;
-    sim::CollisionObject* collObjB = inCollision.mCollisionObjectB;
-    
-    sim::SimState* simStateA = collObjA->GetSimState();
-    sim::SimState* simStateB = collObjB->GetSimState();
+    sim::CollisionObject *collObjA = inCollision.mCollisionObjectA;
+    sim::CollisionObject *collObjB = inCollision.mCollisionObjectB;
 
-    
+    sim::SimState *simStateA = collObjA->GetSimState();
+    sim::SimState *simStateB = collObjB->GetSimState();
+
+
     float impulseMagnitude = impulse.Magnitude();
 
     const float maxIntensity = 100000.0f;   // empircally determined
 
     // Check to see if the impact was strong enough to detach any attached collectibles.
-    if ( impulseMagnitude > mForceToDetachCollectible )
-    {
+    if (impulseMagnitude > mForceToDetachCollectible) {
         rmt::Vector velocity = GetSimState()->GetLinearVelocity();
-        DetachCollectible( velocity );
+        DetachCollectible(velocity);
     }
 
     float normalizedMagnitude = impulseMagnitude / maxIntensity;
-    
-        
-    if(simStateA->mAIRefIndex == PhysicsAIRef::redBrickVehicle && simStateB->mAIRefIndex == PhysicsAIRef::redBrickVehicle)
-    {
+
+
+    if (simStateA->mAIRefIndex == PhysicsAIRef::redBrickVehicle &&
+        simStateB->mAIRefIndex == PhysicsAIRef::redBrickVehicle) {
         // stricter test
-        if(normalizedMagnitude > 0.8f)
-        {
+        if (normalizedMagnitude > 0.8f) {
             return sim::Solving_Aborted;
-        }                   
-        else if( (  ((Vehicle*)(simStateA->mAIRefPointer))->mVehicleID == VehicleEnum::BART_V && ((Vehicle*)(simStateB->mAIRefPointer))->mVehicleID == VehicleEnum::CKLIMO) ||
-                 (  ((Vehicle*)(simStateA->mAIRefPointer))->mVehicleID == VehicleEnum::CKLIMO && ((Vehicle*)(simStateB->mAIRefPointer))->mVehicleID == VehicleEnum::BART_V) )
-                 
-        {
-            if(normalizedMagnitude > 0.5f)                    
-            {
+        } else if ((((Vehicle * )(simStateA->mAIRefPointer))->mVehicleID == VehicleEnum::BART_V &&
+                    ((Vehicle * )(simStateB->mAIRefPointer))->mVehicleID == VehicleEnum::CKLIMO) ||
+                   (((Vehicle * )(simStateA->mAIRefPointer))->mVehicleID == VehicleEnum::CKLIMO &&
+                    ((Vehicle * )(simStateB->mAIRefPointer))->mVehicleID == VehicleEnum::BART_V)) {
+            if (normalizedMagnitude > 0.5f) {
                 return sim::Solving_Aborted;
-            }                 
-        }        
+            }
+        }
     }
 
-    if(normalizedMagnitude > 1.0f)
-    {
+    if (normalizedMagnitude > 1.0f) {
         rDebugPrintf("Yikes!!! Enormous impulse!\n");
         //impulse.x /= normalizedMagnitude * 2;
         //impulse.y /= normalizedMagnitude * 2;
         //impulse.z /= normalizedMagnitude * 2;
-        if(normalizedMagnitude > 2.0f)
-        {
+        if (normalizedMagnitude > 2.0f) {
             return sim::Solving_Aborted;
         }
-   
-        
+
+
         normalizedMagnitude = 1.0f;
     }
-    if(normalizedMagnitude < 0.0f)
-    {
+    if (normalizedMagnitude < 0.0f) {
         rAssert(0);
     }
 
 
-	if(mVehicleID == VehicleEnum::HUSKA)
-    {
+    if (mVehicleID == VehicleEnum::HUSKA) {
         normalizedMagnitude = 0.2f;
     }
-    
-    if(this->mVehicleID == VehicleEnum::DUNE_V)
-    {
-        if( simStateA->mAIRefIndex == PhysicsAIRef::redBrickPhizFence ||
-            simStateB->mAIRefIndex == PhysicsAIRef::redBrickPhizFence)
-            
-        {
+
+    if (this->mVehicleID == VehicleEnum::DUNE_V) {
+        if (simStateA->mAIRefIndex == PhysicsAIRef::redBrickPhizFence ||
+            simStateB->mAIRefIndex == PhysicsAIRef::redBrickPhizFence) {
             // r/c car hitting a fence
             //? scale up impulse?
-            
+
             impulse.Scale(2.0f);
         }
     }
@@ -4642,295 +4198,248 @@ sim::Solving_Answer Vehicle::PostReactToCollision(rmt::Vector& impulse, sim::Col
     rc.vehicle = this;
     rc.point = inCollision.GetPositionA();  //This could be either.
 
-    GetEventManager()->TriggerEvent( EVENT_RUMBLE_COLLISION, &rc );
+    GetEventManager()->TriggerEvent(EVENT_RUMBLE_COLLISION, &rc);
 
-    if(simStateA->mAIRefIndex == PhysicsAIRef::redBrickVehicle && simStateB->mAIRefIndex == PhysicsAIRef::redBrickVehicle)
-    {        
-        TestWhoHitWhom( simStateA, simStateB, normalizedMagnitude, inCollision );
-        if(mVehicleType != VT_USER)
-        {
+    if (simStateA->mAIRefIndex == PhysicsAIRef::redBrickVehicle &&
+        simStateB->mAIRefIndex == PhysicsAIRef::redBrickVehicle) {
+        TestWhoHitWhom(simStateA, simStateB, normalizedMagnitude, inCollision);
+        if (mVehicleType != VT_USER) {
             DusitsStunTest(normalizedMagnitude);
         }
         // Vehicle - vehicle collision
         // we want to emit paint flicks of the appropriate colour
-        if ( mGeometryVehicle->HasVehicleColour() )
-        {
+        if (mGeometryVehicle->HasVehicleColour()) {
             tColour vehicleColour = mGeometryVehicle->GetVehicleColour();
-            float strength = impulseMagnitude * ( 1.0f / 5000.0f );
+            float strength = impulseMagnitude * (1.0f / 5000.0f);
             float velocityScale = strength;
-            const rmt::Vector& position = inCollision.GetPositionA();
+            const rmt::Vector &position = inCollision.GetPositionA();
             rmt::Vector velocity = mVelocityCM;
-            if ( velocity.MagnitudeSqr() > 0.01f )
-            {
+            if (velocity.MagnitudeSqr() > 0.01f) {
                 velocity.y = 0.0f;
                 velocity.Normalize();
-                velocity.Scale( velocityScale );
-            }
-            else
-            {
-                velocity = rmt::Vector(0,0,0);
+                velocity.Scale(velocityScale);
+            } else {
+                velocity = rmt::Vector(0, 0, 0);
             }
 
-            GetSparkleManager()->AddPaintChips( position, velocity, vehicleColour, strength );
+            GetSparkleManager()->AddPaintChips(position, velocity, vehicleColour, strength);
         }
 
-        Avatar* playerAvatar = GetAvatarManager()->GetAvatarForPlayer(0);
-        if(playerAvatar->GetVehicle() == this)
-        {
+        Avatar *playerAvatar = GetAvatarManager()->GetAvatarForPlayer(0);
+        if (playerAvatar->GetVehicle() == this) {
             CarOnCarCollisionEventData data;
 
             //data.vehicle shall be the other vehicle.
-            if ( simStateA->mAIRefPointer == this )
-            {
-                data.vehicle = ((Vehicle*)(simStateB->mAIRefPointer));
-            }
-            else
-            {
-                data.vehicle = ((Vehicle*)(simStateA->mAIRefPointer));
+            if (simStateA->mAIRefPointer == this) {
+                data.vehicle = ((Vehicle * )(simStateB->mAIRefPointer));
+            } else {
+                data.vehicle = ((Vehicle * )(simStateA->mAIRefPointer));
             }
             data.force = normalizedMagnitude;
             data.collision = &inCollision;
-            GetEventManager()->TriggerEvent( EVENT_VEHICLE_VEHICLE_COLLISION, &data );
-        }       
+            GetEventManager()->TriggerEvent(EVENT_VEHICLE_VEHICLE_COLLISION, &data);
+        }
     }
-    
-   	if(mVehicleType == VT_USER)
-	{
-	    SparksTest(impulseMagnitude, inCollision);  // should this also be wrapped in mUserDrivingCar??
-    } 
-    
+
+    if (mVehicleType == VT_USER) {
+        SparksTest(impulseMagnitude,
+                   inCollision);  // should this also be wrapped in mUserDrivingCar??
+    }
+
     //which one are we?
     bool thisIsA = true;
 
-    if(simStateA->mAIRefPointer == this)
-    {
+    if (simStateA->mAIRefPointer == this) {
         // ok
-    }
-    else
-    {
+    } else {
         thisIsA = false;
-    }   
-    
+    }
+
     // try movign this down so that husks hitting cars and statics will still make sound
     //if(mVehicleID == VehicleEnum::HUSKA)
     //{
     //    return sim::Solving_Continue;
     //}
-    
+
     // new debug test just for traffic collision
     bool oneTapTrafficDeath = false;
-        
-    
-    if( GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_ONE_TAP_TRAFFIC_DEATH) )
-    {
-        
-        if(simStateA->mAIRefIndex == PhysicsAIRef::redBrickVehicle && simStateB->mAIRefIndex == PhysicsAIRef::redBrickVehicle)
-        {
-            if(thisIsA)
-            {
-                if( (((Vehicle*)(simStateA->mAIRefPointer))->mVehicleType == VT_TRAFFIC || ((Vehicle*)(simStateA->mAIRefPointer))->mVehicleType == VT_AI) &&
-                    ((Vehicle*)(simStateB->mAIRefPointer))->mVehicleType == VT_USER)
-                    {
-                        int stophere = 1;
-                        oneTapTrafficDeath = true;
-                        
-                    }
+
+
+    if (GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_ONE_TAP_TRAFFIC_DEATH)) {
+
+        if (simStateA->mAIRefIndex == PhysicsAIRef::redBrickVehicle &&
+            simStateB->mAIRefIndex == PhysicsAIRef::redBrickVehicle) {
+            if (thisIsA) {
+                if ((((Vehicle * )(simStateA->mAIRefPointer))->mVehicleType == VT_TRAFFIC ||
+                     ((Vehicle * )(simStateA->mAIRefPointer))->mVehicleType == VT_AI) &&
+                    ((Vehicle * )(simStateB->mAIRefPointer))->mVehicleType == VT_USER) {
+                    int stophere = 1;
+                    oneTapTrafficDeath = true;
+
+                }
+            } else {
+                if ((((Vehicle * )(simStateB->mAIRefPointer))->mVehicleType == VT_TRAFFIC ||
+                     ((Vehicle * )(simStateB->mAIRefPointer))->mVehicleType == VT_AI) &&
+                    ((Vehicle * )(simStateA->mAIRefPointer))->mVehicleType == VT_USER) {
+                    int stophere = 1;
+                    oneTapTrafficDeath = true;
+                }
             }
-            else
-            {
-                if( (((Vehicle*)(simStateB->mAIRefPointer))->mVehicleType == VT_TRAFFIC || ((Vehicle*)(simStateB->mAIRefPointer))->mVehicleType == VT_AI) &&
-                    ((Vehicle*)(simStateA->mAIRefPointer))->mVehicleType == VT_USER)
-                
-                    {
-                        int stophere = 1;
-                        oneTapTrafficDeath = true;
-                    }
-            }
-        }    
+        }
     }
-    
+
     // This is the "minimum damage threshold" for applying ANY damage
-	// - think of the number as a percentage, i.e., any hit less than .1 (10 &) intensity
-	//   won't cause any damage at all
-	const float minDamageThreshold = 0.06f;
-	
-	
-	
-	if(!oneTapTrafficDeath)
-	{
-        if(normalizedMagnitude < minDamageThreshold)
-        {
+    // - think of the number as a percentage, i.e., any hit less than .1 (10 &) intensity
+    //   won't cause any damage at all
+    const float minDamageThreshold = 0.06f;
+
+
+    if (!oneTapTrafficDeath) {
+        if (normalizedMagnitude < minDamageThreshold) {
             //#ifdef RAD_DEBUG
             //char buffy[128];
             //sprintf(buffy, "normalizedMagnitude %.4f\n", normalizedMagnitude);
             //rDebugPrintf(buffy);
             //#endif
-            
+
             return sim::Solving_Continue;
         }
-    }    
-        
-        
-    
-    
-    
+    }
+
+
+
+
+
     //Greg says to do this.  Won't work in 2-player.
-    if (mUserDrivingCar)
-    {
-        CameraShakeTest(impulseMagnitude, inCollision);     // pass struct, by reference, for convenience
-                                                            // pass in impulseMagnitude because we don't want to compute it twice.  
-    }	
-	
-
-	
-    
-    SoundCollisionData soundData( normalizedMagnitude,
-                                  static_cast<CollisionEntityDSG*>(simStateA->mAIRefPointer),
-                                  static_cast<CollisionEntityDSG*>(simStateB->mAIRefPointer) );
-    GetEventManager()->TriggerEvent( EVENT_COLLISION, &soundData );
+    if (mUserDrivingCar) {
+        CameraShakeTest(impulseMagnitude,
+                        inCollision);     // pass struct, by reference, for convenience
+        // pass in impulseMagnitude because we don't want to compute it twice.
+    }
 
 
-    if(mVehicleID == VehicleEnum::HUSKA)
-    {
+    SoundCollisionData soundData(normalizedMagnitude,
+                                 static_cast<CollisionEntityDSG *>(simStateA->mAIRefPointer),
+                                 static_cast<CollisionEntityDSG *>(simStateB->mAIRefPointer));
+    GetEventManager()->TriggerEvent(EVENT_COLLISION, &soundData);
+
+
+    if (mVehicleID == VehicleEnum::HUSKA) {
         return sim::Solving_Continue;
     }
-    
 
 
-  // before further testing, see if this is a car that hit it's own ground plane
+
+    // before further testing, see if this is a car that hit it's own ground plane
     // if so, abort
-    
-    Avatar* playerAvatar = GetAvatarManager()->GetAvatarForPlayer(0);
-    
-    if(GetGameplayManager()->GetGameType() != GameplayManager::GT_SUPERSPRINT && playerAvatar->GetVehicle() == this)
-    {
+
+    Avatar *playerAvatar = GetAvatarManager()->GetAvatarForPlayer(0);
+
+    if (GetGameplayManager()->GetGameType() != GameplayManager::GT_SUPERSPRINT &&
+        playerAvatar->GetVehicle() == this) {
         const float percentageOfSpeedToMaintain = 0.85f; // plum, change this number
-        
-        if(thisIsA)
-        {
-            if(simStateB->mAIRefIndex == PhysicsAIRef::redBrickPhizVehicleGroundPlane && this->mGas > 0.0f)
-            {
-                if(mBottomOutSpeedMaintenance == 0.0f)
-                {
+
+        if (thisIsA) {
+            if (simStateB->mAIRefIndex == PhysicsAIRef::redBrickPhizVehicleGroundPlane &&
+                this->mGas > 0.0f) {
+                if (mBottomOutSpeedMaintenance == 0.0f) {
                     // not set
-                    mBottomOutSpeedMaintenance = this->mSpeed * percentageOfSpeedToMaintain;                               
-                }
-                else
-                {
+                    mBottomOutSpeedMaintenance = this->mSpeed * percentageOfSpeedToMaintain;
+                } else {
                     // it is set
                     //
                     // so.... maintain it!
-                    if(mBottomOutSpeedMaintenance > (this->mDesignerParams.mDpTopSpeedKmh / 3.6f) * 0.6f)
-                    {
-                        rmt::Vector& linearVel = mSimStateArticulated->GetLinearVelocity();
-                     
+                    if (mBottomOutSpeedMaintenance >
+                        (this->mDesignerParams.mDpTopSpeedKmh / 3.6f) * 0.6f) {
+                        rmt::Vector &linearVel = mSimStateArticulated->GetLinearVelocity();
+
                         float proj = linearVel.DotProduct(this->mVehicleFacing);
-                        if(proj < mBottomOutSpeedMaintenance)
-                        {
+                        if (proj < mBottomOutSpeedMaintenance) {
                             float diff = mBottomOutSpeedMaintenance - proj;
                             rmt::Vector boost = mVehicleFacing;
                             boost.Scale(diff);
-                            
-                            linearVel.Add(boost);                        
-                        
-                        }   
-                        
-                        
+
+                            linearVel.Add(boost);
+
+                        }
+
+
                     }
                 }
-            
-                return sim::Solving_Continue;               
-            }
-            else
-            {
+
+                return sim::Solving_Continue;
+            } else {
                 // didn't hit our ground plane this frame so make sure the maintenance speed is reset
                 mBottomOutSpeedMaintenance = 0.0f;
             }
-        }
-        else
-        {
-            if(simStateA->mAIRefIndex == PhysicsAIRef::redBrickPhizVehicleGroundPlane  && this->mGas > 0.0f)
-            {        
-            
-                if(mBottomOutSpeedMaintenance == 0.0f)
-                {
+        } else {
+            if (simStateA->mAIRefIndex == PhysicsAIRef::redBrickPhizVehicleGroundPlane &&
+                this->mGas > 0.0f) {
+
+                if (mBottomOutSpeedMaintenance == 0.0f) {
                     // not set
-                    mBottomOutSpeedMaintenance = this->mSpeed * percentageOfSpeedToMaintain;                                
-                }
-                else
-                {
+                    mBottomOutSpeedMaintenance = this->mSpeed * percentageOfSpeedToMaintain;
+                } else {
                     // it is set
                     //
                     // so.... maintain it!
-                    
-                    
-                    if(mBottomOutSpeedMaintenance > (this->mDesignerParams.mDpTopSpeedKmh / 3.6f) * 0.6f)
-                    {
-                        rmt::Vector& linearVel = mSimStateArticulated->GetLinearVelocity();
-                     
+
+
+                    if (mBottomOutSpeedMaintenance >
+                        (this->mDesignerParams.mDpTopSpeedKmh / 3.6f) * 0.6f) {
+                        rmt::Vector &linearVel = mSimStateArticulated->GetLinearVelocity();
+
                         float proj = linearVel.DotProduct(this->mVehicleFacing);
-                        if(proj < mBottomOutSpeedMaintenance)
-                        {
+                        if (proj < mBottomOutSpeedMaintenance) {
                             float diff = mBottomOutSpeedMaintenance - proj;
                             rmt::Vector boost = mVehicleFacing;
                             boost.Scale(diff);
-                            
-                            linearVel.Add(boost);                        
-                        
-                        }   
-                        
-                        
+
+                            linearVel.Add(boost);
+
+                        }
+
+
                     }
-                    
-                    
+
+
                 }
-            
-            
-                return sim::Solving_Continue;               
-            }
-            else
-            {
+
+
+                return sim::Solving_Continue;
+            } else {
                 // didn't hit our ground plane this frame so make sure the maintenance speed is reset
-                mBottomOutSpeedMaintenance = 0.0f;        
+                mBottomOutSpeedMaintenance = 0.0f;
             }
-        
-        }   
+
+        }
     }
-
-
-
-
 
 
     bool inflictDamage = true;
 
 
-    if(simStateA->mAIRefIndex == PhysicsAIRef::redBrickVehicle && simStateB->mAIRefIndex == PhysicsAIRef::redBrickVehicle)
-    {
-        
+    if (simStateA->mAIRefIndex == PhysicsAIRef::redBrickVehicle &&
+        simStateB->mAIRefIndex == PhysicsAIRef::redBrickVehicle) {
+
         // lateral resistance drop
 
-        if(mVehicleType != VT_USER)
-        {
+        if (mVehicleType != VT_USER) {
             rmt::Vector otherFacing;
-            if(thisIsA)
-            {
-                otherFacing = ((Vehicle*)(simStateB->mAIRefPointer))->mVehicleFacing;
-            }
-            else
-            {
-                otherFacing = ((Vehicle*)(simStateA->mAIRefPointer))->mVehicleFacing;
+            if (thisIsA) {
+                otherFacing = ((Vehicle * )(simStateB->mAIRefPointer))->mVehicleFacing;
+            } else {
+                otherFacing = ((Vehicle * )(simStateA->mAIRefPointer))->mVehicleFacing;
             }
 
             float dp = mVehicleFacing.DotProduct(otherFacing);
-            if(dp < 0.1f)
-            {
+            if (dp < 0.1f) {
                 dp = 0.1f;
             }
 
             mCollisionLateralResistanceDropFactor = dp;
-        
-        
+
+
             // exaggerated hit results  - note the test for ! VT_USER ain't gonna help here
             /*
             rmt::Vector funImpulse = impulse;
@@ -4941,103 +4450,93 @@ sim::Solving_Answer Vehicle::PostReactToCollision(rmt::Vector& impulse, sim::Col
             
             impulse = funImpulse;
             */
-            
+
         }
-    
-    
+
+
         bool carOnCarDamage = CarOnCarDamageLogic(thisIsA, simStateA, simStateB);
-        
+
         inflictDamage &= carOnCarDamage;
 
 
     }
 
 
-
-    
-    if(GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_INVINCIBLE_CAR))
-    {
-        if(GetAvatarManager()->GetAvatarForPlayer(0)->GetVehicle() == this)
-        {
-            return sim::Solving_Continue;   
+    if (GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_INVINCIBLE_CAR)) {
+        if (GetAvatarManager()->GetAvatarForPlayer(0)->GetVehicle() == this) {
+            return sim::Solving_Continue;
         }
     }
 
     // time for damage inc.       
-    
+
     // debug cheat for the testers...
-    
-    if(GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_FULL_DAMAGE_TO_CAR) && mVehicleType == VT_USER)
-    {
+
+    if (GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_FULL_DAMAGE_TO_CAR) &&
+        mVehicleType == VT_USER) {
         // debug cheat
-     
+
         // note  - don't actually decrememtn hitpoints, just draw all damaged.
-     
-        switch(mDamageType)
-        {
+
+        switch (mDamageType) {
             //case 1: // user level - flaping joints etc...
-            case VDT_USER:
-            {
-                DamageLocation dl = TranslateCollisionIntoLocation(inCollision);            
-                VisualDamageType1(0.995f, dl);    // any point in this actually taking in a parameter
+            case VDT_USER: {
+                DamageLocation dl = TranslateCollisionIntoLocation(inCollision);
+                VisualDamageType1(0.995f,
+                                  dl);    // any point in this actually taking in a parameter
 
-                
 
-            }
-            break;
-
-            //case 2: // ai - localized damage textures but no flapping
-            case VDT_AI:
-            {
-                DamageLocation dl = TranslateCollisionIntoLocation(inCollision);            
-                VisualDamageType2(0.995f, dl);    // any point in this actually taking in a parameter
 
             }
-            break;
+                break;
 
-            //case 3: // traffic - one big poof and texture
-            case VDT_TRAFFIC:
-            {           
+                //case 2: // ai - localized damage textures but no flapping
+            case VDT_AI: {
+                DamageLocation dl = TranslateCollisionIntoLocation(inCollision);
+                VisualDamageType2(0.995f,
+                                  dl);    // any point in this actually taking in a parameter
+
+            }
+                break;
+
+                //case 3: // traffic - one big poof and texture
+            case VDT_TRAFFIC: {
                 VisualDamageType3(0.995f);    // any point in this actually taking in a parameter
             }
-            break;
+                break;
 
             default:
                 rAssertMsg(0, "what are you doing here?");
 
-        }     
-        
-    
+        }
+
+
     }
-    // normal case
-    else if((mVehicleCanSustainDamage && inflictDamage) || oneTapTrafficDeath)// && this->mVehicleType != VT_TRAFFIC)  // todo - definately need to reassess the traffic test here
+        // normal case
+    else if ((mVehicleCanSustainDamage && inflictDamage) ||
+             oneTapTrafficDeath)// && this->mVehicleType != VT_TRAFFIC)  // todo - definately need to reassess the traffic test here
     {
-        if(oneTapTrafficDeath)
-        {
+        if (oneTapTrafficDeath) {
             this->TriggerDamage(100.0f);
-        }    
-        else if(mNoDamageTimer == 0.0f)
-        {
-            if( simStateA->mAIRefIndex == PhysicsAIRef::redBrickVehicle && 
-                simStateB->mAIRefIndex == PhysicsAIRef::redBrickVehicle )
-            {
+        } else if (mNoDamageTimer == 0.0f) {
+            if (simStateA->mAIRefIndex == PhysicsAIRef::redBrickVehicle &&
+                simStateB->mAIRefIndex == PhysicsAIRef::redBrickVehicle) {
                 // The hitter sustains less damage, the hit sustains more
-                if( !mWasHitByVehicle )
-                {
+                if (!mWasHitByVehicle) {
                     normalizedMagnitude *= 0.5f; // I was the hitter! Yes!
                 }
             }
             SwitchOnDamageTypeAndApply(normalizedMagnitude, inCollision);
         }
-    }   
+    }
 
 
     // test
     //static float fun = 2.0f;
     //impulse.Scale(fun);
-    
-    return sim::Solving_Continue;   
-    
+
+    return sim::Solving_Continue;
+
 }
 
 //=============================================================================
@@ -5050,117 +4549,102 @@ sim::Solving_Answer Vehicle::PostReactToCollision(rmt::Vector& impulse, sim::Col
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::DusitsStunTest(float normalizedMagnitude)
-{
+void Vehicle::DusitsStunTest(float normalizedMagnitude) {
     mCollidedWithVehicle = true;
     /*
     const float AI_VEHICLE_STUNNED_IMPACT_THRESHOLD = 0.01f;
-	if( normalizedMagnitude > AI_VEHICLE_STUNNED_IMPACT_THRESHOLD )
+	if(normalizedMagnitude> AI_VEHICLE_STUNNED_IMPACT_THRESHOLD)
     {
         mCollidedWithVehicle = true;
     }
     */
 }
-void Vehicle::TestWhoHitWhom( sim::SimState* simA, sim::SimState* simB, float normalizedMagnitude, const sim::Collision& inCollision )
-{
-    rAssert( simA->mAIRefIndex == PhysicsAIRef::redBrickVehicle && 
-             simB->mAIRefIndex == PhysicsAIRef::redBrickVehicle );
+
+void Vehicle::TestWhoHitWhom(sim::SimState *simA, sim::SimState *simB, float normalizedMagnitude,
+                             const sim::Collision &inCollision) {
+    rAssert(simA->mAIRefIndex == PhysicsAIRef::redBrickVehicle &&
+            simB->mAIRefIndex == PhysicsAIRef::redBrickVehicle);
 
     sim::Collision simCollision = inCollision;
-    rAssert( rmt::Epsilon( simCollision.mNormal.MagnitudeSqr(),1.0f,0.0005f ) );
+    rAssert(rmt::Epsilon(simCollision.mNormal.MagnitudeSqr(), 1.0f, 0.0005f));
 
     // Want to determine which one I am.
     // We also want collision normal to point from him to me.. 
     // But since collision normal for all sim::Collision always points from B to A,
     // if he is simState A, then invert the collision normal.
 
-    Vehicle* him = NULL;
-    if( simA->mAIRefPointer == this )
-    {
-        him = (Vehicle*)simB->mAIRefPointer;
-    }
-    else
-    {
-        him = (Vehicle*)simA->mAIRefPointer;
-        simCollision.mNormal.Scale( -1.0f );
+    Vehicle *him = NULL;
+    if (simA->mAIRefPointer == this) {
+        him = (Vehicle *) simB->mAIRefPointer;
+    } else {
+        him = (Vehicle *) simA->mAIRefPointer;
+        simCollision.mNormal.Scale(-1.0f);
     }
 
     rmt::Vector myVel;
-    GetVelocity( &myVel );
+    GetVelocity(&myVel);
 
     bool gotHitByHim = false;
     float velThreshold = 0.005f;
 
     // If one of the speeds is near zero, it's obvious who hit whom... 
-    if( mSpeed < velThreshold )
-    {
+    if (mSpeed < velThreshold) {
         gotHitByHim = true;
-    }
-    else if( him->mSpeed < velThreshold )
-    {
+    } else if (him->mSpeed < velThreshold) {
         gotHitByHim = false;
-    }
-    else
-    {
+    } else {
         // Deal with the ambiguous case of who hit whom, when 
-        // both velocities are > zero. Sooo...
+        // both velocities are> zero. Sooo...
         // The collision normal is always pointing from him to me and is 
         // at this point NORMALIZED. We steal this and invert the vector
         // to get the heading vector from US to HIM. 
         rmt::Vector toHim = simCollision.mNormal * -1.0f;
-		rAssert( rmt::Epsilon( toHim.MagnitudeSqr(), 1.0f, 0.001f ) );
+        rAssert(rmt::Epsilon(toHim.MagnitudeSqr(), 1.0f, 0.001f));
 
         // Now... if my velocity vector is NOT pointing in "more or less" 
         // the same direction as my vector to him, then I'm not the hitter, 
         // so I got hit by him...
         rmt::Vector myNormalizedVel = myVel / mSpeed;
-		rAssert( rmt::Epsilon( myNormalizedVel.MagnitudeSqr(), 1.0f, 0.001f ) );
+        rAssert(rmt::Epsilon(myNormalizedVel.MagnitudeSqr(), 1.0f, 0.001f));
 
         const float cosAlphaTest = 0.8660254f;  //approx cos30 (in either directions)
-        if( myNormalizedVel.Dot( toHim ) < cosAlphaTest ) // angle greater than cosalpha
+        if (myNormalizedVel.Dot(toHim) < cosAlphaTest) // angle greater than cosalpha
         {
             gotHitByHim = true; // we're not the hitter, so we're the hit
-        }
-        else
-        {
-			// ok, we're the hitter... BUT there's a special case for when 
-			// we're in a head-on collision with the other car. If we detect
-			// this case we don't want to set both as the hitter... we want 
-			// each party to take full damage.... 
+        } else {
+            // ok, we're the hitter... BUT there's a special case for when
+            // we're in a head-on collision with the other car. If we detect
+            // this case we don't want to set both as the hitter... we want
+            // each party to take full damage....
 
-			rmt::Vector hisVel;
-			him->GetVelocity( &hisVel );
-			rmt::Vector hisNormalizedVel = hisVel / him->mSpeed;
-			rAssert( rmt::Epsilon( hisNormalizedVel.MagnitudeSqr(), 1.0f, 0.001f ) );
+            rmt::Vector hisVel;
+            him->GetVelocity(&hisVel);
+            rmt::Vector hisNormalizedVel = hisVel / him->mSpeed;
+            rAssert(rmt::Epsilon(hisNormalizedVel.MagnitudeSqr(), 1.0f, 0.001f));
 
-			rmt::Vector toMe = toHim * -1.0f;
-			rAssert( rmt::Epsilon( toMe.MagnitudeSqr(), 1.0f, 0.001f ) );
+            rmt::Vector toMe = toHim * -1.0f;
+            rAssert(rmt::Epsilon(toMe.MagnitudeSqr(), 1.0f, 0.001f));
 
-			if( hisNormalizedVel.Dot( toMe ) < cosAlphaTest )
-			{
-				// angle greater than tolerance, so he's not headed at me
-				// therefore not a head-on collision. So do the setting
-				// normally.
-				gotHitByHim = false; // we're the hitter
-			}
-			else
-			{
-				// we're the hit (because he's coming straight at us with some 
-				// tangible velocity.)
-				gotHitByHim = true; 
-			}
+            if (hisNormalizedVel.Dot(toMe) < cosAlphaTest) {
+                // angle greater than tolerance, so he's not headed at me
+                // therefore not a head-on collision. So do the setting
+                // normally.
+                gotHitByHim = false; // we're the hitter
+            } else {
+                // we're the hit (because he's coming straight at us with some
+                // tangible velocity.)
+                gotHitByHim = true;
+            }
         }
 
     }
 
     // ok we figured out that ya we got hit, so store the appropriate data
-    if( gotHitByHim )
-    {
+    if (gotHitByHim) {
         // Do special transit to slip for all vehicles
         // NOTE: If don't want player vehicle to transit to slip from impact,
         //       just gotta put in a check here that we're not player vehicle
-        if( normalizedMagnitude > 0.035f )
-        {
+        if (normalizedMagnitude > 0.035f) {
             mVehicleState = VS_SLIP;
         }
         mWasHitByVehicle = true;
@@ -5181,9 +4665,8 @@ void Vehicle::TestWhoHitWhom( sim::SimState* simA, sim::SimState* simB, float no
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SwitchOnDamageTypeAndApply(float normalizedMagnitude, sim::Collision& inCollision)
-{
-    
+void Vehicle::SwitchOnDamageTypeAndApply(float normalizedMagnitude, sim::Collision &inCollision) {
+
     // first just decrement the hit points
     //TriggerDamage(normalizedMagnitude);
 
@@ -5191,40 +4674,37 @@ void Vehicle::SwitchOnDamageTypeAndApply(float normalizedMagnitude, sim::Collisi
 
     //float perc = GetVehicleLifePercentage();
     float perc = TriggerDamage(normalizedMagnitude);
-    
-    switch(mDamageType)
-    {
+
+    switch (mDamageType) {
         //case 1: // user level - flaping joints etc...
-        case VDT_USER:
-        {
-            DamageLocation dl = TranslateCollisionIntoLocation(inCollision);            
-            VisualDamageType1(1.0f - perc, dl);    // any point in this actually taking in a parameter
+        case VDT_USER: {
+            DamageLocation dl = TranslateCollisionIntoLocation(inCollision);
+            VisualDamageType1(1.0f - perc,
+                              dl);    // any point in this actually taking in a parameter
 
-            
 
-        }
-        break;
-
-        //case 2: // ai - localized damage textures but no flapping
-        case VDT_AI:
-        {
-            DamageLocation dl = TranslateCollisionIntoLocation(inCollision);            
-            VisualDamageType2(1.0f - perc, dl);    // any point in this actually taking in a parameter
 
         }
-        break;
-        
-        case VDT_TRAFFIC:
-        {                 
+            break;
+
+            //case 2: // ai - localized damage textures but no flapping
+        case VDT_AI: {
+            DamageLocation dl = TranslateCollisionIntoLocation(inCollision);
+            VisualDamageType2(1.0f - perc,
+                              dl);    // any point in this actually taking in a parameter
+
+        }
+            break;
+
+        case VDT_TRAFFIC: {
             VisualDamageType3(1.0f - perc);    // any point in this actually taking in a parameter
         }
-        break;
+            break;
 
         default:
             rAssertMsg(0, "what are you doing here?");
 
     }
-    
 
 
 }
@@ -5235,83 +4715,66 @@ void Vehicle::SwitchOnDamageTypeAndApply(float normalizedMagnitude, sim::Collisi
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( sim::SimState* simStateA,  sim::SimState* simStateB)
+// Parameters:  (sim::SimState* simStateA,  sim::SimState* simStateB)
 //
 // Return:      bool 
 //
 //=============================================================================
-bool Vehicle::CarOnCarDamageLogic(bool thisIsA, sim::SimState* simStateA,  sim::SimState* simStateB)
-{
-    
-    if(this->mIsADestroyObjective)
-    {
-        if(thisIsA)
-        {
-            if( ((Vehicle*)(simStateB->mAIRefPointer))->mVehicleType == VT_USER)
-            {
+bool
+Vehicle::CarOnCarDamageLogic(bool thisIsA, sim::SimState *simStateA, sim::SimState *simStateB) {
+
+    if (this->mIsADestroyObjective) {
+        if (thisIsA) {
+            if (((Vehicle * )(simStateB->mAIRefPointer))->mVehicleType == VT_USER) {
                 // destroy objective hit by user car so it should take damage!
                 return true;
-            }
-            else
-            {
+            } else {
                 //inflictDamage = false;
                 return false;
             }
-        }
-        else
-        {
-            if( ((Vehicle*)(simStateA->mAIRefPointer))->mVehicleType == VT_USER)
-            {
+        } else {
+            if (((Vehicle * )(simStateA->mAIRefPointer))->mVehicleType == VT_USER) {
                 // destroy objective hit by user car so it should take damage
                 return true;
-            }
-            else
-            {
+            } else {
                 //inflictDamage = false;
                 return false;
             }
         }
-        
 
-    }
-    else if(this->mVehicleType == VT_USER)
-    {
-    
+
+    } else if (this->mVehicleType == VT_USER) {
+
         // I want to know if this is a dump mission - if so, I shouldn't take damage....
-        
-    
-    
-        if(thisIsA)
-        {
-            if( ((Vehicle*)(simStateB->mAIRefPointer))->mIsADestroyObjective)
-            {
+
+
+
+        if (thisIsA) {
+            if (((Vehicle * )(simStateB->mAIRefPointer))->mIsADestroyObjective) {
                 // user car hitting a destroy objective so it should not take damage
                 //inflictDamage = false;
-                
+
                 //return false;
-                
+
                 // test - April 8, 2003
                 // even during a destroy mission, the user will take damage when hitting the destory objective
                 // makes stronger cars more important
                 return true;
-                
+
             }
-        }
-        else
-        {
-            if( ((Vehicle*)(simStateA->mAIRefPointer))->mIsADestroyObjective)
-            {
+        } else {
+            if (((Vehicle * )(simStateA->mAIRefPointer))->mIsADestroyObjective) {
                 // destroy objective hit by user car so it should take damage
                 //inflictDamage = false;
-                
-                
+
+
                 //return false;
                 // see note above
                 return true;
             }
         }
 
-    }   
+    }
 
     return true;
 }
@@ -5327,42 +4790,35 @@ bool Vehicle::CarOnCarDamageLogic(bool thisIsA, sim::SimState* simStateA,  sim::
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::CameraShakeTest(float impulseMagnitude, sim::Collision& inCollision)
-{
+void Vehicle::CameraShakeTest(float impulseMagnitude, sim::Collision &inCollision) {
 
     //TODO: Greg can you make this more reliable?  Should I take into account
     //the mass of the vehicle?
     //Fudge some magnitude calc to send to the shaker.
-    
+
     // greg responds: the mass is taken into account in the size of the impulse - I think...?
-    
+
     const float cameraShakeThreshold = 19000.0f;
     const float maxIntensity = 100000.0f;   // copied from PostReactToCollision, but doesn't have to be the same
-    
-    if(impulseMagnitude > cameraShakeThreshold)
-    {
+
+    if (impulseMagnitude > cameraShakeThreshold) {
         ShakeEventData shakeData;
         shakeData.playerID = 0;  //Hack...
         shakeData.force = impulseMagnitude / maxIntensity;
 
-        rmt::Vector pointOnOtherObject;    
+        rmt::Vector pointOnOtherObject;
 
-        sim::CollisionObject* collObjA = inCollision.mCollisionObjectA;
-        sim::CollisionObject* collObjB = inCollision.mCollisionObjectB;
-    
-        sim::SimState* simStateA = collObjA->GetSimState();
-        sim::SimState* simStateB = collObjB->GetSimState();
+        sim::CollisionObject *collObjA = inCollision.mCollisionObjectA;
+        sim::CollisionObject *collObjB = inCollision.mCollisionObjectB;
 
-        if(simStateA == mSimStateArticulated)
-        {
+        sim::SimState *simStateA = collObjA->GetSimState();
+        sim::SimState *simStateB = collObjB->GetSimState();
+
+        if (simStateA == mSimStateArticulated) {
             pointOnOtherObject = inCollision.GetPositionB();
-        }
-        else if(simStateB == mSimStateArticulated)
-        {
-            pointOnOtherObject = inCollision.GetPositionA();    
-        }
-        else
-        {
+        } else if (simStateB == mSimStateArticulated) {
+            pointOnOtherObject = inCollision.GetPositionA();
+        } else {
             rAssertMsg(0, "Ask Greg what went wrong!");
         }
 
@@ -5372,7 +4828,7 @@ void Vehicle::CameraShakeTest(float impulseMagnitude, sim::Collision& inCollisio
 
         shakeData.direction = contactPointToCenter;
 
-        GetEventManager()->TriggerEvent( EVENT_CAMERA_SHAKE, (void*)(&shakeData) );
+        GetEventManager()->TriggerEvent(EVENT_CAMERA_SHAKE, (void *) (&shakeData));
     }
 
 
@@ -5388,71 +4844,63 @@ void Vehicle::CameraShakeTest(float impulseMagnitude, sim::Collision& inCollisio
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SparksTest(float impulseMagnitude, sim::Collision& inCollision)  // should this also be wrapped in mUserDrivingCar??
+void Vehicle::SparksTest(float impulseMagnitude,
+                         sim::Collision &inCollision)  // should this also be wrapped in mUserDrivingCar??
 {
-    sim::CollisionObject* collObjA = inCollision.mCollisionObjectA;
-    sim::CollisionObject* collObjB = inCollision.mCollisionObjectB;
-    
-    sim::SimState* simStateA = collObjA->GetSimState(); // A is the vehicle.
-    sim::SimState* simStateB;
-    if( simStateA->mAIRefPointer != this )
-    {
+    sim::CollisionObject *collObjA = inCollision.mCollisionObjectA;
+    sim::CollisionObject *collObjB = inCollision.mCollisionObjectB;
+
+    sim::SimState *simStateA = collObjA->GetSimState(); // A is the vehicle.
+    sim::SimState *simStateB;
+    if (simStateA->mAIRefPointer != this) {
         simStateB = simStateA;
         simStateA = collObjB->GetSimState();
-    }
-    else
-    {
+    } else {
         simStateB = collObjB->GetSimState();
     }
 
-	// Lets add some vehicle specific particle effects upon collision
-	// If the other collision object also a vehicle, lets create some sparks!
-	// Better place for this constant?
-	const float MIN_IMPULSE_VEHICLE_VEHICLE_SPARKS = 0.01f;
+    // Lets add some vehicle specific particle effects upon collision
+    // If the other collision object also a vehicle, lets create some sparks!
+    // Better place for this constant?
+    const float MIN_IMPULSE_VEHICLE_VEHICLE_SPARKS = 0.01f;
     float velocityScale = 0.0f;
 
     bool doStars = false;
-    switch( simStateB->mAIRefIndex )
-    {
-    case PhysicsAIRef::redBrickPhizFence:
-        impulseMagnitude *= ( 1.0f / 25000.0f );
-        doStars = true;
-        break;
-    case PhysicsAIRef::redBrickVehicle:
-        impulseMagnitude *= ( 1.0f / 5000.0f );
-        velocityScale = impulseMagnitude;
-        break;
-    case PhysicsAIRef::redBrickPhizMoveable:
-        impulseMagnitude *= ( 1.0f / 5000.0f );
-        velocityScale = impulseMagnitude * 0.5f;
-        break;
-    case PhysicsAIRef::redBrickPhizStatic:
-        impulseMagnitude *= ( 1.0f / 25000.0f );
-        impulseMagnitude = rmt::Min( 1.0f, impulseMagnitude * 2.0f );
-        doStars = true;
-    default:
-        return;
+    switch (simStateB->mAIRefIndex) {
+        case PhysicsAIRef::redBrickPhizFence:
+            impulseMagnitude *= (1.0f / 25000.0f);
+            doStars = true;
+            break;
+        case PhysicsAIRef::redBrickVehicle:
+            impulseMagnitude *= (1.0f / 5000.0f);
+            velocityScale = impulseMagnitude;
+            break;
+        case PhysicsAIRef::redBrickPhizMoveable:
+            impulseMagnitude *= (1.0f / 5000.0f);
+            velocityScale = impulseMagnitude * 0.5f;
+            break;
+        case PhysicsAIRef::redBrickPhizStatic:
+            impulseMagnitude *= (1.0f / 25000.0f);
+            impulseMagnitude = rmt::Min(1.0f, impulseMagnitude * 2.0f);
+            doStars = true;
+        default:
+            return;
     }
 
-    if( impulseMagnitude > 10.0f )
-    {
+    if (impulseMagnitude > 10.0f) {
         impulseMagnitude *= 0.1f;
     }
 
-	if ( impulseMagnitude > MIN_IMPULSE_VEHICLE_VEHICLE_SPARKS )
-	{
-        const rmt::Vector& pos = inCollision.GetPositionA();
-        if( doStars )
-        {
-            GetSparkleManager()->AddStars( pos, impulseMagnitude );
-        }
-        else
-        {
+    if (impulseMagnitude > MIN_IMPULSE_VEHICLE_VEHICLE_SPARKS) {
+        const rmt::Vector &pos = inCollision.GetPositionA();
+        if (doStars) {
+            GetSparkleManager()->AddStars(pos, impulseMagnitude);
+        } else {
             rmt::Vector vel = mVelocityCM;
             vel.y = 0.0f;
             vel.Normalize();
-            vel.Scale( velocityScale );
-            GetSparkleManager()->AddSparks( pos, vel, impulseMagnitude );
+            vel.Scale(velocityScale);
+            GetSparkleManager()->AddSparks(pos, vel, impulseMagnitude);
         }
     }
 }
@@ -5467,8 +4915,7 @@ void Vehicle::SparksTest(float impulseMagnitude, sim::Collision& inCollision)  /
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::VisualDamageType1(float percentageDamage, DamageLocation dl)
-{
+void Vehicle::VisualDamageType1(float percentageDamage, DamageLocation dl) {
 /*
     // new design, new range
     
@@ -5485,8 +4932,7 @@ void Vehicle::VisualDamageType1(float percentageDamage, DamageLocation dl)
 
     // get the joint in question:
     int joint = -1;
-    switch(dl)
-    {
+    switch (dl) {
         case dl_hood:
             joint = mHoodJoint;
             break;
@@ -5507,27 +4953,22 @@ void Vehicle::VisualDamageType1(float percentageDamage, DamageLocation dl)
             rAssert(0);
     }
 
-    if(percentageDamage > 0.1f)    
-    {
+    if (percentageDamage > 0.1f) {
         // only join that got hit should flap        
-        if(joint != -1)
-        {
+        if (joint != -1) {
             int index = mJointIndexToInertialJointDriverMapping[joint];
-            if(index != -1)
-            {
+            if (index != -1) {
                 mPhObj->GetJoint(joint)->SetInvStiffness(1.0f);
                 mInertialJointDrivers[index]->SetIsEnabled(true);
-            }         
+            }
         }
     }
 
 
-    if(percentageDamage > 0.3f)
-    {
+    if (percentageDamage > 0.3f) {
         // only the joint that got hit should have texture on it.
 
-        switch(dl)
-        {
+        switch (dl) {
             case dl_hood:
                 mGeometryVehicle->DamageTextureHood(true);
                 break;
@@ -5548,97 +4989,85 @@ void Vehicle::VisualDamageType1(float percentageDamage, DamageLocation dl)
             default:
                 rAssert(0);
         }
-        
+
         // but all should flap
-            // all sides flapping ?
+        // all sides flapping ?
         int index;
-    
-        if(mHoodJoint != -1)
-        {
+
+        if (mHoodJoint != -1) {
             index = mJointIndexToInertialJointDriverMapping[mHoodJoint];
-            if(index != -1)
-            {
+            if (index != -1) {
                 mPhObj->GetJoint(mHoodJoint)->SetInvStiffness(1.0f);
                 mInertialJointDrivers[index]->SetIsEnabled(true);
             }
         }
 
-        if(mTrunkJoint != -1)
-        {
+        if (mTrunkJoint != -1) {
             index = mJointIndexToInertialJointDriverMapping[mTrunkJoint];
-            if(index != -1)
-            {
+            if (index != -1) {
                 mPhObj->GetJoint(mTrunkJoint)->SetInvStiffness(1.0f);
                 mInertialJointDrivers[index]->SetIsEnabled(true);
             }
         }
 
-        if(mDoorDJoint != -1)
-        {        
+        if (mDoorDJoint != -1) {
             index = mJointIndexToInertialJointDriverMapping[mDoorDJoint];
-            if(index != -1)
-            {
+            if (index != -1) {
                 mPhObj->GetJoint(mDoorDJoint)->SetInvStiffness(1.0f);
                 mInertialJointDrivers[index]->SetIsEnabled(true);
             }
         }
 
-        if(mDoorPJoint != -1)
-        {
+        if (mDoorPJoint != -1) {
             index = mJointIndexToInertialJointDriverMapping[mDoorPJoint];
-            if(index != -1)
-            {
+            if (index != -1) {
                 mPhObj->GetJoint(mDoorPJoint)->SetInvStiffness(1.0f);
                 mInertialJointDrivers[index]->SetIsEnabled(true);
             }
         }
 
 
-
     }
 
-    
-    if(percentageDamage > 0.6f)
-    {
+
+    if (percentageDamage > 0.6f) {
         // for now, just try taking off the hood before we make smoke pour out there.
         //int index;
-    
-        if(mHoodJoint != -1)
-        {
-            mGeometryVehicle->HideFlappingPiece(mHoodJoint, true);                
+
+        if (mHoodJoint != -1) {
+            mGeometryVehicle->HideFlappingPiece(mHoodJoint, true);
         }
-        
+
         // all texture
-        
+
         mGeometryVehicle->DamageTextureHood(true);
         mGeometryVehicle->DamageTextureTrunk(true);
         mGeometryVehicle->DamageTextureDoorD(true);
-        mGeometryVehicle->DamageTextureDoorP(true);       
+        mGeometryVehicle->DamageTextureDoorP(true);
 
         // white smoke        
         mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeLight);
-        
+
         mDontShowBrakeLights = true;
         mGeometryVehicle->SetLightsOffDueToDamage(true);
-        
+
         // at this point lights and brake lights should stop working
-        
+
 
     }
-    
-    if(percentageDamage >= 0.98f)    // this is the one-more-hit warning
+
+    if (percentageDamage >= 0.98f)    // this is the one-more-hit warning
     {
         mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeMedium);
 
     }
-    
-    if(percentageDamage > 0.99f)    // about to blow
+
+    if (percentageDamage > 0.99f)    // about to blow
     {
-       mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeHeavy);    
+        mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeHeavy);
     }
 
 }
-
 
 
 //=============================================================================
@@ -5651,8 +5080,7 @@ void Vehicle::VisualDamageType1(float percentageDamage, DamageLocation dl)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::VisualDamageType2(float percentageDamage, DamageLocation dl)
-{
+void Vehicle::VisualDamageType2(float percentageDamage, DamageLocation dl) {
 /*
     try this range
 
@@ -5667,26 +5095,24 @@ void Vehicle::VisualDamageType2(float percentageDamage, DamageLocation dl)
 
 */
 
-    
+
     // note:
     // joint might still be -1, if the is a type 1 car but it doesn't have all four 
     // flapping joints?
 
     // this is bulky, but fuck it, gotta get this shit working like yesterday
 
-    if(percentageDamage > 0.1f)
-    {
+    if (percentageDamage > 0.1f) {
         // only the joint that got hit should have texture on it.
 
-        switch(dl)
-        {
+        switch (dl) {
             case dl_hood:
                 mGeometryVehicle->DamageTextureHood(true);
                 break;
 
             case dl_trunk:
                 mGeometryVehicle->DamageTextureTrunk(true);
-                mDontShowBrakeLights = true;       
+                mDontShowBrakeLights = true;
                 break;
 
             case dl_driverside:
@@ -5700,14 +5126,12 @@ void Vehicle::VisualDamageType2(float percentageDamage, DamageLocation dl)
             default:
                 rAssert(0);
         }
-        
 
 
     }
 
-        
-    if(percentageDamage > 0.4f)
-    {
+
+    if (percentageDamage > 0.4f) {
         // smoke 1
         //
         // ? all sides textured?
@@ -5715,31 +5139,27 @@ void Vehicle::VisualDamageType2(float percentageDamage, DamageLocation dl)
         mGeometryVehicle->DamageTextureHood(true);
         mGeometryVehicle->DamageTextureTrunk(true);
         mGeometryVehicle->DamageTextureDoorD(true);
-        mGeometryVehicle->DamageTextureDoorP(true);       
-        
+        mGeometryVehicle->DamageTextureDoorP(true);
+
         //mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeLight);
         mGeometryVehicle->SetLightsOffDueToDamage(true);
-        
+
     }
-    
-    if(percentageDamage > 0.6f)
-    {
+
+    if (percentageDamage > 0.6f) {
         mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeLight);
         //mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeMedium);
     }
-    
-    if(percentageDamage >= 0.98f)
-    {
-        mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeMedium);
-    }    
 
-    if(percentageDamage > 0.99f)
-    {
+    if (percentageDamage >= 0.98f) {
+        mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeMedium);
+    }
+
+    if (percentageDamage > 0.99f) {
         mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeHeavy);
     }
 
 }
-
 
 
 //=============================================================================
@@ -5752,22 +5172,18 @@ void Vehicle::VisualDamageType2(float percentageDamage, DamageLocation dl)
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::VisualDamageType3(float percentageDamage)
-{   
-    
-    if(percentageDamage > 0.6f)
-    {
+void Vehicle::VisualDamageType3(float percentageDamage) {
+
+    if (percentageDamage > 0.6f) {
         mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeLight);
         //mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeMedium);
     }
-    
-    if(percentageDamage >= 0.98f)
-    {
-        mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeMedium);
-    }    
 
-    if(percentageDamage > 0.99f)
-    {
+    if (percentageDamage >= 0.98f) {
+        mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeMedium);
+    }
+
+    if (percentageDamage > 0.99f) {
         mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeHeavy);
     }
 
@@ -5779,88 +5195,81 @@ void Vehicle::VisualDamageType3(float percentageDamage)
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float Health )
+// Parameters:  (float Health)
 //
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::SyncVisualDamage( float Health )
-{
-    if( Health >= 1.0f )
-    {
+void Vehicle::SyncVisualDamage(float Health) {
+    if (Health >= 1.0f) {
         return;
-    }
-    else if( Health <= 0.0f )
-    {
+    } else if (Health <= 0.0f) {
         // Husk.
         mHitPoints = 0.0f;
         mVehicleDestroyed = true;
         ActivateTriggers(false);
-    }
-    else
-    {
+    } else {
         // this should use the same visual logic functions as the normal damage system
         // just need to make up a DamageLocation
         // how about the hood? :)
-        switch(mDamageType)
-        {
+        switch (mDamageType) {
             //case 1: // user level - flaping joints etc...
-            case VDT_USER:
-            {                
-                VisualDamageType1(1.0f - Health, dl_hood);    // any point in this actually taking in a parameter
+            case VDT_USER: {
+                VisualDamageType1(1.0f - Health,
+                                  dl_hood);    // any point in this actually taking in a parameter
             }
-            break;
+                break;
 
-            //case 2: // ai - localized damage textures but no flapping
-            case VDT_AI:
-            {                
-                VisualDamageType2(1.0f - Health, dl_hood);    // any point in this actually taking in a parameter
+                //case 2: // ai - localized damage textures but no flapping
+            case VDT_AI: {
+                VisualDamageType2(1.0f - Health,
+                                  dl_hood);    // any point in this actually taking in a parameter
             }
-            break;
-            
-            case VDT_TRAFFIC:
-            {                 
-                VisualDamageType3(1.0f - Health);    // any point in this actually taking in a parameter
+                break;
+
+            case VDT_TRAFFIC: {
+                VisualDamageType3(
+                        1.0f - Health);    // any point in this actually taking in a parameter
             }
-            break;
+                break;
 
             default:
                 rAssertMsg(0, "what are you doing here?");
 
         }
-             
-           
-    
-    
-    
-    
-    
-    /*
-        if( Health <= 0.8f)
-        {
-            mGeometryVehicle->DamageTextureHood(true);
-            mGeometryVehicle->DamageTextureTrunk(true);
-            mGeometryVehicle->DamageTextureDoorD(true);
-            mGeometryVehicle->DamageTextureDoorP(true);       
-        }
-        if( Health <= 0.6f )
-        {
-            mGeometryVehicle->SetLightsOffDueToDamage(true);   
-            if( Health <= 0.01f )
+
+
+
+
+
+
+
+        /*
+            if(Health <= 0.8f)
             {
-                mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeHeavy);
+                mGeometryVehicle->DamageTextureHood(true);
+                mGeometryVehicle->DamageTextureTrunk(true);
+                mGeometryVehicle->DamageTextureDoorD(true);
+                mGeometryVehicle->DamageTextureDoorP(true);
             }
-            else if( Health <= 0.4f )
+            if(Health <= 0.6f)
             {
-                mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeMedium);
+                mGeometryVehicle->SetLightsOffDueToDamage(true);
+                if(Health <= 0.01f)
+                {
+                    mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeHeavy);
+                }
+                else if(Health <= 0.4f)
+                {
+                    mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeMedium);
+                }
+                else
+                {
+                    mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeLight);
+                }
             }
-            else
-            {
-                mGeometryVehicle->SetEngineSmoke(ParticleEnum::eEngineSmokeLight);
-            }
-        }
-        
-     */   
+
+         */
     }
 }
 
@@ -5874,27 +5283,21 @@ void Vehicle::SyncVisualDamage( float Health )
 // Return:      
 //
 //=============================================================================
-Vehicle::DamageLocation Vehicle::TranslateCollisionIntoLocation(sim::Collision& inCollision)
-{
+Vehicle::DamageLocation Vehicle::TranslateCollisionIntoLocation(sim::Collision &inCollision) {
 
-    sim::CollisionObject* collObjA = inCollision.mCollisionObjectA;
-    sim::CollisionObject* collObjB = inCollision.mCollisionObjectB;
-    
-    sim::SimState* simStateA = collObjA->GetSimState();
-    sim::SimState* simStateB = collObjB->GetSimState();
+    sim::CollisionObject *collObjA = inCollision.mCollisionObjectA;
+    sim::CollisionObject *collObjB = inCollision.mCollisionObjectB;
 
-    rmt::Vector pointOnOtherCar;    
-    
-    if(simStateA == mSimStateArticulated)
-    {
+    sim::SimState *simStateA = collObjA->GetSimState();
+    sim::SimState *simStateB = collObjB->GetSimState();
+
+    rmt::Vector pointOnOtherCar;
+
+    if (simStateA == mSimStateArticulated) {
         pointOnOtherCar = inCollision.GetPositionB();
-    }
-    else if(simStateB == mSimStateArticulated)
-    {
-        pointOnOtherCar = inCollision.GetPositionA();    
-    }
-    else
-    {
+    } else if (simStateB == mSimStateArticulated) {
+        pointOnOtherCar = inCollision.GetPositionA();
+    } else {
         rAssertMsg(0, "problem in Vehicle::TranslateCollisionIntoLocation");
     }
 
@@ -5911,38 +5314,30 @@ Vehicle::DamageLocation Vehicle::TranslateCollisionIntoLocation(sim::Collision& 
 
     const float cos45 = 0.7071f;
 
-    int joint = 0;    
+    int joint = 0;
 
-    if(dot > cos45)
-    {
+    if (dot > cos45) {
         // hood
         //return mHoodJoint;
         //joint = mHoodJoint;
-        
+
         return dl_hood;
-    }
-    else if(dot < -cos45)
-    {
+    } else if (dot < -cos45) {
         // trunk
         //return mTrunkJoint;
         //joint = mTrunkJoint;
 
         return dl_trunk;
-    }
-    else
-    {
+    } else {
         float dot2 = mVehicleTransverse.DotProduct(centreToContactPoint);
-    
-        if(dot2 > cos45)
-        {
+
+        if (dot2 > cos45) {
             // passenger side
             //return mDoorPJoint;
             //joint = mDoorPJoint;
 
             return dl_driverside;
-        }
-        else
-        {
+        } else {
             // driver side
             //return mDoorDJoint;
             //joint = mDoorDJoint;
@@ -5957,7 +5352,6 @@ Vehicle::DamageLocation Vehicle::TranslateCollisionIntoLocation(sim::Collision& 
 }
 
 
-
 //=============================================================================
 // Vehicle::BeefUpHitPointsOnTrafficCarsWhenUserDriving
 //=============================================================================
@@ -5968,10 +5362,9 @@ Vehicle::DamageLocation Vehicle::TranslateCollisionIntoLocation(sim::Collision& 
 // Return:      void 
 //
 //=============================================================================
-void Vehicle::BeefUpHitPointsOnTrafficCarsWhenUserDriving()
-{
+void Vehicle::BeefUpHitPointsOnTrafficCarsWhenUserDriving() {
     // can't just use VT_TRAFFIC since we want the effect if we've gone to a phone booth
-    if( this->mVehicleID == VehicleEnum::TAXIA ||   // plus all others Jeff gives me
+    if (this->mVehicleID == VehicleEnum::TAXIA ||   // plus all others Jeff gives me
         this->mVehicleID == VehicleEnum::COMPACTA ||
         this->mVehicleID == VehicleEnum::MINIVANA ||
         this->mVehicleID == VehicleEnum::PICKUPA ||
@@ -5996,18 +5389,14 @@ void Vehicle::BeefUpHitPointsOnTrafficCarsWhenUserDriving()
         this->mVehicleID == VehicleEnum::PIZZA ||
         this->mVehicleID == VehicleEnum::SCHOOLBU ||
         this->mVehicleID == VehicleEnum::VOTETRUC ||
-        this->mVehicleID == VehicleEnum::CBONE )
-        
-    {
-        
+        this->mVehicleID == VehicleEnum::CBONE) {
+
         // only add to an undamaged car, so that you can't get in and out to repair
-        if(this->GetVehicleLifePercentage(this->mHitPoints) == 1.0f)
-        {
-            
-            if(this->mDesignerParams.mHitPoints <= 1.0f)
-            {
+        if (this->GetVehicleLifePercentage(this->mHitPoints) == 1.0f) {
+
+            if (this->mDesignerParams.mHitPoints <= 1.0f) {
                 this->mDesignerParams.mHitPoints += 1.0f;
-                this->mHitPoints = mDesignerParams.mHitPoints;                   
+                this->mHitPoints = mDesignerParams.mHitPoints;
             }
         }
     }
@@ -6025,14 +5414,12 @@ void Vehicle::BeefUpHitPointsOnTrafficCarsWhenUserDriving()
 // Return:      float 
 //
 //=============================================================================
-float Vehicle::GetVehicleLifePercentage(float testvalue)
-{
+float Vehicle::GetVehicleLifePercentage(float testvalue) {
     float temp = testvalue / mDesignerParams.mHitPoints;
-    if(temp < 0.0f)
-    {
+    if (temp < 0.0f) {
         // shouldn't ever really be here
         // going below 0 should be caught somewhere else
-        temp = 0.0f;        
+        temp = 0.0f;
     }
     rAssert(temp <= 1.0f);
     rAssert(temp >= 0.0f);
@@ -6052,88 +5439,75 @@ float Vehicle::GetVehicleLifePercentage(float testvalue)
 // Return:      void 
 //
 //=============================================================================
-float Vehicle::TriggerDamage(float amount, bool clamp)
-{
-    
+float Vehicle::TriggerDamage(float amount, bool clamp) {
+
     // TODO - disable some updating stuff - like locomotive shit, if 
     // we are destroyed
-    if(mVehicleDestroyed)
-    {
+    if (mVehicleDestroyed) {
         // already destroyed
         // do nothing
-        
+
         return 0.0f;
     }
 
     // try the clamp to 99% for last hit on all car types
-    if(clamp)//mDamageType == VDT_USER || mDamageType == VDT_AI)
+    if (clamp)//mDamageType == VDT_USER || mDamageType == VDT_AI)
     {
-    
+
         float currentPerc = GetVehicleLifePercentage(mHitPoints);
 
-        if(currentPerc > 0.02f)
-        {
+        if (currentPerc > 0.02f) {
             // we want to make sure we clamp this hit at 1% life left
 
             float testvalue = mHitPoints;
-            testvalue -= amount;         
+            testvalue -= amount;
 
-            if(testvalue < 0.0f)
-            {    
-                testvalue = 0.0f;        
+            if (testvalue < 0.0f) {
+                testvalue = 0.0f;
             }
-            
+
             float perc = GetVehicleLifePercentage(testvalue);
-    
-            if(perc < 0.02f)
-            {
+
+            if (perc < 0.02f) {
                 // the clamp case:
-            
+
                 mHitPoints = 0.001f;    // just some token amount
 
-               //only update the charactersheet if this car belongs to the player
-                if (mbPlayerCar == true)
-                {
-                    GetCharacterSheetManager()->UpdateCarHealth( mCharacterSheetCarIndex, perc);
+                //only update the charactersheet if this car belongs to the player
+                if (mbPlayerCar == true) {
+                    GetCharacterSheetManager()->UpdateCarHealth(mCharacterSheetCarIndex, perc);
                 }
-                            
-                GetEventManager()->TriggerEvent(EVENT_VEHICLE_DAMAGED, (void*)this);
+
+                GetEventManager()->TriggerEvent(EVENT_VEHICLE_DAMAGED, (void *) this);
                 mNoDamageTimer = 1.0f;  // set countdown
                 return 0.02f;   // return fixed amount
-            }        
-            else
-            {
+            } else {
                 // just normal hit
                 mHitPoints = testvalue;     // fall through and continue            
-            }        
+            }
 
-        }
-        else
-        {
+        } else {
             // this is the hit that takes us out
             mHitPoints = 0.0f;
         }
-        
 
+
+    } else {
+        mHitPoints -= amount;
     }
-    else
-    {
-        mHitPoints -= amount;    
-    }    
 
-    if(mHitPoints <= 0.0f)
-    {
+    if (mHitPoints <= 0.0f) {
         // we've been destroyed
         mHitPoints = 0.0f;
         mVehicleDestroyed = true;
-        
+
         ActivateTriggers(false);
         //GetEventManager()->TriggerEvent(EVENT_VEHICLE_DESTROYED_BY_USER, (void*)this);
         // move the triggering of this event to PostSubstepUpdate
         //
         // user car will pause for timer, other cars will send out immediately
         mDamageOutResetTimer = 0.0f;
-        
+
         /*
         // if this is a traffic, then just give'r right here
         if(mDamageType == VDT_TRAFFIC)
@@ -6149,18 +5523,17 @@ float Vehicle::TriggerDamage(float amount, bool clamp)
             
         }
         */
-        
+
     }
-    
+
     // make sure the damaged event fired off either way...
-    GetEventManager()->TriggerEvent(EVENT_VEHICLE_DAMAGED, (void*)this);
+    GetEventManager()->TriggerEvent(EVENT_VEHICLE_DAMAGED, (void *) this);
 
     float health = GetVehicleLifePercentage(mHitPoints);
-    
+
     //only update the charactersheet if this car belongs to the player
-    if (mbPlayerCar == true)
-    {
-        GetCharacterSheetManager()->UpdateCarHealth( mCharacterSheetCarIndex, health );
+    if (mbPlayerCar == true) {
+        GetCharacterSheetManager()->UpdateCarHealth(mCharacterSheetCarIndex, health);
     }
     return health;
 }
@@ -6175,74 +5548,60 @@ float Vehicle::TriggerDamage(float amount, bool clamp)
 //  and whether someone is opening/closing them
 //
 
-bool Vehicle::NeedToOpenDoor(Door door)
-{
-    if(!mHasDoors)
-    {
+bool Vehicle::NeedToOpenDoor(Door door) {
+    if (!mHasDoors) {
         return false;
     }
 
-    if(mDesiredDoorPosition[door] < 0.8f) 
-    {
+    if (mDesiredDoorPosition[door] < 0.8f) {
         return true;
     }
 
-    if(!HasActiveDoor(door))
-    {
+    if (!HasActiveDoor(door)) {
         return false;
     }
 
     return false;
 }
 
-bool Vehicle::NeedToCloseDoor(Door door)
-{
+bool Vehicle::NeedToCloseDoor(Door door) {
     // TODO : there are cases where we might want to not close it 
     // (physics, missing door, door left open, etc)
-    if(!mHasDoors)
-    {
+    if (!mHasDoors) {
         return false;
     }
 
     // check if door was left open when we exited
-    if(mDesiredDoorPosition[door] > 0.0f)
-    {
+    if (mDesiredDoorPosition[door] > 0.0f) {
         return true;
     }
 
-    if(!HasActiveDoor(door))
-    {
+    if (!HasActiveDoor(door)) {
         return false;
     }
 
     return false;
 }
 
-bool Vehicle::HasActiveDoor(Door door)
-{
-    if(!mHasDoors)
-    {
+bool Vehicle::HasActiveDoor(Door door) {
+    if (!mHasDoors) {
         return false;
     }
 
-    switch(door)
-    {
+    switch (door) {
         case DOOR_DRIVER:
-            if(mDoorDJoint != -1)
-            {
-                int inertialJointIndex = mJointIndexToInertialJointDriverMapping[ mDoorDJoint ];
-                if( inertialJointIndex == -1 )
-                {
-                    rWarningMsg( false, "why is there no inertial joint? doesn't this car have a door?" );
+            if (mDoorDJoint != -1) {
+                int inertialJointIndex = mJointIndexToInertialJointDriverMapping[mDoorDJoint];
+                if (inertialJointIndex == -1) {
+                    rWarningMsg(false,
+                                "why is there no inertial joint? doesn't this car have a door?");
                     return false;
                 }
-                sim::PhysicsJointInertialEffector* inertialJoint = mInertialJointDrivers[ inertialJointIndex ];
-                if( inertialJoint == NULL )
-                {
+                sim::PhysicsJointInertialEffector *inertialJoint = mInertialJointDrivers[inertialJointIndex];
+                if (inertialJoint == NULL) {
                     return false;
                 }
-                if( inertialJoint->IsEnabled() )
-                {
+                if (inertialJoint->IsEnabled()) {
                     return false;
                 }
             }
@@ -6250,9 +5609,8 @@ bool Vehicle::HasActiveDoor(Door door)
             break;
 
         case DOOR_PASSENGER:
-            if(mDoorPJoint != -1)
-            {
-                if(mInertialJointDrivers[mJointIndexToInertialJointDriverMapping[mDoorPJoint]]->IsEnabled())
+            if (mDoorPJoint != -1) {
+                if (mInertialJointDrivers[mJointIndexToInertialJointDriverMapping[mDoorPJoint]]->IsEnabled())
                     return false;
             }
             break;
@@ -6260,66 +5618,58 @@ bool Vehicle::HasActiveDoor(Door door)
     return true;
 }
 
-void Vehicle::UpdateDoorState(void)
-{
-    if(mDesiredDoorPosition[DOOR_DRIVER] == 0.0f)
-    {
-        if((mDoorDJoint != -1) && (mPhObj->GetJoint(mDoorDJoint)))
-        {
+void Vehicle::UpdateDoorState(void) {
+    if (mDesiredDoorPosition[DOOR_DRIVER] == 0.0f) {
+        if ((mDoorDJoint != -1) && (mPhObj->GetJoint(mDoorDJoint))) {
             mDesiredDoorPosition[DOOR_DRIVER] = mPhObj->GetJoint(mDoorDJoint)->Deformation();
         }
     }
 
-    if(mDesiredDoorPosition[DOOR_PASSENGER] == 0.0f)
-    {
-        if((mDoorPJoint != -1) && (mPhObj->GetJoint(mDoorPJoint)))
-        {
+    if (mDesiredDoorPosition[DOOR_PASSENGER] == 0.0f) {
+        if ((mDoorPJoint != -1) && (mPhObj->GetJoint(mDoorPJoint))) {
             mDesiredDoorPosition[DOOR_PASSENGER] = mPhObj->GetJoint(mDoorPJoint)->Deformation();
         }
     }
 }
 
-void Vehicle::ReleaseDoors(void)
-{
+void Vehicle::ReleaseDoors(void) {
     mDesiredDoorPosition[DOOR_DRIVER] = 0.0f;
     mDesiredDoorPosition[DOOR_PASSENGER] = 0.0f;
 }
 
-void Vehicle::PlayExplosionEffect()
-{
-    
+void Vehicle::PlayExplosionEffect() {
+
     //rmt::Vector explosionCenter = rPosition();
-   // explosionCenter.y += EXPLOSION_Y_OFFSET;
-    GetWorldPhysicsManager()->ApplyForceToDynamicsSpherical( mCollisionAreaIndex, rPosition(), EXPLOSION_EFFECT_RADIUS, EXPLOSION_FORCE );
-    
+    // explosionCenter.y += EXPLOSION_Y_OFFSET;
+    GetWorldPhysicsManager()->ApplyForceToDynamicsSpherical(mCollisionAreaIndex, rPosition(),
+                                                            EXPLOSION_EFFECT_RADIUS,
+                                                            EXPLOSION_FORCE);
+
     // Lets get the explosion position as the center of the wheels
-    rmt::Vector explosionCenter(0,0,0);
-    for ( int i = 0 ; i < 4 ; i++ )
-    {
+    rmt::Vector explosionCenter(0, 0, 0);
+    for (int i = 0; i < 4; i++) {
         explosionCenter += mSuspensionWorldSpacePoints[i];
     }
     explosionCenter *= 0.25f;
     rmt::Matrix explosionTransform = GetTransform();
-    explosionTransform.FillTranslate( explosionCenter );
-    
-    GetBreakablesManager()->Play( BreakablesEnum::eCarExplosion, explosionTransform );
+    explosionTransform.FillTranslate(explosionCenter);
 
-    GetEventManager()->TriggerEvent( EVENT_BIG_BOOM_SOUND, this );
+    GetBreakablesManager()->Play(BreakablesEnum::eCarExplosion, explosionTransform);
+
+    GetEventManager()->TriggerEvent(EVENT_BIG_BOOM_SOUND, this);
 }
 
 
-void Vehicle::AddToSimulation()
-{
+void Vehicle::AddToSimulation() {
     //DynaPhysDSG::AddToSimulation();   // greg
-                                        // jan 31, 2003
-                                        // I don't think any vehicle should do this - just use it's own ground plane
-    SetLocomotion( VL_PHYSICS );
+    // jan 31, 2003
+    // I don't think any vehicle should do this - just use it's own ground plane
+    SetLocomotion(VL_PHYSICS);
 }
 
-void Vehicle::ApplyForce( const rmt::Vector& direction, float force )
-{
-    SetLocomotion( VL_PHYSICS );
-    rmt::Vector& rVelocity = GetSimState()->GetLinearVelocity();
+void Vehicle::ApplyForce(const rmt::Vector &direction, float force) {
+    SetLocomotion(VL_PHYSICS);
+    rmt::Vector &rVelocity = GetSimState()->GetLinearVelocity();
     float deltaV = force / GetMass();
     // Apply delta velocity
     rVelocity += (direction * deltaV);
@@ -6327,44 +5677,36 @@ void Vehicle::ApplyForce( const rmt::Vector& direction, float force )
     AddToSimulation();
 
     // Damage the vehicle
-    if ( mUserDrivingCar )
-    {      
-        TriggerDamage( force * s_DamageFromExplosionPlayer / EXPLOSION_FORCE, false );
+    if (mUserDrivingCar) {
+        TriggerDamage(force * s_DamageFromExplosionPlayer / EXPLOSION_FORCE, false);
+    } else {
+        TriggerDamage(force * s_DamageFromExplosion / EXPLOSION_FORCE, false);
     }
-    else
-    {
-        TriggerDamage( force * s_DamageFromExplosion / EXPLOSION_FORCE, false );
-    }     
 }
 
-    
-bool Vehicle::AttachCollectible( StatePropCollectible* drawable )
-{
-    if ( drawable->GetState() != 0 )
+
+bool Vehicle::AttachCollectible(StatePropCollectible *drawable) {
+    if (drawable->GetState() != 0)
         return false;
 
-    bool wasAttached = mGeometryVehicle->AttachCollectible( drawable );
-    if ( wasAttached )
-    {
-        GetEventManager()->TriggerEvent( EVENT_VEHICLE_COLLECTED_PROP, this );
+    bool wasAttached = mGeometryVehicle->AttachCollectible(drawable);
+    if (wasAttached) {
+        GetEventManager()->TriggerEvent(EVENT_VEHICLE_COLLECTED_PROP, this);
     }
     return wasAttached;
 }
 
-StatePropCollectible* Vehicle::GetAttachedCollectible()
-{
+StatePropCollectible *Vehicle::GetAttachedCollectible() {
     return mGeometryVehicle->GetAttachedCollectible();
 }
 
-void Vehicle::DetachCollectible( const rmt::Vector& velocity, bool explode )
-{
-    mGeometryVehicle->DetachCollectible(velocity, explode);            
+void Vehicle::DetachCollectible(const rmt::Vector &velocity, bool explode) {
+    mGeometryVehicle->DetachCollectible(velocity, explode);
 }
 
 
 // move the door  to the specified location (called by the character AI during get in/out of car)
-void  Vehicle::MoveDoor(Door door, DoorAction action, float position)
-{
+void Vehicle::MoveDoor(Door door, DoorAction action, float position) {
     rAssert(door < 2);
 
     mDesiredDoorPosition[door] = position;
@@ -6372,17 +5714,16 @@ void  Vehicle::MoveDoor(Door door, DoorAction action, float position)
 }
 
 // calculate the position of a single door
-void Vehicle::CalcDoor(unsigned doorIndex, unsigned joint, float doorOpen)
-{
+void Vehicle::CalcDoor(unsigned doorIndex, unsigned joint, float doorOpen) {
     // clamp desired door position to 0 -> 1
-    if(mDesiredDoorPosition[doorIndex] > rmt::Abs(doorOpen)) 
+    if (mDesiredDoorPosition[doorIndex] > rmt::Abs(doorOpen))
         mDesiredDoorPosition[doorIndex] = rmt::Abs(doorOpen);
 
-    if(mDesiredDoorPosition[doorIndex] < 0.0f)
+    if (mDesiredDoorPosition[doorIndex] < 0.0f)
         mDesiredDoorPosition[doorIndex] = 0.0f;
 
     // grab the rest pose
-    poser::Pose* pose = mPoseEngine->GetPose();
+    poser::Pose *pose = mPoseEngine->GetPose();
     rmt::Matrix matrix = pose->GetSkeleton()->GetJoint(joint)->restPose;
     rmt::Matrix tmp;
 
@@ -6395,14 +5736,12 @@ void Vehicle::CalcDoor(unsigned doorIndex, unsigned joint, float doorOpen)
     pose->GetJoint(joint)->SetObjectMatrix(tmp);
 
     // if we just closed the door all the way, turn off future door activity
-    if((mDesiredDoorAction[doorIndex] == DOORACTION_CLOSE) && (mDesiredDoorPosition[doorIndex] == 0.0f))
-    {
+    if ((mDesiredDoorAction[doorIndex] == DOORACTION_CLOSE) &&
+        (mDesiredDoorPosition[doorIndex] == 0.0f)) {
         // if neccesary, reset physics state
         int index = mJointIndexToInertialJointDriverMapping[joint];
-        if( index != -1 )
-        {
-            if(mInertialJointDrivers[index]->IsEnabled())
-            {
+        if (index != -1) {
+            if (mInertialJointDrivers[index]->IsEnabled()) {
                 mPhObj->GetJoint(joint)->ResetDeformation();
             }
         }
@@ -6411,32 +5750,26 @@ void Vehicle::CalcDoor(unsigned doorIndex, unsigned joint, float doorOpen)
 
 }
 
-void Vehicle::CalcDoors(void)
-{
+void Vehicle::CalcDoors(void) {
     // angle in radians that represents a fully open door 
     // TODO : could be tweakable
     const float doorOpen = 1.0f;
-       
+
     // update each door, if neccesary
-    if((mDesiredDoorAction[0] != DOORACTION_NONE) || (mDesiredDoorAction[1] != DOORACTION_NONE))
-    {
-        if((mDesiredDoorAction[0] != DOORACTION_NONE) && mDoorDJoint != -1)
-        {
+    if ((mDesiredDoorAction[0] != DOORACTION_NONE) || (mDesiredDoorAction[1] != DOORACTION_NONE)) {
+        if ((mDesiredDoorAction[0] != DOORACTION_NONE) && mDoorDJoint != -1) {
             CalcDoor(0, mDoorDJoint, doorOpen);
         }
 
-        if((mDesiredDoorAction[1] != DOORACTION_NONE) && mDoorPJoint != -1)
-        {
+        if ((mDesiredDoorAction[1] != DOORACTION_NONE) && mDoorPJoint != -1) {
             // passenger door is backwards, so we do negative rotation
-            CalcDoor(1, mDoorPJoint, -1.0f * doorOpen); 
+            CalcDoor(1, mDoorPJoint, -1.0f * doorOpen);
         }
     }
 }
 
-void Vehicle::SetDriverName(const char* name)
-{
-    if(!name)
-    {
+void Vehicle::SetDriverName(const char *name) {
+    if (!name) {
         mDriverName[0] = 0;
         return;
     }
@@ -6445,25 +5778,21 @@ void Vehicle::SetDriverName(const char* name)
     strcpy(mDriverName, name);
 }
 
-const char* Vehicle::GetDriverName(void)
-{
+const char *Vehicle::GetDriverName(void) {
     return mDriverName;
 }
 
 
-void Vehicle::SetDriver(Character* d) 
-{                          
+void Vehicle::SetDriver(Character *d) {
     tRefCounted::Assign(mpDriver, d);
 }
 
-void Vehicle::SetShadowAdjustments( float Adjustments[ 4 ][ 2 ] ) 
-{ 
-    mGeometryVehicle->SetShadowAdjustments( Adjustments ); 
+void Vehicle::SetShadowAdjustments(float Adjustments[4][2]) {
+    mGeometryVehicle->SetShadowAdjustments(Adjustments);
 }
 
-void Vehicle::SetShininess( unsigned char EnvRef )
-{
-    mGeometryVehicle->SetShininess( EnvRef );
+void Vehicle::SetShininess(unsigned char EnvRef) {
+    mGeometryVehicle->SetShininess(EnvRef);
 }
 
 //=============================================================================
@@ -6477,7 +5806,6 @@ void Vehicle::SetShininess( unsigned char EnvRef )
 // Return:      float 
 //
 //=============================================================================
-float Vehicle::GetTopSpeed() const
-{
-    return mDesignerParams.mDpTopSpeedKmh * ( 1000.0f / 3600.0f );
+float Vehicle::GetTopSpeed() const {
+    return mDesignerParams.mDpTopSpeedKmh * (1000.0f / 3600.0f);
 }

@@ -29,9 +29,9 @@
 //===========================================================================
 class CGuiMenu;
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Screen;
+
     class Text;
 };
 
@@ -39,33 +39,36 @@ namespace Scrooby
 // Interface Definitions
 //===========================================================================
 class CGuiScreenMissionOver : public CGuiScreen,
-                              public EventListener
-{
+                              public EventListener {
 public:
-    CGuiScreenMissionOver( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenMissionOver(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenMissionOver();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    virtual void HandleEvent( EventEnum id, void* pEventData );
-    virtual CGuiMenu* HasMenu() { return m_pMenu; }
+    virtual void HandleEvent(EventEnum id, void *pEventData);
+
+    virtual CGuiMenu *HasMenu() { return m_pMenu; }
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
     static const int MAX_NUM_HINTS_PER_FAILURE = 8;
 
-    void SetFailureMessage( MissionCondition::ConditionTypeEnum conditionType );
+    void SetFailureMessage(MissionCondition::ConditionTypeEnum conditionType);
 
-    CGuiMenu* m_pMenu;
+    CGuiMenu *m_pMenu;
 
-    Scrooby::Text* m_failureReason;
-    Scrooby::Text* m_failureHint;
+    Scrooby::Text *m_failureReason;
+    Scrooby::Text *m_failureHint;
 
 };
 

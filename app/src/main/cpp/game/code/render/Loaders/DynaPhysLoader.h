@@ -28,36 +28,37 @@
 // Synopsis:   The DynaPhysLoader; Synopsis by Inspection.
 //
 //========================================================================
-class DynaPhysLoader 
-: public tSimpleChunkHandler,
-  public IWrappedLoader 
-{
+class DynaPhysLoader
+        : public tSimpleChunkHandler,
+          public IWrappedLoader {
 public:
-   DynaPhysLoader();
-   virtual ~DynaPhysLoader();
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   void SetRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    DynaPhysLoader();
 
-   void ModRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    virtual ~DynaPhysLoader();
 
-   ///////////////////////////////////////////////////////////////////////
-   // tSimpleChunkHandler
-   ///////////////////////////////////////////////////////////////////////
-   virtual tEntity* LoadObject(tChunkFile* file, tEntityStore* store);
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
+
+    void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
+
+    ///////////////////////////////////////////////////////////////////////
+    // tSimpleChunkHandler
+    ///////////////////////////////////////////////////////////////////////
+    virtual tEntity *LoadObject(tChunkFile *file, tEntityStore *store);
 
 protected:
-   sim::CollisionObjectLoader* mpCollObjLoader;
-   sim::PhysicsObjectLoader*   mpPhysObjLoader;
-   tCompositeDrawableLoader*   mpCompDLoader;
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   //ChunkListenerCallback*  mpListenerCB;
-   //void* mpUserData;
+    sim::CollisionObjectLoader *mpCollObjLoader;
+    sim::PhysicsObjectLoader *mpPhysObjLoader;
+    tCompositeDrawableLoader *mpCompDLoader;
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    //ChunkListenerCallback*  mpListenerCB;
+    //void* mpUserData;
 private:
 };
 

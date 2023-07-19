@@ -44,8 +44,7 @@
 // Return:      N/A.
 //
 //==============================================================================
-DirectionalLocator::DirectionalLocator()
-{
+DirectionalLocator::DirectionalLocator() {
     mTransform.Identity();
 }
 
@@ -59,8 +58,7 @@ DirectionalLocator::DirectionalLocator()
 // Return:      N/A.
 //
 //==============================================================================
-DirectionalLocator::~DirectionalLocator()
-{
+DirectionalLocator::~DirectionalLocator() {
 }
 
 //******************************************************************************

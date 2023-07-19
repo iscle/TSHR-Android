@@ -28,22 +28,23 @@ class InputManager;
 //
 //=============================================================================
 
-class DebugCam : public SuperCam
-{
+class DebugCam : public SuperCam {
 public:
     DebugCam();
+
     virtual ~DebugCam();
-  
+
     //Update: Called when you want the super cam to update its state.
-    void Update( unsigned int milliseconds );
+    void Update(unsigned int milliseconds);
 
     //Returns the name of the super cam.  
     //This can be used in the FE or debug info
-    const char* const GetName() const;
+    const char *const GetName() const;
 
     Type GetType();
 
     void EnableShake();
+
     void DisableShake();
 
 private:
@@ -51,16 +52,18 @@ private:
     float mRotationAngleXZ;
     float mRotationAngleY;
 
-    InputManager* mIm;
-  
+    InputManager *mIm;
+
     //These functions are to allow real-time control of the settings of 
     //the supercam.
     void OnRegisterDebugControls();
+
     void OnUnregisterDebugControls();
 
     //Prevent wasteful constructor creation.
-    DebugCam( const DebugCam& debugcam );
-    DebugCam& operator=( const DebugCam& debugcam );
+    DebugCam(const DebugCam &debugcam);
+
+    DebugCam &operator=(const DebugCam &debugcam);
 };
 
 //*****************************************************************************
@@ -79,8 +82,7 @@ private:
 // Return:      const char* const 
 //
 //=============================================================================
-inline const char* const DebugCam::GetName() const
-{
+inline const char *const DebugCam::GetName() const {
     return "DEBUG_CAM";
 }
 
@@ -94,8 +96,7 @@ inline const char* const DebugCam::GetName() const
 // Return:      Type 
 //
 //=============================================================================
-inline SuperCam::Type DebugCam::GetType()
-{
+inline SuperCam::Type DebugCam::GetType() {
     return DEBUG_CAM;
 }
 

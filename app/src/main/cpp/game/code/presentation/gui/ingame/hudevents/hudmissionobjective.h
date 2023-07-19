@@ -29,9 +29,9 @@ const float MISSION_ICON_SCALE = 0.78f;
 const float MISSION_ICON_SCALE = 1.5f;
 #endif
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Page;
+
     class Sprite;
 }
 
@@ -41,22 +41,24 @@ class tSprite;
 // Interface Definitions
 //===========================================================================
 
-class HudMissionObjective : public HudEventHandler
-{
+class HudMissionObjective : public HudEventHandler {
 public:
-    HudMissionObjective( Scrooby::Page* pPage );
+    HudMissionObjective(Scrooby::Page *pPage);
+
     virtual ~HudMissionObjective();
 
     virtual void Start();
-    virtual void Stop();
-    virtual void Update( float elapsedTime );
 
-    void SetMessageID( unsigned int messageID );
+    virtual void Stop();
+
+    virtual void Update(float elapsedTime);
+
+    void SetMessageID(unsigned int messageID);
+
     bool UpdateIcon();
 
 private:
-    enum eSubState
-    {
+    enum eSubState {
         STATE_ICON_POP_UP,
         STATE_ICON_DISPLAY_HOLD,
         STATE_ICON_SLIDE_UP,
@@ -67,8 +69,8 @@ private:
 
     unsigned int m_currentSubState;
 
-    Scrooby::Sprite* m_missionIcon;
-    tSprite* m_missionIconImage;
+    Scrooby::Sprite *m_missionIcon;
+    tSprite *m_missionIconImage;
     unsigned int m_messageID;
 
     GuiSFX::UnderdampedTranslator m_iconTranslator;
@@ -76,8 +78,7 @@ private:
 };
 
 inline void
-HudMissionObjective::SetMessageID( unsigned int messageID )
-{
+HudMissionObjective::SetMessageID(unsigned int messageID) {
     m_messageID = messageID;
 }
 

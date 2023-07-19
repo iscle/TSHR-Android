@@ -25,7 +25,9 @@
 // Forward References
 //========================================
 class ISuperCamTarget;
+
 class tCameraAnimationController;
+
 class tMultiController;
 
 //=============================================================================
@@ -34,27 +36,35 @@ class tMultiController;
 //
 //=============================================================================
 
-class RelativeAnimatedCam : 
-    public AnimatedCam
-{
+class RelativeAnimatedCam :
+        public AnimatedCam {
 public:
     RelativeAnimatedCam();
-    static void       CheckPendingCameraSwitch();
-    const char* const GetName() const;
+
+    static void CheckPendingCameraSwitch();
+
+    const char *const GetName() const;
+
     SuperCam::Type GetType();
-    void SetCameraAnimationController( tCameraAnimationController* controller );
-    void SetOffsetMatrix( const rmt::Matrix& m );
-    void Update( unsigned int milliseconds );
+
+    void SetCameraAnimationController(tCameraAnimationController *controller);
+
+    void SetOffsetMatrix(const rmt::Matrix &m);
+
+    void Update(unsigned int milliseconds);
 
 protected:
-    virtual void      LetterBoxStart();
-    virtual void      LetterBoxStop();
+    virtual void LetterBoxStart();
+
+    virtual void LetterBoxStop();
 
     //Prevent wasteful constructor creation.
-    RelativeAnimatedCam( const AnimatedCam& AnimatedCam );
-    RelativeAnimatedCam& operator=( const AnimatedCam& AnimatedCam );
+    RelativeAnimatedCam(const AnimatedCam &AnimatedCam);
+
+    RelativeAnimatedCam &operator=(const AnimatedCam &AnimatedCam);
+
     rmt::Matrix mOffsetMatrix;
-    tCameraAnimationController* gCameraAnimationController;
+    tCameraAnimationController *gCameraAnimationController;
 };
 
 //*****************************************************************************

@@ -31,92 +31,102 @@
 //===========================================================================
 
 class CGuiMenu;
+
 class Reward;
 
-struct PlayerMenu
-{
-    enum eSubMenu
-    {
+struct PlayerMenu {
+    enum eSubMenu {
         MENU_CHARACTERS,
         MENU_VEHICLES,
 
         NUM_SUB_MENUS
     };
 
-    CGuiMenu* m_pMenu[ NUM_SUB_MENUS ];
+    CGuiMenu *m_pMenu[NUM_SUB_MENUS];
     int m_currentSubMenu;
     int m_controllerID;
 
-    Scrooby::Text* m_pressStart;
-    Scrooby::Sprite* m_vehicleRating;
-    Scrooby::Drawable* m_characterSelectedIcon;
-    Scrooby::Drawable* m_vehicleSelectedIcon;
+    Scrooby::Text *m_pressStart;
+    Scrooby::Sprite *m_vehicleRating;
+    Scrooby::Drawable *m_characterSelectedIcon;
+    Scrooby::Drawable *m_vehicleSelectedIcon;
 
     PlayerMenu();
 
-    void HandleMessage( eGuiMessage message,
-                        unsigned int param1 = 0,
-                        unsigned int param2 = 0 );
+    void HandleMessage(eGuiMessage message,
+                       unsigned int param1 = 0,
+                       unsigned int param2 = 0);
 
-    CGuiMenu* GetCurrentSubMenu() const;
-    void SetActive( bool isActive, int controllerID = -1 );
+    CGuiMenu *GetCurrentSubMenu() const;
+
+    void SetActive(bool isActive, int controllerID = -1);
+
     bool IsActive() const;
+
     bool IsDone() const;
 
 };
 
-inline bool PlayerMenu::IsActive() const
-{
-    return( m_controllerID != -1 );
+inline bool PlayerMenu::IsActive() const {
+    return (m_controllerID != -1);
 }
 
-inline bool PlayerMenu::IsDone() const
-{
-    return( m_currentSubMenu >= NUM_SUB_MENUS );
+inline bool PlayerMenu::IsDone() const {
+    return (m_currentSubMenu >= NUM_SUB_MENUS);
 }
 
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenMiniMenu : public CGuiScreen
-{
+class CGuiScreenMiniMenu : public CGuiScreen {
 public:
-    CGuiScreenMiniMenu( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenMiniMenu(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenMiniMenu();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
-    virtual CGuiMenu* HasMenu() { return m_pTrackMenu; }
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
+
+    virtual CGuiMenu *HasMenu() { return m_pTrackMenu; }
+
 #ifdef RAD_WIN32
-    virtual eFEHotspotType CheckCursorAgainstHotspots( float x, float y );
+    virtual eFEHotspotType CheckCursorAgainstHotspots(float x, float y);
 #endif
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
     void UpdateCharacterSlots();
 
-    void SetTrackSelectionEnabled( bool enable );
-    void MoveTrackCursor( int previousIndex, int nextIndex );
+    void SetTrackSelectionEnabled(bool enable);
+
+    void MoveTrackCursor(int previousIndex, int nextIndex);
+
     void OnTrackSelected();
 
-    void ActivateNewPlayer( int controllerID );
+    void ActivateNewPlayer(int controllerID);
 
-    void OnCharacterSelected( int playerID, bool isSelected );
-    void OnVehicleSelected( int playerID, bool isSelected );
+    void OnCharacterSelected(int playerID, bool isSelected);
 
-    void AddRewardVehicle( Reward* pReward );
+    void OnVehicleSelected(int playerID, bool isSelected);
+
+    void AddRewardVehicle(Reward *pReward);
+
     void PrepareVehicleSelections();
-    void UpdateVehicleDisplayImages( int playerID, Scrooby::Sprite* vehicleImage );
-    void UpdateVehicleRating( int playerID );
 
-    void SetTimerEnabled( bool enable );
+    void UpdateVehicleDisplayImages(int playerID, Scrooby::Sprite *vehicleImage);
 
-    int GetPlayerMenuID( int controllerID ) const;
+    void UpdateVehicleRating(int playerID);
+
+    void SetTimerEnabled(bool enable);
+
+    int GetPlayerMenuID(int controllerID) const;
 
     static const int NUM_TRACKS = 7;
     static const int MAX_NUM_VEHICLES = 64;
@@ -127,16 +137,14 @@ private:
     static const int TIMER_WAIT_TIME = 10000; // in msec
 #endif
 
-    enum eScreenState
-    {
+    enum eScreenState {
         SCREEN_STATE_NORMAL,
         SCREEN_STATE_OPTIONS,
 
         NUM_SCREEN_STATES
     };
 
-    enum eCharacter
-    {
+    enum eCharacter {
         CHARACTER_LISA,
         CHARACTER_BART,
         CHARACTER_HOMER,
@@ -146,8 +154,7 @@ private:
         NUM_CHARACTERS
     };
 
-    enum eCharacterSelectionState
-    {
+    enum eCharacterSelectionState {
         CHARACTER_NOT_SELECTED = 0,
         CHARACTER_SELECTED = 1,
 
@@ -166,17 +173,17 @@ private:
     eScreenState m_screenState;
 */
 
-    CGuiMenu* m_pTrackMenu;
-    Scrooby::Sprite* m_trackDirection;
-    Scrooby::Text* m_trackNumLaps;
-    Scrooby::Sprite* m_trackNumLapsArrowU;
-    Scrooby::Sprite* m_trackNumLapsArrowD;
-    Scrooby::Polygon* m_trackCursorBgd;
+    CGuiMenu *m_pTrackMenu;
+    Scrooby::Sprite *m_trackDirection;
+    Scrooby::Text *m_trackNumLaps;
+    Scrooby::Sprite *m_trackNumLapsArrowU;
+    Scrooby::Sprite *m_trackNumLapsArrowD;
+    Scrooby::Polygon *m_trackCursorBgd;
     unsigned int m_elapsedTime;
 
-    Scrooby::Text* m_backLabel;
+    Scrooby::Text *m_backLabel;
 
-    PlayerMenu m_playerMenus[ SuperSprintData::NUM_PLAYERS ];
+    PlayerMenu m_playerMenus[SuperSprintData::NUM_PLAYERS];
     int m_numActivePlayers;
     int m_numActivePlayersDone;
     short m_characterSlots; // bit-mask
@@ -190,19 +197,19 @@ private:
     bool m_bTrackSelected;
 #endif
 
-    Reward* m_unlockedVehicles[ MAX_NUM_VEHICLES ];
+    Reward *m_unlockedVehicles[MAX_NUM_VEHICLES];
     int m_numUnlockedVehicles;
 
-    Scrooby::Group* m_optionsButton;
+    Scrooby::Group *m_optionsButton;
 /*
     Scrooby::Layer* m_optionsOverlay;
     CGuiMenu* m_optionsMenu;
 */
 
-    Scrooby::Group* m_characterSelectInfo;
+    Scrooby::Group *m_characterSelectInfo;
 
-    Scrooby::Group* m_timerOverlay;
-    NumericText<Scrooby::Text> m_timer;
+    Scrooby::Group *m_timerOverlay;
+    NumericText <Scrooby::Text> m_timer;
     int m_remainingTime;
 
 };

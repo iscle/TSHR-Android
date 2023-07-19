@@ -47,45 +47,49 @@
 //      
 //
 //===========================================================================
-class PropStats
-{
-    public:
-        PropStats();
-        ~PropStats();
-   
-        static void EnableTracking();
+class PropStats {
+public:
+    PropStats();
 
-        static void StartTracking( const char* proptype );
-        static void IncreaseInstanceCount( const char* proptype, int count );
-        static void StopTracking( const char* proptype, int count = 0 );
+    ~PropStats();
 
-        static void Print( void* userData );
+    static void EnableTracking();
 
-    protected:
+    static void StartTracking(const char *proptype);
 
-        static int s_MemInUseAtStart;
-        static bool s_TrackingEnabled;
-        static int GetMemAvailable();
+    static void IncreaseInstanceCount(const char *proptype, int count);
 
-        struct MemUsage
-        {
-            MemUsage() : numInstances( 0 ), memUsed( 0 ), memUsedInitialInstance( 0 ){}
-            int numInstances;
-            int memUsed;
-            int memUsedInitialInstance;
-        };
+    static void StopTracking(const char *proptype, int count = 0);
 
-        typedef Map< std::string, MemUsage > PropMemMap;
-        typedef PropMemMap::iterator PropMemMapIt;
+    static void Print(void *userData);
 
-        static PropMemMap s_PropMemData;
+protected:
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow PropStats from being copied and assigned.
-        PropStats( const PropStats& );
-        PropStats& operator=( const PropStats& );
+    static int s_MemInUseAtStart;
+    static bool s_TrackingEnabled;
+
+    static int GetMemAvailable();
+
+    struct MemUsage {
+        MemUsage() : numInstances(0), memUsed(0), memUsedInitialInstance(0) {}
+
+        int numInstances;
+        int memUsed;
+        int memUsedInitialInstance;
+    };
+
+    typedef Map <std::string, MemUsage> PropMemMap;
+    typedef PropMemMap::iterator PropMemMapIt;
+
+    static PropMemMap s_PropMemData;
+
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow PropStats from being copied and assigned.
+    PropStats(const PropStats &);
+
+    PropStats &operator=(const PropStats &);
 
 };
 

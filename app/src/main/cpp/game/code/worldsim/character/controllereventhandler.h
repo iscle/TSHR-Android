@@ -30,25 +30,25 @@
 class CameraRelativeCharacterController;
 
 class CameraRelativeCharacterControllerEventHandler
-:
-public EventListener
-{
-public:
-    CameraRelativeCharacterControllerEventHandler( CameraRelativeCharacterController* pParent )
         :
-    mpParent( pParent )
-    {
+                public EventListener {
+public:
+    CameraRelativeCharacterControllerEventHandler(CameraRelativeCharacterController *pParent)
+            :
+            mpParent(pParent) {
     }
+
     // Derived classes must implement this method to receive
     // event notification.
-    virtual void HandleEvent( EventEnum id, void* pEventData )
-    {
-        mpParent->HandleEvent( id, pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData) {
+        mpParent->HandleEvent(id, pEventData);
     }
+
 protected:
 private:
-    CameraRelativeCharacterControllerEventHandler( void );
-    CameraRelativeCharacterController* mpParent;
+    CameraRelativeCharacterControllerEventHandler(void);
+
+    CameraRelativeCharacterController *mpParent;
 };
 
 #endif //CONTROLLEREVENTHANDLER_H_

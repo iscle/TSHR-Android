@@ -26,13 +26,21 @@
 //===========================================================================
 
 class tAnimatedObjectFactoryLoader;
+
 class tAnimatedObjectLoader;
+
 class tFrameControllerLoader;
+
 class tCompositeDrawableLoader;
+
 class tGeometryLoader;
+
 class tSkeletonLoader;
+
 class tAnimationLoader;
+
 class tParticleSystemLoader;
+
 class tParticleSystemFactoryLoader;
 
 //===========================================================================
@@ -53,52 +61,53 @@ class tParticleSystemFactoryLoader;
 //
 //===========================================================================
 class BreakableObjectLoader
-: public tSimpleChunkHandler,
-  public IWrappedLoader
-{
-    public:
-        BreakableObjectLoader();
-        virtual ~BreakableObjectLoader();
+        : public tSimpleChunkHandler,
+          public IWrappedLoader {
+public:
+    BreakableObjectLoader();
+
+    virtual ~BreakableObjectLoader();
 
     ///////////////////////////////////////////////////////////////////////
     // IWrappedLoader
     ///////////////////////////////////////////////////////////////////////
-    virtual void SetRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    virtual void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                                 int iUserData);
 
-    virtual void ModRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    virtual void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                                 int iUserData);
 
     ///////////////////////////////////////////////////////////////////////
     // tSimpleChunkHandler
     ///////////////////////////////////////////////////////////////////////
-    virtual tEntity* LoadObject(tChunkFile* file, tEntityStore* store);
+    virtual tEntity *LoadObject(tChunkFile *file, tEntityStore *store);
 
-    protected:
+protected:
 
-    private:
+private:
 
-        tAnimatedObjectFactoryLoader* mpFactoryLoader;
- 	    tAnimatedObjectLoader* mpAnimObjectLoader;
+    tAnimatedObjectFactoryLoader *mpFactoryLoader;
+    tAnimatedObjectLoader *mpAnimObjectLoader;
 
-        tFrameControllerLoader* mpControllerLoader;
+    tFrameControllerLoader *mpControllerLoader;
 
-	    tCompositeDrawableLoader* mpCompDrawLoader;
-	    tGeometryLoader* mpP3DGeoLoader;
+    tCompositeDrawableLoader *mpCompDrawLoader;
+    tGeometryLoader *mpP3DGeoLoader;
 
-        tSkeletonLoader* mpSkelLoader;
-        tAnimationLoader* mpAnimLoader;
+    tSkeletonLoader *mpSkelLoader;
+    tAnimationLoader *mpAnimLoader;
 
-        tParticleSystemLoader* mpParticleSystemLoader;
-        tParticleSystemFactoryLoader* mpParticleSystemFactoryLoader;
+    tParticleSystemLoader *mpParticleSystemLoader;
+    tParticleSystemFactoryLoader *mpParticleSystemFactoryLoader;
 
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow BreakableObjectLoader from being copied and assigned.
-        BreakableObjectLoader( const BreakableObjectLoader& );
-        BreakableObjectLoader& operator=( const BreakableObjectLoader& );
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow BreakableObjectLoader from being copied and assigned.
+    BreakableObjectLoader(const BreakableObjectLoader &);
+
+    BreakableObjectLoader &operator=(const BreakableObjectLoader &);
 };
 
 #endif

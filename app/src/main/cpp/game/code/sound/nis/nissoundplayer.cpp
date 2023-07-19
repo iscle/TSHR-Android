@@ -35,55 +35,48 @@
 //
 
 NISPlayerGroup::NISPlayerGroup() :
-    m_soundID( 0 ),
-    m_loadCallback( NULL ),
-    m_playCallback( NULL ),
-    m_soundQueued( false )
-{
+        m_soundID(0),
+        m_loadCallback(NULL),
+        m_playCallback(NULL),
+        m_soundQueued(false) {
 }
 
-NISPlayerGroup::~NISPlayerGroup()
-{
+NISPlayerGroup::~NISPlayerGroup() {
 }
 
-void NISPlayerGroup::LoadSound( radKey32 soundID, NISSoundLoadedCallback* callback )
-{
+void NISPlayerGroup::LoadSound(radKey32 soundID, NISSoundLoadedCallback *callback) {
     //
     // For NIS playback, don't use buffered data sources.  Hopefully we
     // won't be play these in situations where skipping is likely.  If it
     // happens, then we can experiment with short buffers, I suppose.
     // Stinky limited IOP memory.
     //
-    m_soundQueued = m_player.QueueSound( soundID, this );
+    m_soundQueued = m_player.QueueSound(soundID, this);
 
-    if( m_soundQueued )
-    {
+    if (m_soundQueued) {
         m_loadCallback = callback;
         m_soundID = soundID;
     }
 }
 
-void NISPlayerGroup::PlaySound( rmt::Box3D* box, NISSoundPlaybackCompleteCallback* callback )
-{
+void NISPlayerGroup::PlaySound(rmt::Box3D *box, NISSoundPlaybackCompleteCallback *callback) {
     radSoundVector position;
     rmt::Vector midpoint;
 
-    if( m_soundQueued )
-    {
+    if (m_soundQueued) {
         //
         // Calculate position to play at
         //
-        rAssert( box != NULL );
+        rAssert(box != NULL);
         midpoint = box->Mid();
-        position.SetElements( midpoint.x, midpoint.y, midpoint.z );
+        position.SetElements(midpoint.x, midpoint.y, midpoint.z);
 
         m_playCallback = callback;
-        m_player.PlayQueuedSound( position, this );
+        m_player.PlayQueuedSound(position, this);
     }
 }
 
-void NISPlayerGroup::StopAndDumpSound()
-{
+void NISPlayerGroup::StopAndDumpSound() {
     // Just in case.
     m_loadCallback = NULL;
     m_playCallback = NULL;
@@ -93,15 +86,12 @@ void NISPlayerGroup::StopAndDumpSound()
     m_player.Stop();
 }
 
-bool NISPlayerGroup::IsSoundIDLoaded( radKey32 soundID )
-{
-    return( m_soundID == soundID );
+bool NISPlayerGroup::IsSoundIDLoaded(radKey32 soundID) {
+    return (m_soundID == soundID);
 }
 
-void NISPlayerGroup::Continue()
-{
-    if( m_player.IsPaused() )
-    {
+void NISPlayerGroup::Continue() {
+    if (m_player.IsPaused()) {
         m_player.Continue();
     }
 }
@@ -117,10 +107,8 @@ void NISPlayerGroup::Continue()
 // Return:      void 
 //
 //=============================================================================
-void NISPlayerGroup::OnSoundReady()
-{
-    if( m_loadCallback )
-    {
+void NISPlayerGroup::OnSoundReady() {
+    if (m_loadCallback) {
         m_loadCallback->NISSoundLoaded();
         m_loadCallback = NULL;
     }
@@ -137,10 +125,8 @@ void NISPlayerGroup::OnSoundReady()
 // Return:      void 
 //
 //=============================================================================
-void NISPlayerGroup::OnPlaybackComplete()
-{
-    if( m_playCallback )
-    {
+void NISPlayerGroup::OnPlaybackComplete() {
+    if (m_playCallback) {
         m_playCallback->NISSoundPlaybackComplete();
         m_playCallback = NULL;
     }
@@ -165,14 +151,13 @@ void NISPlayerGroup::OnPlaybackComplete()
 //
 //==============================================================================
 NISSoundPlayer::NISSoundPlayer() :
-    m_currentFEGag( 0 )
-{
+        m_currentFEGag(0) {
     //
     // Register as an event listener
     //
-    GetEventManager()->AddListener( this, EVENT_FE_GAG_INIT );
-    GetEventManager()->AddListener( this, EVENT_FE_GAG_START );
-    GetEventManager()->AddListener( this, EVENT_FE_GAG_STOP );
+    GetEventManager()->AddListener(this, EVENT_FE_GAG_INIT);
+    GetEventManager()->AddListener(this, EVENT_FE_GAG_START);
+    GetEventManager()->AddListener(this, EVENT_FE_GAG_STOP);
 }
 
 //==============================================================================
@@ -185,8 +170,7 @@ NISSoundPlayer::NISSoundPlayer() :
 // Return:      N/A.
 //
 //==============================================================================
-NISSoundPlayer::~NISSoundPlayer()
-{
+NISSoundPlayer::~NISSoundPlayer() {
 }
 
 //=============================================================================
@@ -200,20 +184,17 @@ NISSoundPlayer::~NISSoundPlayer()
 // Return:      void 
 //
 //=============================================================================
-void NISSoundPlayer::LoadNISSound( radKey32 NISSoundID, NISSoundLoadedCallback* callback )
-{
+void NISSoundPlayer::LoadNISSound(radKey32 NISSoundID, NISSoundLoadedCallback *callback) {
     unsigned int i;
 
-    for( i = 0; i < NUM_NIS_PLAYERS; i++ )
-    {
-        if( m_NISPlayers[i].IsFree() )
-        {
-            m_NISPlayers[i].LoadSound( NISSoundID, callback );
+    for (i = 0; i < NUM_NIS_PLAYERS; i++) {
+        if (m_NISPlayers[i].IsFree()) {
+            m_NISPlayers[i].LoadSound(NISSoundID, callback);
             break;
         }
     }
 
-    rAssert( i < NUM_NIS_PLAYERS );
+    rAssert(i < NUM_NIS_PLAYERS);
 }
 
 //=============================================================================
@@ -226,29 +207,23 @@ void NISSoundPlayer::LoadNISSound( radKey32 NISSoundID, NISSoundLoadedCallback* 
 // Return:      void 
 //
 //=============================================================================
-void NISSoundPlayer::PlayNISSound( radKey32 NISSoundID, rmt::Box3D* box, NISSoundPlaybackCompleteCallback* callback )
-{
+void NISSoundPlayer::PlayNISSound(radKey32 NISSoundID, rmt::Box3D *box,
+                                  NISSoundPlaybackCompleteCallback *callback) {
     unsigned int i;
 
-    if( NISSoundID == 0 )
-    {
-        rDebugString( "Attempting to play NIS sound where no sound file specified. Ignored.\n" );
-    }
-    else
-    {
-        for( i = 0; i < NUM_NIS_PLAYERS; i++ )
-        {
-            if( m_NISPlayers[i].IsSoundIDLoaded( NISSoundID ) )
-            {
-                m_NISPlayers[i].PlaySound( box, callback );
+    if (NISSoundID == 0) {
+        rDebugString("Attempting to play NIS sound where no sound file specified. Ignored.\n");
+    } else {
+        for (i = 0; i < NUM_NIS_PLAYERS; i++) {
+            if (m_NISPlayers[i].IsSoundIDLoaded(NISSoundID)) {
+                m_NISPlayers[i].PlaySound(box, callback);
                 break;
             }
         }
 
-        if( i >= NUM_NIS_PLAYERS )
-        {
-            rTuneString( "Attempting to play NIS sound which wasn't loaded. Tell Cory.\n" );
-            //rTuneAssert( false );
+        if (i >= NUM_NIS_PLAYERS) {
+            rTuneString("Attempting to play NIS sound which wasn't loaded. Tell Cory.\n");
+            //rTuneAssert(false);
         }
     }
 }
@@ -263,14 +238,11 @@ void NISSoundPlayer::PlayNISSound( radKey32 NISSoundID, rmt::Box3D* box, NISSoun
 // Return:      void 
 //
 //=============================================================================
-void NISSoundPlayer::StopAndDumpNISSound( radKey32 NISSoundID )
-{
+void NISSoundPlayer::StopAndDumpNISSound(radKey32 NISSoundID) {
     unsigned int i;
 
-    for( i = 0; i < NUM_NIS_PLAYERS; i++ )
-    {
-        if( m_NISPlayers[i].IsSoundIDLoaded( NISSoundID ) )
-        {
+    for (i = 0; i < NUM_NIS_PLAYERS; i++) {
+        if (m_NISPlayers[i].IsSoundIDLoaded(NISSoundID)) {
             m_NISPlayers[i].StopAndDumpSound();
             break;
         }
@@ -287,12 +259,10 @@ void NISSoundPlayer::StopAndDumpNISSound( radKey32 NISSoundID )
 // Return:      void 
 //
 //=============================================================================
-void NISSoundPlayer::PauseAllNISPlayers()
-{
+void NISSoundPlayer::PauseAllNISPlayers() {
     unsigned int i;
 
-    for( i = 0; i < NUM_NIS_PLAYERS; i++ )
-    {
+    for (i = 0; i < NUM_NIS_PLAYERS; i++) {
         m_NISPlayers[i].Pause();
     }
 }
@@ -307,12 +277,10 @@ void NISSoundPlayer::PauseAllNISPlayers()
 // Return:      void 
 //
 //=============================================================================
-void NISSoundPlayer::ContinueAllNISPlayers()
-{
+void NISSoundPlayer::ContinueAllNISPlayers() {
     unsigned int i;
 
-    for( i = 0; i < NUM_NIS_PLAYERS; i++ )
-    {
+    for (i = 0; i < NUM_NIS_PLAYERS; i++) {
         m_NISPlayers[i].Continue();
     }
 }
@@ -328,18 +296,16 @@ void NISSoundPlayer::ContinueAllNISPlayers()
 // Return:      void 
 //
 //=============================================================================
-void NISSoundPlayer::HandleEvent( EventEnum id, void* pEventData )
-{
+void NISSoundPlayer::HandleEvent(EventEnum id, void *pEventData) {
     rmt::Box3D box;
     rmt::Vector low;
     rmt::Vector high;
     radKey32 gagName = 0;
 
-    switch( id )
-    {
+    switch (id) {
         case EVENT_FE_GAG_INIT:
-            gagName = reinterpret_cast<radKey32>( pEventData );
-            loadFEGag( gagName );
+            gagName = reinterpret_cast<radKey32>(pEventData);
+            loadFEGag(gagName);
             break;
 
         case EVENT_FE_GAG_START:
@@ -347,19 +313,19 @@ void NISSoundPlayer::HandleEvent( EventEnum id, void* pEventData )
             // Use a hardcoded position here for now.  Not ideal, but the
             // window isn't going anywhere soon.
             //
-            low.Set( -2.04f, 1.9f, -0.2f );
-            high.Set( -2.0f, 1.96f, -0.1f );
-            box.Set( low, high );
+            low.Set(-2.04f, 1.9f, -0.2f);
+            high.Set(-2.0f, 1.96f, -0.1f);
+            box.Set(low, high);
 
-            PlayNISSound( m_currentFEGag, &box, NULL );
+            PlayNISSound(m_currentFEGag, &box, NULL);
             break;
 
         case EVENT_FE_GAG_STOP:
-            StopAndDumpNISSound( m_currentFEGag );
+            StopAndDumpNISSound(m_currentFEGag);
             break;
 
         default:
-            rAssertMsg( false, "Huh?  Shouldn't get an event here." );
+            rAssertMsg(false, "Huh?  Shouldn't get an event here.");
             break;
     }
 }
@@ -380,9 +346,8 @@ void NISSoundPlayer::HandleEvent( EventEnum id, void* pEventData )
 // Return:      void 
 //
 //=============================================================================
-void NISSoundPlayer::loadFEGag( radKey32 gagKey )
-{
+void NISSoundPlayer::loadFEGag(radKey32 gagKey) {
     m_currentFEGag = gagKey;
 
-    LoadNISSound( gagKey, NULL );
+    LoadNISSound(gagKey, NULL);
 }

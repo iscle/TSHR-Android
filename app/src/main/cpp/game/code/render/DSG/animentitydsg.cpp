@@ -64,21 +64,20 @@ static unsigned sUpdateIndex = 0;
 //===========================================================================
 
 AnimEntityDSG::AnimEntityDSG()
-:
-mbAddToUpdateList( true ),
-mTrackSeparately( 0 ),
-mpDrawable( NULL ),
-mpMultiController( NULL ),
-mIsVisible( true ),
-mIsAnimationPlaying( true ),
-mRenderLayer( RenderEnums::LevelSlot ),
-mParticleSystemBoundingBox( NULL ),
-m_TimeLastParticleUpdate(0),
-mTimeSinceLastUpdate(0.0f),
-updateIndex(sUpdateIndex++)
-{
-    mEffectElements.Allocate( MAX_NUM_PARTICLE_SYSTEMS );
-    
+        :
+        mbAddToUpdateList(true),
+        mTrackSeparately(0),
+        mpDrawable(NULL),
+        mpMultiController(NULL),
+        mIsVisible(true),
+        mIsAnimationPlaying(true),
+        mRenderLayer(RenderEnums::LevelSlot),
+        mParticleSystemBoundingBox(NULL),
+        m_TimeLastParticleUpdate(0),
+        mTimeSinceLastUpdate(0.0f),
+        updateIndex(sUpdateIndex++) {
+    mEffectElements.Allocate(MAX_NUM_PARTICLE_SYSTEMS);
+
 }
 
 //===========================================================================
@@ -98,26 +97,22 @@ updateIndex(sUpdateIndex++)
 //
 //===========================================================================
 
-AnimEntityDSG::~AnimEntityDSG()
-{
-BEGIN_PROFILE( "Anim Destroy" );
-    if (mpDrawable != NULL)
-    {
-        mpDrawable->Release();   
+AnimEntityDSG::~AnimEntityDSG() {
+    BEGIN_PROFILE("Anim Destroy");
+    if (mpDrawable != NULL) {
+        mpDrawable->Release();
         mpDrawable = NULL;
     }
-    if (mpMultiController != NULL)
-    {
-        mpMultiController->Release();   
+    if (mpMultiController != NULL) {
+        mpMultiController->Release();
         mpMultiController = NULL;
     }
-    if ( mParticleSystemBoundingBox != NULL )
-    {
+    if (mParticleSystemBoundingBox != NULL) {
         delete mParticleSystemBoundingBox;
         mParticleSystemBoundingBox = NULL;
     }
 
-END_PROFILE( "Anim Destroy" );
+    END_PROFILE("Anim Destroy");
 
 }
 //===========================================================================
@@ -137,27 +132,24 @@ END_PROFILE( "Anim Destroy" );
 //
 //===========================================================================
 
-void AnimEntityDSG::Display()
-{
-    if(IS_DRAW_LONG) return;
+void AnimEntityDSG::Display() {
+    if (IS_DRAW_LONG) return;
 #ifdef PROFILER_ENABLED
     char profileName[] = "  AnimEntityDSG Display";
 #endif
     DSG_BEGIN_PROFILE(profileName)
-    rAssert( mpDrawable != NULL);
+    rAssert(mpDrawable != NULL);
 
-	if ( mIsVisible )
-	{
+    if (mIsVisible) {
         p3d::pddi->PushMultMatrix(PDDI_MATRIX_MODELVIEW, &mTransformOffset);
         mpDrawable->Display();
         p3d::pddi->PopMatrix(PDDI_MATRIX_MODELVIEW);
-	}
+    }
 
     DSG_END_PROFILE(profileName)
 }
 
-void AnimEntityDSG::Reset()
-{    
+void AnimEntityDSG::Reset() {
     mpMultiController->Reset();
 }
 
@@ -178,9 +170,8 @@ void AnimEntityDSG::Reset()
 //
 //===========================================================================
 
-rmt::Vector* AnimEntityDSG::pPosition()
-{
-    return (rmt::Vector*)(mTransformOffset.m[3]);   
+rmt::Vector *AnimEntityDSG::pPosition() {
+    return (rmt::Vector * )(mTransformOffset.m[3]);
 }
 //===========================================================================
 // AnimEntityDSG::rPosition
@@ -198,9 +189,8 @@ rmt::Vector* AnimEntityDSG::pPosition()
 //
 //===========================================================================
 
-const rmt::Vector& AnimEntityDSG::rPosition()
-{
-    return mTransformOffset.Row( 3 );     
+const rmt::Vector &AnimEntityDSG::rPosition() {
+    return mTransformOffset.Row(3);
 }
 //===========================================================================
 // AnimEntityDSG::GetPosition
@@ -219,11 +209,11 @@ const rmt::Vector& AnimEntityDSG::rPosition()
 //
 //===========================================================================
 
-void AnimEntityDSG::GetPosition( rmt::Vector* ipPosn )
-{
-    *ipPosn = *(rmt::Vector*)(mTransformOffset.m[3]);
-    ipPosn->Add(*(rmt::Vector*)(mTransform.m[3]));
+void AnimEntityDSG::GetPosition(rmt::Vector *ipPosn) {
+    *ipPosn = *(rmt::Vector * )(mTransformOffset.m[3]);
+    ipPosn->Add(*(rmt::Vector * )(mTransform.m[3]));
 }
+
 //========================================================================
 // animentitydsg::
 //========================================================================
@@ -237,20 +227,17 @@ void AnimEntityDSG::GetPosition( rmt::Vector* ipPosn )
 // Constraints: None.
 //
 //========================================================================
-void AnimEntityDSG::SetAnimRootHeadingYUp( rmt::Vector& irHeading )
-{
-    mTransformOffset.FillHeading( irHeading, rmt::Vector(0.0f,1.0f,0.0f));
+void AnimEntityDSG::SetAnimRootHeadingYUp(rmt::Vector &irHeading) {
+    mTransformOffset.FillHeading(irHeading, rmt::Vector(0.0f, 1.0f, 0.0f));
 }
 
-void AnimEntityDSG::GetAnimRootHeading( rmt::Vector& orHeading )
-{
+void AnimEntityDSG::GetAnimRootHeading(rmt::Vector &orHeading) {
     mTransformOffset.GetHeading(orHeading);
 }
 
-void AnimEntityDSG::SetPosition( rmt::Vector& irNewPosition )
-{
+void AnimEntityDSG::SetPosition(rmt::Vector &irNewPosition) {
     //mTransformOffset.Identity();
-    mTransformOffset.FillTranslate( irNewPosition );
+    mTransformOffset.FillTranslate(irNewPosition);
 }
 
 //===========================================================================
@@ -271,44 +258,42 @@ void AnimEntityDSG::SetPosition( rmt::Vector& irNewPosition )
 //===========================================================================
 
 
-void AnimEntityDSG::Update( float timeElapsedSec )
-{
+void AnimEntityDSG::Update(float timeElapsedSec) {
     bool doUpdate = true;
     rmt::Sphere sphere;
-    
+
     GetBoundingSphere(&sphere);
 
     bool vis = GetGameplayManager()->TestPosInFrustrumOfPlayer(sphere.centre, 0, sphere.radius);
 
     doUpdate = vis || ((GetGame()->GetFrameCount() % 7) == (updateIndex % 7));
-    
-    if(mIsAnimationPlaying)
-    {
+
+    if (mIsAnimationPlaying) {
         mTimeSinceLastUpdate += timeElapsedSec;
     }
 
-	if ( mIsAnimationPlaying && doUpdate)
-	{
-		// Save the bounding box information before the animation
-		//
-		rmt::Box3D oldBox;
-		GetBoundingBox( &oldBox );
+    if (mIsAnimationPlaying && doUpdate) {
+        // Save the bounding box information before the animation
+        //
+        rmt::Box3D oldBox;
+        GetBoundingBox(&oldBox);
 
-		// advance the animation and update transform!
-		//
+        // advance the animation and update transform!
+        //
 
-		float timeElapsedMS = mTimeSinceLastUpdate * 1000.0f;
+        float timeElapsedMS = mTimeSinceLastUpdate * 1000.0f;
 
-		mpMultiController->Advance( timeElapsedMS );        
-		mTransform = mpDrawable->GetPose()->GetJoint( 0 )->objectMatrix;
+        mpMultiController->Advance(timeElapsedMS);
+        mTransform = mpDrawable->GetPose()->GetJoint(0)->objectMatrix;
 
         // Move the object in the scenegraph.
         //
-        WorldRenderLayer* pWorldRenderLayer = static_cast< WorldRenderLayer* > (GetRenderManager()->mpLayer( mRenderLayer ));
+        WorldRenderLayer *pWorldRenderLayer = static_cast<WorldRenderLayer *>(GetRenderManager()->mpLayer(
+                mRenderLayer));
         // Sanity check
-        rAssert( dynamic_cast<WorldRenderLayer*>(pWorldRenderLayer) != NULL );
-        rAssert( mRenderLayer != RenderEnums::numLayers );
-        pWorldRenderLayer->pWorldScene()->Move( oldBox, this );   
+        rAssert(dynamic_cast<WorldRenderLayer *>(pWorldRenderLayer) != NULL);
+        rAssert(mRenderLayer != RenderEnums::numLayers);
+        pWorldRenderLayer->pWorldScene()->Move(oldBox, this);
         mTimeSinceLastUpdate = 0.0f;
     }
 }
@@ -334,57 +319,54 @@ void AnimEntityDSG::Update( float timeElapsedSec )
 //
 //===========================================================================
 
-void AnimEntityDSG::LoadSetUp( tCompositeDrawable* pDrawable, tMultiController* pMultiController, tEntityStore* store, rmt::Vector& irPosition )
-{
+void AnimEntityDSG::LoadSetUp(tCompositeDrawable *pDrawable, tMultiController *pMultiController,
+                              tEntityStore *store, rmt::Vector &irPosition) {
     mpDrawable = pDrawable;
     mpMultiController = pMultiController;
 
-    char outputbuffer [255];
+    char outputbuffer[255];
 
-    if (mpDrawable == NULL)
-    {
-        sprintf(outputbuffer,"%s is missing a drawable \n",this->GetName());
-        rTuneAssertMsg( mpDrawable != NULL,outputbuffer );
+    if (mpDrawable == NULL) {
+        sprintf(outputbuffer, "%s is missing a drawable \n", this->GetName());
+        rTuneAssertMsg(mpDrawable != NULL, outputbuffer);
     }
-    
-    if( mpMultiController == NULL)
-    {
-        sprintf(outputbuffer,"%s is missing a Multicontroller \n",this->GetName());
-        rTuneAssertMsg( pMultiController !=NULL, outputbuffer);
+
+    if (mpMultiController == NULL) {
+        sprintf(outputbuffer, "%s is missing a Multicontroller \n", this->GetName());
+        rTuneAssertMsg(pMultiController != NULL, outputbuffer);
     }
 
     mpDrawable->AddRef();
     pMultiController->AddRef();
-	pMultiController->Reset();
-	pMultiController->SetFrame(0.0f);
+    pMultiController->Reset();
+    pMultiController->SetFrame(0.0f);
 
 
     mTransform.Identity();
 
     mTransformOffset.Identity();
-    mTransformOffset.FillTranslate( irPosition );
+    mTransformOffset.FillTranslate(irPosition);
 
-   
-    tPose* pPose = mpDrawable->GetPose();
+
+    tPose *pPose = mpDrawable->GetPose();
     pPose->Evaluate();
-    mTransform = pPose->GetJoint( 0 )->worldMatrix;
-    
+    mTransform = pPose->GetJoint(0)->worldMatrix;
+
     mpDrawable->ProcessShaders(*this);
 
-	//      Whether or not the animentity is cyclic or not.
-	//		If any of the animations referenced are not cyclic, then assume the animation
-	//		is non-cyclic
+    //      Whether or not the animentity is cyclic or not.
+    //		If any of the animations referenced are not cyclic, then assume the animation
+    //		is non-cyclic
 
 
-    FindEffectElements( mpDrawable );
+    FindEffectElements(mpDrawable);
     rmt::Box3D particlebox;
-    bool particleBBFound = GetParticleSystemBoundingBox( mpDrawable, &particlebox );
-    if ( particleBBFound )
-    {
+    bool particleBBFound = GetParticleSystemBoundingBox(mpDrawable, &particlebox);
+    if (particleBBFound) {
         delete mParticleSystemBoundingBox;
         mParticleSystemBoundingBox = new rmt::Box3D;
-        *mParticleSystemBoundingBox = particlebox;  
-    }   
+        *mParticleSystemBoundingBox = particlebox;
+    }
 }
 
 
@@ -405,26 +387,24 @@ void AnimEntityDSG::LoadSetUp( tCompositeDrawable* pDrawable, tMultiController* 
 //
 //===========================================================================
 
-void AnimEntityDSG::GetBoundingBox( rmt::Box3D* box )
-{
+void AnimEntityDSG::GetBoundingBox(rmt::Box3D *box) {
 
-    mpDrawable->GetBoundingBox( &mBoundingBox );
-    
+    mpDrawable->GetBoundingBox(&mBoundingBox);
 
-    //mTransformOffset.Transform( mBoundingBox.low,  &mBoundingBox.low );
-    //mTransformOffset.Transform( mBoundingBox.high, &mBoundingBox.high );
+
+    //mTransformOffset.Transform(mBoundingBox.low,  &mBoundingBox.low);
+    //mTransformOffset.Transform(mBoundingBox.high, &mBoundingBox.high);
     //Only mod the box with translation; don't want to have to move the box in
     //the tree for every rotation
-    mBoundingBox.low.Add( *(rmt::Vector*)(mTransformOffset.m[3]) );
-    mBoundingBox.high.Add( *(rmt::Vector*)(mTransformOffset.m[3]) );
+    mBoundingBox.low.Add(*(rmt::Vector * )(mTransformOffset.m[3]));
+    mBoundingBox.high.Add(*(rmt::Vector * )(mTransformOffset.m[3]));
 
 
-    if ( mParticleSystemBoundingBox )
-    {
-        mParticleSystemBoundingBox->low.Add( *(rmt::Vector*)(mTransformOffset.m[3]) );
-        mParticleSystemBoundingBox->high.Add( *(rmt::Vector*)(mTransformOffset.m[3]) );
-        mBoundingBox.Expand( mParticleSystemBoundingBox->low );
-        mBoundingBox.Expand( mParticleSystemBoundingBox->high );
+    if (mParticleSystemBoundingBox) {
+        mParticleSystemBoundingBox->low.Add(*(rmt::Vector * )(mTransformOffset.m[3]));
+        mParticleSystemBoundingBox->high.Add(*(rmt::Vector * )(mTransformOffset.m[3]));
+        mBoundingBox.Expand(mParticleSystemBoundingBox->low);
+        mBoundingBox.Expand(mParticleSystemBoundingBox->high);
     }
 
     *box = mBoundingBox;
@@ -446,23 +426,23 @@ void AnimEntityDSG::GetBoundingBox( rmt::Box3D* box )
 //
 //===========================================================================
 
-void AnimEntityDSG::GetBoundingSphere( rmt::Sphere* sphere )
-{/*
-    mpDrawable->GetBoundingSphere( &mBoundingSphere );
+void AnimEntityDSG::GetBoundingSphere(rmt::Sphere *sphere) {/*
+    mpDrawable->GetBoundingSphere(&mBoundingSphere);
 
-    //mTransformOffset.Transform( mBoundingSphere.centre,  &mBoundingSphere.centre );
+    //mTransformOffset.Transform(mBoundingSphere.centre,  &mBoundingSphere.centre);
     //Only mod the box with translation; don't want to have to move the box in
     //the tree for every rotation
-    mBoundingSphere.centre.Add( *(rmt::Vector*)(mTransformOffset.m[3]) );
+    mBoundingSphere.centre.Add(*(rmt::Vector*)(mTransformOffset.m[3]));
 
    // rmt::Sphere particleSphere;
-   // mParticleSystemBoundingBox.GetBoundingSphere( &particleSphere );
+   // mParticleSystemBoundingBox.GetBoundingSphere(&particleSphere);
     *sphere = mBoundingSphere;*/
 
     rmt::Box3D box;
-    GetBoundingBox( &box );
+    GetBoundingBox(&box);
     *sphere = box.GetBoundingSphere();
 }
+
 //===========================================================================
 // AnimEntityDSG::PlaceOnGround
 //===========================================================================
@@ -473,90 +453,80 @@ void AnimEntityDSG::GetBoundingSphere( rmt::Sphere* sphere )
 //      
 //
 // Parameters:
-//      float heightAboveGround ( typically z fighting offset )
+//      float heightAboveGround (typically z fighting offset)
 //
 // Return:
 //      None.
 //
 //===========================================================================
-bool AnimEntityDSG::PlaceOnGround( float heightAboveGround, bool ibMoveOnFail )
-{
+bool AnimEntityDSG::PlaceOnGround(float heightAboveGround, bool ibMoveOnFail) {
 
     bool foundPlane;
     rmt::Vector searchPosn = rPosition();
     searchPosn.y += 100.0f;
     rmt::Vector groundPlaneNormal, groundPlanePosn;
-    GetIntersectManager()->FindIntersection( searchPosn, foundPlane, groundPlaneNormal, groundPlanePosn );
-    if ( foundPlane )
-    {
+    GetIntersectManager()->FindIntersection(searchPosn, foundPlane, groundPlaneNormal,
+                                            groundPlanePosn);
+    if (foundPlane) {
         rmt::Vector newPosition = groundPlanePosn;
         newPosition.y += heightAboveGround;
-        SetPosition( newPosition );
-    }
-    else if( ibMoveOnFail )
-    {
+        SetPosition(newPosition);
+    } else if (ibMoveOnFail) {
         rmt::Vector newPosition = rPosition();
         newPosition.y += heightAboveGround;
-        SetPosition( newPosition );        
+        SetPosition(newPosition);
     }
-   
+
     return foundPlane;
 }
 
 
 // Searches the given drawable and inits the mEffectElements array
-void AnimEntityDSG::FindEffectElements( tCompositeDrawable* drawable )
-{
+void AnimEntityDSG::FindEffectElements(tCompositeDrawable *drawable) {
     mEffectElements.ClearUse();
-    rAssert( drawable != NULL );
+    rAssert(drawable != NULL);
     // Iterate through the elements, search for effect elements
     // which get stuffed into the array
-    for ( int i = 0 ; i < drawable->GetNumDrawableElement() ; i++ )
-    {
-        tCompositeDrawable::DrawableElement* element = drawable->GetDrawableElement( i );
+    for (int i = 0; i < drawable->GetNumDrawableElement(); i++) {
+        tCompositeDrawable::DrawableElement *element = drawable->GetDrawableElement(i);
         // Only insert effect elements, the others dont contain particle systems
-        if ( element->GetType() == tCompositeDrawable::DrawableElement::EFFECT_ELEMENT )
-        {
+        if (element->GetType() == tCompositeDrawable::DrawableElement::EFFECT_ELEMENT) {
             // Better do a cast check
-            tCompositeDrawable::DrawableEffectElement* effectElement = static_cast< tCompositeDrawable::DrawableEffectElement* >( element );
-            rAssert( dynamic_cast< tCompositeDrawable::DrawableEffectElement* >(element) != NULL );
+            tCompositeDrawable::DrawableEffectElement *effectElement = static_cast<tCompositeDrawable::DrawableEffectElement *>(element);
+            rAssert(dynamic_cast<tCompositeDrawable::DrawableEffectElement *>(element) != NULL);
 
-            mEffectElements.Add( effectElement );
+            mEffectElements.Add(effectElement);
 
-            effectElement->SetPose( drawable->GetPose() );
+            effectElement->SetPose(drawable->GetPose());
         }
     }
 }
 
-bool AnimEntityDSG::GetParticleSystemBoundingBox( tCompositeDrawable* drawable, rmt::Box3D* out_box )
-{
+bool
+AnimEntityDSG::GetParticleSystemBoundingBox(tCompositeDrawable *drawable, rmt::Box3D *out_box) {
     rmt::Box3D rootBox;
-    rAssert( drawable != NULL );
+    rAssert(drawable != NULL);
 
     drawable->GetPose()->Evaluate();
 
     bool boxFound = false;
     // Lets find the particle systems
-    for ( int i = 0 ; i < drawable->GetNumDrawableElement() ; i++ )
-    {
-        tCompositeDrawable::DrawableElement* element = drawable->GetDrawableElement( i );
-        if ( element )
-        {
-            if ( element->GetType() == tCompositeDrawable::DrawableElement::EFFECT_ELEMENT )
-            {
+    for (int i = 0; i < drawable->GetNumDrawableElement(); i++) {
+        tCompositeDrawable::DrawableElement *element = drawable->GetDrawableElement(i);
+        if (element) {
+            if (element->GetType() == tCompositeDrawable::DrawableElement::EFFECT_ELEMENT) {
                 // Its a tEffect
-                tParticleSystem* particleSystem = static_cast< tParticleSystem* >( element->GetDrawable() );
-                rAssert( dynamic_cast< tParticleSystem* >( element->GetDrawable() ) );
-                if ( particleSystem )
-                {
+                tParticleSystem *particleSystem = static_cast<tParticleSystem *>(element->GetDrawable());
+                rAssert(dynamic_cast<tParticleSystem *>(element->GetDrawable()));
+                if (particleSystem) {
                     rmt::Box3D subbox;
-                    particleSystem->ComputePreciseBoundingBox( &subbox );
-                    const rmt::Matrix* worldMatrix = element->GetWorldMatrix();
-                    subbox.low.Add( worldMatrix->Row(3) );
-                    subbox.high.Add( worldMatrix->Row(3) );
+                    particleSystem->ComputePreciseBoundingBox(&subbox);
+                    const rmt::Matrix *worldMatrix = element->GetWorldMatrix();
+                    subbox.low.Add(worldMatrix->Row(3));
+                    subbox.high.Add(worldMatrix->Row(3));
 
-                    rootBox.Expand( subbox.low );
-                    rootBox.Expand( subbox.high );
+                    rootBox.Expand(subbox.low);
+                    rootBox.Expand(subbox.high);
 
                     boxFound = true;
                 }

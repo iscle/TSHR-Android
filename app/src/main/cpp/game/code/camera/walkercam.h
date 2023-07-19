@@ -22,7 +22,9 @@
 // Forward References
 //========================================
 class ISuperCamTarget;
+
 class Character;
+
 class AnimatedIcon;
 
 //=============================================================================
@@ -31,55 +33,59 @@ class AnimatedIcon;
 //
 //=============================================================================
 
-class WalkerCam : public SuperCam
-{
+class WalkerCam : public SuperCam {
 public:
-    enum 
-    { 
+    enum {
         MAX_TARGETS = 3,
         IN_COLLISION = SUPERCAM_END
     };
 
     WalkerCam();
+
     virtual ~WalkerCam();
 
     //Update: Called when you want the super cam to update its state.
-    void Update( unsigned int milliseconds );
-    void UpdateForPhysics( unsigned int milliseconds );
+    void Update(unsigned int milliseconds);
+
+    void UpdateForPhysics(unsigned int milliseconds);
 
     //Returns the name of the super cam.  
     //This can be used in the FE or debug info
-    virtual const char* const GetName() const;
+    virtual const char *const GetName() const;
 
     virtual Type GetType();
 
     //This loads the off-line created settings for the camera.  
     //It is passed in as a byte stream of some data of known size.
-    void LoadSettings( unsigned char* settings ); 
+    void LoadSettings(unsigned char *settings);
 
     //These are for favourable support of this command
-    void SetTarget( ISuperCamTarget* target ); 
-    void AddTarget( ISuperCamTarget* target );
+    void SetTarget(ISuperCamTarget *target);
+
+    void AddTarget(ISuperCamTarget *target);
 
     unsigned int GetNumTargets() const;
 
-    void SetCollisionOffset( const rmt::Vector* offset, unsigned int numCollisions, const rmt::Vector& groundOffset );
+    void SetCollisionOffset(const rmt::Vector *offset, unsigned int numCollisions,
+                            const rmt::Vector &groundOffset);
+
     float GetCollisionRadius() const { return GetNearPlane(); };
 
     virtual float GetIntersectionRadius() const { return mMagnitude; };
 
-    void SetCollectibleLocation( AnimatedIcon* icon ) { mCollectible = icon; };
+    void SetCollectibleLocation(AnimatedIcon *icon) { mCollectible = icon; };
 
-    #ifdef DEBUGWATCH
-        virtual const char* GetWatcherName() const;
-    #endif
+#ifdef DEBUGWATCH
+    virtual const char* GetWatcherName() const;
+#endif
 
 protected:
     void OnDisplay() const;
+
     virtual void OnInit() { InitMyController(); };
 
 private:
-    ISuperCamTarget* mTarget;
+    ISuperCamTarget *mTarget;
 
     WalkerCamData mData;
 
@@ -100,7 +106,7 @@ private:
 
     float mCameraHeight;
 
-    const rmt::Vector* mCollisionOffset;
+    const rmt::Vector *mCollisionOffset;
     unsigned int mNumCollisions;
     rmt::Vector mGroundOffset;
 
@@ -116,39 +122,48 @@ private:
     rmt::Vector mOldPos;
     float mOldMagnitude;
 
-    AnimatedIcon* mCollectible;
+    AnimatedIcon *mCollectible;
 
-    void UpdatePositionNormal( unsigned int milliseconds, float timeMod );
-    void UpdatePositionInCollision( unsigned int milliseconds, float timeMod );
-    bool UpdatePositionOneCollsion( unsigned int milliseconds, float timeMod, unsigned int collisionIndex = 0 );
-    void UpdatePositionMultipleCollision( unsigned int milliseconds, float timeMod );
+    void UpdatePositionNormal(unsigned int milliseconds, float timeMod);
+
+    void UpdatePositionInCollision(unsigned int milliseconds, float timeMod);
+
+    bool UpdatePositionOneCollsion(unsigned int milliseconds, float timeMod,
+                                   unsigned int collisionIndex = 0);
+
+    void UpdatePositionMultipleCollision(unsigned int milliseconds, float timeMod);
 
     //These functions are to allow real-time control of the settings of 
     //the supercam.
     virtual void OnRegisterDebugControls();
+
     virtual void OnUnregisterDebugControls();
 
-    void GetTargetPosition( rmt::Vector* position, bool withOffset = true ) const;
+    void GetTargetPosition(rmt::Vector *position, bool withOffset = true) const;
 
-    float IsTargetNearPed( unsigned int milliseconds );
+    float IsTargetNearPed(unsigned int milliseconds);
 
     bool IsPushingStick();
+
     bool IsStickStill();
+
     bool PushingTheWrongWay();
-    
+
     //Prevent wasteful constructor creation.
-    WalkerCam( const WalkerCam& walkercam );
-    WalkerCam& operator=( const WalkerCam& walkercam );
+    WalkerCam(const WalkerCam &walkercam);
+
+    WalkerCam &operator=(const WalkerCam &walkercam);
 };
 
 //Subclass, just ignore this.
-class ComedyCam : public WalkerCam
-{
+class ComedyCam : public WalkerCam {
 public:
-    ComedyCam(){};
+    ComedyCam() {};
+
     virtual ~ComedyCam() {};
 
-    virtual const char* const GetName() const { return "COMEDY_CAM"; };
+    virtual const char *const GetName() const { return "COMEDY_CAM"; };
+
     virtual Type GetType() { return SuperCam::COMEDY_CAM; };
 };
 
@@ -168,9 +183,8 @@ public:
 // Return:      const char* const 
 //
 //=============================================================================
-inline const char* const WalkerCam::GetName() const
-{
-   return "WALKER_CAM";
+inline const char *const WalkerCam::GetName() const {
+    return "WALKER_CAM";
 }
 
 //=============================================================================
@@ -183,8 +197,7 @@ inline const char* const WalkerCam::GetName() const
 // Return:      Type 
 //
 //=============================================================================
-inline SuperCam::Type WalkerCam::GetType()
-{
+inline SuperCam::Type WalkerCam::GetType() {
     return WALKER_CAM;
 }
 
@@ -198,8 +211,7 @@ inline SuperCam::Type WalkerCam::GetType()
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int WalkerCam::GetNumTargets() const
-{
+inline unsigned int WalkerCam::GetNumTargets() const {
     return (mTarget != NULL) ? 1 : 0;
 }
 
@@ -208,13 +220,13 @@ inline unsigned int WalkerCam::GetNumTargets() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const rmt::Vector& offset, unsigned int numCollisions, const rmt::Vector& groundOffset )
+// Parameters:  (const rmt::Vector& offset, unsigned int numCollisions, const rmt::Vector& groundOffset)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCam::SetCollisionOffset( const rmt::Vector* offset, unsigned int numCollisions, const rmt::Vector& groundOffset )
-{
+inline void WalkerCam::SetCollisionOffset(const rmt::Vector *offset, unsigned int numCollisions,
+                                          const rmt::Vector &groundOffset) {
     mCollisionOffset = offset;
     mNumCollisions = numCollisions;
     mGroundOffset = groundOffset;

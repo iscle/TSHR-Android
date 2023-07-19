@@ -19,7 +19,9 @@
 // Project Includes
 //========================================
 #ifndef WORLD_BUILDER
+
 #include <meta/Locator.h>
+
 #else
 #include "Locator.h"
 #endif
@@ -49,12 +51,11 @@
 //
 //==============================================================================
 Locator::Locator() :
-    mID( ~0 ),
-    mData( 0 ),
-    mFlags( 0 ),
-    mLocation( rmt::Vector( 0.0f, 0.0f, 0.0f ) )
-{
-    SetFlag( ACTIVE, true );
+        mID(~0),
+        mData(0),
+        mFlags(0),
+        mLocation(rmt::Vector(0.0f, 0.0f, 0.0f)) {
+    SetFlag(ACTIVE, true);
 }
 
 //==============================================================================
@@ -67,8 +68,7 @@ Locator::Locator() :
 // Return:      N/A.
 //
 //==============================================================================
-Locator::~Locator()
-{
+Locator::~Locator() {
 }
 
 //=============================================================================
@@ -76,14 +76,13 @@ Locator::~Locator()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* currentLoc )
+// Parameters:  (rmt::Vector* currentLoc)
 //
 // Return:      void 
 //
 //=============================================================================
-void Locator::GetPosition( rmt::Vector* currentLoc )
-{
-    GetLocation( currentLoc );
+void Locator::GetPosition(rmt::Vector *currentLoc) {
+    GetLocation(currentLoc);
 }
 
 //=============================================================================
@@ -91,15 +90,14 @@ void Locator::GetPosition( rmt::Vector* currentLoc )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* heading )
+// Parameters:  (rmt::Vector* heading)
 //
 // Return:      void 
 //
 //=============================================================================
-void Locator::GetHeading( rmt::Vector* heading )
-{
+void Locator::GetHeading(rmt::Vector *heading) {
     //Locators have no heading.
-    heading->Set( 0.0f, 0.0f, 0.0f );
+    heading->Set(0.0f, 0.0f, 0.0f);
 }
 
 //******************************************************************************

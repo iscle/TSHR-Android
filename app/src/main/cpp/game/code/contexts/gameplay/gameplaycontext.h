@@ -30,48 +30,54 @@
 // Synopsis:    
 //
 //=============================================================================
-class GameplayContext : public PlayingContext
-{
-    public:
+class GameplayContext : public PlayingContext {
+public:
 
-        // Static Methods for accessing this singleton.
-        static GameplayContext* GetInstance();
-        void         PauseAllButPresentation( const bool pause );
-        bool IsPaused() { return m_PausedAllButPresentation; }
+    // Static Methods for accessing this singleton.
+    static GameplayContext *GetInstance();
 
-    protected:
+    void PauseAllButPresentation(const bool pause);
 
-        virtual void OnStart( ContextEnum previousContext );
-        virtual void OnStop( ContextEnum nextContext );
-        virtual void OnUpdate( unsigned int elapsedTime );
-        
-        virtual void OnSuspend();
-        virtual void OnResume();
+    bool IsPaused() { return m_PausedAllButPresentation; }
 
-    private:
+protected:
 
-        // constructor and destructor are protected to force singleton implementation
-        GameplayContext();
-        virtual ~GameplayContext();
+    virtual void OnStart(ContextEnum previousContext);
 
-        // Declared but not defined to prevent copying and assignment.
-        GameplayContext( const GameplayContext& );
-        GameplayContext& operator=( const GameplayContext& );
+    virtual void OnStop(ContextEnum nextContext);
 
-        // Pointer to the one and only instance of this singleton.
-        static GameplayContext* spInstance;
-        
+    virtual void OnUpdate(unsigned int elapsedTime);
+
+    virtual void OnSuspend();
+
+    virtual void OnResume();
+
+private:
+
+    // constructor and destructor are protected to force singleton implementation
+    GameplayContext();
+
+    virtual ~GameplayContext();
+
+    // Declared but not defined to prevent copying and assignment.
+    GameplayContext(const GameplayContext &);
+
+    GameplayContext &operator=(const GameplayContext &);
+
+    // Pointer to the one and only instance of this singleton.
+    static GameplayContext *spInstance;
+
 #ifdef DEBUGWATCH
-        unsigned int mDebugPhysTiming, mDebugTimeDelta, mDebugOnUpdateDT;
+    unsigned int mDebugPhysTiming, mDebugTimeDelta, mDebugOnUpdateDT;
 #endif
-        bool    m_PausedAllButPresentation;
-        
-        bool mSlowMoHack;
+    bool m_PausedAllButPresentation;
+
+    bool mSlowMoHack;
 
 };
 
 // A little syntactic sugar for getting at this singleton.
-inline GameplayContext* GetGameplayContext() { return( GameplayContext::GetInstance() ); }
+inline GameplayContext *GetGameplayContext() { return (GameplayContext::GetInstance()); }
 
 
 #endif // GAMEPLAYCONTEXT_H

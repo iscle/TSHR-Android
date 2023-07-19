@@ -27,8 +27,7 @@
 //========================================
 // Constants, Typedefs and Statics
 //========================================
-enum ContextEnum
-{
+enum ContextEnum {
     // The following shows the possible transitions between
     // contexts:
     //                            [ PREVIOUS ]        [ CURRENT ]       [ NEXT ]
@@ -38,16 +37,16 @@ enum ContextEnum
     CONTEXT_BOOTUP,              // ENTRY        -----> BOOTUP     -----> FRONTEND
 
     CONTEXT_FRONTEND,            // BOOTUP       -----> FRONTEND   -----> LOADING_G
-                                 //                |                 |
-                                 // PAUSE        --|                 |--> LOADING_D
+    //                |                 |
+    // PAUSE        --|                 |--> LOADING_D
 
     CONTEXT_LOADING_DEMO,        // FRONTEND     -----> LOADING_D  -----> DEMO
 
     CONTEXT_DEMO,                // LOADING_D    -----> DEMO       -----> FRONTEND
 
     CONTEXT_SUPERSPRINT_FE,      // FRONTEND     -----> SS_FE      -----> LOADING_S
-                                 //                                  |
-                                 //                                  |--> FRONTEND
+    //                                  |
+    //                                  |--> FRONTEND
 
     CONTEXT_LOADING_SUPERSPRINT, // SS_FE        -----> LOADING_S  -----> SUPERSPRINT
 
@@ -56,14 +55,14 @@ enum ContextEnum
     CONTEXT_LOADING_GAMEPLAY,    // FRONTEND     -----> LOADING_G  -----> GAMEPLAY
 
     CONTEXT_GAMEPLAY,            // LOADING_G    -----> GAMEPLAY   -----> PAUSE
-                                 //                |
-                                 // PAUSE        --|
+    //                |
+    // PAUSE        --|
 
     CONTEXT_PAUSE,               // GAMEPLAY     -----> PAUSE      -----> GAMEPLAY
-                                 //                                  | 
-                                 //                                  |--> FRONTEND
+    //                                  |
+    //                                  |--> FRONTEND
 
-    CONTEXT_EXIT,                // FRONTEND     -----> EXIT       -----> (End)
+    CONTEXT_EXIT,                // FRONTEND     -----> EXIT       ----->(End)
 
     NUM_CONTEXTS
 };

@@ -41,18 +41,18 @@
 //
 //******************************************************************************
 #define SKIPPING_DEFAULT false
-static tName               g_CameraName;
-static tName               g_MulticontrollerName;
-static tName               g_MissionStartCameraName;
-static tName               g_MissionStartMulticontrollerName;
-static tCamera*            g_Camera = NULL;
-static tMultiController*   g_Multicontroller = NULL;
-static bool                g_CameraSwitchPending = false;
-static bool                g_TriggeredNextCamera = false;
-static int                 g_InstanceCount = 0;
-static int                 g_CameraTransitionFlags = 0;
-static bool                g_AllowSkipping = SKIPPING_DEFAULT;
-static bool                g_SurpressNextLetterbox = false;
+static tName g_CameraName;
+static tName g_MulticontrollerName;
+static tName g_MissionStartCameraName;
+static tName g_MissionStartMulticontrollerName;
+static tCamera *g_Camera = NULL;
+static tMultiController *g_Multicontroller = NULL;
+static bool g_CameraSwitchPending = false;
+static bool g_TriggeredNextCamera = false;
+static int g_InstanceCount = 0;
+static int g_CameraTransitionFlags = 0;
+static bool g_AllowSkipping = SKIPPING_DEFAULT;
+static bool g_SurpressNextLetterbox = false;
 
 const int DEFAULT_TRANSITION_FLAGS = SuperCamCentral::QUICK | SuperCamCentral::FORCE;
 
@@ -63,28 +63,25 @@ const int DEFAULT_TRANSITION_FLAGS = SuperCamCentral::QUICK | SuperCamCentral::F
 //******************************************************************************
 
 
-void AnimatedCam::Abort()
-{
-    if( g_Multicontroller != NULL )
-    {
+void AnimatedCam::Abort() {
+    if (g_Multicontroller != NULL) {
         int flags = DEFAULT_TRANSITION_FLAGS;
 
-        if ( 0 != g_CameraTransitionFlags )
-        {
+        if (0 != g_CameraTransitionFlags) {
             //Override the flags.
             flags = g_CameraTransitionFlags;
         }
 
-        rAssert( m_NextCameraType != NUM_TYPES );
-        GetSuperCamManager()->GetSCC( 0 )->SelectSuperCam( m_NextCameraType, flags, 3000 );
+        rAssert(m_NextCameraType != NUM_TYPES);
+        GetSuperCamManager()->GetSCC(0)->SelectSuperCam(m_NextCameraType, flags, 3000);
         g_TriggeredNextCamera = true;
 
         //Reset the flags override.
         g_CameraTransitionFlags = 0;
 
-        tRefCounted::Release( g_Multicontroller );
-        tRefCounted::Release( g_Camera );
-        AllowSkipping( SKIPPING_DEFAULT );
+        tRefCounted::Release(g_Multicontroller);
+        tRefCounted::Release(g_Camera);
+        AllowSkipping(SKIPPING_DEFAULT);
     }
 }
 
@@ -99,9 +96,8 @@ void AnimatedCam::Abort()
 // Return:      N/A.
 //
 //==============================================================================
-AnimatedCam::AnimatedCam():
-    m_NextCameraType( INVALID )
-{
+AnimatedCam::AnimatedCam() :
+        m_NextCameraType(INVALID) {
     ++g_InstanceCount;
 }
 
@@ -115,14 +111,12 @@ AnimatedCam::AnimatedCam():
 // Return:      N/A.
 //
 //==============================================================================
-AnimatedCam::~AnimatedCam()
-{
+AnimatedCam::~AnimatedCam() {
     --g_InstanceCount;
-    if( g_InstanceCount == 0 )
-    {
+    if (g_InstanceCount == 0) {
 
-        tRefCounted::Release( g_Multicontroller );
-        tRefCounted::Release( g_Camera );
+        tRefCounted::Release(g_Multicontroller);
+        tRefCounted::Release(g_Camera);
         g_CameraName.SetText(NULL);
         g_MulticontrollerName.SetText(NULL);
         g_MissionStartCameraName.SetText(NULL);
@@ -142,8 +136,7 @@ AnimatedCam::~AnimatedCam()
 // Return:      N/A.
 //
 //==============================================================================
-void AnimatedCam::AllowSkipping( const bool skippingAllowed )
-{
+void AnimatedCam::AllowSkipping(const bool skippingAllowed) {
     g_AllowSkipping = skippingAllowed;
 }
 
@@ -157,8 +150,7 @@ void AnimatedCam::AllowSkipping( const bool skippingAllowed )
 // Return:      N/A.
 //
 //==============================================================================
-bool AnimatedCam::CameraSwitchPending()
-{
+bool AnimatedCam::CameraSwitchPending() {
     return g_CameraSwitchPending;
 }
 
@@ -173,28 +165,22 @@ bool AnimatedCam::CameraSwitchPending()
 // Return:      N/A.
 //
 //==============================================================================
-void AnimatedCam::CheckPendingCameraSwitch()
-{
-    if( CameraSwitchPending() )
-    {
+void AnimatedCam::CheckPendingCameraSwitch() {
+    if (CameraSwitchPending()) {
         LookupCamera();
         LookupMulticontroller();
-        SuperCamManager* scm = GetSuperCamManager();
-        SuperCamCentral* scc = scm->GetSCC( 0 );
-        SuperCam*        sc  = scc->GetActiveSuperCam();
-        if( sc == NULL )
-        {
-            GetSuperCamManager()->GetSCC( 0 )->SelectSuperCam( ANIMATED_CAM );
-        }
-        else
-        {
-            SuperCam::Type type  = sc->GetType();
-            if( type != ANIMATED_CAM )
-            {
-                GetSuperCamManager()->GetSCC( 0 )->SelectSuperCam( ANIMATED_CAM );
+        SuperCamManager *scm = GetSuperCamManager();
+        SuperCamCentral *scc = scm->GetSCC(0);
+        SuperCam *sc = scc->GetActiveSuperCam();
+        if (sc == NULL) {
+            GetSuperCamManager()->GetSCC(0)->SelectSuperCam(ANIMATED_CAM);
+        } else {
+            SuperCam::Type type = sc->GetType();
+            if (type != ANIMATED_CAM) {
+                GetSuperCamManager()->GetSCC(0)->SelectSuperCam(ANIMATED_CAM);
             }
         }
-        SetCameraSwitchPending( false );
+        SetCameraSwitchPending(false);
     }
 }
 
@@ -208,15 +194,14 @@ void AnimatedCam::CheckPendingCameraSwitch()
 // Return:      none
 //
 //=============================================================================
-void AnimatedCam::ClearCamera()
-{
-    tCamera* pCamera = NULL;
-    tMultiController* pMultiController = NULL;
+void AnimatedCam::ClearCamera() {
+    tCamera *pCamera = NULL;
+    tMultiController *pMultiController = NULL;
 
-    tRefCounted::Assign( g_Camera, pCamera);
-    tRefCounted::Assign( g_Multicontroller,pMultiController );
+    tRefCounted::Assign(g_Camera, pCamera);
+    tRefCounted::Assign(g_Multicontroller, pMultiController);
 
-    
+
 }
 
 //=============================================================================
@@ -229,8 +214,7 @@ void AnimatedCam::ClearCamera()
 // Return:      const char* const 
 //
 //=============================================================================
-const char* const AnimatedCam::GetName() const
-{
+const char *const AnimatedCam::GetName() const {
     return "ANIMATED_CAM";
 }
 
@@ -244,8 +228,7 @@ const char* const AnimatedCam::GetName() const
 // Return:      Type 
 //
 //=============================================================================
-SuperCam::Type AnimatedCam::GetType()
-{
+SuperCam::Type AnimatedCam::GetType() {
     return ANIMATED_CAM;
 }
 
@@ -277,36 +260,31 @@ const char* AnimatedCam::GetWatcherName() const
 // Return:      Type 
 //
 //=============================================================================
-void AnimatedCam::LetterBoxStart()
-{
-    if( !g_SurpressNextLetterbox )
-    {
-        CGuiManager* gm = GetGuiSystem()->GetCurrentManager();
+void AnimatedCam::LetterBoxStart() {
+    if (!g_SurpressNextLetterbox) {
+        CGuiManager *gm = GetGuiSystem()->GetCurrentManager();
         CGuiWindow::eGuiWindowID currentScreenId = gm->GetCurrentScreen();
-        CGuiWindow* currentWindow = gm->FindWindowByID( currentScreenId );
+        CGuiWindow *currentWindow = gm->FindWindowByID(currentScreenId);
         currentWindow->ForceClearTransitions();
         CGuiScreenLetterBox::SuppressAcceptCancelButtons();
-        if( g_AllowSkipping )
-        {
+        if (g_AllowSkipping) {
             CGuiScreenLetterBox::UnSurpressSkipButton();
-        }
-        else
-        {
+        } else {
             CGuiScreenLetterBox::SurpressSkipButton();
         }
-        GetGuiSystem()->GotoScreen( CGuiWindow::GUI_SCREEN_ID_LETTER_BOX, 0x00, 0x00, CLEAR_WINDOW_HISTORY );
+        GetGuiSystem()->GotoScreen(CGuiWindow::GUI_SCREEN_ID_LETTER_BOX, 0x00, 0x00,
+                                   CLEAR_WINDOW_HISTORY);
 
-        CGuiManagerInGame* guiIngameManager = GetGuiSystem()->GetInGameManager();
-        if( guiIngameManager != NULL )
-        {
-            CGuiWindow* window = guiIngameManager->FindWindowByID( CGuiWindow::GUI_SCREEN_ID_LETTER_BOX );
-            CGuiScreenLetterBox* letterBox = dynamic_cast< CGuiScreenLetterBox* >( window );
+        CGuiManagerInGame *guiIngameManager = GetGuiSystem()->GetInGameManager();
+        if (guiIngameManager != NULL) {
+            CGuiWindow *window = guiIngameManager->FindWindowByID(
+                    CGuiWindow::GUI_SCREEN_ID_LETTER_BOX);
+            CGuiScreenLetterBox *letterBox = dynamic_cast<CGuiScreenLetterBox *>(window);
             letterBox->CheckIfScreenShouldBeBlank();
 
-            window = guiIngameManager->FindWindowByID( CGuiWindow::GUI_SCREEN_ID_MULTI_HUD );
-            CGuiScreenMultiHud* multiHud = dynamic_cast< CGuiScreenMultiHud* >( window );
-            if( multiHud != NULL )
-            {
+            window = guiIngameManager->FindWindowByID(CGuiWindow::GUI_SCREEN_ID_MULTI_HUD);
+            CGuiScreenMultiHud *multiHud = dynamic_cast<CGuiScreenMultiHud *>(window);
+            if (multiHud != NULL) {
                 multiHud->ShowLetterBox();
             }
         }
@@ -323,16 +301,12 @@ void AnimatedCam::LetterBoxStart()
 // Return:      Type 
 //
 //=============================================================================
-void AnimatedCam::LetterBoxStop()
-{
-    if( !g_SurpressNextLetterbox )
-    {
+void AnimatedCam::LetterBoxStop() {
+    if (!g_SurpressNextLetterbox) {
         CGuiScreenLetterBox::ForceOpen();
-        CGuiScreenLetterBox::SuppressAcceptCancelButtons( false );
-        GetGuiSystem()->GotoScreen( CGuiWindow::GUI_SCREEN_ID_HUD, 0x00, 0x00, CLEAR_WINDOW_HISTORY );
-    }
-    else
-    {
+        CGuiScreenLetterBox::SuppressAcceptCancelButtons(false);
+        GetGuiSystem()->GotoScreen(CGuiWindow::GUI_SCREEN_ID_HUD, 0x00, 0x00, CLEAR_WINDOW_HISTORY);
+    } else {
         g_SurpressNextLetterbox = false;
     }
 }
@@ -347,16 +321,12 @@ void AnimatedCam::LetterBoxStop()
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::LookupCamera()
-{
-    if( g_Camera == NULL )
-    {
-        if( g_CameraName.GetUID() != static_cast< tUID >( 0 ) )
-        {
-            tCamera* found = p3d::find< tCamera >( g_CameraName.GetUID() );
-            if( found != NULL )
-            {
-                tRefCounted::Assign( g_Camera, found );
+void AnimatedCam::LookupCamera() {
+    if (g_Camera == NULL) {
+        if (g_CameraName.GetUID() != static_cast<tUID>(0)) {
+            tCamera *found = p3d::find<tCamera>(g_CameraName.GetUID());
+            if (found != NULL) {
+                tRefCounted::Assign(g_Camera, found);
             }
         }
     }
@@ -372,16 +342,12 @@ void AnimatedCam::LookupCamera()
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::LookupMulticontroller()
-{
-    if( g_Multicontroller == NULL )
-    {
-        if( g_MulticontrollerName.GetUID() != static_cast< tUID >( 0 ) )
-        {
-            tMultiController* found = p3d::find< tMultiController >( g_MulticontrollerName.GetUID() );
-            if( found != NULL )
-            {
-                tRefCounted::Assign( g_Multicontroller, found );
+void AnimatedCam::LookupMulticontroller() {
+    if (g_Multicontroller == NULL) {
+        if (g_MulticontrollerName.GetUID() != static_cast<tUID>(0)) {
+            tMultiController *found = p3d::find<tMultiController>(g_MulticontrollerName.GetUID());
+            if (found != NULL) {
+                tRefCounted::Assign(g_Multicontroller, found);
             }
             Reset();
         }
@@ -398,11 +364,10 @@ void AnimatedCam::LookupMulticontroller()
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::OnInit()
-{
+void AnimatedCam::OnInit() {
     LetterBoxStart();
     InitMyController();
-    InputManager::GetInstance()->SetGameState( Input::ACTIVE_ANIM_CAM );
+    InputManager::GetInstance()->SetGameState(Input::ACTIVE_ANIM_CAM);
 }
 
 //=============================================================================
@@ -415,11 +380,10 @@ void AnimatedCam::OnInit()
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::OnShutdown()
-{
+void AnimatedCam::OnShutdown() {
     LetterBoxStop();
-    InputManager::GetInstance()->SetGameState( Input::DEACTIVE_ANIM_CAM );
-    GetEventManager()->TriggerEvent( EVENT_ANIMATED_CAM_SHUTDOWN );
+    InputManager::GetInstance()->SetGameState(Input::DEACTIVE_ANIM_CAM);
+    GetEventManager()->TriggerEvent(EVENT_ANIMATED_CAM_SHUTDOWN);
     m_NextCameraType = INVALID;
 }
 
@@ -433,10 +397,8 @@ void AnimatedCam::OnShutdown()
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::Reset()
-{
-    if( g_Multicontroller != NULL )
-    {
+void AnimatedCam::Reset() {
+    if (g_Multicontroller != NULL) {
         g_Multicontroller->Reset();
     }
     g_TriggeredNextCamera = false;
@@ -452,17 +414,13 @@ void AnimatedCam::Reset()
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::SetCamera( tName name )
-{
-   // tRefCounted::Release( g_Camera );
+void AnimatedCam::SetCamera(tName name) {
+    // tRefCounted::Release(g_Camera);
     g_CameraName = name;
-    if( g_CameraName.GetUID() == static_cast< tUID >( 0 ) )
-    {
-        SetCameraSwitchPending( false );
-    }
-    else
-    {
-        SetCameraSwitchPending( true );
+    if (g_CameraName.GetUID() == static_cast<tUID>(0)) {
+        SetCameraSwitchPending(false);
+    } else {
+        SetCameraSwitchPending(true);
     }
 }
 
@@ -476,17 +434,13 @@ void AnimatedCam::SetCamera( tName name )
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::SetMulticontroller( tName name )
-{
-    //tRefCounted::Release( g_Multicontroller );
+void AnimatedCam::SetMulticontroller(tName name) {
+    //tRefCounted::Release(g_Multicontroller);
     g_MulticontrollerName = name;
-    if( g_MulticontrollerName.GetUID() == static_cast< tUID >( 0 ) )
-    {
-        SetCameraSwitchPending( false );
-    }
-    else
-    {
-        SetCameraSwitchPending( true );
+    if (g_MulticontrollerName.GetUID() == static_cast<tUID>(0)) {
+        SetCameraSwitchPending(false);
+    } else {
+        SetCameraSwitchPending(true);
     }
 }
 
@@ -500,8 +454,7 @@ void AnimatedCam::SetMulticontroller( tName name )
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::SetMissionStartCamera( tName name )
-{
+void AnimatedCam::SetMissionStartCamera(tName name) {
     g_MissionStartCameraName = name;
 }
 
@@ -515,8 +468,7 @@ void AnimatedCam::SetMissionStartCamera( tName name )
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::SetMissionStartMulticontroller( tName name )
-{
+void AnimatedCam::SetMissionStartMulticontroller(tName name) {
     g_MissionStartMulticontrollerName = name;
 }
 
@@ -531,9 +483,8 @@ void AnimatedCam::SetMissionStartMulticontroller( tName name )
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::SetNextCameraType( const SuperCam::Type type )
-{
-    rAssert( type != ANIMATED_CAM );
+void AnimatedCam::SetNextCameraType(const SuperCam::Type type) {
+    rAssert(type != ANIMATED_CAM);
     m_NextCameraType = type;
     //m_NextCameraType = SuperCam::DEFAULT_CAM;
 }
@@ -549,8 +500,7 @@ void AnimatedCam::SetNextCameraType( const SuperCam::Type type )
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::SetTarget( ISuperCamTarget* target )
-{
+void AnimatedCam::SetTarget(ISuperCamTarget *target) {
     //nothing
 }
 
@@ -564,15 +514,12 @@ void AnimatedCam::SetTarget( ISuperCamTarget* target )
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::Skip()
-{
-    if( g_AllowSkipping )
-    {
-        if( g_Multicontroller != NULL )
-        {
-            g_Multicontroller->Advance( 20000.0f );
+void AnimatedCam::Skip() {
+    if (g_AllowSkipping) {
+        if (g_Multicontroller != NULL) {
+            g_Multicontroller->Advance(20000.0f);
         }
-        AllowSkipping( SKIPPING_DEFAULT );
+        AllowSkipping(SKIPPING_DEFAULT);
     }
 }
 
@@ -586,11 +533,10 @@ void AnimatedCam::Skip()
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::TriggerMissionStartCamera()
-{
-    SetCamera( g_MissionStartCameraName );
-    SetMulticontroller( g_MissionStartMulticontrollerName );
-    g_MissionStartCameraName          = "";
+void AnimatedCam::TriggerMissionStartCamera() {
+    SetCamera(g_MissionStartCameraName);
+    SetMulticontroller(g_MissionStartMulticontrollerName);
+    g_MissionStartCameraName = "";
     g_MissionStartMulticontrollerName = "";
 }
 
@@ -604,8 +550,7 @@ void AnimatedCam::TriggerMissionStartCamera()
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::SetCameraSwitchPending( const bool pending )
-{
+void AnimatedCam::SetCameraSwitchPending(const bool pending) {
     g_CameraSwitchPending = pending;
 }
 
@@ -614,13 +559,12 @@ void AnimatedCam::SetCameraSwitchPending( const bool pending )
 //=============================================================================
 // Description: Overrides the default camera transition flags
 //
-// Parameters:  ( int flags )
+// Parameters:  (int flags)
 //
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::SetCameraTransitionFlags( int flags )
-{
+void AnimatedCam::SetCameraTransitionFlags(int flags) {
     g_CameraTransitionFlags = flags;
 }
 
@@ -634,8 +578,7 @@ void AnimatedCam::SetCameraTransitionFlags( int flags )
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::SupressNextLetterbox()
-{
+void AnimatedCam::SupressNextLetterbox() {
     g_SurpressNextLetterbox = true;
 }
 
@@ -644,102 +587,90 @@ void AnimatedCam::SupressNextLetterbox()
 //=============================================================================
 // Description: called to animate the camera
 //
-// Parameters:  ( unsigned int milliseconds
+// Parameters:  (unsigned int milliseconds
 //
 // Return:      void 
 //
 //=============================================================================
-void AnimatedCam::Update( unsigned int milliseconds )
-{
-    if( g_TriggeredNextCamera )
-    {
+void AnimatedCam::Update(unsigned int milliseconds) {
+    if (g_TriggeredNextCamera) {
         return;
     }
-    if( g_Multicontroller != NULL )
-    {
-        g_Multicontroller->Advance( static_cast< float >( milliseconds ) );
+    if (g_Multicontroller != NULL) {
+        g_Multicontroller->Advance(static_cast<float>(milliseconds));
 
-        InteriorManager* im = GetInteriorManager();
-        
+        InteriorManager *im = GetInteriorManager();
+
         //This is a last chance test to make sure that we do not play cameras
         //in interiors.
-        if( g_Multicontroller->LastFrameReached() || 
-            (im && ( im->IsEntering() || im->IsInside() || im->IsExiting() ) ) )
-        {
+        if (g_Multicontroller->LastFrameReached() ||
+            (im && (im->IsEntering() || im->IsInside() || im->IsExiting()))) {
             //
             // The animation has looped
             //
-            if( g_TriggeredNextCamera == false )
-            { 
+            if (g_TriggeredNextCamera == false) {
                 int flags = DEFAULT_TRANSITION_FLAGS;
 
-                if ( 0 != g_CameraTransitionFlags )
-                {
+                if (0 != g_CameraTransitionFlags) {
                     //Override the flags.
                     flags = g_CameraTransitionFlags;
                 }
 
-                rAssert( m_NextCameraType != NUM_TYPES );
-                GetSuperCamManager()->GetSCC( 0 )->SelectSuperCam( m_NextCameraType, flags, 3000 );
+                rAssert(m_NextCameraType != NUM_TYPES);
+                GetSuperCamManager()->GetSCC(0)->SelectSuperCam(m_NextCameraType, flags, 3000);
                 g_TriggeredNextCamera = true;
 
                 //Reset the flags override.
                 g_CameraTransitionFlags = 0;
 
-                tRefCounted::Release( g_Multicontroller );
-                tRefCounted::Release( g_Camera );
-                AllowSkipping( SKIPPING_DEFAULT );
+                tRefCounted::Release(g_Multicontroller);
+                tRefCounted::Release(g_Camera);
+                AllowSkipping(SKIPPING_DEFAULT);
             }
-        }
-        else
-        {
+        } else {
             //
             // Update the camera values
             //
             rmt::Vector position;
             rmt::Vector target;
-            g_Camera->GetWorldPosition( &position );
-            g_Camera->GetWorldLookAtDirection( &target );
+            g_Camera->GetWorldPosition(&position);
+            g_Camera->GetWorldLookAtDirection(&target);
 
             static rmt::Vector oldPosition = position;
             static float maxDistance = 30;
 
             target *= 10.0f;
             target += position;
-            SetCameraValues( milliseconds, position, target);
+            SetCameraValues(milliseconds, position, target);
         }
-    }
-    else
-    {
+    } else {
         //
         // We never found the multicontroller in the inventory
         //
         int flags = DEFAULT_TRANSITION_FLAGS;
 
-        if ( 0 != g_CameraTransitionFlags )
-        {
+        if (0 != g_CameraTransitionFlags) {
             //Override the flags.
             flags = g_CameraTransitionFlags;
         }
 
-        GetSuperCamManager()->GetSCC( 0 )->SelectSuperCam( SuperCam::DEFAULT_CAM, flags, 0 );
+        GetSuperCamManager()->GetSCC(0)->SelectSuperCam(SuperCam::DEFAULT_CAM, flags, 0);
         g_TriggeredNextCamera = true;
 
         //Reset the flags override.
         g_CameraTransitionFlags = 0;
 
-        tRefCounted::Release( g_Multicontroller );
-        tRefCounted::Release( g_Camera );
+        tRefCounted::Release(g_Multicontroller);
+        tRefCounted::Release(g_Camera);
 
         //
         // Since our camera system doesn't use regular p3d cameras, i have to fake
         // the following information 
         //
-        if( g_Camera == NULL )
-        {
+        if (g_Camera == NULL) {
             //this is a bad bad case to ever get into
-            rWarningMsg( false, "Camera could not be loaded" );
-            //SetCameraValues( milliseconds, rmt::Vector( 0, 0, 0 ), rmt::Vector( 1, 0, 0 ) );
+            rWarningMsg(false, "Camera could not be loaded");
+            //SetCameraValues(milliseconds, rmt::Vector(0, 0, 0), rmt::Vector(1, 0, 0));
         }
 
     }

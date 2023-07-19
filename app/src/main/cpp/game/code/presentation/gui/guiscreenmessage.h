@@ -12,7 +12,7 @@
 //                  2002/10/21      TChu        Created for SRR2
 //
 //===========================================================================
- 
+
 #ifndef GUISCREENMESSAGE_H
 #define GUISCREENMESSAGE_H
 
@@ -37,14 +37,12 @@ class CGuiMenu;
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenMessage : public CGuiScreen
-{
+class CGuiScreenMessage : public CGuiScreen {
 public:
-    enum eMessageID
-    {
-		MSG_ID_CONTROLLER_DISCONNECTED_GC,
-		MSG_ID_CONTROLLER_DISCONNECTED_PS2,
-		MSG_ID_CONTROLLER_DISCONNECTED_XBOX,
+    enum eMessageID {
+        MSG_ID_CONTROLLER_DISCONNECTED_GC,
+        MSG_ID_CONTROLLER_DISCONNECTED_PS2,
+        MSG_ID_CONTROLLER_DISCONNECTED_XBOX,
         MSG_ID_AUTO_LOADING_GAME_GC,
         MSG_ID_AUTO_LOADING_GAME_PS2,
         MSG_ID_AUTO_LOADING_GAME_XBOX,
@@ -57,12 +55,12 @@ public:
         MSG_ID_SAVING_GAME_PS2,
         MSG_ID_SAVING_GAME_XBOX,
         MSG_ID_SAVING_GAME_XBOX_HD,
-		MSG_ID_FORMATTING_GC,
-		MSG_ID_FORMATTING_PS2,
-		MSG_ID_FORMATTING_XBOX,
-		MSG_ID_DELETING_GC,
-		MSG_ID_DELETING_PS2,
-		MSG_ID_DELETING_XBOX,
+        MSG_ID_FORMATTING_GC,
+        MSG_ID_FORMATTING_PS2,
+        MSG_ID_FORMATTING_XBOX,
+        MSG_ID_DELETING_GC,
+        MSG_ID_DELETING_PS2,
+        MSG_ID_DELETING_XBOX,
         MSG_ID_LOADING_MISSION,
         MSG_ID_PROGRESSIVE_SCAN_TEST,
 #ifdef RAD_WIN32
@@ -74,40 +72,45 @@ public:
         NUM_MESSAGE_ID
     };
 
-    CGuiScreenMessage( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenMessage(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenMessage();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    virtual CGuiMenu* HasMenu() { return m_pMenu; }
+    virtual CGuiMenu *HasMenu() { return m_pMenu; }
 
-    static void Display( int messageIndex, CGuiEntity* pCallback = NULL );
+    static void Display(int messageIndex, CGuiEntity *pCallback = NULL);
 
-    static void FormatMessage( Scrooby::Text* pText,
-                               UnicodeChar* originalStringBuffer = NULL,
-                               int stringBufferLength = -1 );
+    static void FormatMessage(Scrooby::Text *pText,
+                              UnicodeChar *originalStringBuffer = NULL,
+                              int stringBufferLength = -1);
+
     static void GetControllerDisconnectedMessage(int controllerId, char *str, int max_char);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
-    CGuiMenu* m_pMenu;
+    CGuiMenu *m_pMenu;
 
-    Scrooby::Text* m_messageText;
+    Scrooby::Text *m_messageText;
     static int s_messageIndex;
-    static CGuiEntity* s_pMessageCallback;
+    static CGuiEntity *s_pMessageCallback;
     static int s_ControllerDisconnectedPort;
 
-    Scrooby::Sprite* m_messageIcon;
+    Scrooby::Sprite *m_messageIcon;
     unsigned int m_elapsedTime;
 
-    UnicodeChar m_originalStringBuffer[ 256 ];
-    static void ConvertUnicodeToChar(char *str, P3D_UNICODE* uni_str, int max_char);
+    UnicodeChar m_originalStringBuffer[256];
+
+    static void ConvertUnicodeToChar(char *str, P3D_UNICODE *uni_str, int max_char);
 
 };
 

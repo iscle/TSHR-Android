@@ -28,48 +28,49 @@
 // Synopsis:   The supercammanager; Synopsis by Inspection.
 //
 //========================================================================
-class SuperCamManager 
-{
+class SuperCamManager {
 public:
-   // Static Methods (for creating, destroying and acquiring an instance 
-   // of the SuperCamManager )
-   static SuperCamManager* CreateInstance();
-   static SuperCamManager* GetInstance();
-   static void  DestroyInstance();
+    // Static Methods (for creating, destroying and acquiring an instance
+    // of the SuperCamManager)
+    static SuperCamManager *CreateInstance();
 
-   void Init( bool shutdown );
+    static SuperCamManager *GetInstance();
 
-   //SuperCamCentral& GetSCC( int iPlayer );
+    static void DestroyInstance();
 
-   // I don't think there's any need for reference here
-   SuperCamCentral* GetSCC( int iPlayer );
-   
-   void PreCollisionPrep();
+    void Init(bool shutdown);
 
-   void Update( unsigned int iElapsedTime, bool isFirstSubstep );
-   
-   
-   // called by worldphysicsmanager for cameras to make their submissions to collision
-   void SubmitStatics();
+    //SuperCamCentral& GetSCC(int iPlayer);
 
-   void ToggleFirstPerson( int controllerID );
+    // I don't think there's any need for reference here
+    SuperCamCentral *GetSCC(int iPlayer);
+
+    void PreCollisionPrep();
+
+    void Update(unsigned int iElapsedTime, bool isFirstSubstep);
+
+
+    // called by worldphysicsmanager for cameras to make their submissions to collision
+    void SubmitStatics();
+
+    void ToggleFirstPerson(int controllerID);
 
 private:
-   SuperCamManager();
-   ~SuperCamManager();
+    SuperCamManager();
 
-   // Static Private Render Data
-   static SuperCamManager* mspInstance;
+    ~SuperCamManager();
 
-   SuperCamCentral mSCCs[MAX_PLAYERS];
+    // Static Private Render Data
+    static SuperCamManager *mspInstance;
+
+    SuperCamCentral mSCCs[MAX_PLAYERS];
 };
 
 //
 // A little syntactic sugar for getting at this singleton.
 //
-inline SuperCamManager* GetSuperCamManager() 
-{ 
-   return( SuperCamManager::GetInstance() ); 
+inline SuperCamManager *GetSuperCamManager() {
+    return (SuperCamManager::GetInstance());
 }
 
 #endif

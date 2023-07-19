@@ -30,32 +30,33 @@ class SoundAvatar;
 //
 //=============================================================================
 
-class AvatarSoundPlayer
-{
-    public:
-        AvatarSoundPlayer();
-        virtual ~AvatarSoundPlayer();
+class AvatarSoundPlayer {
+public:
+    AvatarSoundPlayer();
 
-        void Initialize();
+    virtual ~AvatarSoundPlayer();
 
-        void UpdateOncePerFrame( unsigned int elapsedTime );
-        
-        //
-        // Returns true if first player in car, false otherwise
-        //
-        bool OnBeginGameplay();
+    void Initialize();
 
-        void OnEndGameplay();
+    void UpdateOncePerFrame(unsigned int elapsedTime);
 
-    private:
-        //Prevent wasteful constructor creation.
-        AvatarSoundPlayer( const AvatarSoundPlayer& original );
-        AvatarSoundPlayer& operator=( const AvatarSoundPlayer& rhs );
+    //
+    // Returns true if first player in car, false otherwise
+    //
+    bool OnBeginGameplay();
 
-        //
-        // One SoundAvatar to track activity of each Avatar object
-        //
-        SoundAvatar* m_avatars[MAX_PLAYERS];
+    void OnEndGameplay();
+
+private:
+    //Prevent wasteful constructor creation.
+    AvatarSoundPlayer(const AvatarSoundPlayer &original);
+
+    AvatarSoundPlayer &operator=(const AvatarSoundPlayer &rhs);
+
+    //
+    // One SoundAvatar to track activity of each Avatar object
+    //
+    SoundAvatar *m_avatars[MAX_PLAYERS];
 };
 
 

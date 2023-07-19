@@ -24,51 +24,50 @@
 // Global Data, Local Data, Local Classes
 //
 //*****************************************************************************
-IRadMemoryHeap* g_HeapArray[ NUM_GAME_MEMORY_ALLOCATORS ];
+IRadMemoryHeap *g_HeapArray[NUM_GAME_MEMORY_ALLOCATORS];
 
-struct HeapCreationData
-{
-    HeapType            type;
+struct HeapCreationData {
+    HeapType type;
     GameMemoryAllocator parent;
-    char                name[ 256 ];
+    char name[256];
 };
 
-HeapCreationData g_HeapCreationData[] = 
-{
-    { HEAP_TYPE_DOUG_LEA, GMA_DEFAULT, "Default"              },      
-    { HEAP_TYPE_DOUG_LEA, GMA_DEFAULT, "Temp"                 },      
-    { HEAP_TYPE_NONE,     GMA_DEFAULT, "Gamecube VMM"         },      
+HeapCreationData g_HeapCreationData[] =
+        {
+                {HEAP_TYPE_DOUG_LEA, GMA_DEFAULT, "Default"},
+                {HEAP_TYPE_DOUG_LEA, GMA_DEFAULT, "Temp"},
+                {HEAP_TYPE_NONE, GMA_DEFAULT, "Gamecube VMM"},
 #ifdef RAD_WIN32
-    { HEAP_TYPE_TRACKING, GMA_DEFAULT, "Persistent"           },  // no static heap for pc
+                { HEAP_TYPE_TRACKING, GMA_DEFAULT, "Persistent"           },  // no static heap for pc
 #else
-    { HEAP_TYPE_STATIC,   GMA_DEFAULT, "Persistent"           },
+                {HEAP_TYPE_STATIC, GMA_DEFAULT, "Persistent"},
 #endif // RAD_WIN32
-    { HEAP_TYPE_TRACKING, GMA_DEFAULT, "Level"                },
-    { HEAP_TYPE_TRACKING, GMA_DEFAULT, "Level Movie"          },
-    { HEAP_TYPE_TRACKING, GMA_DEFAULT, "Level FE"             },
-    { HEAP_TYPE_TRACKING, GMA_DEFAULT, "Level Zone"           },
-    { HEAP_TYPE_TRACKING, GMA_DEFAULT, "Level Other"          },
-    { HEAP_TYPE_DOUG_LEA, GMA_DEFAULT, "Level Hud"            },
-    { HEAP_TYPE_TRACKING, GMA_DEFAULT, "Level Mission"        },
-    { HEAP_TYPE_TRACKING, GMA_DEFAULT, "Level Audio"          },
-    { HEAP_TYPE_NONE,     GMA_DEFAULT, "Debug"                },
-    { HEAP_TYPE_TRACKING, GMA_DEFAULT, "Special"              },
-    { HEAP_TYPE_TRACKING, GMA_DEFAULT, "Music"                },
-    { HEAP_TYPE_DOUG_LEA, GMA_DEFAULT, "Audio Persistent"     },
-    { HEAP_TYPE_DOUG_LEA, GMA_DEFAULT, "Small Alloc"          },
+                {HEAP_TYPE_TRACKING, GMA_DEFAULT, "Level"},
+                {HEAP_TYPE_TRACKING, GMA_DEFAULT, "Level Movie"},
+                {HEAP_TYPE_TRACKING, GMA_DEFAULT, "Level FE"},
+                {HEAP_TYPE_TRACKING, GMA_DEFAULT, "Level Zone"},
+                {HEAP_TYPE_TRACKING, GMA_DEFAULT, "Level Other"},
+                {HEAP_TYPE_DOUG_LEA, GMA_DEFAULT, "Level Hud"},
+                {HEAP_TYPE_TRACKING, GMA_DEFAULT, "Level Mission"},
+                {HEAP_TYPE_TRACKING, GMA_DEFAULT, "Level Audio"},
+                {HEAP_TYPE_NONE, GMA_DEFAULT, "Debug"},
+                {HEAP_TYPE_TRACKING, GMA_DEFAULT, "Special"},
+                {HEAP_TYPE_TRACKING, GMA_DEFAULT, "Music"},
+                {HEAP_TYPE_DOUG_LEA, GMA_DEFAULT, "Audio Persistent"},
+                {HEAP_TYPE_DOUG_LEA, GMA_DEFAULT, "Small Alloc"},
 #ifdef RAD_XBOX
-    { HEAP_TYPE_TRACKING, GMA_DEFAULT, "XBOX Sound"           },
+                { HEAP_TYPE_TRACKING, GMA_DEFAULT, "XBOX Sound"           },
 #endif
 #ifdef USE_CHAR_GAG_HEAP
-    { HEAP_TYPE_DOUG_LEA, GMA_DEFAULT, "Characters and Gags"  },
+                { HEAP_TYPE_DOUG_LEA, GMA_DEFAULT, "Characters and Gags"  },
 #endif
-    { HEAP_TYPE_TRACKING, GMA_DEFAULT, "Anywhere in Level"    },
-    { HEAP_TYPE_TRACKING, GMA_DEFAULT, "Anywhere in FE"       },
-    { HEAP_TYPE_TRACKING, GMA_DEFAULT, "Either Other or Zone" },
-    { HEAP_TYPE_TRACKING, GMA_DEFAULT, "Search"               },
-    { HEAP_TYPE_NONE,     GMA_DEFAULT, "???"                  },
-    { HEAP_TYPE_NONE,     GMA_DEFAULT, "???"                  },
-};
+                {HEAP_TYPE_TRACKING, GMA_DEFAULT, "Anywhere in Level"},
+                {HEAP_TYPE_TRACKING, GMA_DEFAULT, "Anywhere in FE"},
+                {HEAP_TYPE_TRACKING, GMA_DEFAULT, "Either Other or Zone"},
+                {HEAP_TYPE_TRACKING, GMA_DEFAULT, "Search"},
+                {HEAP_TYPE_NONE, GMA_DEFAULT, "???"},
+                {HEAP_TYPE_NONE, GMA_DEFAULT, "???"},
+        };
 
 //*****************************************************************************
 //
@@ -87,9 +86,8 @@ HeapCreationData g_HeapCreationData[] =
 // Return:      N/A.
 //
 //=============================================================================
-HeapType AllocatorType( GameMemoryAllocator allocator )
-{
-    return g_HeapCreationData[ allocator ].type;
+HeapType AllocatorType(GameMemoryAllocator allocator) {
+    return g_HeapCreationData[allocator].type;
 }
 
 //=============================================================================
@@ -103,61 +101,54 @@ HeapType AllocatorType( GameMemoryAllocator allocator )
 // Return:      N/A.
 //
 //=============================================================================
-void CreateHeap ( GameMemoryAllocator allocator, const unsigned int size )
-{
-    unsigned int index = static_cast< unsigned int >( allocator );
-    rAssert( g_HeapArray[ index ] == NULL );
+void CreateHeap(GameMemoryAllocator allocator, const unsigned int size) {
+    unsigned int index = static_cast<unsigned int>(allocator);
+    rAssert(g_HeapArray[index] == NULL);
 
-    HeapType type    = g_HeapCreationData[ index ].type;
-    const char* name = g_HeapCreationData[ index ].name;
-    GameMemoryAllocator parent = g_HeapCreationData[ index ].parent;
+    HeapType type = g_HeapCreationData[index].type;
+    const char *name = g_HeapCreationData[index].name;
+    GameMemoryAllocator parent = g_HeapCreationData[index].parent;
 
-    rReleasePrintf ("Creating Heap: %s (%d)\n", name, size );
+    rReleasePrintf("Creating Heap: %s (%d)\n", name, size);
 
-    #ifdef RAD_RELEASE
-    if( type == HEAP_TYPE_TRACKING )
+#ifdef RAD_RELEASE
+    if(type == HEAP_TYPE_TRACKING)
     {
         type = HEAP_TYPE_NONE;
     }
-    #endif
+#endif
 
-    switch( type )
-    {
-        case HEAP_TYPE_STATIC :
-        {
-            HeapMgr()->PushHeap( GMA_DEBUG );
-            g_HeapArray[ index ] = radMemoryCreateStaticHeap( size, RADMEMORY_ALLOC_DEFAULT, name );
-            g_HeapArray[ index ]->AddRef();
-            HeapMgr()->PopHeap( GMA_DEBUG );
+    switch (type) {
+        case HEAP_TYPE_STATIC : {
+            HeapMgr()->PushHeap(GMA_DEBUG);
+            g_HeapArray[index] = radMemoryCreateStaticHeap(size, RADMEMORY_ALLOC_DEFAULT, name);
+            g_HeapArray[index]->AddRef();
+            HeapMgr()->PopHeap(GMA_DEBUG);
             break;
         }
-        case HEAP_TYPE_TRACKING :
-        {
-            HeapMgr()->PushHeap( GMA_DEBUG );
-            g_HeapArray[ index ] = radMemoryCreateTrackingHeap( size, RADMEMORY_ALLOC_DEFAULT, name );
-            HeapMgr()->PopHeap( GMA_DEBUG );
+        case HEAP_TYPE_TRACKING : {
+            HeapMgr()->PushHeap(GMA_DEBUG);
+            g_HeapArray[index] = radMemoryCreateTrackingHeap(size, RADMEMORY_ALLOC_DEFAULT, name);
+            HeapMgr()->PopHeap(GMA_DEBUG);
             break;
         }
-        case HEAP_TYPE_DOUG_LEA :
-        {
-            HeapMgr()->PushHeap( GMA_DEBUG );
-            g_HeapArray[ index ] = radMemoryCreateDougLeaHeap( size, RADMEMORY_ALLOC_DEFAULT, name );
-            g_HeapArray[ index ]->AddRef();
-            HeapMgr()->PopHeap( GMA_DEBUG );
+        case HEAP_TYPE_DOUG_LEA : {
+            HeapMgr()->PushHeap(GMA_DEBUG);
+            g_HeapArray[index] = radMemoryCreateDougLeaHeap(size, RADMEMORY_ALLOC_DEFAULT, name);
+            g_HeapArray[index]->AddRef();
+            HeapMgr()->PopHeap(GMA_DEBUG);
             break;
         }
-        case HEAP_TYPE_NONE :
-        {
-            //rAssert( false );
+        case HEAP_TYPE_NONE : {
+            //rAssert(false);
             return;
         }
-        default:
-        {
-            rAssert( false );
+        default: {
+            rAssert(false);
             return;
         }
     }
-    radMemoryRegisterAllocator( allocator, parent,g_HeapArray[ index ] );
+    radMemoryRegisterAllocator(allocator, parent, g_HeapArray[index]);
 }
 
 //=============================================================================
@@ -171,11 +162,9 @@ void CreateHeap ( GameMemoryAllocator allocator, const unsigned int size )
 // Return:      N/A.
 //
 //=============================================================================
-void DestroyHeapA( GameMemoryAllocator allocator )
-{
-    unsigned int index = static_cast< unsigned int >( allocator );
-    if( g_HeapArray[ index ] == NULL )
-    {
+void DestroyHeapA(GameMemoryAllocator allocator) {
+    unsigned int index = static_cast<unsigned int>(allocator);
+    if (g_HeapArray[index] == NULL) {
         return;
     }
 
@@ -188,47 +177,42 @@ void DestroyHeapA( GameMemoryAllocator allocator )
     //
     unsigned int numAllocs;
     unsigned int totalFree;
-    g_HeapArray[ index ]->GetStatus ( &totalFree, 0, &numAllocs, 0);
+    g_HeapArray[index]->GetStatus(&totalFree, 0, &numAllocs, 0);
 
     //
     // Suspend memory monitor etc if we've leaked
     //
-    if( numAllocs > 0 )
-    {
-        #ifndef FINAL
-            unsigned int size = g_HeapArray[ index ]->GetSize();
-            char s[ 256 ];
-            const char* name = g_HeapCreationData[ index ].name;
-            unsigned int leakSize = size - totalFree;
-            sprintf( s, "MEMORY LEAK: '%s' %d blocks %d bytes ", name, numAllocs, leakSize );
-            rTunePrintf( s );
-            g_HeapArray[index]->ValidateHeap();
-        #endif
+    if (numAllocs > 0) {
+#ifndef FINAL
+        unsigned int size = g_HeapArray[index]->GetSize();
+        char s[256];
+        const char *name = g_HeapCreationData[index].name;
+        unsigned int leakSize = size - totalFree;
+        sprintf(s, "MEMORY LEAK: '%s' %d blocks %d bytes ", name, numAllocs, leakSize);
+        rTunePrintf(s);
+        g_HeapArray[index]->ValidateHeap();
+#endif
 
         // Destroy the heap
         //
-        g_HeapArray[ index ]->Release ();
-        g_HeapArray[ index ] = 0;
-        ::radMemoryUnregisterAllocator( allocator );
+        g_HeapArray[index]->Release();
+        g_HeapArray[index] = 0;
+        ::radMemoryUnregisterAllocator(allocator);
 
-        if( CommandLineOptions::Get( CLO_MEMORY_MONITOR ) )
-        {
-            ::radMemoryMonitorSuspend ();
+        if (CommandLineOptions::Get(CLO_MEMORY_MONITOR)) {
+            ::radMemoryMonitorSuspend();
         }
-        #ifndef RAD_RELEASE
-        else
-        {
+#ifndef RAD_RELEASE
+        else {
 //                rAssertMsg (0, s);
         }
-        #endif // RAD_RELEASE
-    }
-    else
-    {
+#endif // RAD_RELEASE
+    } else {
         // Destroy the heap
         //
-        g_HeapArray[ index ]->Release ();
-        g_HeapArray[ index ] = 0;
-        ::radMemoryUnregisterAllocator( allocator );
+        g_HeapArray[index]->Release();
+        g_HeapArray[index] = 0;
+        ::radMemoryUnregisterAllocator(allocator);
     }
 }
 
@@ -243,9 +227,8 @@ void DestroyHeapA( GameMemoryAllocator allocator )
 // Return:      N/A.
 //
 //=============================================================================
-IRadMemoryAllocator* GetAllocator( GameMemoryAllocator allocator )
-{
-    IRadMemoryAllocator* allocatorPtr = radMemoryGetAllocator( static_cast< int >( allocator ) );
+IRadMemoryAllocator *GetAllocator(GameMemoryAllocator allocator) {
+    IRadMemoryAllocator *allocatorPtr = radMemoryGetAllocator(static_cast<int>(allocator));
     return allocatorPtr;
 }
 
@@ -260,9 +243,8 @@ IRadMemoryAllocator* GetAllocator( GameMemoryAllocator allocator )
 // Return:      N/A.
 //
 //=============================================================================
-IRadMemoryHeap** GetHeapReference( GameMemoryAllocator allocator )
-{
-    return &( g_HeapArray[ allocator ] );
+IRadMemoryHeap **GetHeapReference(GameMemoryAllocator allocator) {
+    return &(g_HeapArray[allocator]);
 }
 
 //=============================================================================
@@ -276,21 +258,18 @@ IRadMemoryHeap** GetHeapReference( GameMemoryAllocator allocator )
 // Return:      total free space
 //
 //=============================================================================
-size_t GetTotalMemoryFreeInAllHeaps()
-{
+size_t GetTotalMemoryFreeInAllHeaps() {
     unsigned int totalFreeMemory = 0;
     unsigned int i;
     unsigned int size = NUM_GAME_MEMORY_ALLOCATORS;
-    for( i = 0; i < size; ++i )
-    {
-        IRadMemoryHeap* heap = g_HeapArray[ i ];
+    for (i = 0; i < size; ++i) {
+        IRadMemoryHeap *heap = g_HeapArray[i];
         unsigned int free;
         unsigned int largestBlock;
         unsigned int numberOfObjects;
         unsigned int highWaterMark;
-        if( heap != NULL )
-        {
-            heap->GetStatus( &free, &largestBlock, &numberOfObjects, &highWaterMark );
+        if (heap != NULL) {
+            heap->GetStatus(&free, &largestBlock, &numberOfObjects, &highWaterMark);
             totalFreeMemory += free;
         }
     }
@@ -308,14 +287,11 @@ size_t GetTotalMemoryFreeInAllHeaps()
 // Return:      the index of the heap
 //
 //=============================================================================
-GameMemoryAllocator WhichAllocator( const IRadMemoryAllocator* heap )
-{
+GameMemoryAllocator WhichAllocator(const IRadMemoryAllocator *heap) {
     int i;
-    for( i = 0; i < NUM_GAME_MEMORY_ALLOCATORS; ++i )
-    {
-        if( g_HeapArray[ i ] == heap )
-        {
-            return static_cast< GameMemoryAllocator >( i );
+    for (i = 0; i < NUM_GAME_MEMORY_ALLOCATORS; ++i) {
+        if (g_HeapArray[i] == heap) {
+            return static_cast<GameMemoryAllocator>(i);
         }
     }
     return NUM_GAME_MEMORY_ALLOCATORS;

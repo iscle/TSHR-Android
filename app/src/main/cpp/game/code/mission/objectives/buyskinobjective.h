@@ -27,24 +27,25 @@
 //
 //=============================================================================
 
-class BuySkinObjective : public MissionObjective
-{
+class BuySkinObjective : public MissionObjective {
 public:
-        BuySkinObjective();
-        virtual ~BuySkinObjective();
+    BuySkinObjective();
 
-        void SetSkinName( const char* name );
+    virtual ~BuySkinObjective();
+
+    void SetSkinName(const char *name);
 
 protected:
 
-    virtual void OnUpdate( unsigned int elapsedTime );
+    virtual void OnUpdate(unsigned int elapsedTime);
 
 private:
-    char* mSkinName;
+    char *mSkinName;
 
-        //Prevent wasteful constructor creation.
-    BuySkinObjective( const BuySkinObjective& buyskinobjective );
-    BuySkinObjective& operator=( const BuySkinObjective& buyskinobjective );
+    //Prevent wasteful constructor creation.
+    BuySkinObjective(const BuySkinObjective &buyskinobjective);
+
+    BuySkinObjective &operator=(const BuySkinObjective &buyskinobjective);
 };
 
 //*****************************************************************************

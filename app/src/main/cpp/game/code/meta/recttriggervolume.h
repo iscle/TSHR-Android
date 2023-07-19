@@ -19,7 +19,9 @@
 #include <radmath/radmath.hpp>
 
 #ifndef WORLD_BUILDER
+
 #include <meta/triggervolume.h>
+
 #else
 #include "triggervolume.h"
 #endif
@@ -33,73 +35,83 @@
 //
 //=============================================================================
 
-class RectTriggerVolume : public TriggerVolume
-{
+class RectTriggerVolume : public TriggerVolume {
 public:
-    RectTriggerVolume( const rmt::Vector& center, 
-                       const rmt::Vector& axisX, 
-                       const rmt::Vector& axisY, 
-                       const rmt::Vector& axisZ, 
-                       float extentX, 
-                       float extentY, 
-                       float extentZ );
+    RectTriggerVolume(const rmt::Vector &center,
+                      const rmt::Vector &axisX,
+                      const rmt::Vector &axisY,
+                      const rmt::Vector &axisZ,
+                      float extentX,
+                      float extentY,
+                      float extentZ);
+
     virtual ~RectTriggerVolume();
 
 
     // Intersection information
-    bool Contains ( const rmt::Vector& point, float epsilon = 0.00f ) const;
-    
+    bool Contains(const rmt::Vector &point, float epsilon = 0.00f) const;
+
     // Intersection of bounding box with trigger volume.
     //p1 - p4 are the four corners of the box.
-    bool IntersectsBox( const rmt::Vector& p1, 
-                        const rmt::Vector& p2, 
-                        const rmt::Vector& p3, 
-                        const rmt::Vector& p4 ) const;
+    bool IntersectsBox(const rmt::Vector &p1,
+                       const rmt::Vector &p2,
+                       const rmt::Vector &p3,
+                       const rmt::Vector &p4) const;
 
-    virtual bool IntersectsBox( const rmt::Box3D& box );
+    virtual bool IntersectsBox(const rmt::Box3D &box);
 
-    bool IntersectsSphere( const rmt::Vector& position, 
-                           float radius ) const;
+    bool IntersectsSphere(const rmt::Vector &position,
+                          float radius) const;
 
-    bool IntersectLine( const rmt::Vector& p1,
-                        const rmt::Vector& p2 ) const;
+    bool IntersectLine(const rmt::Vector &p1,
+                       const rmt::Vector &p2) const;
 
     // Bounding box
-    bool GetBoundingBox ( rmt::Vector& p1, rmt::Vector& p2 ) const;
+    bool GetBoundingBox(rmt::Vector &p1, rmt::Vector &p2) const;
 
     Type GetType() const;
 
-    void SetTransform(rmt::Matrix&);
+    void SetTransform(rmt::Matrix &);
 
-    const rmt::Vector& GetAxisX() const;
-    const rmt::Vector& GetAxisY() const;
-    const rmt::Vector& GetAxisZ() const;
+    const rmt::Vector &GetAxisX() const;
 
-    float   GetExtentX() const;
-    void    SetExtentX( float extent );
-    
-    float   GetExtentY() const;
-    void    SetExtentY( float extent );
+    const rmt::Vector &GetAxisY() const;
 
-    float   GetExtentZ() const;
-    void    SetExtentZ( float extent );
+    const rmt::Vector &GetAxisZ() const;
 
-    const rmt::Matrix& GetW2T();
-    const rmt::Matrix& GetT2W();
+    float GetExtentX() const;
+
+    void SetExtentX(float extent);
+
+    float GetExtentY() const;
+
+    void SetExtentY(float extent);
+
+    float GetExtentZ() const;
+
+    void SetExtentZ(float extent);
+
+    const rmt::Matrix &GetW2T();
+
+    const rmt::Matrix &GetT2W();
 
     //////////////////////////////////////////////////////////////////////////
     // tDrawable interface
     //////////////////////////////////////////////////////////////////////////
-    void GetBoundingBox(rmt::Box3D* box);
-    void GetBoundingSphere(rmt::Sphere* sphere);
+    void GetBoundingBox(rmt::Box3D *box);
+
+    void GetBoundingSphere(rmt::Sphere *sphere);
+
 protected:
     virtual void InitPoints();
+
     virtual void CalcPoints();
 
 private:
     RectTriggerVolume();
-    bool IntersectLineRect(  const rmt::Vector& lineOrig, 
-                             const rmt::Vector& lineDir ) const;
+
+    bool IntersectLineRect(const rmt::Vector &lineOrig,
+                           const rmt::Vector &lineDir) const;
 
     void UpdateW2T();
 
@@ -117,8 +129,9 @@ private:
     rmt::Matrix mTrigger2World;
 
     //Prevent wasteful constructor creation.
-    RectTriggerVolume( const RectTriggerVolume& recttriggervolume );
-    RectTriggerVolume& operator=( const RectTriggerVolume& recttriggervolume );
+    RectTriggerVolume(const RectTriggerVolume &recttriggervolume);
+
+    RectTriggerVolume &operator=(const RectTriggerVolume &recttriggervolume);
 };
 
 //=============================================================================
@@ -126,13 +139,12 @@ private:
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float extent )
+// Parameters:  (float extent)
 //
 // Return:      inline 
 //
 //=============================================================================
-inline void RectTriggerVolume::SetExtentX( float extent )
-{
+inline void RectTriggerVolume::SetExtentX(float extent) {
     mExtentX = extent;
 }
 
@@ -141,13 +153,12 @@ inline void RectTriggerVolume::SetExtentX( float extent )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float extent )
+// Parameters:  (float extent)
 //
 // Return:      inline 
 //
 //=============================================================================
-inline void RectTriggerVolume::SetExtentY( float extent )
-{
+inline void RectTriggerVolume::SetExtentY(float extent) {
     mExtentY = extent;
 }
 
@@ -156,13 +167,12 @@ inline void RectTriggerVolume::SetExtentY( float extent )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float extent )
+// Parameters:  (float extent)
 //
 // Return:      inline 
 //
 //=============================================================================
-inline void RectTriggerVolume::SetExtentZ( float extent )
-{
+inline void RectTriggerVolume::SetExtentZ(float extent) {
     mExtentZ = extent;
 }
 
@@ -176,9 +186,8 @@ inline void RectTriggerVolume::SetExtentZ( float extent )
 // Return:      inline 
 //
 //=============================================================================
-inline float RectTriggerVolume::GetExtentX() const
-{
-    return( mExtentX );
+inline float RectTriggerVolume::GetExtentX() const {
+    return (mExtentX);
 }
 
 //=============================================================================
@@ -191,9 +200,8 @@ inline float RectTriggerVolume::GetExtentX() const
 // Return:      inline 
 //
 //=============================================================================
-inline float RectTriggerVolume::GetExtentY() const
-{
-    return( mExtentY );
+inline float RectTriggerVolume::GetExtentY() const {
+    return (mExtentY);
 }
 
 //=============================================================================
@@ -206,9 +214,8 @@ inline float RectTriggerVolume::GetExtentY() const
 // Return:      inline 
 //
 //=============================================================================
-inline float RectTriggerVolume::GetExtentZ() const
-{
-    return( mExtentZ );
+inline float RectTriggerVolume::GetExtentZ() const {
+    return (mExtentZ);
 }
 
 #endif //RECTTRIGGERVOLUME_H

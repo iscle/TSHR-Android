@@ -49,9 +49,8 @@
 // Return:      N/A.
 //
 //==============================================================================
-OutOfBoundsCondition::OutOfBoundsCondition()
-{
-    this->SetType( COND_OUT_OF_BOUNDS );
+OutOfBoundsCondition::OutOfBoundsCondition() {
+    this->SetType(COND_OUT_OF_BOUNDS);
 }
 
 //==============================================================================
@@ -64,8 +63,7 @@ OutOfBoundsCondition::OutOfBoundsCondition()
 // Return:      N/A.
 //
 //==============================================================================
-OutOfBoundsCondition::~OutOfBoundsCondition()
-{
+OutOfBoundsCondition::~OutOfBoundsCondition() {
 }
 
 //=============================================================================
@@ -78,9 +76,8 @@ OutOfBoundsCondition::~OutOfBoundsCondition()
 // Return:      void 
 //
 //=============================================================================
-void OutOfBoundsCondition::OnInitialize()
-{
-    GetEventManager()->AddListener( this, (EventEnum)(EVENT_LOCATOR + LocatorEvent::DEATH) );
+void OutOfBoundsCondition::OnInitialize() {
+    GetEventManager()->AddListener(this, (EventEnum)(EVENT_LOCATOR + LocatorEvent::DEATH));
 }
 
 //=============================================================================
@@ -93,9 +90,8 @@ void OutOfBoundsCondition::OnInitialize()
 // Return:      void 
 //
 //=============================================================================
-void OutOfBoundsCondition::OnFinalize()
-{
-    GetEventManager()->RemoveListener( this, (EventEnum)(EVENT_LOCATOR + LocatorEvent::DEATH) );
+void OutOfBoundsCondition::OnFinalize() {
+    GetEventManager()->RemoveListener(this, (EventEnum)(EVENT_LOCATOR + LocatorEvent::DEATH));
 }
 
 //=============================================================================
@@ -103,32 +99,27 @@ void OutOfBoundsCondition::OnFinalize()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void OutOfBoundsCondition::HandleEvent( EventEnum id, void* pEventData )
-{
-    switch( id )
-    {
-    case (EventEnum)(EVENT_LOCATOR + LocatorEvent::DEATH):
-        {
-            EventLocator* evtLoc = static_cast<EventLocator*>(pEventData);
-            if ( evtLoc->GetPlayerID() < static_cast<unsigned int>(MAX_PLAYERS) )
-            {
+void OutOfBoundsCondition::HandleEvent(EventEnum id, void *pEventData) {
+    switch (id) {
+        case (EventEnum)(EVENT_LOCATOR + LocatorEvent::DEATH): {
+            EventLocator *evtLoc = static_cast<EventLocator *>(pEventData);
+            if (evtLoc->GetPlayerID() < static_cast<unsigned int>(MAX_PLAYERS)) {
                 //This is a player
-                SetIsViolated( true );
+                SetIsViolated(true);
             }
             break;
         }
-    default:
-        {
+        default: {
             break;
         }
     }
 
-    MissionCondition::HandleEvent( id, pEventData );
+    MissionCondition::HandleEvent(id, pEventData);
 }
 
 //=============================================================================
@@ -142,12 +133,11 @@ void OutOfBoundsCondition::HandleEvent( EventEnum id, void* pEventData )
 // Return:      True if close, false otherwise 
 //
 //=============================================================================
-bool OutOfBoundsCondition::IsClose()
-{
+bool OutOfBoundsCondition::IsClose() {
     //
     // I don't really know what this does, let's say not close
     //
-    return( false );
+    return (false);
 }
 
 //******************************************************************************

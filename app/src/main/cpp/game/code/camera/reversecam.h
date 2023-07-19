@@ -28,48 +28,55 @@ class ISuperCamTarget;
 //
 //=============================================================================
 
-class ReverseCam : public SuperCam
-{
+class ReverseCam : public SuperCam {
 public:
     ReverseCam();
-	virtual ~ReverseCam();
 
-   //Update: Called when you want the super cam to update its state.
-    virtual void Update( unsigned int milliseconds );
-    virtual void UpdateForPhysics( unsigned int milliseconds );
+    virtual ~ReverseCam();
+
+    //Update: Called when you want the super cam to update its state.
+    virtual void Update(unsigned int milliseconds);
+
+    virtual void UpdateForPhysics(unsigned int milliseconds);
 
     //Returns the name of the super cam.  
     //This can be used in the FE or debug info
-    virtual const char* const GetName() const;
+    virtual const char *const GetName() const;
 
     //This loads the off-line created settings for the camera.  
     //It is passed in as a byte stream of some data of known size.
-    virtual void LoadSettings( unsigned char* settings ) {}; 
+    virtual void LoadSettings(unsigned char *settings) {};
 
     virtual Type GetType();
 
     //These are for favourable support of this command
-    virtual void SetTarget( ISuperCamTarget* target ); 
-    virtual void AddTarget( ISuperCamTarget* target );
-    
+    virtual void SetTarget(ISuperCamTarget *target);
+
+    virtual void AddTarget(ISuperCamTarget *target);
+
     unsigned int GetNumTargets() const;
 
     void EnableShake();
+
     void DisableShake();
 
     //Support for colliding with the world.
-    void SetCollisionOffset( const rmt::Vector* offset, unsigned int numCollisions, const rmt::Vector& groundOffset );
+    void SetCollisionOffset(const rmt::Vector *offset, unsigned int numCollisions,
+                            const rmt::Vector &groundOffset);
+
     float GetCollisionRadius() const { return mCollisionRadius; };
 
 protected:
     bool CanSwitch();
+
     virtual void OnInit() { InitMyController(); };
 
     virtual void OnRegisterDebugControls();
+
     virtual void OnUnregisterDebugControls();
 
 private:
-    ISuperCamTarget* mTarget;
+    ISuperCamTarget *mTarget;
 
     rmt::Vector mPosition;
     rmt::Vector mPositionDelta;
@@ -82,7 +89,7 @@ private:
     float mLag;
     float mTargetLag;
 
-    const rmt::Vector* mCollisionOffset;
+    const rmt::Vector *mCollisionOffset;
     float mCollisionRadius;
     unsigned int mNumCollisions;
     rmt::Vector mGroundOffset;
@@ -90,8 +97,9 @@ private:
     float mOtherY;
 
     //Prevent wasteful constructor creation.
-	ReverseCam( const ReverseCam& reversecam );
-	ReverseCam& operator=( const ReverseCam& reversecam );
+    ReverseCam(const ReverseCam &reversecam);
+
+    ReverseCam &operator=(const ReverseCam &reversecam);
 };
 
 //*****************************************************************************
@@ -111,8 +119,7 @@ private:
 //
 //=============================================================================
 
-inline const char* const ReverseCam::GetName() const
-{
+inline const char *const ReverseCam::GetName() const {
     return "REVERSE_CAM";
 }
 
@@ -126,8 +133,7 @@ inline const char* const ReverseCam::GetName() const
 // Return:      Type 
 //
 //=============================================================================
-inline SuperCam::Type ReverseCam::GetType()
-{
+inline SuperCam::Type ReverseCam::GetType() {
     return REVERSE_CAM;
 }
 
@@ -137,13 +143,12 @@ inline SuperCam::Type ReverseCam::GetType()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ReverseCam::SetTarget( ISuperCamTarget* target )
-{
+inline void ReverseCam::SetTarget(ISuperCamTarget *target) {
     mTarget = target;
 }
 
@@ -152,14 +157,13 @@ inline void ReverseCam::SetTarget( ISuperCamTarget* target )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ReverseCam::AddTarget( ISuperCamTarget* target )
-{
-    rAssertMsg( false, "Only call SetTarget on the ReverseCam" );
+inline void ReverseCam::AddTarget(ISuperCamTarget *target) {
+    rAssertMsg(false, "Only call SetTarget on the ReverseCam");
 }
 
 //=============================================================================
@@ -172,10 +176,8 @@ inline void ReverseCam::AddTarget( ISuperCamTarget* target )
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int ReverseCam::GetNumTargets() const
-{
-    if ( mTarget )
-    {
+inline unsigned int ReverseCam::GetNumTargets() const {
+    if (mTarget) {
         return 1;
     }
 
@@ -187,13 +189,13 @@ inline unsigned int ReverseCam::GetNumTargets() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const rmt::Vector& offset, unsigned int numCollisions, const rmt::Vector& groundOffset )
+// Parameters:  (const rmt::Vector& offset, unsigned int numCollisions, const rmt::Vector& groundOffset)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ReverseCam::SetCollisionOffset( const rmt::Vector* offset, unsigned int numCollisions, const rmt::Vector& groundOffset )
-{
+inline void ReverseCam::SetCollisionOffset(const rmt::Vector *offset, unsigned int numCollisions,
+                                           const rmt::Vector &groundOffset) {
     mCollisionOffset = offset;
     mNumCollisions = numCollisions;
     mGroundOffset = groundOffset;

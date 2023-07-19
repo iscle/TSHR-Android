@@ -32,33 +32,34 @@ class ISuperCamTarget;
 //
 //=============================================================================
 
-class ChaseCam : public SuperCam
-{
+class ChaseCam : public SuperCam {
 public:
     ChaseCam();
+
     virtual ~ChaseCam();
 
-   //Update: Called when you want the super cam to update its state.
-    virtual void Update( unsigned int milliseconds );
+    //Update: Called when you want the super cam to update its state.
+    virtual void Update(unsigned int milliseconds);
 
     //Returns the name of the super cam.  
     //This can be used in the FE or debug info
-    virtual const char* const GetName() const;
+    virtual const char *const GetName() const;
 
     //This loads the off-line created settings for the camera.  
     //It is passed in as a byte stream of some data of known size.
-    virtual void LoadSettings( unsigned char* settings ); 
- 
+    virtual void LoadSettings(unsigned char *settings);
+
     virtual Type GetType();
 
     //These are for favourable support of this command
-    virtual void SetTarget( ISuperCamTarget* target ); 
-    virtual void AddTarget( ISuperCamTarget* target );
-    
+    virtual void SetTarget(ISuperCamTarget *target);
+
+    virtual void AddTarget(ISuperCamTarget *target);
+
     unsigned int GetNumTargets() const;
 
 private:
-    ISuperCamTarget* mTarget;
+    ISuperCamTarget *mTarget;
     ChaseCamData mData;
 
     rmt::Vector mPosition;
@@ -71,13 +72,15 @@ private:
     //These functions are to allow real-time control of the settings of 
     //the supercam.
     virtual void OnRegisterDebugControls();
+
     virtual void OnUnregisterDebugControls();
 
     void DoCameraCut();
 
     //Prevent wasteful constructor creation.
-    ChaseCam( const ChaseCam& chasecam );
-    ChaseCam& operator=( const ChaseCam& chasecam );
+    ChaseCam(const ChaseCam &chasecam);
+
+    ChaseCam &operator=(const ChaseCam &chasecam);
 };
 
 //*****************************************************************************
@@ -96,8 +99,7 @@ private:
 // Return:      const char* const 
 //
 //=============================================================================
-inline const char* const ChaseCam::GetName() const
-{
+inline const char *const ChaseCam::GetName() const {
     return "CHASE_CAM";
 }
 
@@ -111,8 +113,7 @@ inline const char* const ChaseCam::GetName() const
 // Return:      Type 
 //
 //=============================================================================
-inline SuperCam::Type ChaseCam::GetType()
-{
+inline SuperCam::Type ChaseCam::GetType() {
     return CHASE_CAM;
 }
 
@@ -121,13 +122,12 @@ inline SuperCam::Type ChaseCam::GetType()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ChaseCam::SetTarget( ISuperCamTarget* target )
-{
+inline void ChaseCam::SetTarget(ISuperCamTarget *target) {
     mTarget = target;
 }
 
@@ -136,14 +136,13 @@ inline void ChaseCam::SetTarget( ISuperCamTarget* target )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ChaseCam::AddTarget( ISuperCamTarget* target )
-{
-    rAssertMsg( false, "Only call SetTarget on the ChaseCam" );
+inline void ChaseCam::AddTarget(ISuperCamTarget *target) {
+    rAssertMsg(false, "Only call SetTarget on the ChaseCam");
 }
 
 //=============================================================================
@@ -156,10 +155,8 @@ inline void ChaseCam::AddTarget( ISuperCamTarget* target )
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int ChaseCam::GetNumTargets() const
-{
-    if ( mTarget )
-    {
+inline unsigned int ChaseCam::GetNumTargets() const {
+    if (mTarget) {
         return 1;
     }
 

@@ -25,20 +25,30 @@
 //===========================================================================
 
 class tCompositeDrawableLoader;
+
 class tMultiControllerLoader;
+
 class tSkeletonLoader;
+
 class tFrameControllerLoader;
+
 class tMultiController;
+
 class tAnimationLoader;
+
 class CStatePropDataLoader;
+
 class tAnimatedObjectFactoryLoader;
+
 class tAnimatedObjectLoader;
-namespace sim
-{
-	class CollisionObjectLoader;
-	class PhysicsObjectLoader;
-	class PhysicsObject;
-	class CollisionObject;
+namespace sim {
+    class CollisionObjectLoader;
+
+    class PhysicsObjectLoader;
+
+    class PhysicsObject;
+
+    class CollisionObject;
 };
 
 
@@ -62,43 +72,46 @@ namespace sim
 //
 //===========================================================================
 class AnimDynaPhysLoader
-: public tSimpleChunkHandler,
-  public IWrappedLoader 
-{
-    public:
-        AnimDynaPhysLoader();
-        virtual ~AnimDynaPhysLoader();
-  
-		virtual tEntity* LoadObject(tChunkFile* file, tEntityStore* store);
+        : public tSimpleChunkHandler,
+          public IWrappedLoader {
+public:
+    AnimDynaPhysLoader();
 
-		void SetRegdListener( ChunkListenerCallback* pListenerCB,
-							 int   iUserData );
+    virtual ~AnimDynaPhysLoader();
 
-		void ModRegdListener( ChunkListenerCallback* pListenerCB,
-							 int   iUserData );
+    virtual tEntity *LoadObject(tChunkFile *file, tEntityStore *store);
 
-        static void SetShadowElement( const char* compDrawName, 
-                                      const char* compDrawElement );
+    void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
 
-        static void ClearShadowList();
-        static tUID GetShadowElement( tUID );
+    void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
 
-    protected:
+    static void SetShadowElement(const char *compDrawName,
+                                 const char *compDrawElement);
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow AnimDynaPhysLoader from being copied and assigned.
-        AnimDynaPhysLoader( const AnimDynaPhysLoader& );
-        AnimDynaPhysLoader& operator=( const AnimDynaPhysLoader& );
+    static void ClearShadowList();
 
-        bool m_IsStateProp;
-    
-        bool IsMissionProp( const char* name )const;
-        static Map< tUID, tUID > s_ShadowList;
+    static tUID GetShadowElement(tUID);
+
+protected:
+
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow AnimDynaPhysLoader from being copied and assigned.
+    AnimDynaPhysLoader(const AnimDynaPhysLoader &);
+
+    AnimDynaPhysLoader &operator=(const AnimDynaPhysLoader &);
+
+    bool m_IsStateProp;
+
+    bool IsMissionProp(const char *name) const;
+
+    static Map <tUID, tUID> s_ShadowList;
 
 
-		//void LoadAnimWrapper( tChunkFile* file, tEntityStore* store, AnimDynaPhysWrapper* opAnimDynaPhysWrapper );
+    //void LoadAnimWrapper(tChunkFile* file, tEntityStore* store, AnimDynaPhysWrapper* opAnimDynaPhysWrapper);
 };
 //===========================================================================
 // Interface Definitions
@@ -114,40 +127,43 @@ class AnimDynaPhysLoader
 //		requires a store search to find physics and collision objects
 //
 //===========================================================================
-class AnimDynaPhysWrapperLoader 
-: public tSimpleChunkHandler,
-  public IWrappedLoader 
-{
+class AnimDynaPhysWrapperLoader
+        : public tSimpleChunkHandler,
+          public IWrappedLoader {
 public:
     AnimDynaPhysWrapperLoader();
+
     virtual ~AnimDynaPhysWrapperLoader();
-	void SetRegdListener( ChunkListenerCallback* pListenerCB,
-						 int   iUserData );
 
-	void ModRegdListener( ChunkListenerCallback* pListenerCB,
-						 int   iUserData );
+    void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
 
-	virtual tEntity* LoadObject( tChunkFile* file, tEntityStore* store );
- 
+    void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
+
+    virtual tEntity *LoadObject(tChunkFile *file, tEntityStore *store);
+
 private:
     // These methods defined as private and not implemented ensure that
     // clients will not be able to use them.  For example, we will
     // disallow AnimDynaPhysLoader from being copied and assigned.
-    AnimDynaPhysWrapperLoader( const AnimDynaPhysWrapperLoader& );
-    AnimDynaPhysWrapperLoader& operator=( const AnimDynaPhysWrapperLoader& );
+    AnimDynaPhysWrapperLoader(const AnimDynaPhysWrapperLoader &);
+
+    AnimDynaPhysWrapperLoader &operator=(const AnimDynaPhysWrapperLoader &);
 
 private:
 
-	sim::CollisionObjectLoader* mpCollObjLoader;
-	tCompositeDrawableLoader*	mpCompDLoader;
-	tMultiControllerLoader*		mpMCLoader;
-	tSkeletonLoader*			mpSkelLoader;
-	sim::PhysicsObjectLoader*	mpPhysObjLoader;
-	tFrameControllerLoader*		mpFCLoader;
-	tAnimationLoader*			mpAnimationLoader;
+    sim::CollisionObjectLoader *mpCollObjLoader;
+    tCompositeDrawableLoader *mpCompDLoader;
+    tMultiControllerLoader *mpMCLoader;
+    tSkeletonLoader *mpSkelLoader;
+    sim::PhysicsObjectLoader *mpPhysObjLoader;
+    tFrameControllerLoader *mpFCLoader;
+    tAnimationLoader *mpAnimationLoader;
 
 
 };
+
 //===========================================================================
 //
 // Description: 
@@ -158,41 +174,42 @@ private:
 //		requires a store search to find physics and collision objects
 //
 //===========================================================================
-class AnimObjDSGWrapperLoader 
-: public tSimpleChunkHandler,
-  public IWrappedLoader 
-{
+class AnimObjDSGWrapperLoader
+        : public tSimpleChunkHandler,
+          public IWrappedLoader {
 public:
     AnimObjDSGWrapperLoader();
+
     virtual ~AnimObjDSGWrapperLoader();
-	void SetRegdListener( ChunkListenerCallback* pListenerCB,
-						 int   iUserData );
 
-	void ModRegdListener( ChunkListenerCallback* pListenerCB,
-						 int   iUserData );
+    void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
 
-	virtual tEntity* LoadObject( tChunkFile* file, tEntityStore* store );
- 
+    void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
+
+    virtual tEntity *LoadObject(tChunkFile *file, tEntityStore *store);
+
 private:
     // These methods defined as private and not implemented ensure that
     // clients will not be able to use them.  For example, we will
     // disallow AnimDynaPhysLoader from being copied and assigned.
-    AnimObjDSGWrapperLoader( const AnimObjDSGWrapperLoader& );
-    AnimObjDSGWrapperLoader& operator=( const AnimObjDSGWrapperLoader& );
+    AnimObjDSGWrapperLoader(const AnimObjDSGWrapperLoader &);
+
+    AnimObjDSGWrapperLoader &operator=(const AnimObjDSGWrapperLoader &);
 
 private:
 
-	sim::CollisionObjectLoader* mpCollObjLoader;
-	tCompositeDrawableLoader*	mpCompDLoader;
-	tMultiControllerLoader*		mpMCLoader;
-	tSkeletonLoader*			mpSkelLoader;
-	sim::PhysicsObjectLoader*	mpPhysObjLoader;
-	tFrameControllerLoader*		mpFCLoader;
-	tAnimationLoader*			mpAnimationLoader;
-    CStatePropDataLoader*       mpStatePropLoader;
-    tAnimatedObjectFactoryLoader* mpFactoryLoader;
- 	tAnimatedObjectLoader*      mpAnimObjectLoader;
-
+    sim::CollisionObjectLoader *mpCollObjLoader;
+    tCompositeDrawableLoader *mpCompDLoader;
+    tMultiControllerLoader *mpMCLoader;
+    tSkeletonLoader *mpSkelLoader;
+    sim::PhysicsObjectLoader *mpPhysObjLoader;
+    tFrameControllerLoader *mpFCLoader;
+    tAnimationLoader *mpAnimationLoader;
+    CStatePropDataLoader *mpStatePropLoader;
+    tAnimatedObjectFactoryLoader *mpFactoryLoader;
+    tAnimatedObjectLoader *mpAnimObjectLoader;
 
 
 };

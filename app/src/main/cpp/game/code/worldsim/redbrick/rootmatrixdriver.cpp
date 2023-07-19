@@ -19,11 +19,11 @@
 #include <worldsim/redbrick/rootmatrixdriver.h>
 
 //------------------------------------------------------------------------
-void RootMatrixDriver::Update(poser::Pose* pose)
-{
-    poser::Joint* j = pose->GetJoint(0);
+void RootMatrixDriver::Update(poser::Pose *pose) {
+    poser::Joint *j = pose->GetJoint(0);
     //rmt::Matrix m = j->GetObjectMatrix();
     //m.Mult(*mRootMatrix);
-    j->SetWorldMatrix(*mRootMatrix);    // recall, mRootMatrix is a pointer to mTransform of the physics vehicle
+    j->SetWorldMatrix(
+            *mRootMatrix);    // recall, mRootMatrix is a pointer to mTransform of the physics vehicle
 }
 

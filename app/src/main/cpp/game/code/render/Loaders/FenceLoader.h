@@ -26,36 +26,35 @@
 // Synopsis:   The FenceLoader; Synopsis by Inspection.
 //
 //========================================================================
-class FenceLoader 
-: public tSimpleChunkHandler,
-  public IWrappedLoader 
-{
+class FenceLoader
+        : public tSimpleChunkHandler,
+          public IWrappedLoader {
 public:
-   FenceLoader();
+    FenceLoader();
 
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   void SetRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
 
-   void ModRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
 
-   ///////////////////////////////////////////////////////////////////////
-   // tSimpleChunkHandler
-   ///////////////////////////////////////////////////////////////////////
-   virtual tEntity* LoadObject(tChunkFile* file, tEntityStore* store);
+    ///////////////////////////////////////////////////////////////////////
+    // tSimpleChunkHandler
+    ///////////////////////////////////////////////////////////////////////
+    virtual tEntity *LoadObject(tChunkFile *file, tEntityStore *store);
 
 protected:
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   //ChunkListenerCallback*  mpListenerCB;
-   //void* mpUserData;
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    //ChunkListenerCallback*  mpListenerCB;
+    //void* mpUserData;
 private:
 
-	static unsigned int mFenceCount;
+    static unsigned int mFenceCount;
 };
 
 #endif

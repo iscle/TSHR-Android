@@ -44,8 +44,7 @@
 // Return:      N/A.
 //
 //==============================================================================
-SoundFXPauseLogic::SoundFXPauseLogic()
-{
+SoundFXPauseLogic::SoundFXPauseLogic() {
 }
 
 //==============================================================================
@@ -58,8 +57,7 @@ SoundFXPauseLogic::SoundFXPauseLogic()
 // Return:      N/A.
 //
 //==============================================================================
-SoundFXPauseLogic::~SoundFXPauseLogic()
-{
+SoundFXPauseLogic::~SoundFXPauseLogic() {
 }
 
 //=============================================================================
@@ -72,8 +70,7 @@ SoundFXPauseLogic::~SoundFXPauseLogic()
 // Return:      void 
 //
 //=============================================================================
-void SoundFXPauseLogic::RegisterEventListeners()
-{
+void SoundFXPauseLogic::RegisterEventListeners() {
 }
 
 //=============================================================================
@@ -87,8 +84,7 @@ void SoundFXPauseLogic::RegisterEventListeners()
 // Return:      void 
 //
 //=============================================================================
-void SoundFXPauseLogic::HandleEvent( EventEnum id, void* pEventData )
-{
+void SoundFXPauseLogic::HandleEvent(EventEnum id, void *pEventData) {
 }
 
 //******************************************************************************

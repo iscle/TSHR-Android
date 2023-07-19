@@ -45,8 +45,7 @@
 // Return:      N/A.
 //
 //==============================================================================
-PlayableDialog::PlayableDialog()
-{
+PlayableDialog::PlayableDialog() {
 }
 
 //==============================================================================
@@ -61,9 +60,8 @@ PlayableDialog::PlayableDialog()
 // Return:      N/A.
 //
 //==============================================================================
-PlayableDialog::PlayableDialog( unsigned int level, unsigned int mission, EventEnum event ) :
-    SelectableDialog( level, mission, event )
-{
+PlayableDialog::PlayableDialog(unsigned int level, unsigned int mission, EventEnum event) :
+        SelectableDialog(level, mission, event) {
 }
 
 //==============================================================================
@@ -76,8 +74,7 @@ PlayableDialog::PlayableDialog( unsigned int level, unsigned int mission, EventE
 // Return:      N/A.
 //
 //==============================================================================
-PlayableDialog::~PlayableDialog()
-{
+PlayableDialog::~PlayableDialog() {
 }
 
 //******************************************************************************

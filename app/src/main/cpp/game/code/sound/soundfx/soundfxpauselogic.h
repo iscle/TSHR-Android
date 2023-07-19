@@ -29,20 +29,21 @@
 //
 //=============================================================================
 
-class SoundFXPauseLogic : public SoundFXLogic
-{
-    public:
-        SoundFXPauseLogic();
-        virtual ~SoundFXPauseLogic();
+class SoundFXPauseLogic : public SoundFXLogic {
+public:
+    SoundFXPauseLogic();
 
-        void RegisterEventListeners();
+    virtual ~SoundFXPauseLogic();
 
-        void HandleEvent( EventEnum id, void* pEventData );
+    void RegisterEventListeners();
 
-    private:
-        //Prevent wasteful constructor creation.
-        SoundFXPauseLogic( const SoundFXPauseLogic& original );
-        SoundFXPauseLogic& operator=( const SoundFXPauseLogic& rhs );
+    void HandleEvent(EventEnum id, void *pEventData);
+
+private:
+    //Prevent wasteful constructor creation.
+    SoundFXPauseLogic(const SoundFXPauseLogic &original);
+
+    SoundFXPauseLogic &operator=(const SoundFXPauseLogic &rhs);
 };
 
 

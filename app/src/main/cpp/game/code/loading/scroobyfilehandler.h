@@ -28,41 +28,43 @@
 //
 //=============================================================================
 class ScroobyFileHandler : public FileHandler,
-                           public Scrooby::LoadProjectCallback
-{
-    public:
+                           public Scrooby::LoadProjectCallback {
+public:
 
-        ScroobyFileHandler();
-        virtual ~ScroobyFileHandler();
+    ScroobyFileHandler();
 
-        //
-        // Implement FileHandler interface.
-        //
-        virtual void LoadFile( const char* filename, 
-                               FileHandler::LoadFileCallback* pCallback,
-                               void* pUserData,
-                               GameMemoryAllocator heap );
+    virtual ~ScroobyFileHandler();
 
-        virtual void LoadFileSync( const char* filename );
+    //
+    // Implement FileHandler interface.
+    //
+    virtual void LoadFile(const char *filename,
+                          FileHandler::LoadFileCallback *pCallback,
+                          void *pUserData,
+                          GameMemoryAllocator heap);
 
-        //
-        // Implements Scrooby::LoadProjectCallback interface.
-        //
-        virtual void OnProjectLoadComplete( Scrooby::Project* pProject );
+    virtual void LoadFileSync(const char *filename);
 
-        //
-        // Specify which Scrooby inventory section to load the project.
-        //
-        void SetSectionName( const char* sectionName );
-        const char* GetSectionName() { return( mcSectionName ); }
+    //
+    // Implements Scrooby::LoadProjectCallback interface.
+    //
+    virtual void OnProjectLoadComplete(Scrooby::Project *pProject);
 
-    private:
+    //
+    // Specify which Scrooby inventory section to load the project.
+    //
+    void SetSectionName(const char *sectionName);
 
-        // Prevent wasteful constructor creation.
-        ScroobyFileHandler( const ScroobyFileHandler& scroobyFileHandler );
-        ScroobyFileHandler& operator=( const ScroobyFileHandler& scroobyFileHandler );
+    const char *GetSectionName() { return (mcSectionName); }
 
-        char mcSectionName[ 32 ];
+private:
+
+    // Prevent wasteful constructor creation.
+    ScroobyFileHandler(const ScroobyFileHandler &scroobyFileHandler);
+
+    ScroobyFileHandler &operator=(const ScroobyFileHandler &scroobyFileHandler);
+
+    char mcSectionName[32];
 
 };
 

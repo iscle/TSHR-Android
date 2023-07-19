@@ -46,10 +46,9 @@
 // Return:      N/A.
 //
 //==============================================================================
-ATCLoader::ATCLoader():tSimpleChunkHandler( SRR2::ChunkID::ATTRIBUTE_TABLE )
-{
-    
-   
+ATCLoader::ATCLoader() : tSimpleChunkHandler(SRR2::ChunkID::ATTRIBUTE_TABLE) {
+
+
 }
 
 //==============================================================================
@@ -62,8 +61,7 @@ ATCLoader::ATCLoader():tSimpleChunkHandler( SRR2::ChunkID::ATTRIBUTE_TABLE )
 // Return:      N/A.
 //
 //==============================================================================
-ATCLoader::~ATCLoader()
-{
+ATCLoader::~ATCLoader() {
 }
 
 //=============================================================================
@@ -79,48 +77,46 @@ ATCLoader::~ATCLoader()
 
 
 //Loads the ATC Chunk
-tEntity* ATCLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{   
-    ATCManager* p_atcmanager =NULL;
-    AttributeRow* p_AttributeRow = NULL;
+tEntity *ATCLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
+    ATCManager *p_atcmanager = NULL;
+    AttributeRow *p_AttributeRow = NULL;
     unsigned long numrows = f->GetUInt();
-    
-    //creating ATCTable
-    #ifdef RAD_GAMECUBE
-        HeapMgr()->PushHeap( GMA_GC_VMM );
-    #else
-        HeapMgr()->PushHeap( GMA_PERSISTENT );
-    #endif
 
-    p_AttributeRow = new AttributeRow [numrows];
-    #ifdef RAD_GAMECUBE
-        HeapMgr()->PopHeap( GMA_GC_VMM );
-    #else
-        HeapMgr()->PopHeap( GMA_PERSISTENT );
-    #endif
+    //creating ATCTable
+#ifdef RAD_GAMECUBE
+    HeapMgr()->PushHeap(GMA_GC_VMM);
+#else
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
+#endif
+
+    p_AttributeRow = new AttributeRow[numrows];
+#ifdef RAD_GAMECUBE
+    HeapMgr()->PopHeap(GMA_GC_VMM);
+#else
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
+#endif
 
     //populating ATCTable
     //read in the array row until there is no more rows
-    for(unsigned int i=0;i<numrows;i++)
-    {
-       f->GetString(p_AttributeRow[i].mSound);
-       f->GetString(p_AttributeRow[i].mParticle);
-       f->GetString(p_AttributeRow[i].mAnimation);
-       p_AttributeRow[i].mFriction=f->GetFloat();
-       p_AttributeRow[i].mMass=f->GetFloat();
-       p_AttributeRow[i].mElasticity=f->GetFloat();
+    for (unsigned int i = 0; i < numrows; i++) {
+        f->GetString(p_AttributeRow[i].mSound);
+        f->GetString(p_AttributeRow[i].mParticle);
+        f->GetString(p_AttributeRow[i].mAnimation);
+        p_AttributeRow[i].mFriction = f->GetFloat();
+        p_AttributeRow[i].mMass = f->GetFloat();
+        p_AttributeRow[i].mElasticity = f->GetFloat();
     }
-    
+
     //setting mp_ATCTable in the ATCManager
-    p_atcmanager=ATCManager::GetInstance();
-    p_atcmanager->SetATCTable(p_AttributeRow,numrows);
-   
+    p_atcmanager = ATCManager::GetInstance();
+    p_atcmanager->SetATCTable(p_AttributeRow, numrows);
+
     return NULL;
 }
 
 
 
-            
+
 
 //******************************************************************************
 //

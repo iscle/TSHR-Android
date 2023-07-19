@@ -25,34 +25,37 @@
 // Forward References
 //===========================================================================
 class CHudMap;
+
 class tPointCamera;
 
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenHudMap : public CGuiScreen
-{
+class CGuiScreenHudMap : public CGuiScreen {
 public:
-    CGuiScreenHudMap( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenHudMap(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenHudMap();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
-    CHudMap* m_largeHudMap;
+    CHudMap *m_largeHudMap;
     int m_posX;
     int m_posY;
     int m_width;
     int m_height;
 
-    tPointCamera* m_camera;
+    tPointCamera *m_camera;
 
 };
 

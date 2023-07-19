@@ -27,8 +27,7 @@
 //========================================
 // Constants, Typedefs and Statics
 //========================================
-enum FileHandlerEnum
-{
+enum FileHandlerEnum {
     FILEHANDLER_PURE3D,
     FILEHANDLER_LEVEL,
     FILEHANDLER_MISSION,

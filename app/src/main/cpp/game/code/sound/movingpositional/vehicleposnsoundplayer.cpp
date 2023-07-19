@@ -47,10 +47,9 @@
 // Return:      N/A.
 //
 //=============================================================================
-VehiclePositionalSoundPlayer::VehiclePositionalSoundPlayer( ) :
-    m_vehicle( NULL ),
-    m_tiePitchToVelocity( false )
-{
+VehiclePositionalSoundPlayer::VehiclePositionalSoundPlayer() :
+        m_vehicle(NULL),
+        m_tiePitchToVelocity(false) {
 }
 
 //=============================================================================
@@ -63,8 +62,7 @@ VehiclePositionalSoundPlayer::VehiclePositionalSoundPlayer( ) :
 // Return:      N/A.
 //
 //=============================================================================
-VehiclePositionalSoundPlayer::~VehiclePositionalSoundPlayer()
-{
+VehiclePositionalSoundPlayer::~VehiclePositionalSoundPlayer() {
 }
 
 //=============================================================================
@@ -79,27 +77,23 @@ VehiclePositionalSoundPlayer::~VehiclePositionalSoundPlayer()
 // Return:      void 
 //
 //=============================================================================
-void VehiclePositionalSoundPlayer::ActivateByName( const char* soundName, Vehicle* theCar )
-{
-    IRadNameSpace* nameSpace;
-    IRefCount* nameSpaceObj;
-    positionalSoundSettings* parameters;
+void VehiclePositionalSoundPlayer::ActivateByName(const char *soundName, Vehicle *theCar) {
+    IRadNameSpace *nameSpace;
+    IRefCount *nameSpaceObj;
+    positionalSoundSettings *parameters;
 
     //
     // Find the tunable sound settings that go with the name
     //
     nameSpace = Sound::daSoundRenderingManagerGet()->GetTuningNamespace();
-    rAssert( nameSpace != NULL );
-    nameSpaceObj = nameSpace->GetInstance( ::radMakeKey32( soundName ) );
-    if( nameSpaceObj != NULL )
-    {
-        parameters = reinterpret_cast<positionalSoundSettings*>( nameSpaceObj );
+    rAssert(nameSpace != NULL);
+    nameSpaceObj = nameSpace->GetInstance(::radMakeKey32(soundName));
+    if (nameSpaceObj != NULL) {
+        parameters = reinterpret_cast<positionalSoundSettings *>(nameSpaceObj);
 
-        Activate( parameters, parameters->GetClipName(), theCar );
-    }
-    else
-    {
-        rDebugString( "Couldn't play AI car sound, no matching settings found" );
+        Activate(parameters, parameters->GetClipName(), theCar);
+    } else {
+        rDebugString("Couldn't play AI car sound, no matching settings found");
     }
 }
 
@@ -116,21 +110,20 @@ void VehiclePositionalSoundPlayer::ActivateByName( const char* soundName, Vehicl
 // Return:      void 
 //
 //=============================================================================
-void VehiclePositionalSoundPlayer::Activate( positionalSoundSettings* soundSettings,
-                                             const char* resourceName,
-                                             Vehicle* theCar )
-{
+void VehiclePositionalSoundPlayer::Activate(positionalSoundSettings *soundSettings,
+                                            const char *resourceName,
+                                            Vehicle *theCar) {
     rmt::Vector posn;
 
     m_vehicle = theCar;
 
-    m_player.SetPositionCarrier( *this );
-    m_player.SetParameters( soundSettings );
+    m_player.SetPositionCarrier(*this);
+    m_player.SetParameters(soundSettings);
 
-    theCar->GetPosition( &posn );
-    m_player.SetPosition( posn.x, posn.y, posn.z );
+    theCar->GetPosition(&posn);
+    m_player.SetPosition(posn.x, posn.y, posn.z);
 
-    m_player.PlaySound( resourceName, NULL );
+    m_player.PlaySound(resourceName, NULL);
 }
 
 //=============================================================================
@@ -143,8 +136,7 @@ void VehiclePositionalSoundPlayer::Activate( positionalSoundSettings* soundSetti
 // Return:      void 
 //
 //=============================================================================
-void VehiclePositionalSoundPlayer::Deactivate()
-{
+void VehiclePositionalSoundPlayer::Deactivate() {
     m_vehicle = NULL;
     m_tiePitchToVelocity = false;
 
@@ -161,12 +153,11 @@ void VehiclePositionalSoundPlayer::Deactivate()
 // Return:      void 
 //
 //=============================================================================
-void VehiclePositionalSoundPlayer::GetPosition( radSoundVector& position )
-{
+void VehiclePositionalSoundPlayer::GetPosition(radSoundVector &position) {
     rmt::Vector vehiclePosn;
 
-    m_vehicle->GetPosition( &vehiclePosn );
-    position.SetElements( vehiclePosn.x, vehiclePosn.y, vehiclePosn.z );
+    m_vehicle->GetPosition(&vehiclePosn);
+    position.SetElements(vehiclePosn.x, vehiclePosn.y, vehiclePosn.z);
 }
 
 //=============================================================================
@@ -179,12 +170,11 @@ void VehiclePositionalSoundPlayer::GetPosition( radSoundVector& position )
 // Return:      void 
 //
 //=============================================================================
-void VehiclePositionalSoundPlayer::GetVelocity( radSoundVector& velocity )
-{
+void VehiclePositionalSoundPlayer::GetVelocity(radSoundVector &velocity) {
     rmt::Vector vehicleVel;
 
-    m_vehicle->GetVelocity( &vehicleVel );
-    velocity.SetElements( vehicleVel.x, vehicleVel.y, vehicleVel.z );
+    m_vehicle->GetVelocity(&vehicleVel);
+    velocity.SetElements(vehicleVel.x, vehicleVel.y, vehicleVel.z);
 }
 
 //=============================================================================
@@ -197,8 +187,7 @@ void VehiclePositionalSoundPlayer::GetVelocity( radSoundVector& velocity )
 // Return:      void 
 //
 //=============================================================================
-void VehiclePositionalSoundPlayer::ServiceOncePerFrame()
-{
+void VehiclePositionalSoundPlayer::ServiceOncePerFrame() {
     m_player.ServiceOncePerFrame();
 }
 
@@ -213,9 +202,8 @@ void VehiclePositionalSoundPlayer::ServiceOncePerFrame()
 // Return:      true if we're playing sound for that car, false otherwise 
 //
 //=============================================================================
-bool VehiclePositionalSoundPlayer::UsesVehicle( Vehicle* car )
-{
-    return( ( m_vehicle != NULL ) && ( car == m_vehicle ) );
+bool VehiclePositionalSoundPlayer::UsesVehicle(Vehicle *car) {
+    return ((m_vehicle != NULL) && (car == m_vehicle));
 }
 
 //=============================================================================
@@ -228,26 +216,23 @@ bool VehiclePositionalSoundPlayer::UsesVehicle( Vehicle* car )
 // Return:      void 
 //
 //=============================================================================
-void VehiclePositionalSoundPlayer::BlowUp()
-{
-    IRadNameSpace* nameSpace;
-    positionalSoundSettings* settings;
+void VehiclePositionalSoundPlayer::BlowUp() {
+    IRadNameSpace *nameSpace;
+    positionalSoundSettings *settings;
     rmt::Vector position;
 
     nameSpace = Sound::daSoundRenderingManagerGet()->GetTuningNamespace();
-    rAssert( nameSpace != NULL );
-    settings = reinterpret_cast<positionalSoundSettings*>( nameSpace->GetInstance( "collision_sounds" ) );
-    if( settings != NULL )
-    {
-        m_vehicle->GetPosition( &position );
-        m_explosionPlayer.SetPosition( position.x, position.y, position.z );
-        m_explosionPlayer.SetPositionCarrier( *this );
-        m_explosionPlayer.SetParameters( settings );
-        m_explosionPlayer.PlaySound( "generic_car_explode" );
-    }
-    else
-    {
-        rDebugString( "Couldn't find positional explosion settings for AI vehicle" );
+    rAssert(nameSpace != NULL);
+    settings = reinterpret_cast<positionalSoundSettings *>(nameSpace->GetInstance(
+            "collision_sounds"));
+    if (settings != NULL) {
+        m_vehicle->GetPosition(&position);
+        m_explosionPlayer.SetPosition(position.x, position.y, position.z);
+        m_explosionPlayer.SetPositionCarrier(*this);
+        m_explosionPlayer.SetParameters(settings);
+        m_explosionPlayer.PlaySound("generic_car_explode");
+    } else {
+        rDebugString("Couldn't find positional explosion settings for AI vehicle");
     }
 }
 

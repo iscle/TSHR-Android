@@ -30,17 +30,16 @@
 // Public Member Functions
 //===========================================================================
 
-HudMapCam::HudMapCam( int playerID )
-:   KullCam(),
-    m_camera( NULL ),
-    m_originalHeading( -1, 0, 0 )
-{
-    SetPlayerID( playerID );
+HudMapCam::HudMapCam(int playerID)
+        : KullCam(),
+          m_camera(NULL),
+          m_originalHeading(-1, 0, 0) {
+    SetPlayerID(playerID);
     mIgnoreDebugController = true;
 
     m_camera = new tPointCamera;
     m_camera->AddRef();
-    SetCamera( m_camera );
+    SetCamera(m_camera);
 
     // override default KullCam parameters
     mElevation = 0.0f;
@@ -48,66 +47,55 @@ HudMapCam::HudMapCam( int playerID )
 
     // fix hud map cam FOV
     //
-    this->SetFOV( rmt::PI_BY2 );
+    this->SetFOV(rmt::PI_BY2);
 }
 
-HudMapCam::~HudMapCam()
-{
-    if( m_camera != NULL )
-    {
+HudMapCam::~HudMapCam() {
+    if (m_camera != NULL) {
         m_camera->Release();
         m_camera = NULL;
     }
 }
 
 void
-HudMapCam::Update( unsigned int milliseconds )
-{
+HudMapCam::Update(unsigned int milliseconds) {
     // adjust kull cam rotation to match main camera heading
     //
     rmt::Vector camHeading;
-    GetSuperCamManager()->GetSCC( this->GetPlayerID() )->GetActiveSuperCam()->GetHeading( &camHeading );
+    GetSuperCamManager()->GetSCC(this->GetPlayerID())->GetActiveSuperCam()->GetHeading(&camHeading);
     camHeading.y = 0;
 
-    if( camHeading.MagnitudeSqr() > 0 )
-    {
-        float ratio = camHeading.DotProduct( m_originalHeading ) / camHeading.Magnitude();
-        if( ratio > 1.0f )
-        {
+    if (camHeading.MagnitudeSqr() > 0) {
+        float ratio = camHeading.DotProduct(m_originalHeading) / camHeading.Magnitude();
+        if (ratio > 1.0f) {
             mRotation = 0.0f;
-        }
-        else if( ratio < -1.0f )
-        {
+        } else if (ratio < -1.0f) {
             mRotation = rmt::PI;
-        }
-        else
-        {
-            mRotation = rmt::ACos( ratio );
+        } else {
+            mRotation = rmt::ACos(ratio);
         }
 
-        rAssert( !rmt::IsNan( mRotation ) );
+        rAssert(!rmt::IsNan(mRotation));
 
         rmt::Vector normal = camHeading;
-        normal.CrossProduct( m_originalHeading );
-        if( normal.y < 0 )
-        {
+        normal.CrossProduct(m_originalHeading);
+        if (normal.y < 0) {
             mRotation = -mRotation;
         }
     }
 
-    KullCam::Update( milliseconds );
+    KullCam::Update(milliseconds);
 
     // fix hud map cam at 'mMagnitude' above sea level
     //
     rmt::Vector camPosition = m_camera->GetPosition();
     camPosition.y = mMagnitude;
-    m_camera->SetPosition( camPosition );
+    m_camera->SetPosition(camPosition);
 }
 
 void
-HudMapCam::SetHeight( float height )
-{
-    rAssert( height > 0.0f );
+HudMapCam::SetHeight(float height) {
+    rAssert(height > 0.0f);
     mMagnitude = height;
 }
 

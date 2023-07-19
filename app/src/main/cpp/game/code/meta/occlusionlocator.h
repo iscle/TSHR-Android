@@ -28,10 +28,10 @@
 //
 //=============================================================================
 
-class OcclusionLocator : public TriggerLocator
-{
+class OcclusionLocator : public TriggerLocator {
 public:
     OcclusionLocator();
+
     virtual ~OcclusionLocator();
 
     virtual LocatorType::Type GetDataType() const;
@@ -40,16 +40,18 @@ public:
 
 protected:
     friend class LocatorLoader;
-    void SetNumOccTriggers( unsigned int num );
+
+    void SetNumOccTriggers(unsigned int num);
 
 private:
-    virtual void OnTrigger( unsigned int playerID );
+    virtual void OnTrigger(unsigned int playerID);
 
     unsigned int mNumOccTriggers;
 
     //Prevent wasteful constructor creation.
-    OcclusionLocator( const OcclusionLocator& occlusionlocator );
-    OcclusionLocator& operator=( const OcclusionLocator& occlusionlocator );
+    OcclusionLocator(const OcclusionLocator &occlusionlocator);
+
+    OcclusionLocator &operator=(const OcclusionLocator &occlusionlocator);
 };
 
 //******************************************************************************
@@ -68,9 +70,8 @@ private:
 // Return:      inline 
 //
 //=============================================================================
-inline LocatorType::Type OcclusionLocator::GetDataType() const
-{
-    return( LocatorType::OCCLUSION );
+inline LocatorType::Type OcclusionLocator::GetDataType() const {
+    return (LocatorType::OCCLUSION);
 }
 
 
@@ -84,8 +85,7 @@ inline LocatorType::Type OcclusionLocator::GetDataType() const
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int OcclusionLocator::GetNumOccTriggers() const
-{
+inline unsigned int OcclusionLocator::GetNumOccTriggers() const {
     return mNumOccTriggers;
 }
 
@@ -100,13 +100,12 @@ inline unsigned int OcclusionLocator::GetNumOccTriggers() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int num )
+// Parameters:  (unsigned int num)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void OcclusionLocator::SetNumOccTriggers( unsigned int num )
-{
+inline void OcclusionLocator::SetNumOccTriggers(unsigned int num) {
     mNumOccTriggers = num;
 }
 

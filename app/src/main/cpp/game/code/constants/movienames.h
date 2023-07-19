@@ -26,14 +26,13 @@
 //
 //=============================================================================
 
-namespace MovieNames
-{
+namespace MovieNames {
 #ifdef RAD_XBOX
 
     static char* DEMO = "D:\\movies\\demo.rmv";
     static char* RADICALLOGO = "D:\\movies\\radlogo.rmv";
     static char* FOXLOGO = "D:\\movies\\foxlogo.rmv";
-	static char* GRACIELOGO = "D:\\movies\\gracie.rmv";
+    static char* GRACIELOGO = "D:\\movies\\gracie.rmv";
     static char* VUGLOGO = "D:\\movies\\vuglogo.rmv";
     static char* INTROFMV = "D:\\movies\\intro.rmv";
     static char* MOVIE1 = "D:\\movies\\fmv1a.rmv";
@@ -50,7 +49,7 @@ namespace MovieNames
     static char* DEMO = "movies\\demo.rmv";
     static char* RADICALLOGO = "movies\\radlogo.rmv";
     static char* FOXLOGO = "movies\\foxlogo.rmv";
-	static char* GRACIELOGO = "movies\\gracie.rmv";
+    static char* GRACIELOGO = "movies\\gracie.rmv";
     static char* VUGLOGO = "movies\\vuglogo.rmv";
     static char* INTROFMV = "movies\\intro.rmv";
     static char* MOVIE1 = "movies\\fmv1a.rmv";
@@ -67,7 +66,7 @@ namespace MovieNames
     static char* DEMO = "movies/demo.rmv";
     static char* RADICALLOGO = "movies/radlogo.rmv";
     static char* FOXLOGO = "movies/foxlogo.rmv";
-	static char* GRACIELOGO = "movies/gracie.rmv";
+    static char* GRACIELOGO = "movies/gracie.rmv";
     static char* VUGLOGO = "movies/vuglogo.rmv";
     static char* INTROFMV = "movies/intro.rmv";
     static char* MOVIE1 = "movies/fmv1a.rmv";

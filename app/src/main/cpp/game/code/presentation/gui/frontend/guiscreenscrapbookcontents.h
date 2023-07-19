@@ -29,32 +29,35 @@ class CGuiMenu2D;
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenScrapBookContents : public CGuiScreen
-{
+class CGuiScreenScrapBookContents : public CGuiScreen {
 public:
-    CGuiScreenScrapBookContents( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenScrapBookContents(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenScrapBookContents();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    virtual CGuiMenu* HasMenu() { return m_pMenu; }
+    virtual CGuiMenu *HasMenu() { return m_pMenu; }
 
     unsigned int GetCurrentLevel() const;
-    void SetLevelBarVisible( bool isVisible );
+
+    void SetLevelBarVisible(bool isVisible);
+
 #ifdef RAD_WIN32
-    virtual eFEHotspotType CheckCursorAgainstHotspots( float x, float y );
+    virtual eFEHotspotType CheckCursorAgainstHotspots(float x, float y);
 #endif
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
-    enum eMenuItem
-    {
+    enum eMenuItem {
         MENU_STORY_MISSIONS,
         MENU_CHARACTER_CLOTHING,
         MENU_VEHICLES,
@@ -66,22 +69,23 @@ private:
         NUM_MENU_ITEMS
     };
 
-    void OnLevelSelectionChange( int delta );
-    void OnMenuSelectionMade( eMenuItem selection );
+    void OnLevelSelectionChange(int delta);
 
-    CGuiMenu2D* m_pMenu;
+    void OnMenuSelectionMade(eMenuItem selection);
 
-    Scrooby::Sprite* m_menuImages[ NUM_MENU_ITEMS ];
+    CGuiMenu2D *m_pMenu;
 
-    Scrooby::Group* m_levelBarGroup;
-    Scrooby::Text* m_levelSelection;
-    Scrooby::Group* m_LTrigger;
-    Scrooby::Group* m_RTrigger;
-    Scrooby::Sprite* m_LTriggerBgd;
-    Scrooby::Sprite* m_RTriggerBgd;
+    Scrooby::Sprite *m_menuImages[NUM_MENU_ITEMS];
+
+    Scrooby::Group *m_levelBarGroup;
+    Scrooby::Text *m_levelSelection;
+    Scrooby::Group *m_LTrigger;
+    Scrooby::Group *m_RTrigger;
+    Scrooby::Sprite *m_LTriggerBgd;
+    Scrooby::Sprite *m_RTriggerBgd;
     unsigned int m_currentLevel;
 
-    Scrooby::Layer* m_sparkles;
+    Scrooby::Layer *m_sparkles;
 
 };
 
@@ -89,8 +93,7 @@ private:
 // Inlines
 //===========================================================================
 
-inline unsigned int CGuiScreenScrapBookContents::GetCurrentLevel() const
-{
+inline unsigned int CGuiScreenScrapBookContents::GetCurrentLevel() const {
     return m_currentLevel;
 }
 

@@ -30,17 +30,19 @@
 //
 //=============================================================================
 
-class PlayableDialog : public SelectableDialog
-{
-    public:
-        PlayableDialog();
-        PlayableDialog( unsigned int level, unsigned int mission, EventEnum event );
-        virtual ~PlayableDialog();
+class PlayableDialog : public SelectableDialog {
+public:
+    PlayableDialog();
 
-    private:
-        //Prevent wasteful constructor creation.
-        PlayableDialog( const PlayableDialog& original );
-        PlayableDialog& operator=( const PlayableDialog& rhs );
+    PlayableDialog(unsigned int level, unsigned int mission, EventEnum event);
+
+    virtual ~PlayableDialog();
+
+private:
+    //Prevent wasteful constructor creation.
+    PlayableDialog(const PlayableDialog &original);
+
+    PlayableDialog &operator=(const PlayableDialog &rhs);
 };
 
 

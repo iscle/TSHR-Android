@@ -20,7 +20,7 @@
 //===========================================================================
 
 const float DEGREES_PER_SECOND = 20.0f;
-const float RADIANS_PER_MILLISECOND = rmt::DegToRadian( DEGREES_PER_SECOND ) / 1000.0f;
+const float RADIANS_PER_MILLISECOND = rmt::DegToRadian(DEGREES_PER_SECOND) / 1000.0f;
 
 //===========================================================================
 // Global Data, Local Data, Local Classes
@@ -44,9 +44,8 @@ const float RADIANS_PER_MILLISECOND = rmt::DegToRadian( DEGREES_PER_SECOND ) / 1
 //
 //===========================================================================
 
-ActorAnimationUFO::ActorAnimationUFO():
-m_NumUpdates( 0 )
-{
+ActorAnimationUFO::ActorAnimationUFO() :
+        m_NumUpdates(0) {
 
 }
 
@@ -63,9 +62,8 @@ m_NumUpdates( 0 )
 //
 //===========================================================================
 
-ActorAnimationUFO::~ActorAnimationUFO()
-{
-    
+ActorAnimationUFO::~ActorAnimationUFO() {
+
 }
 
 //===========================================================================
@@ -81,21 +79,19 @@ ActorAnimationUFO::~ActorAnimationUFO()
 //
 //===========================================================================
 
-bool ActorAnimationUFO::Update( const rmt::Matrix& currTransform, 
-                                rmt::Matrix* newTransform, 
-                                float deltaTime, 
-                                tCompositeDrawable* compDraw )
-{
+bool ActorAnimationUFO::Update(const rmt::Matrix &currTransform,
+                               rmt::Matrix *newTransform,
+                               float deltaTime,
+                               tCompositeDrawable *compDraw) {
     float angle = deltaTime * RADIANS_PER_MILLISECOND;
 
     // Rotate the ufo
     rmt::Matrix rotationMatrix;
     rotationMatrix.Identity();
-    rotationMatrix.FillRotateY( angle );
-    newTransform->Mult( rotationMatrix, currTransform );
+    rotationMatrix.FillRotateY(angle);
+    newTransform->Mult(rotationMatrix, currTransform);
 
-    if ( (m_NumUpdates % 100) == 0 )
-    {
+    if ((m_NumUpdates % 100) == 0) {
         rotationMatrix.OrthoNormal();
     }
 

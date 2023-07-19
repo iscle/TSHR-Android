@@ -53,11 +53,10 @@ static const int MAX_TIME = 4000;
 // Return:      N/A.
 //
 //==============================================================================
-Blinker::Blinker():
-    mCharacter( NULL ),
-    mController( NULL ) ,
-    mState( STATE_BLINKING )
-{
+Blinker::Blinker() :
+        mCharacter(NULL),
+        mController(NULL),
+        mState(STATE_BLINKING) {
 }
 
 //==============================================================================
@@ -70,10 +69,8 @@ Blinker::Blinker():
 // Return:      N/A.
 //
 //==============================================================================
-Blinker::~Blinker()
-{
-    if( mController != NULL )
-    {
+Blinker::~Blinker() {
+    if (mController != NULL) {
         mController->Release();
     }
 }
@@ -83,44 +80,37 @@ Blinker::~Blinker()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( Character* pCharacter )
+// Parameters:  (Character* pCharacter)
 //
 // Return:      void 
 //
 //=============================================================================
-void Blinker::SetCharacter( Character* pCharacter )
-{
-//    if( mCharacter  == pCharacter )
+void Blinker::SetCharacter(Character *pCharacter) {
+//    if(mCharacter  == pCharacter)
 //    {
 //        return;
 //    }
     mCharacter = pCharacter;
 
-    if (pCharacter == 0)
-    {
-        if (mController)
-        {
-            mController->Release ();
+    if (pCharacter == 0) {
+        if (mController) {
+            mController->Release();
             mController = 0;
         }
-    }
-    else
-    {
-        const char* modelName = GetCharacterManager()->GetModelName( mCharacter );
-        tMultiController* multicontroller = 0;
-        if( tName::MakeUID( modelName ) != tName::MakeUID( "npd" ) )
-        {
-            multicontroller = p3d::find< tMultiController >( modelName );
+    } else {
+        const char *modelName = GetCharacterManager()->GetModelName(mCharacter);
+        tMultiController *multicontroller = 0;
+        if (tName::MakeUID(modelName) != tName::MakeUID("npd")) {
+            multicontroller = p3d::find<tMultiController>(modelName);
         }
-        tRefCounted::Assign( mController, multicontroller );
+        tRefCounted::Assign(mController, multicontroller);
     }
 
-    if( mController == NULL )
-    {
+    if (mController == NULL) {
         return;
     }
 
-    mController->SetCycleMode( FORCE_NON_CYCLIC );
+    mController->SetCycleMode(FORCE_NON_CYCLIC);
 }
 
 //=============================================================================
@@ -128,64 +118,50 @@ void Blinker::SetCharacter( Character* pCharacter )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int elapsedTime )
+// Parameters:  (int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void Blinker::Update( int elapsedTime )
-{
+void Blinker::Update(int elapsedTime) {
     mTimeSinceBlink += elapsedTime;
 
-    if( mController == NULL )
-    {
-        if( (mCharacter->GetActiveFrame() & 0xf) == (GetGame()->GetFrameCount() & 0xf))
-        {
+    if (mController == NULL) {
+        if ((mCharacter->GetActiveFrame() & 0xf) == (GetGame()->GetFrameCount() & 0xf)) {
             mTimeSinceBlink = 0;
-            const char* modelName = GetCharacterManager()->GetModelName( mCharacter );
-            tMultiController* multicontroller = 0;
-            if(tName::MakeUID(modelName) != tName::MakeUID("npd"))
-            {
-                multicontroller = p3d::find< tMultiController >( modelName );
+            const char *modelName = GetCharacterManager()->GetModelName(mCharacter);
+            tMultiController *multicontroller = 0;
+            if (tName::MakeUID(modelName) != tName::MakeUID("npd")) {
+                multicontroller = p3d::find<tMultiController>(modelName);
             }
-            if( multicontroller != NULL )
-            {
-                tRefCounted::Assign( mController, multicontroller );
-            }
-            else
-            {
+            if (multicontroller != NULL) {
+                tRefCounted::Assign(mController, multicontroller);
+            } else {
                 return;
             }
-        }
-        else
-        {
+        } else {
             return;
         }
     }
 
-    switch( mState )
-    {
-    case STATE_WAITING:
-        {
-            rAssert( mController != NULL );
-            if( mTimeSinceBlink >= mTimeTarget )
-            {
+    switch (mState) {
+        case STATE_WAITING: {
+            rAssert(mController != NULL);
+            if (mTimeSinceBlink >= mTimeTarget) {
                 mController->Reset();
                 mState = STATE_BLINKING;
             }
 
             break;
         }
-    case STATE_BLINKING:
-        {
-            rAssert( mController != NULL );
+        case STATE_BLINKING: {
+            rAssert(mController != NULL);
 
-            mController->Advance( static_cast<float>( elapsedTime ), true );
+            mController->Advance(static_cast<float>(elapsedTime), true);
 
             float frames = mController->GetNumFrames();
             float frame = mController->GetFrame();
-            if( frame >= frames )
-            {
+            if (frame >= frames) {
                 mTimeTarget = MIN_TIME + (MAX_TIME - MIN_TIME) * rand() / RAND_MAX;
                 mTimeSinceBlink = 0;
                 mState = STATE_WAITING;
@@ -193,8 +169,7 @@ void Blinker::Update( int elapsedTime )
 
             break;
         }
-    default:
-        {
+        default: {
             break;
         }
     }
@@ -210,10 +185,8 @@ void Blinker::Update( int elapsedTime )
 // Return:      void 
 //
 //=============================================================================
-void Blinker::StartBlinking()
-{
-    if( mState == STATE_INVALID )
-    {
+void Blinker::StartBlinking() {
+    if (mState == STATE_INVALID) {
         mState = STATE_BLINKING;
     }
 }
@@ -228,10 +201,8 @@ void Blinker::StartBlinking()
 // Return:      void 
 //
 //=============================================================================
-void Blinker::StopBlinking()
-{
-    if( mState != STATE_INVALID )
-    {
+void Blinker::StopBlinking() {
+    if (mState != STATE_INVALID) {
         mState = STATE_INVALID;
     }
 }

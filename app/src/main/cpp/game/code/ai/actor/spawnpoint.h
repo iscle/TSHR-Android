@@ -27,6 +27,7 @@
 //===========================================================================
 
 class Behaviour;
+
 class TriggerVolume;
 
 
@@ -50,47 +51,48 @@ class TriggerVolume;
 //      Each spawn point will only ever spawn one actor at a time
 //
 //===========================================================================
-class SpawnPoint : public TriggerLocator, public EventListener
-{
-    public:
-        SpawnPoint( const char* spawnPointName, const char* statePropName, const rmt::Sphere& sphere, unsigned int timeOut );
-        ~SpawnPoint();
+class SpawnPoint : public TriggerLocator, public EventListener {
+public:
+    SpawnPoint(const char *spawnPointName, const char *statePropName, const rmt::Sphere &sphere,
+               unsigned int timeOut);
 
-        tUID GetUID()const { return m_SpawnPointName; }       
-        void AddBehaviour( Behaviour* );
+    ~SpawnPoint();
 
-        virtual LocatorType::Type GetDataType() const { return LocatorType::SPAWN_POINT; };
-    
-        // Can the spawn point respawn a new actor? Or has there
-        // not been enough time since the last respawn
-        bool CanRespawn()const;
+    tUID GetUID() const { return m_SpawnPointName; }
 
-        virtual void HandleEvent( EventEnum id, void* pEventData );
+    void AddBehaviour(Behaviour *);
 
-    protected:
+    virtual LocatorType::Type GetDataType() const { return LocatorType::SPAWN_POINT; };
 
-        rmt::Sphere m_Sphere;
-        unsigned int m_SpawnTimeout;
-        TriggerVolume* m_TriggerVolume;
-        tUID m_StatePropName; 
-        tUID m_SpawnPointName;
+    // Can the spawn point respawn a new actor? Or has there
+    // not been enough time since the last respawn
+    bool CanRespawn() const;
 
-        unsigned int m_TimeActorDestroyed;
-        unsigned int m_TimeOutPeriod;
-        bool m_WasDestroyed;
-        short mPersistentObjectID;
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
-        virtual void OnTrigger( unsigned int playerID );
+protected:
 
-        // List of behaviours that can be attached to a spawned object
-    
+    rmt::Sphere m_Sphere;
+    unsigned int m_SpawnTimeout;
+    TriggerVolume *m_TriggerVolume;
+    tUID m_StatePropName;
+    tUID m_SpawnPointName;
 
-    private:
+    unsigned int m_TimeActorDestroyed;
+    unsigned int m_TimeOutPeriod;
+    bool m_WasDestroyed;
+    short mPersistentObjectID;
 
-        SwapArray< Behaviour* > m_Behaviours;
+    virtual void OnTrigger(unsigned int playerID);
+
+    // List of behaviours that can be attached to a spawned object
+
+
+private:
+
+    SwapArray<Behaviour *> m_Behaviours;
 
 };
-
 
 
 #endif

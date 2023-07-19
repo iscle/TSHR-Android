@@ -28,6 +28,7 @@
 #include <contexts/gameplay/gameplaycontext.h>
 #include <worldsim/coins/coinmanager.h>
 #include <worldsim/coins/sparkle.h>
+
 #ifdef RAD_WIN32
 #include <input/inputmanager.h>
 #endif
@@ -57,11 +58,10 @@
 //
 //========================================================================
 FrontEndRenderLayer::FrontEndRenderLayer()
-:   RenderLayer(),
-    mpScroobyApp( NULL )
-{
+        : RenderLayer(),
+          mpScroobyApp(NULL) {
 #ifdef DEBUGWATCH
-    radDbgWatchAddUnsignedInt(&mDebugRenderTime, "Render Time", "Front End Render Layer" );
+    radDbgWatchAddUnsignedInt(&mDebugRenderTime, "Render Time", "Front End Render Layer");
 #endif
 }
 
@@ -78,30 +78,26 @@ FrontEndRenderLayer::FrontEndRenderLayer()
 // Constraints: 
 //
 //========================================================================
-FrontEndRenderLayer::~FrontEndRenderLayer()
-{
+FrontEndRenderLayer::~FrontEndRenderLayer() {
 #ifdef DEBUGWATCH
     radDbgWatchDelete(&mDebugRenderTime);
 #endif
 }
 
-void FrontEndRenderLayer::DrawCoinObject()
-{
+void FrontEndRenderLayer::DrawCoinObject() {
     // Render HUD coin effects.
-    if((GetGameFlow()->GetCurrentContext() == CONTEXT_GAMEPLAY ||
-        GetGameFlow()->GetCurrentContext() == CONTEXT_PAUSE) &&
-	   !GetPresentationManager()->IsBusy())
-	{
+    if ((GetGameFlow()->GetCurrentContext() == CONTEXT_GAMEPLAY ||
+         GetGameFlow()->GetCurrentContext() == CONTEXT_PAUSE) &&
+        !GetPresentationManager()->IsBusy()) {
         GetCoinManager()->HUDRender();
         GetSparkleManager()->HUDRender();
         //??? GetHitnRunManager()->HUDRender();
+    } else {
+        GetCoinManager()->ClearHUDCoins();
     }
-	else
-	{
-		GetCoinManager()->ClearHUDCoins();
-	}
 
 }
+
 //************************************************************************
 // Render Interface
 //************************************************************************
@@ -118,27 +114,25 @@ void FrontEndRenderLayer::DrawCoinObject()
 // Constraints: 
 //
 //========================================================================
-void FrontEndRenderLayer::Render()
-{
-    BEGIN_PROFILE( "FE Render" );
+void FrontEndRenderLayer::Render() {
+    BEGIN_PROFILE("FE Render");
 
 #ifdef DEBUGWATCH
     mDebugRenderTime = radTimeGetMicroseconds();
 #endif
 
-    for( unsigned int view = 0; view < mNumViews; view++ )
-    {
-        mpView[ view ]->BeginRender();
+    for (unsigned int view = 0; view < mNumViews; view++) {
+        mpView[view]->BeginRender();
 
         rAssert(!IsDead());
 
-        HeapMgr()->PushHeap( GMA_TEMP );
+        HeapMgr()->PushHeap(GMA_TEMP);
 
         if (!GetCoinManager()->DrawAfterGui())
             DrawCoinObject();
         // display Scrooby screen (and updates all Pure3d objects)
         //
-        mpScroobyApp->DrawFrame( static_cast<float>( g_scroobySimulationTime ) );
+        mpScroobyApp->DrawFrame(static_cast<float>(g_scroobySimulationTime));
 #ifdef RAD_WIN32
         // Update the frontend cursor.
         GetInputManager()->GetFEMouse()->Update();
@@ -147,18 +141,18 @@ void FrontEndRenderLayer::Render()
         if (GetCoinManager()->DrawAfterGui())
             DrawCoinObject();
 
-        HeapMgr()->PopHeap ( GMA_TEMP );
+        HeapMgr()->PopHeap(GMA_TEMP);
 
 //        GetBillboardQuadManager()->DisplayAll();
 
-        mpView[ view ]->EndRender();
+        mpView[view]->EndRender();
     }
 
 #ifdef DEBUGWATCH
     mDebugRenderTime = radTimeGetMicroseconds()-mDebugRenderTime;
 #endif
 
-    END_PROFILE( "FE Render" );
+    END_PROFILE("FE Render");
 }
 
 //************************************************************************
@@ -180,10 +174,9 @@ void FrontEndRenderLayer::Render()
 // Constraints: 
 //
 //========================================================================
-void FrontEndRenderLayer::AddGuts( tDrawable* ipDrawable )
-{
-   //The Basic FrontEndRenderLayer does not support this type
-   rAssert(false);
+void FrontEndRenderLayer::AddGuts(tDrawable *ipDrawable) {
+    //The Basic FrontEndRenderLayer does not support this type
+    rAssert(false);
 }
 
 //========================================================================
@@ -199,10 +192,9 @@ void FrontEndRenderLayer::AddGuts( tDrawable* ipDrawable )
 // Constraints: 
 //
 //========================================================================
-void FrontEndRenderLayer::AddGuts( tGeometry* ipGeometry )
-{
-   //The Basic FrontEndRenderLayer does not support this type
-   rAssert(false);
+void FrontEndRenderLayer::AddGuts(tGeometry *ipGeometry) {
+    //The Basic FrontEndRenderLayer does not support this type
+    rAssert(false);
 }
 
 //========================================================================
@@ -218,10 +210,9 @@ void FrontEndRenderLayer::AddGuts( tGeometry* ipGeometry )
 // Constraints: None.
 //
 //========================================================================
-void FrontEndRenderLayer::AddGuts( IntersectDSG* ipIntersectDSG )
-{
-   //The Basic FrontEndRenderLayer does not support this type
-   rAssert(false);
+void FrontEndRenderLayer::AddGuts(IntersectDSG *ipIntersectDSG) {
+    //The Basic FrontEndRenderLayer does not support this type
+    rAssert(false);
 }
 
 //========================================================================
@@ -237,10 +228,9 @@ void FrontEndRenderLayer::AddGuts( IntersectDSG* ipIntersectDSG )
 // Constraints: None.
 //
 //========================================================================
-void FrontEndRenderLayer::AddGuts( StaticEntityDSG* ipStaticEntityDSG )
-{
-   //The Basic FrontEndRenderLayer does not support this type
-   rAssert(false);
+void FrontEndRenderLayer::AddGuts(StaticEntityDSG *ipStaticEntityDSG) {
+    //The Basic FrontEndRenderLayer does not support this type
+    rAssert(false);
 }
 
 //========================================================================
@@ -256,10 +246,9 @@ void FrontEndRenderLayer::AddGuts( StaticEntityDSG* ipStaticEntityDSG )
 // Constraints: None.
 //
 //========================================================================
-void FrontEndRenderLayer::AddGuts( StaticPhysDSG* ipStaticPhysDSG )
-{
-   //The Basic FrontEndRenderLayer does not support this type
-   rAssert(false);
+void FrontEndRenderLayer::AddGuts(StaticPhysDSG *ipStaticPhysDSG) {
+    //The Basic FrontEndRenderLayer does not support this type
+    rAssert(false);
 }
 
 //========================================================================
@@ -275,9 +264,8 @@ void FrontEndRenderLayer::AddGuts( StaticPhysDSG* ipStaticPhysDSG )
 // Constraints: None.
 //
 //========================================================================
-void FrontEndRenderLayer::AddGuts( Scrooby::App* ipScroobyApp )
-{
-    rAssert( mpScroobyApp == NULL );
+void FrontEndRenderLayer::AddGuts(Scrooby::App *ipScroobyApp) {
+    rAssert(mpScroobyApp == NULL);
 
     mpScroobyApp = ipScroobyApp;
 }
@@ -295,8 +283,7 @@ void FrontEndRenderLayer::AddGuts( Scrooby::App* ipScroobyApp )
 // Constraints: None.
 //
 //========================================================================
-void FrontEndRenderLayer::SetUpGuts()
-{
+void FrontEndRenderLayer::SetUpGuts() {
     // do nothing
 }
 
@@ -313,7 +300,6 @@ void FrontEndRenderLayer::SetUpGuts()
 // Constraints: None.
 //
 //========================================================================
-void FrontEndRenderLayer::NullifyGuts()
-{
+void FrontEndRenderLayer::NullifyGuts() {
     mpScroobyApp = NULL;
 }

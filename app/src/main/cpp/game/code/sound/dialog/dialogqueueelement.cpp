@@ -38,174 +38,173 @@
 //
 //******************************************************************************
 
-IRadTimerList* DialogQueueElement::s_timerList = NULL;
+IRadTimerList *DialogQueueElement::s_timerList = NULL;
 bool DialogQueueElement::s_watcherInitialized = false;
 
-struct LinePriorityTableEntry
-{
+struct LinePriorityTableEntry {
     EventEnum eventID;
     DialogPriority priority;
     unsigned int probability;
 #ifndef RAD_RELEASE
-    const char* eventName;
+    const char *eventName;
 #endif
 };
 
 LinePriorityTableEntry priorityTable[] =
-{
-    { EVENT_GETINTOVEHICLE_START, OccasionalPlayLine, 20
+        {
+                {EVENT_GETINTOVEHICLE_START,                  OccasionalPlayLine,  20
 #ifndef RAD_RELEASE
-    , "GIC"
+                        , "GIC"
 #endif
-    },
-    { EVENT_BURNOUT, OccasionalPlayLine, 15
+                },
+                {EVENT_BURNOUT,                               OccasionalPlayLine,  15
 #ifndef RAD_RELEASE
-    , "Burn"
+                        , "Burn"
 #endif
-    },
-    { EVENT_DESTINATION_REACHED, OccasionalPlayLine, 20
+                },
+                {EVENT_DESTINATION_REACHED,                   OccasionalPlayLine,  20
 #ifndef RAD_RELEASE
-    , "Arrive"
+                        , "Arrive"
 #endif
-    },
-    { EVENT_BIG_AIR, OccasionalPlayLine, 20
+                },
+                {EVENT_BIG_AIR,                               OccasionalPlayLine,  20
 #ifndef RAD_RELEASE
-    , "Air"
+                        , "Air"
 #endif
-    },
-    { EVENT_BIG_CRASH, OccasionalPlayLine, 20
+                },
+                {EVENT_BIG_CRASH,                             OccasionalPlayLine,  20
 #ifndef RAD_RELEASE
-    , "Damage"
+                        , "Damage"
 #endif
-    },
-    { EVENT_GETOUTOFVEHICLE_START, OccasionalPlayLine, 20
+                },
+                {EVENT_GETOUTOFVEHICLE_START,                 OccasionalPlayLine,  20
 #ifndef RAD_RELEASE
-        , "GOC"
+                        , "GOC"
 #endif
-    },
-    { EVENT_RACE_PASSED_AI, OccasionalPlayLine, 20
+                },
+                {EVENT_RACE_PASSED_AI,                        OccasionalPlayLine,  20
 #ifndef RAD_RELEASE
-        , "Pass"
+                        , "Pass"
 #endif
-    },
-    { EVENT_RACE_GOT_PASSED_BY_AI, OccasionalPlayLine, 20
+                },
+                {EVENT_RACE_GOT_PASSED_BY_AI,                 OccasionalPlayLine,  20
 #ifndef RAD_RELEASE
-        , "Passed"
+                        , "Passed"
 #endif
-    },
-    { EVENT_KICK_NPC_SOUND, OccasionalPlayLine, 20
+                },
+                {EVENT_KICK_NPC_SOUND,                        OccasionalPlayLine,  20
 #ifndef RAD_RELEASE
-        , "HitByW"
+                        , "HitByW"
 #endif
-    },
-    { EVENT_PLAYER_CAR_HIT_NPC, OccasionalPlayLine, 20
+                },
+                {EVENT_PLAYER_CAR_HIT_NPC,                    OccasionalPlayLine,  20
 #ifndef RAD_RELEASE
-        , "HitByC"
+                        , "HitByC"
 #endif
-    },
-    { EVENT_PEDESTRIAN_DODGE, OccasionalPlayLine, 20
+                },
+                {EVENT_PEDESTRIAN_DODGE,                      OccasionalPlayLine,  20
 #ifndef RAD_RELEASE
-        , "NHitByC"
+                        , "NHitByC"
 #endif
-    },
-    { EVENT_PLAYER_MAKES_LIGHT_OF_CAR_HITTING_NPC, OccasionalPlayLine, 20
+                },
+                {EVENT_PLAYER_MAKES_LIGHT_OF_CAR_HITTING_NPC, OccasionalPlayLine,  20
 #ifndef RAD_RELEASE
-    , "HitP"
+                        , "HitP"
 #endif
-    },
-    { EVENT_PEDESTRIAN_SMACKDOWN, OccasionalPlayLine, 20
+                },
+                {EVENT_PEDESTRIAN_SMACKDOWN,                  OccasionalPlayLine,  20
 #ifndef RAD_RELEASE
-    , "Char"
+                        , "Char"
 #endif
-    },
-    { EVENT_MINOR_VEHICLE_CRASH, OccasionalPlayLine, 20
+                },
+                {EVENT_MINOR_VEHICLE_CRASH,                   OccasionalPlayLine,  20
 #ifndef RAD_RELEASE
-        , "Mcrash"
+                        , "Mcrash"
 #endif
-    },
-    { EVENT_TRAFFIC_IMPEDED, OccasionalPlayLine, 20
+                },
+                {EVENT_TRAFFIC_IMPEDED,                       OccasionalPlayLine,  20
 #ifndef RAD_RELEASE
-        , "CarWay"
+                        , "CarWay"
 #endif
-    },
-    { EVENT_HIT_BREAKABLE, OccasionalPlayLine, 20
+                },
+                {EVENT_HIT_BREAKABLE,                         OccasionalPlayLine,  20
 #ifndef RAD_RELEASE
-    , "Break"
+                        , "Break"
 #endif
-    },
-    { EVENT_COLLECT_OBJECT, OccasionalPlayLine, 50
+                },
+                {EVENT_COLLECT_OBJECT,                        OccasionalPlayLine,  50
 #ifndef RAD_RELEASE
-    , "ObjectW"
+                        , "ObjectW"
 #endif
-    },
-    { EVENT_BIG_BOOM_SOUND, ShouldPlayLine, 100
+                },
+                {EVENT_BIG_BOOM_SOUND,                        ShouldPlayLine,      100
 #ifndef RAD_RELEASE
-    , "Dcar"
+                        , "Dcar"
 #endif
-    },
-    { EVENT_MISSION_FAILURE, ShouldPlayLine, 100
+                },
+                {EVENT_MISSION_FAILURE,                       ShouldPlayLine,      100
 #ifndef RAD_RELEASE
-    , "Mfail"
+                        , "Mfail"
 #endif
-    },
-    { EVENT_TAIL_LOST_DIALOG, ShouldPlayLine, 100
+                },
+                {EVENT_TAIL_LOST_DIALOG,                      ShouldPlayLine,      100
 #ifndef RAD_RELEASE
-    , "Tail"
+                        , "Tail"
 #endif
-    },
-    { EVENT_MISSION_SUCCESS_DIALOG, ShouldPlayLine, 100
+                },
+                {EVENT_MISSION_SUCCESS_DIALOG,                ShouldPlayLine,      100
 #ifndef RAD_RELEASE
-    , "Mvic"
+                        , "Mvic"
 #endif
-    },
-    { EVENT_CARD_COLLECTED, MustPlayLine, 100
+                },
+                {EVENT_CARD_COLLECTED,                        MustPlayLine,        100
 #ifndef RAD_RELEASE
-    , "Card"
+                        , "Card"
 #endif
-    },
-    { EVENT_PHONE_BOOTH_RIDE_REQUEST, MustPlayLine, 100
+                },
+                {EVENT_PHONE_BOOTH_RIDE_REQUEST,              MustPlayLine,        100
 #ifndef RAD_RELEASE
-    , "Askride"
+                        , "Askride"
 #endif
-    },
-    { EVENT_PHONE_BOOTH_NEW_VEHICLE_SELECTED, MustPlayLine, 100
+                },
+                {EVENT_PHONE_BOOTH_NEW_VEHICLE_SELECTED,      MustPlayLine,        100
 #ifndef RAD_RELEASE
-    , "Ridereply"
+                        , "Ridereply"
 #endif
-    },
-    { EVENT_PHONE_BOOTH_OLD_VEHICLE_RESELECTED, MustPlayLine, 100
+                },
+                {EVENT_PHONE_BOOTH_OLD_VEHICLE_RESELECTED,    MustPlayLine,        100
 #ifndef RAD_RELEASE
-    , "Answer"
+                        , "Answer"
 #endif
-    },
-    { EVENT_MISSION_BRIEFING_ACCEPTED, MustPlayLine, 100
+                },
+                {EVENT_MISSION_BRIEFING_ACCEPTED,             MustPlayLine,        100
 #ifndef RAD_RELEASE
-    , "Mstart"
+                        , "Mstart"
 #endif
-    },
-    { EVENT_CONVERSATION_INIT_DIALOG, MustPlayImmediately, 100
+                },
+                {EVENT_CONVERSATION_INIT_DIALOG,              MustPlayImmediately, 100
 #ifndef RAD_RELEASE
-        , "EVENT_CONVERSATION_INIT_DIALOG"
+                        , "EVENT_CONVERSATION_INIT_DIALOG"
 #endif
-    },
-    { EVENT_IN_GAMEPLAY_CONVERSATION, MustPlayImmediately, 100
+                },
+                {EVENT_IN_GAMEPLAY_CONVERSATION,              MustPlayImmediately, 100
 #ifndef RAD_RELEASE
-        , "EVENT_IN_GAMEPLAY_CONVERSATION"
+                        , "EVENT_IN_GAMEPLAY_CONVERSATION"
 #endif
-    },
-    { EVENT_TUTORIAL_DIALOG_PLAY, MustPlayImmediately, 100
+                },
+                {EVENT_TUTORIAL_DIALOG_PLAY,                  MustPlayImmediately, 100
 #ifndef RAD_RELEASE
-        , "EVENT_TUTORIAL_DIALOG_PLAY"
+                        , "EVENT_TUTORIAL_DIALOG_PLAY"
 #endif
-    },
-    { EVENT_DING_DONG, MustPlayImmediately, 100
+                },
+                {EVENT_DING_DONG,                             MustPlayImmediately, 100
 #ifndef RAD_RELEASE
-        , "EVENT_DING_DONG"
+                        , "EVENT_DING_DONG"
 #endif
-    }
-};
+                }
+        };
 
-static unsigned int priorityTableLength = sizeof( priorityTable ) / sizeof( LinePriorityTableEntry );
+static unsigned int priorityTableLength = sizeof(priorityTable) / sizeof(LinePriorityTableEntry);
 
 //******************************************************************************
 //
@@ -223,44 +222,41 @@ static unsigned int priorityTableLength = sizeof( priorityTable ) / sizeof( Line
 // Return:      N/A.
 //
 //==============================================================================
-DialogQueueElement::DialogQueueElement( SelectableDialog* dialog ) :
-    m_dialog( dialog ),
-    m_player1( NULL ),
-    m_player2( NULL ),
-    m_lineDoneCallback( NULL ),
-    m_dialogDoneCallback( NULL ),
-    m_linesPlayed( 0 ),
-    m_queue( NULL ),
-    m_hasPosition( false )
-{
+DialogQueueElement::DialogQueueElement(SelectableDialog *dialog) :
+        m_dialog(dialog),
+        m_player1(NULL),
+        m_player2(NULL),
+        m_lineDoneCallback(NULL),
+        m_dialogDoneCallback(NULL),
+        m_linesPlayed(0),
+        m_queue(NULL),
+        m_hasPosition(false) {
     unsigned int lifeInMsecs;
 
-    rAssert( m_dialog != NULL );
+    rAssert(m_dialog != NULL);
 
-    if( s_timerList == NULL )
-    {
+    if (s_timerList == NULL) {
         //
         // We need enough timers for each element in the queue, plus one for
         // currently playing dialog and one to create before we test for the
         // queue being full.  Actually, we don't really need one for current
         // dialog, but we'll call that safety margin.
         //
-        ::radTimeCreateList( &s_timerList, MAX_QUEUE_ELEMENTS + 2, GMA_AUDIO_PERSISTENT );
+        ::radTimeCreateList(&s_timerList, MAX_QUEUE_ELEMENTS + 2, GMA_AUDIO_PERSISTENT);
     }
 
     m_timer = NULL;
 
-    lifeInMsecs = DialogLine::GetLifeInMsecsForEvent( dialog->GetEvent() );
+    lifeInMsecs = DialogLine::GetLifeInMsecsForEvent(dialog->GetEvent());
 
-    if( lifeInMsecs > 0 )
-    {
-        s_timerList->CreateTimer( &m_timer, 
-                                  lifeInMsecs, 
-                                  this, 
-                                  NULL, 
-                                  true, 
-                                  IRadTimer::ResetModeOneShot );
-        rAssert( m_timer != NULL );
+    if (lifeInMsecs > 0) {
+        s_timerList->CreateTimer(&m_timer,
+                                 lifeInMsecs,
+                                 this,
+                                 NULL,
+                                 true,
+                                 IRadTimer::ResetModeOneShot);
+        rAssert(m_timer != NULL);
     }
 }
 
@@ -274,13 +270,11 @@ DialogQueueElement::DialogQueueElement( SelectableDialog* dialog ) :
 // Return:      N/A.
 //
 //==============================================================================
-DialogQueueElement::~DialogQueueElement()
-{
-    if( m_timer )
-    {
-        m_timer->UnregisterCallback( this );
+DialogQueueElement::~DialogQueueElement() {
+    if (m_timer) {
+        m_timer->UnregisterCallback(this);
 #ifdef DEBUG_QUEUE_REFCOUNT
-        rTunePrintf( "~DialogQueueElement Timer: %d\n", m_timer->GetRefCount() );
+        rTunePrintf("~DialogQueueElement Timer: %d\n", m_timer->GetRefCount());
 #endif
         m_timer->Release();
     }
@@ -299,15 +293,14 @@ DialogQueueElement::~DialogQueueElement()
 // Return:      void 
 //
 //=============================================================================
-void DialogQueueElement::OnTimerDone( unsigned int elapsedTime, void * pUserData )
-{
+void DialogQueueElement::OnTimerDone(unsigned int elapsedTime, void *pUserData) {
     RemoveSelfFromList();
 
     //
     // We're now expendable.  Delete self.
     //
 #ifdef DEBUG_QUEUE_REFCOUNT
-    rTunePrintf( "OnTimerDone %x: Count %d\n", this, GetRefCount() );
+    rTunePrintf("OnTimerDone %x: Count %d\n", this, GetRefCount());
 #endif
     Release();
 }
@@ -323,31 +316,24 @@ void DialogQueueElement::OnTimerDone( unsigned int elapsedTime, void * pUserData
 // Return:      none
 //
 //=============================================================================
-void DialogQueueElement::AddToQueue( DialogQueueType* queue, rmt::Vector* posn )
-{
-    DialogQueueElement* lowerPriorityElement;
+void DialogQueueElement::AddToQueue(DialogQueueType *queue, rmt::Vector *posn) {
+    DialogQueueElement *lowerPriorityElement;
     bool duplicateFound = false;
-    DialogPriority priority = CalculateDialogPriority( *m_dialog );
+    DialogPriority priority = CalculateDialogPriority(*m_dialog);
 
-    rAssert( queue != NULL );
+    rAssert(queue != NULL);
     m_queue = queue;
 
-    if( posn != NULL )
-    {
+    if (posn != NULL) {
         m_hasPosition = true;
         m_position = *posn;
-    }
-    else
-    {
+    } else {
         m_hasPosition = false;
     }
 
-    if( m_queue->empty() )
-    {
-        m_queue->push_front( this );
-    }
-    else
-    {
+    if (m_queue->empty()) {
+        m_queue->push_front(this);
+    } else {
         DialogQueueType::iterator iter = m_queue->begin();
 
         //
@@ -355,65 +341,53 @@ void DialogQueueElement::AddToQueue( DialogQueueType* queue, rmt::Vector* posn )
         // dialog in it.  It couldn't have been passed over yet because
         // all the earlier stuff has a higher priority
         //
-        for( ; iter != m_queue->end(); ++iter )
-        {
-            if( (*iter)->DialogMatches( m_dialog ) )
-            {
+        for (; iter != m_queue->end(); ++iter) {
+            if ((*iter)->DialogMatches(m_dialog)) {
                 duplicateFound = true;
                 break;
             }
         }
 
-        if( !duplicateFound )
-        {
-            if( m_queue->size() >= MAX_QUEUE_ELEMENTS )
-            {
+        if (!duplicateFound) {
+            if (m_queue->size() >= MAX_QUEUE_ELEMENTS) {
                 //
                 // Dialog full, something has to go.  Ditch the lowest priority
                 // one.  If that's the one we're inserting, don't do it.  If there's
                 // a lower-priority one in the queue, ditch that one instead.
                 //
-                if( iter == m_queue->end() )
-                {
+                if (iter == m_queue->end()) {
                     //
                     // Nothing lower
                     //
 #ifdef DEBUG_QUEUE_REFCOUNT
-                    rTunePrintf( "AddToQueue %x: Count %d\n", this, GetRefCount() );
+                    rTunePrintf("AddToQueue %x: Count %d\n", this, GetRefCount());
 #endif
                     Release();
-                }
-                else
-                {
+                } else {
                     lowerPriorityElement = *iter;
-                    m_queue->insert( iter, this );
-                    m_queue->remove( lowerPriorityElement );
+                    m_queue->insert(iter, this);
+                    m_queue->remove(lowerPriorityElement);
                     lowerPriorityElement->Release();
                 }
-            }
-            else
-            {
+            } else {
                 //
                 // Find spot to insert based on priority
                 //
                 iter = m_queue->begin();
-                while( ( iter != m_queue->end() )
-                    && ( (*iter)->GetPriority() >= priority ) )
-                {
+                while ((iter != m_queue->end())
+                       && ((*iter)->GetPriority() >= priority)) {
                     ++iter;
                 }
 
-                m_queue->insert( iter, this );
+                m_queue->insert(iter, this);
             }
-        }
-        else
-        {
+        } else {
             //
             // No need to add this to the queue, and the caller is now relying
             // on this object for self-management, so delete self
             //
 #ifdef DEBUG_QUEUE_REFCOUNT
-            rTunePrintf( "AddToQueue %x: Count %d\n", this, GetRefCount() );
+            rTunePrintf("AddToQueue %x: Count %d\n", this, GetRefCount());
 #endif
             Release();
         }
@@ -430,11 +404,10 @@ void DialogQueueElement::AddToQueue( DialogQueueType* queue, rmt::Vector* posn )
 // Return:      void 
 //
 //=============================================================================
-void DialogQueueElement::RemoveSelfFromList()
-{
-    rAssert( m_queue != NULL );
+void DialogQueueElement::RemoveSelfFromList() {
+    rAssert(m_queue != NULL);
 
-    m_queue->remove( this );
+    m_queue->remove(this);
 }
 
 //=============================================================================
@@ -449,23 +422,20 @@ void DialogQueueElement::RemoveSelfFromList()
 //              UnknownPriority otherwise.
 //
 //=============================================================================
-DialogPriority DialogQueueElement::CalculateDialogPriority( const SelectableDialog& dialog )
-{
+DialogPriority DialogQueueElement::CalculateDialogPriority(const SelectableDialog &dialog) {
     EventEnum eventID;
     unsigned int i;
     DialogPriority priority = UnknownPriority;
 
     eventID = dialog.GetEvent();
-    for( i = 0; i < priorityTableLength; i++ )
-    {
-        if( priorityTable[i].eventID == eventID )
-        {
+    for (i = 0; i < priorityTableLength; i++) {
+        if (priorityTable[i].eventID == eventID) {
             priority = priorityTable[i].priority;
             break;
         }
     }
 
-    return( priority );
+    return (priority);
 }
 
 //=============================================================================
@@ -480,24 +450,21 @@ DialogPriority DialogQueueElement::CalculateDialogPriority( const SelectableDial
 //              100 otherwise.
 //
 //=============================================================================
-unsigned int DialogQueueElement::CalculateDialogProbability( const SelectableDialog& dialog )
-{
+unsigned int DialogQueueElement::CalculateDialogProbability(const SelectableDialog &dialog) {
     EventEnum eventID;
     unsigned int i;
     unsigned int probability = 100;
 
     eventID = dialog.GetEvent();
-    for( i = 0; i < priorityTableLength; i++ )
-    {
-        if( ( priorityTable[i].priority == OccasionalPlayLine )
-            && ( priorityTable[i].eventID == eventID ) )
-        {
+    for (i = 0; i < priorityTableLength; i++) {
+        if ((priorityTable[i].priority == OccasionalPlayLine)
+            && (priorityTable[i].eventID == eventID)) {
             probability = priorityTable[i].probability;
             break;
         }
     }
 
-    return( probability );
+    return (probability);
 }
 
 //=============================================================================
@@ -511,12 +478,11 @@ unsigned int DialogQueueElement::CalculateDialogProbability( const SelectableDia
 // Return:      void 
 //
 //=============================================================================
-void DialogQueueElement::OnPlaybackComplete()
-{
+void DialogQueueElement::OnPlaybackComplete() {
     unsigned int numDialogLines = m_dialog->GetNumDialogLines();
-    SimpsonsSoundPlayer* player;
-    SimpsonsSoundPlayer* queuer;  // I think I made up a word
-    Character* npcPtr;
+    SimpsonsSoundPlayer *player;
+    SimpsonsSoundPlayer *queuer;  // I think I made up a word
+    Character *npcPtr;
 
     //
     // Reference self in case one of the callbacks we trigger
@@ -524,87 +490,67 @@ void DialogQueueElement::OnPlaybackComplete()
     //
     AddRef();
 
-    if( ++m_linesPlayed >= numDialogLines )
-    {
-        if( m_dialogDoneCallback )
-        {
-            if( isMouthFlappingEvent( m_dialog->GetEvent() ) )
-            {
+    if (++m_linesPlayed >= numDialogLines) {
+        if (m_dialogDoneCallback) {
+            if (isMouthFlappingEvent(m_dialog->GetEvent())) {
                 //
                 // Coordinate the mouth flapping.  Find out whether the PC
                 // or the NPC just finished talking, and send out the appropriate
                 // talk/shutup events.
                 //
-                if( dialogLineIsWalker( m_linesPlayed ) )
-                {
-                    GetEventManager()->TriggerEvent( EVENT_PC_SHUTUP );
-                }
-                else
-                {
-                    GetEventManager()->TriggerEvent( EVENT_NPC_SHUTUP );
+                if (dialogLineIsWalker(m_linesPlayed)) {
+                    GetEventManager()->TriggerEvent(EVENT_PC_SHUTUP);
+                } else {
+                    GetEventManager()->TriggerEvent(EVENT_NPC_SHUTUP);
                 }
             }
 
             //
             // Tell the rest of the world that we're done
             //
-            if( m_dialog->GetEvent() == EVENT_CONVERSATION_INIT_DIALOG )
-            {
+            if (m_dialog->GetEvent() == EVENT_CONVERSATION_INIT_DIALOG) {
 /*
-                if( m_dialog->GetMission() == static_cast<unsigned int>( DialogLine::TUTORIAL_MISSION_NUMBER ) )
+                if(m_dialog->GetMission() == static_cast<unsigned int>(DialogLine::TUTORIAL_MISSION_NUMBER))
                 {
-                    GetEventManager()->TriggerEvent( EVENT_TUTORIAL_DIALOG_DONE );
+                    GetEventManager()->TriggerEvent(EVENT_TUTORIAL_DIALOG_DONE);
                 }
                 else
 */
                 {
-                    GetEventManager()->TriggerEvent( EVENT_CONVERSATION_DONE );
+                    GetEventManager()->TriggerEvent(EVENT_CONVERSATION_DONE);
                 }
-            }
-            else if( m_dialog->GetEvent() == EVENT_TUTORIAL_DIALOG_PLAY )
-            {
-                GetEventManager()->TriggerEvent( EVENT_TUTORIAL_DIALOG_DONE );
+            } else if (m_dialog->GetEvent() == EVENT_TUTORIAL_DIALOG_PLAY) {
+                GetEventManager()->TriggerEvent(EVENT_TUTORIAL_DIALOG_DONE);
             }
 
             m_dialogDoneCallback->OnDialogComplete();
         }
-    }
-    else
-    {
-        if( m_lineDoneCallback )
-        {
+    } else {
+        if (m_lineDoneCallback) {
             m_lineDoneCallback->OnDialogLineComplete();
         }
 
-        if( isMouthFlappingEvent( m_dialog->GetEvent() ) )
-        {
+        if (isMouthFlappingEvent(m_dialog->GetEvent())) {
             //
             // Coordinate the mouth flapping.  Find out whether the PC
             // or the NPC just finished talking, and send out the appropriate
             // talk/shutup events.
             //
-            if( dialogLineIsWalker( m_linesPlayed ) )
-            {
-                GetEventManager()->TriggerEvent( EVENT_PC_SHUTUP );
-            }
-            else
-            {
-                GetEventManager()->TriggerEvent( EVENT_NPC_SHUTUP );
+            if (dialogLineIsWalker(m_linesPlayed)) {
+                GetEventManager()->TriggerEvent(EVENT_PC_SHUTUP);
+            } else {
+                GetEventManager()->TriggerEvent(EVENT_NPC_SHUTUP);
             }
 
             //
             // Start up the next line
             //
-            if( dialogLineIsWalker( m_linesPlayed + 1 ) )
-            {
-                GetEventManager()->TriggerEvent( EVENT_PC_TALK );
-            }
-            else
-            {
-                npcPtr = dialogLineIsNPC( m_linesPlayed + 1 );
-                if( npcPtr != NULL )
-                {
-                    GetEventManager()->TriggerEvent( EVENT_NPC_TALK, npcPtr );
+            if (dialogLineIsWalker(m_linesPlayed + 1)) {
+                GetEventManager()->TriggerEvent(EVENT_PC_TALK);
+            } else {
+                npcPtr = dialogLineIsNPC(m_linesPlayed + 1);
+                if (npcPtr != NULL) {
+                    GetEventManager()->TriggerEvent(EVENT_NPC_TALK, npcPtr);
                 }
             }
         }
@@ -612,29 +558,25 @@ void DialogQueueElement::OnPlaybackComplete()
         //
         // Even line numbers on player 1, odd on player 2
         //
-        if( m_linesPlayed % 2 == 0 )
-        {
+        if (m_linesPlayed % 2 == 0) {
             player = m_player1;
             queuer = m_player2;
-        }
-        else
-        {
+        } else {
             player = m_player2;
             queuer = m_player1;
         }
-        m_dialog->PlayQueuedLine( *player, this );
+        m_dialog->PlayQueuedLine(*player, this);
 
         //
         // Queue dialog if necessary
         //
-        if( numDialogLines > m_linesPlayed + 1 )
-        {
-            m_dialog->QueueLine( m_linesPlayed + 1, *queuer );
+        if (numDialogLines > m_linesPlayed + 1) {
+            m_dialog->QueueLine(m_linesPlayed + 1, *queuer);
         }
     }
 
 #ifdef DEBUG_QUEUE_REFCOUNT
-    rTunePrintf( "OnPlaybackComplete %x: Count %d\n", this, GetRefCount() );
+    rTunePrintf("OnPlaybackComplete %x: Count %d\n", this, GetRefCount());
 #endif
     Release();
 }
@@ -649,8 +591,7 @@ void DialogQueueElement::OnPlaybackComplete()
 // Return:      void 
 //
 //=============================================================================
-void DialogQueueElement::OnSoundReady()
-{
+void DialogQueueElement::OnSoundReady() {
 }
 
 //=============================================================================
@@ -666,51 +607,43 @@ void DialogQueueElement::OnSoundReady()
 // Return:      void 
 //
 //=============================================================================
-void DialogQueueElement::PlayDialog( SimpsonsSoundPlayer& player1,
-                                     SimpsonsSoundPlayer& player2,
-                                     DialogLineCompleteCallback* lineCallback,
-                                     DialogCompleteCallback* dialogCallback )
-{
-    Character* npcPtr;
+void DialogQueueElement::PlayDialog(SimpsonsSoundPlayer &player1,
+                                    SimpsonsSoundPlayer &player2,
+                                    DialogLineCompleteCallback *lineCallback,
+                                    DialogCompleteCallback *dialogCallback) {
+    Character *npcPtr;
 
     m_lineDoneCallback = lineCallback;
     m_dialogDoneCallback = dialogCallback;
 
     m_player1 = &player1;
     m_player2 = &player2;
-    m_dialog->PlayLine( m_linesPlayed, *m_player1, this );
-    if( m_dialog->GetNumDialogLines() >= 2 )
-    {
+    m_dialog->PlayLine(m_linesPlayed, *m_player1, this);
+    if (m_dialog->GetNumDialogLines() >= 2) {
         //
         // Queue up the next line
         //
-        m_dialog->QueueLine( m_linesPlayed + 1, *m_player2 );
+        m_dialog->QueueLine(m_linesPlayed + 1, *m_player2);
     }
 
-    if( isMouthFlappingEvent( m_dialog->GetEvent() ) )
-    {
+    if (isMouthFlappingEvent(m_dialog->GetEvent())) {
         //
         // Start the mouth flapping
         //
-        if( dialogLineIsWalker( 1 ) )
-        {
-            GetEventManager()->TriggerEvent( EVENT_PC_TALK );
-        }
-        else
-        {
-            npcPtr = dialogLineIsNPC( 1 );
-            if( npcPtr != NULL )
-            {
-                GetEventManager()->TriggerEvent( EVENT_NPC_TALK, npcPtr );
+        if (dialogLineIsWalker(1)) {
+            GetEventManager()->TriggerEvent(EVENT_PC_TALK);
+        } else {
+            npcPtr = dialogLineIsNPC(1);
+            if (npcPtr != NULL) {
+                GetEventManager()->TriggerEvent(EVENT_NPC_TALK, npcPtr);
             }
         }
     }
-    
-    if( m_timer )
-    {
-        m_timer->UnregisterCallback( this );
+
+    if (m_timer) {
+        m_timer->UnregisterCallback(this);
 #ifdef DEBUG_QUEUE_REFCOUNT
-        rTunePrintf( "PlayDialog Timer: %d\n", m_timer->GetRefCount() );
+        rTunePrintf("PlayDialog Timer: %d\n", m_timer->GetRefCount());
 #endif
         m_timer->Release();
         m_timer = NULL;
@@ -727,8 +660,7 @@ void DialogQueueElement::PlayDialog( SimpsonsSoundPlayer& player1,
 // Return:      void 
 //
 //=============================================================================
-void DialogQueueElement::StopDialog()
-{
+void DialogQueueElement::StopDialog() {
     //
     // Just in case of nasty callback action on the Stop() calls below
     //
@@ -742,17 +674,15 @@ void DialogQueueElement::StopDialog()
     m_player1->Stop();
     m_player2->Stop();
 
-    if( m_dialog != NULL )
-    {
-        if( isMouthFlappingEvent( m_dialog->GetEvent() ) )
-        {
-            GetEventManager()->TriggerEvent( EVENT_PC_SHUTUP );
-            GetEventManager()->TriggerEvent( EVENT_NPC_SHUTUP );
+    if (m_dialog != NULL) {
+        if (isMouthFlappingEvent(m_dialog->GetEvent())) {
+            GetEventManager()->TriggerEvent(EVENT_PC_SHUTUP);
+            GetEventManager()->TriggerEvent(EVENT_NPC_SHUTUP);
         }
     }
 
 #ifdef DEBUG_QUEUE_REFCOUNT
-    rTunePrintf( "StopDialog %x: Count %d\n", this, GetRefCount() );
+    rTunePrintf("StopDialog %x: Count %d\n", this, GetRefCount());
 #endif
     Release();
 }
@@ -767,32 +697,27 @@ void DialogQueueElement::StopDialog()
 // Return:      void 
 //
 //=============================================================================
-void DialogQueueElement::Service()
-{
-    if( s_timerList != NULL )
-    {
+void DialogQueueElement::Service() {
+    if (s_timerList != NULL) {
         s_timerList->Service();
     }
 
 #ifndef RAD_RELEASE
-    if( !s_watcherInitialized )
-    {
+    if (!s_watcherInitialized) {
         //
         // Register probability table in Watcher
         //
         unsigned int i;
 
-        for( i = 0; i < priorityTableLength; i++ )
-        {
-            if( priorityTable[i].priority == OccasionalPlayLine )
-            {
-                radDbgWatchAddUnsignedInt( &(priorityTable[i].probability),
-                                           priorityTable[i].eventName,
-                                           "Dialogue Tuning",
-                                           NULL,
-                                           NULL,
-                                           0,
-                                           100 );
+        for (i = 0; i < priorityTableLength; i++) {
+            if (priorityTable[i].priority == OccasionalPlayLine) {
+                radDbgWatchAddUnsignedInt(&(priorityTable[i].probability),
+                                          priorityTable[i].eventName,
+                                          "Dialogue Tuning",
+                                          NULL,
+                                          NULL,
+                                          0,
+                                          100);
             }
         }
 
@@ -811,42 +736,34 @@ void DialogQueueElement::Service()
 // Return:      pointer to rmt::Vector with position if positional, NULL otherwise
 //
 //=============================================================================
-rmt::Vector* DialogQueueElement::GetPosition()
-{
-    rmt::Vector* retVal;
+rmt::Vector *DialogQueueElement::GetPosition() {
+    rmt::Vector *retVal;
 
-    if( m_hasPosition )
-    {
+    if (m_hasPosition) {
         retVal = &m_position;
-    }
-    else
-    {
+    } else {
         retVal = NULL;
     }
 
-    return( retVal );
+    return (retVal);
 }
 
-void DialogQueueElement::FillDebugInfo( DialogSoundDebugPage& debugInfo, unsigned int lineNum )
-{
+void DialogQueueElement::FillDebugInfo(DialogSoundDebugPage &debugInfo, unsigned int lineNum) {
     unsigned int msecs;
 
-    if( m_timer != NULL )
-    {
+    if (m_timer != NULL) {
         msecs = m_timer->GetTimeout();
-    }
-    else
-    {
+    } else {
         msecs = 0;
     }
 
-    debugInfo.SetQueueEntry( lineNum,
-                             m_dialog->GetEvent(),
-                             m_dialog->GetMission(),
-                             m_dialog->GetLevel(),
-                             m_dialog->GetDialogLineCharacterUID( 1 ),
-                             CalculateDialogPriority( *m_dialog ),
-                             msecs );
+    debugInfo.SetQueueEntry(lineNum,
+                            m_dialog->GetEvent(),
+                            m_dialog->GetMission(),
+                            m_dialog->GetLevel(),
+                            m_dialog->GetDialogLineCharacterUID(1),
+                            CalculateDialogPriority(*m_dialog),
+                            msecs);
 }
 
 //******************************************************************************
@@ -866,18 +783,17 @@ void DialogQueueElement::FillDebugInfo( DialogSoundDebugPage& debugInfo, unsigne
 // Return:      true if player character, false otherwise
 //
 //=============================================================================
-bool DialogQueueElement::dialogLineIsWalker( unsigned int lineNum )
-{
+bool DialogQueueElement::dialogLineIsWalker(unsigned int lineNum) {
     tUID characterUID;
-    Character* walker;
+    Character *walker;
     tUID walkerUID;
 
-    characterUID = m_dialog->GetDialogLineCharacterUID( lineNum );
-    walker = GetAvatarManager()->GetAvatarForPlayer( 0 )->GetCharacter();
-    rAssert( walker != NULL );
+    characterUID = m_dialog->GetDialogLineCharacterUID(lineNum);
+    walker = GetAvatarManager()->GetAvatarForPlayer(0)->GetCharacter();
+    rAssert(walker != NULL);
     walkerUID = walker->GetUID();
 
-    return( characterUID == walkerUID );
+    return (characterUID == walkerUID);
 }
 
 //=============================================================================
@@ -891,29 +807,27 @@ bool DialogQueueElement::dialogLineIsWalker( unsigned int lineNum )
 // Return:      pointer to character object if found, NULL otherwise
 //
 //=============================================================================
-Character* DialogQueueElement::dialogLineIsNPC( unsigned int lineNum )
-{
+Character *DialogQueueElement::dialogLineIsNPC(unsigned int lineNum) {
     tUID speakerUID;
-    Character* npc;
+    Character *npc;
 
-    speakerUID = m_dialog->GetDialogLineCharacterUID( lineNum );
-    npc = GetCharacterManager()->GetCharacterByName( speakerUID );
+    speakerUID = m_dialog->GetDialogLineCharacterUID(lineNum);
+    npc = GetCharacterManager()->GetCharacterByName(speakerUID);
 
     //
     // If the character is an NPC, we'll get a pointer.  If it's some
     // character that doesn't exist in the world (e.g. Brockman in L7M1),
     // then we get NULL.
     //
-    if( npc != NULL )
-    {
-        return( npc );
+    if (npc != NULL) {
+        return (npc);
     }
 
     //
     // P.S. Not only do we have to check the speaker's UID, we have to
     // check for stinky skins as well
     //
-    return( DialogList::GetStinkySkinPointer( speakerUID ) );
+    return (DialogList::GetStinkySkinPointer(speakerUID));
 }
 
 //=============================================================================
@@ -927,12 +841,10 @@ Character* DialogQueueElement::dialogLineIsNPC( unsigned int lineNum )
 // Return:      true if mouth flapping event, false otherwise 
 //
 //=============================================================================
-bool DialogQueueElement::isMouthFlappingEvent( EventEnum theEvent )
-{
+bool DialogQueueElement::isMouthFlappingEvent(EventEnum theEvent) {
     bool retVal = false;
 
-    switch( theEvent )
-    {
+    switch (theEvent) {
         case EVENT_CONVERSATION_INIT_DIALOG:
         case EVENT_AMBIENT_ASKFOOD:
         case EVENT_AMBIENT_FOODREPLY:
@@ -947,5 +859,5 @@ bool DialogQueueElement::isMouthFlappingEvent( EventEnum theEvent )
             break;
     }
 
-    return( retVal );
+    return (retVal);
 }

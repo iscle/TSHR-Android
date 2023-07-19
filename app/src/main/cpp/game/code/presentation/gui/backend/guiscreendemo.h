@@ -28,23 +28,25 @@
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenDemo : public CGuiScreen
-{
+class CGuiScreenDemo : public CGuiScreen {
 public:
-    CGuiScreenDemo( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenDemo(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenDemo();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
-    Scrooby::Text* m_demoText;
+    Scrooby::Text *m_demoText;
     unsigned int m_elapsedTime;
 
 };

@@ -14,8 +14,7 @@
 
 #include <constants/vehicleenum.h>
 
-enum SoundClusterName
-{
+enum SoundClusterName {
     SC_ALWAYS_LOADED,
     SC_FRONTEND,
     SC_INGAME,

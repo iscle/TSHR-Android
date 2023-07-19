@@ -42,8 +42,7 @@
 // Return:      N/A.
 //
 //=============================================================================
-AIVehicleSoundPlayer::AIVehicleSoundPlayer()
-{
+AIVehicleSoundPlayer::AIVehicleSoundPlayer() {
 }
 
 //=============================================================================
@@ -56,8 +55,7 @@ AIVehicleSoundPlayer::AIVehicleSoundPlayer()
 // Return:      N/A.
 //
 //=============================================================================
-AIVehicleSoundPlayer::~AIVehicleSoundPlayer()
-{
+AIVehicleSoundPlayer::~AIVehicleSoundPlayer() {
 }
 
 //=============================================================================
@@ -70,8 +68,7 @@ AIVehicleSoundPlayer::~AIVehicleSoundPlayer()
 // Return:      void 
 //
 //=============================================================================
-void AIVehicleSoundPlayer::ServiceOncePerFrame()
-{
+void AIVehicleSoundPlayer::ServiceOncePerFrame() {
     float pitch;
 
     VehiclePositionalSoundPlayer::ServiceOncePerFrame();
@@ -80,15 +77,14 @@ void AIVehicleSoundPlayer::ServiceOncePerFrame()
     // Adjust pitch for vehicle speed if desired.  I'll probably need to
     // expose this for designer tuning later.
     //
-    if( IsActive() && m_tiePitchToVelocity )
-    {
-        pitch = 0.3f + ( 0.7f * ( m_vehicle->GetSpeedKmh() / m_vehicle->mDesignerParams.mDpTopSpeedKmh ) );
-        if( pitch > 1.2f )
-        {
+    if (IsActive() && m_tiePitchToVelocity) {
+        pitch = 0.3f +
+                (0.7f * (m_vehicle->GetSpeedKmh() / m_vehicle->mDesignerParams.mDpTopSpeedKmh));
+        if (pitch > 1.2f) {
             pitch = 1.2f;
         }
 
-        m_player.SetPitch( pitch );
+        m_player.SetPitch(pitch);
     }
 }
 

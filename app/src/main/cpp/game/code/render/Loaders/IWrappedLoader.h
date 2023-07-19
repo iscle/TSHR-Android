@@ -30,19 +30,20 @@
 class IWrappedLoader //: public tSimpleChunkHandler
 {
 public:
-   IWrappedLoader(){}
-   virtual ~IWrappedLoader(){}
+    IWrappedLoader() {}
 
-   virtual void SetRegdListener( ChunkListenerCallback* pListenerCB,
-                                 int   iUserData ) = 0;
+    virtual ~IWrappedLoader() {}
 
-   virtual void ModRegdListener( ChunkListenerCallback* pListenerCB,
-                                 int   iUserData ) = 0;
+    virtual void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                                 int iUserData) = 0;
+
+    virtual void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                                 int iUserData) = 0;
 
 
 protected:
-   ChunkListenerCallback*  mpListenerCB;
-   int mUserData;
+    ChunkListenerCallback *mpListenerCB;
+    int mUserData;
 
 };
 

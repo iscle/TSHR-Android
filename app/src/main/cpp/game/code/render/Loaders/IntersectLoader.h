@@ -26,33 +26,32 @@
 // Synopsis:   The IntersectLoader; Synopsis by Inspection.
 //
 //========================================================================
-class IntersectLoader 
-: public tSimpleChunkHandler,
-  public IWrappedLoader 
-{
+class IntersectLoader
+        : public tSimpleChunkHandler,
+          public IWrappedLoader {
 public:
-   IntersectLoader();
+    IntersectLoader();
 
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   void SetRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
 
-   void ModRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
 
-   ///////////////////////////////////////////////////////////////////////
-   // tSimpleChunkHandler
-   ///////////////////////////////////////////////////////////////////////
-   virtual tEntity* LoadObject(tChunkFile* file, tEntityStore* store);
+    ///////////////////////////////////////////////////////////////////////
+    // tSimpleChunkHandler
+    ///////////////////////////////////////////////////////////////////////
+    virtual tEntity *LoadObject(tChunkFile *file, tEntityStore *store);
 
 private:
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   //ChunkListenerCallback*  mpListenerCB;
-   //void* mpUserData;
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    //ChunkListenerCallback*  mpListenerCB;
+    //void* mpUserData;
 };
 
 #endif

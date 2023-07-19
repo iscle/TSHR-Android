@@ -51,9 +51,8 @@
 //
 //==============================================================================
 BumperCam::BumperCam() :
-    mTarget( NULL )
-{
-    mGroundOffset.Set( 0.0f, 0.0f, 0.0f );
+        mTarget(NULL) {
+    mGroundOffset.Set(0.0f, 0.0f, 0.0f);
 }
 
 //==============================================================================
@@ -66,8 +65,7 @@ BumperCam::BumperCam() :
 // Return:      N/A.
 //
 //==============================================================================
-BumperCam::~BumperCam()
-{
+BumperCam::~BumperCam() {
 }
 
 
@@ -76,117 +74,103 @@ BumperCam::~BumperCam()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void BumperCam::Update( unsigned int milliseconds )
-{
-    rAssertMsg( mTarget, "The BumperCam needs a target!" );
+void BumperCam::Update(unsigned int milliseconds) {
+    rAssertMsg(mTarget, "The BumperCam needs a target!");
 
-    if ( !mTarget->IsCar() )
-    {
+    if (!mTarget->IsCar()) {
         return;
     }
 
-    if ( GetFlag( (Flag)CUT ) )
-    {
-        SetFlag( (Flag)CUT, false );
+    if (GetFlag((Flag) CUT)) {
+        SetFlag((Flag) CUT, false);
     }
 
     //Reset the FOV.
-    if ( GetCheatInputSystem()->IsCheatEnabled( CHEAT_ID_SPEED_CAM ) )
-    {
-        SetFOV( 1.608495f );
-    }
-    else
-    {
-        SetFOV( mData.GetFOV() );
+    if (GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_SPEED_CAM)) {
+        SetFOV(1.608495f);
+    } else {
+        SetFOV(mData.GetFOV());
     }
 
-    if ( GetFlag((Flag)FIRST_TIME ) )
-    {
-        rAssert( mTarget->IsCar() );
+    if (GetFlag((Flag) FIRST_TIME)) {
+        rAssert(mTarget->IsCar());
 
-        rAssert( dynamic_cast< Vehicle* > ( mTarget ) != NULL );
-        Vehicle* targV = static_cast<Vehicle*>(mTarget);
-        rAssert( targV );
-       
+        rAssert(dynamic_cast<Vehicle *>(mTarget) != NULL);
+        Vehicle *targV = static_cast<Vehicle *>(mTarget);
+        rAssert(targV);
+
         float halfWheelBase = targV->mWheelBase * 0.5f;
         float top = targV->GetExtents().y;
         float front = halfWheelBase - GetNearPlane();
 
         top += 0.3f;
 
-        mData.SetFrontPosition( rmt::Vector( 0.0f, top, front ) );
-        mData.SetFrontTarget( rmt::Vector( 0.0f, top, front + 2.0f ) );
+        mData.SetFrontPosition(rmt::Vector(0.0f, top, front));
+        mData.SetFrontTarget(rmt::Vector(0.0f, top, front + 2.0f));
 
         float back = -halfWheelBase + GetNearPlane();
 
         top -= 0.3f;
 
-        mData.SetBackPosition( rmt::Vector( 0.0f, top, back ) );
-        mData.SetBackTarget( rmt::Vector( 0.0f, top, back - 2.0f ) );
+        mData.SetBackPosition(rmt::Vector(0.0f, top, back));
+        mData.SetBackTarget(rmt::Vector(0.0f, top, back - 2.0f));
 
-        SetFlag( (Flag)FIRST_TIME, false );
+        SetFlag((Flag) FIRST_TIME, false);
     }
-    
-    bool lookBack = GetFlag( (Flag)LOOK_BACK );
 
-    if ( lookBack )
-    {
-        SetFlag( (Flag)LOOK_BACK, false );
+    bool lookBack = GetFlag((Flag) LOOK_BACK);
+
+    if (lookBack) {
+        SetFlag((Flag) LOOK_BACK, false);
     }
- 
+
     //---------  Buid a rod for the camera
 
     //This is where the camera is looking, not it's position.
     rmt::Vector desiredTarget;
 
-    if ( lookBack )
-    {
+    if (lookBack) {
         //Use the back view.
-        mData.GetBackTarget( &desiredTarget );
-    }
-    else
-    {
+        mData.GetBackTarget(&desiredTarget);
+    } else {
         //Use the front view.
-        mData.GetFrontTarget( &desiredTarget );
+        mData.GetFrontTarget(&desiredTarget);
     }
 
     rmt::Matrix mat;
     rmt::Vector targetHeading, targetVUP;
-    mTarget->GetHeading( &targetHeading );
-    mTarget->GetVUP( &targetVUP );
+    mTarget->GetHeading(&targetHeading);
+    mTarget->GetVUP(&targetVUP);
     mat.Identity();
-    mat.FillHeading( targetHeading, targetVUP );
+    mat.FillHeading(targetHeading, targetVUP);
 
     //Put the desiredTarget in the target space
-    desiredTarget.Transform( mat );
+    desiredTarget.Transform(mat);
 
     rmt::Vector desiredPosition;
-    if ( lookBack )
-    {
-        mData.GetBackPosition( &desiredPosition );
-    }
-    else
-    {
-        mData.GetFrontPosition( &desiredPosition );
+    if (lookBack) {
+        mData.GetBackPosition(&desiredPosition);
+    } else {
+        mData.GetFrontPosition(&desiredPosition);
     }
 
     //Put desiredPosition in the space of the target.
-    desiredPosition.Transform( mat );
+    desiredPosition.Transform(mat);
 
     //---------  Set the position and target of the camera
 
     rmt::Vector targetPosition;
-    mTarget->GetPosition( &targetPosition );
+    mTarget->GetPosition(&targetPosition);
 
-    desiredPosition.Add( targetPosition );
-    desiredTarget.Add( targetPosition );
+    desiredPosition.Add(targetPosition);
+    desiredTarget.Add(targetPosition);
 
-    SetCameraValues( milliseconds, desiredPosition, desiredTarget, &targetVUP );
+    SetCameraValues(milliseconds, desiredPosition, desiredTarget, &targetVUP);
 }
 
 //=============================================================================
@@ -194,22 +178,21 @@ void BumperCam::Update( unsigned int milliseconds )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void BumperCam::UpdateForPhysics( unsigned int milliseconds )
-{
+void BumperCam::UpdateForPhysics(unsigned int milliseconds) {
     rmt::Vector position, target, vup;
-    GetPosition( &position );
-    GetTarget( &target );
-    mTarget->GetVUP( &vup );
+    GetPosition(&position);
+    GetTarget(&target);
+    mTarget->GetVUP(&vup);
 
     // Add ground collision.
-    position.Add( mGroundOffset );
+    position.Add(mGroundOffset);
 
-    SetCameraValues( 0, position, target, &vup );  //No extra transition
+    SetCameraValues(0, position, target, &vup);  //No extra transition
 }
 
 //=============================================================================
@@ -217,13 +200,12 @@ void BumperCam::UpdateForPhysics( unsigned int milliseconds )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned char* settings )
+// Parameters:  (unsigned char* settings)
 //
 // Return:      void 
 //
 //=============================================================================
-void BumperCam::LoadSettings( unsigned char* settings )
-{
+void BumperCam::LoadSettings(unsigned char *settings) {
 }
 
 //=============================================================================
@@ -231,13 +213,13 @@ void BumperCam::LoadSettings( unsigned char* settings )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const rmt::Vector* offset, unsigned int numCollisions, const rmt::Vector& groundOffset )
+// Parameters:  (const rmt::Vector* offset, unsigned int numCollisions, const rmt::Vector& groundOffset)
 //
 // Return:      void 
 //
 //=============================================================================
-void BumperCam::SetCollisionOffset( const rmt::Vector* offset, unsigned int numCollisions, const rmt::Vector& groundOffset )
-{
+void BumperCam::SetCollisionOffset(const rmt::Vector *offset, unsigned int numCollisions,
+                                   const rmt::Vector &groundOffset) {
     //Only colliding with ground.
     mGroundOffset.y = groundOffset.y;
 }
@@ -259,16 +241,15 @@ void BumperCam::SetCollisionOffset( const rmt::Vector* offset, unsigned int numC
 // Return:      void 
 //
 //=============================================================================
-void BumperCam::OnRegisterDebugControls()
-{
+void BumperCam::OnRegisterDebugControls() {
 #ifdef DEBUGWATCH
     char nameSpace[256];
-    sprintf( nameSpace, "SuperCam\\Player%d\\Bumper", GetPlayerID() );
+    sprintf(nameSpace, "SuperCam\\Player%d\\Bumper", GetPlayerID());
 
-    radDbgWatchAddVector( &mData.mFrontPos.x, "Front Position", nameSpace, NULL, NULL, -10.0f, 10.0f );
-    radDbgWatchAddVector( &mData.mFrontTarg.x, "Front Target", nameSpace, NULL, NULL, -10.0f, 10.0f );
-    radDbgWatchAddVector( &mData.mBackPos.x, "Back Position", nameSpace, NULL, NULL, -10.0f, 10.0f );
-    radDbgWatchAddVector( &mData.mBackTarg.x, "Back Target", nameSpace, NULL, NULL, -10.0f, 10.0f );
+    radDbgWatchAddVector(&mData.mFrontPos.x, "Front Position", nameSpace, NULL, NULL, -10.0f, 10.0f);
+    radDbgWatchAddVector(&mData.mFrontTarg.x, "Front Target", nameSpace, NULL, NULL, -10.0f, 10.0f);
+    radDbgWatchAddVector(&mData.mBackPos.x, "Back Position", nameSpace, NULL, NULL, -10.0f, 10.0f);
+    radDbgWatchAddVector(&mData.mBackTarg.x, "Back Target", nameSpace, NULL, NULL, -10.0f, 10.0f);
 #endif
 }
 
@@ -282,12 +263,11 @@ void BumperCam::OnRegisterDebugControls()
 // Return:      void 
 //
 //=============================================================================
-void BumperCam::OnUnregisterDebugControls()
-{
+void BumperCam::OnUnregisterDebugControls() {
 #ifdef DEBUGWATCH
-    radDbgWatchDelete( &mData.mFrontPos.x );
-    radDbgWatchDelete( &mData.mFrontTarg.x );
-    radDbgWatchDelete( &mData.mBackPos.x );
-    radDbgWatchDelete( &mData.mBackTarg.x );
+    radDbgWatchDelete(&mData.mFrontPos.x);
+    radDbgWatchDelete(&mData.mFrontTarg.x);
+    radDbgWatchDelete(&mData.mBackPos.x);
+    radDbgWatchDelete(&mData.mBackTarg.x);
 #endif
 }

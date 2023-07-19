@@ -28,24 +28,25 @@
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenScrapBookStats : public CGuiScreen
-{
+class CGuiScreenScrapBookStats : public CGuiScreen {
 public:
-    CGuiScreenScrapBookStats( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenScrapBookStats(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenScrapBookStats();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
-    enum eGameStats
-    {
+    enum eGameStats {
         STAT_STORY_MISSIONS,
         STAT_BONUS_MISSIONS,
         STAT_STREET_RACES,
@@ -59,8 +60,8 @@ private:
         NUM_GAME_STATS
     };
 
-    Scrooby::Text* m_gameStats[ NUM_GAME_STATS ];
-    Scrooby::Text* m_percentGameComplete;
+    Scrooby::Text *m_gameStats[NUM_GAME_STATS];
+    Scrooby::Text *m_percentGameComplete;
 
 };
 

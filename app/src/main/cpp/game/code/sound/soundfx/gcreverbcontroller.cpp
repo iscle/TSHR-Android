@@ -44,11 +44,10 @@
 // Return:      N/A.
 //
 //==============================================================================
-GCReverbController::GCReverbController()
-{
-    m_reverbInterface = ::radSoundEffectStdReverbGcnCreate( GMA_PERSISTENT );
+GCReverbController::GCReverbController() {
+    m_reverbInterface = ::radSoundEffectStdReverbGcnCreate(GMA_PERSISTENT);
 
-    registerReverbEffect( m_reverbInterface );
+    registerReverbEffect(m_reverbInterface);
 }
 
 //==============================================================================
@@ -61,8 +60,7 @@ GCReverbController::GCReverbController()
 // Return:      N/A.
 //
 //==============================================================================
-GCReverbController::~GCReverbController()
-{
+GCReverbController::~GCReverbController() {
     m_reverbInterface->Release();
     m_reverbInterface = NULL;
 }
@@ -77,13 +75,12 @@ GCReverbController::~GCReverbController()
 // Return:      void 
 //
 //=============================================================================
-void GCReverbController::SetReverbOn( reverbSettings* settings )
-{
-    SetReverbGain( settings->GetGain() );
-    m_reverbInterface->SetPreDelay( settings->GetGCPreDelay() );
-    m_reverbInterface->SetReverbTime( settings->GetGCReverbTime() );
-    m_reverbInterface->SetColoration( settings->GetGCColoration() );
-    m_reverbInterface->SetDamping( settings->GetGCDamping() );
+void GCReverbController::SetReverbOn(reverbSettings *settings) {
+    SetReverbGain(settings->GetGain());
+    m_reverbInterface->SetPreDelay(settings->GetGCPreDelay());
+    m_reverbInterface->SetReverbTime(settings->GetGCReverbTime());
+    m_reverbInterface->SetColoration(settings->GetGCColoration());
+    m_reverbInterface->SetDamping(settings->GetGCDamping());
 }
 
 //=============================================================================
@@ -96,9 +93,8 @@ void GCReverbController::SetReverbOn( reverbSettings* settings )
 // Return:      void 
 //
 //=============================================================================
-void GCReverbController::SetReverbOff()
-{
-    SetReverbGain( 0.0f );
+void GCReverbController::SetReverbOff() {
+    SetReverbGain(0.0f);
 }
 
 //******************************************************************************

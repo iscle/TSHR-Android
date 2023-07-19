@@ -25,16 +25,14 @@
 // Forward References
 //===========================================================================
 
-enum eCardType
-{
+enum eCardType {
     COLLECTOR_CARD,
     BONUS_CARD,
 
     NUM_CARD_TYPES
 };
 
-enum eQuoteID
-{
+enum eQuoteID {
     EMPTY_QUOTE = -1,
 
     QUOTE_ANNOUNCER,
@@ -78,24 +76,28 @@ const unsigned int MAX_NUM_QUOTES = 3; // max. number of quotes per card
 // Interface Definitions
 //===========================================================================
 
-class Card
-{
+class Card {
 public:
-	Card( unsigned int ID,
-          unsigned int level,
-          unsigned int levelID,
-          tUID cardName,
-          const eQuoteID* quotes,
-          int numQuotes );
+    Card(unsigned int ID,
+         unsigned int level,
+         unsigned int levelID,
+         tUID cardName,
+         const eQuoteID *quotes,
+         int numQuotes);
 
     virtual ~Card();
 
     // Accessors to card info
     unsigned int GetID() const { return m_ID; }
+
     unsigned int GetLevel() const { return m_level; }
+
     unsigned int GetLevelID() const { return m_levelID; }
+
     tUID GetCardName() const { return m_cardName; }
-    eQuoteID GetQuoteID( int index ) const;
+
+    eQuoteID GetQuoteID(int index) const;
+
     int GetNumQuotes() const { return m_numQuotes; }
 
     // Pure virtual function to be implemented by derived classes
@@ -109,20 +111,21 @@ private:
 
     // No copying or assignment. Declare but don't define.
     //
-    Card( const Card& );
-    Card& operator= ( const Card& );
+    Card(const Card &);
+
+    Card &operator=(const Card &);
 
     //---------------------------------------------------------------------
     // Private Data
     //---------------------------------------------------------------------
 
-    unsigned int m_ID;          // ID >= 0 (for card image)
-    unsigned int m_level;       // level >= 1
-    unsigned int m_levelID;     // levelID >= 1
+    unsigned int m_ID;          // ID>= 0 (for card image)
+    unsigned int m_level;       // level>= 1
+    unsigned int m_levelID;     // levelID>= 1
 
     tUID m_cardName;            // hashed ID for card name
 
-    eQuoteID m_quotes[ MAX_NUM_QUOTES ];
+    eQuoteID m_quotes[MAX_NUM_QUOTES];
     int m_numQuotes;
 
 };

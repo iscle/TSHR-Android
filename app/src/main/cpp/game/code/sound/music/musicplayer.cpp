@@ -54,88 +54,85 @@
 //
 //******************************************************************************
 
-static const char* AMBIENT_FILE_NAME = "sound\\ambience\\ambience.rms";
-static const char* LEVEL_FILE_NAME_PREFIX = "sound\\music\\L";
-static const char* LEVEL_FILE_NAME_SUFFIX = "_music.rms";
-static const char* MUSIC_SEARCH_PATH      = "sound\\music\\";
-static const char* AMBIENCE_SEARCH_PATH   = "sound\\ambience\\";
+static const char *AMBIENT_FILE_NAME = "sound\\ambience\\ambience.rms";
+static const char *LEVEL_FILE_NAME_PREFIX = "sound\\music\\L";
+static const char *LEVEL_FILE_NAME_SUFFIX = "_music.rms";
+static const char *MUSIC_SEARCH_PATH = "sound\\music\\";
+static const char *AMBIENCE_SEARCH_PATH = "sound\\ambience\\";
 
-struct InteriorIDEntry
-{
+struct InteriorIDEntry {
     radInt64 id;
-    const char* name;
+    const char *name;
     MusicEventList musicEvent;
 };
 
 static InteriorIDEntry interiorNameTable[] =
-{
-    { 0, "KwikEMart",             MEVENT_INTERIOR_KWIK_E_MART },
-    { 0, "SpringfieldElementary", MEVENT_INTERIOR_SCHOOL      },
-    { 0, "SimpsonsHouse",         MEVENT_INTERIOR_HOUSE       },
-    { 0, "Krustylu",              MEVENT_INTERIOR_HOUSE       },
-    { 0, "dmv",                   MEVENT_INTERIOR_DMV         }
-};
+        {
+                {0, "KwikEMart",             MEVENT_INTERIOR_KWIK_E_MART},
+                {0, "SpringfieldElementary", MEVENT_INTERIOR_SCHOOL},
+                {0, "SimpsonsHouse",         MEVENT_INTERIOR_HOUSE},
+                {0, "Krustylu",              MEVENT_INTERIOR_HOUSE},
+                {0, "dmv",                   MEVENT_INTERIOR_DMV}
+        };
 
-static int interiorTableLength = sizeof( interiorNameTable ) / sizeof( InteriorIDEntry );
+static int interiorTableLength = sizeof(interiorNameTable) / sizeof(InteriorIDEntry);
 
 //
 // Tables for mapping music/ambience events to indices into radMusic scripts
 //
 
-struct MusicScriptTableEntry
-{
-    const char* name;
+struct MusicScriptTableEntry {
+    const char *name;
     radKey32 nameKey;
     int scriptIndex;
 };
 static const int NO_INDEX = -1;
 
 static MusicScriptTableEntry musicEventTable[] =
-{
-    { "movie", 0, 0 },
-    { "pause", 0, 0 },
-    { "unpause", 0, 0 },
-    { "FE", 0, 0 },
-    { "Loading_screen", 0, 0 },
-    { "Newspaper_Spin", 0, 0 },
-    { "SuperSprint", 0, 0 },
-    { "Win_SuperSprint", 0, 0 },
-    { "Lose_SuperSprint", 0, 0 },
-    { "Level_Intro", 0, 0 },
-    { "Sunday_Drive_start", 0, 0 },
-    { "Sunday_Drive_Get_out_of_Car", 0, 0 },
-    { "Store", 0, 0 },
-    { "Enter_StoneCutters_Tunnel", 0, 0 },
-    { "Exit_StoneCutters_Tunnel", 0, 0 },
-    { "OF_explore_mission", 0, 0 },
-    { "OF_found_card", 0, 0 },
-    { "OF_time_out", 0, 0 },
-    { "OF_Apu_Oasis", 0, 0 },
-    { "OF_House", 0, 0 },
-    { "OF_KiwkEMart", 0, 0 },
-    { "OF_School", 0, 0 },
-    { "OF_Moes", 0, 0 },
-    { "OF_DMV", 0, 0 },
-    { "OF_Android_Dungeon", 0, 0 },
-    { "OF_Observatory", 0, 0 },
-    { "Win_3Street_Races", 0, 0 },
-    { "Level_Completed", 0, 0 },
-    { "Destroy_Camera_Bonus", 0, 0 },
-    { "StoneCutters", 0, 0 },
-    { "Social_Club", 0, 0 },
-    { "DuffBeer", 0, 0 },
-    { "Hit_and_Run", 0, 0 },
-    { "Hit_and_Run_Caught", 0, 0 },
-    { "Wasp_Attack", 0, 0 },
-    { "Gated_Mission", 0, 0 },
-    { "ScaryMusic01", 0, 0 },
-    { "Credits", 0, 0 }
-};
+        {
+                {"movie",                       0, 0},
+                {"pause",                       0, 0},
+                {"unpause",                     0, 0},
+                {"FE",                          0, 0},
+                {"Loading_screen",              0, 0},
+                {"Newspaper_Spin",              0, 0},
+                {"SuperSprint",                 0, 0},
+                {"Win_SuperSprint",             0, 0},
+                {"Lose_SuperSprint",            0, 0},
+                {"Level_Intro",                 0, 0},
+                {"Sunday_Drive_start",          0, 0},
+                {"Sunday_Drive_Get_out_of_Car", 0, 0},
+                {"Store",                       0, 0},
+                {"Enter_StoneCutters_Tunnel",   0, 0},
+                {"Exit_StoneCutters_Tunnel",    0, 0},
+                {"OF_explore_mission",          0, 0},
+                {"OF_found_card",               0, 0},
+                {"OF_time_out",                 0, 0},
+                {"OF_Apu_Oasis",                0, 0},
+                {"OF_House",                    0, 0},
+                {"OF_KiwkEMart",                0, 0},
+                {"OF_School",                   0, 0},
+                {"OF_Moes",                     0, 0},
+                {"OF_DMV",                      0, 0},
+                {"OF_Android_Dungeon",          0, 0},
+                {"OF_Observatory",              0, 0},
+                {"Win_3Street_Races",           0, 0},
+                {"Level_Completed",             0, 0},
+                {"Destroy_Camera_Bonus",        0, 0},
+                {"StoneCutters",                0, 0},
+                {"Social_Club",                 0, 0},
+                {"DuffBeer",                    0, 0},
+                {"Hit_and_Run",                 0, 0},
+                {"Hit_and_Run_Caught",          0, 0},
+                {"Wasp_Attack",                 0, 0},
+                {"Gated_Mission",               0, 0},
+                {"ScaryMusic01",                0, 0},
+                {"Credits",                     0, 0}
+        };
 
-static unsigned int musicEventTableLength = sizeof( musicEventTable ) / sizeof( MusicScriptTableEntry );
+static unsigned int musicEventTableLength = sizeof(musicEventTable) / sizeof(MusicScriptTableEntry);
 
-struct MissionNameScriptEntry
-{
+struct MissionNameScriptEntry {
     radKey32 nameKey;
     int scriptIndex;
 };
@@ -147,8 +144,7 @@ static const unsigned int RACE_TABLE_SIZE = 12;
 static MissionNameScriptEntry raceScriptTable[RACE_TABLE_SIZE];
 static unsigned int raceScriptTableLength;
 
-struct MatrixStateScriptEntry
-{
+struct MatrixStateScriptEntry {
     radKey32 stateNameKey;
     unsigned int stateIndex;
     radKey32 stateValueNameKey;
@@ -163,148 +159,194 @@ static const int NUM_LEVELS = 7;
 static const int NUM_STARTING_MISSIONS = 8;
 
 static AmbientEventList startingAmbiences[NUM_LEVELS][NUM_STARTING_MISSIONS] =
-{
-    // L1
-    {
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START + 
-        ( LocatorEvent::AMBIENT_SOUND_SUBURBS - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START + 
-        ( LocatorEvent::AMBIENT_SOUND_SUBURBS - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START + 
-        ( LocatorEvent::AMBIENT_SOUND_SUBURBS - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START + 
-        ( LocatorEvent::AMBIENT_SOUND_SUBURBS - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START + 
-        ( LocatorEvent::AMBIENT_SOUND_PP_ROOM_2 - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START + 
-        ( LocatorEvent::AMBIENT_SOUND_SUBURBS - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START + 
-        ( LocatorEvent::AMBIENT_SOUND_SUBURBS - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START + 
-        ( LocatorEvent::AMBIENT_SOUND_COUNTRY_HIGHWAY - LocatorEvent::AMBIENT_SOUND_CITY ) )
-    },
+        {
+                // L1
+                {
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_SUBURBS -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_SUBURBS -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_SUBURBS -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_SUBURBS -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_PP_ROOM_2 -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_SUBURBS -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_SUBURBS -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_COUNTRY_HIGHWAY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY))
+                },
 
-    // L2
-    {
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    AEVENT_INTERIOR_HOUSE  // unused
-    },
+                // L2
+                {
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        AEVENT_INTERIOR_HOUSE  // unused
+                },
 
-    // L3
-    {
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_LIGHT_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_LIGHT_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_LIGHT_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_FOREST_HIGHWAY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_LIGHT_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_QUAY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_QUAY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    AEVENT_INTERIOR_HOUSE  // unused
-    },
+                // L3
+                {
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_LIGHT_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_LIGHT_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_LIGHT_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_FOREST_HIGHWAY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_LIGHT_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_QUAY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_QUAY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        AEVENT_INTERIOR_HOUSE  // unused
+                },
 
-    // L4
-    {
-    AEVENT_INTERIOR_HOUSE,
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_COUNTRY_NIGHT - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_SUBURBS_NIGHT - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_SUBURBS_NIGHT - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_SUBURBS_NIGHT - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_SUBURBS_NIGHT - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_SUBURBS_NIGHT - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    AEVENT_INTERIOR_HOUSE  // unused
-    },
+                // L4
+                {
+                        AEVENT_INTERIOR_HOUSE,
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_COUNTRY_NIGHT -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_SUBURBS_NIGHT -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_SUBURBS_NIGHT -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_SUBURBS_NIGHT -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_SUBURBS_NIGHT -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_SUBURBS_NIGHT -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        AEVENT_INTERIOR_HOUSE  // unused
+                },
 
-    // L5
-    {
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_CITY - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    AEVENT_INTERIOR_HOUSE  // unused
-    },
+                // L5
+                {
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_CITY -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        AEVENT_INTERIOR_HOUSE  // unused
+                },
 
-    // L6
-    {
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_PLACEHOLDER10 - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_PLACEHOLDER10 - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_SEASIDE_NIGHT - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_COUNTRY_NIGHT - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_SEASIDE_NIGHT - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_PLACEHOLDER10 - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_PLACEHOLDER10 - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    AEVENT_INTERIOR_HOUSE  // unused
-    },
+                // L6
+                {
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_PLACEHOLDER10 -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_PLACEHOLDER10 -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_SEASIDE_NIGHT -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_COUNTRY_NIGHT -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_SEASIDE_NIGHT -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_PLACEHOLDER10 -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_PLACEHOLDER10 -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        AEVENT_INTERIOR_HOUSE  // unused
+                },
 
-    // L7
-    {
-    AEVENT_INTERIOR_HOUSE,
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_PLACEHOLDER7 - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_HALLOWEEN1 - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    AEVENT_INTERIOR_HOUSE,
-    AEVENT_INTERIOR_HOUSE,
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_PLACEHOLDER7 - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    static_cast<AmbientEventList>( AEVENT_TRIGGER_START +
-        ( LocatorEvent::AMBIENT_SOUND_PLACEHOLDER7 - LocatorEvent::AMBIENT_SOUND_CITY ) ),
-    AEVENT_INTERIOR_HOUSE  // unused
-    }
-};
+                // L7
+                {
+                        AEVENT_INTERIOR_HOUSE,
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_PLACEHOLDER7 -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_HALLOWEEN1 -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        AEVENT_INTERIOR_HOUSE,
+                        AEVENT_INTERIOR_HOUSE,
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_PLACEHOLDER7 -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        static_cast<AmbientEventList>(AEVENT_TRIGGER_START +
+                                                      (LocatorEvent::AMBIENT_SOUND_PLACEHOLDER7 -
+                                                       LocatorEvent::AMBIENT_SOUND_CITY)),
+                        AEVENT_INTERIOR_HOUSE  // unused
+                }
+        };
 
-static LocatorEvent::Event startingExteriorAmbiences[NUM_LEVELS] = 
-{
-    LocatorEvent::AMBIENT_SOUND_SUBURBS,
-    LocatorEvent::AMBIENT_SOUND_CITY,
-    LocatorEvent::AMBIENT_SOUND_LIGHT_CITY,
-    LocatorEvent::AMBIENT_SOUND_SUBURBS_NIGHT,
-    LocatorEvent::AMBIENT_SOUND_CITY,
-    LocatorEvent::AMBIENT_SOUND_PLACEHOLDER10,
-    LocatorEvent::AMBIENT_SOUND_HALLOWEEN1
-};
+static LocatorEvent::Event startingExteriorAmbiences[NUM_LEVELS] =
+        {
+                LocatorEvent::AMBIENT_SOUND_SUBURBS,
+                LocatorEvent::AMBIENT_SOUND_CITY,
+                LocatorEvent::AMBIENT_SOUND_LIGHT_CITY,
+                LocatorEvent::AMBIENT_SOUND_SUBURBS_NIGHT,
+                LocatorEvent::AMBIENT_SOUND_CITY,
+                LocatorEvent::AMBIENT_SOUND_PLACEHOLDER10,
+                LocatorEvent::AMBIENT_SOUND_HALLOWEEN1
+        };
 
 static int s_PostHitAndRunTimer = -99;
 
@@ -324,79 +366,76 @@ static int s_PostHitAndRunTimer = -99;
 // Return:      N/A.
 //
 //==============================================================================
-MusicPlayer::MusicPlayer( Sound::IDaSoundTuner& tuner ) :
-    m_lastServiceTime( ::radTimeGetMilliseconds( ) ),
-    m_isLoadingMusic( false ),
-    m_isInCar( false ),
-    m_radLoadRequest( NULL ),
-    m_musicPerformance( NULL ),
-    m_musicComposition( NULL ),
-    m_isLoadingAmbient( false ),
-    m_ambientPerformance( NULL ),
-    m_ambientComposition( NULL ),
-    m_currentAmbient( AEVENT_TRIGGER_START ),
-    m_ambiencePlaying( false ),
-    m_onApuRooftop( false ),
-    m_stoneCutterSong( false ),
-    m_LBCSong( false ),
-    m_delayedMusicStart( false ),
-    m_wasp( NULL )
-{
-    EventManager* eventMgr;
+MusicPlayer::MusicPlayer(Sound::IDaSoundTuner &tuner) :
+        m_lastServiceTime(::radTimeGetMilliseconds()),
+        m_isLoadingMusic(false),
+        m_isInCar(false),
+        m_radLoadRequest(NULL),
+        m_musicPerformance(NULL),
+        m_musicComposition(NULL),
+        m_isLoadingAmbient(false),
+        m_ambientPerformance(NULL),
+        m_ambientComposition(NULL),
+        m_currentAmbient(AEVENT_TRIGGER_START),
+        m_ambiencePlaying(false),
+        m_onApuRooftop(false),
+        m_stoneCutterSong(false),
+        m_LBCSong(false),
+        m_delayedMusicStart(false),
+        m_wasp(NULL) {
+    EventManager *eventMgr;
     unsigned int event;
 
     //
     // Register as an event listener
     //
-    
+
     eventMgr = GetEventManager();
 
-    eventMgr->AddListener( this, EVENT_GETINTOVEHICLE_END );
-    eventMgr->AddListener( this, EVENT_GETOUTOFVEHICLE_END );
-    eventMgr->AddListener( this, EVENT_INTERIOR_SWITCH );
-    eventMgr->AddListener( this, EVENT_MISSION_DRAMA );
-    eventMgr->AddListener( this, EVENT_MISSION_FAILURE );
-    eventMgr->AddListener( this, EVENT_MISSION_SUCCESS );
-    eventMgr->AddListener( this, EVENT_CARD_COLLECTED );
-    eventMgr->AddListener( this, EVENT_FE_START_GAME_SELECTED );
-    eventMgr->AddListener( this, EVENT_HIT_AND_RUN_START );
-    eventMgr->AddListener( this, EVENT_HIT_AND_RUN_CAUGHT );
-    eventMgr->AddListener( this, EVENT_HIT_AND_RUN_EVADED );
+    eventMgr->AddListener(this, EVENT_GETINTOVEHICLE_END);
+    eventMgr->AddListener(this, EVENT_GETOUTOFVEHICLE_END);
+    eventMgr->AddListener(this, EVENT_INTERIOR_SWITCH);
+    eventMgr->AddListener(this, EVENT_MISSION_DRAMA);
+    eventMgr->AddListener(this, EVENT_MISSION_FAILURE);
+    eventMgr->AddListener(this, EVENT_MISSION_SUCCESS);
+    eventMgr->AddListener(this, EVENT_CARD_COLLECTED);
+    eventMgr->AddListener(this, EVENT_FE_START_GAME_SELECTED);
+    eventMgr->AddListener(this, EVENT_HIT_AND_RUN_START);
+    eventMgr->AddListener(this, EVENT_HIT_AND_RUN_CAUGHT);
+    eventMgr->AddListener(this, EVENT_HIT_AND_RUN_EVADED);
 
     //
     // Temporarily remove wasp music
     //
-    //eventMgr->AddListener( this, EVENT_WASP_CHARGING );
-    //eventMgr->AddListener( this, EVENT_WASP_BLOWED_UP );
+    //eventMgr->AddListener(this, EVENT_WASP_CHARGING);
+    //eventMgr->AddListener(this, EVENT_WASP_BLOWED_UP);
 
-    eventMgr->AddListener( this, EVENT_ACTOR_REMOVED );
-    eventMgr->AddListener( this, EVENT_CHANGE_MUSIC );
-    eventMgr->AddListener( this, EVENT_CHANGE_MUSIC_STATE );
-    eventMgr->AddListener( this, EVENT_STAGE_TRANSITION_FAILED );
-    eventMgr->AddListener( this, EVENT_COMPLETED_ALLSTREETRACES );
-    eventMgr->AddListener( this, EVENT_MISSION_RESET );
-    eventMgr->AddListener( this, EVENT_CHARACTER_POS_RESET );
-    eventMgr->AddListener( this, EVENT_PLAY_CREDITS );
-    eventMgr->AddListener( this, EVENT_PLAY_FE_MUSIC );
-    eventMgr->AddListener( this, EVENT_PLAY_MUZAK );
-    //eventMgr->AddListener( this, EVENT_PLAY_IDLE_MUSIC );
-    eventMgr->AddListener( this, EVENT_SUPERSPRINT_WIN );
-    eventMgr->AddListener( this, EVENT_SUPERSPRINT_LOSE );
-    eventMgr->AddListener( this, EVENT_STOP_THE_MUSIC );
+    eventMgr->AddListener(this, EVENT_ACTOR_REMOVED);
+    eventMgr->AddListener(this, EVENT_CHANGE_MUSIC);
+    eventMgr->AddListener(this, EVENT_CHANGE_MUSIC_STATE);
+    eventMgr->AddListener(this, EVENT_STAGE_TRANSITION_FAILED);
+    eventMgr->AddListener(this, EVENT_COMPLETED_ALLSTREETRACES);
+    eventMgr->AddListener(this, EVENT_MISSION_RESET);
+    eventMgr->AddListener(this, EVENT_CHARACTER_POS_RESET);
+    eventMgr->AddListener(this, EVENT_PLAY_CREDITS);
+    eventMgr->AddListener(this, EVENT_PLAY_FE_MUSIC);
+    eventMgr->AddListener(this, EVENT_PLAY_MUZAK);
+    //eventMgr->AddListener(this, EVENT_PLAY_IDLE_MUSIC);
+    eventMgr->AddListener(this, EVENT_SUPERSPRINT_WIN);
+    eventMgr->AddListener(this, EVENT_SUPERSPRINT_LOSE);
+    eventMgr->AddListener(this, EVENT_STOP_THE_MUSIC);
 
     //
     // Register all of the ambience events
     //
-    for( event = EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_CITY;
-            event <= EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PLACEHOLDER16;
-            ++event )
-    {
-        if( ( event < EVENT_LOCATOR + LocatorEvent::PARKED_BIRDS )
-            || ( ( event > EVENT_LOCATOR + LocatorEvent::FAR_PLANE )
-                 && ( event < EVENT_LOCATOR + LocatorEvent::GOO_DAMAGE ) )
-            || ( event > EVENT_LOCATOR + LocatorEvent::TRAP ) )
-        {
-            eventMgr->AddListener( this, static_cast<EventEnum>(event) );
+    for (event = EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_CITY;
+         event <= EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PLACEHOLDER16;
+         ++event) {
+        if ((event < EVENT_LOCATOR + LocatorEvent::PARKED_BIRDS)
+            || ((event > EVENT_LOCATOR + LocatorEvent::FAR_PLANE)
+                && (event < EVENT_LOCATOR + LocatorEvent::GOO_DAMAGE))
+            || (event > EVENT_LOCATOR + LocatorEvent::TRAP)) {
+            eventMgr->AddListener(this, static_cast<EventEnum>(event));
         }
     }
 
@@ -416,52 +455,43 @@ MusicPlayer::MusicPlayer( Sound::IDaSoundTuner& tuner ) :
 // Return:      N/A.
 //
 //==============================================================================
-MusicPlayer::~MusicPlayer()
-{
+MusicPlayer::~MusicPlayer() {
     //
     // Deregister from EventManager
     //
-    GetEventManager()->RemoveAll( this );
-    
-    if( m_musicPerformance != NULL )
-    {
-        radmusic::performance_stop( m_musicPerformance );
-        radmusic::performance_delete( & m_musicPerformance );
-    }
-    
-    if ( m_musicComposition != NULL )
-    {
-        radmusic::composition_delete( & m_musicComposition );
+    GetEventManager()->RemoveAll(this);
+
+    if (m_musicPerformance != NULL) {
+        radmusic::performance_stop(m_musicPerformance);
+        radmusic::performance_delete(&m_musicPerformance);
     }
 
-    if( m_ambientPerformance != NULL )
-    {
-        radmusic::performance_stop( m_ambientPerformance );
-        radmusic::performance_delete( & m_ambientPerformance );
+    if (m_musicComposition != NULL) {
+        radmusic::composition_delete(&m_musicComposition);
     }
-    
-    if ( m_ambientComposition != NULL )
-    {
-        radmusic::composition_delete( & m_ambientComposition );
+
+    if (m_ambientPerformance != NULL) {
+        radmusic::performance_stop(m_ambientPerformance);
+        radmusic::performance_delete(&m_ambientPerformance);
+    }
+
+    if (m_ambientComposition != NULL) {
+        radmusic::composition_delete(&m_ambientComposition);
     }
 }
 
-void MusicPlayer::TriggerMusicEvent( MusicEventList event )
-{
+void MusicPlayer::TriggerMusicEvent(MusicEventList event) {
     int scriptIndex;
     int tableIndex;
 
-    if( !(CommandLineOptions::Get( CLO_NO_MUSIC )) )
-    {
+    if (!(CommandLineOptions::Get(CLO_NO_MUSIC))) {
         //
         // Much necessary hack: screen out music we're tired of hearing
         //
-        if( CommandLineOptions::Get( CLO_NO_AVRIL ) )
-        {
-            if( ( event == MEVENT_FE )
-                || ( event == MEVENT_SUNDAY_DRIVE_START )
-                || ( event == MEVENT_STREETRACE_START ) )
-            {
+        if (CommandLineOptions::Get(CLO_NO_AVRIL)) {
+            if ((event == MEVENT_FE)
+                || (event == MEVENT_SUNDAY_DRIVE_START)
+                || (event == MEVENT_STREETRACE_START)) {
                 // Silence
                 event = MEVENT_MOVIE;
             }
@@ -470,64 +500,52 @@ void MusicPlayer::TriggerMusicEvent( MusicEventList event )
         //
         // Get the script index for this event from the appropriate table
         //
-        if( event < MEVENT_END_STANDARD_EVENTS )
-        {
+        if (event < MEVENT_END_STANDARD_EVENTS) {
             scriptIndex = musicEventTable[event].scriptIndex;
-        }
-        else if( event < MEVENT_END_MISSION_EVENTS )
-        {
-            tableIndex = ( ( event - MEVENT_MISSION_START ) + calculateMissionIndex() );
+        } else if (event < MEVENT_END_MISSION_EVENTS) {
+            tableIndex = ((event - MEVENT_MISSION_START) + calculateMissionIndex());
             scriptIndex = missionScriptTable[tableIndex].scriptIndex;
-        }
-        else
-        {
-            tableIndex = ( ( event - MEVENT_STREETRACE_START ) + calculateMissionIndex() );
+        } else {
+            tableIndex = ((event - MEVENT_STREETRACE_START) + calculateMissionIndex());
             scriptIndex = raceScriptTable[tableIndex].scriptIndex;
         }
 
         //
         // TODO: Uncomment after all the missions are set up and ready to go
         //
-        //rAssertMsg( ( scriptIndex != NO_INDEX ), "Music event not found in script? (E-mail Esan, then continue)" );
+        //rAssertMsg((scriptIndex != NO_INDEX), "Music event not found in script? (E-mail Esan, then continue)");
 
-        if( ( scriptIndex != NO_INDEX )
-            && ( m_musicPerformance != NULL ) )
-        {
+        if ((scriptIndex != NO_INDEX)
+            && (m_musicPerformance != NULL)) {
             radmusic::performance_trigger_event(
-                m_musicPerformance,
-                scriptIndex );
+                    m_musicPerformance,
+                    scriptIndex);
         }
     }
 }
 
-void MusicPlayer::TriggerAmbientEvent( unsigned int event )
-{
+void MusicPlayer::TriggerAmbientEvent(unsigned int event) {
     unsigned int scriptLength;
 
-    if( m_ambientPerformance == NULL )
-    {
+    if (m_ambientPerformance == NULL) {
         return;
     }
 
-    if( !(CommandLineOptions::Get( CLO_NO_MUSIC )) )
-    {
-        scriptLength = radmusic::performance_num_events( m_ambientPerformance );
+    if (!(CommandLineOptions::Get(CLO_NO_MUSIC))) {
+        scriptLength = radmusic::performance_num_events(m_ambientPerformance);
 
-        if( event < scriptLength )
-        {
-            radmusic::performance_trigger_event( m_ambientPerformance, event );
-        }
-        else
-        {
+        if (event < scriptLength) {
+            radmusic::performance_trigger_event(m_ambientPerformance, event);
+        } else {
             //
             // TODO: reinstate this after MS 17, get ambience for all interiors
             //
 
-            //rAssertMsg( false, "Invalid ambient event received, ignored\n" );
+            //rAssertMsg(false, "Invalid ambient event received, ignored\n");
         }
     }
 }
-        
+
 //=============================================================================
 // MusicPlayer::HandleEvent
 //=============================================================================
@@ -539,13 +557,12 @@ void MusicPlayer::TriggerAmbientEvent( unsigned int event )
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::HandleEvent( EventEnum id, void* pEventData )
-{
+void MusicPlayer::HandleEvent(EventEnum id, void *pEventData) {
     bool inCar;
     int interiorIndex;
-    MusicStateData* musicState;
-    EventLocator* pLocator = (EventLocator*)pEventData;
-    Character* pCharacter = NULL;
+    MusicStateData *musicState;
+    EventLocator *pLocator = (EventLocator *) pEventData;
+    Character *pCharacter = NULL;
     int levelIndex;
     int missionIndex;
 
@@ -553,40 +570,35 @@ void MusicPlayer::HandleEvent( EventEnum id, void* pEventData )
     static int previousTime = 0, recentTime = 0;
     static EventEnum previousEvent = EVENT_LOCATOR;
     static EventEnum recentEvent = EVENT_LOCATOR;
-    static EventLocator* previousLocator = NULL;
-    static EventLocator*  recentLocator = NULL;
+    static EventLocator *previousLocator = NULL;
+    static EventLocator *recentLocator = NULL;
     static bool bSpecialCaseMusic = false;
     static MusicEventList lastSpecialMusic = MEVENT_MOVIE;  // default
 
     // bmc: don't pay attention to music events when in hit and run mode
     /*
-    if ( s_HitAndRun )
+    if (s_HitAndRun)
     {
-        if ( id != EVENT_HIT_AND_RUN_CAUGHT && id != EVENT_HIT_AND_RUN_EVADED && 
-             id != EVENT_MISSION_FAILURE && id != EVENT_MISSION_SUCCESS && id != EVENT_MISSION_RESET )
+        if (id != EVENT_HIT_AND_RUN_CAUGHT && id != EVENT_HIT_AND_RUN_EVADED &&
+             id != EVENT_MISSION_FAILURE && id != EVENT_MISSION_SUCCESS && id != EVENT_MISSION_RESET)
             return;
         else
             s_HitAndRun = false;
     }
     */
 
-    switch( id )
-    {
+    switch (id) {
         case EVENT_FE_START_GAME_SELECTED:
-            TriggerMusicEvent( MEVENT_NEWSPAPER_SPIN );
+            TriggerMusicEvent(MEVENT_NEWSPAPER_SPIN);
             break;
 
         case EVENT_GETINTOVEHICLE_END:
             m_isInCar = true;
-            
-            if ( !s_HitAndRun )
-            {
-                if ( bSpecialCaseMusic )
-                {
-                    TriggerMusicEvent( lastSpecialMusic );
-                }
-                else
-                {
+
+            if (!s_HitAndRun) {
+                if (bSpecialCaseMusic) {
+                    TriggerMusicEvent(lastSpecialMusic);
+                } else {
                     startMusic();
                 }
             }
@@ -594,177 +606,149 @@ void MusicPlayer::HandleEvent( EventEnum id, void* pEventData )
 
         case EVENT_GETOUTOFVEHICLE_END:
             // bmc: have to validate that it's not an ai player getting out of the car...
-            pCharacter = static_cast<Character*>( pEventData );
-            if ( !pCharacter->IsNPC() )
-            {
+            pCharacter = static_cast<Character *>(pEventData);
+            if (!pCharacter->IsNPC()) {
                 m_isInCar = false;
 
                 // if playing special music then we don't want to mess with it...
-                if ( !bSpecialCaseMusic )
-                {
-                    if ( !s_HitAndRun && !musicLockedOnForStage() )
-                    {
-                        if( currentMissionIsSundayDrive() )
-                        {
-                            TriggerMusicEvent( MEVENT_SUNDAY_DRIVE_GET_OUT_OF_CAR );
+                if (!bSpecialCaseMusic) {
+                    if (!s_HitAndRun && !musicLockedOnForStage()) {
+                        if (currentMissionIsSundayDrive()) {
+                            TriggerMusicEvent(MEVENT_SUNDAY_DRIVE_GET_OUT_OF_CAR);
+                        } else if (currentMissionIsRace()) {
+                            TriggerMusicEvent(MEVENT_STREETRACE_GET_OUT_OF_CAR);
+                        } else {
+                            TriggerMusicEvent(MEVENT_GET_OUT_OF_CAR);
                         }
-                        else if( currentMissionIsRace() )
-                        {
-                            TriggerMusicEvent( MEVENT_STREETRACE_GET_OUT_OF_CAR );
-                        }
-                        else
-                        {
-                            TriggerMusicEvent( MEVENT_GET_OUT_OF_CAR );
-                        }
-                        turnAmbienceOn( m_currentAmbient );
+                        turnAmbienceOn(m_currentAmbient);
                     }
                 }
             }
             break;
 
-        case EVENT_MISSION_RESET:
-            {
-                s_HitAndRun = false;
-                bSpecialCaseMusic = false;
-                lastSpecialMusic = MEVENT_MOVIE;
-                // bmc: play music if just declined restarting of a mission
-                if ( GetGameplayManager()->IsSundayDrive() &&
-                    GetInteriorManager()->GetInterior() == static_cast< tUID >( 0 ) && (int)pEventData == 0 )
-                {
-                    startMusic();
-                }
+        case EVENT_MISSION_RESET: {
+            s_HitAndRun = false;
+            bSpecialCaseMusic = false;
+            lastSpecialMusic = MEVENT_MOVIE;
+            // bmc: play music if just declined restarting of a mission
+            if (GetGameplayManager()->IsSundayDrive() &&
+                GetInteriorManager()->GetInterior() == static_cast<tUID>(0) &&
+                (int) pEventData == 0) {
+                startMusic();
+            }
 
-                inCar = GetAvatarManager()->GetAvatarForPlayer( 0 )->IsInCar();
-                if( inCar != m_isInCar )
-                {
-                    m_isInCar = inCar;
-                    startMusic();
-                }
-                else if ( inCar )
-                {
-                    // bmc: another hack -- if restarting a mission and we're in a car to start it then play the damn music
-                    startMusic();
-                }
+            inCar = GetAvatarManager()->GetAvatarForPlayer(0)->IsInCar();
+            if (inCar != m_isInCar) {
+                m_isInCar = inCar;
+                startMusic();
+            } else if (inCar) {
+                // bmc: another hack -- if restarting a mission and we're in a car to start it then play the damn music
+                startMusic();
+            }
 
-#if defined( RAD_XBOX ) || defined( RAD_WIN32 )
-                // XBox seems to like this syntax better.
-                bool jumpStage = reinterpret_cast<bool>( pEventData );
+#if defined(RAD_XBOX) || defined(RAD_WIN32)
+            // XBox seems to like this syntax better.
+            bool jumpStage = reinterpret_cast<bool>(pEventData);
 #else
-                bool jumpStage = (bool)( pEventData );
+            bool jumpStage = (bool) (pEventData);
 #endif
 
-                if( jumpStage )
-                {
-                    //
-                    // Make sure we're playing the right ambience
-                    //
-                    levelIndex = calculateLevelIndex();
-                    missionIndex = GetGameplayManager()->GetCurrentMissionIndex();
+            if (jumpStage) {
+                //
+                // Make sure we're playing the right ambience
+                //
+                levelIndex = calculateLevelIndex();
+                missionIndex = GetGameplayManager()->GetCurrentMissionIndex();
 
-                    if( startingAmbiences[levelIndex][missionIndex] == AEVENT_INTERIOR_HOUSE )
-                    {
-                        m_currentAmbient = AEVENT_TRIGGER_START + ( startingExteriorAmbiences[calculateLevelIndex()] - LocatorEvent::AMBIENT_SOUND_CITY );
-                    }
-                    else
-                    {
-                        m_currentAmbient = startingAmbiences[levelIndex][missionIndex];
-                    }
-                    if( !inCar )
-                    {
-                        turnAmbienceOn( startingAmbiences[levelIndex][missionIndex] );
-                    }
+                if (startingAmbiences[levelIndex][missionIndex] == AEVENT_INTERIOR_HOUSE) {
+                    m_currentAmbient = AEVENT_TRIGGER_START +
+                                       (startingExteriorAmbiences[calculateLevelIndex()] -
+                                        LocatorEvent::AMBIENT_SOUND_CITY);
+                } else {
+                    m_currentAmbient = startingAmbiences[levelIndex][missionIndex];
+                }
+                if (!inCar) {
+                    turnAmbienceOn(startingAmbiences[levelIndex][missionIndex]);
                 }
             }
+        }
             break;
 
         case EVENT_CHARACTER_POS_RESET:
-            if ( pEventData )
-                pCharacter = static_cast<Character*>( pEventData );
+            if (pEventData)
+                pCharacter = static_cast<Character *>(pEventData);
 
-            if ( pCharacter && pCharacter->IsNPC() )
+            if (pCharacter && pCharacter->IsNPC())
                 break;
 
-            inCar = GetAvatarManager()->GetAvatarForPlayer( 0 )->IsInCar();
-            if( inCar != m_isInCar )
-            {
+            inCar = GetAvatarManager()->GetAvatarForPlayer(0)->IsInCar();
+            if (inCar != m_isInCar) {
                 m_isInCar = inCar;
                 startMusic();
             }
-            
+
             break;
 
         case EVENT_INTERIOR_SWITCH:
             //
             // We sometimes get these events on loading screens.  Filter them out.
             //
-            if( GetGameFlow()->GetCurrentContext() == CONTEXT_LOADING_GAMEPLAY )
-            {
+            if (GetGameFlow()->GetCurrentContext() == CONTEXT_LOADING_GAMEPLAY) {
                 break;
             }
 
-            if(pEventData)
-            {
+            if (pEventData) {
                 // switching to interior
-                interiorIndex = calculateInteriorIndex( GetInteriorManager()->GetInterior() );
-                turnAmbienceOn( AEVENT_INTERIOR_KWIK_E_MART + interiorIndex );
-                if( !musicLockedOnForStage() )
-                {
-                    TriggerMusicEvent( interiorNameTable[interiorIndex].musicEvent );
+                interiorIndex = calculateInteriorIndex(GetInteriorManager()->GetInterior());
+                turnAmbienceOn(AEVENT_INTERIOR_KWIK_E_MART + interiorIndex);
+                if (!musicLockedOnForStage()) {
+                    TriggerMusicEvent(interiorNameTable[interiorIndex].musicEvent);
                 }
-            }
-            else if( !m_isInCar )
-            {
+            } else if (!m_isInCar) {
                 // switching to exterior
-                turnAmbienceOn( m_currentAmbient );
-                if( !musicLockedOnForStage() )
-                {
-                    TriggerMusicEvent( MEVENT_OF_EXPLORE_MISSION );
+                turnAmbienceOn(m_currentAmbient);
+                if (!musicLockedOnForStage()) {
+                    TriggerMusicEvent(MEVENT_OF_EXPLORE_MISSION);
                 }
             }
             break;
 
         case EVENT_MISSION_DRAMA:
-            TriggerMusicEvent( MEVENT_MISSION_DRAMA );
+            TriggerMusicEvent(MEVENT_MISSION_DRAMA);
             break;
 
         case EVENT_CHANGE_MUSIC:
-            triggerMusicMissionEventByName( static_cast<radKey32*>( pEventData ) );
+            triggerMusicMissionEventByName(static_cast<radKey32 *>(pEventData));
             break;
 
         case EVENT_CHANGE_MUSIC_STATE:
-            musicState = static_cast<MusicStateData*>( pEventData );
-            triggerMusicStateChange( musicState->stateKey, musicState->stateEventKey );
+            musicState = static_cast<MusicStateData *>(pEventData);
+            triggerMusicStateChange(musicState->stateKey, musicState->stateEventKey);
             break;
 
         case EVENT_MISSION_SUCCESS:
             s_HitAndRun = false;
-            if( currentMissionIsRace() )
-            {
-                TriggerMusicEvent( MEVENT_STREETRACE_WIN );
-            }
-            else
-            {
-                TriggerMusicEvent( MEVENT_WIN_MISSION );
+            if (currentMissionIsRace()) {
+                TriggerMusicEvent(MEVENT_STREETRACE_WIN);
+            } else {
+                TriggerMusicEvent(MEVENT_WIN_MISSION);
             }
             playPostMissionSounds();
             break;
 
         case EVENT_MISSION_FAILURE:
             s_HitAndRun = false;
-            if( currentMissionIsRace() )
-            {
-                TriggerMusicEvent( MEVENT_STREETRACE_LOSE );
-            }
-            else
-            {
-                TriggerMusicEvent( MEVENT_LOSE_MISSION );
+            if (currentMissionIsRace()) {
+                TriggerMusicEvent(MEVENT_STREETRACE_LOSE);
+            } else {
+                TriggerMusicEvent(MEVENT_LOSE_MISSION);
             }
 
             //playPostMissionSounds();
             break;
 
         case EVENT_STAGE_TRANSITION_FAILED:
-            TriggerMusicEvent( MEVENT_GATED_MISSION );
+            TriggerMusicEvent(MEVENT_GATED_MISSION);
             break;
 
         case EVENT_CARD_COLLECTED:
@@ -772,21 +756,20 @@ void MusicPlayer::HandleEvent( EventEnum id, void* pEventData )
             // If we're in the car, don't interrupt the music, we'll play
             // a sound effect instead
             //
-            if( !m_isInCar )
-            {
-                TriggerMusicEvent( MEVENT_OF_FOUND_CARD );
+            if (!m_isInCar) {
+                TriggerMusicEvent(MEVENT_OF_FOUND_CARD);
             }
             break;
 
         case EVENT_HIT_AND_RUN_START:
-            TriggerMusicEvent( MEVENT_HIT_AND_RUN_START );
+            TriggerMusicEvent(MEVENT_HIT_AND_RUN_START);
             s_HitAndRun = true;
             // bmc: queueing this after the hit and run music seems to do the trick when hit and run ends...but only on evade...
             //startMusic();
             break;
 
         case EVENT_HIT_AND_RUN_CAUGHT:
-            TriggerMusicEvent( MEVENT_HIT_AND_RUN_CAUGHT );
+            TriggerMusicEvent(MEVENT_HIT_AND_RUN_CAUGHT);
             s_HitAndRun = false;
             // begin counter -- (x) ticks until startMusic call...
             s_PostHitAndRunTimer = 110;
@@ -794,65 +777,63 @@ void MusicPlayer::HandleEvent( EventEnum id, void* pEventData )
 
         case EVENT_HIT_AND_RUN_EVADED:
             // bmc: play nothing...
-            //TriggerMusicEvent( MEVENT_SUNDAY_DRIVE_START );
+            //TriggerMusicEvent(MEVENT_SUNDAY_DRIVE_START);
             s_HitAndRun = false;
             // begin counter -- (x) ticks until startMusic call...
             s_PostHitAndRunTimer = 10;
             break;
 
         case EVENT_WASP_CHARGING:
-            if( !m_isInCar )
-            {
-                m_wasp = static_cast<Actor*>( pEventData );
-                TriggerMusicEvent( MEVENT_WASP_ATTACK );
+            if (!m_isInCar) {
+                m_wasp = static_cast<Actor *>(pEventData);
+                TriggerMusicEvent(MEVENT_WASP_ATTACK);
             }
             break;
 
         case EVENT_WASP_BLOWED_UP:
         case EVENT_ACTOR_REMOVED:
-            if( static_cast<Actor*>( pEventData ) == m_wasp )
-            {
-                TriggerMusicEvent( MEVENT_OF_EXPLORE_MISSION );
+            if (static_cast<Actor *>(pEventData) == m_wasp) {
+                TriggerMusicEvent(MEVENT_OF_EXPLORE_MISSION);
 
                 m_wasp = NULL;
             }
             break;
 
         case EVENT_COMPLETED_ALLSTREETRACES:
-            TriggerMusicEvent( MEVENT_WIN_3_RACES );
+            TriggerMusicEvent(MEVENT_WIN_3_RACES);
             break;
 
         case EVENT_DESTROYED_ALLCAMERAS:
-            TriggerMusicEvent( MEVENT_DESTROY_CAMERA_BONUS );
+            TriggerMusicEvent(MEVENT_DESTROY_CAMERA_BONUS);
             break;
 
         case EVENT_SUPERSPRINT_WIN:
-            TriggerMusicEvent( MEVENT_SUPERSPRINT_WIN );
+            TriggerMusicEvent(MEVENT_SUPERSPRINT_WIN);
             break;
 
         case EVENT_SUPERSPRINT_LOSE:
-            TriggerMusicEvent( MEVENT_SUPERSPRINT_LOSE );
+            TriggerMusicEvent(MEVENT_SUPERSPRINT_LOSE);
             break;
 
         case EVENT_PLAY_CREDITS:
-            TriggerMusicEvent( MEVENT_CREDITS );
+            TriggerMusicEvent(MEVENT_CREDITS);
             break;
 
         case EVENT_PLAY_FE_MUSIC:
-            TriggerMusicEvent( MEVENT_FE );
+            TriggerMusicEvent(MEVENT_FE);
             break;
 
         case EVENT_PLAY_MUZAK:
-            TriggerMusicEvent( MEVENT_STORE );
+            TriggerMusicEvent(MEVENT_STORE);
             break;
 
         case EVENT_PLAY_IDLE_MUSIC:
             // bmc: do nothing here -- it fucks things over anyway
-        //    TriggerMusicEvent( MEVENT_OF_TIME_OUT );
+            //    TriggerMusicEvent(MEVENT_OF_TIME_OUT);
             break;
 
         case EVENT_STOP_THE_MUSIC:
-            TriggerMusicEvent( MEVENT_MOVIE );
+            TriggerMusicEvent(MEVENT_MOVIE);
             break;
 
         default:
@@ -860,36 +841,35 @@ void MusicPlayer::HandleEvent( EventEnum id, void* pEventData )
             // This should be triggered with ambience events.  Easier to handle here
             // than writing dozens of cases above
             //
-            rAssert( id >= EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_CITY );
-            rAssert( id <= EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PLACEHOLDER16 );
-            rAssert( ! ( ( id >= EVENT_LOCATOR + LocatorEvent::PARKED_BIRDS ) 
-                          && ( id <= EVENT_LOCATOR + LocatorEvent::FAR_PLANE ) ) );
-            rAssert( ! ( ( id >= EVENT_LOCATOR + LocatorEvent::GOO_DAMAGE ) 
-                         && ( id <= EVENT_LOCATOR + LocatorEvent::TRAP ) ) );
+            rAssert(id >= EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_CITY);
+            rAssert(id <= EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PLACEHOLDER16);
+            rAssert(!((id >= EVENT_LOCATOR + LocatorEvent::PARKED_BIRDS)
+                      && (id <= EVENT_LOCATOR + LocatorEvent::FAR_PLANE)));
+            rAssert(!((id >= EVENT_LOCATOR + LocatorEvent::GOO_DAMAGE)
+                      && (id <= EVENT_LOCATOR + LocatorEvent::TRAP)));
 
             // don't play specific music if in hit and run
-            if ( s_HitAndRun || !pLocator->GetPlayerEntered() )
+            if (s_HitAndRun || !pLocator->GetPlayerEntered())
                 break;
 
 
 #ifdef RAD_DEBUG
             char temp[256];
 
-            radmusic::performance_event_name( m_ambientPerformance, 
+            radmusic::performance_event_name(m_ambientPerformance,
                 AEVENT_TRIGGER_START + id - (EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_CITY),
                 temp,
-                256 );
+                256);
 
-            rDebugPrintf( "Hit ambient trigger for %s\n", temp );
+            rDebugPrintf("Hit ambient trigger for %s\n", temp);
 #endif
 
-            if( m_ambiencePlaying )
-            {
-                turnAmbienceOn( AEVENT_TRIGGER_START + id - (EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_CITY) );
-            }
-            else
-            {
-                m_currentAmbient = AEVENT_TRIGGER_START + id - (EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_CITY);
+            if (m_ambiencePlaying) {
+                turnAmbienceOn(AEVENT_TRIGGER_START + id -
+                               (EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_CITY));
+            } else {
+                m_currentAmbient = AEVENT_TRIGGER_START + id -
+                                   (EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_CITY);
             }
 
             //
@@ -903,70 +883,54 @@ void MusicPlayer::HandleEvent( EventEnum id, void* pEventData )
             // if the player continuously drives back and forth over the volumes...may become confused 
             // as to which one to actually choose and end up with the wrong one :(
 
-            if ( id == recentEvent )
-            {
+            if (id == recentEvent) {
                 // ignore
                 id = id;
-            }
-            else if ( id == previousEvent && ( ( now - previousTime ) < ( 500 ) ) )
-            {
-                rDebugPrintf( "Sound ignoring likely thrashing event id = %d with time delay %d\n", id, now-previousTime );
+            } else if (id == previousEvent && ((now - previousTime) < (500))) {
+                rDebugPrintf("Sound ignoring likely thrashing event id = %d with time delay %d\n",
+                             id, now - previousTime);
                 id = id;
-            }
-            else
-            {
-                if( ( id == ( EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PLACEHOLDER9 ) )
-                    && ( GetGameplayManager()->IsSundayDrive() ) )
-                {
+            } else {
+                if ((id == (EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PLACEHOLDER9))
+                    && (GetGameplayManager()->IsSundayDrive())) {
                     lastSpecialMusic = MEVENT_STONECUTTER_SONG;
-                    TriggerMusicEvent( MEVENT_STONECUTTER_SONG );
+                    TriggerMusicEvent(MEVENT_STONECUTTER_SONG);
                     bSpecialCaseMusic = true;
-                }
-                else if( ( id == ( EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PLACEHOLDER8 ) )
-                        && ( GetGameplayManager()->IsSundayDrive() ) )
-                {
+                } else if ((id == (EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PLACEHOLDER8))
+                           && (GetGameplayManager()->IsSundayDrive())) {
                     lastSpecialMusic = MEVENT_LBC_SONG;
-                    TriggerMusicEvent( MEVENT_LBC_SONG );
+                    TriggerMusicEvent(MEVENT_LBC_SONG);
                     bSpecialCaseMusic = true;
                 }
-                //else if( ( id == ( EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_STONE_CUTTER_TUNNEL ) )
-                //        && ( GetGameplayManager()->IsSundayDrive() ) )
-                //{
-                //    TriggerMusicEvent( MEVENT_STONECUTTER_SONG );
-                //    bSpecialCaseMusic = true;
-                //}
-                else if( ( id == ( EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_STONE_CUTTER_HALL ) )
-                        && ( GetGameplayManager()->IsSundayDrive() ) )
-                {
+                    //else if((id == (EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_STONE_CUTTER_TUNNEL))
+                    //        && (GetGameplayManager()->IsSundayDrive()))
+                    //{
+                    //    TriggerMusicEvent(MEVENT_STONECUTTER_SONG);
+                    //    bSpecialCaseMusic = true;
+                    //}
+                else if ((id == (EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_STONE_CUTTER_HALL))
+                         && (GetGameplayManager()->IsSundayDrive())) {
                     lastSpecialMusic = MEVENT_ENTER_STONECUTTER_TUNNEL;
-                    TriggerMusicEvent( MEVENT_ENTER_STONECUTTER_TUNNEL );
+                    TriggerMusicEvent(MEVENT_ENTER_STONECUTTER_TUNNEL);
                     bSpecialCaseMusic = true;
-                }
-                else if( ( id == ( EVENT_LOCATOR + LocatorEvent::AMBIENT_KWIK_E_MART_ROOFTOP ) ) || 
-                        ( id == ( EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PLACEHOLDER3 ) )
-                        && ( GetGameplayManager()->IsSundayDrive() ) )
-                {
+                } else if ((id == (EVENT_LOCATOR + LocatorEvent::AMBIENT_KWIK_E_MART_ROOFTOP)) ||
+                           (id == (EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PLACEHOLDER3))
+                           && (GetGameplayManager()->IsSundayDrive())) {
                     lastSpecialMusic = MEVENT_APU_OASIS;
-                    TriggerMusicEvent( MEVENT_APU_OASIS );
+                    TriggerMusicEvent(MEVENT_APU_OASIS);
                     bSpecialCaseMusic = true;
-                }
-                else if( ( id == ( EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_HALLOWEEN2 ) )
-                        && ( GetGameplayManager()->IsSundayDrive() ) )
-                {
+                } else if ((id == (EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_HALLOWEEN2))
+                           && (GetGameplayManager()->IsSundayDrive())) {
                     lastSpecialMusic = MEVENT_SCARYMUSIC;
-                    TriggerMusicEvent( MEVENT_SCARYMUSIC );
+                    TriggerMusicEvent(MEVENT_SCARYMUSIC);
                     bSpecialCaseMusic = true;
-                }
-                else if( ( id == ( EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_DUFF_EXTERIOR ) ) ||
-                          ( id == ( EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_BREWERY_NIGHT ) )
-                        && ( GetGameplayManager()->IsSundayDrive() ) )
-                {
+                } else if ((id == (EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_DUFF_EXTERIOR)) ||
+                           (id == (EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_BREWERY_NIGHT))
+                           && (GetGameplayManager()->IsSundayDrive())) {
                     lastSpecialMusic = MEVENT_DUFF_SONG;
-                    TriggerMusicEvent( MEVENT_DUFF_SONG );
+                    TriggerMusicEvent(MEVENT_DUFF_SONG);
                     bSpecialCaseMusic = true;
-                }
-                else if( bSpecialCaseMusic )
-                {
+                } else if (bSpecialCaseMusic) {
                     startMusic(); // bmc: test
                     bSpecialCaseMusic = false;
                     lastSpecialMusic = MEVENT_MOVIE;  // default
@@ -998,42 +962,39 @@ void MusicPlayer::HandleEvent( EventEnum id, void* pEventData )
 //=============================================================================
 
 void MusicPlayer::SetUpPerformance(
-    radmusic::performance ** ppPerformance,
-    radmusic::composition ** ppComposition,
-    const char * searchPath )
-{
-    rAssert( NULL != ppPerformance );
-    rAssert( NULL != ppComposition );
-    rAssert( NULL == *ppPerformance );
-    rAssert( NULL == *ppComposition );
-        
-    radmusic::radload_composition_adapter * compAdapter =
-        radLoadFind< radmusic::radload_composition_adapter >(
-            m_radLoadRequest->GetInventory( ), "my_composition" );
-            
-    rAssert( NULL != compAdapter );
-    
+        radmusic::performance **ppPerformance,
+        radmusic::composition **ppComposition,
+        const char *searchPath) {
+    rAssert(NULL != ppPerformance);
+    rAssert(NULL != ppComposition);
+    rAssert(NULL == *ppPerformance);
+    rAssert(NULL == *ppComposition);
+
+    radmusic::radload_composition_adapter *compAdapter =
+            radLoadFind<radmusic::radload_composition_adapter>(m_radLoadRequest->GetInventory(),
+                                                               "my_composition");
+
+    rAssert(NULL != compAdapter);
+
     *ppComposition = compAdapter->p_composition;
-    
-    rAssert( NULL != *ppComposition );
-    
+
+    rAssert(NULL != *ppComposition);
+
     compAdapter->p_composition = NULL;
-    
-    m_radLoadRequest->Release( );
+
+    m_radLoadRequest->Release();
     m_radLoadRequest = NULL;
-            
-    if ( CommandLineOptions::Get( CLO_FIREWIRE ) )
-    {
-        *ppPerformance = radmusic::performance_new( *ppComposition, searchPath, radMemorySpace_Local );    
+
+    if (CommandLineOptions::Get(CLO_FIREWIRE)) {
+        *ppPerformance = radmusic::performance_new(*ppComposition, searchPath,
+                                                   radMemorySpace_Local);
+    } else {
+        *ppPerformance = radmusic::performance_new(*ppComposition, searchPath);
     }
-    else
-    {
-        *ppPerformance = radmusic::performance_new( *ppComposition, searchPath );    
-    }
-    
-    rAssert( *ppPerformance != NULL );
+
+    rAssert(*ppPerformance != NULL);
 }
-        
+
 //=============================================================================
 // MusicPlayer::Service
 //=============================================================================
@@ -1045,36 +1006,32 @@ void MusicPlayer::SetUpPerformance(
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::Service()
-{
-    HeapMgr()->PushHeap( GMA_AUDIO_PERSISTENT );
+void MusicPlayer::Service() {
+    HeapMgr()->PushHeap(GMA_AUDIO_PERSISTENT);
 
-    unsigned int now = ::radTimeGetMilliseconds( );
+    unsigned int now = ::radTimeGetMilliseconds();
     unsigned int dif = now - m_lastServiceTime;
-    
-    if ( m_musicPerformance != NULL )
-    {
-        radmusic::performance_update( m_musicPerformance, dif );
+
+    if (m_musicPerformance != NULL) {
+        radmusic::performance_update(m_musicPerformance, dif);
     }
-    
-    if ( m_ambientPerformance != NULL )
-    {
-        radmusic::performance_update( m_ambientPerformance, dif );
+
+    if (m_ambientPerformance != NULL) {
+        radmusic::performance_update(m_ambientPerformance, dif);
     }
-    
+
     m_lastServiceTime = now;
 
     //
     // According to Tim, this can be changed to a synchronous
     // load on a thread using:
     //
-    // radmusic::composition_new_from_file( const char * p_file_name );
+    // radmusic::composition_new_from_file(const char * p_file_name);
     //
-      
-    if( m_isLoadingMusic && ( m_radLoadRequest->IsComplete( ) ) )
-    {
-        SetUpPerformance( & m_musicPerformance, & m_musicComposition, MUSIC_SEARCH_PATH );
-         
+
+    if (m_isLoadingMusic && (m_radLoadRequest->IsComplete())) {
+        SetUpPerformance(&m_musicPerformance, &m_musicComposition, MUSIC_SEARCH_PATH);
+
         m_isLoadingMusic = false;
 
         //
@@ -1083,50 +1040,40 @@ void MusicPlayer::Service()
         buildEventTables();
 
         m_loadCompleteCallback->LoadCompleted();
-    }
-    else if( m_isLoadingAmbient && m_radLoadRequest->IsComplete( ) )
-    {
-        SetUpPerformance( & m_ambientPerformance, & m_ambientComposition, AMBIENCE_SEARCH_PATH );
-                
+    } else if (m_isLoadingAmbient && m_radLoadRequest->IsComplete()) {
+        SetUpPerformance(&m_ambientPerformance, &m_ambientComposition, AMBIENCE_SEARCH_PATH);
+
         m_isLoadingAmbient = false;
 
-        rAssert( radmusic::performance_num_events( m_ambientPerformance ) == AEVENT_NUM_EVENTS );
+        rAssert(radmusic::performance_num_events(m_ambientPerformance) == AEVENT_NUM_EVENTS);
 
 
         m_loadCompleteCallback->LoadCompleted();
     }
 
-    HeapMgr()->PopHeap( GMA_AUDIO_PERSISTENT );
+    HeapMgr()->PopHeap(GMA_AUDIO_PERSISTENT);
 
     // bmc: hit-and-run post music hack
-    if ( s_PostHitAndRunTimer > 0 )
-    {
-        if ( --s_PostHitAndRunTimer == 0 )
-        {        
+    if (s_PostHitAndRunTimer > 0) {
+        if (--s_PostHitAndRunTimer == 0) {
             s_PostHitAndRunTimer = -99;
             startMusic();
         }
     }
 
     // My own music hack -- DE
-    if( m_delayedMusicStart )
-    {
-        if( m_musicPerformance == NULL )
-        {
+    if (m_delayedMusicStart) {
+        if (m_musicPerformance == NULL) {
             m_delayedMusicStart = false;
-        }
-        else
-        {
+        } else {
             //
             // Check to see if the mission success/fail stinger is done yet
             //
-            if( radmusic::performance_is_state_steady_idle( m_musicPerformance ) )
-            {
-                char regionName[ 64 ];
-                radmusic::debug_performance_current_region_name( m_musicPerformance, regionName, 64 );
+            if (radmusic::performance_is_state_steady_idle(m_musicPerformance)) {
+                char regionName[64];
+                radmusic::debug_performance_current_region_name(m_musicPerformance, regionName, 64);
 
-                if( strcmp( regionName, "stopped" ) == 0 )
-                {
+                if (strcmp(regionName, "stopped") == 0) {
                     m_delayedMusicStart = false;
                     startMusic();
                 }
@@ -1146,14 +1093,13 @@ void MusicPlayer::Service()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::QueueRadmusicScriptLoad()
-{
-    GetLoadingManager()->AddRequest( FILEHANDLER_SOUND, AMBIENT_FILE_NAME, GMA_LEVEL_AUDIO );
+void MusicPlayer::QueueRadmusicScriptLoad() {
+    GetLoadingManager()->AddRequest(FILEHANDLER_SOUND, AMBIENT_FILE_NAME, GMA_LEVEL_AUDIO);
 
     //
     // For the front end, any music script will do right now
     //
-    QueueMusicLevelLoad( RenderEnums::L1 );
+    QueueMusicLevelLoad(RenderEnums::L1);
 }
 
 //=============================================================================
@@ -1167,19 +1113,17 @@ void MusicPlayer::QueueRadmusicScriptLoad()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::QueueMusicLevelLoad( RenderEnums::LevelEnum level )
-{
+void MusicPlayer::QueueMusicLevelLoad(RenderEnums::LevelEnum level) {
     char musicScriptName[100];
     int levelNum = level - RenderEnums::L1 + 1;
 
     //TODO:  Esan are we going to play special music here?
-    if ( levelNum > RenderEnums::numLevels )
-    {
+    if (levelNum > RenderEnums::numLevels) {
         levelNum -= RenderEnums::numLevels;
     }
 
-    sprintf( musicScriptName, "%s%d%s", LEVEL_FILE_NAME_PREFIX, levelNum, LEVEL_FILE_NAME_SUFFIX );
-    GetLoadingManager()->AddRequest( FILEHANDLER_SOUND, musicScriptName, GMA_LEVEL_AUDIO );
+    sprintf(musicScriptName, "%s%d%s", LEVEL_FILE_NAME_PREFIX, levelNum, LEVEL_FILE_NAME_SUFFIX);
+    GetLoadingManager()->AddRequest(FILEHANDLER_SOUND, musicScriptName, GMA_LEVEL_AUDIO);
 }
 
 //=============================================================================
@@ -1192,32 +1136,28 @@ void MusicPlayer::QueueMusicLevelLoad( RenderEnums::LevelEnum level )
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::LoadRadmusicScript( const char* filename, SoundFileHandler* fileHandler )
-{
-    rAssert( NULL == m_radLoadRequest );
-    
-    if( strcmp( filename, AMBIENT_FILE_NAME ) == 0 )
-    {
+void MusicPlayer::LoadRadmusicScript(const char *filename, SoundFileHandler *fileHandler) {
+    rAssert(NULL == m_radLoadRequest);
+
+    if (strcmp(filename, AMBIENT_FILE_NAME) == 0) {
         m_isLoadingAmbient = true;
-    }
-    else
-    {
+    } else {
         UnloadRadmusicScript();
         m_isLoadingMusic = true;
     }
 
     m_loadCompleteCallback = fileHandler;
-    
+
     // We have to keep the string around--problem with radload.
-    
-    strncpy( n_currentLoadName, filename, 64 );
+
+    strncpy(n_currentLoadName, filename, 64);
 
     radLoadOptions options;
-    options.filename  = n_currentLoadName; 
+    options.filename = n_currentLoadName;
     options.allocator = GMA_MUSIC;
-    
+
     HeapMgr()->PushHeap(GMA_MUSIC);
-    radLoadInstance()->Load( & options, & m_radLoadRequest );   
+    radLoadInstance()->Load(&options, &m_radLoadRequest);
     HeapMgr()->PopHeap(GMA_MUSIC);
 }
 
@@ -1231,19 +1171,16 @@ void MusicPlayer::LoadRadmusicScript( const char* filename, SoundFileHandler* fi
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::UnloadRadmusicScript()
-{
-    if( NULL != m_musicPerformance  )
-    {
-        radmusic::performance_stop( m_musicPerformance );
-        radmusic::performance_delete( & m_musicPerformance );
+void MusicPlayer::UnloadRadmusicScript() {
+    if (NULL != m_musicPerformance) {
+        radmusic::performance_stop(m_musicPerformance);
+        radmusic::performance_delete(&m_musicPerformance);
 
         m_musicPerformance = NULL;
     }
-    
-    if ( NULL != m_musicComposition )
-    {
-        radmusic::composition_delete( & m_musicComposition );
+
+    if (NULL != m_musicComposition) {
+        radmusic::composition_delete(&m_musicComposition);
 
         m_musicComposition = NULL;
     }
@@ -1259,9 +1196,8 @@ void MusicPlayer::UnloadRadmusicScript()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::OnFrontEndStart()
-{
-    TriggerMusicEvent( MEVENT_FE );
+void MusicPlayer::OnFrontEndStart() {
+    TriggerMusicEvent(MEVENT_FE);
 }
 
 //=============================================================================
@@ -1274,10 +1210,8 @@ void MusicPlayer::OnFrontEndStart()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::OnFrontEndFinish()
-{
-    if( CommandLineOptions::Get( CLO_NO_MUSIC ) )
-    {
+void MusicPlayer::OnFrontEndFinish() {
+    if (CommandLineOptions::Get(CLO_NO_MUSIC)) {
         return;
     }
 }
@@ -1293,16 +1227,14 @@ void MusicPlayer::OnFrontEndFinish()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::OnGameplayStart( bool playerInCar )
-{
+void MusicPlayer::OnGameplayStart(bool playerInCar) {
     int levelIndex;
     int missionIndex;
 
     m_isInCar = playerInCar;
 
-    if( !(GetGameplayManager()->IsSuperSprint()) )
-    {
-        TriggerMusicEvent( MEVENT_LEVEL_INTRO );
+    if (!(GetGameplayManager()->IsSuperSprint())) {
+        TriggerMusicEvent(MEVENT_LEVEL_INTRO);
     }
 
     //
@@ -1310,24 +1242,20 @@ void MusicPlayer::OnGameplayStart( bool playerInCar )
     // case, since the characters can't be placed in cars until they select
     // their cars, but we want music at gameplay start anyway
     //
-    if( playerInCar || GetGameplayManager()->IsSuperSprint() )
-    {
+    if (playerInCar || GetGameplayManager()->IsSuperSprint()) {
         startMusic();
-    }
-    else
-    {
+    } else {
         levelIndex = calculateLevelIndex();
         missionIndex = GetGameplayManager()->GetCurrentMissionIndex();
 
-        if( startingAmbiences[levelIndex][missionIndex] == AEVENT_INTERIOR_HOUSE )
-        {
-            m_currentAmbient = AEVENT_TRIGGER_START + ( startingExteriorAmbiences[calculateLevelIndex()] - LocatorEvent::AMBIENT_SOUND_CITY );
-        }
-        else
-        {
+        if (startingAmbiences[levelIndex][missionIndex] == AEVENT_INTERIOR_HOUSE) {
+            m_currentAmbient = AEVENT_TRIGGER_START +
+                               (startingExteriorAmbiences[calculateLevelIndex()] -
+                                LocatorEvent::AMBIENT_SOUND_CITY);
+        } else {
             m_currentAmbient = startingAmbiences[levelIndex][missionIndex];
         }
-        turnAmbienceOn( startingAmbiences[levelIndex][missionIndex] );
+        turnAmbienceOn(startingAmbiences[levelIndex][missionIndex]);
     }
 }
 
@@ -1341,11 +1269,10 @@ void MusicPlayer::OnGameplayStart( bool playerInCar )
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::OnGameplayFinish()
-{
-    TriggerMusicEvent( MEVENT_LOADING_SCREEN );
+void MusicPlayer::OnGameplayFinish() {
+    TriggerMusicEvent(MEVENT_LOADING_SCREEN);
 
-    turnAmbienceOff( AEVENT_FRONTEND );
+    turnAmbienceOff(AEVENT_FRONTEND);
 
     m_delayedMusicStart = false;
 }
@@ -1360,10 +1287,9 @@ void MusicPlayer::OnGameplayFinish()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::OnPauseStart()
-{
-    TriggerMusicEvent( MEVENT_PAUSE );
-    turnAmbienceOff( AEVENT_PAUSE );
+void MusicPlayer::OnPauseStart() {
+    TriggerMusicEvent(MEVENT_PAUSE);
+    turnAmbienceOff(AEVENT_PAUSE);
 }
 
 //=============================================================================
@@ -1376,10 +1302,9 @@ void MusicPlayer::OnPauseStart()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::OnPauseEnd()
-{
-    TriggerMusicEvent( MEVENT_UNPAUSE );
-    turnAmbienceOn( AEVENT_UNPAUSE );
+void MusicPlayer::OnPauseEnd() {
+    TriggerMusicEvent(MEVENT_UNPAUSE);
+    turnAmbienceOn(AEVENT_UNPAUSE);
 }
 
 //=============================================================================
@@ -1393,9 +1318,8 @@ void MusicPlayer::OnPauseEnd()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::OnStoreStart()
-{
-    TriggerMusicEvent( MEVENT_STORE );
+void MusicPlayer::OnStoreStart() {
+    TriggerMusicEvent(MEVENT_STORE);
 }
 
 //=============================================================================
@@ -1408,20 +1332,16 @@ void MusicPlayer::OnStoreStart()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::OnStoreEnd()
-{
+void MusicPlayer::OnStoreEnd() {
     //
     // We actually reuse this for supersprint
     //
-    if( !(GetGameplayManager()->IsSuperSprint()) )
-    {
-        if( GetInteriorManager()->GetInterior() == static_cast< tUID >( 0 ) )
-        {
-            TriggerMusicEvent( MEVENT_OF_EXPLORE_MISSION );
-        }
-        else
-        {
-            TriggerMusicEvent( interiorNameTable[calculateInteriorIndex( GetInteriorManager()->GetInterior() )].musicEvent );
+    if (!(GetGameplayManager()->IsSuperSprint())) {
+        if (GetInteriorManager()->GetInterior() == static_cast<tUID>(0)) {
+            TriggerMusicEvent(MEVENT_OF_EXPLORE_MISSION);
+        } else {
+            TriggerMusicEvent(interiorNameTable[calculateInteriorIndex(
+                    GetInteriorManager()->GetInterior())].musicEvent);
         }
     }
 }
@@ -1436,10 +1356,9 @@ void MusicPlayer::OnStoreEnd()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::StopForMovie()
-{
-    TriggerMusicEvent( MEVENT_PAUSE );
-    turnAmbienceOff( AEVENT_PAUSE );
+void MusicPlayer::StopForMovie() {
+    TriggerMusicEvent(MEVENT_PAUSE);
+    turnAmbienceOff(AEVENT_PAUSE);
 }
 
 //=============================================================================
@@ -1452,24 +1371,21 @@ void MusicPlayer::StopForMovie()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::ResumeAfterMovie()
-{
-    TriggerMusicEvent( MEVENT_UNPAUSE );
-    turnAmbienceOn( AEVENT_UNPAUSE );
+void MusicPlayer::ResumeAfterMovie() {
+    TriggerMusicEvent(MEVENT_UNPAUSE);
+    turnAmbienceOn(AEVENT_UNPAUSE);
 }
 
-bool MusicPlayer::IsStoppedForMovie( void )
-{
-    char regionName[ 64 ];
-    if ( !m_musicPerformance )
-    {
+bool MusicPlayer::IsStoppedForMovie(void) {
+    char regionName[64];
+    if (!m_musicPerformance) {
         return true;
     }
-    radmusic::debug_performance_current_region_name( m_musicPerformance, regionName, 64 );
+    radmusic::debug_performance_current_region_name(m_musicPerformance, regionName, 64);
 
-    bool steadyIdle = radmusic::performance_is_state_steady_idle( m_musicPerformance );       
+    bool steadyIdle = radmusic::performance_is_state_steady_idle(m_musicPerformance);
 
-    bool paused = ( strcmp( regionName, "stopped" ) == 0 || strcmp( regionName, "pause_region" ) == 0 );
+    bool paused = (strcmp(regionName, "stopped") == 0 || strcmp(regionName, "pause_region") == 0);
 
     return paused && steadyIdle;
 }
@@ -1484,9 +1400,8 @@ bool MusicPlayer::IsStoppedForMovie( void )
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::RestartSupersprintMusic()
-{
-    TriggerMusicEvent( MEVENT_SUPERSPRINT );
+void MusicPlayer::RestartSupersprintMusic() {
+    TriggerMusicEvent(MEVENT_SUPERSPRINT);
 }
 
 //=============================================================================
@@ -1499,16 +1414,12 @@ void MusicPlayer::RestartSupersprintMusic()
 // Return:      Float value for volume 
 //
 //=============================================================================
-float MusicPlayer::GetVolume()
-{
-    rAssert( NULL != m_musicPerformance );
-    if ( NULL == m_musicPerformance )
-    {
+float MusicPlayer::GetVolume() {
+    rAssert(NULL != m_musicPerformance);
+    if (NULL == m_musicPerformance) {
         return 0.0f;
-    }
-    else
-    {
-        return( radmusic::performance_volume( m_musicPerformance ) );
+    } else {
+        return (radmusic::performance_volume(m_musicPerformance));
     }
 }
 
@@ -1522,11 +1433,9 @@ float MusicPlayer::GetVolume()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::SetVolume( float volume )
-{
-    if ( NULL != m_musicPerformance )
-    {
-        radmusic::performance_volume( m_musicPerformance, volume );
+void MusicPlayer::SetVolume(float volume) {
+    if (NULL != m_musicPerformance) {
+        radmusic::performance_volume(m_musicPerformance, volume);
     }
 }
 
@@ -1540,16 +1449,12 @@ void MusicPlayer::SetVolume( float volume )
 // Return:      Float value for volume 
 //
 //=============================================================================
-float MusicPlayer::GetAmbienceVolume()
-{
-    rAssert( NULL != m_ambientPerformance );
-    if ( NULL == m_ambientPerformance )
-    {
+float MusicPlayer::GetAmbienceVolume() {
+    rAssert(NULL != m_ambientPerformance);
+    if (NULL == m_ambientPerformance) {
         return 0.0f;
-    }
-    else
-    {
-        return( radmusic::performance_volume( m_ambientPerformance ) );
+    } else {
+        return (radmusic::performance_volume(m_ambientPerformance));
     }
 }
 
@@ -1563,12 +1468,10 @@ float MusicPlayer::GetAmbienceVolume()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::SetAmbienceVolume( float volume )
-{
-    rAssert( NULL != m_ambientPerformance );
-    if ( NULL != m_ambientPerformance )
-    {
-        radmusic::performance_volume( m_ambientPerformance, volume );
+void MusicPlayer::SetAmbienceVolume(float volume) {
+    rAssert(NULL != m_ambientPerformance);
+    if (NULL != m_ambientPerformance) {
+        radmusic::performance_volume(m_ambientPerformance, volume);
     }
 }
 
@@ -1582,16 +1485,14 @@ void MusicPlayer::SetAmbienceVolume( float volume )
 // Return:      float from 0.0f to 4.0f
 //
 //=============================================================================
-float MusicPlayer::GetBeatValue()
-{
+float MusicPlayer::GetBeatValue() {
     float beat = 0.0f;
 
-    if( m_musicPerformance != NULL )
-    {
-        radmusic::debug_performance_current_beat( m_musicPerformance, &beat );
+    if (m_musicPerformance != NULL) {
+        radmusic::debug_performance_current_beat(m_musicPerformance, &beat);
     }
 
-    return( beat );
+    return (beat);
 }
 
 //******************************************************************************
@@ -1610,13 +1511,12 @@ float MusicPlayer::GetBeatValue()
 // Return:      Index
 //
 //=============================================================================
-int MusicPlayer::calculateLevelIndex()
-{
+int MusicPlayer::calculateLevelIndex() {
     RenderEnums::LevelEnum level;
 
     level = GetGameplayManager()->GetCurrentLevelIndex();
 
-    return( static_cast<int>( level - RenderEnums::L1 ) );
+    return (static_cast<int>(level - RenderEnums::L1));
 }
 
 //=============================================================================
@@ -1630,47 +1530,39 @@ int MusicPlayer::calculateLevelIndex()
 // Return:      Index
 //
 //=============================================================================
-int MusicPlayer::calculateMissionIndex()
-{
+int MusicPlayer::calculateMissionIndex() {
     int index;
     int missionIndex;
-    Mission* currentMission;
-    GameplayManager* gameplayMgr = GetGameplayManager();
-    
-    if( gameplayMgr->IsSundayDrive() )
-    {
-        index = -1;
-    }
-    else
-    {
-        currentMission = gameplayMgr->GetCurrentMission();
-        rAssert( currentMission != NULL );
+    Mission *currentMission;
+    GameplayManager *gameplayMgr = GetGameplayManager();
 
-        if( currentMission->IsRaceMission() )
-        {
-            index = ( gameplayMgr->GetCurrentMissionNum() - GameplayManager::MAX_MISSIONS ) * ( MEVENT_END_RACE_EVENTS - MEVENT_STREETRACE_START );
-        }
-        else if( currentMission->IsBonusMission() )
-        {
-            index = 8 * ( MEVENT_END_MISSION_EVENTS - MEVENT_MISSION_START );  // 0-7 are regular missions, 8 is bonus
-        }
-        else
-        {
+    if (gameplayMgr->IsSundayDrive()) {
+        index = -1;
+    } else {
+        currentMission = gameplayMgr->GetCurrentMission();
+        rAssert(currentMission != NULL);
+
+        if (currentMission->IsRaceMission()) {
+            index = (gameplayMgr->GetCurrentMissionNum() - GameplayManager::MAX_MISSIONS) *
+                    (MEVENT_END_RACE_EVENTS - MEVENT_STREETRACE_START);
+        } else if (currentMission->IsBonusMission()) {
+            index = 8 * (MEVENT_END_MISSION_EVENTS -
+                         MEVENT_MISSION_START);  // 0-7 are regular missions, 8 is bonus
+        } else {
             missionIndex = gameplayMgr->GetCurrentMissionIndex();
 
             //
             // Stupid dummy level 1 and its special-case training mission
             //
-            if( gameplayMgr->GetCurrentLevelIndex() != RenderEnums::L1 )
-            {
+            if (gameplayMgr->GetCurrentLevelIndex() != RenderEnums::L1) {
                 missionIndex += 1;
             }
 
-            index = missionIndex * ( MEVENT_END_MISSION_EVENTS - MEVENT_MISSION_START );
+            index = missionIndex * (MEVENT_END_MISSION_EVENTS - MEVENT_MISSION_START);
         }
     }
 
-    return( index );
+    return (index);
 }
 
 //=============================================================================
@@ -1684,37 +1576,32 @@ int MusicPlayer::calculateMissionIndex()
 //              in ambient list
 //
 //=============================================================================
-int MusicPlayer::calculateInteriorIndex( tUID interiorID )
-{
+int MusicPlayer::calculateInteriorIndex(tUID interiorID) {
     int i;
     int retVal = 2;  // Default to Simpsons house sound
 
     //
     // We should've be calculating this unless we're actually inside
     //
-    rAssert( interiorID != static_cast< tUID >( 0 ) );
+    rAssert(interiorID != static_cast<tUID>(0));
 
-    if( interiorNameTable[0].id == static_cast< tUID >( 0 ) )
-    {
+    if (interiorNameTable[0].id == static_cast<tUID>(0)) {
         //
         // Initialize table
         //
-        for( i = 0; i < interiorTableLength; i++ )
-        {
-            interiorNameTable[i].id = tName::MakeUID( interiorNameTable[i].name );
+        for (i = 0; i < interiorTableLength; i++) {
+            interiorNameTable[i].id = tName::MakeUID(interiorNameTable[i].name);
         }
     }
 
-    for( i = 0; i < interiorTableLength; i++ )
-    {
-        if( interiorID == static_cast< tUID >( interiorNameTable[i].id ) )
-        {
+    for (i = 0; i < interiorTableLength; i++) {
+        if (interiorID == static_cast<tUID>(interiorNameTable[i].id)) {
             retVal = i;
             break;
         }
     }
 
-    return( retVal );
+    return (retVal);
 }
 
 //=============================================================================
@@ -1728,23 +1615,20 @@ int MusicPlayer::calculateInteriorIndex( tUID interiorID )
 // Return:      True if music stays on, false otherwise 
 //
 //=============================================================================
-bool MusicPlayer::musicLockedOnForStage()
-{
-    Mission* mission;
-    MissionStage* stage;
+bool MusicPlayer::musicLockedOnForStage() {
+    Mission *mission;
+    MissionStage *stage;
     bool musicLocked = false;
 
     mission = GetGameplayManager()->GetCurrentMission();
-    if( mission != NULL )
-    {
+    if (mission != NULL) {
         stage = mission->GetCurrentStage();
-        if( stage != NULL )
-        {
+        if (stage != NULL) {
             musicLocked = stage->GetMusicAlwaysOnFlag();
         }
     }
 
-    return( musicLocked );
+    return (musicLocked);
 }
 
 //=============================================================================
@@ -1757,8 +1641,7 @@ bool MusicPlayer::musicLockedOnForStage()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::startMusic()
-{
+void MusicPlayer::startMusic() {
     // bmc: if calling startMusic then hit and run *must* be over...clean it up
     s_PostHitAndRunTimer = -99;
     // bmc
@@ -1767,52 +1650,35 @@ void MusicPlayer::startMusic()
     bool onFoot = false;
 
     mission = calculateMissionIndex();
-    if( mission >= 0 )
-    {
-        if( currentMissionIsRace() )
-        {
-            TriggerMusicEvent( MEVENT_STREETRACE_START );
-        }
-        else if ( m_isInCar )
-        {
-            TriggerMusicEvent( MEVENT_MISSION_START );
-        }
-        else
-        {
-            TriggerMusicEvent( MEVENT_OF_EXPLORE_MISSION );
+    if (mission >= 0) {
+        if (currentMissionIsRace()) {
+            TriggerMusicEvent(MEVENT_STREETRACE_START);
+        } else if (m_isInCar) {
+            TriggerMusicEvent(MEVENT_MISSION_START);
+        } else {
+            TriggerMusicEvent(MEVENT_OF_EXPLORE_MISSION);
             onFoot = true;
         }
 
-    }
-    else if( GetGameplayManager()->IsSuperSprint() )
-    {
+    } else if (GetGameplayManager()->IsSuperSprint()) {
         //
         // Play Fox's licensed music.  Fox sucks.
         //
-        TriggerMusicEvent( MEVENT_SUPERSPRINT );
-    }
-    else if ( m_isInCar )
-    {
-        TriggerMusicEvent( MEVENT_SUNDAY_DRIVE_START );
-    }
-    else
-    {
-        TriggerMusicEvent( MEVENT_OF_EXPLORE_MISSION );
+        TriggerMusicEvent(MEVENT_SUPERSPRINT);
+    } else if (m_isInCar) {
+        TriggerMusicEvent(MEVENT_SUNDAY_DRIVE_START);
+    } else {
+        TriggerMusicEvent(MEVENT_OF_EXPLORE_MISSION);
         onFoot = true;
     }
 
-    if( !onFoot )
-    {
-        turnAmbienceOff( AEVENT_PAUSE );
-    }
-    else if( ( GetInteriorManager() != NULL )
-             && ( GetInteriorManager()->IsInside() ) )
-    {
+    if (!onFoot) {
+        turnAmbienceOff(AEVENT_PAUSE);
+    } else if ((GetInteriorManager() != NULL)
+               && (GetInteriorManager()->IsInside())) {
         triggerCurrentInteriorAmbience();
-    }
-    else
-    {
-        turnAmbienceOn( m_currentAmbient );
+    } else {
+        turnAmbienceOn(m_currentAmbient);
     }
 }
 
@@ -1826,18 +1692,13 @@ void MusicPlayer::startMusic()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::playPostMissionSounds()
-{
-    if( !m_isInCar )
-    {
-        if( ( GetInteriorManager() != NULL )
-            && ( GetInteriorManager()->IsInside() ) )
-        {
+void MusicPlayer::playPostMissionSounds() {
+    if (!m_isInCar) {
+        if ((GetInteriorManager() != NULL)
+            && (GetInteriorManager()->IsInside())) {
             triggerCurrentInteriorAmbience();
-        }
-        else
-        {
-            turnAmbienceOn( m_currentAmbient );
+        } else {
+            turnAmbienceOn(m_currentAmbient);
         }
     }
 
@@ -1856,12 +1717,10 @@ void MusicPlayer::playPostMissionSounds()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::turnAmbienceOn( unsigned int event )
-{
-    TriggerAmbientEvent( event );
+void MusicPlayer::turnAmbienceOn(unsigned int event) {
+    TriggerAmbientEvent(event);
 
-    if( ( event != AEVENT_UNPAUSE ) && ( event <= AEVENT_TRIGGER_END ) )
-    {
+    if ((event != AEVENT_UNPAUSE) && (event <= AEVENT_TRIGGER_END)) {
         m_currentAmbient = event;
     }
     m_ambiencePlaying = true;
@@ -1878,12 +1737,11 @@ void MusicPlayer::turnAmbienceOn( unsigned int event )
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::turnAmbienceOff( unsigned int event )
-{
-    rAssert( ( event == AEVENT_PAUSE ) || ( event == AEVENT_MOVIE )
-             || ( event == AEVENT_FRONTEND ) );
+void MusicPlayer::turnAmbienceOff(unsigned int event) {
+    rAssert((event == AEVENT_PAUSE) || (event == AEVENT_MOVIE)
+            || (event == AEVENT_FRONTEND));
 
-    TriggerAmbientEvent( event );
+    TriggerAmbientEvent(event);
     m_ambiencePlaying = false;
 }
 
@@ -1898,17 +1756,15 @@ void MusicPlayer::turnAmbienceOff( unsigned int event )
 //              otherwise
 //
 //=============================================================================
-bool MusicPlayer::currentMissionIsRace()
-{
+bool MusicPlayer::currentMissionIsRace() {
     bool retVal = false;
-    Mission* theMission = GetGameplayManager()->GetCurrentMission();
+    Mission *theMission = GetGameplayManager()->GetCurrentMission();
 
-    if( ( theMission != NULL ) && ( theMission->IsRaceMission() ) )
-    {
+    if ((theMission != NULL) && (theMission->IsRaceMission())) {
         retVal = true;
     }
 
-    return( retVal );
+    return (retVal);
 }
 
 //=============================================================================
@@ -1922,17 +1778,15 @@ bool MusicPlayer::currentMissionIsRace()
 //              otherwise
 //
 //=============================================================================
-bool MusicPlayer::currentMissionIsSundayDrive()
-{
+bool MusicPlayer::currentMissionIsSundayDrive() {
     bool retVal = false;
-    Mission* theMission = GetGameplayManager()->GetCurrentMission();
+    Mission *theMission = GetGameplayManager()->GetCurrentMission();
 
-    if( ( theMission != NULL ) && ( theMission->IsSundayDrive() ) )
-    {
+    if ((theMission != NULL) && (theMission->IsSundayDrive())) {
         retVal = true;
     }
 
-    return( retVal );
+    return (retVal);
 }
 
 //=============================================================================
@@ -1945,8 +1799,7 @@ bool MusicPlayer::currentMissionIsSundayDrive()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::initializeTableNameKeys()
-{
+void MusicPlayer::initializeTableNameKeys() {
     unsigned int i;
     char temp[256];
     unsigned int tableIndex;
@@ -1955,85 +1808,79 @@ void MusicPlayer::initializeTableNameKeys()
     //
     // We've already got strings for the musicEventTable, just make keys
     //
-    for( i = 0; i < musicEventTableLength; i++ )
-    {
-        musicEventTable[i].nameKey = ::radMakeCaseInsensitiveKey32( musicEventTable[i].name );
+    for (i = 0; i < musicEventTableLength; i++) {
+        musicEventTable[i].nameKey = ::radMakeCaseInsensitiveKey32(musicEventTable[i].name);
     }
 
     //
     // For the mission and race tables, generate strings and store the keys
     //
     tableIndex = 0;
-    for( i = 0; i < 9; i++ )  // min. 8 missions per level + bonus
+    for (i = 0; i < 9; i++)  // min. 8 missions per level + bonus
     {
-        if( i == 8 )
-        {
-            strcpy( prefix, "Bonus" );
-        }
-        else
-        {
-            sprintf( prefix, "M%d", i );
+        if (i == 8) {
+            strcpy(prefix, "Bonus");
+        } else {
+            sprintf(prefix, "M%d", i);
         }
 
-        sprintf( temp, "%s_start", prefix );
-        missionScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32( temp );
+        sprintf(temp, "%s_start", prefix);
+        missionScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32(temp);
 
-        sprintf( temp, "%s_drama", prefix );
-        missionScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32( temp );
+        sprintf(temp, "%s_drama", prefix);
+        missionScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32(temp);
 
-        sprintf( temp, "%s_win", prefix );
-        missionScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32( temp );
+        sprintf(temp, "%s_win", prefix);
+        missionScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32(temp);
 
-        sprintf( temp, "%s_lose", prefix );
-        missionScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32( temp );
+        sprintf(temp, "%s_lose", prefix);
+        missionScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32(temp);
 
-        sprintf( temp, "%s_get_out_of_car", prefix );
-        missionScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32( temp );
+        sprintf(temp, "%s_get_out_of_car", prefix);
+        missionScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32(temp);
 
-        sprintf( temp, "%s_10sec_to_go", prefix );
-        missionScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32( temp );
+        sprintf(temp, "%s_10sec_to_go", prefix);
+        missionScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32(temp);
     }
     //
     // Record the length of this table
     //
-    rAssert( tableIndex <= MISSION_TABLE_SIZE );
+    rAssert(tableIndex <= MISSION_TABLE_SIZE);
     missionScriptTableLength = tableIndex;
-    
+
     //
     // Just to be safe
     //
-    for( i = missionScriptTableLength; i < MISSION_TABLE_SIZE; i++ )
-    {
+    for (i = missionScriptTableLength; i < MISSION_TABLE_SIZE; i++) {
         missionScriptTable[i].nameKey = 0;
         missionScriptTable[i].scriptIndex = NO_INDEX;
     }
 
     tableIndex = 0;
-    for( i = 0; i < 3; i++ )  // 3 race missions
+    for (i = 0; i < 3; i++)  // 3 race missions
     {
-        sprintf( temp, "StreetRace0%d_start", i+1 );
-        raceScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32( temp );
+        sprintf(temp, "StreetRace0%d_start", i + 1);
+        raceScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32(temp);
 
-        sprintf( temp, "StreetRace0%d_win", i+1 );
-        raceScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32( temp );
+        sprintf(temp, "StreetRace0%d_win", i + 1);
+        raceScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32(temp);
 
-        sprintf( temp, "StreetRace0%d_lose", i+1 );
-        raceScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32( temp );
+        sprintf(temp, "StreetRace0%d_lose", i + 1);
+        raceScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32(temp);
 
-        sprintf( temp, "StreetRace0%d_getoutofcar", i+1 );
-        raceScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32( temp );
+        sprintf(temp, "StreetRace0%d_getoutofcar", i + 1);
+        raceScriptTable[tableIndex++].nameKey = ::radMakeCaseInsensitiveKey32(temp);
     }
     //
     // Record the length of this table
     //
-    rAssert( tableIndex <= RACE_TABLE_SIZE );
+    rAssert(tableIndex <= RACE_TABLE_SIZE);
     raceScriptTableLength = tableIndex;
 
     //
     // Just to be safe one more time
     //
-    for( i = raceScriptTableLength; i < RACE_TABLE_SIZE; i++ )
-    {
+    for (i = raceScriptTableLength; i < RACE_TABLE_SIZE; i++) {
         raceScriptTable[i].nameKey = 0;
         raceScriptTable[i].scriptIndex = NO_INDEX;
     }
@@ -2049,8 +1896,7 @@ void MusicPlayer::initializeTableNameKeys()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::buildEventTables()
-{
+void MusicPlayer::buildEventTables() {
     unsigned int i, j;
     unsigned int scriptLength;
     char temp[256];
@@ -2065,23 +1911,19 @@ void MusicPlayer::buildEventTables()
     //
     // First, clear the old values out
     //
-    for( i = 0; i < musicEventTableLength; i++ )
-    {
+    for (i = 0; i < musicEventTableLength; i++) {
         musicEventTable[i].scriptIndex = NO_INDEX;
     }
 
-    for( i = 0; i < MISSION_TABLE_SIZE; i++ )
-    {
+    for (i = 0; i < MISSION_TABLE_SIZE; i++) {
         missionScriptTable[i].scriptIndex = NO_INDEX;
     }
 
-    for( i = 0; i < RACE_TABLE_SIZE; i++ )
-    {
+    for (i = 0; i < RACE_TABLE_SIZE; i++) {
         raceScriptTable[i].scriptIndex = NO_INDEX;
     }
 
-    for( i = 0; i < MATRIX_TABLE_SIZE; i++ )
-    {
+    for (i = 0; i < MATRIX_TABLE_SIZE; i++) {
         matrixStateTable[i].stateNameKey = 0;
         matrixStateTable[i].stateIndex = NO_INDEX;
         matrixStateTable[i].stateValueNameKey = 0;
@@ -2092,21 +1934,18 @@ void MusicPlayer::buildEventTables()
     // Now, go through each event in the script and search for a match
     // in the tables.  If one is found, fill in its index
     //
-    scriptLength = radmusic::performance_num_events( m_musicPerformance );
-    for( i = 0; i < scriptLength; i++ )
-    {
-        radmusic::performance_event_name( m_musicPerformance, i, temp, 256 );
-        tempKey = ::radMakeCaseInsensitiveKey32( temp );
+    scriptLength = radmusic::performance_num_events(m_musicPerformance);
+    for (i = 0; i < scriptLength; i++) {
+        radmusic::performance_event_name(m_musicPerformance, i, temp, 256);
+        tempKey = ::radMakeCaseInsensitiveKey32(temp);
 
         found = false;
 
         //
         // Check standard music events first
         //
-        for( j = 0; j < musicEventTableLength; j++ )
-        {
-            if( musicEventTable[j].nameKey == tempKey )
-            {
+        for (j = 0; j < musicEventTableLength; j++) {
+            if (musicEventTable[j].nameKey == tempKey) {
                 musicEventTable[j].scriptIndex = i;
                 found = true;
                 break;
@@ -2116,12 +1955,9 @@ void MusicPlayer::buildEventTables()
         //
         // If not there, try mission events
         //
-        if( !found )
-        {
-            for( j = 0; j < missionScriptTableLength; j++ )
-            {
-                if( missionScriptTable[j].nameKey == tempKey )
-                {
+        if (!found) {
+            for (j = 0; j < missionScriptTableLength; j++) {
+                if (missionScriptTable[j].nameKey == tempKey) {
                     missionScriptTable[j].scriptIndex = i;
                     found = true;
                     break;
@@ -2132,12 +1968,9 @@ void MusicPlayer::buildEventTables()
         //
         // Finally, try race events
         //
-        if( !found )
-        {
-            for( j = 0; j < raceScriptTableLength; j++ )
-            {
-                if( raceScriptTable[j].nameKey == tempKey )
-                {
+        if (!found) {
+            for (j = 0; j < raceScriptTableLength; j++) {
+                if (raceScriptTable[j].nameKey == tempKey) {
                     raceScriptTable[j].scriptIndex = i;
                     found = true;
                     break;
@@ -2150,7 +1983,7 @@ void MusicPlayer::buildEventTables()
         // anywhere yet.  Assert on this at some point once the script appears
         // stabilized.
         //
-        //rAssert( found );
+        //rAssert(found);
     }
 
     //
@@ -2159,19 +1992,17 @@ void MusicPlayer::buildEventTables()
     //
     currentTableLine = 0;
 
-    numStates = radmusic::performance_num_states( m_musicPerformance );
-    for( i = 0; i < numStates; i++ )
-    {
-        radmusic::performance_state_name( m_musicPerformance, i, temp, 256 );
-        stateKey = ::radMakeCaseInsensitiveKey32( temp );
+    numStates = radmusic::performance_num_states(m_musicPerformance);
+    for (i = 0; i < numStates; i++) {
+        radmusic::performance_state_name(m_musicPerformance, i, temp, 256);
+        stateKey = ::radMakeCaseInsensitiveKey32(temp);
 
-        numStateEvents = radmusic::performance_num_state_values( m_musicPerformance, i );
-        for( j = 0; j < numStateEvents; j++ )
-        {
-            radmusic::performance_state_value_name( m_musicPerformance, i, j, temp, 256 );
-            stateEventKey = ::radMakeCaseInsensitiveKey32( temp );
+        numStateEvents = radmusic::performance_num_state_values(m_musicPerformance, i);
+        for (j = 0; j < numStateEvents; j++) {
+            radmusic::performance_state_value_name(m_musicPerformance, i, j, temp, 256);
+            stateEventKey = ::radMakeCaseInsensitiveKey32(temp);
 
-            rAssert( currentTableLine < MATRIX_TABLE_SIZE );
+            rAssert(currentTableLine < MATRIX_TABLE_SIZE);
 
             matrixStateTable[currentTableLine].stateIndex = i;
             matrixStateTable[currentTableLine].stateValueIndex = j;
@@ -2194,22 +2025,17 @@ void MusicPlayer::buildEventTables()
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::triggerMusicMissionEventByName( radKey32* key )
-{
+void MusicPlayer::triggerMusicMissionEventByName(radKey32 *key) {
     unsigned int i;
 
-    rAssert( key != NULL );
+    rAssert(key != NULL);
 
-    if( !(CommandLineOptions::Get( CLO_NO_MUSIC )) )
-    {
-        for( i = 0; i < missionScriptTableLength; i++ )
-        {
-            if( missionScriptTable[i].nameKey == *key )
-            {
-                if( missionScriptTable[i].scriptIndex != NO_INDEX )
-                {
-                    radmusic::performance_trigger_event( m_musicPerformance,
-                                                         missionScriptTable[i].scriptIndex );
+    if (!(CommandLineOptions::Get(CLO_NO_MUSIC))) {
+        for (i = 0; i < missionScriptTableLength; i++) {
+            if (missionScriptTable[i].nameKey == *key) {
+                if (missionScriptTable[i].scriptIndex != NO_INDEX) {
+                    radmusic::performance_trigger_event(m_musicPerformance,
+                                                        missionScriptTable[i].scriptIndex);
                 }
                 break;
             }
@@ -2228,40 +2054,35 @@ void MusicPlayer::triggerMusicMissionEventByName( radKey32* key )
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::triggerMusicStateChange( radKey32 stateKey, radKey32 stateEventKey )
-{
+void MusicPlayer::triggerMusicStateChange(radKey32 stateKey, radKey32 stateEventKey) {
     unsigned int i;
 
     //
     // Look for a match in the matrix table
     //
-    for( i = 0; i < matrixStateTableLength; i++ )
-    {
-        if( ( matrixStateTable[i].stateNameKey == stateKey )
-            && ( matrixStateTable[i].stateValueNameKey == stateEventKey ) )
-        {
+    for (i = 0; i < matrixStateTableLength; i++) {
+        if ((matrixStateTable[i].stateNameKey == stateKey)
+            && (matrixStateTable[i].stateValueNameKey == stateEventKey)) {
             //
             // Match, trigger the state change
             //
-            radmusic::performance_state_value( m_musicPerformance,
-                                               matrixStateTable[i].stateIndex,
-                                               matrixStateTable[i].stateValueIndex );
+            radmusic::performance_state_value(m_musicPerformance,
+                                              matrixStateTable[i].stateIndex,
+                                              matrixStateTable[i].stateValueIndex);
 
             //
             // We need to trigger an event to prompt the change.  Presumably
             // we do this only for in-car stuff.
             //
-            if( m_isInCar )
-            {
-                TriggerMusicEvent( MEVENT_MISSION_START );
+            if (m_isInCar) {
+                TriggerMusicEvent(MEVENT_MISSION_START);
             }
             break;
         }
     }
 
-    if( i == matrixStateTableLength )
-    {
-        rAssertMsg( false, "Mission script calling non-existent radMusic state" );
+    if (i == matrixStateTableLength) {
+        rAssertMsg(false, "Mission script calling non-existent radMusic state");
     }
 }
 
@@ -2275,10 +2096,9 @@ void MusicPlayer::triggerMusicStateChange( radKey32 stateKey, radKey32 stateEven
 // Return:      void 
 //
 //=============================================================================
-void MusicPlayer::triggerCurrentInteriorAmbience()
-{
+void MusicPlayer::triggerCurrentInteriorAmbience() {
     int interiorIndex;
 
-    interiorIndex = calculateInteriorIndex( GetInteriorManager()->GetInterior() );
-    turnAmbienceOn( AEVENT_INTERIOR_KWIK_E_MART + interiorIndex );
+    interiorIndex = calculateInteriorIndex(GetInteriorManager()->GetInterior());
+    turnAmbienceOn(AEVENT_INTERIOR_KWIK_E_MART + interiorIndex);
 }

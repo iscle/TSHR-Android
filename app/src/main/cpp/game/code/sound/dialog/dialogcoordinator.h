@@ -28,8 +28,11 @@
 //========================================
 
 struct IRadNameSpace;
+
 class DialogList;
+
 class Character;
+
 class Vehicle;
 
 //=============================================================================
@@ -38,45 +41,53 @@ class Vehicle;
 //
 //=============================================================================
 
-class DialogCoordinator : public EventListener
-{
-    public:
-        DialogCoordinator( IRadNameSpace* namespaceObj );
-        virtual ~DialogCoordinator();
-        
-        void Initialize();
-        void OnGameplayEnd() { m_playbackQueue->StopAllDialog(); }
+class DialogCoordinator : public EventListener {
+public:
+    DialogCoordinator(IRadNameSpace *namespaceObj);
 
-        void OnPauseStart() { m_playbackQueue->PauseDialog(); }
-        void OnPauseEnd() { m_playbackQueue->UnpauseDialog(); }
+    virtual ~DialogCoordinator();
 
-        void HandleEvent( EventEnum id, void* pEventData );
+    void Initialize();
 
-        void ServiceOncePerFrame() { m_playbackQueue->ServiceOncePerFrame(); }
+    void OnGameplayEnd() { m_playbackQueue->StopAllDialog(); }
 
-    private:
-        //Prevent wasteful constructor creation.
-        DialogCoordinator();
-        DialogCoordinator( const DialogCoordinator& original );
-        DialogCoordinator& operator=( const DialogCoordinator& rhs );
+    void OnPauseStart() { m_playbackQueue->PauseDialog(); }
 
-        void registerDialogEvents();
-        void queueVillainDialog( EventEnum id, void* eventData );
-        bool playLinePositionally( EventEnum id );
-        void getCharacterPosition( Character* thePed, rmt::Vector& posn );
-        bool eventHasVehicleData( EventEnum id );
+    void OnPauseEnd() { m_playbackQueue->UnpauseDialog(); }
 
-        IRadNameSpace* m_dialogNamespace;
+    void HandleEvent(EventEnum id, void *pEventData);
 
-        DialogList* m_dialogList;
-        DialogPriorityQueue* m_playbackQueue;
+    void ServiceOncePerFrame() { m_playbackQueue->ServiceOncePerFrame(); }
 
-        bool m_dialogOn;
+private:
+    //Prevent wasteful constructor creation.
+    DialogCoordinator();
 
-        //
-        // Hack!
-        //
-        bool m_phoneBoothRequestMade;
+    DialogCoordinator(const DialogCoordinator &original);
+
+    DialogCoordinator &operator=(const DialogCoordinator &rhs);
+
+    void registerDialogEvents();
+
+    void queueVillainDialog(EventEnum id, void *eventData);
+
+    bool playLinePositionally(EventEnum id);
+
+    void getCharacterPosition(Character *thePed, rmt::Vector &posn);
+
+    bool eventHasVehicleData(EventEnum id);
+
+    IRadNameSpace *m_dialogNamespace;
+
+    DialogList *m_dialogList;
+    DialogPriorityQueue *m_playbackQueue;
+
+    bool m_dialogOn;
+
+    //
+    // Hack!
+    //
+    bool m_phoneBoothRequestMade;
 };
 
 

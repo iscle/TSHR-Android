@@ -26,16 +26,19 @@
 //========================================
 
 class Vehicle;
+
 class carSoundParameters;
+
 class globalSettings;
+
 class VehicleSoundPlayer;
+
 class EngineState;
 
 //
 // Enumerated list of temporary engine states
 //
-enum EngineStateEnum
-{
+enum EngineStateEnum {
     ENGINE_STATE_NORMAL,
     ENGINE_STATE_UPSHIFTING,
     ENGINE_STATE_DOWNSHIFTING,
@@ -55,106 +58,110 @@ enum EngineStateEnum
 //
 //=============================================================================
 
-class VehicleSoundPlayer : public SimpsonsSoundPlayerCallback
-{
-    public:
-        VehicleSoundPlayer();
-        virtual ~VehicleSoundPlayer();
+class VehicleSoundPlayer : public SimpsonsSoundPlayerCallback {
+public:
+    VehicleSoundPlayer();
 
-        //
-        // Update routines
-        //
-        void UpdateOncePerFrame( unsigned int elapsedTime );
+    virtual ~VehicleSoundPlayer();
 
-        void UpdateSoundParameters( unsigned int elapsedTime );
-        
-        //
-        // Check the vehicle to see if we should be playing a skid noise
-        //
-        void CheckForSkid( unsigned int elapsedTime );
+    //
+    // Update routines
+    //
+    void UpdateOncePerFrame(unsigned int elapsedTime);
 
-        //
-        // Check the vehicle controller to see if we should be playing
-        // a horn noise
-        //
-        void CheckHorn();
+    void UpdateSoundParameters(unsigned int elapsedTime);
 
-        //
-        // Start and stop sound when the player gets in and out of the car
-        //
-        void StartCarSounds( Vehicle* newVehicle );
-        void StopCarSounds();
+    //
+    // Check the vehicle to see if we should be playing a skid noise
+    //
+    void CheckForSkid(unsigned int elapsedTime);
 
-        //
-        // Play door sounds
-        //
-        void PlayDoorOpen();
-        void PlayDoorClose();
+    //
+    // Check the vehicle controller to see if we should be playing
+    // a horn noise
+    //
+    void CheckHorn();
 
-        //
-        // Called when gearshift is done playing
-        //
-        void OnPlaybackComplete();
+    //
+    // Start and stop sound when the player gets in and out of the car
+    //
+    void StartCarSounds(Vehicle *newVehicle);
 
-        //
-        // Needed to complete SimpsonsSoundPlayerCallback interface
-        //
-        void OnSoundReady();
+    void StopCarSounds();
 
-        //
-        // Proximity testing for AI vehicle dialog (better here than
-        // anywhere else)
-        //
-        void AddAIVehicleProximityTest( Vehicle* aiVehicle );
-        void DeleteAIVehicleProximityTest( Vehicle* aiVehicle );
+    //
+    // Play door sounds
+    //
+    void PlayDoorOpen();
 
-    private:
-        //Prevent wasteful constructor creation.
-        VehicleSoundPlayer( const VehicleSoundPlayer& original );
-        VehicleSoundPlayer& operator=( const VehicleSoundPlayer& rhs );
+    void PlayDoorClose();
 
-        bool carSoundIsActive();
+    //
+    // Called when gearshift is done playing
+    //
+    void OnPlaybackComplete();
 
-        void checkDamage();
-        void checkProximity();
+    //
+    // Needed to complete SimpsonsSoundPlayerCallback interface
+    //
+    void OnSoundReady();
 
-        const char* getSkidResourceForTerrain( eTerrainType terrain );
+    //
+    // Proximity testing for AI vehicle dialog (better here than
+    // anywhere else)
+    //
+    void AddAIVehicleProximityTest(Vehicle *aiVehicle);
 
-        enum CarSoundPlayers
-        {
-            CARPLAYER_ENGINE,
-            CARPLAYER_SHIFT,
-            CARPLAYER_SKID,
-            CARPLAYER_HORNPLAYER,
-            CARPLAYER_DAMAGE,
-            CARPLAYER_OVERLAY,
-            CARPLAYER_BACKUP_BEEP,
-            CARPLAYER_DOOR,
+    void DeleteAIVehicleProximityTest(Vehicle *aiVehicle);
 
-            CARPLAYER_NUMPLAYERS
-        };
+private:
+    //Prevent wasteful constructor creation.
+    VehicleSoundPlayer(const VehicleSoundPlayer &original);
+
+    VehicleSoundPlayer &operator=(const VehicleSoundPlayer &rhs);
+
+    bool carSoundIsActive();
+
+    void checkDamage();
+
+    void checkProximity();
+
+    const char *getSkidResourceForTerrain(eTerrainType terrain);
+
+    enum CarSoundPlayers {
+        CARPLAYER_ENGINE,
+        CARPLAYER_SHIFT,
+        CARPLAYER_SKID,
+        CARPLAYER_HORNPLAYER,
+        CARPLAYER_DAMAGE,
+        CARPLAYER_OVERLAY,
+        CARPLAYER_BACKUP_BEEP,
+        CARPLAYER_DOOR,
+
+        CARPLAYER_NUMPLAYERS
+    };
 
 #ifdef SOUND_DEBUG_INFO_ENABLED
-        VehicleSoundDebugPage m_debugInfo;
+    VehicleSoundDebugPage m_debugInfo;
 #endif
 
-        SimpsonsSoundPlayer m_soundPlayers[CARPLAYER_NUMPLAYERS];
-        EngineState* m_engineStates[NUM_ENGINE_STATES];
+    SimpsonsSoundPlayer m_soundPlayers[CARPLAYER_NUMPLAYERS];
+    EngineState *m_engineStates[NUM_ENGINE_STATES];
 
-        Vehicle* m_vehicle;
-        carSoundParameters* m_parameters;
-        globalSettings* m_peeloutSettings;
+    Vehicle *m_vehicle;
+    carSoundParameters *m_parameters;
+    globalSettings *m_peeloutSettings;
 
-        bool m_isSkidding;
-        bool m_hornPlaying;
-        bool m_oneTimeHorn;
-        float m_powerslideTrim;
+    bool m_isSkidding;
+    bool m_hornPlaying;
+    bool m_oneTimeHorn;
+    float m_powerslideTrim;
 
-        bool m_playingDamage;
+    bool m_playingDamage;
 
-        Vehicle* m_proximityAIVehicle;
+    Vehicle *m_proximityAIVehicle;
 
-        eTerrainType m_terrainType;
+    eTerrainType m_terrainType;
 };
 
 

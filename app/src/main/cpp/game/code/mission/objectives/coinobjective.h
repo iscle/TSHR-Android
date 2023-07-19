@@ -28,36 +28,48 @@
 //
 //=============================================================================
 
-class CoinObjective : public MissionObjective
-{
+class CoinObjective : public MissionObjective {
 public:
-   
+
 
     CoinObjective();
+
     virtual ~CoinObjective();
 
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
+
     void SetCoinFee(int coins);
+
     void SetFeeCollected();
+
     int GetCoinAmount();
+
     bool PayCoinFee();
+
     //these two functions are soo hacky they are a work around for missionstages resetting for Coin Objectives
     bool Proceed();
+
     void SetProceed();
-    
-   
+
+
 protected:
     virtual void OnInitialize();
+
     virtual void OnFinalize();
+
     virtual void OnUpdate(unsigned int elapsedTime);
+
     virtual void Update(unsigned int elaspedTime);
+
 private:
     bool mbFeeCollected;
     int mCoinFee;
     bool mHack;
+
     //Prevent wasteful constructor creation.
-    CoinObjective( const CoinObjective& CoinObjective );
-    CoinObjective& operator=( const CoinObjective& CoinObjective );
+    CoinObjective(const CoinObjective &CoinObjective);
+
+    CoinObjective &operator=(const CoinObjective &CoinObjective);
 };
 
 

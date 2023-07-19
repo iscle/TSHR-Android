@@ -30,23 +30,24 @@
 //=============================================================================
 
 class AvatarVehiclePosnPlayer : public VehiclePositionalSoundPlayer,
-                                public EventListener
-{
-    public:
-        AvatarVehiclePosnPlayer();
-        virtual ~AvatarVehiclePosnPlayer();
+                                public EventListener {
+public:
+    AvatarVehiclePosnPlayer();
 
-        //
-        // EventListener functions
-        //
-        void HandleEvent( EventEnum id, void* pEventData );
+    virtual ~AvatarVehiclePosnPlayer();
 
-        void StartPositionalIdle( Vehicle* carPtr = NULL );
+    //
+    // EventListener functions
+    //
+    void HandleEvent(EventEnum id, void *pEventData);
 
-    private:
-        //Prevent wasteful constructor creation.
-        AvatarVehiclePosnPlayer( const AvatarVehiclePosnPlayer& avatarvehicleposnplayer );
-        AvatarVehiclePosnPlayer& operator=( const AvatarVehiclePosnPlayer& avatarvehicleposnplayer );
+    void StartPositionalIdle(Vehicle *carPtr = NULL);
+
+private:
+    //Prevent wasteful constructor creation.
+    AvatarVehiclePosnPlayer(const AvatarVehiclePosnPlayer &avatarvehicleposnplayer);
+
+    AvatarVehiclePosnPlayer &operator=(const AvatarVehiclePosnPlayer &avatarvehicleposnplayer);
 };
 
 //*****************************************************************************

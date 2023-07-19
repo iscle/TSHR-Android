@@ -29,28 +29,27 @@
 //
 //=============================================================================
 
-class SoundCollisionData 
-{
-    public:
-        SoundCollisionData( float intensity, CollisionEntityDSG* objA, CollisionEntityDSG* objB )
-        {
-            //impulse = vector;
-            mIntensity = intensity;
-            collObjA = objA;
-            collObjB = objB;
-        }
-        ~SoundCollisionData() {}
+class SoundCollisionData {
+public:
+    SoundCollisionData(float intensity, CollisionEntityDSG *objA, CollisionEntityDSG *objB) {
+        //impulse = vector;
+        mIntensity = intensity;
+        collObjA = objA;
+        collObjB = objB;
+    }
 
-        float mIntensity;    // 0.0f - 1.0f
-        CollisionEntityDSG* collObjA;
-        CollisionEntityDSG* collObjB;
+    ~SoundCollisionData() {}
 
-    private:
-        //
-        // In this case, allow the shallow-copy assignment and copy constructors.
-        // We don't want the default constructor, though.
-        //
-        SoundCollisionData();
+    float mIntensity;    // 0.0f - 1.0f
+    CollisionEntityDSG *collObjA;
+    CollisionEntityDSG *collObjB;
+
+private:
+    //
+    // In this case, allow the shallow-copy assignment and copy constructors.
+    // We don't want the default constructor, though.
+    //
+    SoundCollisionData();
 };
 
 

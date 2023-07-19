@@ -12,19 +12,19 @@
 #ifndef VIRTUALINPUTS_HPP
 #define VIRTUALINPUTS_HPP
 
-enum eMapType
-{
+enum eMapType {
     MAP_CHARACTER = 0,
     MAP_VEHICLE,
     MAP_FRONTEND,
     NUM_MAPTYPES
 };
 
-class VirtualInputs
-{
+class VirtualInputs {
 public:
-    static const char* GetName( int VirtualInput );
-    static eMapType GetType( int VirtualInput );
+    static const char *GetName(int VirtualInput);
+
+    static eMapType GetType(int VirtualInput);
+
     static int GetNumber();
 };
 

@@ -686,5 +686,5 @@
 
 static const unsigned int DEFAULTFONT_SIZE = 52051;
 
-static const char* DEFAULTFONT_NAME = "adlibn.p3d";
+static const char *DEFAULTFONT_NAME = "adlibn.p3d";
 

@@ -20,50 +20,53 @@
 // Project Includes
 //=================================================
 #include <render/Loaders/IWrappedLoader.h>
-namespace sim
-{
+
+namespace sim {
     class CollisionObjectLoader;
 }
 class tFrameControllerLoader;
+
 class tCompositeDrawableLoader;
+
 class tMultiControllerLoader;
+
 //========================================================================
 //
 // Synopsis:   The AnimCollLoader; Synopsis by Inspection.
 //
 //========================================================================
-class AnimCollLoader 
-: public tSimpleChunkHandler,
-  public IWrappedLoader 
-{
+class AnimCollLoader
+        : public tSimpleChunkHandler,
+          public IWrappedLoader {
 public:
-   AnimCollLoader();
-   virtual ~AnimCollLoader();
- 
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   void SetRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    AnimCollLoader();
 
-   void ModRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    virtual ~AnimCollLoader();
 
-   ///////////////////////////////////////////////////////////////////////
-   // tSimpleChunkHandler
-   ///////////////////////////////////////////////////////////////////////
-   virtual tEntity* LoadObject(tChunkFile* file, tEntityStore* store);
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
+
+    void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
+
+    ///////////////////////////////////////////////////////////////////////
+    // tSimpleChunkHandler
+    ///////////////////////////////////////////////////////////////////////
+    virtual tEntity *LoadObject(tChunkFile *file, tEntityStore *store);
 
 protected:
-   tCompositeDrawableLoader*    mpCompDLoader;
-   tFrameControllerLoader*      mpFCLoader;
-   tMultiControllerLoader*      mpMultiControllerLoader;
-   sim::CollisionObjectLoader* mpCollObjLoader;
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   //ChunkListenerCallback*  mpListenerCB;
-   //void* mpUserData;
+    tCompositeDrawableLoader *mpCompDLoader;
+    tFrameControllerLoader *mpFCLoader;
+    tMultiControllerLoader *mpMultiControllerLoader;
+    sim::CollisionObjectLoader *mpCollObjLoader;
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    //ChunkListenerCallback*  mpListenerCB;
+    //void* mpUserData;
 private:
 };
 

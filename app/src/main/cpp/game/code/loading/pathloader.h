@@ -17,21 +17,20 @@
 #include <render/Loaders/IWrappedLoader.h>
 
 
-
-class PathLoader : 
-    public tSimpleChunkHandler, 
-    public IWrappedLoader
-{
+class PathLoader :
+        public tSimpleChunkHandler,
+        public IWrappedLoader {
 //MEMBERS
 public:
 
 //METHODS
 public:
     PathLoader();
+
     virtual ~PathLoader();
 
     // P3D chunk loader.
-    virtual tLoadStatus Load(tChunkFile* f, tEntityStore* store);
+    virtual tLoadStatus Load(tChunkFile *f, tEntityStore *store);
 
     // P3D chunk id.
     virtual bool CheckChunkID(unsigned id);
@@ -39,26 +38,28 @@ public:
     ///////////////////////////////////////////////////////////////////////
     // IWrappedLoader
     ///////////////////////////////////////////////////////////////////////
-    void SetRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
 
-    void ModRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
+
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
     // tSimpleChunkHandler
     ///////////////////////////////////////////////////////////////////////
-    virtual tEntity* LoadObject(tChunkFile* f, tEntityStore* store);
+    virtual tEntity *LoadObject(tChunkFile *f, tEntityStore *store);
     ///////////////////////////////////////////////////////////////////////
 
 
 
 //MEMBERS
 private:
-    
+
     // prevent wasteful copy constructors
-    PathLoader( const PathLoader& );
-    PathLoader& operator= ( const PathLoader& );
+    PathLoader(const PathLoader &);
+
+    PathLoader &operator=(const PathLoader &);
 
 };
 

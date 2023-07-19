@@ -27,71 +27,60 @@
 //===========================================================================
 
 bool GuiSFX::Flash
-(
-    Scrooby::BoundedDrawable* drawable,
-    float elapsedTime,
-    float durationTime,
-    int zoomRate,
-    float maxScale,
-    float thresholdScale
-)
-{
-    if( elapsedTime > durationTime )
-    {
+        (
+                Scrooby::BoundedDrawable *drawable,
+                float elapsedTime,
+                float durationTime,
+                int zoomRate,
+                float maxScale,
+                float thresholdScale
+        ) {
+    if (elapsedTime > durationTime) {
         return true;
     }
 
-    rAssert( drawable != NULL );
-    rAssert( elapsedTime >= 0 && durationTime > 0 );
+    rAssert(drawable != NULL);
+    rAssert(elapsedTime >= 0 && durationTime > 0);
 
-    float scale = (float)elapsedTime / (float)durationTime;
-    for( int i = 0; i < zoomRate; i++ )
-    {
-        scale = rmt::Sqrt( scale );
+    float scale = (float) elapsedTime / (float) durationTime;
+    for (int i = 0; i < zoomRate; i++) {
+        scale = rmt::Sqrt(scale);
     }
 
     scale *= maxScale;
 
     drawable->ResetTransformation();
-    drawable->ScaleAboutCenter( scale, scale, 1.0f );
+    drawable->ScaleAboutCenter(scale, scale, 1.0f);
 
-    if( scale > thresholdScale )
-    {
-        drawable->SetAlpha( 1.0f - ((scale - thresholdScale) /
-                                    (maxScale - thresholdScale)) );
-    }
-    else
-    {
-        drawable->SetAlpha( 1.0f );
+    if (scale > thresholdScale) {
+        drawable->SetAlpha(1.0f - ((scale - thresholdScale) /
+                                   (maxScale - thresholdScale)));
+    } else {
+        drawable->SetAlpha(1.0f);
     }
 
     return false;
 }
 
 bool GuiSFX::Blink
-(
-    Scrooby::Drawable* drawable,
-    float elapsedTime,
-    float blinkingPeriod,
-    bool usingAlpha
-)
-{
-    rAssert( drawable );
+        (
+                Scrooby::Drawable *drawable,
+                float elapsedTime,
+                float blinkingPeriod,
+                bool usingAlpha
+        ) {
+    rAssert(drawable);
 
-    if( elapsedTime > blinkingPeriod )
-    {
-        if( usingAlpha )
-        {
+    if (elapsedTime > blinkingPeriod) {
+        if (usingAlpha) {
             // toggle drawable visiblity (using alpha)
             //
             float newAlpha = (drawable->GetAlpha() > 0.5f) ? 0.0f : 1.0f;
-            drawable->SetAlpha( newAlpha );
-        }
-        else
-        {
+            drawable->SetAlpha(newAlpha);
+        } else {
             // toggle drawable visibility
             //
-            drawable->SetVisible( !drawable->IsVisible() );
+            drawable->SetVisible(!drawable->IsVisible());
         }
 
         return true;
@@ -101,106 +90,100 @@ bool GuiSFX::Blink
 }
 
 float GuiSFX::Pulse
-(
-    float elapsedTime,
-    float period,
-    float center,
-    float amplitude,
-    float thetaOffset
-)
-{
+        (
+                float elapsedTime,
+                float period,
+                float center,
+                float amplitude,
+                float thetaOffset
+        ) {
     float theta = rmt::PI_2 * elapsedTime / period - thetaOffset;
 
-    return( amplitude * rmt::Sin( theta ) + center );
+    return (amplitude * rmt::Sin(theta) + center);
 }
 
 void GuiSFX::ModulateColour
-(
-    tColour* currentColour,
-    float elapsedTime,
-    float period,
-    tColour startColour,
-    tColour endColour,
-    float thetaOffset
-)
-{
-    float modValue = GuiSFX::Pulse( elapsedTime, period, 0.5f, 0.5f, thetaOffset );
+        (
+                tColour *currentColour,
+                float elapsedTime,
+                float period,
+                tColour startColour,
+                tColour endColour,
+                float thetaOffset
+        ) {
+    float modValue = GuiSFX::Pulse(elapsedTime, period, 0.5f, 0.5f, thetaOffset);
 
-    rAssert( currentColour != NULL );
+    rAssert(currentColour != NULL);
 
-    currentColour->SetRed( startColour.Red() +
-                          (int)( modValue * (endColour.Red() - startColour.Red()) ) );
+    currentColour->SetRed(startColour.Red() +
+                          (int) (modValue * (endColour.Red() - startColour.Red())));
 
-    currentColour->SetGreen( startColour.Green() +
-                            (int)( modValue * (endColour.Green() - startColour.Green()) ) );
+    currentColour->SetGreen(startColour.Green() +
+                            (int) (modValue * (endColour.Green() - startColour.Green())));
 
-    currentColour->SetBlue( startColour.Blue() +
-                           (int)( modValue * (endColour.Blue() - startColour.Blue()) ) );
+    currentColour->SetBlue(startColour.Blue() +
+                           (int) (modValue * (endColour.Blue() - startColour.Blue())));
 
-    currentColour->SetAlpha( startColour.Alpha() +
-                            (int)( modValue * (endColour.Alpha() - startColour.Alpha()) ) );
+    currentColour->SetAlpha(startColour.Alpha() +
+                            (int) (modValue * (endColour.Alpha() - startColour.Alpha())));
 }
 
 float GuiSFX::Pendulum
-(
-    Scrooby::BoundedDrawable* drawable,
-    float deltaTime,
-    float length,
-    float currentAngle,
-    float initialAngle,
-    float gravity
-)
-{
-    rAssertMsg( 0, "WARNING: *** Not yet implemented!" );
+        (
+                Scrooby::BoundedDrawable *drawable,
+                float deltaTime,
+                float length,
+                float currentAngle,
+                float initialAngle,
+                float gravity
+        ) {
+    rAssertMsg(0, "WARNING: *** Not yet implemented!");
 
     return 0.0f;
 /*
-    rAssert( drawable );
+    rAssert(drawable);
 
     float root = (2 * gravity / length) *
-                 (rmt::Cos( initialAngle ) - rmt::Cos( currentAngle ));
+                 (rmt::Cos(initialAngle) - rmt::Cos(currentAngle));
 
-    int rootSign = root > 0 ? 1 : -1;
+    int rootSign = root> 0 ? 1 : -1;
 
     // update current angle
-    if( currentAngle > 0.0f )
+    if(currentAngle> 0.0f)
     {
-        currentAngle -= rmt::Sqrt( root * rootSign )
+        currentAngle -= rmt::Sqrt(root * rootSign)
                         * (deltaTime / 1000.0f);
     }
     else
     {
-        currentAngle += rmt::Sqrt( root * rootSign )
+        currentAngle += rmt::Sqrt(root * rootSign)
                         * (deltaTime / 1000.0f);
     }
 
     // rotate pendulum arm
     drawable->ResetTransformation();
-    drawable->RotateAboutCenter( rmt::RadianToDeg( currentAngle ) );
+    drawable->RotateAboutCenter(rmt::RadianToDeg(currentAngle));
 
     return currentAngle;
 */
 }
 
 bool GuiSFX::Spiral
-(
-    Scrooby::BoundedDrawable* drawable,
-    float elapsedTime,
-    float durationTime,
-    float rotationPeriod,
-    float startScale,
-    float endScale,
-    bool withFading
-)
-{
-    if( elapsedTime > durationTime )
-    {
+        (
+                Scrooby::BoundedDrawable *drawable,
+                float elapsedTime,
+                float durationTime,
+                float rotationPeriod,
+                float startScale,
+                float endScale,
+                bool withFading
+        ) {
+    if (elapsedTime > durationTime) {
         drawable->ResetTransformation();
-        drawable->ScaleAboutCenter( endScale );
+        drawable->ScaleAboutCenter(endScale);
 
-        if( withFading )
-        {
-            drawable->SetAlpha( 1.0f );
+        if (withFading) {
+            drawable->SetAlpha(1.0f);
         }
 
         return true;
@@ -223,34 +206,31 @@ bool GuiSFX::Spiral
 
     // scale and rotate drawable
     //
-    rAssert( drawable );
+    rAssert(drawable);
     drawable->ResetTransformation();
-    drawable->ScaleAboutCenter( scale );
-    drawable->RotateAboutCenter( rmt::RadianToDeg( rotation ) );
+    drawable->ScaleAboutCenter(scale);
+    drawable->RotateAboutCenter(rmt::RadianToDeg(rotation));
 
     // if enabled, fade in the drawable as well
-    if( withFading )
-    {
-        drawable->SetAlpha( spiralValue );
+    if (withFading) {
+        drawable->SetAlpha(spiralValue);
     }
 
     return false;
 }
 
 bool GuiSFX::SlideX
-(
-    Scrooby::Drawable* drawable,
-    float elapsedTime,
-    float durationTime,
-    bool slideInwards,
-    int fromBorder,
-    int screenWidth
-)
-{
-    rAssert( drawable );
+        (
+                Scrooby::Drawable *drawable,
+                float elapsedTime,
+                float durationTime,
+                bool slideInwards,
+                int fromBorder,
+                int screenWidth
+        ) {
+    rAssert(drawable);
 
-    if( elapsedTime > durationTime )
-    {
+    if (elapsedTime > durationTime) {
         drawable->ResetTransformation();
 
         return true;
@@ -260,8 +240,8 @@ bool GuiSFX::SlideX
     int posY = 0;
     int width = 0;
     int height = 0;
-    drawable->GetOriginPosition( posX, posY );
-    drawable->GetBoundingBoxSize( width, height );
+    drawable->GetOriginPosition(posX, posY);
+    drawable->GetBoundingBoxSize(width, height);
 
     int distanceX = (fromBorder > 0) ? (screenWidth - posX) : (posX + width);
 
@@ -270,25 +250,23 @@ bool GuiSFX::SlideX
                          (elapsedTime / durationTime) * distanceX;
 
     drawable->ResetTransformation();
-    drawable->Translate( static_cast<int>( translationX ), 0 );
+    drawable->Translate(static_cast<int>(translationX), 0);
 
     return false;
 }
 
 bool GuiSFX::SlideY
-(
-    Scrooby::Drawable* drawable,
-    float elapsedTime,
-    float durationTime,
-    bool slideInwards,
-    int fromBorder,
-    int screenHeight
-)
-{
-    rAssert( drawable );
+        (
+                Scrooby::Drawable *drawable,
+                float elapsedTime,
+                float durationTime,
+                bool slideInwards,
+                int fromBorder,
+                int screenHeight
+        ) {
+    rAssert(drawable);
 
-    if( elapsedTime > durationTime )
-    {
+    if (elapsedTime > durationTime) {
         drawable->ResetTransformation();
 
         return true;
@@ -298,8 +276,8 @@ bool GuiSFX::SlideY
     int posY = 0;
     int width = 0;
     int height = 0;
-    drawable->GetOriginPosition( posX, posY );
-    drawable->GetBoundingBoxSize( width, height );
+    drawable->GetOriginPosition(posX, posY);
+    drawable->GetBoundingBoxSize(width, height);
 
     int distanceY = (fromBorder > 0) ? (screenHeight - posY) : (posY + height);
 
@@ -308,26 +286,24 @@ bool GuiSFX::SlideY
                          (elapsedTime / durationTime) * distanceY;
 
     drawable->ResetTransformation();
-    drawable->Translate( 0, static_cast<int>( translationY ) );
+    drawable->Translate(0, static_cast<int>(translationY));
 
     return false;
 }
 
 bool GuiSFX::Flip
-(
-    Scrooby::BoundedDrawable* drawable,
-    float elapsedTime,
-    float durationTime,
-    float startAngle,
-    float endAngle,
-    rmt::Vector axis
-)
-{
-    rAssert( drawable );
+        (
+                Scrooby::BoundedDrawable *drawable,
+                float elapsedTime,
+                float durationTime,
+                float startAngle,
+                float endAngle,
+                rmt::Vector axis
+        ) {
+    rAssert(drawable);
     drawable->ResetTransformation();
 
-    if( elapsedTime > durationTime )
-    {
+    if (elapsedTime > durationTime) {
         return true;
     }
 
@@ -336,23 +312,21 @@ bool GuiSFX::Flip
                      elapsedTime / durationTime * (endAngle - startAngle);
 
     // rotate the drawable about specified axis
-    drawable->RotateAboutCenter( rmt::RadianToDeg( rotation ), axis );
+    drawable->RotateAboutCenter(rmt::RadianToDeg(rotation), axis);
 
     return false;
 }
 
 void GuiSFX::Projectile
-(
-    Scrooby::Drawable* drawable,
-    float elapsedTime,
-    float durationTime,
-    rmt::Vector initVelocity,
-    bool reverse,
-    float gravity
-)
-{
-    if( reverse )
-    {
+        (
+                Scrooby::Drawable *drawable,
+                float elapsedTime,
+                float durationTime,
+                rmt::Vector initVelocity,
+                bool reverse,
+                float gravity
+        ) {
+    if (reverse) {
         // reverse the elapsed time
         //
         elapsedTime = durationTime - elapsedTime;
@@ -368,34 +342,34 @@ void GuiSFX::Projectile
 
     // translate the drawable
     //
-    rAssert( drawable );
-    drawable->Translate( static_cast<int>( currentPos.x ),
-                         static_cast<int>( currentPos.y ) );
+    rAssert(drawable);
+    drawable->Translate(static_cast<int>(currentPos.x),
+                        static_cast<int>(currentPos.y));
 }
 
 void GuiSFX::Projectile
-(
-    Scrooby::Drawable* drawable,
-    float elapsedTime,
-    float durationTime,
-    rmt::Vector start,
-    rmt::Vector end,
-    bool reverse,
-    float gravity
-)
-{
+        (
+                Scrooby::Drawable *drawable,
+                float elapsedTime,
+                float durationTime,
+                rmt::Vector start,
+                rmt::Vector end,
+                bool reverse,
+                float gravity
+        ) {
     // calculate the initial velocity
     //
     rmt::Vector initVelocity;
     initVelocity.x = (end.x - start.x) / durationTime;
-    initVelocity.y = (end.y - start.y - 0.5f * gravity * durationTime * durationTime) / durationTime;
+    initVelocity.y =
+            (end.y - start.y - 0.5f * gravity * durationTime * durationTime) / durationTime;
     initVelocity.z = 0.0f;
 
-    GuiSFX::Projectile( drawable,
-                        elapsedTime,
-                        durationTime,
-                        initVelocity,
-                        reverse,
-                        gravity );
+    GuiSFX::Projectile(drawable,
+                       elapsedTime,
+                       durationTime,
+                       initVelocity,
+                       reverse,
+                       gravity);
 }
 

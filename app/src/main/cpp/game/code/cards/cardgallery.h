@@ -32,17 +32,19 @@ const unsigned int NUM_LEVELS = 7;
 const unsigned int NUM_CARDS_PER_LEVEL = 7;
 
 class CardsDB;
+
 class Card;
 
-struct CardList
-{
-    Card* m_cards[ NUM_CARDS_PER_LEVEL ];
+struct CardList {
+    Card *m_cards[NUM_CARDS_PER_LEVEL];
     int m_numCards;
 
     CardList();
 
-    void Add( Card* card );
-    bool Remove( unsigned int cardID );
+    void Add(Card *card);
+
+    bool Remove(unsigned int cardID);
+
     void Empty();
 };
 
@@ -51,47 +53,55 @@ struct CardList
 //===========================================================================
 
 class CardGallery : public GameDataHandler,
-                    public ICheatEnteredCallback
-{
+                    public ICheatEnteredCallback {
 public:
     // Static Methods for accessing this singleton.
-    static CardGallery* CreateInstance();
-    static void DestroyInstance();
-    static CardGallery* GetInstance();
+    static CardGallery *CreateInstance();
 
-	CardGallery();
+    static void DestroyInstance();
+
+    static CardGallery *GetInstance();
+
+    CardGallery();
+
     virtual ~CardGallery();
 
     // Initialization (involves disc I/O)
     void Init();
 
     // Adding collected cards (either by UID name or by card ID)
-    Card* AddCollectedCardByName( tUID cardName );
-    Card* AddCollectedCardByID( unsigned int cardID );
+    Card *AddCollectedCardByName(tUID cardName);
+
+    Card *AddCollectedCardByID(unsigned int cardID);
 
     void AddAllCollectedCards();
+
     void RemoveAllCollectedCards();
 
     // Querying collected cards
-    const CardList* GetCollectedCards( unsigned int level ) const;
-    bool IsCardCollected( tUID cardName ) const;
+    const CardList *GetCollectedCards(unsigned int level) const;
+
+    bool IsCardCollected(tUID cardName) const;
 
     // Querying card decks
     //
     int GetNumCardDecksCompleted() const;
-    bool IsCardDeckComplete( unsigned int level ) const;
+
+    bool IsCardDeckComplete(unsigned int level) const;
 
     // Querying cards DB
-    CardsDB* GetCardsDB() const { return m_cardsDB; }
+    CardsDB *GetCardsDB() const { return m_cardsDB; }
 
     // Implements Game Data Handler
-    virtual void LoadData( const GameDataByte* dataBuffer,
-                           unsigned int numBytes );
-    virtual void SaveData( GameDataByte* dataBuffer,
-                           unsigned int numBytes );
+    virtual void LoadData(const GameDataByte *dataBuffer,
+                          unsigned int numBytes);
+
+    virtual void SaveData(GameDataByte *dataBuffer,
+                          unsigned int numBytes);
+
     virtual void ResetData();
 
-    virtual void OnCheatEntered( eCheatID cheatID, bool isEnabled );
+    virtual void OnCheatEntered(eCheatID cheatID, bool isEnabled);
 
 private:
 
@@ -101,30 +111,30 @@ private:
 
     // No copying or assignment. Declare but don't define.
     //
-    CardGallery( const CardGallery& );
-    CardGallery& operator= ( const CardGallery& );
+    CardGallery(const CardGallery &);
 
-    void AddCollectedCard( Card* newCard );
+    CardGallery &operator=(const CardGallery &);
+
+    void AddCollectedCard(Card *newCard);
 
     //---------------------------------------------------------------------
     // Private Data
     //---------------------------------------------------------------------
 
     // Pointer to the one and only instance of this singleton.
-    static CardGallery* spInstance;
+    static CardGallery *spInstance;
 
-    CardsDB* m_cardsDB;
+    CardsDB *m_cardsDB;
 
-    CardList m_collectedCards[ NUM_LEVELS ];
+    CardList m_collectedCards[NUM_LEVELS];
     int m_numCollectedCards;
 
 };
 
 // A little syntactic sugar for getting at this singleton.
-inline CardGallery* GetCardGallery() { return( CardGallery::GetInstance() ); }
+inline CardGallery *GetCardGallery() { return (CardGallery::GetInstance()); }
 
-inline void CardGallery::ResetData()
-{
+inline void CardGallery::ResetData() {
     this->RemoveAllCollectedCards();
 }
 

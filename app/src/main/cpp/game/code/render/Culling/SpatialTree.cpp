@@ -37,54 +37,49 @@
 // TODO: remove rAssert associated code
 //
 ////////////////////////////////////////////////////////////////////////// 
-void SpatialTree::SetNodes( int& orSubTreeSize, int iNodeIndex, int iParentIndex, OctTreeNode* ipTreeRoot, BoxPts& irBoxPts )
-{
-   int rightSubTreeSize = 0;
+void
+SpatialTree::SetNodes(int &orSubTreeSize, int iNodeIndex, int iParentIndex, OctTreeNode *ipTreeRoot,
+                      BoxPts &irBoxPts) {
+    int rightSubTreeSize = 0;
 
-   mTreeNodes[iNodeIndex].mData.mSubDivPlane.Set( ipTreeRoot->mAxis, ipTreeRoot->mPlanePosn );
-   mTreeNodes[iNodeIndex].mData.mBBox = irBoxPts;
-   mTreeNodes[iNodeIndex].LinkParent(iParentIndex - iNodeIndex);
+    mTreeNodes[iNodeIndex].mData.mSubDivPlane.Set(ipTreeRoot->mAxis, ipTreeRoot->mPlanePosn);
+    mTreeNodes[iNodeIndex].mData.mBBox = irBoxPts;
+    mTreeNodes[iNodeIndex].LinkParent(iParentIndex - iNodeIndex);
 
-   if( ipTreeRoot->mpChildLT != NULL )
-   {
-      rAssert( ipTreeRoot->mpChildGT != NULL );
+    if (ipTreeRoot->mpChildLT != NULL) {
+        rAssert(ipTreeRoot->mpChildGT != NULL);
 
-      BoxPts BBoxLT( irBoxPts );
-      BBoxLT.CutOffGT(     mTreeNodes[iNodeIndex].mData.mSubDivPlane );
-      irBoxPts.CutOffLT(   mTreeNodes[iNodeIndex].mData.mSubDivPlane );
+        BoxPts BBoxLT(irBoxPts);
+        BBoxLT.CutOffGT(mTreeNodes[iNodeIndex].mData.mSubDivPlane);
+        irBoxPts.CutOffLT(mTreeNodes[iNodeIndex].mData.mSubDivPlane);
 
-      SetNodes( orSubTreeSize,      iNodeIndex+1,                iNodeIndex, ipTreeRoot->mpChildLT, BBoxLT   );
-      SetNodes( rightSubTreeSize,   iNodeIndex+orSubTreeSize+1,  iNodeIndex, ipTreeRoot->mpChildGT, irBoxPts );
+        SetNodes(orSubTreeSize, iNodeIndex + 1, iNodeIndex, ipTreeRoot->mpChildLT, BBoxLT);
+        SetNodes(rightSubTreeSize, iNodeIndex + orSubTreeSize + 1, iNodeIndex,
+                 ipTreeRoot->mpChildGT, irBoxPts);
 
-      orSubTreeSize = orSubTreeSize + rightSubTreeSize;
-      mTreeNodes[iNodeIndex].SetSubTreeSize( orSubTreeSize );
-   }
-   else
-   {
-      rAssert( ipTreeRoot->mpChildGT == NULL );
+        orSubTreeSize = orSubTreeSize + rightSubTreeSize;
+        mTreeNodes[iNodeIndex].SetSubTreeSize(orSubTreeSize);
+    } else {
+        rAssert(ipTreeRoot->mpChildGT == NULL);
 
-      mTreeNodes[iNodeIndex].SetSubTreeSize( ContiguousBinNode< SpatialNode >::msNoChildren );
-   }
-   
-   orSubTreeSize++;
+        mTreeNodes[iNodeIndex].SetSubTreeSize(ContiguousBinNode<SpatialNode>::msNoChildren);
+    }
+
+    orSubTreeSize++;
 }
 
 //////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////// 
-void SpatialTree::CountNodes( int& orCount, OctTreeNode* ipTreeRoot )
-{
-   orCount++;
+void SpatialTree::CountNodes(int &orCount, OctTreeNode *ipTreeRoot) {
+    orCount++;
 
-   if( ipTreeRoot->mpChildLT != NULL )
-   {
-      rAssert( ipTreeRoot->mpChildGT != NULL );
-      CountNodes( orCount, ipTreeRoot->mpChildLT );
-      CountNodes( orCount, ipTreeRoot->mpChildGT );
-   }
-   else
-   {
-      rAssert( ipTreeRoot->mpChildGT == NULL );
-   }
+    if (ipTreeRoot->mpChildLT != NULL) {
+        rAssert(ipTreeRoot->mpChildGT != NULL);
+        CountNodes(orCount, ipTreeRoot->mpChildLT);
+        CountNodes(orCount, ipTreeRoot->mpChildGT);
+    } else {
+        rAssert(ipTreeRoot->mpChildGT == NULL);
+    }
 }
 
 //******************************************************************************

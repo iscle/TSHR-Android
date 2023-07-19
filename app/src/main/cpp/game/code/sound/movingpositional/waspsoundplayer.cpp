@@ -45,17 +45,16 @@
 //
 //=============================================================================
 WaspSoundPlayer::WaspSoundPlayer() :
-    m_isFadingIn( false ),
-    m_attacking( false ),
-    m_blowingUp( false )
-{
-    EventManager* eventMgr = GetEventManager();
+        m_isFadingIn(false),
+        m_attacking(false),
+        m_blowingUp(false) {
+    EventManager *eventMgr = GetEventManager();
 
-    eventMgr->AddListener( this, EVENT_ACTOR_REMOVED );
-    eventMgr->AddListener( this, EVENT_WASP_CHARGING );
-    eventMgr->AddListener( this, EVENT_WASP_CHARGED );
-    eventMgr->AddListener( this, EVENT_WASP_ATTACKING );
-    eventMgr->AddListener( this, EVENT_WASP_BLOWED_UP );
+    eventMgr->AddListener(this, EVENT_ACTOR_REMOVED);
+    eventMgr->AddListener(this, EVENT_WASP_CHARGING);
+    eventMgr->AddListener(this, EVENT_WASP_CHARGED);
+    eventMgr->AddListener(this, EVENT_WASP_ATTACKING);
+    eventMgr->AddListener(this, EVENT_WASP_BLOWED_UP);
 }
 
 //=============================================================================
@@ -68,9 +67,8 @@ WaspSoundPlayer::WaspSoundPlayer() :
 // Return:      N/A.
 //
 //=============================================================================
-WaspSoundPlayer::~WaspSoundPlayer()
-{
-    GetEventManager()->RemoveAll( this );
+WaspSoundPlayer::~WaspSoundPlayer() {
+    GetEventManager()->RemoveAll(this);
 }
 
 //=============================================================================
@@ -84,12 +82,11 @@ WaspSoundPlayer::~WaspSoundPlayer()
 // Return:      void 
 //
 //=============================================================================
-void WaspSoundPlayer::Activate( Actor* theActor )
-{
+void WaspSoundPlayer::Activate(Actor *theActor) {
     //
     // Play the fade-in sound
     //
-    playWaspSound( "wasp_fade_in", theActor );
+    playWaspSound("wasp_fade_in", theActor);
     m_isFadingIn = true;
 }
 
@@ -104,42 +101,39 @@ void WaspSoundPlayer::Activate( Actor* theActor )
 // Return:      void 
 //
 //=============================================================================
-void WaspSoundPlayer::HandleEvent( EventEnum id, void* pEventData )
-{
+void WaspSoundPlayer::HandleEvent(EventEnum id, void *pEventData) {
     //
     // Make sure we've got the event for the right wasp
     //
-    if( static_cast<Actor*>(pEventData) != m_actor )
-    {
+    if (static_cast<Actor *>(pEventData) != m_actor) {
         return;
     }
 
-    switch( id )
-    {
+    switch (id) {
         case EVENT_ACTOR_REMOVED:
             deactivate();
             break;
 
         case EVENT_WASP_CHARGING:
-            playWaspSound( "wasp_charging", m_actor );
+            playWaspSound("wasp_charging", m_actor);
             break;
 
         case EVENT_WASP_CHARGED:
-            playWaspSound( "wasp_charged_idle", m_actor );
+            playWaspSound("wasp_charged_idle", m_actor);
             break;
 
         case EVENT_WASP_ATTACKING:
-            playWaspSound( "wasp_attack", m_actor );
+            playWaspSound("wasp_attack", m_actor);
             m_attacking = true;
             break;
 
         case EVENT_WASP_BLOWED_UP:
-            playWaspSound( "wasp_destroyed", m_actor );
+            playWaspSound("wasp_destroyed", m_actor);
             m_blowingUp = true;
             break;
 
         default:
-            rAssertMsg( false, "Unexpected event in WaspSoundPlayer::HandleEvent\n" );
+            rAssertMsg(false, "Unexpected event in WaspSoundPlayer::HandleEvent\n");
             break;
     }
 }
@@ -155,17 +149,13 @@ void WaspSoundPlayer::HandleEvent( EventEnum id, void* pEventData )
 // Return:      void 
 //
 //=============================================================================
-void WaspSoundPlayer::OnPlaybackComplete()
-{
-    if( m_isFadingIn || m_attacking )
-    {
+void WaspSoundPlayer::OnPlaybackComplete() {
+    if (m_isFadingIn || m_attacking) {
         m_isFadingIn = false;
         m_attacking = false;
 
-        playWaspSound( "wasp_idle", m_actor );
-    }
-    else if( m_blowingUp )
-    {
+        playWaspSound("wasp_idle", m_actor);
+    } else if (m_blowingUp) {
         //
         // Wasp destroyed, deactivate player
         //
@@ -190,8 +180,7 @@ void WaspSoundPlayer::OnPlaybackComplete()
 // Return:      void 
 //
 //=============================================================================
-void WaspSoundPlayer::deactivate()
-{
+void WaspSoundPlayer::deactivate() {
     safeStop();
 
     ActorPlayer::deactivate();
@@ -207,8 +196,7 @@ void WaspSoundPlayer::deactivate()
 // Return:      void 
 //
 //=============================================================================
-void WaspSoundPlayer::safeStop()
-{
+void WaspSoundPlayer::safeStop() {
     //
     // Kill the callbacks before stopping, so we don't get sounds
     // lingering around after we think we're stopped
@@ -230,11 +218,10 @@ void WaspSoundPlayer::safeStop()
 // Return:      void 
 //
 //=============================================================================
-void WaspSoundPlayer::playWaspSound( const char* soundName, Actor* theActor )
-{
-    IRadNameSpace* nameSpace;
-    IRefCount* nameSpaceObj;
-    positionalSoundSettings* parameters;
+void WaspSoundPlayer::playWaspSound(const char *soundName, Actor *theActor) {
+    IRadNameSpace *nameSpace;
+    IRefCount *nameSpaceObj;
+    positionalSoundSettings *parameters;
 
     //
     // Kill the old sound, disabling any callback action first.
@@ -245,16 +232,13 @@ void WaspSoundPlayer::playWaspSound( const char* soundName, Actor* theActor )
     // Get the positionalSoundSettings object for the wasp sound
     //
     nameSpace = Sound::daSoundRenderingManagerGet()->GetTuningNamespace();
-    rAssert( nameSpace != NULL );
-    nameSpaceObj = nameSpace->GetInstance( ::radMakeKey32( "wasp_settings" ) );
-    if( nameSpaceObj != NULL )
-    {
-        parameters = reinterpret_cast<positionalSoundSettings*>( nameSpaceObj );
+    rAssert(nameSpace != NULL);
+    nameSpaceObj = nameSpace->GetInstance(::radMakeKey32("wasp_settings"));
+    if (nameSpaceObj != NULL) {
+        parameters = reinterpret_cast<positionalSoundSettings *>(nameSpaceObj);
 
-        playSound( parameters, soundName, theActor );
-    }
-    else
-    {
-        rDebugString( "Couldn't play wasp sound, no matching settings found" );
+        playSound(parameters, soundName, theActor);
+    } else {
+        rDebugString("Couldn't play wasp sound, no matching settings found");
     }
 }

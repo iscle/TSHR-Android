@@ -21,10 +21,8 @@
 //========================================
 // Forward References
 //========================================
-namespace Language
-{
-    enum Language
-    {
+namespace Language {
+    enum Language {
         ENGLISH,
         FRENCH,
         GERMAN,

@@ -57,52 +57,50 @@ const unsigned int SPLASH_SCREEN_DEMO_WAIT_TIME = 30000; // in msec
 //
 //===========================================================================
 CGuiScreenSplash::CGuiScreenSplash
-(
-	Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-)
-:   CGuiScreen( pScreen, pParent, GUI_SCREEN_ID_SPLASH ),
-    m_pMenu( NULL ),
-    m_pressStart( NULL ),
-    m_demoLoopTime( SPLASH_SCREEN_DEMO_WAIT_TIME ),
-    m_elapsedTime( 0 )
-{
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        : CGuiScreen(pScreen, pParent, GUI_SCREEN_ID_SPLASH),
+          m_pMenu(NULL),
+          m_pressStart(NULL),
+          m_demoLoopTime(SPLASH_SCREEN_DEMO_WAIT_TIME),
+          m_elapsedTime(0) {
     // Retrieve the Scrooby drawing elements.
     //
-    Scrooby::Page* pPage = m_pScroobyScreen->GetPage( "Splash" );
-    rAssert( pPage != NULL );
+    Scrooby::Page *pPage = m_pScroobyScreen->GetPage("Splash");
+    rAssert(pPage != NULL);
 /*
-    Scrooby::Sprite* splashImage = pPage->GetSprite( "GameLogo" );
-    if( splashImage != NULL )
+    Scrooby::Sprite* splashImage = pPage->GetSprite("GameLogo");
+    if(splashImage != NULL)
     {
         const float SPLASH_SCREEN_IMAGE_CORRECTION_SCALE = 2.0f;
-        splashImage->ScaleAboutCenter( SPLASH_SCREEN_IMAGE_CORRECTION_SCALE );
+        splashImage->ScaleAboutCenter(SPLASH_SCREEN_IMAGE_CORRECTION_SCALE);
     }
 */
     // Create a menu.
     //
-    m_pMenu = new CGuiMenu( this );
-    rAssert( m_pMenu != NULL );
+    m_pMenu = new CGuiMenu(this);
+    rAssert(m_pMenu != NULL);
 
-    m_pressStart = pPage->GetText( "PressStart" );
-    rAssert( m_pressStart != NULL );
+    m_pressStart = pPage->GetText("PressStart");
+    rAssert(m_pressStart != NULL);
 
-    m_pMenu->AddMenuItem( m_pressStart,
-                          NULL,
-                          NULL,
-                          NULL,
-                          NULL,
-                          NULL,
-                          SELECTION_ENABLED | TEXT_OUTLINE_ENABLED );
+    m_pMenu->AddMenuItem(m_pressStart,
+                         NULL,
+                         NULL,
+                         NULL,
+                         NULL,
+                         NULL,
+                         SELECTION_ENABLED | TEXT_OUTLINE_ENABLED);
 
     // set "press start" text to "loading ...", by default
     //
-    m_pressStart->SetIndex( TEXT_LOADING );
-    m_pressStart->SetColour( tColour( 255, 255, 255 ) );
+    m_pressStart->SetIndex(TEXT_LOADING);
+    m_pressStart->SetColour(tColour(255, 255, 255));
 
-    if( CommandLineOptions::Get( CLO_DEMO_TEST ) ||
-        GetCheatInputSystem()->IsCheatEnabled( CHEAT_ID_DEMO_TEST ) )
-    {
+    if (CommandLineOptions::Get(CLO_DEMO_TEST) ||
+        GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_DEMO_TEST)) {
         m_demoLoopTime = 1000; // in msec
     }
 }
@@ -120,10 +118,8 @@ CGuiScreenSplash::CGuiScreenSplash
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenSplash::~CGuiScreenSplash()
-{
-    if( m_pMenu != NULL )
-    {
+CGuiScreenSplash::~CGuiScreenSplash() {
+    if (m_pMenu != NULL) {
         delete m_pMenu;
         m_pMenu = NULL;
     }
@@ -143,44 +139,29 @@ CGuiScreenSplash::~CGuiScreenSplash()
 //
 //===========================================================================
 void CGuiScreenSplash::HandleMessage
-(
-	eGuiMessage message, 
-	unsigned int param1,
-	unsigned int param2 
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        switch( message )
-        {
-            case GUI_MSG_UPDATE:
-            {
-                if( !m_pMenu->HasSelectionBeenMade() )
-                {
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        switch (message) {
+            case GUI_MSG_UPDATE: {
+                if (!m_pMenu->HasSelectionBeenMade()) {
                     m_elapsedTime += param1;
-                    if( m_elapsedTime > m_demoLoopTime )
-                    {
-                        if( s_demoPlaybackToggle != 0 )
-                        {
-                            if ( CommandLineOptions::Get( CLO_DEMO_TEST ) ||
-                                 GetCheatInputSystem()->IsCheatEnabled( CHEAT_ID_DEMO_TEST ) )
-                            {
+                    if (m_elapsedTime > m_demoLoopTime) {
+                        if (s_demoPlaybackToggle != 0) {
+                            if (CommandLineOptions::Get(CLO_DEMO_TEST) ||
+                                GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_DEMO_TEST)) {
                                 this->StartDemoInRuntime();
-                            }
-                            else
-                            {
+                            } else {
                                 this->StartDemoAsMovie();
                             }
-                        }
-                        else
-                        {
-                            if ( CommandLineOptions::Get( CLO_DEMO_TEST ) ||
-                                 GetCheatInputSystem()->IsCheatEnabled( CHEAT_ID_DEMO_TEST ) )
-                            {
+                        } else {
+                            if (CommandLineOptions::Get(CLO_DEMO_TEST) ||
+                                GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_DEMO_TEST)) {
                                 this->StartDemoInRuntime();
-                            }
-                            else
-                            {
+                            } else {
                                 this->StartDemoAsMovie();
                             }
                         }
@@ -193,13 +174,14 @@ void CGuiScreenSplash::HandleMessage
                     }
                 }
 
-                if( m_pressStart != NULL && !GetLoadingManager()->IsLoading() ) // sound loading is done
+                if (m_pressStart != NULL &&
+                    !GetLoadingManager()->IsLoading()) // sound loading is done
                 {
-                    rAssert( m_pMenu != NULL );
+                    rAssert(m_pMenu != NULL);
 
-                    m_pressStart->SetIndex( TEXT_PRESS_START_GC +  PLATFORM_TEXT_INDEX);
-                    m_pressStart->SetColour( m_pMenu->GetHighlightColour() );
-                    m_pMenu->GetMenuItem( 0 )->m_attributes |= SELECTABLE;
+                    m_pressStart->SetIndex(TEXT_PRESS_START_GC + PLATFORM_TEXT_INDEX);
+                    m_pressStart->SetColour(m_pMenu->GetHighlightColour());
+                    m_pMenu->GetMenuItem(0)->m_attributes |= SELECTABLE;
 
                     // set this to NULL cuz we don't need to change it anymore
                     //
@@ -208,58 +190,51 @@ void CGuiScreenSplash::HandleMessage
 
                 break;
             }
-            case GUI_MSG_CONTROLLER_SELECT:
-            {
+            case GUI_MSG_CONTROLLER_SELECT: {
                 // ignore controller select inputs
                 //
                 return;
 
                 break;
             }
-            case GUI_MSG_CONTROLLER_START:
-            {
+            case GUI_MSG_CONTROLLER_START: {
 
-                GetGuiSystem()->SetPrimaryController((int)param1);
+                GetGuiSystem()->SetPrimaryController((int) param1);
 
-                if( GetLoadingManager()->IsLoading() )
-                {
+                if (GetLoadingManager()->IsLoading()) {
                     // ignore start input until all loading is done
                     //
                     return;
                 }
 
-                if( !m_pMenu->HasSelectionBeenMade() )
-                {
+                if (!m_pMenu->HasSelectionBeenMade()) {
                     m_pMenu->MakeSelection();
                 }
 
                 break;
             }
 
-            case GUI_MSG_MENU_SELECTION_MADE:
-            {
-                m_pParent->HandleMessage( GUI_MSG_SPLASH_SCREEN_DONE );
+            case GUI_MSG_MENU_SELECTION_MADE: {
+                m_pParent->HandleMessage(GUI_MSG_SPLASH_SCREEN_DONE);
 
                 break;
             }
 
-            default:
-            {
+            default: {
                 break;
             }
         }
 
         // relay message to menu
         //
-        if( m_pMenu != NULL )
-        {
-            m_pMenu->HandleMessage( message, param1, param2 );
+        if (m_pMenu != NULL) {
+            m_pMenu->HandleMessage(message, param1, param2);
         }
     }
 
-	// Propogate the message up the hierarchy.
-	//
-	CGuiScreen::HandleMessage( message, param1, param2 );
+    // Propogate the message up the hierarchy.
+    //
+    CGuiScreen::HandleMessage(message, param1, param2);
 }
 
 //===========================================================================
@@ -274,8 +249,7 @@ void CGuiScreenSplash::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenSplash::InitIntro()
-{
+void CGuiScreenSplash::InitIntro() {
 }
 
 
@@ -291,8 +265,7 @@ void CGuiScreenSplash::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenSplash::InitRunning()
-{
+void CGuiScreenSplash::InitRunning() {
     m_elapsedTime = 0;
 }
 
@@ -309,8 +282,7 @@ void CGuiScreenSplash::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenSplash::InitOutro()
-{
+void CGuiScreenSplash::InitOutro() {
 }
 
 
@@ -319,26 +291,25 @@ void CGuiScreenSplash::InitOutro()
 //---------------------------------------------------------------------
 
 void
-CGuiScreenSplash::StartDemoInRuntime()
-{
+CGuiScreenSplash::StartDemoInRuntime() {
     // Quit FE and start the demo in runtime.
     //
-    m_pParent->HandleMessage( GUI_MSG_QUIT_FRONTEND, 0 ); // 0 = demo mode
+    m_pParent->HandleMessage(GUI_MSG_QUIT_FRONTEND, 0); // 0 = demo mode
 }
 
 void
-CGuiScreenSplash::StartDemoAsMovie()
-{
+CGuiScreenSplash::StartDemoAsMovie() {
 #ifndef RAD_WIN32
     // Play demo movie.
     //
-    rAssert( m_guiManager );
-    CGuiScreenPlayMovie* playMovieScreen = static_cast<CGuiScreenPlayMovie*>( m_guiManager->FindWindowByID( GUI_SCREEN_ID_PLAY_MOVIE_DEMO ) );
-    rAssert( playMovieScreen );
-    playMovieScreen->SetMovieToPlay( MovieNames::DEMO );
+    rAssert(m_guiManager);
+    CGuiScreenPlayMovie *playMovieScreen = static_cast<CGuiScreenPlayMovie *>(m_guiManager->FindWindowByID(
+            GUI_SCREEN_ID_PLAY_MOVIE_DEMO));
+    rAssert(playMovieScreen);
+    playMovieScreen->SetMovieToPlay(MovieNames::DEMO);
 
-    m_pParent->HandleMessage( GUI_MSG_GOTO_SCREEN,
-                              GUI_SCREEN_ID_PLAY_MOVIE_DEMO );
+    m_pParent->HandleMessage(GUI_MSG_GOTO_SCREEN,
+                             GUI_SCREEN_ID_PLAY_MOVIE_DEMO);
 #endif
 }
 

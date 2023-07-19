@@ -31,46 +31,41 @@
 #include <memory/memoryutilities.h>
 #include <memory/srrmemory.h>
 
-#ifdef RAD_MW 
-    #include <mwutils.h>
+#ifdef RAD_MW
+#include <mwutils.h>
 #endif
 
 //========================================
 // Forward Declarations
 //========================================
-static void ProcessCommandLineArguments( int argc, char* argv[] );
+static void ProcessCommandLineArguments(int argc, char *argv[]);
 
-static void ProcessCommandLineArgumentsFromFile( );
+static void ProcessCommandLineArgumentsFromFile();
 
 
-
-void OutputHandler (const char * pString )
-{
+void OutputHandler(const char *pString) {
     static int ypos = 0;
-    static IRadTextDisplay* textDisplay = 0;
+    static IRadTextDisplay *textDisplay = 0;
 
 
-    if (!textDisplay || (ypos > 20))
-    {
-        if (textDisplay)
-        {
-            textDisplay->Release ();
+    if (!textDisplay || (ypos > 20)) {
+        if (textDisplay) {
+            textDisplay->Release();
         }
-        ::radTextDisplayGet( &textDisplay, GMA_TEMP );
-        textDisplay->SetBackgroundColor( 0 );
-        textDisplay->SetTextColor( 0xffffffff );
+        ::radTextDisplayGet(&textDisplay, GMA_TEMP);
+        textDisplay->SetBackgroundColor(0);
+        textDisplay->SetTextColor(0xffffffff);
         textDisplay->Clear();
         ypos = 0;
     }
 
-    if ( textDisplay )
-    {
-        textDisplay->TextOutAt( pString, 0, ypos );
+    if (textDisplay) {
+        textDisplay->TextOutAt(pString, 0, ypos);
         textDisplay->SwapBuffers();
         ypos++;
     }
 
-    radThreadSleep (200);
+    radThreadSleep(200);
 }
 
 
@@ -86,14 +81,13 @@ void OutputHandler (const char * pString )
 // Returns:     0 success, non zero error.
 //
 //=============================================================================
-int main( int argc, char* argv[] )
-{
+int main(int argc, char *argv[]) {
     //::rDebugSetOutputHandler (OutputHandler);
 
     // Get rid of junk in the frame buffer, 
     // before pddi gets initialised
     sceGsSyncV(0);
-    *GS_PMODE = SCE_GS_SET_PMODE(0,0,0,0,0,0,0);
+    *GS_PMODE = SCE_GS_SET_PMODE(0, 0, 0, 0, 0, 0, 0);
     sceGsResetPath();
     ps2_clearvram();
 
@@ -121,17 +115,17 @@ int main( int argc, char* argv[] )
     // All settings get stored in GameDB.
     //
     CommandLineOptions::InitDefaults();
-    ProcessCommandLineArguments( argc, argv );
+    ProcessCommandLineArguments(argc, argv);
 
     //
     // Have to get FTech setup first so that we can use all the memory services.
     //
     PS2Platform::InitializeFoundation();
 
-    srand (Game::GetRandomSeed ());
+    srand(Game::GetRandomSeed());
 
 #ifndef RAD_RELEASE
-    tName::SetAllocator (GMA_DEBUG);
+    tName::SetAllocator(GMA_DEBUG);
 
     // Now disable the default heap
     //
@@ -143,10 +137,10 @@ int main( int argc, char* argv[] )
     //g_HeapActivityTracker.EnableHeapFrees (GMA_PERSISTENT, false);
 #endif
 
-    HeapMgr()->PushHeap (GMA_PERSISTENT);
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
-	//Process any commandline options from the command.txt file
-	ProcessCommandLineArgumentsFromFile();
+    //Process any commandline options from the command.txt file
+    ProcessCommandLineArgumentsFromFile();
 
     //
     // Instantiate all the singletons before doing anything else.
@@ -156,17 +150,17 @@ int main( int argc, char* argv[] )
     //
     // Construct the platform object.
     //
-    PS2Platform* pPlatform = PS2Platform::CreateInstance();
-    rAssert( pPlatform != NULL );
+    PS2Platform *pPlatform = PS2Platform::CreateInstance();
+    rAssert(pPlatform != NULL);
 
     //
     // Create the game object.
     //
-    Game* pGame = Game::CreateInstance( pPlatform );
-    rAssert( pGame != NULL );
-    
+    Game *pGame = Game::CreateInstance(pPlatform);
+    rAssert(pGame != NULL);
 
-	
+
+
 
 
     //
@@ -174,29 +168,29 @@ int main( int argc, char* argv[] )
     //
     pGame->Initialize();
 
-    HeapMgr()->PopHeap (GMA_PERSISTENT);
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
 
     //
     // Run it!  Control will not return from here until the game is stopped.
     //
     pGame->Run();
-    
+
     //
     // Terminate the game (this frees all resources allocated by the game).
     //
     pGame->Terminate();
-    
+
     //
     // Destroy the game object.
     //
     Game::DestroyInstance();
-    
+
     //
     // Destroy the game and platform (do it in this order in case the game's 
     // destructor references the platform.
     //
     PS2Platform::DestroyInstance();
-    
+
     //
     // Show some debug output
     //
@@ -208,11 +202,11 @@ int main( int argc, char* argv[] )
     // Dump all the singletons.
     //
     DestroySingletons();
-    
+
     //
     // Pass any error codes back to the operating system.
     //
-    return( 0 );
+    return (0);
 }
 
 
@@ -229,67 +223,60 @@ int main( int argc, char* argv[] )
 // Returns:     None.
 //
 //=============================================================================
-void ProcessCommandLineArguments( int argc, char* argv[] )
-{
+void ProcessCommandLineArguments(int argc, char *argv[]) {
 //#ifndef FINAL
 
-    rDebugPrintf( "*************************************************************\n" );
-    rDebugPrintf( "Command Line Args:\n" );
+    rDebugPrintf("*************************************************************\n");
+    rDebugPrintf("Command Line Args:\n");
 
     //
     // Pick out all the command line options and store them in GameDB.
     // Also dump them to the output for handy dandy viewing.
     //
     int i;
-    for( i = 0; i < argc; ++i )
-    {
-        char* argument = argv[i];
-        
-        rDebugPrintf( "arg%d: %s\n", i, argument );
-        
-        CommandLineOptions::HandleOption( argument );
+    for (i = 0; i < argc; ++i) {
+        char *argument = argv[i];
+
+        rDebugPrintf("arg%d: %s\n", i, argument);
+
+        CommandLineOptions::HandleOption(argument);
 
     }
-    if( !CommandLineOptions::Get( CLO_ART_STATS ) )
-    {
-        //CommandLineOptions::HandleOption( "noheaps" );
+    if (!CommandLineOptions::Get(CLO_ART_STATS)) {
+        //CommandLineOptions::HandleOption("noheaps");
     }
 
 
-    rDebugPrintf( "*************************************************************\n" );
+    rDebugPrintf("*************************************************************\n");
 
 //#endif // FINAL
 }
 
 
-
-void ProcessCommandLineArgumentsFromFile()
-{
+void ProcessCommandLineArgumentsFromFile() {
 #ifndef FINAL
 
-      //Chuck: looking for additional command line args being passed in from a file
-     //its for QA testing etc.
+    //Chuck: looking for additional command line args being passed in from a file
+    //its for QA testing etc.
 
-    IRadFile* pfile =NULL;
-    
-    ::radFileOpenSync(&pfile,"command.txt");
+    IRadFile *pfile = NULL;
 
-    if (pfile != NULL)
-    {
-        char commandlinestring [256];
-        commandlinestring[ 0 ] = '\0';
+    ::radFileOpenSync(&pfile, "command.txt");
 
-        pfile->ReadSync(commandlinestring,255);
+    if (pfile != NULL) {
+        char commandlinestring[256];
+        commandlinestring[0] = '\0';
+
+        pfile->ReadSync(commandlinestring, 255);
 
         //QA created the command line file and wants to pass additional arguements
-            
-        char* argument = strtok(commandlinestring," ");
-        while (argument != NULL)
-        {
+
+        char *argument = strtok(commandlinestring, " ");
+        while (argument != NULL) {
             CommandLineOptions::HandleOption(argument);
-            argument=strtok(NULL," ");
+            argument = strtok(NULL, " ");
         }
-		pfile->Release();
+        pfile->Release();
     }
 #endif //FINAL
 } //end of Function

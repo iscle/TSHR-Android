@@ -18,28 +18,27 @@
 
 class Vehicle;
 
-class VehicleEventListener : public EventListener
-{
+class VehicleEventListener : public EventListener {
 public:
-    
+
     VehicleEventListener();
-    VehicleEventListener(Vehicle* owner);
+
+    VehicleEventListener(Vehicle *owner);
 
     virtual ~VehicleEventListener();
 
 
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
 private:
-        
+
     // Declared but not defined to prevent copying and assignment.
-    VehicleEventListener( const VehicleEventListener& );
-    VehicleEventListener& operator=( const VehicleEventListener& );
+    VehicleEventListener(const VehicleEventListener &);
 
-    Vehicle* mVehicleOwner;
+    VehicleEventListener &operator=(const VehicleEventListener &);
+
+    Vehicle *mVehicleOwner;
 };
-
-
 
 
 #endif // VEHICLEEVENTLISTENER_H

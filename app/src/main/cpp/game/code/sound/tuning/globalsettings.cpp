@@ -34,8 +34,8 @@ using namespace Sound;
 //
 // Initialially the list is empty
 //
-globalSettings* radLinkedClass< globalSettings >::s_pLinkedClassHead = NULL;
-globalSettings* radLinkedClass< globalSettings >::s_pLinkedClassTail = NULL;
+globalSettings *radLinkedClass<globalSettings>::s_pLinkedClassHead = NULL;
+globalSettings *radLinkedClass<globalSettings>::s_pLinkedClassTail = NULL;
 
 //******************************************************************************
 //
@@ -54,34 +54,30 @@ globalSettings* radLinkedClass< globalSettings >::s_pLinkedClassTail = NULL;
 //
 //==============================================================================
 globalSettings::globalSettings() :
-    radRefCount( 0 ),
-    m_peeloutMin( 0.0f ),
-    m_peeloutMax( 1.0f ),
-    m_peeloutMaxTrim( 1.0f ),
-    m_roadSkidClip( NULL ),
-    m_dirtSkidClip( NULL ),
-    m_roadFootstepClip( NULL ),
-    m_metalFootstepClip( NULL ),
-    m_woodFootstepClip( NULL ),
-    m_coinPitchCount( 0 ),
-    m_ambienceVolume( 0.0f ),
-    m_musicVolume( 0.0f ),
-    m_sfxVolume( 0.0f ),
-    m_dialogueVolume( 0.0f ),
-    m_carVolume( 0.0f )
-{
+        radRefCount(0),
+        m_peeloutMin(0.0f),
+        m_peeloutMax(1.0f),
+        m_peeloutMaxTrim(1.0f),
+        m_roadSkidClip(NULL),
+        m_dirtSkidClip(NULL),
+        m_roadFootstepClip(NULL),
+        m_metalFootstepClip(NULL),
+        m_woodFootstepClip(NULL),
+        m_coinPitchCount(0),
+        m_ambienceVolume(0.0f),
+        m_musicVolume(0.0f),
+        m_sfxVolume(0.0f),
+        m_dialogueVolume(0.0f),
+        m_carVolume(0.0f) {
     unsigned int i, j;
 
-    for( i = 0; i < NUM_DUCK_SITUATIONS; i++ )
-    {
-        for( j = 0; j < NUM_DUCK_VOLUMES; j++ )
-        {
+    for (i = 0; i < NUM_DUCK_SITUATIONS; i++) {
+        for (j = 0; j < NUM_DUCK_VOLUMES; j++) {
             m_duckVolumes[i].duckVolume[j] = 0.0f;
         }
     }
 
-    for( i = 0; i < s_maxCoinPitches; i++ )
-    {
+    for (i = 0; i < s_maxCoinPitches; i++) {
         m_coinPitches[i] = 1.0f;
     }
 }
@@ -96,28 +92,22 @@ globalSettings::globalSettings() :
 // Return:      N/A.
 //
 //==============================================================================
-globalSettings::~globalSettings()
-{
-    if( m_roadSkidClip != NULL )
-    {
-        delete( GMA_AUDIO_PERSISTENT, m_roadSkidClip );
+globalSettings::~globalSettings() {
+    if (m_roadSkidClip != NULL) {
+        delete (GMA_AUDIO_PERSISTENT, m_roadSkidClip);
     }
-    if( m_dirtSkidClip != NULL )
-    {
-        delete( GMA_AUDIO_PERSISTENT, m_dirtSkidClip );
+    if (m_dirtSkidClip != NULL) {
+        delete (GMA_AUDIO_PERSISTENT, m_dirtSkidClip);
     }
 
-    if( m_roadFootstepClip != NULL )
-    {
-        delete( GMA_AUDIO_PERSISTENT, m_roadFootstepClip );
+    if (m_roadFootstepClip != NULL) {
+        delete (GMA_AUDIO_PERSISTENT, m_roadFootstepClip);
     }
-    if( m_metalFootstepClip != NULL )
-    {
-        delete( GMA_AUDIO_PERSISTENT, m_metalFootstepClip );
+    if (m_metalFootstepClip != NULL) {
+        delete (GMA_AUDIO_PERSISTENT, m_metalFootstepClip);
     }
-    if( m_woodFootstepClip != NULL )
-    {
-        delete( GMA_AUDIO_PERSISTENT, m_woodFootstepClip );
+    if (m_woodFootstepClip != NULL) {
+        delete (GMA_AUDIO_PERSISTENT, m_woodFootstepClip);
     }
 }
 
@@ -131,9 +121,8 @@ globalSettings::~globalSettings()
 // Return:      void 
 //
 //=============================================================================
-void globalSettings::SetMasterVolume( float volume )
-{
-    GetSoundManager()->SetMasterVolume( volume );
+void globalSettings::SetMasterVolume(float volume) {
+    GetSoundManager()->SetMasterVolume(volume);
 }
 
 //=============================================================================
@@ -146,8 +135,7 @@ void globalSettings::SetMasterVolume( float volume )
 // Return:      void 
 //
 //=============================================================================
-void globalSettings::SetSfxVolume( float volume )
-{
+void globalSettings::SetSfxVolume(float volume) {
     m_sfxVolume = volume;
 }
 
@@ -161,8 +149,7 @@ void globalSettings::SetSfxVolume( float volume )
 // Return:      void 
 //
 //=============================================================================
-void globalSettings::SetCarVolume( float volume )
-{
+void globalSettings::SetCarVolume(float volume) {
     m_carVolume = volume;
 }
 
@@ -176,8 +163,7 @@ void globalSettings::SetCarVolume( float volume )
 // Return:      void 
 //
 //=============================================================================
-void globalSettings::SetMusicVolume( float volume )
-{
+void globalSettings::SetMusicVolume(float volume) {
     m_musicVolume = volume;
 }
 
@@ -191,8 +177,7 @@ void globalSettings::SetMusicVolume( float volume )
 // Return:      void 
 //
 //=============================================================================
-void globalSettings::SetDialogueVolume( float volume )
-{
+void globalSettings::SetDialogueVolume(float volume) {
     m_dialogueVolume = volume;
 }
 
@@ -206,8 +191,7 @@ void globalSettings::SetDialogueVolume( float volume )
 // Return:      void 
 //
 //=============================================================================
-void globalSettings::SetAmbienceVolume( float volume )
-{
+void globalSettings::SetAmbienceVolume(float volume) {
     m_ambienceVolume = volume;
 }
 
@@ -221,10 +205,9 @@ void globalSettings::SetAmbienceVolume( float volume )
 // Return:      void 
 //
 //=============================================================================
-void globalSettings::SetPeeloutMin( float min )
-{
-    rAssert( min >= 0.0f );
-    rAssert( min <= 1.0f );
+void globalSettings::SetPeeloutMin(float min) {
+    rAssert(min >= 0.0f);
+    rAssert(min <= 1.0f);
 
     m_peeloutMin = min;
 }
@@ -239,10 +222,9 @@ void globalSettings::SetPeeloutMin( float min )
 // Return:      void 
 //
 //=============================================================================
-void globalSettings::SetPeeloutMax( float max )
-{
-    rAssert( max >= 0.0f );
-    rAssert( max <= 1.0f );
+void globalSettings::SetPeeloutMax(float max) {
+    rAssert(max >= 0.0f);
+    rAssert(max <= 1.0f);
 
     m_peeloutMax = max;
 }
@@ -257,9 +239,8 @@ void globalSettings::SetPeeloutMax( float max )
 // Return:      void 
 //
 //=============================================================================
-void globalSettings::SetPeeloutMaxTrim( float trim )
-{
-    rAssert( trim >= 0.0f );
+void globalSettings::SetPeeloutMaxTrim(float trim) {
+    rAssert(trim >= 0.0f);
 
     m_peeloutMaxTrim = trim;
 }
@@ -274,14 +255,13 @@ void globalSettings::SetPeeloutMaxTrim( float trim )
 // Return:      void 
 //
 //=============================================================================
-void globalSettings::SetSkidRoadClipName( const char* clipName )
-{
-    rAssert( clipName != NULL );
+void globalSettings::SetSkidRoadClipName(const char *clipName) {
+    rAssert(clipName != NULL);
 
-    HeapMgr()->PushHeap( GMA_AUDIO_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_AUDIO_PERSISTENT);
 
-    m_roadSkidClip = new char[strlen(clipName)+1];
-    strcpy( m_roadSkidClip, clipName );
+    m_roadSkidClip = new char[strlen(clipName) + 1];
+    strcpy(m_roadSkidClip, clipName);
 
     HeapMgr()->PopHeap(GMA_AUDIO_PERSISTENT);
 }
@@ -296,14 +276,13 @@ void globalSettings::SetSkidRoadClipName( const char* clipName )
 // Return:      void 
 //
 //=============================================================================
-void globalSettings::SetSkidDirtClipName( const char* clipName )
-{
-    rAssert( clipName != NULL );
+void globalSettings::SetSkidDirtClipName(const char *clipName) {
+    rAssert(clipName != NULL);
 
-    HeapMgr()->PushHeap( GMA_AUDIO_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_AUDIO_PERSISTENT);
 
-    m_dirtSkidClip = new char[strlen(clipName)+1];
-    strcpy( m_dirtSkidClip, clipName );
+    m_dirtSkidClip = new char[strlen(clipName) + 1];
+    strcpy(m_dirtSkidClip, clipName);
 
     HeapMgr()->PopHeap(GMA_AUDIO_PERSISTENT);
 }
@@ -318,14 +297,13 @@ void globalSettings::SetSkidDirtClipName( const char* clipName )
 // Return:      void 
 //
 //=============================================================================
-void globalSettings::SetFootstepRoadClipName( const char* clipName )
-{
-    rAssert( clipName != NULL );
+void globalSettings::SetFootstepRoadClipName(const char *clipName) {
+    rAssert(clipName != NULL);
 
-    HeapMgr()->PushHeap( GMA_AUDIO_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_AUDIO_PERSISTENT);
 
-    m_roadFootstepClip = new char[strlen(clipName)+1];
-    strcpy( m_roadFootstepClip, clipName );
+    m_roadFootstepClip = new char[strlen(clipName) + 1];
+    strcpy(m_roadFootstepClip, clipName);
 
     HeapMgr()->PopHeap(GMA_AUDIO_PERSISTENT);
 }
@@ -340,14 +318,13 @@ void globalSettings::SetFootstepRoadClipName( const char* clipName )
 // Return:      void 
 //
 //=============================================================================
-void globalSettings::SetFootstepMetalClipName( const char* clipName )
-{
-    rAssert( clipName != NULL );
+void globalSettings::SetFootstepMetalClipName(const char *clipName) {
+    rAssert(clipName != NULL);
 
-    HeapMgr()->PushHeap( GMA_AUDIO_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_AUDIO_PERSISTENT);
 
-    m_metalFootstepClip = new char[strlen(clipName)+1];
-    strcpy( m_metalFootstepClip, clipName );
+    m_metalFootstepClip = new char[strlen(clipName) + 1];
+    strcpy(m_metalFootstepClip, clipName);
 
     HeapMgr()->PopHeap(GMA_AUDIO_PERSISTENT);
 }
@@ -362,14 +339,13 @@ void globalSettings::SetFootstepMetalClipName( const char* clipName )
 // Return:      void 
 //
 //=============================================================================
-void globalSettings::SetFootstepWoodClipName( const char* clipName )
-{
-    rAssert( clipName != NULL );
+void globalSettings::SetFootstepWoodClipName(const char *clipName) {
+    rAssert(clipName != NULL);
 
-    HeapMgr()->PushHeap( GMA_AUDIO_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_AUDIO_PERSISTENT);
 
-    m_woodFootstepClip = new char[strlen(clipName)+1];
-    strcpy( m_woodFootstepClip, clipName );
+    m_woodFootstepClip = new char[strlen(clipName) + 1];
+    strcpy(m_woodFootstepClip, clipName);
 
     HeapMgr()->PopHeap(GMA_AUDIO_PERSISTENT);
 }
@@ -385,15 +361,11 @@ void globalSettings::SetFootstepWoodClipName( const char* clipName )
 // Return:      void 
 //
 //=============================================================================
-void globalSettings::SetCoinPitch( float pitch )
-{
-    if( m_coinPitchCount < s_maxCoinPitches )
-    {
+void globalSettings::SetCoinPitch(float pitch) {
+    if (m_coinPitchCount < s_maxCoinPitches) {
         m_coinPitches[m_coinPitchCount++] = pitch;
-    }
-    else
-    {
-        rDebugString( "Too many coin pitches specified in script\n" );
+    } else {
+        rDebugString("Too many coin pitches specified in script\n");
     }
 }
 
@@ -407,11 +379,10 @@ void globalSettings::SetCoinPitch( float pitch )
 // Return:      the pitch 
 //
 //=============================================================================
-float globalSettings::GetCoinPitch( unsigned int index )
-{
-    rAssert( index < s_maxCoinPitches );
+float globalSettings::GetCoinPitch(unsigned int index) {
+    rAssert(index < s_maxCoinPitches);
 
-    return( m_coinPitches[index] );
+    return (m_coinPitches[index]);
 }
 
 //******************************************************************************
@@ -433,8 +404,8 @@ float globalSettings::GetCoinPitch( unsigned int index )
 // Return:      void 
 //
 //=============================================================================
-void globalSettings::setDuckVolume( DuckSituations situation, DuckVolumes volumeToSet, float volume )
-{
+void
+globalSettings::setDuckVolume(DuckSituations situation, DuckVolumes volumeToSet, float volume) {
     m_duckVolumes[situation].duckVolume[volumeToSet] = volume;
 }
 
@@ -455,13 +426,12 @@ void globalSettings::setDuckVolume( DuckSituations situation, DuckVolumes volume
 //
 //==============================================================================
 void GlobalSettingsObjCreate
-(
-    IGlobalSettings** ppParametersObj,
-    radMemoryAllocator allocator
-)
-{
-    rAssert( ppParametersObj != NULL );
-    (*ppParametersObj) = new ( allocator ) globalSettings( );
-    (*ppParametersObj)->AddRef( );
+        (
+                IGlobalSettings **ppParametersObj,
+                radMemoryAllocator allocator
+        ) {
+    rAssert(ppParametersObj != NULL);
+    (*ppParametersObj) = new(allocator) globalSettings();
+    (*ppParametersObj)->AddRef();
 }
 

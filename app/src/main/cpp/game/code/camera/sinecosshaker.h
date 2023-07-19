@@ -19,6 +19,7 @@
 #ifndef WORLD_BUILDER
 //This is the non-tool includes
 #include <camera/icamerashaker.h>
+
 #else
 #include "icamerashaker.h"
 #endif
@@ -34,33 +35,42 @@ class tPointCamera;
 //
 //=============================================================================
 
-class SineCosShaker : public ICameraShaker
-{
+class SineCosShaker : public ICameraShaker {
 public:
     SineCosShaker();
+
     virtual ~SineCosShaker();
 
     void Reset();
-    void ShakeCamera( rmt::Vector* pos, rmt::Vector* targ, unsigned int milliseconds );
-    void SetSpeed( float speed );
-    void SetTime( unsigned int milliseconds );
-    void SetCamera( tPointCamera* camera );
-    void SetCameraRelative( bool cameraRelative );
-    void SetDirection( const rmt::Vector& dir );
 
-    void SetLooping( bool loop );
+    void ShakeCamera(rmt::Vector *pos, rmt::Vector *targ, unsigned int milliseconds);
+
+    void SetSpeed(float speed);
+
+    void SetTime(unsigned int milliseconds);
+
+    void SetCamera(tPointCamera *camera);
+
+    void SetCameraRelative(bool cameraRelative);
+
+    void SetDirection(const rmt::Vector &dir);
+
+    void SetLooping(bool loop);
+
     bool DoneShaking();
-    
-    const char* const GetName();
+
+    const char *const GetName();
 
     void RegisterDebugInfo();
+
     void UnregisterDebugInfo();
 
-    void SetShakeData( const ShakeEventData* data );
+    void SetShakeData(const ShakeEventData *data);
 
-    void SetAmpYIncrement( float inc );
-    void SetAmpMaxScale( float max );
-    
+    void SetAmpYIncrement(float inc);
+
+    void SetAmpMaxScale(float max);
+
 
 private:
 
@@ -69,9 +79,9 @@ private:
     float mSpeed;
 
     //This camera is screen-relative
-    tPointCamera* mCamera;
+    tPointCamera *mCamera;
     bool mIsCameraRelative;
-    
+
     float mAmpYIncrement;   //rate of amplitude
     float mAmplitudeY;      //aplitude stored
 
@@ -83,10 +93,10 @@ private:
     rmt::Vector mDirection;
 
 
-
     //Prevent wasteful constructor creation.
-    SineCosShaker( const SineCosShaker& sinecosshaker );
-    SineCosShaker& operator=( const SineCosShaker& sinecosshaker );
+    SineCosShaker(const SineCosShaker &sinecosshaker);
+
+    SineCosShaker &operator=(const SineCosShaker &sinecosshaker);
 };
 
 
@@ -106,8 +116,7 @@ private:
 // Return:      void 
 //
 //=============================================================================
-inline void SineCosShaker::Reset()
-{
+inline void SineCosShaker::Reset() {
     //mTime = 0;
     mCurrentTime = 0;
     mLooping = false;
@@ -119,13 +128,12 @@ inline void SineCosShaker::Reset()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float speed )
+// Parameters:  (float speed)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SineCosShaker::SetSpeed( float speed )
-{
+inline void SineCosShaker::SetSpeed(float speed) {
     mSpeed = speed;
 }
 
@@ -134,13 +142,12 @@ inline void SineCosShaker::SetSpeed( float speed )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float milliseconds )
+// Parameters:  (float milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SineCosShaker::SetTime( unsigned int milliseconds )
-{
+inline void SineCosShaker::SetTime(unsigned int milliseconds) {
     mTime = milliseconds;
 }
 
@@ -149,13 +156,12 @@ inline void SineCosShaker::SetTime( unsigned int milliseconds )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool cameraRelative )
+// Parameters:  (bool cameraRelative)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SineCosShaker::SetCameraRelative( bool cameraRelative )
-{
+inline void SineCosShaker::SetCameraRelative(bool cameraRelative) {
     mIsCameraRelative = cameraRelative;
 }
 
@@ -164,13 +170,12 @@ inline void SineCosShaker::SetCameraRelative( bool cameraRelative )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const rmt::Vector& dir )
+// Parameters:  (const rmt::Vector& dir)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SineCosShaker::SetDirection( const rmt::Vector& dir )
-{
+inline void SineCosShaker::SetDirection(const rmt::Vector &dir) {
     mDirection = dir;
 }
 
@@ -179,13 +184,12 @@ inline void SineCosShaker::SetDirection( const rmt::Vector& dir )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool loop )
+// Parameters:  (bool loop)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SineCosShaker::SetLooping( bool loop )
-{
+inline void SineCosShaker::SetLooping(bool loop) {
     mLooping = loop;
 }
 
@@ -199,8 +203,7 @@ inline void SineCosShaker::SetLooping( bool loop )
 // Return:      bool 
 //
 //=============================================================================
-inline bool SineCosShaker::DoneShaking()
-{
+inline bool SineCosShaker::DoneShaking() {
     return (mCurrentTime >= mTime);
 }
 
@@ -214,8 +217,7 @@ inline bool SineCosShaker::DoneShaking()
 // Return:      const 
 //
 //=============================================================================
-inline const char* const SineCosShaker::GetName()
-{
+inline const char *const SineCosShaker::GetName() {
     return "SineCos Shaker";
 }
 
@@ -224,13 +226,12 @@ inline const char* const SineCosShaker::GetName()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float inc )
+// Parameters:  (float inc)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SineCosShaker::SetAmpYIncrement( float inc )
-{
+inline void SineCosShaker::SetAmpYIncrement(float inc) {
     mAmpYIncrement = inc;
 }
 
@@ -239,13 +240,12 @@ inline void SineCosShaker::SetAmpYIncrement( float inc )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float max )
+// Parameters:  (float max)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SineCosShaker::SetAmpMaxScale( float max )
-{
+inline void SineCosShaker::SetAmpMaxScale(float max) {
     mAmpScaleMax = max;
 }
 

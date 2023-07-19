@@ -149,14 +149,15 @@
 //
 //******************************************************************************
 
-IRadCementLibrary* PS2Platform::s_MainCement = NULL;
+IRadCementLibrary *PS2Platform::s_MainCement = NULL;
 
 // Static pointer to instance of singleton.
-PS2Platform* PS2Platform::spInstance = NULL;
+PS2Platform *PS2Platform::spInstance = NULL;
 
 
 //The Adlib font.  <sigh>
-unsigned char gFont[] = 
+unsigned char gFont[] =
+
 #include <font/defaultfont.h>
 
 
@@ -180,12 +181,11 @@ static const int WindowSizeX = 640;
 //
 static const int WindowBPP = 32;
 
-void LoadMemP3DFile( unsigned char* buffer, unsigned int size, tEntityStore* store )
-{
-    tFileMem* file = new tFileMem(buffer,size);
+void LoadMemP3DFile(unsigned char *buffer, unsigned int size, tEntityStore *store) {
+    tFileMem *file = new tFileMem(buffer, size);
     file->AddRef();
     file->SetFilename("memfile.p3d");
-    p3d::loadManager->GetP3DHandler()->Load( file, p3d::inventory );
+    p3d::loadManager->GetP3DHandler()->Load(file, p3d::inventory);
     file->Release();
 }
 
@@ -210,15 +210,14 @@ extern bool gIgnoreLastFrameSyncCheck;
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-PS2Platform* PS2Platform::CreateInstance()
-{
-MEMTRACK_PUSH_GROUP( "PS2Platform" );
-    rAssert( spInstance == NULL );
+PS2Platform *PS2Platform::CreateInstance() {
+    MEMTRACK_PUSH_GROUP("PS2Platform");
+    rAssert(spInstance == NULL);
 
     spInstance = new(GMA_PERSISTENT) PS2Platform;
-    rAssert( spInstance );
-MEMTRACK_POP_GROUP("PS2Platform");
-    
+    rAssert(spInstance);
+    MEMTRACK_POP_GROUP("PS2Platform");
+
     return spInstance;
 }
 
@@ -235,10 +234,9 @@ MEMTRACK_POP_GROUP("PS2Platform");
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-PS2Platform* PS2Platform::GetInstance()
-{
-    rAssert( spInstance != NULL );
-    
+PS2Platform *PS2Platform::GetInstance() {
+    rAssert(spInstance != NULL);
+
     return spInstance;
 }
 
@@ -254,15 +252,14 @@ PS2Platform* PS2Platform::GetInstance()
 // Return:      None.
 //
 //==============================================================================
-void PS2Platform::DestroyInstance()
-{
-    rAssert( spInstance != NULL );
+void PS2Platform::DestroyInstance() {
+    rAssert(spInstance != NULL);
 
-    delete( GMA_PERSISTENT, spInstance );
+    delete (GMA_PERSISTENT, spInstance);
     spInstance = NULL;
 }
 
- 
+
 //==============================================================================
 // PS2Platform::InitializeFoundation
 //==============================================================================
@@ -276,8 +273,7 @@ void PS2Platform::DestroyInstance()
 //              Consult their documentation before changing.
 //
 //==============================================================================
-void PS2Platform::InitializeFoundation() 
-{
+void PS2Platform::InitializeFoundation() {
     const char IRX_PATH[] = "IRX\\";
     const char SONY_LIB_NAME[] = "IOPRP254.IMG";
 
@@ -285,32 +281,31 @@ void PS2Platform::InitializeFoundation()
     // Initialize the memory heaps
     //
     PS2Platform::InitializeMemory();
-    
+
 #ifndef FINAL
     //
     // Register an out-of-memory display handler in case something goes bad
     // while allocating the heaps
     //
-    ::radMemorySetOutOfMemoryCallback( PrintOutOfMemoryMessage, NULL );
+    ::radMemorySetOutOfMemoryCallback(PrintOutOfMemoryMessage, NULL);
 #endif
 
     //
     // Initialize memory monitor by JamesCo. TM.
     //
-    if( CommandLineOptions::Get( CLO_MEMORY_MONITOR) )
-    {
+    if (CommandLineOptions::Get(CLO_MEMORY_MONITOR)) {
         const int KB = 1024;
-        ::radMemoryMonitorInitialize( 100 * KB, GMA_DEBUG );
+        ::radMemoryMonitorInitialize(100 * KB, GMA_DEBUG);
     }
-    
+
     // Setup the memory heaps
     //
-    HeapMgr()->PrepareHeapsStartup ();
+    HeapMgr()->PrepareHeapsStartup();
 
 
     // Seed the heap stack with this
     //
-    HeapMgr()->PushHeap (GMA_PERSISTENT);
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
     //
     // Initilalize the platform system
@@ -322,69 +317,62 @@ void PS2Platform::InitializeFoundation()
     radPlatformGameMediaType mediaType = GameMediaCD;
 #endif // DVD_MEDIA
 
-    if( CommandLineOptions::Get( CLO_FIREWIRE ) )
-    {
-        ::radPlatformInitialize( IRX_PATH, 
-                                 IOPMediaCDVD, 
-                                 mediaType,
-                                 NULL,
-                                 GMA_PERSISTENT );
+    if (CommandLineOptions::Get(CLO_FIREWIRE)) {
+        ::radPlatformInitialize(IRX_PATH,
+                                IOPMediaCDVD,
+                                mediaType,
+                                NULL,
+                                GMA_PERSISTENT);
+    } else if (CommandLineOptions::Get(CLO_CD_FILES_ONLY)) {
+        ::radPlatformInitialize(IRX_PATH,
+                                IOPMediaCDVD,
+                                mediaType,
+                                SONY_LIB_NAME,
+                                GMA_PERSISTENT);
+    } else {
+        ::radPlatformInitialize(IRX_PATH,
+                                IOPMediaHost,
+                                mediaType,
+                                SONY_LIB_NAME,
+                                GMA_PERSISTENT);
     }
-    else if( CommandLineOptions::Get( CLO_CD_FILES_ONLY ) )
-    {
-        ::radPlatformInitialize( IRX_PATH, 
-                                 IOPMediaCDVD, 
-                                 mediaType,
-                                 SONY_LIB_NAME,
-                                 GMA_PERSISTENT );
-    }
-    else
-    {
-        ::radPlatformInitialize( IRX_PATH, 
-                                 IOPMediaHost, 
-                                 mediaType,
-                                 SONY_LIB_NAME,
-                                 GMA_PERSISTENT );
-    }
-    
 
 
 #ifdef IOP_MEMORY_TEST
 
     IRadTextDisplay * pDisp;
 
-    radTextDisplayGet( & pDisp, RADMEMORY_ALLOC_DEFAULT );
+    radTextDisplayGet(& pDisp, RADMEMORY_ALLOC_DEFAULT);
     
     char buf[ 256 ];
     
-    unsigned int maxFreeMemSize = sceSifQueryMaxFreeMemSize( );
-    unsigned int totalFreeMemSize = sceSifQueryTotalFreeMemSize( );
-    unsigned int memSize = sceSifQueryMemSize( );
+    unsigned int maxFreeMemSize = sceSifQueryMaxFreeMemSize();
+    unsigned int totalFreeMemSize = sceSifQueryTotalFreeMemSize();
+    unsigned int memSize = sceSifQueryMemSize();
     
     sprintf(
         buf,
         "\nMemSize: [0x%x]\nTotalFreeMemSize: [0x%x]\nMaxFreeMemSize:[0x%x]\n",
         memSize,
         totalFreeMemSize,
-        maxFreeMemSize );
+        maxFreeMemSize);
     
-    pDisp->TextOut( buf );
-    pDisp->SwapBuffers( );
+    pDisp->TextOut(buf);
+    pDisp->SwapBuffers();
     
-    while( 1 ) { }
+    while(1) { }
     
-    pDisp->Release( );
-#endif    
-   
-    
-    
+    pDisp->Release();
+#endif
+
+
+
     // Eat up 6 mb if "TOOL" in command line for testing IOP crashes.
-    
-    if ( CommandLineOptions::Get( CLO_PS2_TOOL ) )
-    {
-    
+
+    if (CommandLineOptions::Get(CLO_PS2_TOOL)) {
+
         // Results from above:
-        
+
         // Tool:
         //     MemSize:          [0x7fff00]
         //     TotalFreeMemSize: [0x798400]
@@ -395,26 +383,25 @@ void PS2Platform::InitializeFoundation()
         //     TotalFreeMemSize: [0x1a3900]
         //     MaxFreeMemSize:   [0x1a3900] 
 
-     
+
         const unsigned int toolMaxFreeMemSize = 0x798200;
         const unsigned int consumerMaxFreeMemSize = 0x1a3900;
         const unsigned int difMaxFreeMemSize = toolMaxFreeMemSize - consumerMaxFreeMemSize;
- 
+
         const int allocChunkSize = 4096 * 16;
-        
-        rReleasePrintf( "Consuming [0x%x] bytes on tool:\n", difMaxFreeMemSize );
-        
+
+        rReleasePrintf("Consuming [0x%x] bytes on tool:\n", difMaxFreeMemSize);
+
         unsigned int maxFreeMemSize;
-        
-        do
-        {
-            void * pMem = sceSifAllocIopHeap( allocChunkSize );
-            rReleaseAssertMsg( pMem, "Out of memory consuming extra tool memory" );            
-            maxFreeMemSize = sceSifQueryMaxFreeMemSize( );            
-            rReleasePrintf( "BURNING IOP: MaxFreeMemSize: [0x%x]\n", maxFreeMemSize );
-        } while( maxFreeMemSize > consumerMaxFreeMemSize );
+
+        do {
+            void *pMem = sceSifAllocIopHeap(allocChunkSize);
+            rReleaseAssertMsg(pMem, "Out of memory consuming extra tool memory");
+            maxFreeMemSize = sceSifQueryMaxFreeMemSize();
+            rReleasePrintf("BURNING IOP: MaxFreeMemSize: [0x%x]\n", maxFreeMemSize);
+        } while (maxFreeMemSize > consumerMaxFreeMemSize);
     }
-    
+
     //
     // Initialize the timer system
     //
@@ -423,68 +410,59 @@ void PS2Platform::InitializeFoundation()
     //
     // Initialize the debug communication system.
     //
-    if( CommandLineOptions::Get( CLO_FIREWIRE ) )
-    {
-        ::radDbgComTargetInitialize( FireWire, 
-                                     radDbgComDefaultPort, 
-                                     (void*)"",
-                                     GMA_DEBUG ); 
+    if (CommandLineOptions::Get(CLO_FIREWIRE)) {
+        ::radDbgComTargetInitialize(FireWire,
+                                    radDbgComDefaultPort,
+                                    (void *) "",
+                                    GMA_DEBUG);
+    } else {
+        ::radDbgComTargetInitialize(Deci,
+                                    radDbgComDefaultPort, // Default
+                                    NULL,                 // Default
+                                    GMA_DEBUG);
     }
-    else
-    {
-        ::radDbgComTargetInitialize( Deci,
-                                     radDbgComDefaultPort, // Default
-                                     NULL,                 // Default
-                                     GMA_DEBUG );
-    }
-    
+
     //
     // Initialize the Watcher.
     //
 #ifdef DEBUGWATCH
-        ::radDbgWatchInitialize( "SRR2",
-                                 16384 * 32, // Default
-                                 GMA_DEBUG );
+    ::radDbgWatchInitialize("SRR2",
+                             16384 * 32, // Default
+                             GMA_DEBUG);
 #endif // DEBUGWATCH
 
     //
     // Initialize the file system.
     //
-    ::radFileInitialize( 50, // Default
-                         32, // Default
-                         GMA_PERSISTENT );
+    ::radFileInitialize(50, // Default
+                        32, // Default
+                        GMA_PERSISTENT);
 
-	::radLoadInitialize( );
+    ::radLoadInitialize();
 
-    if( CommandLineOptions::Get( CLO_FIREWIRE ) )
-    {
-        ::radSetDefaultDrive( "REMOTEDRIVE:" );
-    }
-    else if( CommandLineOptions::Get( CLO_CD_FILES_ONLY ) )
-    {
-        ::radSetDefaultDrive( "CDROM:" );
-    }
-    else
-    {
-        ::radSetDefaultDrive( "HOSTDRIVE:" );
+    if (CommandLineOptions::Get(CLO_FIREWIRE)) {
+        ::radSetDefaultDrive("REMOTEDRIVE:");
+    } else if (CommandLineOptions::Get(CLO_CD_FILES_ONLY)) {
+        ::radSetDefaultDrive("CDROM:");
+    } else {
+        ::radSetDefaultDrive("HOSTDRIVE:");
     }
 
-    ::radDriveMount( 0, GMA_PERSISTENT );
+    ::radDriveMount(0, GMA_PERSISTENT);
 
     //
     // On PS2, synchronously load the art.rcf file. This is needed before
     // anything else can happen.
     //
-    if( CommandLineOptions::Get( CLO_CD_FILES_ONLY ) )
-    {
-        radFileRegisterCementLibrarySync( & s_MainCement, "art.rcf" );
+    if (CommandLineOptions::Get(CLO_CD_FILES_ONLY)) {
+        radFileRegisterCementLibrarySync(&s_MainCement, "art.rcf");
     }
 
 
     //
     // Initialize the new movie player
     //
-    ::radMovieInitialize2( GMA_PERSISTENT );
+    ::radMovieInitialize2(GMA_PERSISTENT);
 
     //
     // Init VU0 for optimizations.
@@ -496,30 +474,28 @@ void PS2Platform::InitializeFoundation()
     // Set up exception handlers, so that when the game crashes we can
     // see something.
     //
-    if( CommandLineOptions::Get( CLO_CD_FILES_ONLY ) ||
-        CommandLineOptions::Get( CLO_FIREWIRE ) )
-    {
-        SetDebugHandler( 1, handleTLBChange );
-        SetDebugHandler( 2, handleTLBLoadMismatch );
-        SetDebugHandler( 3, handleTLBStoreMismatch );
-        SetDebugHandler( 4, handleAddressLoadError );
-        SetDebugHandler( 5, handleAddressStoreError );
-        SetDebugHandler( 6, handleBusFetchError );
-        SetDebugHandler( 7, handleBusDataError );
+    if (CommandLineOptions::Get(CLO_CD_FILES_ONLY) ||
+        CommandLineOptions::Get(CLO_FIREWIRE)) {
+        SetDebugHandler(1, handleTLBChange);
+        SetDebugHandler(2, handleTLBLoadMismatch);
+        SetDebugHandler(3, handleTLBStoreMismatch);
+        SetDebugHandler(4, handleAddressLoadError);
+        SetDebugHandler(5, handleAddressStoreError);
+        SetDebugHandler(6, handleBusFetchError);
+        SetDebugHandler(7, handleBusDataError);
 
         // #8 is "system call exception", #9 is "breakpoint exception".
         // I don't think we need those.
 
-        SetDebugHandler( 10, handleReservedInstruction );
-        SetDebugHandler( 11, handleCoprocessor );
-        SetDebugHandler( 12, handleOverflow );
-        SetDebugHandler( 13, handleTrap );
+        SetDebugHandler(10, handleReservedInstruction);
+        SetDebugHandler(11, handleCoprocessor);
+        SetDebugHandler(12, handleOverflow);
+        SetDebugHandler(13, handleTrap);
     }
 #endif
 
-    HeapMgr()->PopHeap (GMA_PERSISTENT);
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
-
 
 
 //==============================================================================
@@ -533,13 +509,11 @@ void PS2Platform::InitializeFoundation()
 // Return:      
 //
 //==============================================================================
-void PS2Platform::InitializeMemory()
-{
+void PS2Platform::InitializeMemory() {
     //
     // Only do this once!
     //
-    if( gMemorySystemInitialized == true )
-    {
+    if (gMemorySystemInitialized == true) {
         return;
     }
 
@@ -557,8 +531,6 @@ void PS2Platform::InitializeMemory()
 }
 
 
-
-
 //==============================================================================
 // PS2Platform::InitializePlatform
 //==============================================================================
@@ -569,20 +541,18 @@ void PS2Platform::InitializeMemory()
 // Return:      None.
 //
 //==============================================================================
-void PS2Platform::InitializePlatform() 
-{
-    HeapMgr()->PushHeap (GMA_PERSISTENT);
+void PS2Platform::InitializePlatform() {
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
-    if( CommandLineOptions::Get( CLO_SN_PROFILER ) )
-    {
+    if (CommandLineOptions::Get(CLO_SN_PROFILER)) {
         this->EnableSnProfiler();
     }
-    
+
     InitializePure3D();
 
     // Add anything here that needs to be before the
     // drive is opened.
-    DisplaySplashScreen( Error ); // blank screen
+    DisplaySplashScreen(Error); // blank screen
 
     //
     // This is SLOW so do it last.
@@ -594,7 +564,7 @@ void PS2Platform::InitializePlatform()
     //
     GetInputManager()->Init();
 
-    HeapMgr()->PopHeap (GMA_PERSISTENT);
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
 
 
@@ -608,14 +578,12 @@ void PS2Platform::InitializePlatform()
 // Return:      None.
 //
 //==============================================================================
-void PS2Platform::ShutdownPlatform()
-{
+void PS2Platform::ShutdownPlatform() {
     ShutdownPure3D();
     ShutdownFoundation();
 }
 
-void PS2Platform::ResetMachine()
-{
+void PS2Platform::ResetMachine() {
     scePadEnd();
     sceSifExitCmd();
 
@@ -631,24 +599,21 @@ void PS2Platform::ResetMachine()
 
     char imageName[64];
 
-    if( CommandLineOptions::Get( CLO_CD_FILES_ONLY ) )
-    {
+    if (CommandLineOptions::Get(CLO_CD_FILES_ONLY)) {
 #ifndef RAD_E3
-        sprintf( imageName, "cdrom0:\\slps123.45" );
+        sprintf(imageName, "cdrom0:\\slps123.45");
 #else
-        sprintf( imageName, "cdrom0:\\slps123.45" );
+        sprintf(imageName, "cdrom0:\\slps123.45");
 #endif
-        LoadExecPS2( imageName, 0, NULL );
-    }
-    else
-    {
-        char *args[] = { "hostfiles" };
+        LoadExecPS2(imageName, 0, NULL);
+    } else {
+        char *args[] = {"hostfiles"};
 #ifndef RAD_E3
-        sprintf( imageName, "hostdrive:\\srr2p%c.elf", build );
+        sprintf(imageName, "hostdrive:\\srr2p%c.elf", build);
 #else
-        sprintf( imageName, "hostdrive:\\srr2e3p%c.elf", build );
+        sprintf(imageName, "hostdrive:\\srr2e3p%c.elf", build);
 #endif
-        LoadExecPS2( imageName, 1, args );
+        LoadExecPS2(imageName, 1, args);
     }
 }
 
@@ -662,14 +627,13 @@ void PS2Platform::ResetMachine()
 // Return:      void 
 //
 //=============================================================================
-void PS2Platform::LaunchDashboard()
-{
+void PS2Platform::LaunchDashboard() {
     GetLoadingManager()->CancelPendingRequests();
 
     //TODO: Make sure sounds shut down too.
-    GetSoundManager()->SetMasterVolume( 0.0f );
+    GetSoundManager()->SetMasterVolume(0.0f);
 
-    DisplaySplashScreen( FadeToBlack );
+    DisplaySplashScreen(FadeToBlack);
 
     GetPresentationManager()->StopAll();
 
@@ -678,7 +642,7 @@ void PS2Platform::LaunchDashboard()
 
     p3d::loadManager->CancelAll();
 
-    SoundManager::DestroyInstance();    
+    SoundManager::DestroyInstance();
 
     ShutdownPlatform();
     ResetMachine();
@@ -690,26 +654,25 @@ void PS2Platform::LaunchDashboard()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( SplashScreen screenID, 
+// Parameters:  (SplashScreen screenID,
 //                const char* overlayText = NULL, 
 //                float fontScale = 1.0f, 
 //                float textPosX = 0.0f, 
 //                float textPosY = 0.0f, 
 //                tColour textColour,
-//                int fadeFrames = 3 )
+//                int fadeFrames = 3)
 //
 // Return:      void 
 //
 //=============================================================================
-void PS2Platform::DisplaySplashScreen( SplashScreen screenID, 
-                                       const char* overlayText, 
-                                       float fontScale, 
-                                       float textPosX, 
-                                       float textPosY,
-                                       tColour textColour,
-                                       int fadeFrames )
-{
-    DisplaySplashScreen( NULL, overlayText, fontScale, textPosX, textPosY, textColour, fadeFrames );
+void PS2Platform::DisplaySplashScreen(SplashScreen screenID,
+                                      const char *overlayText,
+                                      float fontScale,
+                                      float textPosX,
+                                      float textPosY,
+                                      tColour textColour,
+                                      int fadeFrames) {
+    DisplaySplashScreen(NULL, overlayText, fontScale, textPosX, textPosY, textColour, fadeFrames);
 }
 
 //=============================================================================
@@ -717,32 +680,31 @@ void PS2Platform::DisplaySplashScreen( SplashScreen screenID,
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const char* textureName, 
+// Parameters:  (const char* textureName,
 //                const char* overlayText = NULL, 
 //                float fontScale = 1.0f, 
 //                float textPosX = 0.0f, 
 //                float textPosY = 0.0f, 
 //                tColour textColour,
-//                int fadeFrames = 3 )
+//                int fadeFrames = 3)
 //
 // Return:      void 
 //
 //=============================================================================
-void PS2Platform::DisplaySplashScreen( const char* textureName,
-                                       const char* overlayText, 
-                                       float fontScale, 
-                                       float textPosX, 
-                                       float textPosY, 
-                                       tColour textColour,
-                                       int fadeFrames )
-{
+void PS2Platform::DisplaySplashScreen(const char *textureName,
+                                      const char *overlayText,
+                                      float fontScale,
+                                      float textPosX,
+                                      float textPosY,
+                                      tColour textColour,
+                                      int fadeFrames) {
     p3d::pddi->DrawSync();
 
-    HeapMgr()->PushHeap( GMA_TEMP );
+    HeapMgr()->PushHeap(GMA_TEMP);
     p3d::inventory->PushSection();
-    p3d::inventory->AddSection( PS2_SECTION );
-    p3d::inventory->SelectSection( PS2_SECTION );
-    
+    p3d::inventory->AddSection(PS2_SECTION);
+    p3d::inventory->SelectSection(PS2_SECTION);
+
     P3D_UNICODE unicodeText[256];
 
     // Save the current Projection mode so I can restore it later
@@ -754,22 +716,22 @@ void PS2Platform::DisplaySplashScreen( const char* textureName,
 
 
     //CREATE THE FONT
-    tTextureFont* thisFont = NULL;
+    tTextureFont *thisFont = NULL;
 
     // Convert memory buffer into a texturefont.
     //
     //p3d::load(gFont, DEFAULTFONT_SIZE, GMA_TEMP);
-    LoadMemP3DFile( gFont, DEFAULTFONT_SIZE, p3d::inventory );
+    LoadMemP3DFile(gFont, DEFAULTFONT_SIZE, p3d::inventory);
 
     thisFont = p3d::find<tTextureFont>("adlibn_20");
-    rAssert( thisFont );
+    rAssert(thisFont);
 
     thisFont->AddRef();
-    tShader* fontShader = thisFont->GetShader();
-    //fontShader->SetInt( )
+    tShader *fontShader = thisFont->GetShader();
+    //fontShader->SetInt()
 
 
-    p3d::AsciiToUnicode( overlayText, unicodeText, 256 );
+    p3d::AsciiToUnicode(overlayText, unicodeText, 256);
 
     // Make the missing letter into somthing I can see
     //
@@ -777,42 +739,37 @@ void PS2Platform::DisplaySplashScreen( const char* textureName,
 
     int a = 0;
 
-    do
-    {
-    	p3d::pddi->SetColourWrite(true, true, true, true);
-        p3d::pddi->SetClearColour( pddiColour(0,0,0) );
+    do {
+        p3d::pddi->SetColourWrite(true, true, true, true);
+        p3d::pddi->SetClearColour(pddiColour(0, 0, 0));
         p3d::pddi->BeginFrame();
         p3d::pddi->Clear(PDDI_BUFFER_COLOUR);
 
         //This is for fading in the font and shaders.
         int bright = 255;
         if (a < fadeFrames) bright = (a * 255) / fadeFrames;
-        if ( bright > 255 ) bright = 255;
+        if (bright > 255) bright = 255;
         tColour c(bright, bright, bright, 255);
 
         //Display font
-        if (overlayText != NULL)
-        {
+        if (overlayText != NULL) {
             tColour colour = textColour;
-            colour.SetAlpha( bright );
+            colour.SetAlpha(bright);
 
-            thisFont->SetColour( colour );
+            thisFont->SetColour(colour);
 
             p3d::pddi->SetProjectionMode(PDDI_PROJECTION_ORTHOGRAPHIC);
             p3d::stack->Push();
             p3d::stack->LoadIdentity();
 
-            p3d::stack->Translate( textPosX, textPosY, 1.5f);
+            p3d::stack->Translate(textPosX, textPosY, 1.5f);
             float scaleSize = 1.0f / 480.0f;  //This is likely good for 528 also.
-            p3d::stack->Scale(scaleSize * fontScale, scaleSize* fontScale , 1.0f);
+            p3d::stack->Scale(scaleSize * fontScale, scaleSize * fontScale, 1.0f);
 
-            if ( textPosX != 0.0f || textPosY != 0.0f )
-            {
-                thisFont->DisplayText( unicodeText );
-            }
-            else
-            {
-                thisFont->DisplayText( unicodeText, 3 );
+            if (textPosX != 0.0f || textPosY != 0.0f) {
+                thisFont->DisplayText(unicodeText);
+            } else {
+                thisFont->DisplayText(unicodeText, 3);
             }
 
             p3d::stack->Pop();
@@ -871,49 +828,45 @@ void PS2Platform::DisplaySplashScreen( const char* textureName,
 //              Consult their documentation before changing.
 //
 //==============================================================================
-void PS2Platform::InitializeFoundationDrive() 
-{
+void PS2Platform::InitializeFoundationDrive() {
     //
     // No remote drives if we're only allowing files from the CD.
     //
 
-//    if( CommandLineOptions::Get( CLO_CD_FILES_ONLY ) )
+//    if(CommandLineOptions::Get(CLO_CD_FILES_ONLY))
 //    {
-//        ::radDriveSetShadow( false );
+//        ::radDriveSetShadow(false);
 //    }
 
     //
     // Get the CDROM drive and hold it open for the life of the game.
     // This is a costly operation so we only want to do it once.
     //
-    if( CommandLineOptions::Get( CLO_CD_FILES_ONLY ) )
-    {
-        ::radDriveOpen( &mpIRadDrive, 
-                        "CDROM:",
-                        NormalPriority, // Default
-                        GMA_PERSISTENT );
+    if (CommandLineOptions::Get(CLO_CD_FILES_ONLY)) {
+        ::radDriveOpen(&mpIRadDrive,
+                       "CDROM:",
+                       NormalPriority, // Default
+                       GMA_PERSISTENT);
 
         //Only care about CD drives.
-        mpIRadDrive->RegisterErrorHandler( this, NULL );
-    }
-    else
-    {
-        ::radDriveOpen( &mpIRadDrive, 
-                        "HOSTDRIVE:",
-                        NormalPriority, // Default
-                        GMA_PERSISTENT );
+        mpIRadDrive->RegisterErrorHandler(this, NULL);
+    } else {
+        ::radDriveOpen(&mpIRadDrive,
+                       "HOSTDRIVE:",
+                       NormalPriority, // Default
+                       GMA_PERSISTENT);
 
         //Only care about CD drives.
-        mpIRadDrive->RegisterErrorHandler( this, NULL );
+        mpIRadDrive->RegisterErrorHandler(this, NULL);
     }
-    rAssert( mpIRadDrive != NULL );
+    rAssert(mpIRadDrive != NULL);
 
     //
     // Set the read-write granulatity to prevent operations from
     // being partitioned.
     //
     //const int GRANULARITY = 20 * 1024 * 1024;
-    //mpIRadDrive->SetReadWriteGranularity( GRANULARITY );
+    //mpIRadDrive->SetReadWriteGranularity(GRANULARITY);
 
 }
 
@@ -931,8 +884,7 @@ void PS2Platform::InitializeFoundationDrive()
 //              they were initialized in.
 //
 //==============================================================================
-void PS2Platform::ShutdownFoundation()
-{
+void PS2Platform::ShutdownFoundation() {
     //
     // Release the main cement file.
     //
@@ -970,8 +922,7 @@ void PS2Platform::ShutdownFoundation()
     ::radDriveUnmount();
     ::radFileTerminate();
     ::radDbgWatchTerminate();
-    if( CommandLineOptions::Get( CLO_MEMORY_MONITOR) )
-    {
+    if (CommandLineOptions::Get(CLO_MEMORY_MONITOR)) {
         ::radMemoryMonitorTerminate();
     }
     ::radDbgComTargetTerminate();
@@ -979,7 +930,7 @@ void PS2Platform::ShutdownFoundation()
     ::radPlatformTerminate();
     ::radMemoryTerminate();
     ::radThreadTerminate();
-    ::radMovieTerminate2( );
+    ::radMovieTerminate2();
 }
 
 
@@ -993,11 +944,10 @@ void PS2Platform::ShutdownFoundation()
 // Return:      None.
 //
 //==============================================================================
-void PS2Platform::InitializePure3D() 
-{
-MEMTRACK_PUSH_GROUP( "PS2Platform" );
-//    p3d::SetMemAllocator( p3d::ALLOC_DEFAULT, GMA_PERSISTENT );
-//    p3d::SetMemAllocator( p3d::ALLOC_LOADED, GMA_LEVEL );
+void PS2Platform::InitializePure3D() {
+    MEMTRACK_PUSH_GROUP("PS2Platform");
+//    p3d::SetMemAllocator(p3d::ALLOC_DEFAULT, GMA_PERSISTENT);
+//    p3d::SetMemAllocator(p3d::ALLOC_LOADED, GMA_LEVEL);
 
     //
     // Initialise Pure3D platform object.
@@ -1005,7 +955,7 @@ MEMTRACK_PUSH_GROUP( "PS2Platform" );
     // for example requires the application instance to be passed in.
     //
     mpPlatform = tPlatform::Create();
-    rAssert( mpPlatform != NULL );
+    rAssert(mpPlatform != NULL);
 
     //
     // Initialiase the Pure3D context object.
@@ -1026,15 +976,14 @@ MEMTRACK_PUSH_GROUP( "PS2Platform" );
     //
     // Rendering to NTSC or PAL.
     //
-#ifdef PAL    
+#ifdef PAL
     init.pal = true;
 #else
     init.pal = false;
 #endif
 
     //for progressive scan
-    if( CommandLineOptions::Get( CLO_PROGRESSIVE_SCAN ) )
-    {
+    if (CommandLineOptions::Get(CLO_PROGRESSIVE_SCAN)) {
         init.dtv480 = true;
     }
 
@@ -1045,18 +994,18 @@ MEMTRACK_PUSH_GROUP( "PS2Platform" );
     //
     // Create the context.
     //
-    mpContext = mpPlatform->CreateContext( &init );
-    rAssert( mpContext != NULL );
+    mpContext = mpPlatform->CreateContext(&init);
+    rAssert(mpContext != NULL);
 
     //
     // Assign this context to the platform.
     //
-    mpPlatform->SetActiveContext( mpContext );
-    
+    mpPlatform->SetActiveContext(mpContext);
+
     //((pddiExtPS2Control*)p3d::pddi->GetExtension(PDDI_EXT_PS2_CONTROL))->EnableClipper(false);
     //((pddiExtPS2Control*)p3d::pddi->GetExtension(PDDI_EXT_PS2_CONTROL))->ForceMFIFOSync(true);
 
-    p3d::pddi->EnableZBuffer( true );
+    p3d::pddi->EnableZBuffer(true);
 
     //
     // This call installs chunk handlers for all the primary chunk types that
@@ -1064,19 +1013,16 @@ MEMTRACK_PUSH_GROUP( "PS2Platform" );
     // like.
     //
 //    p3d::InstallDefaultLoaders();
-        P3DASSERT(p3d::context);
-    tP3DFileHandler* p3d = new(GMA_PERSISTENT) tP3DFileHandler;
+    P3DASSERT(p3d::context);
+    tP3DFileHandler *p3d = new(GMA_PERSISTENT) tP3DFileHandler;
     //p3d::loadManager->AddHandler(p3d, "p3d");
     p3d::context->GetLoadManager()->AddHandler(p3d, "p3d");
     p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tPNGHandler, "png");
 
-    if( CommandLineOptions::Get( CLO_FE_UNJOINED ) )
-    {
+    if (CommandLineOptions::Get(CLO_FE_UNJOINED)) {
         p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tBMPHandler, "bmp");
         p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tTargaHandler, "tga");
-    }
-    else
-    {
+    } else {
         p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tBMPHandler, "p3d");
         p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tPNGHandler, "p3d");
         p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tTargaHandler, "p3d");
@@ -1084,118 +1030,120 @@ MEMTRACK_PUSH_GROUP( "PS2Platform" );
 
 //    p3d->AddHandler(new tGeometryLoader);
 //    GeometryWrappedLoader* pGWL = new GeometryWrappedLoader;
-    GeometryWrappedLoader* pGWL = 
-       (GeometryWrappedLoader*)GetAllWrappers()->mpLoader( AllWrappers::msGeometry );
-    pGWL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pGWL );
+    GeometryWrappedLoader *pGWL =
+            (GeometryWrappedLoader *) GetAllWrappers()->mpLoader(AllWrappers::msGeometry);
+    pGWL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pGWL);
 
-    StaticEntityLoader* pSEL = 
-       (StaticEntityLoader*)GetAllWrappers()->mpLoader( AllWrappers::msStaticEntity );
-    pSEL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pSEL );
+    StaticEntityLoader *pSEL =
+            (StaticEntityLoader *) GetAllWrappers()->mpLoader(AllWrappers::msStaticEntity);
+    pSEL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pSEL);
 
-    StaticPhysLoader* pSPL = 
-       (StaticPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msStaticPhys );
-    pSPL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pSPL );
+    StaticPhysLoader *pSPL =
+            (StaticPhysLoader *) GetAllWrappers()->mpLoader(AllWrappers::msStaticPhys);
+    pSPL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pSPL);
 
-    TreeDSGLoader* pTDL = 
-       (TreeDSGLoader*)GetAllWrappers()->mpLoader( AllWrappers::msTreeDSG );
-    pTDL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pTDL );
+    TreeDSGLoader *pTDL =
+            (TreeDSGLoader *) GetAllWrappers()->mpLoader(AllWrappers::msTreeDSG);
+    pTDL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pTDL);
 
-    FenceLoader* pFL = 
-       (FenceLoader*)GetAllWrappers()->mpLoader( AllWrappers::msFenceEntity );
-    pFL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pFL );
+    FenceLoader *pFL =
+            (FenceLoader *) GetAllWrappers()->mpLoader(AllWrappers::msFenceEntity);
+    pFL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pFL);
 
-    IntersectLoader* pIL = 
-       (IntersectLoader*)GetAllWrappers()->mpLoader( AllWrappers::msIntersectDSG );
-    pIL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pIL );
-    
-    AnimCollLoader* pACL = 
-        (AnimCollLoader*)GetAllWrappers()->mpLoader( AllWrappers::msAnimCollEntity );
-    pACL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pACL );
-        
-    AnimDSGLoader* pAnimDSGLoader = 
-        (AnimDSGLoader*)GetAllWrappers()->mpLoader( AllWrappers::msAnimEntity );
-    pAnimDSGLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pAnimDSGLoader );
+    IntersectLoader *pIL =
+            (IntersectLoader *) GetAllWrappers()->mpLoader(AllWrappers::msIntersectDSG);
+    pIL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pIL);
 
-    DynaPhysLoader* pDPL = 
-        (DynaPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msDynaPhys );
-    pDPL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pDPL );
+    AnimCollLoader *pACL =
+            (AnimCollLoader *) GetAllWrappers()->mpLoader(AllWrappers::msAnimCollEntity);
+    pACL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pACL);
 
-    InstStatPhysLoader* pISPL = 
-        (InstStatPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msInstStatPhys );
-    pISPL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pISPL );
-    
-    InstStatEntityLoader* pISEL = 
-        (InstStatEntityLoader*)GetAllWrappers()->mpLoader( AllWrappers::msInstStatEntity );
-    pISEL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pISEL );
-    
-    LocatorLoader* pLL = 
-        (LocatorLoader*)GetAllWrappers()->mpLoader( AllWrappers::msLocator);
-    pLL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pLL );
+    AnimDSGLoader *pAnimDSGLoader =
+            (AnimDSGLoader *) GetAllWrappers()->mpLoader(AllWrappers::msAnimEntity);
+    pAnimDSGLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pAnimDSGLoader);
 
-    RoadLoader* pRL = 
-        (RoadLoader*)GetAllWrappers()->mpLoader( AllWrappers::msRoadSegment);
-    pRL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pRL );
+    DynaPhysLoader *pDPL =
+            (DynaPhysLoader *) GetAllWrappers()->mpLoader(AllWrappers::msDynaPhys);
+    pDPL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pDPL);
 
-	PathLoader* pPL = 
-        (PathLoader*)GetAllWrappers()->mpLoader( AllWrappers::msPathSegment);
-    pPL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pPL );
-    
-    WorldSphereLoader* pWSL = 
-        (WorldSphereLoader*)GetAllWrappers()->mpLoader( AllWrappers::msWorldSphere);
-    pWSL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pWSL );
+    InstStatPhysLoader *pISPL =
+            (InstStatPhysLoader *) GetAllWrappers()->mpLoader(AllWrappers::msInstStatPhys);
+    pISPL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pISPL);
 
-    LensFlareLoader* pLSL = 
-        (LensFlareLoader*)GetAllWrappers()->mpLoader( AllWrappers::msLensFlare);
-    pLSL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pLSL );
+    InstStatEntityLoader *pISEL =
+            (InstStatEntityLoader *) GetAllWrappers()->mpLoader(AllWrappers::msInstStatEntity);
+    pISEL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pISEL);
 
-    BillboardWrappedLoader* pBWL = 
-        (BillboardWrappedLoader*)GetAllWrappers()->mpLoader( AllWrappers::msBillboard);
-    pBWL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pBWL );
-    
-    InstParticleSystemLoader* pInstParticleSystemLoader = 
-        (InstParticleSystemLoader*) GetAllWrappers()->mpLoader( AllWrappers::msInstParticleSystem);
-    pInstParticleSystemLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pInstParticleSystemLoader );
+    LocatorLoader *pLL =
+            (LocatorLoader *) GetAllWrappers()->mpLoader(AllWrappers::msLocator);
+    pLL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pLL);
 
-    BreakableObjectLoader* pBreakableObjectLoader = 
-        (BreakableObjectLoader*) GetAllWrappers()->mpLoader( AllWrappers::msBreakableObject);
-    pBreakableObjectLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pBreakableObjectLoader );
+    RoadLoader *pRL =
+            (RoadLoader *) GetAllWrappers()->mpLoader(AllWrappers::msRoadSegment);
+    pRL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pRL);
 
-	AnimDynaPhysLoader*	pAnimDynaPhysLoader = 
-		(AnimDynaPhysLoader*) GetAllWrappers()->mpLoader( AllWrappers::msAnimDynaPhys);
-	pAnimDynaPhysLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pAnimDynaPhysLoader );
+    PathLoader *pPL =
+            (PathLoader *) GetAllWrappers()->mpLoader(AllWrappers::msPathSegment);
+    pPL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pPL);
 
-	AnimDynaPhysWrapperLoader* pAnimWrapperLoader = 
-		(AnimDynaPhysWrapperLoader*) GetAllWrappers()->mpLoader( AllWrappers::msAnimDynaPhysWrapper);
-	pAnimWrapperLoader->SetRegdListener( GetRenderManager(), 0 );
-	p3d->AddHandler( pAnimWrapperLoader );
+    WorldSphereLoader *pWSL =
+            (WorldSphereLoader *) GetAllWrappers()->mpLoader(AllWrappers::msWorldSphere);
+    pWSL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pWSL);
+
+    LensFlareLoader *pLSL =
+            (LensFlareLoader *) GetAllWrappers()->mpLoader(AllWrappers::msLensFlare);
+    pLSL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pLSL);
+
+    BillboardWrappedLoader *pBWL =
+            (BillboardWrappedLoader *) GetAllWrappers()->mpLoader(AllWrappers::msBillboard);
+    pBWL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pBWL);
+
+    InstParticleSystemLoader *pInstParticleSystemLoader =
+            (InstParticleSystemLoader *) GetAllWrappers()->mpLoader(
+                    AllWrappers::msInstParticleSystem);
+    pInstParticleSystemLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pInstParticleSystemLoader);
+
+    BreakableObjectLoader *pBreakableObjectLoader =
+            (BreakableObjectLoader *) GetAllWrappers()->mpLoader(AllWrappers::msBreakableObject);
+    pBreakableObjectLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pBreakableObjectLoader);
+
+    AnimDynaPhysLoader *pAnimDynaPhysLoader =
+            (AnimDynaPhysLoader *) GetAllWrappers()->mpLoader(AllWrappers::msAnimDynaPhys);
+    pAnimDynaPhysLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pAnimDynaPhysLoader);
+
+    AnimDynaPhysWrapperLoader *pAnimWrapperLoader =
+            (AnimDynaPhysWrapperLoader *) GetAllWrappers()->mpLoader(
+                    AllWrappers::msAnimDynaPhysWrapper);
+    pAnimWrapperLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pAnimWrapperLoader);
 
     p3d->AddHandler(new(GMA_PERSISTENT) tTextureLoader);
-    p3d->AddHandler( new(GMA_PERSISTENT) tSetLoader );
+    p3d->AddHandler(new(GMA_PERSISTENT) tSetLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) tShaderLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) tCameraLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) tGameAttrLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) tLightLoader);
-  
+
     p3d->AddHandler(new(GMA_PERSISTENT) tLocatorLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) tLightGroupLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) tImageLoader);
@@ -1228,21 +1176,21 @@ MEMTRACK_PUSH_GROUP( "PS2Platform" );
     //p3d->AddHandler(new p3d::tIgnoreLoader);
 
 
-    tSEQFileHandler* sequencerFileHandler = new(GMA_PERSISTENT) tSEQFileHandler;
+    tSEQFileHandler *sequencerFileHandler = new(GMA_PERSISTENT) tSEQFileHandler;
     p3d::loadManager->AddHandler(sequencerFileHandler, "seq");
 
-       // sim lib
+    // sim lib
     sim::InstallSimLoaders();
 
-    p3d->AddHandler(new(GMA_PERSISTENT) CameraDataLoader, SRR2::ChunkID::WALKERCAM );    
-    p3d->AddHandler(new(GMA_PERSISTENT) CameraDataLoader, SRR2::ChunkID::FOLLOWCAM );    
-    p3d->AddHandler(new(GMA_PERSISTENT) IntersectionLoader);    
+    p3d->AddHandler(new(GMA_PERSISTENT) CameraDataLoader, SRR2::ChunkID::WALKERCAM);
+    p3d->AddHandler(new(GMA_PERSISTENT) CameraDataLoader, SRR2::ChunkID::FOLLOWCAM);
+    p3d->AddHandler(new(GMA_PERSISTENT) IntersectionLoader);
     //p3d->AddHandler(new(GMA_PERSISTENT) RoadLoader);   
-    p3d->AddHandler(new(GMA_PERSISTENT) RoadDataSegmentLoader);  
+    p3d->AddHandler(new(GMA_PERSISTENT) RoadDataSegmentLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) CStatePropDataLoader);
-MEMTRACK_POP_GROUP("PS2Platform");
+    MEMTRACK_POP_GROUP("PS2Platform");
 
-    p3d::context->SetClearColour(tColour(0,0,0));
+    p3d::context->SetClearColour(tColour(0, 0, 0));
     p3d::pddi->Clear(PDDI_BUFFER_ALL);
     p3d::context->SwapBuffers();
     p3d::pddi->Clear(PDDI_BUFFER_ALL);
@@ -1259,8 +1207,7 @@ MEMTRACK_POP_GROUP("PS2Platform");
 // Return:      None.
 //
 //==============================================================================
-void PS2Platform::ShutdownPure3D()
-{
+void PS2Platform::ShutdownPure3D() {
     //
     // Clean-up the Pure3D Inventory
     //
@@ -1270,18 +1217,16 @@ void PS2Platform::ShutdownPure3D()
     //
     // Clean-up the space taken by the Pure 3D context.
     //
-    if( mpContext != NULL )
-    {
-        mpPlatform->DestroyContext( mpContext );
+    if (mpContext != NULL) {
+        mpPlatform->DestroyContext(mpContext);
         mpContext = NULL;
     }
 
     //
     // Clean-up the space taken by the Pure 3D platform.
     //
-    if( mpPlatform != NULL )
-    {
-        tPlatform::Destroy( mpPlatform );
+    if (mpPlatform != NULL) {
+        tPlatform::Destroy(mpPlatform);
         mpPlatform = NULL;
     }
 }
@@ -1296,8 +1241,7 @@ void PS2Platform::ShutdownPure3D()
 // Return:      None.
 //
 //==============================================================================
-void PS2Platform::SetProgressiveMode( bool progressiveScan )
-{
+void PS2Platform::SetProgressiveMode(bool progressiveScan) {
     pddiDisplayInit init;
 
     init.xsize = WindowSizeX;
@@ -1305,7 +1249,7 @@ void PS2Platform::SetProgressiveMode( bool progressiveScan )
     //
     // Rendering to NTSC or PAL.
     //
-#ifdef PAL    
+#ifdef PAL
     init.pal = true;
 #else
     init.pal = false;
@@ -1324,61 +1268,51 @@ void PS2Platform::SetProgressiveMode( bool progressiveScan )
 // PS2Platform::CheckForStartupButtons
 //==============================================================================
 
-bool PS2Platform::CheckForStartupButtons( void )
-{
-    unsigned char buffer[ 32 ];
+bool PS2Platform::CheckForStartupButtons(void) {
+    unsigned char buffer[32];
     bool buttonsPushed = false;
 
-    for ( int p = 0; p < 2; p++ )
-    {
-        for ( int s = 0; s < 4; s++ )
-        {
+    for (int p = 0; p < 2; p++) {
+        for (int s = 0; s < 4; s++) {
             // spin until the system understands that there's a controller around.            
             int state = scePadStateExecCmd;
-            do 
-            {
-                state = scePadGetState( p, s );
-            } while( state != scePadStateDiscon && state != scePadStateFindCTP1 && 
-                     state != scePadStateStable && state != scePadStateError );
+            do {
+                state = scePadGetState(p, s);
+            } while (state != scePadStateDiscon && state != scePadStateFindCTP1 &&
+                     state != scePadStateStable && state != scePadStateError);
 
             //
             // Now we have a controller.
             //
-            if ( state == scePadStateFindCTP1 || state == scePadStateStable )
-            {
-                if ( scePadRead( p, s, buffer ) != 0 && // read success
-                     buffer[ 0 ] == 0 &&                // buffer fill success
-                     ( buffer[ 3 ] & (1<<6) ) == 0 &&   // X pushed
-                     ( buffer [ 3 ] & (1<<4) ) == 0     // triangle pushed
-                    )
-                {
+            if (state == scePadStateFindCTP1 || state == scePadStateStable) {
+                if (scePadRead(p, s, buffer) != 0 && // read success
+                    buffer[0] == 0 &&                // buffer fill success
+                    (buffer[3] & (1 << 6)) == 0 &&   // X pushed
+                    (buffer[3] & (1 << 4)) == 0     // triangle pushed
+                        ) {
                     buttonsPushed = true;
                     break;
                 }
             }
         }
-        if ( buttonsPushed ) break;
+        if (buttonsPushed) break;
     }
 
     return buttonsPushed;
 }
 
-void PS2Platform::OnControllerError(const char *msg)
-{
+void PS2Platform::OnControllerError(const char *msg) {
     bool inFrame = p3d::context->InFrame();
 
-    if ( inFrame ) p3d::context->EndFrame( true );
-    DisplaySplashScreen( Error, msg, 0.7f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
-    if ( inFrame ) p3d::context->BeginFrame( );
+    if (inFrame) p3d::context->EndFrame(true);
+    DisplaySplashScreen(Error, msg, 0.7f, 0.0f, 0.0f, tColour(255, 255, 255), 0);
+    if (inFrame) p3d::context->BeginFrame();
     mErrorState = CTL_ERROR;
     mPauseForError = true;
 
-    if ( GetPresentationManager()->GetFMVPlayer()->IsPlaying() )
-    {
-        GetPresentationManager()->GetFMVPlayer()->Pause( );
-    }
-    else
-    {
+    if (GetPresentationManager()->GetFMVPlayer()->IsPlaying()) {
+        GetPresentationManager()->GetFMVPlayer()->Pause();
+    } else {
         GetSoundManager()->StopForMovie();
     }
 }
@@ -1388,20 +1322,19 @@ void PS2Platform::OnControllerError(const char *msg)
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( radFileError error, const char* pDriveName, void* pUserData )
+// Parameters:  (radFileError error, const char* pDriveName, void* pUserData)
 //
 // Return:      bool 
 //
 //=============================================================================
-bool PS2Platform::OnDriveError( radFileError error, const char* pDriveName, void* pUserData )
-{
+bool PS2Platform::OnDriveError(radFileError error, const char *pDriveName, void *pUserData) {
     bool inFrame = p3d::context->InFrame();
 
     const int NUM_RADFILE_ERRORS = 13;
     unsigned int errorIndex = error;
 
 #ifdef PAL
-    switch( CGuiTextBible::GetCurrentLanguage() )
+    switch(CGuiTextBible::GetCurrentLanguage())
     {
         case Scrooby::XL_FRENCH:
         {
@@ -1428,48 +1361,38 @@ bool PS2Platform::OnDriveError( radFileError error, const char* pDriveName, void
     }
 #endif // PAL
 
-    rAssert( errorIndex < sizeof( ERROR_STRINGS ) / sizeof( ERROR_STRINGS[ 0 ] ) );
+    rAssert(errorIndex < sizeof(ERROR_STRINGS) / sizeof(ERROR_STRINGS[0]));
 
-    switch ( error )
-    {
-    case Success:
-        {
-            if ( mErrorState != NONE )
-            {
-                if ( inFrame ) p3d::context->EndFrame( true );
-                DisplaySplashScreen( FadeToBlack );
-                if ( inFrame ) p3d::context->BeginFrame( );
+    switch (error) {
+        case Success: {
+            if (mErrorState != NONE) {
+                if (inFrame) p3d::context->EndFrame(true);
+                DisplaySplashScreen(FadeToBlack);
+                if (inFrame) p3d::context->BeginFrame();
                 mErrorState = NONE;
                 mPauseForError = false;
             }
 
-            if ( GetPresentationManager()->GetFMVPlayer()->IsPlaying() )
-            {
-                GetPresentationManager()->GetFMVPlayer()->UnPause( );
-            }
-            else
-            {
+            if (GetPresentationManager()->GetFMVPlayer()->IsPlaying()) {
+                GetPresentationManager()->GetFMVPlayer()->UnPause();
+            } else {
                 GetSoundManager()->ResumeAfterMovie();
             }
-            return true;   
+            return true;
             break;
         }
-    case FileNotFound:
-        {
-            if ( CommandLineOptions::Get( CLO_FILE_NOT_FOUND ) )
-            {
-                rAssert( pUserData != NULL );
+        case FileNotFound: {
+            if (CommandLineOptions::Get(CLO_FILE_NOT_FOUND)) {
+                rAssert(pUserData != NULL);
 
-                radFileRequest* request = static_cast<radFileRequest*>( pUserData );
-                const char* fileName = request->GetFilename();
+                radFileRequest *request = static_cast<radFileRequest *>(pUserData);
+                const char *fileName = request->GetFilename();
 
                 //Get rid of the slashes.
                 unsigned int i;
                 unsigned int lastIndex = 0;
-                for ( i = 0; i < strlen( fileName ); ++i )
-                {
-                    if ( fileName[ i ] == '\\' )
-                    {
+                for (i = 0; i < strlen(fileName); ++i) {
+                    if (fileName[i] == '\\') {
                         lastIndex = i;
                     }
                 }
@@ -1477,60 +1400,52 @@ bool PS2Platform::OnDriveError( radFileError error, const char* pDriveName, void
                 unsigned int adjustedIndex = lastIndex == 0 ? lastIndex : lastIndex + 1;
 
                 char adjustedName[32];
-                strncpy( adjustedName, &fileName[adjustedIndex], ( strlen( fileName ) - lastIndex ) );
-                adjustedName[ strlen( fileName ) - lastIndex ] = '\0';
+                strncpy(adjustedName, &fileName[adjustedIndex], (strlen(fileName) - lastIndex));
+                adjustedName[strlen(fileName) - lastIndex] = '\0';
 
                 char errorString[256];
-                sprintf( errorString, "%s:\n%s", ERROR_STRINGS[errorIndex], adjustedName );
-                if ( inFrame ) p3d::context->EndFrame( true );
-                DisplaySplashScreen( Error, errorString, 1.0f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
-                if ( inFrame ) p3d::context->BeginFrame( );
+                sprintf(errorString, "%s:\n%s", ERROR_STRINGS[errorIndex], adjustedName);
+                if (inFrame) p3d::context->EndFrame(true);
+                DisplaySplashScreen(Error, errorString, 1.0f, 0.0f, 0.0f, tColour(255, 255, 255),
+                                    0);
+                if (inFrame) p3d::context->BeginFrame();
                 mErrorState = P_ERROR;
                 mPauseForError = true;
 
-                if ( GetPresentationManager()->GetFMVPlayer()->IsPlaying() )
-                {
-                    GetPresentationManager()->GetFMVPlayer()->Pause( );
-                }
-                else
-                {
+                if (GetPresentationManager()->GetFMVPlayer()->IsPlaying()) {
+                    GetPresentationManager()->GetFMVPlayer()->Pause();
+                } else {
                     GetSoundManager()->StopForMovie();
                 }
                 return true;
-            }
-            else
-            {
+            } else {
                 //Hmmm...  This could be a hack.
                 error = WrongMedia;
                 //Fall through.
             }
         }
-    case ShellOpen:
-    case WrongMedia:
-    case NoMedia:
-    case HardwareFailure:
-        {
+        case ShellOpen:
+        case WrongMedia:
+        case NoMedia:
+        case HardwareFailure: {
             //This could be the wrong disc.
-            if ( inFrame ) p3d::context->EndFrame( true );
-            DisplaySplashScreen( Error, ERROR_STRINGS[errorIndex], 1.0f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
-            if ( inFrame ) p3d::context->BeginFrame( );
+            if (inFrame) p3d::context->EndFrame(true);
+            DisplaySplashScreen(Error, ERROR_STRINGS[errorIndex], 1.0f, 0.0f, 0.0f,
+                                tColour(255, 255, 255), 0);
+            if (inFrame) p3d::context->BeginFrame();
             mErrorState = P_ERROR;
             mPauseForError = true;
 
-            if ( GetPresentationManager()->GetFMVPlayer()->IsPlaying() )
-            {
-                GetPresentationManager()->GetFMVPlayer()->Pause( );
-            }
-            else
-            {
+            if (GetPresentationManager()->GetFMVPlayer()->IsPlaying()) {
+                GetPresentationManager()->GetFMVPlayer()->Pause();
+            } else {
                 GetSoundManager()->StopForMovie();
             }
             return true;
         }
-    default:
-        {
+        default: {
             //Others are not supported.
-            rAssert( false );
+            rAssert(false);
         }
     }
 
@@ -1555,9 +1470,8 @@ bool PS2Platform::OnDriveError( radFileError error, const char* pDriveName, void
 //
 //==============================================================================
 PS2Platform::PS2Platform() :
-    mpPlatform( NULL ),
-    mpContext( NULL )
-{
+        mpPlatform(NULL),
+        mpContext(NULL) {
 }
 
 
@@ -1571,8 +1485,7 @@ PS2Platform::PS2Platform() :
 // Return:      N/A.
 //
 //==============================================================================
-PS2Platform::~PS2Platform()
-{
+PS2Platform::~PS2Platform() {
 }
 
 
@@ -1586,8 +1499,7 @@ PS2Platform::~PS2Platform()
 // Return:      None.
 //
 //==============================================================================
-void PS2Platform::EnableSnProfiler()
-{
+void PS2Platform::EnableSnProfiler() {
 #ifndef RAD_RELEASE
 #ifndef RAD_MW
 
@@ -1595,32 +1507,30 @@ void PS2Platform::EnableSnProfiler()
     // Quadword aligned, can be 2K to 64K bytes
     //
     static u_long128 profdata[2048];
-	
+
     snDebugInit();
-	
-    sceSifInitRpc( 0 );
-	
+
+    sceSifInitRpc(0);
+
     //
     // Load the SNProfile module
     //
-	if( sceSifLoadModule( "host0:/usr/local/sce/iop/modules/SNProfil.irx", 0, NULL ) < 0 )
-	{
-	    rDebugString( "Can't load SNProfil.IRX module\n" );
-		exit( -1 );
-	}
-
-	//
-    // Initialize the profiler
-    //
-    if( snProfInit( _4KHZ, profdata, sizeof(profdata) ) != 0 )
-    {
-	    //
-        // See SN_PRF... in LIBSN.H
-        //
-        rDebugString( "SN Profiler init failed\n" ); 
+    if (sceSifLoadModule("host0:/usr/local/sce/iop/modules/SNProfil.irx", 0, NULL) < 0) {
+        rDebugString("Can't load SNProfil.IRX module\n");
+        exit(-1);
     }
 
-    snProfSetFlagValue( 1 );
+    //
+    // Initialize the profiler
+    //
+    if (snProfInit(_4KHZ, profdata, sizeof(profdata)) != 0) {
+        //
+        // See SN_PRF... in LIBSN.H
+        //
+        rDebugString("SN Profiler init failed\n");
+    }
+
+    snProfSetFlagValue(1);
 
 #endif
 #endif
@@ -1633,114 +1543,103 @@ void PS2Platform::EnableSnProfiler()
 // whenever the PS2 crashes on a variety of conditions.
 //
 
-void PS2Platform::handleTLBChange( unsigned int stat,
-                                   unsigned int cause,
-                                   unsigned int epc,
-                                   unsigned int bva,
-                                   unsigned int bpa,
-                                   u_long128* registers )
-{
-    dumpExceptionData( "TLB Change Error", stat, cause, epc, bva, bpa, registers );
-}
-
-void PS2Platform::handleTLBLoadMismatch( unsigned int stat,
-                                         unsigned int cause,
-                                         unsigned int epc,
-                                         unsigned int bva,
-                                         unsigned int bpa,
-                                         u_long128* registers )
-{
-    dumpExceptionData( "TLB Load Error", stat, cause, epc, bva, bpa, registers );
-}
-
-void PS2Platform::handleTLBStoreMismatch( unsigned int stat,
-                                          unsigned int cause,
-                                          unsigned int epc,
-                                          unsigned int bva,
-                                          unsigned int bpa,
-                                          u_long128* registers )
-{
-    dumpExceptionData( "TLB Store Error", stat, cause, epc, bva, bpa, registers );
-}
-
-void PS2Platform::handleAddressLoadError( unsigned int stat,
-                                          unsigned int cause,
-                                          unsigned int epc,
-                                          unsigned int bva,
-                                          unsigned int bpa,
-                                          u_long128* registers )
-{
-    dumpExceptionData( "Address Load Error", stat, cause, epc, bva, bpa, registers );
-}
-
-void PS2Platform::handleAddressStoreError( unsigned int stat,
-                                           unsigned int cause,
-                                           unsigned int epc,
-                                           unsigned int bva,
-                                           unsigned int bpa,
-                                           u_long128* registers )
-{
-    dumpExceptionData( "Address Store Error", stat, cause, epc, bva, bpa, registers );
-}
-
-void PS2Platform::handleBusFetchError( unsigned int stat,
-                                       unsigned int cause,
-                                       unsigned int epc,
-                                       unsigned int bva,
-                                       unsigned int bpa,
-                                       u_long128* registers )
-{
-    dumpExceptionData( "Bus Fetch Error", stat, cause, epc, bva, bpa, registers );
-}
-
-void PS2Platform::handleBusDataError( unsigned int stat,
-                                      unsigned int cause,
-                                      unsigned int epc,
-                                      unsigned int bva,
-                                      unsigned int bpa,
-                                      u_long128* registers )
-{
-    dumpExceptionData( "Bus Data Error", stat, cause, epc, bva, bpa, registers );
-}
-
-void PS2Platform::handleReservedInstruction( unsigned int stat,
-                                             unsigned int cause,
-                                             unsigned int epc,
-                                             unsigned int bva,
-                                             unsigned int bpa,
-                                             u_long128* registers )
-{
-    dumpExceptionData( "Reserved Instruction Error", stat, cause, epc, bva, bpa, registers );
-}
-
-void PS2Platform::handleCoprocessor( unsigned int stat,
-                                     unsigned int cause,
-                                     unsigned int epc,
-                                     unsigned int bva,
-                                     unsigned int bpa,
-                                     u_long128* registers )
-{
-    dumpExceptionData( "Coprocessor Error", stat, cause, epc, bva, bpa, registers );
-}
-
-void PS2Platform::handleOverflow( unsigned int stat,
+void PS2Platform::handleTLBChange(unsigned int stat,
                                   unsigned int cause,
                                   unsigned int epc,
                                   unsigned int bva,
                                   unsigned int bpa,
-                                  u_long128* registers )
-{
-    dumpExceptionData( "Overflow Error", stat, cause, epc, bva, bpa, registers );
+                                  u_long128 *registers) {
+    dumpExceptionData("TLB Change Error", stat, cause, epc, bva, bpa, registers);
 }
 
-void PS2Platform::handleTrap( unsigned int stat,
-                              unsigned int cause,
-                              unsigned int epc,
-                              unsigned int bva,
-                              unsigned int bpa,
-                              u_long128* registers )
-{
-    dumpExceptionData( "Trap Error", stat, cause, epc, bva, bpa, registers );
+void PS2Platform::handleTLBLoadMismatch(unsigned int stat,
+                                        unsigned int cause,
+                                        unsigned int epc,
+                                        unsigned int bva,
+                                        unsigned int bpa,
+                                        u_long128 *registers) {
+    dumpExceptionData("TLB Load Error", stat, cause, epc, bva, bpa, registers);
+}
+
+void PS2Platform::handleTLBStoreMismatch(unsigned int stat,
+                                         unsigned int cause,
+                                         unsigned int epc,
+                                         unsigned int bva,
+                                         unsigned int bpa,
+                                         u_long128 *registers) {
+    dumpExceptionData("TLB Store Error", stat, cause, epc, bva, bpa, registers);
+}
+
+void PS2Platform::handleAddressLoadError(unsigned int stat,
+                                         unsigned int cause,
+                                         unsigned int epc,
+                                         unsigned int bva,
+                                         unsigned int bpa,
+                                         u_long128 *registers) {
+    dumpExceptionData("Address Load Error", stat, cause, epc, bva, bpa, registers);
+}
+
+void PS2Platform::handleAddressStoreError(unsigned int stat,
+                                          unsigned int cause,
+                                          unsigned int epc,
+                                          unsigned int bva,
+                                          unsigned int bpa,
+                                          u_long128 *registers) {
+    dumpExceptionData("Address Store Error", stat, cause, epc, bva, bpa, registers);
+}
+
+void PS2Platform::handleBusFetchError(unsigned int stat,
+                                      unsigned int cause,
+                                      unsigned int epc,
+                                      unsigned int bva,
+                                      unsigned int bpa,
+                                      u_long128 *registers) {
+    dumpExceptionData("Bus Fetch Error", stat, cause, epc, bva, bpa, registers);
+}
+
+void PS2Platform::handleBusDataError(unsigned int stat,
+                                     unsigned int cause,
+                                     unsigned int epc,
+                                     unsigned int bva,
+                                     unsigned int bpa,
+                                     u_long128 *registers) {
+    dumpExceptionData("Bus Data Error", stat, cause, epc, bva, bpa, registers);
+}
+
+void PS2Platform::handleReservedInstruction(unsigned int stat,
+                                            unsigned int cause,
+                                            unsigned int epc,
+                                            unsigned int bva,
+                                            unsigned int bpa,
+                                            u_long128 *registers) {
+    dumpExceptionData("Reserved Instruction Error", stat, cause, epc, bva, bpa, registers);
+}
+
+void PS2Platform::handleCoprocessor(unsigned int stat,
+                                    unsigned int cause,
+                                    unsigned int epc,
+                                    unsigned int bva,
+                                    unsigned int bpa,
+                                    u_long128 *registers) {
+    dumpExceptionData("Coprocessor Error", stat, cause, epc, bva, bpa, registers);
+}
+
+void PS2Platform::handleOverflow(unsigned int stat,
+                                 unsigned int cause,
+                                 unsigned int epc,
+                                 unsigned int bva,
+                                 unsigned int bpa,
+                                 u_long128 *registers) {
+    dumpExceptionData("Overflow Error", stat, cause, epc, bva, bpa, registers);
+}
+
+void PS2Platform::handleTrap(unsigned int stat,
+                             unsigned int cause,
+                             unsigned int epc,
+                             unsigned int bva,
+                             unsigned int bpa,
+                             u_long128 *registers) {
+    dumpExceptionData("Trap Error", stat, cause, epc, bva, bpa, registers);
 }
 
 //=============================================================================
@@ -1759,15 +1658,14 @@ void PS2Platform::handleTrap( unsigned int stat,
 // Return:      Why?
 //
 //==============================================================================
-void PS2Platform::dumpExceptionData( const char* exceptionName,
-                                     unsigned int stat,
-                                     unsigned int cause,
-                                     unsigned int epc,
-                                     unsigned int bva,
-                                     unsigned int bpa,
-                                     u_long128* registers )
-{
-    IRadTextDisplay* textDisplay;
+void PS2Platform::dumpExceptionData(const char *exceptionName,
+                                    unsigned int stat,
+                                    unsigned int cause,
+                                    unsigned int epc,
+                                    unsigned int bva,
+                                    unsigned int bpa,
+                                    u_long128 *registers) {
+    IRadTextDisplay *textDisplay;
     char buffer[50];
     int i;
     unsigned int reg1, reg2;
@@ -1776,41 +1674,39 @@ void PS2Platform::dumpExceptionData( const char* exceptionName,
     //
     // Need to shut down the MFIFO for this to work properly
     //
-    ((pddiExtPS2Control*)p3d::pddi->GetExtension(PDDI_EXT_PS2_CONTROL))->MFIFOEnable( false );
+    ((pddiExtPS2Control*)p3d::pddi->GetExtension(PDDI_EXT_PS2_CONTROL))->MFIFOEnable(false);
 #endif
 
-    ::radTextDisplayGet( &textDisplay, GMA_DEFAULT );
+    ::radTextDisplayGet(&textDisplay, GMA_DEFAULT);
 
-    textDisplay->SetBackgroundColor( 0 );
-    textDisplay->SetTextColor( 0xffffffff );
+    textDisplay->SetBackgroundColor(0);
+    textDisplay->SetTextColor(0xffffffff);
     textDisplay->Clear();
-    textDisplay->TextOutAt( exceptionName, 15, 1 );
-    sprintf( buffer, "PC: 0x%x  Address Value: 0x%x", epc, bva );
-    textDisplay->TextOutAt( buffer, 15, 3 );
-    sprintf( buffer, "stat: 0x%x  cause: 0x%x", stat, cause );
-    textDisplay->TextOutAt( buffer, 15, 5 );
-    sprintf( buffer, "Bus error address: 0x%x", bpa );
-    textDisplay->TextOutAt( buffer, 15, 7 );
+    textDisplay->TextOutAt(exceptionName, 15, 1);
+    sprintf(buffer, "PC: 0x%x  Address Value: 0x%x", epc, bva);
+    textDisplay->TextOutAt(buffer, 15, 3);
+    sprintf(buffer, "stat: 0x%x  cause: 0x%x", stat, cause);
+    textDisplay->TextOutAt(buffer, 15, 5);
+    sprintf(buffer, "Bus error address: 0x%x", bpa);
+    textDisplay->TextOutAt(buffer, 15, 7);
 
     //
     // GPR printout
     //
-    for( i = 0; i < 16; i++ )
-    {
-        reg1 = (unsigned int)registers[i] & 0xffffffff;
-        reg2 = (unsigned int)registers[i+16] & 0xffffffff;
-        sprintf( buffer, "GPR%02d: 0x%08x  GPR%02d: 0x%08x", i, reg1, i+16, reg2 );
-        textDisplay->TextOutAt( buffer, 15, 9+i );
+    for (i = 0; i < 16; i++) {
+        reg1 = (unsigned int) registers[i] & 0xffffffff;
+        reg2 = (unsigned int) registers[i + 16] & 0xffffffff;
+        sprintf(buffer, "GPR%02d: 0x%08x  GPR%02d: 0x%08x", i, reg1, i + 16, reg2);
+        textDisplay->TextOutAt(buffer, 15, 9 + i);
     }
 
-    textDisplay->TextOutAt( ":-(", 6, 13 );
+    textDisplay->TextOutAt(":-(", 6, 13);
 
-    if ( CommandLineOptions::Get( CLO_DEMO_TEST ) ||
-         GetCheatInputSystem()->IsCheatEnabled( CHEAT_ID_DEMO_TEST ) )
-    {
+    if (CommandLineOptions::Get(CLO_DEMO_TEST) ||
+        GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_DEMO_TEST)) {
         char buffy[32];
-        sprintf( buffy, "Demo Count: %d", GetGame()->GetDemoCount() );
-        textDisplay->TextOutAt( buffy, 6, 15 );
+        sprintf(buffy, "Demo Count: %d", GetGame()->GetDemoCount());
+        textDisplay->TextOutAt(buffy, 6, 15);
 
         unsigned int time = GetGame()->GetTime();
         unsigned int hours = time / 3600000;
@@ -1821,13 +1717,12 @@ void PS2Platform::dumpExceptionData( const char* exceptionName,
 
         unsigned int seconds = deltaTime / 1000;
         deltaTime = deltaTime % 1000;
-        sprintf( buffy, "Time: %d:%d:%d.%d", hours, minutes, seconds, deltaTime );
-        textDisplay->TextOutAt( buffy, 6, 17 );
+        sprintf(buffy, "Time: %d:%d:%d.%d", hours, minutes, seconds, deltaTime);
+        textDisplay->TextOutAt(buffy, 6, 17);
 
-        if ( GetGameplayManager() )
-        {
-            sprintf( buffy, "Level %d", GetGameplayManager()->GetCurrentLevelIndex() );
-            textDisplay->TextOutAt( buffy, 6, 19 );
+        if (GetGameplayManager()) {
+            sprintf(buffy, "Level %d", GetGameplayManager()->GetCurrentLevelIndex());
+            textDisplay->TextOutAt(buffy, 6, 19);
         }
     }
 
@@ -1837,10 +1732,9 @@ void PS2Platform::dumpExceptionData( const char* exceptionName,
     rReleaseBreak();
 }
 
-void Simpsons2MFIFODisable()
-{
+void Simpsons2MFIFODisable() {
 #ifdef RAD_PS2
-    ((pddiExtPS2Control*)p3d::pddi->GetExtension(PDDI_EXT_PS2_CONTROL))->MFIFOEnable( false );
+    ((pddiExtPS2Control*)p3d::pddi->GetExtension(PDDI_EXT_PS2_CONTROL))->MFIFOEnable(false);
 #endif
 }
 

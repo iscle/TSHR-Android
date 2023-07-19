@@ -63,6 +63,7 @@ static const unsigned int TRACTOR_BEAM_OFF = 3;
 //===========================================================================
 
 class CStateProp;
+
 static tUID s_UfoName = tName::MakeUID("spaceship");
 
 //===========================================================================
@@ -83,62 +84,49 @@ static float DIR_GREEN_SCALE = 1.0f;
 static float DIR_BLUE_SCALE = 1.0f;
 
 
-
-ActorDSG::ActorDSG():
-m_ID( ++s_IDCounter ),
-m_ShieldProp( NULL ),
-m_TractorBeamProp( NULL ),
-m_ShieldEnabled( false ),
-mPhysicsProperties( NULL )
-{
+ActorDSG::ActorDSG() :
+        m_ID(++s_IDCounter),
+        m_ShieldProp(NULL),
+        m_TractorBeamProp(NULL),
+        m_ShieldEnabled(false),
+        mPhysicsProperties(NULL) {
 }
 
-ActorDSG::~ActorDSG()
-{
-    if ( m_ShieldProp != NULL )
-    {
+ActorDSG::~ActorDSG() {
+    if (m_ShieldProp != NULL) {
         m_ShieldProp->Release();
         m_ShieldProp = NULL;
     }
-    if ( m_TractorBeamProp != NULL )
-    {
+    if (m_TractorBeamProp != NULL) {
         m_TractorBeamProp->ReleaseVerified();
         m_TractorBeamProp = NULL;
     }
-    if ( mPhysicsProperties != NULL )
-    {
+    if (mPhysicsProperties != NULL) {
         mPhysicsProperties->Release();
     }
 }
 
-sim::Solving_Answer 
-ActorDSG::PreReactToCollision( sim::SimState* pCollidedObj, sim::Collision& inCollision )
-{  
+sim::Solving_Answer
+ActorDSG::PreReactToCollision(sim::SimState *pCollidedObj, sim::Collision &inCollision) {
     // Check to see that we aren't going to collide with an object that has the same ID
     // that we do
-    if ( pCollidedObj->mAIRefIndex == PhysicsAIRef::ActorStateProp )
-    {
-        rAssert( dynamic_cast< ActorDSG* >( static_cast< tRefCounted* >( pCollidedObj->mAIRefPointer) ) );
-        ActorDSG* pStatePropDSG = static_cast< ActorDSG* >( pCollidedObj->mAIRefPointer );
-        if ( pStatePropDSG->GetID() == GetID() )
-        {
+    if (pCollidedObj->mAIRefIndex == PhysicsAIRef::ActorStateProp) {
+        rAssert(dynamic_cast<ActorDSG *>(static_cast<tRefCounted *>(pCollidedObj->mAIRefPointer)));
+        ActorDSG *pStatePropDSG = static_cast<ActorDSG *>(pCollidedObj->mAIRefPointer);
+        if (pStatePropDSG->GetID() == GetID()) {
             return sim::Solving_Aborted;
         }
     }
-    HandleEvent( StatePropDSG::FEATHER_TOUCH );
-   
+    HandleEvent(StatePropDSG::FEATHER_TOUCH);
+
     return sim::Solving_Continue;
 }
-        
-void 
-ActorDSG::SetRank(rmt::Vector& irRefPosn, rmt::Vector& mViewVector)
-{
-    if ( mpStateProp->GetUID() != s_UfoName )
-    {
-        IEntityDSG::SetRank( irRefPosn, mViewVector );
-    }
-    else
-    {
+
+void
+ActorDSG::SetRank(rmt::Vector &irRefPosn, rmt::Vector &mViewVector) {
+    if (mpStateProp->GetUID() != s_UfoName) {
+        IEntityDSG::SetRank(irRefPosn, mViewVector);
+    } else {
         // Final hack to make the UFO always draw last
         // The UFO has a *huge* bounding sphere that makes it
         // always drawn after the vehicle explosion, cutting it
@@ -148,9 +136,8 @@ ActorDSG::SetRank(rmt::Vector& irRefPosn, rmt::Vector& mViewVector)
 }
 
 
-sim::Solving_Answer 
-ActorDSG::PostReactToCollision(rmt::Vector& impulse, sim::Collision& inCollision)
-{
+sim::Solving_Answer
+ActorDSG::PostReactToCollision(rmt::Vector &impulse, sim::Collision &inCollision) {
     // Calculate impulse
     float impulseMagSqr = impulse.MagnitudeSqr();
     // If the shield is on, impulse has to be above an very high number to cause it be
@@ -159,22 +146,15 @@ ActorDSG::PostReactToCollision(rmt::Vector& impulse, sim::Collision& inCollision
     const float FORCE_REQUIRED_TO_BREAK_SHIELD = 1600000;
     const float FORCE_REQUIRE_TO_DESTROY = 800000;
 
-    if ( m_ShieldEnabled )
-    {
-        if ( impulseMagSqr > FORCE_REQUIRED_TO_BREAK_SHIELD )
-        {   
+    if (m_ShieldEnabled) {
+        if (impulseMagSqr > FORCE_REQUIRED_TO_BREAK_SHIELD) {
             DestroyShield();
-        }
-        else
-        {
+        } else {
             PlayShieldGettingHit();
         }
-    }
-    else
-    {
-        if ( impulseMagSqr > FORCE_REQUIRE_TO_DESTROY )
-        {        
-            HandleEvent( DESTROYED );
+    } else {
+        if (impulseMagSqr > FORCE_REQUIRE_TO_DESTROY) {
+            HandleEvent(DESTROYED);
         }
     }
 
@@ -183,151 +163,128 @@ ActorDSG::PostReactToCollision(rmt::Vector& impulse, sim::Collision& inCollision
     return CollisionEntityDSG::PostReactToCollision(impulse, inCollision);
 }
 
-        
-void ActorDSG::ApplyForce( const rmt::Vector& direction, float force )
-{
+
+void ActorDSG::ApplyForce(const rmt::Vector &direction, float force) {
     // Force over a certain     
     const float SHIELD_BREAKING_FORCE = 400.0f;
     const float FORCE_REQUIRED_TO_DESTROY = 400.0f;
-    if ( m_ShieldEnabled )
-    {
-        if ( force < SHIELD_BREAKING_FORCE )
-        {
-            PlayShieldGettingHit();    
-        }
-        else
-        {
+    if (m_ShieldEnabled) {
+        if (force < SHIELD_BREAKING_FORCE) {
+            PlayShieldGettingHit();
+        } else {
             DestroyShield();
         }
-    }
-    else
-    {
-        if ( force >= FORCE_REQUIRED_TO_DESTROY )
-        {
+    } else {
+        if (force >= FORCE_REQUIRED_TO_DESTROY) {
             DestroyShield();
-            HandleEvent( StatePropDSG::DESTROYED );
-            DynaPhysDSG::ApplyForce( direction, force );
+            HandleEvent(StatePropDSG::DESTROYED);
+            DynaPhysDSG::ApplyForce(direction, force);
         }
     }
 }
 
 
-void 
-ActorDSG::RecieveEvent( int callback , CStateProp* stateProp )
-{
-    switch ( callback )
-    {
-    case FIRE_ENERGY_BOLT:
-        {
+void
+ActorDSG::RecieveEvent(int callback, CStateProp *stateProp) {
+    switch (callback) {
+        case FIRE_ENERGY_BOLT: {
             tName name = "waspray";
-            GetActorManager()->FireProjectile( name.GetUID(), mPosn, -mTransform.Row(2), m_ID );
+            GetActorManager()->FireProjectile(name.GetUID(), mPosn, -mTransform.Row(2), m_ID);
         }
-        break;
-    case REMOVE_FROM_WORLD:
-        GetActorManager()->RemoveActorByDSGPointer( this, true );
-        break;
-    default:
-        StatePropDSG::RecieveEvent( callback, stateProp );
-        break;
+            break;
+        case REMOVE_FROM_WORLD:
+            GetActorManager()->RemoveActorByDSGPointer(this, true);
+            break;
+        default:
+            StatePropDSG::RecieveEvent(callback, stateProp);
+            break;
     };
 }
 
-void 
-ActorDSG::HandleEvent( StatePropDSG::Event event )
-{
+void
+ActorDSG::HandleEvent(StatePropDSG::Event event) {
     // If a shield is enabled, then only destroyed events should get 
-    StatePropDSG::HandleEvent( event );
+    StatePropDSG::HandleEvent(event);
 }
 
 
-bool 
-ActorDSG::LoadShield( const char* statePropName )
-{
+bool
+ActorDSG::LoadShield(const char *statePropName) {
     bool loadedOk = false;
-    CStatePropData* statePropData = p3d::find< CStatePropData > ( statePropName );
-    if ( statePropData != NULL )
-    {
-        CStateProp* stateprop = CStateProp::CreateStateProp( statePropData, 0 );
-        if ( stateprop != NULL )
-        {
+    CStatePropData *statePropData = p3d::find<CStatePropData>(statePropName);
+    if (statePropData != NULL) {
+        CStateProp *stateprop = CStateProp::CreateStateProp(statePropData, 0);
+        if (stateprop != NULL) {
             m_ShieldEnabled = true;
-            tRefCounted::Assign( m_ShieldProp, stateprop);
+            tRefCounted::Assign(m_ShieldProp, stateprop);
             loadedOk = true;
-            SetPhysicsProperties( 100.0f, 0.8f, 1.15f, 0.0f );
+            SetPhysicsProperties(100.0f, 0.8f, 1.15f, 0.0f);
         }
     }
     return loadedOk;
 }
 
-bool 
-ActorDSG::LoadTractorBeam( const char* statePropName )
-{
+bool
+ActorDSG::LoadTractorBeam(const char *statePropName) {
     bool loadedOk = false;
-    CStatePropData* statePropData = p3d::find< CStatePropData > ( statePropName );
-    if ( statePropData != NULL )
-    {
-        CStateProp* stateprop = CStateProp::CreateStateProp( statePropData, TRACTOR_BEAM_OFF );
-        if ( stateprop != NULL )
-        {
-            tRefCounted::Assign( m_TractorBeamProp, stateprop);
+    CStatePropData *statePropData = p3d::find<CStatePropData>(statePropName);
+    if (statePropData != NULL) {
+        CStateProp *stateprop = CStateProp::CreateStateProp(statePropData, TRACTOR_BEAM_OFF);
+        if (stateprop != NULL) {
+            tRefCounted::Assign(m_TractorBeamProp, stateprop);
             loadedOk = true;
         }
     }
     return loadedOk;
 }
 
-void 
-ActorDSG::ActivateTractorBeam()
-{
-    if ( m_TractorBeamProp != NULL )
-    {
-        if ( m_TractorBeamProp->GetState() == TRACTOR_BEAM_OFF )
-        {
-            m_TractorBeamProp->SetState( TRACTOR_BEAM_ACTIVATE );
-        }
-    }
-}
- 
-void 
-ActorDSG::DeactivateTractorBeam()
-{
-    if ( m_TractorBeamProp != NULL )
-    {
-        if ( m_TractorBeamProp->GetState() == TRACTOR_BEAM_ON ||
-             m_TractorBeamProp->GetState() == TRACTOR_BEAM_ACTIVATE )
-        {
-            m_TractorBeamProp->SetState( TRACTOR_BEAM_DEACTIVATE );
+void
+ActorDSG::ActivateTractorBeam() {
+    if (m_TractorBeamProp != NULL) {
+        if (m_TractorBeamProp->GetState() == TRACTOR_BEAM_OFF) {
+            m_TractorBeamProp->SetState(TRACTOR_BEAM_ACTIVATE);
         }
     }
 }
 
-bool 
-ActorDSG::IsTractorBeamOn()const
-{
-    if ( m_TractorBeamProp == NULL )
+void
+ActorDSG::DeactivateTractorBeam() {
+    if (m_TractorBeamProp != NULL) {
+        if (m_TractorBeamProp->GetState() == TRACTOR_BEAM_ON ||
+            m_TractorBeamProp->GetState() == TRACTOR_BEAM_ACTIVATE) {
+            m_TractorBeamProp->SetState(TRACTOR_BEAM_DEACTIVATE);
+        }
+    }
+}
+
+bool
+ActorDSG::IsTractorBeamOn() const {
+    if (m_TractorBeamProp == NULL)
         return false;
 
     return m_TractorBeamProp->GetState() != TRACTOR_BEAM_OFF;
 }
 
 
-void 
-ActorDSG::Display()
-{
+void
+ActorDSG::Display() {
     // Have the rad debugging functions been attached yet?
     // Check, and if not, add them once
 #ifndef RAD_RELEASE
 
     static bool radattached = false;
 
-    if ( radattached == false )
-    {
-        radDbgWatchAddFloat( &AMB_RED_SCALE, "Amb Red Scale", "Wasp lighting", NULL, NULL, 0, 4.0f );
-        radDbgWatchAddFloat( &AMB_GREEN_SCALE, "Amb Green Scale", "Wasp lighting", NULL, NULL, 0, 4.0f );
-        radDbgWatchAddFloat( &AMB_BLUE_SCALE, "Amb Blue Scale", "Wasp lighting", NULL, NULL, 0, 4.0f );
-        radDbgWatchAddFloat( &DIR_RED_SCALE, "Dir Red Scale", "Wasp lighting", NULL, NULL, 0, 4.0f );
-        radDbgWatchAddFloat( &DIR_GREEN_SCALE, "Dir Green Scale", "Wasp lighting", NULL, NULL, 0, 4.0f );
-        radDbgWatchAddFloat( &DIR_BLUE_SCALE, "Dir Blue Scale", "Wasp lighting", NULL, NULL, 0, 4.0f );
+    if (radattached == false) {
+        radDbgWatchAddFloat(&AMB_RED_SCALE, "Amb Red Scale", "Wasp lighting", NULL, NULL, 0, 4.0f);
+        radDbgWatchAddFloat(&AMB_GREEN_SCALE, "Amb Green Scale", "Wasp lighting", NULL, NULL, 0,
+                            4.0f);
+        radDbgWatchAddFloat(&AMB_BLUE_SCALE, "Amb Blue Scale", "Wasp lighting", NULL, NULL, 0,
+                            4.0f);
+        radDbgWatchAddFloat(&DIR_RED_SCALE, "Dir Red Scale", "Wasp lighting", NULL, NULL, 0, 4.0f);
+        radDbgWatchAddFloat(&DIR_GREEN_SCALE, "Dir Green Scale", "Wasp lighting", NULL, NULL, 0,
+                            4.0f);
+        radDbgWatchAddFloat(&DIR_BLUE_SCALE, "Dir Blue Scale", "Wasp lighting", NULL, NULL, 0,
+                            4.0f);
         radattached = true;
     }
 
@@ -338,43 +295,40 @@ ActorDSG::Display()
     // There doesnt appear to be a nice + quick solution 
     // Do a quick UID compare then brighten the level lights
     // We will reset them after drawing is finished
-    static tUID beecameraUID = tName::MakeUID( "beecamera" );
+    static tUID beecameraUID = tName::MakeUID("beecamera");
     tColour origColours[MAX_VIEW_LIGHTS];
     tColour origAmbient;
-    if ( mpStateProp->GetUID() == beecameraUID )
-    {
-        tView* view = p3d::context->GetView();
-        for ( unsigned int i = 0 ; i < MAX_VIEW_LIGHTS ; i ++ )
-        {
-            tLight* light = view->GetLight( i );
-            if ( light )
-            {
+    if (mpStateProp->GetUID() == beecameraUID) {
+        tView *view = p3d::context->GetView();
+        for (unsigned int i = 0; i < MAX_VIEW_LIGHTS; i++) {
+            tLight *light = view->GetLight(i);
+            if (light) {
                 origColours[i] = light->GetColour();
- 
-                int r = (int)( (float) origColours[i].Red() * DIR_RED_SCALE );
-                int g = (int)( (float) origColours[i].Green() * DIR_GREEN_SCALE );
-                int b = (int)( (float) origColours[i].Blue() * DIR_BLUE_SCALE );
 
-                if ( r > 255 ) r = 255;
-                if ( g > 255 ) g = 255;
-                if ( b > 255 ) b = 255;
+                int r = (int) ((float) origColours[i].Red() * DIR_RED_SCALE);
+                int g = (int) ((float) origColours[i].Green() * DIR_GREEN_SCALE);
+                int b = (int) ((float) origColours[i].Blue() * DIR_BLUE_SCALE);
 
-                tColour newColour( r, g, b );
-                light->SetColour( newColour );
+                if (r > 255) r = 255;
+                if (g > 255) g = 255;
+                if (b > 255) b = 255;
+
+                tColour newColour(r, g, b);
+                light->SetColour(newColour);
             }
         }
         origAmbient = p3d::pddi->GetAmbientLight();
 
-        int r = (int)( (float) origAmbient.Red() * AMB_RED_SCALE );
-        int g = (int)( (float) origAmbient.Green() * AMB_GREEN_SCALE );
-        int b = (int)( (float) origAmbient.Blue() * AMB_BLUE_SCALE );
+        int r = (int) ((float) origAmbient.Red() * AMB_RED_SCALE);
+        int g = (int) ((float) origAmbient.Green() * AMB_GREEN_SCALE);
+        int b = (int) ((float) origAmbient.Blue() * AMB_BLUE_SCALE);
 
-        if ( r > 255 ) r = 255;
-        if ( g > 255 ) g = 255;
-        if ( b > 255 ) b = 255;
+        if (r > 255) r = 255;
+        if (g > 255) g = 255;
+        if (b > 255) b = 255;
 
-        tColour scaledAmbient( r, g, b );
-        p3d::pddi->SetAmbientLight( scaledAmbient );
+        tColour scaledAmbient(r, g, b);
+        p3d::pddi->SetAmbientLight(scaledAmbient);
     }
 
 
@@ -383,36 +337,31 @@ ActorDSG::Display()
 #endif
     DSG_BEGIN_PROFILE(profileName)
     StatePropDSG::Display();
-    if ( m_ShieldProp != NULL )
-    {
+    if (m_ShieldProp != NULL) {
         // Draw the shield
-        p3d::stack->PushMultiply( mTransform );
+        p3d::stack->PushMultiply(mTransform);
         m_ShieldProp->UpdateFrameControllersForRender();
         m_ShieldProp->GetDrawable()->Display();
         p3d::stack->Pop();
     }
-    if ( m_TractorBeamProp != NULL )
-    {
+    if (m_TractorBeamProp != NULL) {
         // Draw the tractor beam
-        p3d::stack->PushMultiply( mTransform );
+        p3d::stack->PushMultiply(mTransform);
         m_TractorBeamProp->Display();
         p3d::stack->Pop();
     }
 
     // Reset the level lights for the beecamera
-    if ( mpStateProp->GetUID() == beecameraUID )
-    {
-        tView* view = p3d::context->GetView();
-        for ( unsigned int i = 0 ; i < MAX_VIEW_LIGHTS ; i ++ )
-        {
-            tLight* light = view->GetLight( i );
-            if ( light )
-            {
-                light->SetColour(  origColours[i] );
+    if (mpStateProp->GetUID() == beecameraUID) {
+        tView *view = p3d::context->GetView();
+        for (unsigned int i = 0; i < MAX_VIEW_LIGHTS; i++) {
+            tLight *light = view->GetLight(i);
+            if (light) {
+                light->SetColour(origColours[i]);
             }
         }
         // Reset the ambient    
-        p3d::pddi->SetAmbientLight( origAmbient );
+        p3d::pddi->SetAmbientLight(origAmbient);
     }
 
 
@@ -420,106 +369,93 @@ ActorDSG::Display()
 
 }
 
-void 
-ActorDSG::AdvanceAnimation( float timeInMS )
-{
-    if ( m_ShieldProp )
-    {
-        m_ShieldProp->Update( timeInMS );
+void
+ActorDSG::AdvanceAnimation(float timeInMS) {
+    if (m_ShieldProp) {
+        m_ShieldProp->Update(timeInMS);
     }
-    if ( m_TractorBeamProp )
-    {
-        m_TractorBeamProp->Update( timeInMS );
+    if (m_TractorBeamProp) {
+        m_TractorBeamProp->Update(timeInMS);
     }
 
 
-    StatePropDSG::AdvanceAnimation( timeInMS );
-
-
+    StatePropDSG::AdvanceAnimation(timeInMS);
 
 
 }
 
-void 
-ActorDSG::DestroyShield()
-{
-    if ( m_ShieldProp != NULL )
-    {
+void
+ActorDSG::DestroyShield() {
+    if (m_ShieldProp != NULL) {
         m_ShieldEnabled = false;
-        m_ShieldProp->SetState( SHIELD_STATE_DESTROYED );
+        m_ShieldProp->SetState(SHIELD_STATE_DESTROYED);
     }
 }
-        
-void 
-ActorDSG::PlayShieldGettingHit()
-{
-    if ( m_ShieldProp != NULL )
-    {
-        if ( m_ShieldProp->GetState() != SHIELD_STATE_HIT )
-        {
-            m_ShieldProp->SetState( SHIELD_STATE_HIT );
+
+void
+ActorDSG::PlayShieldGettingHit() {
+    if (m_ShieldProp != NULL) {
+        if (m_ShieldProp->GetState() != SHIELD_STATE_HIT) {
+            m_ShieldProp->SetState(SHIELD_STATE_HIT);
         }
-    }    
-}
-        
-void 
-ActorDSG::RestoreShield()
-{
-    if ( m_ShieldProp )
-    {
-        m_ShieldEnabled = true;
-        m_ShieldProp->SetState( SHIELD_STATE_POWER_UP );
     }
 }
 
-void 
-ActorDSG::SetPhysicsProperties( float mass, float friction, float rest, float tang )
-{
+void
+ActorDSG::RestoreShield() {
+    if (m_ShieldProp) {
+        m_ShieldEnabled = true;
+        m_ShieldProp->SetState(SHIELD_STATE_POWER_UP);
+    }
+}
 
-    if ( mPhysicsProperties == NULL )
+void
+ActorDSG::SetPhysicsProperties(float mass, float friction, float rest, float tang) {
+
+    if (mPhysicsProperties == NULL)
         return;
 
     // We want to grab the volume so we can compute the density via the given mass
     // and the simstate's volume
-    sim::SimStateArticulated* pSimStateArt = ( sim::SimStateArticulated* )( mpSimStateObj );
-    sim::ArticulatedPhysicsObject* physicsObject = static_cast< sim::ArticulatedPhysicsObject*>( pSimStateArt->GetSimulatedObject( -1 ));
+    sim::SimStateArticulated *pSimStateArt = (sim::SimStateArticulated * )(mpSimStateObj);
+    sim::ArticulatedPhysicsObject *physicsObject = static_cast<sim::ArticulatedPhysicsObject *>(pSimStateArt->GetSimulatedObject(
+            -1));
     float volume = physicsObject->GetVolume();
 
-    rAssert( volume != 0 );
+    rAssert(volume != 0);
 
     float density = mass / volume;
 
-    mPhysicsProperties->SetRestCoeffCGS( rest );
-    mPhysicsProperties->SetFrictCoeffCGS( friction );
-    mPhysicsProperties->SetTangRestCoeffCGS( tang );
-    mPhysicsProperties->SetDensityCGS( density );
+    mPhysicsProperties->SetRestCoeffCGS(rest);
+    mPhysicsProperties->SetFrictCoeffCGS(friction);
+    mPhysicsProperties->SetTangRestCoeffCGS(tang);
+    mPhysicsProperties->SetDensityCGS(density);
 
-    mpSimStateObj->SetPhysicsProperties( mPhysicsProperties );
+    mpSimStateObj->SetPhysicsProperties(mPhysicsProperties);
 }
 
-void 
-ActorDSG::LoadSetup( CStatePropData* statePropData, 
-                     int startState, 
-                     const rmt::Matrix& transform,
-                     CollisionAttributes* ipCollAttr,
-                     bool isMoveable,
-                     bool isDynaLoaded,
-                     tEntityStore* ipSearchStore  )
-{
+void
+ActorDSG::LoadSetup(CStatePropData *statePropData,
+                    int startState,
+                    const rmt::Matrix &transform,
+                    CollisionAttributes *ipCollAttr,
+                    bool isMoveable,
+                    bool isDynaLoaded,
+                    tEntityStore *ipSearchStore) {
 
-    HeapMgr()->PushHeap( GMA_LEVEL_OTHER );
-    sim::PhysicsProperties* physicsProperties = new sim::PhysicsProperties;
+    HeapMgr()->PushHeap(GMA_LEVEL_OTHER);
+    sim::PhysicsProperties *physicsProperties = new sim::PhysicsProperties;
 
-    StatePropDSG::LoadSetup( statePropData, startState, transform, ipCollAttr, isDynaLoaded, ipSearchStore );
+    StatePropDSG::LoadSetup(statePropData, startState, transform, ipCollAttr, isDynaLoaded,
+                            ipSearchStore);
 
-    tRefCounted::Assign( mPhysicsProperties, physicsProperties );
-    HeapMgr()->PopHeap( GMA_LEVEL_OTHER );
+    tRefCounted::Assign(mPhysicsProperties, physicsProperties);
+    HeapMgr()->PopHeap(GMA_LEVEL_OTHER);
 
 }
 
-void 
-ActorDSG::GenerateCoins( int numCoins )
-{
+void
+ActorDSG::GenerateCoins(int numCoins) {
 
     // Generate coins, but take into account the fact that this object might be hovering 
     // over the ground.
@@ -529,53 +465,48 @@ ActorDSG::GenerateCoins( int numCoins )
     rmt::Vector deepestPosn, deepestNormal, groundPlaneNormal, groundPlanePosn;
     rmt::Vector searchPosn = rPosition();
     searchPosn.y += 100.0f;
-    GetIntersectManager()->FindIntersection( searchPosn, foundPlane, groundPlaneNormal, groundPlanePosn );
-    if ( foundPlane == false )
-    {
+    GetIntersectManager()->FindIntersection(searchPosn, foundPlane, groundPlaneNormal,
+                                            groundPlanePosn);
+    if (foundPlane == false) {
         groundPlanePosn = rPosition();
         groundPlanePosn.y -= 30.0f;
     }
     // Check to see if there any static objects directly underneath us
     // find the midpoint between the current position and the ground position
-    rmt::Vector midpoint = ( groundPlanePosn + rPosition() ) * 0.5f;
-    float radius = (rPosition().y - groundPlanePosn.y );
-    ReserveArray< StaticPhysDSG* > spList(200);
-    GetIntersectManager()->FindStaticPhysElems( midpoint, radius , spList );
+    rmt::Vector midpoint = (groundPlanePosn + rPosition()) * 0.5f;
+    float radius = (rPosition().y - groundPlanePosn.y);
+    ReserveArray < StaticPhysDSG * > spList(200);
+    GetIntersectManager()->FindStaticPhysElems(midpoint, radius, spList);
     // Iterate through the static phys list and add them to an intersection list
     IntersectionList staticList;
-    for ( int i = 0 ; i < spList.mUseSize; i++ )
-    {
-        staticList.AddStatic( spList[i]->GetSimState() );
+    for (int i = 0; i < spList.mUseSize; i++) {
+        staticList.AddStatic(spList[i]->GetSimState());
     }
     // Now query our list using subcollision volume accuracy to pinpoint the precise location
     // of intersection
     rmt::Vector staticIntersection;
     rmt::Vector start = rPosition();
     rmt::Vector end = groundPlanePosn;
-    if ( staticList.TestIntersectionStatics( start, end, &staticIntersection ))
-    {
+    if (staticList.TestIntersectionStatics(start, end, &staticIntersection)) {
         // There is a static in the way. spawn teh coins on top of this object
-        GetCoinManager()->SpawnCoins( numCoins, rPosition(), staticIntersection.y );           
-    }
-    else
-    {
+        GetCoinManager()->SpawnCoins(numCoins, rPosition(), staticIntersection.y);
+    } else {
         // The wasp is hovering above solid ground. Spawn the coins on the ground
-        GetCoinManager()->SpawnCoins( numCoins, rPosition(), groundPlanePosn.y );
+        GetCoinManager()->SpawnCoins(numCoins, rPosition(), groundPlanePosn.y);
     }
 
 }
 
 int
-ActorDSG::CastsShadow()
-{
+ActorDSG::CastsShadow() {
     // Dont cast a shadow in the first (fade in) and last(exploded) states
     int castsShadow;
 
     unsigned int statepropState = GetState();
-    if ( statepropState == ActorEnum::eFadeIn || statepropState == ActorEnum::eDestroyed )
+    if (statepropState == ActorEnum::eFadeIn || statepropState == ActorEnum::eDestroyed)
         castsShadow = 0;
     else
-        castsShadow = StaticPhysDSG::CastsShadow();  
+        castsShadow = StaticPhysDSG::CastsShadow();
 
     return castsShadow;
 }

@@ -17,8 +17,7 @@
 //=============================================================================
 // Enumerated Types
 //=============================================================================
-enum HeapType
-{
+enum HeapType {
     HEAP_TYPE_STATIC,
     HEAP_TYPE_TRACKING,
     HEAP_TYPE_DOUG_LEA,
@@ -28,12 +27,18 @@ enum HeapType
 //=============================================================================
 // Functions
 //=============================================================================
-HeapType         AllocatorType( GameMemoryAllocator allocator );
-void             CreateHeap ( GameMemoryAllocator allocator, const unsigned int size );
-void             DestroyHeapA( GameMemoryAllocator allocator );
-IRadMemoryAllocator*  GetAllocator( GameMemoryAllocator allocator );
-IRadMemoryHeap** GetHeapReference( GameMemoryAllocator allocator );
-size_t           GetTotalMemoryFreeInAllHeaps();
-GameMemoryAllocator WhichAllocator( const IRadMemoryAllocator* heap );
+HeapType AllocatorType(GameMemoryAllocator allocator);
+
+void CreateHeap(GameMemoryAllocator allocator, const unsigned int size);
+
+void DestroyHeapA(GameMemoryAllocator allocator);
+
+IRadMemoryAllocator *GetAllocator(GameMemoryAllocator allocator);
+
+IRadMemoryHeap **GetHeapReference(GameMemoryAllocator allocator);
+
+size_t GetTotalMemoryFreeInAllHeaps();
+
+GameMemoryAllocator WhichAllocator(const IRadMemoryAllocator *heap);
 
 #endif //CREATEHEAP_H

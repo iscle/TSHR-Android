@@ -30,38 +30,48 @@ class tEntityStore;
 //
 //=============================================================================
 
-class ActionEventLocator : public TriggerLocator
-{
+class ActionEventLocator : public TriggerLocator {
 public:
     ActionEventLocator();
+
     virtual ~ActionEventLocator();
 
     //From Locator
     virtual LocatorType::Type GetDataType() const;
 
-    void SetObjNameSize( unsigned char size );
-    void SetObjName( const char* name );
-    const char* GetObjName() const;
+    void SetObjNameSize(unsigned char size);
 
-    void SetJointNameSize( unsigned char size );
-    void SetJointName( const char* name );
-    const char* GetJointName() const;
+    void SetObjName(const char *name);
 
-    void SetActionNameSize( unsigned char size );
-    void SetActionName( const char* name );
-    const char* GetActionName() const;
+    const char *GetObjName() const;
 
-    void SetButtonInput( CharacterController::eIntention button );
+    void SetJointNameSize(unsigned char size);
+
+    void SetJointName(const char *name);
+
+    const char *GetJointName() const;
+
+    void SetActionNameSize(unsigned char size);
+
+    void SetActionName(const char *name);
+
+    const char *GetActionName() const;
+
+    void SetButtonInput(CharacterController::eIntention button);
+
     CharacterController::eIntention GetButtonInput() const;
 
-    void SetShouldTransform( bool should );
-    bool GetShouldTransform() const;
-    
-    bool AddToGame( tEntityStore* store );
-    void Reset( void );
+    void SetShouldTransform(bool should);
 
-    void SetMatrix( const rmt::Matrix& mat );
-    rmt::Matrix& GetMatrix();
+    bool GetShouldTransform() const;
+
+    bool AddToGame(tEntityStore *store);
+
+    void Reset(void);
+
+    void SetMatrix(const rmt::Matrix &mat);
+
+    rmt::Matrix &GetMatrix();
 
 private:
     unsigned char mObjNameSize;
@@ -70,21 +80,21 @@ private:
 
     bool mShouldTransform;
 
-    char* mObjName;
-    char* mJointName;
-    char* mActionName;
+    char *mObjName;
+    char *mJointName;
+    char *mActionName;
 
     CharacterController::eIntention mButton;
     rmt::Matrix mMatrix;
-    
-    
-    
+
+
     //From TriggerLocator
-    virtual void OnTrigger( unsigned int playerID );
+    virtual void OnTrigger(unsigned int playerID);
 
     //Prevent wasteful constructor creation.
-    ActionEventLocator( const ActionEventLocator& actioneventlocator );
-    ActionEventLocator& operator=( const ActionEventLocator& actioneventlocator );
+    ActionEventLocator(const ActionEventLocator &actioneventlocator);
+
+    ActionEventLocator &operator=(const ActionEventLocator &actioneventlocator);
 };
 
 //*****************************************************************************
@@ -103,8 +113,7 @@ private:
 // Return:      LocatorType
 //
 //=============================================================================
-inline LocatorType::Type ActionEventLocator::GetDataType() const
-{
+inline LocatorType::Type ActionEventLocator::GetDataType() const {
     return LocatorType::ACTION;
 }
 
@@ -118,8 +127,7 @@ inline LocatorType::Type ActionEventLocator::GetDataType() const
 // Return:      const 
 //
 //=============================================================================
-inline const char* ActionEventLocator::GetObjName() const
-{
+inline const char *ActionEventLocator::GetObjName() const {
     return mObjName;
 }
 
@@ -134,8 +142,7 @@ inline const char* ActionEventLocator::GetObjName() const
 // Return:      const 
 //
 //=============================================================================
-inline const char* ActionEventLocator::GetJointName() const
-{
+inline const char *ActionEventLocator::GetJointName() const {
     return mJointName;
 }
 
@@ -149,8 +156,7 @@ inline const char* ActionEventLocator::GetJointName() const
 // Return:      const 
 //
 //=============================================================================
-inline const char* ActionEventLocator::GetActionName() const
-{
+inline const char *ActionEventLocator::GetActionName() const {
     return mActionName;
 }
 
@@ -159,13 +165,12 @@ inline const char* ActionEventLocator::GetActionName() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( CharacterController::eIntention button )
+// Parameters:  (CharacterController::eIntention button)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ActionEventLocator::SetButtonInput( CharacterController::eIntention button )
-{
+inline void ActionEventLocator::SetButtonInput(CharacterController::eIntention button) {
     mButton = button;
 }
 
@@ -179,8 +184,7 @@ inline void ActionEventLocator::SetButtonInput( CharacterController::eIntention 
 // Return:      CharacterController
 //
 //=============================================================================
-inline CharacterController::eIntention ActionEventLocator::GetButtonInput() const
-{
+inline CharacterController::eIntention ActionEventLocator::GetButtonInput() const {
     return mButton;
 }
 
@@ -189,13 +193,12 @@ inline CharacterController::eIntention ActionEventLocator::GetButtonInput() cons
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool should )
+// Parameters:  (bool should)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ActionEventLocator::SetShouldTransform( bool should )
-{
+inline void ActionEventLocator::SetShouldTransform(bool should) {
     mShouldTransform = should;
 }
 
@@ -209,8 +212,7 @@ inline void ActionEventLocator::SetShouldTransform( bool should )
 // Return:      bool 
 //
 //=============================================================================
-inline bool ActionEventLocator::GetShouldTransform() const
-{
+inline bool ActionEventLocator::GetShouldTransform() const {
     return mShouldTransform;
 }
 
@@ -219,13 +221,12 @@ inline bool ActionEventLocator::GetShouldTransform() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const rmt::Matrix& mat )
+// Parameters:  (const rmt::Matrix& mat)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ActionEventLocator::SetMatrix( const rmt::Matrix& mat )
-{
+inline void ActionEventLocator::SetMatrix(const rmt::Matrix &mat) {
     mMatrix = mat;
 }
 
@@ -239,8 +240,7 @@ inline void ActionEventLocator::SetMatrix( const rmt::Matrix& mat )
 // Return:      rmt
 //
 //=============================================================================
-inline rmt::Matrix& ActionEventLocator::GetMatrix()
-{
+inline rmt::Matrix &ActionEventLocator::GetMatrix() {
     return mMatrix;
 }
 

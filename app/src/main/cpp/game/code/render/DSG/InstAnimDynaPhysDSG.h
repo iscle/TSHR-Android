@@ -25,21 +25,22 @@
 // Forward References
 //===========================================================================
 class tMultiController;
+
 class CStatePropData;
 
-namespace sim
-{
-	class SimState;
+namespace sim {
+    class SimState;
+
     class SimStateArticulated;
+
     class CollisionVolume;
+
     class CollisionObject;
 };
-namespace ActionButton
-{
+namespace ActionButton {
     class AnimSwitch;
 };
-namespace poser
-{
+namespace poser {
     class Pose;
 }
 
@@ -61,50 +62,56 @@ namespace poser
 //		Animation playback is set to cycle on all objects, animation is not instanced
 //
 //===========================================================================
-class InstAnimDynaPhysDSG : public InstDynaPhysDSG
-{
-    public:
-        InstAnimDynaPhysDSG();
-        virtual ~InstAnimDynaPhysDSG();
+class InstAnimDynaPhysDSG : public InstDynaPhysDSG {
+public:
+    InstAnimDynaPhysDSG();
 
-		virtual void Display();
-		virtual void DisplayBoundingBox( tColour colour = tColour( 255,0 ,0 ) );
-		virtual void Update(float dt);
+    virtual ~InstAnimDynaPhysDSG();
 
-		// Set position and orientation
-		virtual void SetTransform( const rmt::Matrix& transform );
+    virtual void Display();
 
-		void LoadSetUp( CollisionAttributes*  ipCollAttr,
-                        const rmt::Matrix&    iMatrix, 
-                        tCompositeDrawable*	  ipCompDrawable,
-						tMultiController*	  ipMultiController,
-						tEntityStore*		  ipSearchStore );
-		
-        void SetAction( ActionButton::AnimSwitch* pActionButton );
-        // If the object is a breakable, play the breakable animation
-        // and flag this object for removal
-        // otherwise, do nothing
-        virtual bool Break();
+    virtual void DisplayBoundingBox(tColour colour = tColour(255, 0, 0));
 
-    protected:
+    virtual void Update(float dt);
 
-		tCompositeDrawable*			mpCompDraw;
-		tMultiController*			mpMultiController;
-        ActionButton::AnimSwitch*   mpActionButton;
-        poser::Pose*                mpPose;
+    // Set position and orientation
+    virtual void SetTransform(const rmt::Matrix &transform);
 
-	protected:
+    void LoadSetUp(CollisionAttributes *ipCollAttr,
+                   const rmt::Matrix &iMatrix,
+                   tCompositeDrawable *ipCompDrawable,
+                   tMultiController *ipMultiController,
+                   tEntityStore *ipSearchStore);
 
-		void UpdatePose( float deltaTime );
-		void UpdateBBox( sim::CollisionVolume* pVolume );
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow InstAnimDynaPhysDSG from being copied and assigned.
-        InstAnimDynaPhysDSG( const InstAnimDynaPhysDSG& );
-        InstAnimDynaPhysDSG& operator=( const InstAnimDynaPhysDSG& );
+    void SetAction(ActionButton::AnimSwitch *pActionButton);
 
-		friend class AnimDynaPhysLoader;
+    // If the object is a breakable, play the breakable animation
+    // and flag this object for removal
+    // otherwise, do nothing
+    virtual bool Break();
+
+protected:
+
+    tCompositeDrawable *mpCompDraw;
+    tMultiController *mpMultiController;
+    ActionButton::AnimSwitch *mpActionButton;
+    poser::Pose *mpPose;
+
+protected:
+
+    void UpdatePose(float deltaTime);
+
+    void UpdateBBox(sim::CollisionVolume *pVolume);
+
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow InstAnimDynaPhysDSG from being copied and assigned.
+    InstAnimDynaPhysDSG(const InstAnimDynaPhysDSG &);
+
+    InstAnimDynaPhysDSG &operator=(const InstAnimDynaPhysDSG &);
+
+    friend class AnimDynaPhysLoader;
 
 };
 //===========================================================================
@@ -118,46 +125,55 @@ class InstAnimDynaPhysDSG : public InstDynaPhysDSG
 //
 //===========================================================================
 
-class AnimDynaPhysWrapper : public tEntity
-{
+class AnimDynaPhysWrapper : public tEntity {
 public:
 
-	AnimDynaPhysWrapper();
-	virtual ~AnimDynaPhysWrapper();
+    AnimDynaPhysWrapper();
 
-	float GetVolume()const;
-	bool HasAlpha()const;
+    virtual ~AnimDynaPhysWrapper();
 
-	tCompositeDrawable* GetDrawable()const;
-	tMultiController* GetController()const;
-    CStatePropData* GetStatePropData()const;
-    sim::PhysicsObject*	  GetPhysicsObject()const { return mPhysicsObject; }
-    sim::CollisionObject* GetCollisionObject()const { return mCollisionObject; }
+    float GetVolume() const;
 
-    void SetHasAnimation( bool hasAnim ) { mHasAnimations = hasAnim; }
-    bool HasAnimation()const { return mHasAnimations; }
+    bool HasAlpha() const;
 
-	// Creates a new InstAnimDynaPhys object,
-	// optionally places it on the given heap
-	InstAnimDynaPhysDSG* CreateDSGObject( CollisionAttributes* pAttr, const rmt::Matrix& transform, GameMemoryAllocator );
+    tCompositeDrawable *GetDrawable() const;
+
+    tMultiController *GetController() const;
+
+    CStatePropData *GetStatePropData() const;
+
+    sim::PhysicsObject *GetPhysicsObject() const { return mPhysicsObject; }
+
+    sim::CollisionObject *GetCollisionObject() const { return mCollisionObject; }
+
+    void SetHasAnimation(bool hasAnim) { mHasAnimations = hasAnim; }
+
+    bool HasAnimation() const { return mHasAnimations; }
+
+    // Creates a new InstAnimDynaPhys object,
+    // optionally places it on the given heap
+    InstAnimDynaPhysDSG *
+    CreateDSGObject(CollisionAttributes *pAttr, const rmt::Matrix &transform, GameMemoryAllocator);
 
 private:
 
-    AnimDynaPhysWrapper( const AnimDynaPhysWrapper& );
-    AnimDynaPhysWrapper& operator=( const AnimDynaPhysWrapper& );
+    AnimDynaPhysWrapper(const AnimDynaPhysWrapper &);
+
+    AnimDynaPhysWrapper &operator=(const AnimDynaPhysWrapper &);
 
 private:
 
-	tCompositeDrawable*		mCompDraw;
-	tMultiController*		mMultiController;
-	sim::PhysicsObject*		mPhysicsObject;
-	sim::CollisionObject*   mCollisionObject;
-	bool					mHasAlpha;
-    CStatePropData*         mStatePropData;
-    bool                    mHasAnimations;
+    tCompositeDrawable *mCompDraw;
+    tMultiController *mMultiController;
+    sim::PhysicsObject *mPhysicsObject;
+    sim::CollisionObject *mCollisionObject;
+    bool mHasAlpha;
+    CStatePropData *mStatePropData;
+    bool mHasAnimations;
 
-	friend class AnimDynaPhysWrapperLoader;
-	friend class AnimObjDSGWrapperLoader;
+    friend class AnimDynaPhysWrapperLoader;
+
+    friend class AnimObjDSGWrapperLoader;
 };
 
 #endif

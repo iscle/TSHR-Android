@@ -23,6 +23,7 @@
 // Forward References
 //========================================
 class Vehicle;
+
 class carSoundParameters;
 
 //=============================================================================
@@ -32,46 +33,51 @@ class carSoundParameters;
 //=============================================================================
 
 class TrafficSoundPlayer : public VehiclePositionalSoundPlayer,
-                           public IRadTimerCallback
-{
-    public:
-        TrafficSoundPlayer( );
-        virtual ~TrafficSoundPlayer();
+                           public IRadTimerCallback {
+public:
+    TrafficSoundPlayer();
 
-        static void InitializeClass( unsigned int numVehicles );
+    virtual ~TrafficSoundPlayer();
 
-        void Activate( positionalSoundSettings* soundSettings,
-                       const char* resourceName,
-                       Vehicle* theCar );
-        void Deactivate();
+    static void InitializeClass(unsigned int numVehicles);
 
-        void ServiceOncePerFrame();
-        static void ServiceTimerList();
+    void Activate(positionalSoundSettings *soundSettings,
+                  const char *resourceName,
+                  Vehicle *theCar);
 
-        void HonkHorn();
-        void AddOverlayClip( carSoundParameters* parameters, const char* posnSettingsName );
-        void ToggleOverlayClip( carSoundParameters* parameters, const char* posnSettingsName );
+    void Deactivate();
 
-        //
-        // IRadTimerCallback
-        //
-        void OnTimerDone( unsigned int elapsedTime, void* pUserData );
+    void ServiceOncePerFrame();
 
-    private:
-        //Prevent wasteful constructor creation.
-        TrafficSoundPlayer( const TrafficSoundPlayer& trafficsoundplayer );
-        TrafficSoundPlayer& operator=( const TrafficSoundPlayer& trafficsoundplayer );
+    static void ServiceTimerList();
 
-        IRadTimer* m_hornTimer;
-        PositionalSoundPlayer m_hornPlayer;
+    void HonkHorn();
 
-        carSoundParameters* m_vehicleParameters;
-        PositionalSoundPlayer m_overlayPlayer;
+    void AddOverlayClip(carSoundParameters *parameters, const char *posnSettingsName);
 
-        unsigned int m_honkCount;
-        float m_pitchMultiplier;
+    void ToggleOverlayClip(carSoundParameters *parameters, const char *posnSettingsName);
 
-        static IRadTimerList* s_timerList;
+    //
+    // IRadTimerCallback
+    //
+    void OnTimerDone(unsigned int elapsedTime, void *pUserData);
+
+private:
+    //Prevent wasteful constructor creation.
+    TrafficSoundPlayer(const TrafficSoundPlayer &trafficsoundplayer);
+
+    TrafficSoundPlayer &operator=(const TrafficSoundPlayer &trafficsoundplayer);
+
+    IRadTimer *m_hornTimer;
+    PositionalSoundPlayer m_hornPlayer;
+
+    carSoundParameters *m_vehicleParameters;
+    PositionalSoundPlayer m_overlayPlayer;
+
+    unsigned int m_honkCount;
+    float m_pitchMultiplier;
+
+    static IRadTimerList *s_timerList;
 };
 
 //*****************************************************************************

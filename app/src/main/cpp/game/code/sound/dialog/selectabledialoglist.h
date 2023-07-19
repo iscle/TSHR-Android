@@ -18,7 +18,8 @@ class SelectableDialog;
 #include <list>
 #include <memory/stlallocators.h>
 
-typedef std::list< SelectableDialog*, s2alloc<SelectableDialog*> > SelectableDialogList;
+typedef std::list<SelectableDialog *, s2alloc < SelectableDialog * >>
+SelectableDialogList;
 
 #endif // SELECTABLEDIALOGLIST_H
 

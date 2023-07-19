@@ -16,17 +16,16 @@
 
 
 //------------------------------------------------------------------------
-Wheel::Wheel()
-{
-    mRadius = 0.0f;    
+Wheel::Wheel() {
+    mRadius = 0.0f;
     mObjectSpaceYOffsetFromCurrentPosition = 0.0f;
 
     mWheelNum = -1;     // unset flag
     mYOffset = 0.0f;
 
     mLimit = 0.0f;
-    mk = 0.0f;   
-    mc = 0.0f;   
+    mk = 0.0f;
+    mc = 0.0f;
 
     mWheelInCollision = false;  // TODO - is this method adequate!?
     mWheelBottomedOutThisFrame = false;
@@ -34,7 +33,7 @@ Wheel::Wheel()
     mSpringRelaxRate = 0.5f;    // second to move from limit to 0 when not in collision
 
     mWheelTurnAngle = 0.0f;
-    
+
     mRotAngle = 0.0f;
     mCumulativeRot = 0.0f;
     mTotalTime = 0.0f;
@@ -43,7 +42,7 @@ Wheel::Wheel()
     //mSpinUpRate = 10.0f;    //? - I think this is in (rad/s)/s
 
     //mRenderingSpinUpRateBase = 0.1f;    // this is actually in units of rad/s - 
-                           // it's a direct setting of the increment amount, for now
+    // it's a direct setting of the increment amount, for now
 
     mRenderingSpinUpRateBase = 100.0f;    // back to rad/s
 
@@ -57,7 +56,7 @@ Wheel::Wheel()
     mSteerWheel = false;
     mDriveWheel = false;
 
-   
+
     mVehicle = 0;
 
     //----------------
@@ -70,33 +69,31 @@ Wheel::Wheel()
     //---------
     // redbrick     normal
     //---------
- 
+
     // NOTE: these are all overwritten shortly after init
     // these are just default values that are ok for the ferrari
-    
+
     mDpSuspensionLimit = 0.4f;  // try this for ferrari
-    
+
     mDpSpringk = 0.5f; // prett good value for redbrick
     mDpDamperc = 0.2f;  // scale on critical damping            temp for debugging
 
-      
+
 }
-    
+
 
 //------------------------------------------------------------------------
-Wheel::~Wheel()
-{
+Wheel::~Wheel() {
     //
 }
 
 
 //------------------------------------------------------------------------
-void Wheel::Init(Vehicle* vehicle, int wheelNum, float radius, bool steer, bool drive)
-{
+void Wheel::Init(Vehicle *vehicle, int wheelNum, float radius, bool steer, bool drive) {
     mVehicle = vehicle;
 
     mWheelNum = wheelNum;
-    mRadius = radius;  
+    mRadius = radius;
 
     mSteerWheel = steer;
     mDriveWheel = drive;
@@ -111,7 +108,7 @@ void Wheel::Init(Vehicle* vehicle, int wheelNum, float radius, bool steer, bool 
     // temp hack for lack of phizsim
     //float gravity_y = 9.81f;
 
-    const rmt::Vector& gravity = GetWorldPhysicsManager()->mSimEnvironment->Gravity();// this or CGS ?
+    const rmt::Vector &gravity = GetWorldPhysicsManager()->mSimEnvironment->Gravity();// this or CGS ?
 
     //float gravity_y = 9.81f;
     float gravity_y = -1.0f * gravity.y;
@@ -126,24 +123,23 @@ void Wheel::Init(Vehicle* vehicle, int wheelNum, float radius, bool steer, bool 
     mqk = mk * 5.0f; // first guess at quad spring
     //mqk = mk * 10.0f; // first guess at quad spring
 
-    float criticalDamping = 2.0f * (float)rmt::Sqrt(mk * mVehicle->mDesignerParams.mDpMass);
+    float criticalDamping = 2.0f * (float) rmt::Sqrt(mk * mVehicle->mDesignerParams.mDpMass);
     mc = criticalDamping * mDpDamperc;
-    
+
 
     // these will get recalculated wheh SetDesignParams is called
 
 }
 
 //------------------------------------------------------------------------
-void Wheel::SetDesignerParams(Vehicle::DesignerParams* dp)
-{
+void Wheel::SetDesignerParams(Vehicle::DesignerParams *dp) {
 
     mDpSuspensionLimit = dp->mDpSuspensionLimit;
-    
+
     mDpSpringk = dp->mDpSpringk;
     mDpDamperc = dp->mDpDamperc;
 
-    
+
     //----------
 
     mLimit = mDpSuspensionLimit * mRadius;
@@ -152,7 +148,7 @@ void Wheel::SetDesignerParams(Vehicle::DesignerParams* dp)
     // temp hack for lack of phizsim
     //float gravity_y = 9.81f;
 
-    const rmt::Vector& gravity = GetWorldPhysicsManager()->mSimEnvironment->Gravity();// this or CGS ?
+    const rmt::Vector &gravity = GetWorldPhysicsManager()->mSimEnvironment->Gravity();// this or CGS ?
 
     //float gravity_y = 9.81f;
     float gravity_y = -1.0f * gravity.y;
@@ -168,7 +164,7 @@ void Wheel::SetDesignerParams(Vehicle::DesignerParams* dp)
     //mqk = mk * 10.0f; // first guess at quad spring
 
 
-    float criticalDamping = 2.0f * (float)rmt::Sqrt(mk * mVehicle->mDesignerParams.mDpMass);
+    float criticalDamping = 2.0f * (float) rmt::Sqrt(mk * mVehicle->mDesignerParams.mDpMass);
     mc = criticalDamping * mDpDamperc;
 
 
@@ -177,15 +173,13 @@ void Wheel::SetDesignerParams(Vehicle::DesignerParams* dp)
 }
 
 //------------------------------------------------------------------------
-float Wheel::CalculateSuspensionForce(float suspensionPointYVelocity, float dt)
-{
-    
+float Wheel::CalculateSuspensionForce(float suspensionPointYVelocity, float dt) {
+
     rAssert(0);
 
     float force = 0.0f;
 
-    if(mWheelInCollision)
-    {
+    if (mWheelInCollision) {
 
         float springForce = mk * mYOffset;
 
@@ -198,37 +192,28 @@ float Wheel::CalculateSuspensionForce(float suspensionPointYVelocity, float dt)
         //
         // or... topping out!
         //
-        if((mLimit - rmt::Fabs(mYOffset)) < mLimit * 0.25f)        
-        {            
+        if ((mLimit - rmt::Fabs(mYOffset)) < mLimit * 0.25f) {
             springForce *= 3.0f;
         }
 
         // for now, only add damping if chassis is trying to compress suspension - ie. y velocity is down, -ve
         float damperForce = 0.0f;
 
-        if(suspensionPointYVelocity < 0.0f)
-        {
+        if (suspensionPointYVelocity < 0.0f) {
             damperForce = mc * -1.0f * suspensionPointYVelocity;
-        }
-        else
-        {
+        } else {
             // like the havok guys, only let damper pull down at about 1/3 of push up
             damperForce = mc * -1.0f * suspensionPointYVelocity * 0.3f;
 
         }
- 
+
         force = springForce + damperForce;
-    }
-    else
-    {
+    } else {
         // need to relax spring somehow
         float relaxDistance = mLimit / mSpringRelaxRate * dt;
-        if(mYOffset >= relaxDistance)
-        {
+        if (mYOffset >= relaxDistance) {
             mYOffset -= relaxDistance;
-        }
-        else if(mYOffset <= -relaxDistance)
-        {
+        } else if (mYOffset <= -relaxDistance) {
             mYOffset += relaxDistance;
         }
 
@@ -239,12 +224,10 @@ float Wheel::CalculateSuspensionForce(float suspensionPointYVelocity, float dt)
 }
 
 
-
 //------------------------------------------------------------------------------------------------
-void Wheel::CalculateRenderingSpinUpRateBase(float topSpeedKmh)
-{
+void Wheel::CalculateRenderingSpinUpRateBase(float topSpeedKmh) {
     // mDpRenderingSpinUpSpeedThreshold;    
-    
+
     // at what rad/s is the wheel going % of top speed
 
     float topspeedmps = topSpeedKmh / 3.6f;
@@ -258,27 +241,23 @@ void Wheel::CalculateRenderingSpinUpRateBase(float topSpeedKmh)
     // ! fuck you idiot
     // we need rads not revs
     float linearDistancePerRad = linearDistancePerRev / (2.0f * rmt::PI);
-    
+
 
     mRenderingSpinUpRateBase = (1.0f / linearDistancePerRad) * thresholdmps;
-
 
 
 }
 
 
 //------------------------------------------------------------------------
-void Wheel::CalculateRotAngle(float dt) 
-{
-    if(mVehicle->mEBrake > 0.0f && mWheelInCollision)
-    {    
+void Wheel::CalculateRotAngle(float dt) {
+    if (mVehicle->mEBrake > 0.0f && mWheelInCollision) {
         // now, if no gas, don't rotate
-        if(mVehicle->mGas == 0.0f && this->mDriveWheel == true)
-        {
-            mRotAngle = 0.0f;     
+        if (mVehicle->mGas == 0.0f && this->mDriveWheel == true) {
+            mRotAngle = 0.0f;
             return;
         }
-                
+
     }
 
 
@@ -286,8 +265,7 @@ void Wheel::CalculateRotAngle(float dt)
 
     rmt::Vector wheelDirection = mVehicle->mVehicleFacing;
 
-    if(mSteerWheel)
-    {        
+    if (mSteerWheel) {
         rmt::Matrix steeringMatrix; // TODO - make this a class member?
         steeringMatrix.Identity();
         steeringMatrix.FillRotateY(mWheelTurnAngle);
@@ -307,15 +285,11 @@ void Wheel::CalculateRotAngle(float dt)
 
     // ?
     // see if vehicle's doin' a burnout
-    if(mVehicle->mBurnoutLevel > 0.0f && mDriveWheel)
-    {
-        if(mVehicle->mGas > mVehicle->mBrake)
-        {
+    if (mVehicle->mBurnoutLevel > 0.0f && mDriveWheel) {
+        if (mVehicle->mGas > mVehicle->mBrake) {
             radiansPerTime = mRenderingSpinUpRateBase;
-        }
-        else
-        {
-           radiansPerTime = -1.0f * mRenderingSpinUpRateBase;
+        } else {
+            radiansPerTime = -1.0f * mRenderingSpinUpRateBase;
         }
     }
 
@@ -323,7 +297,7 @@ void Wheel::CalculateRotAngle(float dt)
     /*
     if(mWheelState == WS_LOCOMOTIVE_SLIDE || mWheelState == WS_LOCOMOTIVE_FREE_SPIN)
     {
-        if(radiansPerTime >= mRenderingSpinUpRate)
+        if(radiansPerTime>= mRenderingSpinUpRate)
         {
             // kick out of thid mode and use the calculated value
             //
@@ -347,17 +321,17 @@ void Wheel::CalculateRotAngle(float dt)
 
     mRotAngle = radiansPerTime * dt;
 
-    //if(rmt::Fabs(radiansPerTime - (2.0f * rmt::PI)) < 0.1f)
+    //if(rmt::Fabs(radiansPerTime - (2.0f * rmt::PI)) <0.1f)
     //{
     //    int stophere = 1;
-   // }
+    // }
 
 
     // fucking hack to (temporarily?) fix wheel rot on ps2
     /*
     mTotalTime += dt;
 
-    if(mTotalTime > 30.0f)  // value is in seconds
+    if(mTotalTime> 30.0f)  // value is in seconds
     {
         mTotalTime = 0.0f;
         mCumulativeRot = 0.0f;
@@ -365,21 +339,19 @@ void Wheel::CalculateRotAngle(float dt)
     */
 
     mCumulativeRot += mRotAngle;
-   
-    if(mCumulativeRot > rmt::PI_2)
-    {
+
+    if (mCumulativeRot > rmt::PI_2) {
         mCumulativeRot -= rmt::PI_2;
 
         //safeguard - higly unlikely we'd get here...
-        if(mCumulativeRot > rmt::PI_2)
-        {
+        if (mCumulativeRot > rmt::PI_2) {
             // still?
             // something strange must have happened
             mCumulativeRot = 0.0f;
         }
-        
+
     }
-   
+
 
 
 
@@ -411,30 +383,27 @@ void Wheel::CalculateRotAngle(float dt)
 //
 //
 //=============================================================================
-float Wheel::SetYOffsetFromCurrentPosition(float yoffset)
-{
+float Wheel::SetYOffsetFromCurrentPosition(float yoffset) {
 
     // the parameter mObjectSpaceYOffsetFromCurrentPosition is a bit verbose at this
     // point since before doing wheel collision we set the wheels to the bottom of the 
     // suspension limit, so at this poitn the currentposition is always the same
 
-    if(yoffset > mObjectSpaceYOffsetFromCurrentPosition)
-    {
+    if (yoffset > mObjectSpaceYOffsetFromCurrentPosition) {
         mObjectSpaceYOffsetFromCurrentPosition = yoffset;
     }
     // TODO - make sure this gets reset to 0.0 at the right place
 
 
     // this call got propagated to us from the collision solver, so I think this is the place to set the flag
-    mWheelInCollision = true;    
+    mWheelInCollision = true;
 
     // temp
     // TODO - remove
     //return 0.0f;
 
 
-    if(mObjectSpaceYOffsetFromCurrentPosition > 2.0f * mLimit)
-    {
+    if (mObjectSpaceYOffsetFromCurrentPosition > 2.0f * mLimit) {
         // suspension has bottomed out
         //
         //  TODO - rename this method?
@@ -452,8 +421,7 @@ float Wheel::SetYOffsetFromCurrentPosition(float yoffset)
     // TODO
     // is this ok?
     // should be if we always started out at the bottom of the suspension limit
-    if(mObjectSpaceYOffsetFromCurrentPosition < 0.0f)
-    {
+    if (mObjectSpaceYOffsetFromCurrentPosition < 0.0f) {
         rAssert(0);
         mObjectSpaceYOffsetFromCurrentPosition = 0.0f;
     }
@@ -464,8 +432,7 @@ float Wheel::SetYOffsetFromCurrentPosition(float yoffset)
 
 
 //------------------------------------------------------------------------
-void Wheel::ResolveOffset()
-{
+void Wheel::ResolveOffset() {
     // we assume at this point anyone who wants to has called SetYOffsetFromCurrentPosition
     mYOffset += mObjectSpaceYOffsetFromCurrentPosition;
 
@@ -474,13 +441,11 @@ void Wheel::ResolveOffset()
     // TODO - remove
     //mObjectSpaceYOffsetFromCurrentPosition = 0.0f;
     //return;
-    
-    if(mYOffset > mLimit)
-    {
+
+    if (mYOffset > mLimit) {
         mYOffset = mLimit;
     }
-    if(mYOffset < -mLimit)
-    {
+    if (mYOffset < -mLimit) {
         mYOffset = -mLimit;
     }
 
@@ -499,17 +464,13 @@ void Wheel::ResolveOffset()
 
 
 //------------------------------------------------------------------------
-float Wheel::GetYCorrectionValue()
-{
+float Wheel::GetYCorrectionValue() {
     return mObjectSpaceYOffsetFromCurrentPosition;
 }
 
 
-
-
 //------------------------------------------------------------------------
-void Wheel::Reset()
-{
+void Wheel::Reset() {
     mYOffset = 0.0f;
     mObjectSpaceYOffsetFromCurrentPosition = 0.0f;
 

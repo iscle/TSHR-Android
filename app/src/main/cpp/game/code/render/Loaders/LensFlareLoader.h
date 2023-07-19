@@ -22,45 +22,46 @@
 
 
 class tCompositeDrawableLoader;
+
 class tBillboardQuadGroupLoader;
 
 
-class LensFlareLoader 
-: public tSimpleChunkHandler,
-  public IWrappedLoader 
-{
+class LensFlareLoader
+        : public tSimpleChunkHandler,
+          public IWrappedLoader {
 public:
-   LensFlareLoader();
-   virtual ~LensFlareLoader();
- 
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   void SetRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    LensFlareLoader();
 
-   void ModRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    virtual ~LensFlareLoader();
 
-   ///////////////////////////////////////////////////////////////////////
-   // tSimpleChunkHandler
-   ///////////////////////////////////////////////////////////////////////
-   virtual tEntity* LoadObject(tChunkFile* file, tEntityStore* store);
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
+
+    void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
+
+    ///////////////////////////////////////////////////////////////////////
+    // tSimpleChunkHandler
+    ///////////////////////////////////////////////////////////////////////
+    virtual tEntity *LoadObject(tChunkFile *file, tEntityStore *store);
 
 protected:
-   tCompositeDrawableLoader*	mpCompDLoader;
-   tBillboardQuadGroupLoader*   mpBillBoardQuadLoader;
+    tCompositeDrawableLoader *mpCompDLoader;
+    tBillboardQuadGroupLoader *mpBillBoardQuadLoader;
 
-   // Iterates through the compdrawable, setting the first billboardquadgroup's
-   // occlusion flag to 2
-   // all subsequent ones to 1
-   void SetOcclusionFlags( tCompositeDrawable* compDraw );
+    // Iterates through the compdrawable, setting the first billboardquadgroup's
+    // occlusion flag to 2
+    // all subsequent ones to 1
+    void SetOcclusionFlags(tCompositeDrawable *compDraw);
 
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   //ChunkListenerCallback*  mpListenerCB;
-   //void* mpUserData;
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    //ChunkListenerCallback*  mpListenerCB;
+    //void* mpUserData;
 private:
 };
 

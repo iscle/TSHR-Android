@@ -28,42 +28,52 @@
 //===========================================================================
 
 class tMultiController;
+
 class tPoseAnimationController;
+
 class tPose;
 
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenPurchaseRewards : public IGuiScreenRewards
-{
+class CGuiScreenPurchaseRewards : public IGuiScreenRewards {
 public:
-    CGuiScreenPurchaseRewards( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenPurchaseRewards(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenPurchaseRewards();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    void OnProcessRequestsComplete( void* pUserData );
+    void OnProcessRequestsComplete(void *pUserData);
 
 #ifdef RAD_WIN32
-    virtual eFEHotspotType CheckCursorAgainstHotspots( float x, float y );
+    virtual eFEHotspotType CheckCursorAgainstHotspots(float x, float y);
 #endif
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
 
-    virtual void On3DModelLoaded( const PreviewObject* previewObject );
-    virtual const PreviewObject* GetCurrentPreviewObject() const;
+    void InitRunning();
+
+    void InitOutro();
+
+    virtual void On3DModelLoaded(const PreviewObject *previewObject);
+
+    virtual const PreviewObject *GetCurrentPreviewObject() const;
+
     virtual void InitMenu();
 
 private:
-    void OnUpdate( unsigned int elapsedTime );
+    void OnUpdate(unsigned int elapsedTime);
+
     void UpdateRewardPrice();
+
     void UpdateBankValue();
+
     void PurchaseReward();
+
     void LoadSelectedReward();
 
     Merchandise::eSellerType m_currentType;
@@ -71,7 +81,7 @@ private:
     unsigned int m_elapsedCoinDecrementTotalTime;
     unsigned int m_elapsedCoinDecrementTime;
     int m_bankValueBeforePurchase;
-    Scrooby::Text* m_purchaseLabel;
+    Scrooby::Text *m_purchaseLabel;
 
 #ifdef RAD_WIN32
     Scrooby::Sprite* m_leftArrow;
@@ -79,8 +89,8 @@ private:
 #endif
 
     tMultiController::TrackInfo m_skinTrackInfo;
-    tMultiController* m_skinMultiController;
-    tPoseAnimationController* m_skinAnimController;
+    tMultiController *m_skinMultiController;
+    tPoseAnimationController *m_skinAnimController;
 
 };
 

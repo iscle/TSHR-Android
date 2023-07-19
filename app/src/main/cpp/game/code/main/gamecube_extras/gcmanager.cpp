@@ -58,33 +58,28 @@ int sY = 480;
 //
 //*****************************************************************************
 
-void ResetButtonCallBack( void )
-{
-    if ( OSGetResetButtonState() )
-    {
+void ResetButtonCallBack(void) {
+    if (OSGetResetButtonState()) {
         //Inform the GCManager
-        GCManager::GetInstance()->Reset();        
-    }
-    else
-    {
+        GCManager::GetInstance()->Reset();
+    } else {
         //Reset the callback the last one was bogus.
-    	OSSetResetCallback( ResetButtonCallBack );   
+        OSSetResetCallback(ResetButtonCallBack);
     }
 }
 
-void CheckForGCNReset()
-{
+void CheckForGCNReset() {
     GCManager::GetInstance()->TestForReset();
 }
 
 
 #ifdef DEBUGWATCH
-void ChangeResolutionCallback( void* userData )
+void ChangeResolutionCallback(void* userData)
 {
-	sY = sX * 12;
-	sX *= 16;
-	
-    GCManager::GetInstance()->ChangeResolution( sX, sY, 32 );
+    sY = sX * 12;
+    sX *= 16;
+
+    GCManager::GetInstance()->ChangeResolution(sX, sY, 32);
 }
 #endif
 
@@ -94,7 +89,7 @@ void ChangeResolutionCallback( void* userData )
 //
 //******************************************************************************
 
-GCManager* GCManager::mInstance = NULL;
+GCManager *GCManager::mInstance = NULL;
 
 //******************************************************************************
 //
@@ -102,14 +97,12 @@ GCManager* GCManager::mInstance = NULL;
 //
 //******************************************************************************
 
-GCManager* GCManager::GetInstance()
-{
-MEMTRACK_PUSH_GROUP( "GCManager" );
-    if ( !mInstance )
-    {
+GCManager *GCManager::GetInstance() {
+    MEMTRACK_PUSH_GROUP("GCManager");
+    if (!mInstance) {
         mInstance = new(GMA_PERSISTENT) GCManager();
     }
-MEMTRACK_POP_GROUP( "GCManager" );
+    MEMTRACK_POP_GROUP("GCManager");
 
     return mInstance;
 }
@@ -124,10 +117,9 @@ MEMTRACK_POP_GROUP( "GCManager" );
 // Return:      void 
 //
 //=============================================================================
-void GCManager::Init()
-{
+void GCManager::Init() {
     //We want a callback to test for reset
-    GetGame()->GetTimerList()->CreateTimer( &mTimer, 500, this );
+    GetGame()->GetTimerList()->CreateTimer(&mTimer, 500, this);
 }
 
 //=============================================================================
@@ -140,8 +132,7 @@ void GCManager::Init()
 // Return:      void 
 //
 //=============================================================================
-void GCManager::Reset()
-{
+void GCManager::Reset() {
     mReset = true;
 }
 
@@ -150,22 +141,20 @@ void GCManager::Reset()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime, void * pUserData )
+// Parameters:  (unsigned int elapsedTime, void * pUserData)
 //
 // Return:      void 
 //
 //============================================================================= 
-void GCManager::OnTimerDone( unsigned int elapsedTime, void * pUserData )
-{
-    BEGIN_PROFILE( "GCManager" );
-    if ( mReset )
-    {
+void GCManager::OnTimerDone(unsigned int elapsedTime, void *pUserData) {
+    BEGIN_PROFILE("GCManager");
+    if (mReset) {
         PerformReset();
     }
 
     TestForReset();
 
-    END_PROFILE( "GCManager" );
+    END_PROFILE("GCManager");
 }
 
 
@@ -186,24 +175,22 @@ void GCManager::OnTimerDone( unsigned int elapsedTime, void * pUserData )
 //
 //==============================================================================
 GCManager::GCManager() :
-    mDoingReset( false ),
-    mTimer( NULL )
-{
+        mDoingReset(false),
+        mTimer(NULL) {
     unsigned int i;
-    for ( i = 0; i < Input::MaxControllers; ++i )
-    {
+    for (i = 0; i < Input::MaxControllers; ++i) {
         mControllerReset[i] = false;
         mResetTime[i] = 0;
     }
 
     //Set up the reset callback.
-    OSSetResetCallback( ResetButtonCallBack );   
-    
-#ifdef DEBUGWATCH
-    radDbgWatchAddFunction( "Set Resolution", &ChangeResolutionCallback, this, "GCManager" );
+    OSSetResetCallback(ResetButtonCallBack);
 
-    radDbgWatchAddInt( &sX, "X Resolution (multiple of 16)", "GCManager", NULL, NULL, 1, 40 );
-//    radDbgWatchAddInt( &sY, "Y Resolution", "GCManager", NULL, NULL, 16, 480 );
+#ifdef DEBUGWATCH
+    radDbgWatchAddFunction("Set Resolution", &ChangeResolutionCallback, this, "GCManager");
+
+    radDbgWatchAddInt(&sX, "X Resolution (multiple of 16)", "GCManager", NULL, NULL, 1, 40);
+//    radDbgWatchAddInt(&sY, "Y Resolution", "GCManager", NULL, NULL, 16, 480);
 #endif
 }
 
@@ -217,10 +204,8 @@ GCManager::GCManager() :
 // Return:      N/A.
 //
 //==============================================================================
-GCManager::~GCManager()
-{
-    if ( mTimer )
-    {
+GCManager::~GCManager() {
+    if (mTimer) {
         mTimer->Release();
     }
 }
@@ -235,60 +220,49 @@ GCManager::~GCManager()
 // Return:      void 
 //
 //=============================================================================
-void GCManager::TestForReset()
-{
+void GCManager::TestForReset() {
 
     unsigned int inputCount = 0;
     PADStatus controllers[PAD_MAX_CONTROLLERS];
 
-    for ( inputCount = 0; inputCount < PAD_MAX_CONTROLLERS; ++inputCount )
-    {
-        controllers[ inputCount ].button = 0;
+    for (inputCount = 0; inputCount < PAD_MAX_CONTROLLERS; ++inputCount) {
+        controllers[inputCount].button = 0;
     }
 
     PADRead(controllers);
-    //while( PAD_ERR_TRANSFER == PADRead(controllers) ){  ::radThreadSleep( 32 ); }
+    //while(PAD_ERR_TRANSFER == PADRead(controllers)){  ::radThreadSleep(32); }
 
-    LGPosition lgStatus[ SI_MAX_CHAN ];
-    memset( lgStatus, 0, sizeof( LGPosition )*SI_MAX_CHAN  );
+    LGPosition lgStatus[SI_MAX_CHAN];
+    memset(lgStatus, 0, sizeof(LGPosition) * SI_MAX_CHAN);
 
     extern bool g_isLGInitialized;
-    if( g_isLGInitialized )
-    {
-        LGRead( lgStatus );
+    if (g_isLGInitialized) {
+        LGRead(lgStatus);
     }
 
-    rAssert( PAD_MAX_CONTROLLERS == SI_MAX_CHAN );
-    for ( inputCount = 0; inputCount < PAD_MAX_CONTROLLERS; ++inputCount )
-    {
-        if( lgStatus[inputCount].err == LG_ERR_NONE )
-        {
+    rAssert(PAD_MAX_CONTROLLERS == SI_MAX_CHAN);
+    for (inputCount = 0; inputCount < PAD_MAX_CONTROLLERS; ++inputCount) {
+        if (lgStatus[inputCount].err == LG_ERR_NONE) {
             controllers[inputCount].err = PAD_ERR_NONE;
             controllers[inputCount].button = 0;
 
-            if( lgStatus[inputCount].button & LG_BUTTON_B )
-            {
+            if (lgStatus[inputCount].button & LG_BUTTON_B) {
                 controllers[inputCount].button |= PAD_BUTTON_B;
             }
-            if( lgStatus[inputCount].button & LG_BUTTON_X )
-            {
+            if (lgStatus[inputCount].button & LG_BUTTON_X) {
                 controllers[inputCount].button |= PAD_BUTTON_X;
             }
-            if( lgStatus[inputCount].button & LG_BUTTON_START )
-            {
+            if (lgStatus[inputCount].button & LG_BUTTON_START) {
                 controllers[inputCount].button |= PAD_BUTTON_MENU;
             }
         }
 
-        if ( controllers[ inputCount ].err == PAD_ERR_NONE &&
-            controllers[ inputCount ].button & PAD_BUTTON_B &&
-            controllers[ inputCount ].button & PAD_BUTTON_X &&
-            controllers[ inputCount ].button & PAD_BUTTON_MENU )
-        {
-            if ( mControllerReset[inputCount] )
-            {
-                if ( OSTicksToMilliseconds( OSGetTime() ) - mResetTime[inputCount] > MIN_TIME )
-                {
+        if (controllers[inputCount].err == PAD_ERR_NONE &&
+            controllers[inputCount].button & PAD_BUTTON_B &&
+            controllers[inputCount].button & PAD_BUTTON_X &&
+            controllers[inputCount].button & PAD_BUTTON_MENU) {
+            if (mControllerReset[inputCount]) {
+                if (OSTicksToMilliseconds(OSGetTime()) - mResetTime[inputCount] > MIN_TIME) {
                     mControllerReset[inputCount] = false;
                     mResetTime[inputCount] = 0;
 
@@ -296,49 +270,39 @@ void GCManager::TestForReset()
                     ControllerReset();
                     break;
                 }
-            }
-            else
-            {
-                if ( mResetTime[inputCount] == 0 )
-                {
-                    if(GetGameFlow()==NULL)return;
+            } else {
+                if (mResetTime[inputCount] == 0) {
+                    if (GetGameFlow() == NULL)return;
                     ContextEnum context = GetGameFlow()->GetCurrentContext();
 
-                    if ( context == CONTEXT_LOADING_SUPERSPRINT ||
-                         context == CONTEXT_SUPERSPRINT ||
-                         context == CONTEXT_LOADING_GAMEPLAY ||
-                         context == CONTEXT_GAMEPLAY ||
-                         context == CONTEXT_PAUSE )
-                    {
-                        if ( GetInputManager()->GetControllerPlayerIDforController( inputCount ) >= 0 )
-                        {
-                            mResetTime[inputCount] = OSTicksToMilliseconds( OSGetTime() );
+                    if (context == CONTEXT_LOADING_SUPERSPRINT ||
+                        context == CONTEXT_SUPERSPRINT ||
+                        context == CONTEXT_LOADING_GAMEPLAY ||
+                        context == CONTEXT_GAMEPLAY ||
+                        context == CONTEXT_PAUSE) {
+                        if (GetInputManager()->GetControllerPlayerIDforController(inputCount) >=
+                            0) {
+                            mResetTime[inputCount] = OSTicksToMilliseconds(OSGetTime());
                             mControllerReset[inputCount] = true;
                         }
-                    }
-                    else
-                    {
-                        mResetTime[inputCount] = OSTicksToMilliseconds( OSGetTime() );
+                    } else {
+                        mResetTime[inputCount] = OSTicksToMilliseconds(OSGetTime());
                         mControllerReset[inputCount] = true;
                     }
 
                 }
-            }            
-        }
-        else
-        {
+            }
+        } else {
             mResetTime[inputCount] = 0;
             mControllerReset[inputCount] = false;
         }
     }
-    
-    if ( OSGetResetButtonState() )
-    {
-    	mReset = true;
-    } 
-   
-    if ( mReset )
-    {
+
+    if (OSGetResetButtonState()) {
+        mReset = true;
+    }
+
+    if (mReset) {
         //Bye bye!
         PerformReset();
     }
@@ -354,8 +318,7 @@ void GCManager::TestForReset()
 // Return:      void 
 //
 //=============================================================================
-void GCManager::ControllerReset()
-{
+void GCManager::ControllerReset() {
     //TODO: Test if we should reset here or not!
     //For now...
     Reset();
@@ -368,78 +331,67 @@ void GCManager::ControllerReset()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool displaySplash )
+// Parameters:  (bool displaySplash)
 //
 // Return:      void 
 //
 //=============================================================================
-void GCManager::PerformReset( bool displaySplash, bool launchIPL )
-{
+void GCManager::PerformReset(bool displaySplash, bool launchIPL) {
     // Wait until the switch is released
-	if ( !mDoingReset && ( mReset ) && ( !OSGetResetButtonState( ) ) )
-	{
+    if (!mDoingReset && (mReset) && (!OSGetResetButtonState())) {
         mDoingReset = true;
 
-        if ( !GetGame()->GetPlatform()->PausedForErrors() )
-        {
+        if (!GetGame()->GetPlatform()->PausedForErrors()) {
             // If we have troubles with sound, we should shut it down here. Don't foget
             // to service the sound system enough time for the changes to be reflected.
 
-            if ( GetPresentationManager()->GetFMVPlayer()->IsPlaying() )
-            {
-                GetPresentationManager()->GetFMVPlayer()->Pause( );
-            }
-            else
-            {
+            if (GetPresentationManager()->GetFMVPlayer()->IsPlaying()) {
+                GetPresentationManager()->GetFMVPlayer()->Pause();
+            } else {
                 GetSoundManager()->StopForMovie();
 
-                while( !( GetSoundManager()->IsStoppedForMovie() ) )
-                {
-                    ::radMovieService2( );
-                    ::radFileService( );
+                while (!(GetSoundManager()->IsStoppedForMovie())) {
+                    ::radMovieService2();
+                    ::radFileService();
                     SoundManager::GetInstance()->Update();
-                    SoundManager::GetInstance()->UpdateOncePerFrame( 0, NUM_CONTEXTS, false, true );
+                    SoundManager::GetInstance()->UpdateOncePerFrame(0, NUM_CONTEXTS, false, true);
                 }
             }
         }
 
-        if ( displaySplash && !launchIPL && DVDCheckDisk() )
-        {
+        if (displaySplash && !launchIPL && DVDCheckDisk()) {
             //Fade to black
-         //   GetGame()->GetPlatform()->DisplaySplashScreen( Platform::FadeToBlack, NULL, 1.0f, 1.0f, 0.0f, tColour(0,0,0), 100 );
+            //   GetGame()->GetPlatform()->DisplaySplashScreen(Platform::FadeToBlack, NULL, 1.0f, 1.0f, 0.0f, tColour(0,0,0), 100);
         }
 
         StopEverything();
 
         GXDrawDone();
 
-		//
-		// One last TRC when we reset
-		//
-	 	VISetBlack(true);
-	 	VIFlush();
+        //
+        // One last TRC when we reset
+        //
+        VISetBlack(true);
+        VIFlush();
         VIWaitForRetrace();
 
         //TODO: If we have progressive scan mode enabled, we need to keep it enabled on reset.
         //This could be tricky.
 
-        if ( launchIPL || !DVDCheckDisk() )
-        {
+        if (launchIPL || !DVDCheckDisk()) {
             // Reset the system
-            OSResetSystem( 
-                OS_RESET_HOTRESET, 
-                0,
-                launchIPL );
-        }
-        else
-        {
+            OSResetSystem(
+                    OS_RESET_HOTRESET,
+                    0,
+                    launchIPL);
+        } else {
             // Reset the system
-            OSResetSystem( 
-                OS_RESET_RESTART,
-                0,
-                false );
+            OSResetSystem(
+                    OS_RESET_RESTART,
+                    0,
+                    false);
         }
-	}
+    }
 }
 
 //=============================================================================
@@ -452,17 +404,15 @@ void GCManager::PerformReset( bool displaySplash, bool launchIPL )
 // Return:      void 
 //
 //=============================================================================
-void GCManager::StopEverything()
-{
+void GCManager::StopEverything() {
     //Stop the controllers.
     StopRumble();
 
     //Wait for the memory cards to complete.
-    while ( GetGameDataManager()->IsUsingDrive() )
-    {
+    while (GetGameDataManager()->IsUsingDrive()) {
         ::radFileService();
         ::radControllerSystemService();
-        GetGameDataManager()->Update( 16 );
+        GetGameDataManager()->Update(16);
     }
 
     ::radControllerTerminate();
@@ -478,17 +428,17 @@ void GCManager::StopEverything()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int x, int y, int bpp )
+// Parameters:  (int x, int y, int bpp)
 //
 // Return:      void 
 //
 //=============================================================================
-void GCManager::ChangeResolution( int x, int y, int bpp )
-{
-    rAssert( x % 16 == 0 );  //This must be a multiple of 16pixels!
+void GCManager::ChangeResolution(int x, int y, int bpp) {
+    rAssert(x % 16 == 0);  //This must be a multiple of 16pixels!
 
-    GetGame()->GetPlatform()->DisplaySplashScreen( Platform::Error, NULL, NULL, 0.0f, 0.0f, tColour(0,0,0), 0 );
-    p3d::context->GetDisplay()->InitDisplay( x, y, bpp );
+    GetGame()->GetPlatform()->DisplaySplashScreen(Platform::Error, NULL, NULL, 0.0f, 0.0f,
+                                                  tColour(0, 0, 0), 0);
+    p3d::context->GetDisplay()->InitDisplay(x, y, bpp);
 }
 
 //=============================================================================
@@ -501,103 +451,96 @@ void GCManager::ChangeResolution( int x, int y, int bpp )
 // Return:      void 
 //
 //=============================================================================
-void GCManager::DoProgressiveScanTest()
-{
+void GCManager::DoProgressiveScanTest() {
     //Test for button b being held down and ask if they want progressive mode
     //Or not.
     bool doProgressiveQuestion = false;
 
-    if ( VIGetDTVStatus() != 1 )
-    {
+    if (VIGetDTVStatus() != 1) {
         return;
     }
 
     //There's a cable present..
 
     //If the progressive mode flagis set, then we make the message show also.
-    if ( OSGetProgressiveMode() )
-    {
+    if (OSGetProgressiveMode()) {
         //The flag is set from last time.
         doProgressiveQuestion = true;
-    }
-    else
-    {
+    } else {
         unsigned int inputCount = 0;
         PADStatus controllers[PAD_MAX_CONTROLLERS];
 
-        for ( inputCount = 0; inputCount < PAD_MAX_CONTROLLERS; ++inputCount )
-        {
-            controllers[ inputCount ].button = 0;
+        for (inputCount = 0; inputCount < PAD_MAX_CONTROLLERS; ++inputCount) {
+            controllers[inputCount].button = 0;
         }
-        
-        ::radThreadSleep( 32 );
+
+        ::radThreadSleep(32);
 
         PADRead(controllers);
 
-        for ( inputCount = 0; inputCount < PAD_MAX_CONTROLLERS && !doProgressiveQuestion; ++inputCount )
-        {
-            if ( controllers[ inputCount ].err == PAD_ERR_NONE &&
-                 controllers[ inputCount ].button & PAD_BUTTON_B )
-            {
+        for (inputCount = 0;
+             inputCount < PAD_MAX_CONTROLLERS && !doProgressiveQuestion; ++inputCount) {
+            if (controllers[inputCount].err == PAD_ERR_NONE &&
+                controllers[inputCount].button & PAD_BUTTON_B) {
                 //Someone is holding B.
                 doProgressiveQuestion = true;
-                break;            
+                break;
             }
         }
 
         ::radControllerSystemService();
-        ::radThreadSleep( 16 );
+        ::radThreadSleep(16);
         ::radControllerSystemService();
-        ::radThreadSleep( 16 );
+        ::radThreadSleep(16);
 
-        LGPosition lgStatus[ SI_MAX_CHAN ];
-        memset( lgStatus, 0, sizeof( LGPosition )*SI_MAX_CHAN  );
-        LGRead( lgStatus );
+        LGPosition lgStatus[SI_MAX_CHAN];
+        memset(lgStatus, 0, sizeof(LGPosition) * SI_MAX_CHAN);
+        LGRead(lgStatus);
 
-        for ( inputCount = 0; inputCount < SI_MAX_CHAN && !doProgressiveQuestion; ++inputCount )
-        {
-            if ( lgStatus[ inputCount ].err == LG_ERR_NONE &&
-                 lgStatus[ inputCount ].button & LG_BUTTON_B )
-            {
+        for (inputCount = 0; inputCount < SI_MAX_CHAN && !doProgressiveQuestion; ++inputCount) {
+            if (lgStatus[inputCount].err == LG_ERR_NONE &&
+                lgStatus[inputCount].button & LG_BUTTON_B) {
                 //Someone is holding B.
                 doProgressiveQuestion = true;
-                break;            
+                break;
             }
         }
     }
 
-    if ( doProgressiveQuestion )
-    {
+    if (doProgressiveQuestion) {
         //Display the question.
         //TODO: Localization
-        GetGame()->GetPlatform()->DisplaySplashScreen( Platform::Error, "Do you want to display in progressive mode?", 0.7f );
+        GetGame()->GetPlatform()->DisplaySplashScreen(Platform::Error,
+                                                      "Do you want to display in progressive mode?",
+                                                      0.7f);
 
-        bool setProgressiveOn = ((GCPlatform*)GetGame()->GetPlatform())->DisplayYesNo( 0.7f, -0.2f, -0.1f, 0.1f, -0.1f );
-        
-        if ( setProgressiveOn != ((GCPlatform*)GetGame()->GetPlatform())->GetInitData()->progressive )
-        {
+        bool setProgressiveOn = ((GCPlatform *) GetGame()->GetPlatform())->DisplayYesNo(0.7f, -0.2f,
+                                                                                        -0.1f, 0.1f,
+                                                                                        -0.1f);
+
+        if (setProgressiveOn !=
+            ((GCPlatform *) GetGame()->GetPlatform())->GetInitData()->progressive) {
 
             //Do the TRC delay stuff.
 
             //Set the screen black
-            VISetBlack( TRUE );
+            VISetBlack(TRUE);
             VIFlush();
             VIWaitForRetrace();
 
             unsigned int i;
-            for( i=0; i<10; i++ )
-            {	//Set screen black and wait for several frames
+            for (i = 0; i < 10; i++) {    //Set screen black and wait for several frames
                 VIWaitForRetrace();
             }
 
             //Change modes
-            ((GCPlatform*)GetGame()->GetPlatform())->GetInitData()->progressive = setProgressiveOn;
+            ((GCPlatform *) GetGame()->GetPlatform())->GetInitData()->progressive = setProgressiveOn;
 
             //Need to re-init the display.
-            p3d::context->GetDisplay()->InitDisplay( ((GCPlatform*)GetGame()->GetPlatform())->GetInitData() );  
+            p3d::context->GetDisplay()->InitDisplay(
+                    ((GCPlatform *) GetGame()->GetPlatform())->GetInitData());
 
-            for( i=0; i<100; i++ )
-            {	//Set screen black and wait for several dozen frames
+            for (i = 0; i < 100; i++) {    //Set screen black and wait for several dozen frames
                 VIWaitForRetrace();
             }
 
@@ -607,88 +550,79 @@ void GCManager::DoProgressiveScanTest()
         }
 
         //Set progressive scan mode
-        OSSetProgressiveMode( setProgressiveOn );
+        OSSetProgressiveMode(setProgressiveOn);
 
         //Display message that progressive is enabled
         //TODO: localization
-        if ( setProgressiveOn && OSGetProgressiveMode() )
-        {
-            GetGame()->GetPlatform()->DisplaySplashScreen( Platform::Error, "Screen has been set to progressive mode.\n Press the A Button to continue.", 0.7f );
+        if (setProgressiveOn && OSGetProgressiveMode()) {
+            GetGame()->GetPlatform()->DisplaySplashScreen(Platform::Error,
+                                                          "Screen has been set to progressive mode.\n Press the A Button to continue.",
+                                                          0.7f);
+        } else if (!setProgressiveOn && !OSGetProgressiveMode()) {
+            GetGame()->GetPlatform()->DisplaySplashScreen(Platform::Error,
+                                                          "Screen has been set to interlaced mode.\n Press the A Button to continue.",
+                                                          0.7f);
         }
-        else if ( !setProgressiveOn && !OSGetProgressiveMode() )
-        {
-            GetGame()->GetPlatform()->DisplaySplashScreen( Platform::Error, "Screen has been set to interlaced mode.\n Press the A Button to continue.", 0.7f );
-        }
 
-		if ( setProgressiveOn == OSGetProgressiveMode() )
-		{
-	        //Wait for input or 10 second timeout.
-	        unsigned int time = OSTicksToMilliseconds( OSGetTime() );
+        if (setProgressiveOn == OSGetProgressiveMode()) {
+            //Wait for input or 10 second timeout.
+            unsigned int time = OSTicksToMilliseconds(OSGetTime());
 
-	        bool waiting = true;
+            bool waiting = true;
 
-	        PADStatus controllers[PAD_MAX_CONTROLLERS];
-	        PADStatus lastControllers[PAD_MAX_CONTROLLERS];
+            PADStatus controllers[PAD_MAX_CONTROLLERS];
+            PADStatus lastControllers[PAD_MAX_CONTROLLERS];
 
-	        unsigned int inputCount = 0;
-	        
-	        for ( inputCount = 0; inputCount < PAD_MAX_CONTROLLERS; ++inputCount )
-	        {
-	            controllers[ inputCount ].button = 0;
-	            lastControllers[ inputCount ].button = 0;
-	        }
+            unsigned int inputCount = 0;
 
-            LGPosition lgStatus[ SI_MAX_CHAN ];
-            memset( lgStatus, 0, sizeof( LGPosition )*SI_MAX_CHAN  );
+            for (inputCount = 0; inputCount < PAD_MAX_CONTROLLERS; ++inputCount) {
+                controllers[inputCount].button = 0;
+                lastControllers[inputCount].button = 0;
+            }
 
-	        while ( waiting )
-	        {
+            LGPosition lgStatus[SI_MAX_CHAN];
+            memset(lgStatus, 0, sizeof(LGPosition) * SI_MAX_CHAN);
+
+            while (waiting) {
                 ::radControllerSystemService();
-                ::radThreadSleep( 32 );
-	            PADRead(controllers);
-                LGRead( lgStatus );
+                ::radThreadSleep(32);
+                PADRead(controllers);
+                LGRead(lgStatus);
 
-	            for ( inputCount = 0; inputCount < PAD_MAX_CONTROLLERS; ++inputCount )
-	            {
-                    if( lgStatus[inputCount].err == LG_ERR_NONE )
-                    {
+                for (inputCount = 0; inputCount < PAD_MAX_CONTROLLERS; ++inputCount) {
+                    if (lgStatus[inputCount].err == LG_ERR_NONE) {
                         controllers[inputCount].err = PAD_ERR_NONE;
                         controllers[inputCount].button = 0;
 
-                        if( lgStatus[inputCount].button & LG_BUTTON_A )
-                        {
+                        if (lgStatus[inputCount].button & LG_BUTTON_A) {
                             controllers[inputCount].button = PAD_BUTTON_A;
                         }
-                        if( lgStatus[inputCount].button & LG_BUTTON_START )
-                        {
+                        if (lgStatus[inputCount].button & LG_BUTTON_START) {
                             controllers[inputCount].button = PAD_BUTTON_MENU;
                         }
                     }
 
-	                if ( controllers[ inputCount ].err == PAD_ERR_NONE &&
-	                     ( !( controllers[ inputCount ].button & PAD_BUTTON_A ) &&
-	                       lastControllers[ inputCount ].button & PAD_BUTTON_A ) ||
-	                     ( !( controllers[ inputCount ].button & PAD_BUTTON_MENU ) &&
-	                       lastControllers[ inputCount ].button & PAD_BUTTON_MENU ) )
-	                { 
-	                    waiting = false;
-	                    break;
-	                }
+                    if (controllers[inputCount].err == PAD_ERR_NONE &&
+                        (!(controllers[inputCount].button & PAD_BUTTON_A) &&
+                         lastControllers[inputCount].button & PAD_BUTTON_A) ||
+                        (!(controllers[inputCount].button & PAD_BUTTON_MENU) &&
+                         lastControllers[inputCount].button & PAD_BUTTON_MENU)) {
+                        waiting = false;
+                        break;
+                    }
 
-	                if( controllers[ inputCount ].err == PAD_ERR_NONE ) 
-	                {
-				        lastControllers[ inputCount ] = controllers[ inputCount ];
-			        }
-	            }
+                    if (controllers[inputCount].err == PAD_ERR_NONE) {
+                        lastControllers[inputCount] = controllers[inputCount];
+                    }
+                }
 
-                unsigned int newTime = OSTicksToMilliseconds( OSGetTime() );
-	            if (  newTime - time > 10000 )
-	            {
-	                waiting = false;
-	            }
-	        }
-	    }
-	}
+                unsigned int newTime = OSTicksToMilliseconds(OSGetTime());
+                if (newTime - time > 10000) {
+                    waiting = false;
+                }
+            }
+        }
+    }
 }
 
 //=============================================================================
@@ -702,10 +636,9 @@ void GCManager::DoProgressiveScanTest()
 //
 //=============================================================================
 
-void GCManager::StopRumble()
-{
-    PADControlMotor( PAD_CHAN0, PAD_MOTOR_STOP_HARD ); 
-    PADControlMotor( PAD_CHAN1, PAD_MOTOR_STOP_HARD ); 
-    PADControlMotor( PAD_CHAN2, PAD_MOTOR_STOP_HARD ); 
-    PADControlMotor( PAD_CHAN3, PAD_MOTOR_STOP_HARD );
+void GCManager::StopRumble() {
+    PADControlMotor(PAD_CHAN0, PAD_MOTOR_STOP_HARD);
+    PADControlMotor(PAD_CHAN1, PAD_MOTOR_STOP_HARD);
+    PADControlMotor(PAD_CHAN2, PAD_MOTOR_STOP_HARD);
+    PADControlMotor(PAD_CHAN3, PAD_MOTOR_STOP_HARD);
 }

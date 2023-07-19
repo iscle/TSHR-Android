@@ -27,24 +27,31 @@
 //
 //=============================================================================
 
-class BumperCamData
-{
+class BumperCamData {
 public:
     BumperCamData();
+
     virtual ~BumperCamData() {};
 
-    void GetFrontPosition( rmt::Vector* front );
-    void SetFrontPosition( rmt::Vector front );
-    void GetFrontTarget( rmt::Vector* front );
-    void SetFrontTarget( rmt::Vector front );
+    void GetFrontPosition(rmt::Vector *front);
 
-    void GetBackPosition( rmt::Vector* back );
-    void SetBackPosition( rmt::Vector back );
-    void GetBackTarget( rmt::Vector* back );
-    void SetBackTarget( rmt::Vector back );
+    void SetFrontPosition(rmt::Vector front);
+
+    void GetFrontTarget(rmt::Vector *front);
+
+    void SetFrontTarget(rmt::Vector front);
+
+    void GetBackPosition(rmt::Vector *back);
+
+    void SetBackPosition(rmt::Vector back);
+
+    void GetBackTarget(rmt::Vector *back);
+
+    void SetBackTarget(rmt::Vector back);
 
     float GetFOV() const;
-    void SetFOV( float fov );
+
+    void SetFOV(float fov);
 
     rmt::Vector mFrontPos;
     rmt::Vector mFrontTarg;
@@ -55,8 +62,9 @@ public:
 
 private:
     //Prevent wasteful constructor creation.
-    BumperCamData( const BumperCamData& bumpercamdata );
-    BumperCamData& operator=( const BumperCamData& bumpercamdata );
+    BumperCamData(const BumperCamData &bumpercamdata);
+
+    BumperCamData &operator=(const BumperCamData &bumpercamdata);
 };
 
 //*****************************************************************************
@@ -76,12 +84,11 @@ private:
 //
 //=============================================================================
 inline BumperCamData::BumperCamData() :
-    mFOV( 1.5707f )
-{
-    mFrontPos.Set( 0.0f, 0.0f, 2.3f );    
-    mFrontTarg.Set( 0.0f, 0.0f, 2.8f );    
-    mBackPos.Set( 0.0f, 0.0f, -2.22f );
-    mBackTarg.Set( 0.0f, 0.0f, -2.8f );
+        mFOV(1.5707f) {
+    mFrontPos.Set(0.0f, 0.0f, 2.3f);
+    mFrontTarg.Set(0.0f, 0.0f, 2.8f);
+    mBackPos.Set(0.0f, 0.0f, -2.22f);
+    mBackTarg.Set(0.0f, 0.0f, -2.8f);
 }
 
 //=============================================================================
@@ -89,13 +96,12 @@ inline BumperCamData::BumperCamData() :
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* front )
+// Parameters:  (rmt::Vector* front)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void BumperCamData::GetFrontPosition( rmt::Vector* front )
-{
+inline void BumperCamData::GetFrontPosition(rmt::Vector *front) {
     *front = mFrontPos;
 }
 
@@ -104,13 +110,12 @@ inline void BumperCamData::GetFrontPosition( rmt::Vector* front )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector front )
+// Parameters:  (rmt::Vector front)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void BumperCamData::SetFrontPosition( rmt::Vector front )
-{
+inline void BumperCamData::SetFrontPosition(rmt::Vector front) {
     mFrontPos = front;
 }
 
@@ -119,13 +124,12 @@ inline void BumperCamData::SetFrontPosition( rmt::Vector front )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* front )
+// Parameters:  (rmt::Vector* front)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void BumperCamData::GetFrontTarget( rmt::Vector* front )
-{
+inline void BumperCamData::GetFrontTarget(rmt::Vector *front) {
     *front = mFrontTarg;
 }
 
@@ -134,13 +138,12 @@ inline void BumperCamData::GetFrontTarget( rmt::Vector* front )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector front )
+// Parameters:  (rmt::Vector front)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void BumperCamData::SetFrontTarget( rmt::Vector front )
-{
+inline void BumperCamData::SetFrontTarget(rmt::Vector front) {
     mFrontTarg = front;
 }
 
@@ -149,13 +152,12 @@ inline void BumperCamData::SetFrontTarget( rmt::Vector front )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* back )
+// Parameters:  (rmt::Vector* back)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void BumperCamData::GetBackPosition( rmt::Vector* back )
-{
+inline void BumperCamData::GetBackPosition(rmt::Vector *back) {
     *back = mBackPos;
 }
 
@@ -164,13 +166,12 @@ inline void BumperCamData::GetBackPosition( rmt::Vector* back )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector back )
+// Parameters:  (rmt::Vector back)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void BumperCamData::SetBackPosition( rmt::Vector back )
-{
+inline void BumperCamData::SetBackPosition(rmt::Vector back) {
     mBackPos = back;
 }
 
@@ -179,13 +180,12 @@ inline void BumperCamData::SetBackPosition( rmt::Vector back )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* back )
+// Parameters:  (rmt::Vector* back)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void BumperCamData::GetBackTarget( rmt::Vector* back )
-{
+inline void BumperCamData::GetBackTarget(rmt::Vector *back) {
     *back = mBackTarg;
 }
 
@@ -194,13 +194,12 @@ inline void BumperCamData::GetBackTarget( rmt::Vector* back )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector back )
+// Parameters:  (rmt::Vector back)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void BumperCamData::SetBackTarget( rmt::Vector back )
-{
+inline void BumperCamData::SetBackTarget(rmt::Vector back) {
     mBackTarg = back;
 }
 
@@ -214,8 +213,7 @@ inline void BumperCamData::SetBackTarget( rmt::Vector back )
 // Return:      float 
 //
 //=============================================================================
-inline float BumperCamData::GetFOV() const
-{
+inline float BumperCamData::GetFOV() const {
     return mFOV;
 }
 
@@ -224,13 +222,12 @@ inline float BumperCamData::GetFOV() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float fov )
+// Parameters:  (float fov)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void BumperCamData::SetFOV( float fov )
-{
+inline void BumperCamData::SetFOV(float fov) {
     mFOV = fov;
 }
 

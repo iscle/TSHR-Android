@@ -50,8 +50,7 @@
 // Return:      N/A.
 //
 //==============================================================================
-CameraDataLoader::CameraDataLoader()
-{
+CameraDataLoader::CameraDataLoader() {
 }
 
 //==============================================================================
@@ -64,8 +63,7 @@ CameraDataLoader::CameraDataLoader()
 // Return:      N/A.
 //
 //==============================================================================
-CameraDataLoader::~CameraDataLoader()
-{
+CameraDataLoader::~CameraDataLoader() {
 }
 
 //=============================================================================
@@ -78,27 +76,24 @@ CameraDataLoader::~CameraDataLoader()
 // Return:      tLoadStatus 
 //
 //=============================================================================
-tLoadStatus CameraDataLoader::Load(tChunkFile* f, tEntityStore* store)
-{
-MEMTRACK_PUSH_GROUP( "Camera Data Loading" );
+tLoadStatus CameraDataLoader::Load(tChunkFile *f, tEntityStore *store) {
+    MEMTRACK_PUSH_GROUP("Camera Data Loading");
 
     //This loads two types of chunks.  Follow and walker cams.
 
     unsigned int id = f->GetUInt();
 
     char name[256];
-    sprintf( name, "CameraData%d", id );
+    sprintf(name, "CameraData%d", id);
 
-    HeapMgr()->PushHeap (GMA_LEVEL_OTHER);
+    HeapMgr()->PushHeap(GMA_LEVEL_OTHER);
 
-    if ( f->GetCurrentID() == SRR2::ChunkID::FOLLOWCAM )
-    {
-        if ( !SuperCamCentral::FindFCD( id ) )
-        {
+    if (f->GetCurrentID() == SRR2::ChunkID::FOLLOWCAM) {
+        if (!SuperCamCentral::FindFCD(id)) {
             //Load and create a FOLLOWCAM data chunk
-            FollowCamDataChunk& fcD = SuperCamCentral::GetNewFollowCamDataChunk();
+            FollowCamDataChunk &fcD = SuperCamCentral::GetNewFollowCamDataChunk();
 
-            fcD.SetName( name );
+            fcD.SetName(name);
 
             fcD.mID = id;
             fcD.mRotation = f->GetFloat();
@@ -109,15 +104,13 @@ MEMTRACK_PUSH_GROUP( "Camera Data Loading" );
             fcD.mTargetOffset.y = f->GetFloat();
             fcD.mTargetOffset.z = f->GetFloat();
         }
-    }
-    else if ( f->GetCurrentID() == SRR2::ChunkID::WALKERCAM )
-    {
+    } else if (f->GetCurrentID() == SRR2::ChunkID::WALKERCAM) {
         //Load and create a WALKERCAM data chunk
-        WalkerCamDataChunk* wcD = new WalkerCamDataChunk();
+        WalkerCamDataChunk *wcD = new WalkerCamDataChunk();
 
-        rAssert( wcD );
+        rAssert(wcD);
 
-        wcD->SetName( name );
+        wcD->SetName(name);
 
         wcD->mID = id;
         wcD->mMinMagnitude = f->GetFloat();
@@ -128,23 +121,19 @@ MEMTRACK_PUSH_GROUP( "Camera Data Loading" );
         wcD->mTargetOffset.y = f->GetFloat();
         wcD->mTargetOffset.z = f->GetFloat();
 
-        //store->Store( wcD );
-        tEntity* camData = NULL;
+        //store->Store(wcD);
+        tEntity *camData = NULL;
         camData = wcD;
 
-        if ( camData )
-        {
+        if (camData) {
             p3d::inventory->PushSection();
-            p3d::inventory->SelectSection( SuperCamCentral::CAMERA_INVENTORY_SECTION );
+            p3d::inventory->SelectSection(SuperCamCentral::CAMERA_INVENTORY_SECTION);
             //const tName& name = camData->GetNameObject();
-            //p3d::inventory->find( name );
-            bool collision = p3d::inventory->TestCollision( camData );
-            if( !collision )
-            {
-                p3d::inventory->Store( camData );
-            }
-            else
-            {
+            //p3d::inventory->find(name);
+            bool collision = p3d::inventory->TestCollision(camData);
+            if (!collision) {
+                p3d::inventory->Store(camData);
+            } else {
                 camData->AddRef();
                 camData->Release();
             }
@@ -153,9 +142,9 @@ MEMTRACK_PUSH_GROUP( "Camera Data Loading" );
     }
 
 
-    HeapMgr()->PopHeap (GMA_LEVEL_OTHER);
+    HeapMgr()->PopHeap(GMA_LEVEL_OTHER);
 
-MEMTRACK_POP_GROUP("Camera Data Loading");
+    MEMTRACK_POP_GROUP("Camera Data Loading");
 
     return LOAD_OK;
 }

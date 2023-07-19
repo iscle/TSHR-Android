@@ -48,40 +48,45 @@ class DynaPhysDSG;
 //      steady state.
 //
 //===========================================================================
-class Weapon : public tEntity
-{
-    public:
-        Weapon();
-        virtual ~Weapon();
+class Weapon : public tEntity {
+public:
+    Weapon();
 
-        virtual bool LoadSetup( const char* statePropDSGName )=0;
-        virtual void Update( float timeInMS ) = 0;
-        virtual void Display() = 0;
-        virtual bool IsValidTarget( DynaPhysDSG* pDSG )const = 0;
-        virtual bool CanFire( DynaPhysDSG* pDSG )const = 0;
-        virtual void Fire( DynaPhysDSG* pDSG ) = 0;
-        virtual void SetPosition( const rmt::Vector& position ) = 0;
-        
-            
-    protected:
+    virtual ~Weapon();
+
+    virtual bool LoadSetup(const char *statePropDSGName) = 0;
+
+    virtual void Update(float timeInMS) = 0;
+
+    virtual void Display() = 0;
+
+    virtual bool IsValidTarget(DynaPhysDSG *pDSG) const = 0;
+
+    virtual bool CanFire(DynaPhysDSG *pDSG) const = 0;
+
+    virtual void Fire(DynaPhysDSG *pDSG) = 0;
+
+    virtual void SetPosition(const rmt::Vector &position) = 0;
 
 
+protected:
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow Weapon from being copied and assigned.
-        Weapon( const Weapon& );
-        Weapon& operator=( const Weapon& );
 
- };
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow Weapon from being copied and assigned.
+    Weapon(const Weapon &);
 
-inline Weapon::Weapon()
-{
+    Weapon &operator=(const Weapon &);
+
+};
+
+inline Weapon::Weapon() {
 
 }
-inline Weapon::~Weapon()
-{
+
+inline Weapon::~Weapon() {
 
 }
 

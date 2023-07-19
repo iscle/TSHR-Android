@@ -50,35 +50,36 @@
 //
 //===========================================================================
 class InstParticleSystemLoader
-: public tSimpleChunkHandler,
-  public IWrappedLoader
-{
-    public:
-        InstParticleSystemLoader();
-        virtual ~InstParticleSystemLoader();
+        : public tSimpleChunkHandler,
+          public IWrappedLoader {
+public:
+    InstParticleSystemLoader();
+
+    virtual ~InstParticleSystemLoader();
 
     ///////////////////////////////////////////////////////////////////////
     // IWrappedLoader
     ///////////////////////////////////////////////////////////////////////
-    virtual void SetRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    virtual void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                                 int iUserData);
 
-    virtual void ModRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    virtual void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                                 int iUserData);
 
     ///////////////////////////////////////////////////////////////////////
     // tSimpleChunkHandler
     ///////////////////////////////////////////////////////////////////////
-    virtual tEntity* LoadObject(tChunkFile* file, tEntityStore* store);
+    virtual tEntity *LoadObject(tChunkFile *file, tEntityStore *store);
 
-    protected:
+protected:
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow InstParticleSystemLoader from being copied and assigned.
-        InstParticleSystemLoader( const InstParticleSystemLoader& );
-        InstParticleSystemLoader& operator=( const InstParticleSystemLoader& );
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow InstParticleSystemLoader from being copied and assigned.
+    InstParticleSystemLoader(const InstParticleSystemLoader &);
+
+    InstParticleSystemLoader &operator=(const InstParticleSystemLoader &);
 };
 
 #endif

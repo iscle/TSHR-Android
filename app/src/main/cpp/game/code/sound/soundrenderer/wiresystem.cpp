@@ -46,59 +46,58 @@ namespace Sound {
 //
 //-----------------------------------------------------------------------------
 
-void daSoundTunerWireSystem
-(
-    IDaSoundWiring* pWiring
-)
-{
-    // PATHS //////////////////////////////////////////////////////////////////
+    void daSoundTunerWireSystem
+            (
+                    IDaSoundWiring *pWiring
+            ) {
+        // PATHS //////////////////////////////////////////////////////////////////
 
-    //
-    // Start by wiring up everything as dialogue by default.  This is because
-    // we strip a little path info out of the dialogue files, so that we can
-    // easily switch between languages.
-    //
-    pWiring->WirePath( DIALOGUE, "" );
+        //
+        // Start by wiring up everything as dialogue by default.  This is because
+        // we strip a little path info out of the dialogue files, so that we can
+        // easily switch between languages.
+        //
+        pWiring->WirePath(DIALOGUE, "");
 
-    // Character
-    pWiring->WirePath
-    (
-        CARSOUND,
-        "sound\\carsound"
-    );
+        // Character
+        pWiring->WirePath
+                (
+                        CARSOUND,
+                        "sound\\carsound"
+                );
 
-    // Collision
-    pWiring->WirePath
-    (
-        NIS,
-        "sound\\nis"
-    );
+        // Collision
+        pWiring->WirePath
+                (
+                        NIS,
+                        "sound\\nis"
+                );
 
-    pWiring->WirePath
-    (
-        SOUND_EFFECTS,
-        "sound\\soundfx"
-    );
+        pWiring->WirePath
+                (
+                        SOUND_EFFECTS,
+                        "sound\\soundfx"
+                );
 
-    pWiring->WirePath
-    (
-        OPTIONS_MENU_STINGERS,
-        "sound\\soundfx\\optionsmenu"
-    );
+        pWiring->WirePath
+                (
+                        OPTIONS_MENU_STINGERS,
+                        "sound\\soundfx\\optionsmenu"
+                );
 
-    // SPECIAL GROUPS /////////////////////////////////////////////////////////
+        // SPECIAL GROUPS /////////////////////////////////////////////////////////
 
-    pWiring->WireGroup( NIS, DIALOGUE );
+        pWiring->WireGroup(NIS, DIALOGUE);
 
-    pWiring->WireGroup( DIALOGUE, DUCKABLE );
-    pWiring->WireGroup( SOUND_EFFECTS, DUCKABLE );
-    pWiring->WireGroup( CARSOUND, DUCKABLE );
-    pWiring->WireGroup( OPTIONS_MENU_STINGERS, DUCKABLE );
+        pWiring->WireGroup(DIALOGUE, DUCKABLE);
+        pWiring->WireGroup(SOUND_EFFECTS, DUCKABLE);
+        pWiring->WireGroup(CARSOUND, DUCKABLE);
+        pWiring->WireGroup(OPTIONS_MENU_STINGERS, DUCKABLE);
 
-    pWiring->WireGroup( DIALOGUE, DIALOGUE_TUNE );
-    pWiring->WireGroup( SOUND_EFFECTS, SOUND_EFFECTS_TUNE );
-    pWiring->WireGroup( MASTER, MASTER_TUNE );
-}
+        pWiring->WireGroup(DIALOGUE, DIALOGUE_TUNE);
+        pWiring->WireGroup(SOUND_EFFECTS, SOUND_EFFECTS_TUNE);
+        pWiring->WireGroup(MASTER, MASTER_TUNE);
+    }
 
 
 } // Sound Namespace

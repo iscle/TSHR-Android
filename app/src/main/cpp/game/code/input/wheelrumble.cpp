@@ -45,8 +45,7 @@
 // Return:      N/A.
 //
 //=============================================================================
-WheelRumble::WheelRumble()
-{
+WheelRumble::WheelRumble() {
 #ifdef RAD_WIN32
     m_diPeriodic.dwMagnitude             = 0;
     m_diPeriodic.lOffset                 = 0;
@@ -73,18 +72,18 @@ WheelRumble::WheelRumble()
     mForceEffect.lpvTypeSpecificParams   = &m_diPeriodic;
     mForceEffect.dwStartDelay            = 0;
 #else
-    mForceEffect.type                           = LG_TYPE_TRIANGLE;
-    mForceEffect.duration                       = 500;
-    mForceEffect.startDelay                     = 0;
-    mForceEffect.p.periodic.magnitude           = 0;
-    mForceEffect.p.periodic.direction           = 90;
-    mForceEffect.p.periodic.period              = 80;
-    mForceEffect.p.periodic.phase               = 0;
-    mForceEffect.p.periodic.offset              = 0;
-    mForceEffect.p.periodic.envelope.attackTime  = 0;
-    mForceEffect.p.periodic.envelope.fadeTime    = 0;
+    mForceEffect.type = LG_TYPE_TRIANGLE;
+    mForceEffect.duration = 500;
+    mForceEffect.startDelay = 0;
+    mForceEffect.p.periodic.magnitude = 0;
+    mForceEffect.p.periodic.direction = 90;
+    mForceEffect.p.periodic.period = 80;
+    mForceEffect.p.periodic.phase = 0;
+    mForceEffect.p.periodic.offset = 0;
+    mForceEffect.p.periodic.envelope.attackTime = 0;
+    mForceEffect.p.periodic.envelope.fadeTime = 0;
     mForceEffect.p.periodic.envelope.attackLevel = 0;
-    mForceEffect.p.periodic.envelope.fadeLevel   = 0;
+    mForceEffect.p.periodic.envelope.fadeLevel = 0;
 #endif
 }
 
@@ -98,8 +97,7 @@ WheelRumble::WheelRumble()
 // Return:      N/A.
 //
 //=============================================================================
-WheelRumble::~WheelRumble()
-{
+WheelRumble::~WheelRumble() {
 }
 
 //=============================================================================
@@ -112,8 +110,7 @@ WheelRumble::~WheelRumble()
 // Return:      void 
 //
 //=============================================================================
-void WheelRumble::OnInit()
-{
+void WheelRumble::OnInit() {
 #ifdef RAD_WIN32
     m_diPeriodic.dwMagnitude = 0;
 #else
@@ -126,15 +123,16 @@ void WheelRumble::OnInit()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( u8 mag, u16 dir )
+// Parameters:  (u8 mag, u16 dir)
 //
 // Return:      void 
 //
 //=============================================================================
 #ifdef RAD_WIN32
-void WheelRumble::SetMagDir( u16 mag, u16 dir )
+void WheelRumble::SetMagDir(u16 mag, u16 dir)
 #else
-void WheelRumble::SetMagDir( u8 mag, u16 dir )
+
+void WheelRumble::SetMagDir(u8 mag, u16 dir)
 #endif
 {
 #ifdef RAD_WIN32
@@ -154,13 +152,12 @@ void WheelRumble::SetMagDir( u8 mag, u16 dir )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( u16 per, u16 phas, s16 offset )
+// Parameters:  (u16 per, u16 phas, s16 offset)
 //
 // Return:      void 
 //
 //=============================================================================
-void WheelRumble::SetPPO( u16 per, u16 phas, s16 offset )
-{
+void WheelRumble::SetPPO(u16 per, u16 phas, s16 offset) {
 #ifdef RAD_WIN32
     m_diPeriodic.dwPeriod                = per;
     m_diPeriodic.dwPhase                 = phas;
@@ -179,26 +176,25 @@ void WheelRumble::SetPPO( u16 per, u16 phas, s16 offset )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( u8 type )
+// Parameters:  (u8 type)
 //
 // Return:      void 
 //
 //=============================================================================
-void WheelRumble::SetRumbleType( u8 type ) 
-{
+void WheelRumble::SetRumbleType(u8 type) {
 #ifdef RAD_WIN32
-    
+
 #else
     mForceEffect.type = type;
 #endif
-     
+
 };
 
 #ifdef RAD_WIN32
 void WheelRumble::Update(unsigned timeins)
 {
     m_currentTime += timeins;
-    if( m_currentTime > m_effectTime )
+    if(m_currentTime> m_effectTime)
     {
         SetMagDir(0,0);
         m_currentTime = 0;

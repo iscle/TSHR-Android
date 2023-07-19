@@ -27,9 +27,13 @@
 //========================================
 
 class SoundCollisionData;
+
 class Character;
+
 class ScriptLocator;
+
 class CollisionEntityDSG;
+
 class globalSettings;
 
 //=============================================================================
@@ -39,11 +43,10 @@ class globalSettings;
 // Associated stuff required to play a positional collision sound
 //
 //=============================================================================
-struct PositionalSFXPlayer
-{
+struct PositionalSFXPlayer {
     PositionalSoundPlayer soundPlayer;
-    void* collObjA;
-    void* collObjB;
+    void *collObjA;
+    void *collObjB;
 };
 
 //=============================================================================
@@ -52,77 +55,86 @@ struct PositionalSFXPlayer
 //
 //=============================================================================
 
-class SoundFXGameplayLogic : public SoundFXLogic
-{
-    public:
-        SoundFXGameplayLogic();
-        virtual ~SoundFXGameplayLogic();
+class SoundFXGameplayLogic : public SoundFXLogic {
+public:
+    SoundFXGameplayLogic();
 
-        void RegisterEventListeners();
+    virtual ~SoundFXGameplayLogic();
 
-        virtual void HandleEvent( EventEnum id, void* pEventData );
+    void RegisterEventListeners();
 
-        //
-        // Override callback to trigger tutorial events
-        //
-        void OnPlaybackComplete();
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
-        //
-        // Virtual function to clean up positional sounds
-        //
-        void Cleanup();
+    //
+    // Override callback to trigger tutorial events
+    //
+    void OnPlaybackComplete();
 
-    private:
-        //Prevent wasteful constructor creation.
-        SoundFXGameplayLogic( const SoundFXGameplayLogic& original );
-        SoundFXGameplayLogic& operator=( const SoundFXGameplayLogic& rhs );
+    //
+    // Virtual function to clean up positional sounds
+    //
+    void Cleanup();
 
-        globalSettings* getGlobalSettings();
+private:
+    //Prevent wasteful constructor creation.
+    SoundFXGameplayLogic(const SoundFXGameplayLogic &original);
 
-        void handleCollisionEvent( SoundCollisionData* collisionData );
-        void handleFootstepEvent( Character* walkingCharacter );
-        void handleSwitchEvent();
-        void handleCollection();
-        void handleObjectKick( CollisionEntityDSG* collObject );
-        void playPositionalSound( ScriptLocator* locator );
-        void playCarDoorSound( EventEnum eventType, Character* playerCharacter );
-        void playCoinCollectSound();
-        void startCollisionPlayer( const char* soundName, 
-                                   CollisionEntityDSG* objA,
-                                   CollisionEntityDSG* objB,
-                                   rmt::Vector* positionPtr );
+    SoundFXGameplayLogic &operator=(const SoundFXGameplayLogic &rhs);
 
-        bool collisionPairMatches( int index, void* firstObj, void* secondObj );
+    globalSettings *getGlobalSettings();
 
-        // Number of simultaneous positional sounds
-        static const int s_numPositionalSounds = 3;
+    void handleCollisionEvent(SoundCollisionData *collisionData);
 
-        //
-        // Positional sound objects
-        //
-        PositionalSoundPlayer m_positionalSounds[s_numPositionalSounds];
+    void handleFootstepEvent(Character *walkingCharacter);
 
-        // Number of simultaneous collision sounds
-        static const int s_numCollisionSounds = 6;
+    void handleSwitchEvent();
 
-        //
-        // Positional collision sounds
-        //
-        PositionalSFXPlayer m_collisionSounds[s_numCollisionSounds];
+    void handleCollection();
 
-        positionalSoundSettings* m_collisionMinMax;
-        
-        //
-        // Counter for cycling through ka-ching sounds
-        //
-        unsigned int m_coinCounter;
+    void handleObjectKick(CollisionEntityDSG *collObject);
 
-        //
-        // Timing for suspension ronks
-        //
-        unsigned int m_lastRonkTime;
+    void playPositionalSound(ScriptLocator *locator);
 
-        globalSettings* m_globalSettings;
+    void playCarDoorSound(EventEnum eventType, Character *playerCharacter);
+
+    void playCoinCollectSound();
+
+    void startCollisionPlayer(const char *soundName,
+                              CollisionEntityDSG *objA,
+                              CollisionEntityDSG *objB,
+                              rmt::Vector *positionPtr);
+
+    bool collisionPairMatches(int index, void *firstObj, void *secondObj);
+
+    // Number of simultaneous positional sounds
+    static const int s_numPositionalSounds = 3;
+
+    //
+    // Positional sound objects
+    //
+    PositionalSoundPlayer m_positionalSounds[s_numPositionalSounds];
+
+    // Number of simultaneous collision sounds
+    static const int s_numCollisionSounds = 6;
+
+    //
+    // Positional collision sounds
+    //
+    PositionalSFXPlayer m_collisionSounds[s_numCollisionSounds];
+
+    positionalSoundSettings *m_collisionMinMax;
+
+    //
+    // Counter for cycling through ka-ching sounds
+    //
+    unsigned int m_coinCounter;
+
+    //
+    // Timing for suspension ronks
+    //
+    unsigned int m_lastRonkTime;
+
+    globalSettings *m_globalSettings;
 };
 
 

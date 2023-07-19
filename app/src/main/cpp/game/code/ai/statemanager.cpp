@@ -23,85 +23,73 @@
 #include <worldsim/character/character.h>
 #include <ai/sequencer/actioncontroller.h>
 
-namespace CharacterAi
-{
+namespace CharacterAi {
 
 //==============================================================================
-StateManager::StateManager( Character* pCharacter )
-:
-mpCharacter(pCharacter),
-mpCurrentState( new NoState(pCharacter) ),
-mpNextState( NULL )
-{
-}
+    StateManager::StateManager(Character *pCharacter)
+            :
+            mpCharacter(pCharacter),
+            mpCurrentState(new NoState(pCharacter)),
+            mpNextState(NULL) {
+    }
 
 //==============================================================================
-StateManager::~StateManager()
-{
-    delete mpCurrentState;
-    delete mpNextState;
-}
-
-//==============================================================================
-Character* StateManager::GetCharacter()
-{
-    return mpCharacter;
-}
-//==============================================================================
-CharacterState StateManager::GetState( void ) const
-{
-	return mpCurrentState->GetStateID();
-}
-
-//==============================================================================
-void StateManager::SetState( State* state)
-{
-    if(mpNextState)
-    {
+    StateManager::~StateManager() {
+        delete mpCurrentState;
         delete mpNextState;
     }
 
-    mpNextState = state;
-}
-
 //==============================================================================
-void StateManager::ResetState( void )
-{
-    if(mpNextState)
-    {
-        delete mpNextState;
-        mpNextState = NULL;
+    Character *StateManager::GetCharacter() {
+        return mpCharacter;
     }
 
-    mpCurrentState->Exit( );
-    mpCurrentState->Enter( );
-}
-
 //==============================================================================
-void StateManager::Update( float timeins )
-{    
-    if(mpNextState)
-    {
-        mpCurrentState->Exit( );
-	    delete mpCurrentState;
-        mpCurrentState = mpNextState;
-        mpNextState = NULL;
-        mpCurrentState->Enter( );
+    CharacterState StateManager::GetState(void) const {
+        return mpCurrentState->GetStateID();
     }
 
-    mpCurrentState->Update( timeins );
+//==============================================================================
+    void StateManager::SetState(State *state) {
+        if (mpNextState) {
+            delete mpNextState;
+        }
 
-    // sequence actions, if we can
-    if ( !mpCharacter->GetActionController()->IsBusy())
-    {
-        mpCurrentState->SequenceAction();
+        mpNextState = state;
     }
-}
 
 //==============================================================================
-const State* StateManager::GetCurrentState( void ) const
-{
-	return mpCurrentState;
-}
+    void StateManager::ResetState(void) {
+        if (mpNextState) {
+            delete mpNextState;
+            mpNextState = NULL;
+        }
+
+        mpCurrentState->Exit();
+        mpCurrentState->Enter();
+    }
+
+//==============================================================================
+    void StateManager::Update(float timeins) {
+        if (mpNextState) {
+            mpCurrentState->Exit();
+            delete mpCurrentState;
+            mpCurrentState = mpNextState;
+            mpNextState = NULL;
+            mpCurrentState->Enter();
+        }
+
+        mpCurrentState->Update(timeins);
+
+        // sequence actions, if we can
+        if (!mpCharacter->GetActionController()->IsBusy()) {
+            mpCurrentState->SequenceAction();
+        }
+    }
+
+//==============================================================================
+    const State *StateManager::GetCurrentState(void) const {
+        return mpCurrentState;
+    }
 
 }; // namespace CharacterAi

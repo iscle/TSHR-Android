@@ -27,26 +27,28 @@
 //
 //=============================================================================
 
-class PositionCondition : public VehicleCondition
-{
+class PositionCondition : public VehicleCondition {
 public:
     PositionCondition();
-	virtual ~PositionCondition();
 
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual ~PositionCondition();
 
-    void SetRequiredPosition( int position );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
+
+    void SetRequiredPosition(int position);
 
 private:
     virtual void OnInitialize();
+
     virtual void OnFinalize();
 
     int mRequiredPosition;
     int mNumOthersFinished;
 
     //Prevent wasteful constructor creation.
-	PositionCondition( const PositionCondition& positioncondition );
-	PositionCondition& operator=( const PositionCondition& positioncondition );
+    PositionCondition(const PositionCondition &positioncondition);
+
+    PositionCondition &operator=(const PositionCondition &positioncondition);
 };
 
 //******************************************************************************
@@ -60,13 +62,12 @@ private:
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int position )
+// Parameters:  (int position)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void PositionCondition::SetRequiredPosition( int position )
-{
+inline void PositionCondition::SetRequiredPosition(int position) {
     mRequiredPosition = position;
 }
 

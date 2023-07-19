@@ -56,42 +56,40 @@ const unsigned int MAX_IDLE_TIME_OF_BLACKNESS = 3000; // in msec
 //
 //===========================================================================
 CGuiScreenIrisWipe::CGuiScreenIrisWipe
-(
-    Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-)
-:	CGuiScreen( pScreen, pParent, GUI_SCREEN_ID_IRIS_WIPE ),
-    m_pIris( 0 ),
-    m_pMultiController( 0 ),
-    m_isIrisActive( false ),
-    m_loadingText( NULL ),
-    m_elapsedIdleTime( 0 ),
-    m_elapsedBlinkTime( 0 )
-{
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        : CGuiScreen(pScreen, pParent, GUI_SCREEN_ID_IRIS_WIPE),
+          m_pIris(0),
+          m_pMultiController(0),
+          m_isIrisActive(false),
+          m_loadingText(NULL),
+          m_elapsedIdleTime(0),
+          m_elapsedBlinkTime(0) {
     // Retrieve the Scrooby drawing elements.
     //
-    Scrooby::Page* pPage = m_pScroobyScreen->GetPage( "3dIris" );
-    rAssert( pPage != NULL );
+    Scrooby::Page *pPage = m_pScroobyScreen->GetPage("3dIris");
+    rAssert(pPage != NULL);
 
-    m_pIris = pPage->GetPure3dObject( "p3d_iris" );
-    rAssert( m_pIris );
+    m_pIris = pPage->GetPure3dObject("p3d_iris");
+    rAssert(m_pIris);
 
     // Have to find the multicontroller ourselves because for some stupid reason
     // Scrooby doesn't make it accessable via the Pure3dObject until the first render.
     //
-    m_pMultiController = p3d::find<tMultiController>( "IrisController" );
-    rAssert( m_pMultiController );
+    m_pMultiController = p3d::find<tMultiController>("IrisController");
+    rAssert(m_pMultiController);
 
     m_numFrames = m_pMultiController->GetNumFrames();
 
     // get loading text
     //
-    pPage = m_pScroobyScreen->GetPage( "LoadingText" );
-    if( pPage != NULL )
-    {
-        m_loadingText = pPage->GetText( "Loading" );
-        rAssert( m_loadingText != NULL );
-        m_loadingText->SetVisible( false ); // hide by default
+    pPage = m_pScroobyScreen->GetPage("LoadingText");
+    if (pPage != NULL) {
+        m_loadingText = pPage->GetText("Loading");
+        rAssert(m_loadingText != NULL);
+        m_loadingText->SetVisible(false); // hide by default
     }
 
     m_relativeSpeed = DEFAULT_REL_SPEED;
@@ -110,8 +108,7 @@ CGuiScreenIrisWipe::CGuiScreenIrisWipe
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenIrisWipe::~CGuiScreenIrisWipe()
-{
+CGuiScreenIrisWipe::~CGuiScreenIrisWipe() {
 }
 
 //===========================================================================
@@ -126,8 +123,7 @@ CGuiScreenIrisWipe::~CGuiScreenIrisWipe()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenIrisWipe::DoNotOpenOnNextOutro()
-{
+void CGuiScreenIrisWipe::DoNotOpenOnNextOutro() {
     g_doNotOpenOnNextOutro = true;
 }
 
@@ -144,99 +140,80 @@ void CGuiScreenIrisWipe::DoNotOpenOnNextOutro()
 //
 //===========================================================================
 void CGuiScreenIrisWipe::HandleMessage
-(
-	eGuiMessage message, 
-	unsigned int param1,
-	unsigned int param2 
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        if( message == GUI_MSG_UPDATE )
-        {
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        if (message == GUI_MSG_UPDATE) {
             m_elapsedIdleTime += param1;
 
-            if( m_elapsedIdleTime > MAX_IDLE_TIME_OF_BLACKNESS )
-            {
+            if (m_elapsedIdleTime > MAX_IDLE_TIME_OF_BLACKNESS) {
                 m_elapsedBlinkTime += param1;
 
-                if( m_loadingText != NULL )
-                {
+                if (m_loadingText != NULL) {
                     // blink loading text if idling here on this screen to satisfy
                     // TRC/TCR requirements
                     //
                     const unsigned int BLINKING_PERIOD = 250;
-                    bool isBlinked = GuiSFX::Blink( m_loadingText,
-                                                    static_cast<float>( m_elapsedBlinkTime ),
-                                                    static_cast<float>( BLINKING_PERIOD ) );
-                    if( isBlinked )
-                    {
+                    bool isBlinked = GuiSFX::Blink(m_loadingText,
+                                                   static_cast<float>(m_elapsedBlinkTime),
+                                                   static_cast<float>(BLINKING_PERIOD));
+                    if (isBlinked) {
                         m_elapsedBlinkTime %= BLINKING_PERIOD;
                     }
                 }
             }
         }
-    }
-    else if( m_state == GUI_WINDOW_STATE_INTRO )
-    {
-        switch( message )
-        {
-            case GUI_MSG_UPDATE:
-            {
-                if( m_isIrisActive && m_pMultiController->LastFrameReached() )
-                {
+    } else if (m_state == GUI_WINDOW_STATE_INTRO) {
+        switch (message) {
+            case GUI_MSG_UPDATE: {
+                if (m_isIrisActive && m_pMultiController->LastFrameReached()) {
                     m_isIrisActive = false;
 
                     m_numTransitionsPending--;
-                    rAssert( m_numTransitionsPending == 0 );
+                    rAssert(m_numTransitionsPending == 0);
 
-                    GetEventManager()->TriggerEvent( EVENT_GUI_IRIS_WIPE_CLOSED );
-                    rReleasePrintf( "CGuiScreenIrisWipe => EVENT_GUI_IRIS_WIPE_CLOSED.\n" );
+                    GetEventManager()->TriggerEvent(EVENT_GUI_IRIS_WIPE_CLOSED);
+                    rReleasePrintf("CGuiScreenIrisWipe => EVENT_GUI_IRIS_WIPE_CLOSED.\n");
                 }
 
                 break;
             }
-            default:
-            {
+            default: {
                 break;
             }
         }
-    }
-    else if( m_state == GUI_WINDOW_STATE_OUTRO )
-    {
-        switch( message )
-        {
-            case GUI_MSG_UPDATE:
-            {
-                if( m_isIrisActive && m_pMultiController->LastFrameReached() )
-                {
+    } else if (m_state == GUI_WINDOW_STATE_OUTRO) {
+        switch (message) {
+            case GUI_MSG_UPDATE: {
+                if (m_isIrisActive && m_pMultiController->LastFrameReached()) {
                     m_isIrisActive = false;
 
                     m_numTransitionsPending--;
-                    rAssert( m_numTransitionsPending == 0 );
+                    rAssert(m_numTransitionsPending == 0);
 
-                    GetEventManager()->TriggerEvent( EVENT_GUI_IRIS_WIPE_OPEN );
-                    rReleasePrintf( "CGuiScreenIrisWipe => EVENT_GUI_IRIS_WIPE_OPEN.\n" );
+                    GetEventManager()->TriggerEvent(EVENT_GUI_IRIS_WIPE_OPEN);
+                    rReleasePrintf("CGuiScreenIrisWipe => EVENT_GUI_IRIS_WIPE_OPEN.\n");
                 }
 
                 break;
             }
-            case GUI_MSG_WINDOW_EXIT:
-            {
+            case GUI_MSG_WINDOW_EXIT: {
                 // ignore multiple exit requests
                 //
                 return;
             }
-            default:
-            {
+            default: {
                 break;
             }
         }
     }
 
-	// Propogate the message up the hierarchy.
-	//
-	CGuiScreen::HandleMessage( message, param1, param2 );
+    // Propogate the message up the hierarchy.
+    //
+    CGuiScreen::HandleMessage(message, param1, param2);
 }
 
 
@@ -252,29 +229,27 @@ void CGuiScreenIrisWipe::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenIrisWipe::InitIntro()
-{
-    if( m_loadingText != NULL )
-    {
+void CGuiScreenIrisWipe::InitIntro() {
+    if (m_loadingText != NULL) {
         // hide loading text
         //
-        m_loadingText->SetVisible( false );
+        m_loadingText->SetVisible(false);
     }
 
-    if( !m_isIrisActive )
-    {
+    if (!m_isIrisActive) {
         m_isIrisActive = true;
 
         g_IsIrisClosed = true;
-        m_pIris->SetVisible( true );
-        m_pMultiController->SetRelativeSpeed( m_relativeSpeed );
+        m_pIris->SetVisible(true);
+        m_pMultiController->SetRelativeSpeed(m_relativeSpeed);
 
-        rAssertMsg( m_numTransitionsPending == 0, "Bad news if you hit this assert! Please go tell Tony." );
+        rAssertMsg(m_numTransitionsPending == 0,
+                   "Bad news if you hit this assert! Please go tell Tony.");
         m_numTransitionsPending++;
-        
+
         m_pMultiController->Reset();
-        m_pMultiController->SetFrameRange( 0.0f, m_numFrames * 0.5f );
-        m_pMultiController->SetFrame( 0.0f );
+        m_pMultiController->SetFrameRange(0.0f, m_numFrames * 0.5f);
+        m_pMultiController->SetFrame(0.0f);
     }
 }
 
@@ -291,8 +266,7 @@ void CGuiScreenIrisWipe::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenIrisWipe::InitRunning()
-{
+void CGuiScreenIrisWipe::InitRunning() {
     m_elapsedIdleTime = 0;
     m_elapsedBlinkTime = 0;
 }
@@ -310,32 +284,27 @@ void CGuiScreenIrisWipe::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenIrisWipe::InitOutro()
-{
-    if( m_loadingText != NULL )
-    {
+void CGuiScreenIrisWipe::InitOutro() {
+    if (m_loadingText != NULL) {
         // hide loading text
         //
-        m_loadingText->SetVisible( false );
+        m_loadingText->SetVisible(false);
     }
 
-    if( g_doNotOpenOnNextOutro )
-    {
+    if (g_doNotOpenOnNextOutro) {
         g_doNotOpenOnNextOutro = false;
-    }
-    else
-    {
+    } else {
         g_IsIrisClosed = false;
-        if( !m_isIrisActive )
-        {
+        if (!m_isIrisActive) {
             m_isIrisActive = true;
 
-            rAssertMsg( m_numTransitionsPending == 0, "Bad news if you hit this assert! Please go tell Tony." );
+            rAssertMsg(m_numTransitionsPending == 0,
+                       "Bad news if you hit this assert! Please go tell Tony.");
             m_numTransitionsPending++;
 
             m_pMultiController->Reset();
-            m_pMultiController->SetFrameRange( m_numFrames * 0.5f, m_numFrames );
-            m_pMultiController->SetFrame( m_numFrames * 0.5f );
+            m_pMultiController->SetFrameRange(m_numFrames * 0.5f, m_numFrames);
+            m_pMultiController->SetFrame(m_numFrames * 0.5f);
 
             //Reset the relative speed to the default
             m_relativeSpeed = DEFAULT_REL_SPEED;
@@ -355,8 +324,7 @@ void CGuiScreenIrisWipe::InitOutro()
 // Return:      N/A.
 //
 //===========================================================================
-bool CGuiScreenIrisWipe::IsIrisClosed()
-{
+bool CGuiScreenIrisWipe::IsIrisClosed() {
     return g_IsIrisClosed;
 }
 

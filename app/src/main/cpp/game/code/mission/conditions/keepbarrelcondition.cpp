@@ -49,8 +49,7 @@
 //
 //=============================================================================
 KeepBarrelCondition::KeepBarrelCondition() :
-    mJumpBackBy( 1 )
-{
+        mJumpBackBy(1) {
 }
 
 //=============================================================================
@@ -63,8 +62,7 @@ KeepBarrelCondition::KeepBarrelCondition() :
 // Return:      N/A.
 //
 //=============================================================================
-KeepBarrelCondition::~KeepBarrelCondition()
-{
+KeepBarrelCondition::~KeepBarrelCondition() {
 }
 
 //=============================================================================
@@ -72,23 +70,21 @@ KeepBarrelCondition::~KeepBarrelCondition()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void KeepBarrelCondition::HandleEvent( EventEnum id, void* pEventData )
-{
-    if ( id == EVENT_STATEPROP_COLLECTIBLE_DESTROYED )
-    {
+void KeepBarrelCondition::HandleEvent(EventEnum id, void *pEventData) {
+    if (id == EVENT_STATEPROP_COLLECTIBLE_DESTROYED) {
         //This is kinda hacky, but it's only for this mission anyway.
         //Maybe I should signal and have the stage change in the update
         //of the mission.
         //TODO:  Think about it.
-        GetGameplayManager()->GetCurrentMission()->SpecialCaseStageBackup( mJumpBackBy );
+        GetGameplayManager()->GetCurrentMission()->SpecialCaseStageBackup(mJumpBackBy);
     }
 
-    MissionCondition::HandleEvent( id, pEventData );
+    MissionCondition::HandleEvent(id, pEventData);
 }
 
 
@@ -109,10 +105,9 @@ void KeepBarrelCondition::HandleEvent( EventEnum id, void* pEventData )
 // Return:      void 
 //
 //=============================================================================
-void KeepBarrelCondition::OnInitialize()
-{
+void KeepBarrelCondition::OnInitialize() {
     //Add a listener for the barrel exploding
-    GetEventManager()->AddListener( this, EVENT_STATEPROP_COLLECTIBLE_DESTROYED );
+    GetEventManager()->AddListener(this, EVENT_STATEPROP_COLLECTIBLE_DESTROYED);
 }
 
 //=============================================================================
@@ -125,8 +120,7 @@ void KeepBarrelCondition::OnInitialize()
 // Return:      void 
 //
 //=============================================================================
-void KeepBarrelCondition::OnFinalize()
-{
+void KeepBarrelCondition::OnFinalize() {
     //Remove the listeners
-    GetEventManager()->RemoveListener( this, EVENT_STATEPROP_COLLECTIBLE_DESTROYED );
+    GetEventManager()->RemoveListener(this, EVENT_STATEPROP_COLLECTIBLE_DESTROYED);
 }

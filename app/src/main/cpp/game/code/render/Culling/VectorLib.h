@@ -13,17 +13,17 @@
 // case I need some persistent state further down 
 // the road.
 ///////////////////////////////////////////////////
-class VectorLib
-{
+class VectorLib {
 public:
-   VectorLib();
-   ~VectorLib();
+    VectorLib();
 
-   void FindBounds( Bounds3f& orBounds, FixedArray<Vector3f>& irPoints );
+    ~VectorLib();
+
+    void FindBounds(Bounds3f &orBounds, FixedArray <Vector3f> &irPoints);
 
 protected:
 };
 
-VectorLib& theVectorLib();
+VectorLib &theVectorLib();
 
 #endif

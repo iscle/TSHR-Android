@@ -33,7 +33,7 @@
 //===========================================================================
 
 // Static instance of our singleton pointer.
-ParticleManager* ParticleManager::spInstance = NULL;
+ParticleManager *ParticleManager::spInstance = NULL;
 
 //===========================================================================
 // Global Data, Local Data, Local Classes
@@ -57,19 +57,20 @@ ParticleManager* ParticleManager::spInstance = NULL;
 // Constraints: Must be given valid pFactory and pController pointers
 //
 //==============================================================================
-ParticleManager::ManagedParticleSystem::ManagedParticleSystem( tParticleSystemFactory* pFactory, tEffectController* pController ) 
-: mUserID( -1 ),
-mIsActive( false ),
-mEmissionBias( 1.0f ),
-mThrowUpNewParticles( false ),
-mIsInDSG( false )
-{   
+ParticleManager::ManagedParticleSystem::ManagedParticleSystem(tParticleSystemFactory *pFactory,
+                                                              tEffectController *pController)
+        : mUserID(-1),
+          mIsActive(false),
+          mEmissionBias(1.0f),
+          mThrowUpNewParticles(false),
+          mIsInDSG(false) {
     mpSystem = new ParticleSystemDSG;
-	mpSystem->AddRef();
+    mpSystem->AddRef();
 
-    rAssert( mpSystem != NULL );
-    mpSystem->Init( pFactory, pController ); 
+    rAssert(mpSystem != NULL);
+    mpSystem->Init(pFactory, pController);
 }
+
 //==============================================================================
 // ParticleManager::ParticleSystemEntityDSG::~ParticleSystemEntityDSG
 //==============================================================================
@@ -83,12 +84,12 @@ mIsInDSG( false )
 // Constraints: None.
 //
 //==============================================================================
-ParticleManager::ManagedParticleSystem::~ManagedParticleSystem()
-{
+ParticleManager::ManagedParticleSystem::~ManagedParticleSystem() {
 
-	mpSystem->Release();
+    mpSystem->Release();
     mpSystem = NULL;
 }
+
 //==============================================================================
 // ParticleManager::ManagedParticleSystem::Update
 //==============================================================================
@@ -102,28 +103,23 @@ ParticleManager::ManagedParticleSystem::~ManagedParticleSystem()
 // Constraints: None.
 //
 //==============================================================================
-void ParticleManager::ManagedParticleSystem::Update( float deltaTime)
-{
-    
-    if ( IsLocked() )
-    {
-        if ( mThrowUpNewParticles )
-        {
-            mThrowUpNewParticles = false;        
-        }
-        else
-        {
-            SetBias( p3dParticleSystemConstants::EmitterBias::EMISSION, 0.0f);
+void ParticleManager::ManagedParticleSystem::Update(float deltaTime) {
 
-            if ( mpSystem->GetNumLiveParticles() == 0 )
-            {
-                Unlock();    
-                SetActive( false );
+    if (IsLocked()) {
+        if (mThrowUpNewParticles) {
+            mThrowUpNewParticles = false;
+        } else {
+            SetBias(p3dParticleSystemConstants::EmitterBias::EMISSION, 0.0f);
+
+            if (mpSystem->GetNumLiveParticles() == 0) {
+                Unlock();
+                SetActive(false);
             }
         }
     }
-    mpSystem->Update ( deltaTime );
+    mpSystem->Update(deltaTime);
 }
+
 //==============================================================================
 // ParticleManager::ManagedParticleSystem::Reset
 //==============================================================================
@@ -137,12 +133,9 @@ void ParticleManager::ManagedParticleSystem::Update( float deltaTime)
 // Constraints: None.
 //
 //==============================================================================
-void ParticleManager::ManagedParticleSystem::Reset()
-{
-    mpSystem->Reset ();
+void ParticleManager::ManagedParticleSystem::Reset() {
+    mpSystem->Reset();
 }
-
-
 
 
 //==============================================================================
@@ -158,29 +151,27 @@ void ParticleManager::ManagedParticleSystem::Reset()
 // Constraints: None.
 //
 //==============================================================================
-void ParticleManager::ManagedParticleSystem::SetTransform( const rmt::Matrix& transform )
-{
-	// Check to see if the object has moved, if it has, and its in the DSG
-	// call DSGtree->Move
+void ParticleManager::ManagedParticleSystem::SetTransform(const rmt::Matrix &transform) {
+    // Check to see if the object has moved, if it has, and its in the DSG
+    // call DSGtree->Move
     rmt::Vector oldPos = mpSystem->rPosition();
-	rmt::Vector newPos = transform.Row(3);
-	if ( mIsInDSG && newPos != oldPos )
-	{
-		rmt::Box3D oldBB;	
-		mpSystem->GetBoundingBox( &oldBB );
-	    mpSystem->SetTransform( transform );   
+    rmt::Vector newPos = transform.Row(3);
+    if (mIsInDSG && newPos != oldPos) {
+        rmt::Box3D oldBB;
+        mpSystem->GetBoundingBox(&oldBB);
+        mpSystem->SetTransform(transform);
 
-        WorldRenderLayer* pWorldRenderLayer = static_cast< WorldRenderLayer* > (GetRenderManager()->mpLayer( mLayer ));
+        WorldRenderLayer *pWorldRenderLayer = static_cast<WorldRenderLayer *>(GetRenderManager()->mpLayer(
+                mLayer));
         // Sanity check
-        rAssert( dynamic_cast<WorldRenderLayer*>(pWorldRenderLayer) != NULL );
-        pWorldRenderLayer->pWorldScene()->Move( oldBB, mpSystem );   
+        rAssert(dynamic_cast<WorldRenderLayer *>(pWorldRenderLayer) != NULL);
+        pWorldRenderLayer->pWorldScene()->Move(oldBB, mpSystem);
 
+    } else {
+        mpSystem->SetTransform(transform);
     }
-	else
-	{
-	    mpSystem->SetTransform( transform );   
-	}
 }
+
 //==============================================================================
 // ParticleManager::ParticleSystemEntityDSG::LastFrameReached
 //==============================================================================
@@ -196,11 +187,10 @@ void ParticleManager::ManagedParticleSystem::SetTransform( const rmt::Matrix& tr
 // Constraints: None.
 //
 //==============================================================================
-int ParticleManager::ManagedParticleSystem::LastFrameReached() const
-{
-    return mpSystem->LastFrameReached();       
+int ParticleManager::ManagedParticleSystem::LastFrameReached() const {
+    return mpSystem->LastFrameReached();
 }
-      
+
 
 //==============================================================================
 // ParticleManager::CreateInstance
@@ -216,15 +206,15 @@ int ParticleManager::ManagedParticleSystem::LastFrameReached() const
 //              will result in an assertion (or lost memory if assertions not enabled)
 //
 //==============================================================================
-ParticleManager* ParticleManager::CreateInstance()
-{
-    rAssert( spInstance == NULL );
+ParticleManager *ParticleManager::CreateInstance() {
+    rAssert(spInstance == NULL);
 
     spInstance = new(GMA_PERSISTENT) ParticleManager;
-    rAssert( spInstance != NULL );
-    
+    rAssert(spInstance != NULL);
+
     return spInstance;
 }
+
 //==============================================================================
 // ParticleManager::GetInstance
 //==============================================================================
@@ -239,16 +229,15 @@ ParticleManager* ParticleManager::CreateInstance()
 //
 //
 //==============================================================================
-ParticleManager* ParticleManager::GetInstance()
-{
-    if ( spInstance == NULL )
-    {
+ParticleManager *ParticleManager::GetInstance() {
+    if (spInstance == NULL) {
         CreateInstance();
     }
-    rAssert ( spInstance != NULL);
+    rAssert(spInstance != NULL);
 
     return spInstance;
 }
+
 //==============================================================================
 // ParticleManager::DestroyInstance
 //==============================================================================
@@ -263,11 +252,10 @@ ParticleManager* ParticleManager::GetInstance()
 //
 //
 //==============================================================================
-void ParticleManager::DestroyInstance()
-{
-    rAssert( spInstance != NULL );
+void ParticleManager::DestroyInstance() {
+    rAssert(spInstance != NULL);
 
-    delete( GMA_PERSISTENT, spInstance );
+    delete (GMA_PERSISTENT, spInstance);
     spInstance = NULL;
 }
 
@@ -287,17 +275,13 @@ void ParticleManager::DestroyInstance()
 //
 //==============================================================================
 
-void ParticleManager::DeactiveateAll()
-{
-	// for each active particle system type
-    for (unsigned int i = 0 ; i < mActiveSystems.Size() ; ++i)
-    {
-        for (unsigned int j = 0 ; j < mActiveSystems[i].Size() ; ++j)
-        {
+void ParticleManager::DeactiveateAll() {
+    // for each active particle system type
+    for (unsigned int i = 0; i < mActiveSystems.Size(); ++i) {
+        for (unsigned int j = 0; j < mActiveSystems[i].Size(); ++j) {
             // Advance controller based upon time elapsed but only if it is active
-            if ( mActiveSystems[i][j]->IsActive() )
-            {
-				mActiveSystems[i][j]->SetActive( false );    
+            if (mActiveSystems[i][j]->IsActive()) {
+                mActiveSystems[i][j]->SetActive(false);
             }
         }
     }
@@ -318,23 +302,23 @@ void ParticleManager::DeactiveateAll()
 //
 //
 //==============================================================================
-ParticleManager::ParticleManager()
-{
-    #ifdef RAD_GAMECUBE
-        HeapMgr()->PushHeap( GMA_GC_VMM );
-    #else
-        HeapMgr()->PushHeap( GMA_PERSISTENT );
-    #endif
+ParticleManager::ParticleManager() {
+#ifdef RAD_GAMECUBE
+    HeapMgr()->PushHeap(GMA_GC_VMM);
+#else
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
+#endif
     // Allocate the (std:vector) arrays that will be filled out using the InitializeSystem function
-    mActiveSystems.Grow( ParticleEnum::eNumParticleTypes );
-    mIsParticleTypeDynamicallyLoaded.resize( ParticleEnum::eNumParticleTypes, false );
+    mActiveSystems.Grow(ParticleEnum::eNumParticleTypes);
+    mIsParticleTypeDynamicallyLoaded.resize(ParticleEnum::eNumParticleTypes, false);
 
-    #ifdef RAD_GAMECUBE
-        HeapMgr()->PopHeap( GMA_GC_VMM );
-    #else
-        HeapMgr()->PopHeap( GMA_PERSISTENT );
-    #endif
+#ifdef RAD_GAMECUBE
+    HeapMgr()->PopHeap(GMA_GC_VMM);
+#else
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
+#endif
 }
+
 //==============================================================================
 // ParticleManager::~ParticleManager
 //==============================================================================
@@ -349,8 +333,7 @@ ParticleManager::ParticleManager()
 //
 //
 //==============================================================================
-ParticleManager::~ParticleManager()
-{
+ParticleManager::~ParticleManager() {
 
     // Clear out active particle systems
     ClearSystems();
@@ -372,19 +355,16 @@ ParticleManager::~ParticleManager()
 //
 //
 //==============================================================================
-void ParticleManager::ClearSystems()
-{
+void ParticleManager::ClearSystems() {
     // for each active particle system
     //  remove it from the scene graph
-	DeactiveateAll();
+    DeactiveateAll();
     //  free it
-    for (unsigned int i = 0 ; i < mActiveSystems.Size() ; ++i)
-    {   
-        for (unsigned int j = 0 ; j < mActiveSystems[i].Size () ; ++j)
-        {
+    for (unsigned int i = 0; i < mActiveSystems.Size(); ++i) {
+        for (unsigned int j = 0; j < mActiveSystems[i].Size(); ++j) {
             delete mActiveSystems[i][j];
         }
-		mActiveSystems[i].Shrink(0);
+        mActiveSystems[i].Shrink(0);
     }
 }
 
@@ -407,44 +387,42 @@ void ParticleManager::ClearSystems()
 //
 //
 //==============================================================================
-void ParticleManager::InitializeSystem( ParticleEnum::ParticleID type, 
-                                        tParticleSystemFactory* pFactory, 
-                                        tEffectController* pController, 
-                                        int maxInstances,
-                                        bool isDynamic )
-{
-    rAssert( type >=0 && type < ParticleEnum::eNumParticleTypes );
-    rAssert( pFactory != NULL );
-    rAssert( pController != NULL );
-    rAssert( maxInstances > 0 );
+void ParticleManager::InitializeSystem(ParticleEnum::ParticleID type,
+                                       tParticleSystemFactory *pFactory,
+                                       tEffectController *pController,
+                                       int maxInstances,
+                                       bool isDynamic) {
+    rAssert(type >= 0 && type < ParticleEnum::eNumParticleTypes);
+    rAssert(pFactory != NULL);
+    rAssert(pController != NULL);
+    rAssert(maxInstances > 0);
 
     // Remember we are holding pointers, if we call resize, any valid pointers that are killed
     // will not be freed properly, assert to make sure this never happens
-    rAssert( mActiveSystems[ type ].Size() == 0 );
-    
+    rAssert(mActiveSystems[type].Size() == 0);
 
-    MEMTRACK_PUSH_GROUP( "InitParticleSystem" );
+
+    MEMTRACK_PUSH_GROUP("InitParticleSystem");
 
     //This should be looked at.  TODO
-    #ifdef RAD_GAMECUBE
-        HeapMgr()->PushHeap( GMA_GC_VMM );
-    #else
-        HeapMgr()->PushHeap( GMA_LEVEL_OTHER );
-    #endif
-    mActiveSystems[ type ].Resize( maxInstances );
+#ifdef RAD_GAMECUBE
+    HeapMgr()->PushHeap(GMA_GC_VMM);
+#else
+    HeapMgr()->PushHeap(GMA_LEVEL_OTHER);
+#endif
+    mActiveSystems[type].Resize(maxInstances);
 
 
-    for (int i = 0 ; i < maxInstances ; ++i)
-    {
-        mActiveSystems[ type ][ i ] = new ManagedParticleSystem( pFactory, pController);
+    for (int i = 0; i < maxInstances; ++i) {
+        mActiveSystems[type][i] = new ManagedParticleSystem(pFactory, pController);
     }
-    mIsParticleTypeDynamicallyLoaded[ type ] = isDynamic;
-    #ifdef RAD_GAMECUBE
-        HeapMgr()->PopHeap( GMA_GC_VMM );
-    #else
-        HeapMgr()->PopHeap( GMA_LEVEL_OTHER );
-    #endif
-    MEMTRACK_POP_GROUP( "InitParticleSystem" );
+    mIsParticleTypeDynamicallyLoaded[type] = isDynamic;
+#ifdef RAD_GAMECUBE
+    HeapMgr()->PopHeap(GMA_GC_VMM);
+#else
+    HeapMgr()->PopHeap(GMA_LEVEL_OTHER);
+#endif
+    MEMTRACK_POP_GROUP("InitParticleSystem");
 
 
 }
@@ -463,17 +441,15 @@ void ParticleManager::InitializeSystem( ParticleEnum::ParticleID type,
 //
 //
 //==============================================================================
-void ParticleManager::DeleteSystem( ParticleEnum::ParticleID type )
-{
-    rAssert( type >=0 && type < ParticleEnum::eNumParticleTypes );
-    for (unsigned int i = 0 ; i < mActiveSystems[ type ].Size() ; ++i)
-    {
+void ParticleManager::DeleteSystem(ParticleEnum::ParticleID type) {
+    rAssert(type >= 0 && type < ParticleEnum::eNumParticleTypes);
+    for (unsigned int i = 0; i < mActiveSystems[type].Size(); ++i) {
 
-		// Remove it from the DSG
-		mActiveSystems[ type ][ i ]->SetActive( false );
-        delete mActiveSystems[ type ][ i ];
+        // Remove it from the DSG
+        mActiveSystems[type][i]->SetActive(false);
+        delete mActiveSystems[type][i];
     }
-    mActiveSystems[ type ].Shrink(0);
+    mActiveSystems[type].Shrink(0);
 }
 //==============================================================================
 // ParticleManager::DumpDynaLoad
@@ -491,14 +467,11 @@ void ParticleManager::DeleteSystem( ParticleEnum::ParticleID type )
 //
 //==============================================================================
 
-void ParticleManager::DumpDynaLoad()
-{
-    for (int i = 0 ; i < ParticleEnum::eNumParticleTypes ; ++i)
-    {
-        if ( mIsParticleTypeDynamicallyLoaded[ i ] )
-        {
-            DeleteSystem( ParticleEnum::ParticleID( i ) );
-            mIsParticleTypeDynamicallyLoaded[ i ] = false;
+void ParticleManager::DumpDynaLoad() {
+    for (int i = 0; i < ParticleEnum::eNumParticleTypes; ++i) {
+        if (mIsParticleTypeDynamicallyLoaded[i]) {
+            DeleteSystem(ParticleEnum::ParticleID(i));
+            mIsParticleTypeDynamicallyLoaded[i] = false;
         }
     }
 }
@@ -519,8 +492,7 @@ void ParticleManager::DumpDynaLoad()
 //
 //==============================================================================
 
-ParticlePlayerID ParticleManager::GetUniqueID()const
-{
+ParticlePlayerID ParticleManager::GetUniqueID() const {
     static int sUniqueID = 0;
     return sUniqueID++;
 }
@@ -549,41 +521,38 @@ ParticlePlayerID ParticleManager::GetUniqueID()const
 //==============================================================================
 
 
-void ParticleManager::PlayCyclic( ParticlePlayerID id, const ParticleAttributes& attr, const rmt::Matrix& localMatrix )
-{
-    rAssert( attr.mType >=0 && attr.mType < ParticleEnum::eNumParticleTypes );
+void ParticleManager::PlayCyclic(ParticlePlayerID id, const ParticleAttributes &attr,
+                                 const rmt::Matrix &localMatrix) {
+    rAssert(attr.mType >= 0 && attr.mType < ParticleEnum::eNumParticleTypes);
     // get animation associated with UniqueID, or assign an unused one.
 
-    if( attr.mType == ParticleEnum::eStars )
-    {
+    if (attr.mType == ParticleEnum::eStars) {
         return;
     }
 
     rmt::Matrix orientedLocalMatrix;
-    ReorientUpAxis( localMatrix, &orientedLocalMatrix );
+    ReorientUpAxis(localMatrix, &orientedLocalMatrix);
 
-    ManagedParticleSystem* pFreeSystem = NULL;
+    ManagedParticleSystem *pFreeSystem = NULL;
     bool wasFreeSystemFound = false;
 
-    rWarningMsg( mActiveSystems[ attr.mType ].Size() > 0 , "ParticleManager::PlayCyclic, particles of that type have not been loaded!" );
+    rWarningMsg(mActiveSystems[attr.mType].Size() > 0,
+                "ParticleManager::PlayCyclic, particles of that type have not been loaded!");
 
-    for ( unsigned int i = 0 ; i < mActiveSystems[ attr.mType ].Size() ; i++ )
-    {
-        ManagedParticleSystem* currentSystem = mActiveSystems[ attr.mType ][ i ];  
-        if ( id == currentSystem->GetUserID() )
-        {
+    for (unsigned int i = 0; i < mActiveSystems[attr.mType].Size(); i++) {
+        ManagedParticleSystem *currentSystem = mActiveSystems[attr.mType][i];
+        if (id == currentSystem->GetUserID()) {
             // we have found the system we are looking for
             // tell it to keep playing
             currentSystem->ThrowUpNewParticles();
-            currentSystem->SetTransform( orientedLocalMatrix );
-            currentSystem->SetBias( p3dParticleSystemConstants::EmitterBias::EMISSION, attr.mEmissionBias );
-            currentSystem->SetVelocity( attr.mVelocity );
+            currentSystem->SetTransform(orientedLocalMatrix);
+            currentSystem->SetBias(p3dParticleSystemConstants::EmitterBias::EMISSION,
+                                   attr.mEmissionBias);
+            currentSystem->SetVelocity(attr.mVelocity);
             return;
-        }
-        else if ( wasFreeSystemFound == false &&
-                  currentSystem->IsActive() == false &&
-                  currentSystem->GetUserID() < 0 )
-        {
+        } else if (wasFreeSystemFound == false &&
+                   currentSystem->IsActive() == false &&
+                   currentSystem->GetUserID() < 0) {
             // this thing is unused. Lets flag it so that we can use it for 
             // a locked player if needed
             wasFreeSystemFound = true;
@@ -591,14 +560,13 @@ void ParticleManager::PlayCyclic( ParticlePlayerID id, const ParticleAttributes&
         }
     }
     // The system was not assigned yet. Assign it now.
-    if ( pFreeSystem != NULL )
-    {
-        pFreeSystem->SetTransform( orientedLocalMatrix );
-        pFreeSystem->SetActive( true );
-        pFreeSystem->Lock( id );
+    if (pFreeSystem != NULL) {
+        pFreeSystem->SetTransform(orientedLocalMatrix);
+        pFreeSystem->SetActive(true);
+        pFreeSystem->Lock(id);
         pFreeSystem->ThrowUpNewParticles();
-        pFreeSystem->SetVelocity( attr.mVelocity );
-        pFreeSystem->SetBias( p3dParticleSystemConstants::EmitterBias::EMISSION, attr.mEmissionBias );
+        pFreeSystem->SetVelocity(attr.mVelocity);
+        pFreeSystem->SetBias(p3dParticleSystemConstants::EmitterBias::EMISSION, attr.mEmissionBias);
     }
 }
 
@@ -626,17 +594,14 @@ void ParticleManager::PlayCyclic( ParticlePlayerID id, const ParticleAttributes&
 //==============================================================================
 
 
-void ParticleManager::PlayCyclic( ParticlePlayerID id, const ParticleAttributes& attr, const rmt::Vector& position )
-{
+void ParticleManager::PlayCyclic(ParticlePlayerID id, const ParticleAttributes &attr,
+                                 const rmt::Vector &position) {
     rmt::Matrix localMatrix;
     localMatrix.Identity();
-    localMatrix.FillTranslate( position );
+    localMatrix.FillTranslate(position);
 
-    PlayCyclic( id, attr, localMatrix );
+    PlayCyclic(id, attr, localMatrix);
 }
-
-
-
 
 
 //==============================================================================
@@ -656,32 +621,31 @@ void ParticleManager::PlayCyclic( ParticlePlayerID id, const ParticleAttributes&
 //
 //
 //==============================================================================
-void ParticleManager::Add( const ParticleAttributes& attr, const rmt::Matrix& localMatrix )
-{
-    if( attr.mType == ParticleEnum::eStars )
-    {
-        GetSparkleManager()->AddStars( localMatrix.Row( 3 ), 1.0f );
+void ParticleManager::Add(const ParticleAttributes &attr, const rmt::Matrix &localMatrix) {
+    if (attr.mType == ParticleEnum::eStars) {
+        GetSparkleManager()->AddStars(localMatrix.Row(3), 1.0f);
         return; // Early return. This particle system is now done procedurally.
     }
-    rWarningMsg( mActiveSystems[ attr.mType ].Size() > 0, "ParticleManager::Add(), Particles of that type have not been loaded" );
+    rWarningMsg(mActiveSystems[attr.mType].Size() > 0,
+                "ParticleManager::Add(), Particles of that type have not been loaded");
 
-    for (unsigned int i = 0 ; i < mActiveSystems[ attr.mType ].Size() ; ++i)
-    {
-        
-        if ( mActiveSystems[ attr.mType ][ i ]->IsActive() == false )
-        {
+    for (unsigned int i = 0; i < mActiveSystems[attr.mType].Size(); ++i) {
+
+        if (mActiveSystems[attr.mType][i]->IsActive() == false) {
             rmt::Matrix orientedLocalMatrix;
-            ReorientUpAxis( localMatrix, &orientedLocalMatrix );
-            mActiveSystems[ attr.mType ][ i ]->Reset();
-            mActiveSystems[ attr.mType ][ i ]->SetTransform( localMatrix );
-            mActiveSystems[ attr.mType ][ i ]->SetActive( true );
-            mActiveSystems[ attr.mType ][ i ]->SetBias( p3dParticleSystemConstants::EmitterBias::EMISSION, attr.mEmissionBias );
+            ReorientUpAxis(localMatrix, &orientedLocalMatrix);
+            mActiveSystems[attr.mType][i]->Reset();
+            mActiveSystems[attr.mType][i]->SetTransform(localMatrix);
+            mActiveSystems[attr.mType][i]->SetActive(true);
+            mActiveSystems[attr.mType][i]->SetBias(
+                    p3dParticleSystemConstants::EmitterBias::EMISSION, attr.mEmissionBias);
             break;
         }
-    } 
-  
+    }
+
 
 }
+
 //==============================================================================
 //
 // Description: Adds a new particle system into the manager, 2nd parameter is a vector
@@ -697,12 +661,11 @@ void ParticleManager::Add( const ParticleAttributes& attr, const rmt::Matrix& lo
 //
 //
 //==============================================================================
-void ParticleManager::Add( const ParticleAttributes& attr, const rmt::Vector& position )
-{
+void ParticleManager::Add(const ParticleAttributes &attr, const rmt::Vector &position) {
     rmt::Matrix localMatrix;
     localMatrix.Identity();
-    localMatrix.FillTranslate ( position );
-    Add ( attr, localMatrix );
+    localMatrix.FillTranslate(position);
+    Add(attr, localMatrix);
 }
 //==============================================================================
 // ParticleManager::DebugRender
@@ -739,24 +702,19 @@ void ParticleManager::Add( const ParticleAttributes& attr, const rmt::Vector& po
 //
 //==============================================================================
 
-void ParticleManager::Update( unsigned int deltaTime )
-{
+void ParticleManager::Update(unsigned int deltaTime) {
 
-	float fDeltaTime = static_cast< float >( deltaTime );
+    float fDeltaTime = static_cast<float>(deltaTime);
 
     // for each active particle system type
-    for (unsigned int i = 0 ; i < mActiveSystems.Size() ; ++i)
-    {
-        for (unsigned int j = 0 ; j < mActiveSystems[i].Size() ; ++j)
-        {
+    for (unsigned int i = 0; i < mActiveSystems.Size(); ++i) {
+        for (unsigned int j = 0; j < mActiveSystems[i].Size(); ++j) {
             // Advance controller based upon time elapsed but only if it is active
-            if ( mActiveSystems[i][j]->IsActive() )
-            {
+            if (mActiveSystems[i][j]->IsActive()) {
                 // Advance animation and/or throw up new particles.
-                mActiveSystems[i][j]->Update( fDeltaTime );
+                mActiveSystems[i][j]->Update(fDeltaTime);
 
-                if ( mActiveSystems[i][j]->IsLocked() )    
-                {
+                if (mActiveSystems[i][j]->IsLocked()) {
                     // Locked systems can be in one of several states
                     // 1) they were told to throw up new particles
                     // in between calls to Update
@@ -764,19 +722,16 @@ void ParticleManager::Update( unsigned int deltaTime )
                     // 2) they were not told to throw up new particles
                     // but still have active particles inside them
                     // (keep system assigned to a user)
-                    
+
                     // 3) no throw, no active particles, return it to the 
                     // system for reassignment
 
-                }
-                else 
-                {
+                } else {
                     // if the animation is complete and the system is not cyclic   
-                    if ( mActiveSystems[i][j]->LastFrameReached() )
-                    {
+                    if (mActiveSystems[i][j]->LastFrameReached()) {
                         // tell the DSG to remove the system                           
                         // disable playback
-                        mActiveSystems[i][j]->SetActive( false );    
+                        mActiveSystems[i][j]->SetActive(false);
                     }
                 }
             }
@@ -784,39 +739,37 @@ void ParticleManager::Update( unsigned int deltaTime )
     }
 
 }
-void ParticleManager::ManagedParticleSystem::SetActive( bool isActive )
-{
-	if ( mIsActive && !isActive && mIsInDSG)
-	{
-		// We are deactivating the system
-		// remove it from the DSG
-        
-        WorldRenderLayer* pWorldRenderLayer = static_cast< WorldRenderLayer* > (GetRenderManager()->mpLayer( mLayer ));
+
+void ParticleManager::ManagedParticleSystem::SetActive(bool isActive) {
+    if (mIsActive && !isActive && mIsInDSG) {
+        // We are deactivating the system
+        // remove it from the DSG
+
+        WorldRenderLayer *pWorldRenderLayer = static_cast<WorldRenderLayer *>(GetRenderManager()->mpLayer(
+                mLayer));
         // Sanity check
-        rAssert( dynamic_cast<WorldRenderLayer*>(pWorldRenderLayer) != NULL );
-        pWorldRenderLayer->pWorldScene()->Remove( mpSystem );   
+        rAssert(dynamic_cast<WorldRenderLayer *>(pWorldRenderLayer) != NULL);
+        pWorldRenderLayer->pWorldScene()->Remove(mpSystem);
 
         mIsInDSG = false;
-	}
-	else if ( !mIsActive && isActive && !mIsInDSG )
-	{
-        mLayer = static_cast< RenderEnums::LayerEnum > (GetRenderManager()->rCurWorldRenderLayer() );
-        
-        WorldRenderLayer* pWorldRenderLayer = static_cast< WorldRenderLayer* > (GetRenderManager()->mpLayer( mLayer ));
-        // Sanity check
-        rAssert( dynamic_cast<WorldRenderLayer*>(pWorldRenderLayer) != NULL );
-        pWorldRenderLayer->pWorldScene()->Add( mpSystem );   
+    } else if (!mIsActive && isActive && !mIsInDSG) {
+        mLayer = static_cast<RenderEnums::LayerEnum>(GetRenderManager()->rCurWorldRenderLayer());
 
-		mIsInDSG = true;
-	}
-	mIsActive = isActive;
-	
+        WorldRenderLayer *pWorldRenderLayer = static_cast<WorldRenderLayer *>(GetRenderManager()->mpLayer(
+                mLayer));
+        // Sanity check
+        rAssert(dynamic_cast<WorldRenderLayer *>(pWorldRenderLayer) != NULL);
+        pWorldRenderLayer->pWorldScene()->Add(mpSystem);
+
+        mIsInDSG = true;
+    }
+    mIsActive = isActive;
+
 }
 
-void 
-ParticleManager::ReorientUpAxis( const rmt::Matrix& in, rmt::Matrix* out )
-{
+void
+ParticleManager::ReorientUpAxis(const rmt::Matrix &in, rmt::Matrix *out) {
     *out = in;
-    out->Row(1) = rmt::Vector( 0.0f, 1.0f, 0.0f );
-    out->Row(0).CrossProduct( out->Row(1), out->Row( 0 ) );
+    out->Row(1) = rmt::Vector(0.0f, 1.0f, 0.0f);
+    out->Row(0).CrossProduct(out->Row(1), out->Row(0));
 }

@@ -31,10 +31,15 @@
 
 //fwd dec's
 class IEntityDSG;
+
 class RenderLayer;
+
 class WorldRenderLayer;
+
 class WorldScene;
+
 class tLightGroup;
+
 class ZoneEventLocator;
 
 //MS7: Cary added this to make the clouds go.
@@ -53,120 +58,141 @@ class tMultiController;
 //                   -ContextSwitch Interface           --Devin[4/17/2002]
 //                   -DSG Interface                     
 //========================================================================
-class RenderManager 
-:  public ChunkListenerCallback,
-   public LoadingManager::ProcessRequestsCallback,
-   public EventListener
-{
+class RenderManager
+        : public ChunkListenerCallback,
+          public LoadingManager::ProcessRequestsCallback,
+          public EventListener {
 public:
 
-   // Static Methods (for creating, destroying and acquiring an instance 
-   // of the RenderManager)
-   static RenderManager* CreateInstance();
-   static RenderManager* GetInstance();
-   static void  DestroyInstance();
+    // Static Methods (for creating, destroying and acquiring an instance
+    // of the RenderManager)
+    static RenderManager *CreateInstance();
 
-   ///////////////////////////////////////////////////////////////////////
-   // Accessors
-   ///////////////////////////////////////////////////////////////////////
-   WorldScene* pWorldScene();
-   WorldRenderLayer* pWorldRenderLayer();
-   inline int& rCurWorldRenderLayer();
+    static RenderManager *GetInstance();
 
-   // Context Interface
-   bool LoadAllNeededData(); 
-   void SetLoadData(       RenderEnums::LayerEnum   isLayer,
-                           RenderEnums::LevelEnum   isLevel, 
-                           RenderEnums::MissionEnum isMission );
+    static void DestroyInstance();
 
-   void InitLevel();
-   // Copies light values from the given sun group into the RenderManager
-   // Dynamic allocations on GMA_LEVEL_OTHER
-   // Pass in NULL to disable
-   void SetLevelLayerLights( tLightGroup* SunGroup );
-   // Releases sun group information set in SetLevelLayerLights
-   void ClearLevelLayerLights();
+    ///////////////////////////////////////////////////////////////////////
+    // Accessors
+    ///////////////////////////////////////////////////////////////////////
+    WorldScene *pWorldScene();
 
-   void SetLightMod( const tColour& LightMod );
-   void ResetMoodLighting( bool Immediate = false );
-   void DumpAllLoadedData();
-   void ContextUpdate(     unsigned int iElapsedTime );
+    WorldRenderLayer *pWorldRenderLayer();
 
-   // Layer Interface
-   RenderLayer* mpLayer( RenderEnums::LayerEnum isLayer );
-   void FreezeAllLayers();
-   void FreezeForPresentation( void );
-   void ThawFromPresentation( void );
+    inline int &rCurWorldRenderLayer();
 
-   void RedirectChunks( int ChunkDestinationMask );
+    // Context Interface
+    bool LoadAllNeededData();
 
-   ///////////////////////////////////////////////////////////////////////
-   // ChunkListenerCallback's
-   ///////////////////////////////////////////////////////////////////////
-   virtual void OnChunkLoaded( tEntity*   ipEntity, 
-                               int        iUserData,
-                               unsigned   iChunkID    );        
+    void SetLoadData(RenderEnums::LayerEnum isLayer,
+                     RenderEnums::LevelEnum isLevel,
+                     RenderEnums::MissionEnum isMission);
 
-   ///////////////////////////////////////////////////////////////////////
-   // LoadingManager::ProcessRequestsCallback's
-   ///////////////////////////////////////////////////////////////////////
-   void OnProcessRequestsComplete( void* pUserData );
-   bool DoneInitialLoad();
-   void DoPostLevelLoad();
+    void InitLevel();
 
-   ///////////////////////////////////////////////////////////////////////
-   // EventListener
-   ///////////////////////////////////////////////////////////////////////
-   void HandleEvent( EventEnum id, void* pEventData );
+    // Copies light values from the given sun group into the RenderManager
+    // Dynamic allocations on GMA_LEVEL_OTHER
+    // Pass in NULL to disable
+    void SetLevelLayerLights(tLightGroup *SunGroup);
 
-   void FlushDelList();
-   void MunchDelList(unsigned howManyMicroseconds);
+    // Releases sun group information set in SetLevelLayerLights
+    void ClearLevelLayerLights();
 
-   SwapArray<tRefCounted*> mEntityDeletionList;
-   void SetBlurAlpha( float alpha ) { mBlurAlpha = alpha; }
+    void SetLightMod(const tColour &LightMod);
+
+    void ResetMoodLighting(bool Immediate = false);
+
+    void DumpAllLoadedData();
+
+    void ContextUpdate(unsigned int iElapsedTime);
+
+    // Layer Interface
+    RenderLayer *mpLayer(RenderEnums::LayerEnum isLayer);
+
+    void FreezeAllLayers();
+
+    void FreezeForPresentation(void);
+
+    void ThawFromPresentation(void);
+
+    void RedirectChunks(int ChunkDestinationMask);
+
+    ///////////////////////////////////////////////////////////////////////
+    // ChunkListenerCallback's
+    ///////////////////////////////////////////////////////////////////////
+    virtual void OnChunkLoaded(tEntity *ipEntity,
+                               int iUserData,
+                               unsigned iChunkID);
+
+    ///////////////////////////////////////////////////////////////////////
+    // LoadingManager::ProcessRequestsCallback's
+    ///////////////////////////////////////////////////////////////////////
+    void OnProcessRequestsComplete(void *pUserData);
+
+    bool DoneInitialLoad();
+
+    void DoPostLevelLoad();
+
+    ///////////////////////////////////////////////////////////////////////
+    // EventListener
+    ///////////////////////////////////////////////////////////////////////
+    void HandleEvent(EventEnum id, void *pEventData);
+
+    void FlushDelList();
+
+    void MunchDelList(unsigned howManyMicroseconds);
+
+    SwapArray<tRefCounted *> mEntityDeletionList;
+
+    void SetBlurAlpha(float alpha) { mBlurAlpha = alpha; }
+
 private:
-   //Initialize the mpLayers
-   void InitLayers();
+    //Initialize the mpLayers
+    void InitLayers();
 
-   // Private: it's a fuckin singleton.
-   RenderManager();
-   ~RenderManager();
+    // Private: it's a fuckin singleton.
+    RenderManager();
 
-   // Private Member Data
-   RenderLayer*   mpRenderLayers[RenderEnums::numLayers];
-   tMultiController* mClouds;
+    ~RenderManager();
 
-   // Static Private Render Data
-   static RenderManager* mspInstance;
+    // Private Member Data
+    RenderLayer *mpRenderLayers[RenderEnums::numLayers];
+    tMultiController *mClouds;
 
-   int msLayer;   //RenderEnums::LayerEnum   
-   int msLevel;   //RenderEnums::LevelEnum   
-   int msMission; //RenderEnums::MissionEnum 
+    // Static Private Render Data
+    static RenderManager *mspInstance;
 
-   int mCurWorldLayer;
+    int msLayer;   //RenderEnums::LayerEnum
+    int msLevel;   //RenderEnums::LevelEnum
+    int msMission; //RenderEnums::MissionEnum
 
-   bool mDoneInitialLoad;
-   
-   SwapArray<ZoneEventLocator*> mZELs;
-   ZoneEventLocator* mpZEL;
-   bool mbDynaLoading;
-   bool mbFirstDynamicZone;
-   bool mbDrivingTooFastLoad;
-   bool mbLoadZonesDumped;
-   bool mbIgnoreVisibilityClear;
-   bool mbInVsibilityVolume;
-   // Motion blur accessors / mutator functions
-   void SetMotionBlurEnable( bool enable )  { mEnableMotionBlur = enable; }
-   bool IsBlurEnabled() const               { return mEnableMotionBlur; }
+    int mCurWorldLayer;
+
+    bool mDoneInitialLoad;
+
+    SwapArray<ZoneEventLocator *> mZELs;
+    ZoneEventLocator *mpZEL;
+    bool mbDynaLoading;
+    bool mbFirstDynamicZone;
+    bool mbDrivingTooFastLoad;
+    bool mbLoadZonesDumped;
+    bool mbIgnoreVisibilityClear;
+    bool mbInVsibilityVolume;
+
+    // Motion blur accessors / mutator functions
+    void SetMotionBlurEnable(bool enable) { mEnableMotionBlur = enable; }
+
+    bool IsBlurEnabled() const { return mEnableMotionBlur; }
 
 #ifdef RAD_PS2
-   void ApplyPS2Blur();
+    void ApplyPS2Blur();
 #endif
-   void AdjustBlurByFrameRate( unsigned int elapsedTime );
+
+    void AdjustBlurByFrameRate(unsigned int elapsedTime);
 
 #ifdef DEBUGWATCH
-   unsigned int mDebugSwapTime, mDebugRenderTime;
-   bool mDebugDumpAllZones;
+    unsigned int mDebugSwapTime, mDebugRenderTime;
+    bool mDebugDumpAllZones;
 #endif
 
     bool mEnableMotionBlur;
@@ -174,14 +200,17 @@ private:
 
     // Simple class to log the time it took each frame and
     // average it out
-    class AvgTimeCounter
-    {
+    class AvgTimeCounter {
     public:
         AvgTimeCounter();
-        void Tick( unsigned int elapsedTime );
-        unsigned int GetAverageTimePerFrame()const;
 
-        enum { ELAPSED_TIME_ARRAY_SIZE = 32 };
+        void Tick(unsigned int elapsedTime);
+
+        unsigned int GetAverageTimePerFrame() const;
+
+        enum {
+            ELAPSED_TIME_ARRAY_SIZE = 32
+        };
 
     private:
 
@@ -190,37 +219,38 @@ private:
         // Sum of all values in the mElapsedTimeCount array
         unsigned int mElapsedTimeSum;
         // Array holds the elapsed time counts for the past N updates
-        SwapArray< unsigned int > mElapsedTimeCount;
+        SwapArray<unsigned int> mElapsedTimeCount;
     };
 
 
-    struct MoodLighting
-    {
+    struct MoodLighting {
         MoodLighting();
+
         ~MoodLighting();
-        tLightGroup* mSunGroup;
-        tColour      mSrcModulus;
-        tColour      mDstModulus;
-        tColour*     mOriginals;
-        float        mTransition;
-        int          mVolumeCount; // Count how many volumes of the same modulus we've entered.
-        tColour     CalculateModulus( void );
+
+        tLightGroup *mSunGroup;
+        tColour mSrcModulus;
+        tColour mDstModulus;
+        tColour *mOriginals;
+        float mTransition;
+        int mVolumeCount; // Count how many volumes of the same modulus we've entered.
+        tColour CalculateModulus(void);
     };
+
     MoodLighting mMood;
-    void TransitionMoodLighting( unsigned int elapsedTime );
+
+    void TransitionMoodLighting(unsigned int elapsedTime);
 };
 
 //
 // A little syntactic sugar for getting at this singleton.
 //
-inline RenderManager* GetRenderManager() 
-{ 
-   return( RenderManager::GetInstance() ); 
+inline RenderManager *GetRenderManager() {
+    return (RenderManager::GetInstance());
 }
 
 
-inline int& RenderManager::rCurWorldRenderLayer()
-{
+inline int &RenderManager::rCurWorldRenderLayer() {
     return mCurWorldLayer;
 }
 

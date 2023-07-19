@@ -29,31 +29,37 @@ class Mission;
 //
 //=============================================================================
 
-class TimeRemainBonusObjective : public BonusObjective
-{
+class TimeRemainBonusObjective : public BonusObjective {
 public:
     TimeRemainBonusObjective();
+
     virtual ~TimeRemainBonusObjective();
 
     virtual void Initialize();
+
     virtual void Finalize();
+
     virtual unsigned int GetNumericData();
 
-    void SetTime( unsigned int time );
-    void SetMission( Mission* mission );
+    void SetTime(unsigned int time);
+
+    void SetMission(Mission *mission);
 
 protected:
     virtual void OnReset();
+
     virtual void OnStart();
-    virtual void OnUpdate( unsigned int milliseconds );
+
+    virtual void OnUpdate(unsigned int milliseconds);
 
 private:
     unsigned int mMinTime;
-    Mission* mMission;
+    Mission *mMission;
 
     //Prevent wasteful constructor creation.
-    TimeRemainBonusObjective( const TimeRemainBonusObjective& timeremainbonusobjective );
-    TimeRemainBonusObjective& operator=( const TimeRemainBonusObjective& timeremainbonusobjective );
+    TimeRemainBonusObjective(const TimeRemainBonusObjective &timeremainbonusobjective);
+
+    TimeRemainBonusObjective &operator=(const TimeRemainBonusObjective &timeremainbonusobjective);
 };
 
 //*****************************************************************************
@@ -67,13 +73,12 @@ private:
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int time )
+// Parameters:  (unsigned int time)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void TimeRemainBonusObjective::SetTime( unsigned int time )
-{
+inline void TimeRemainBonusObjective::SetTime(unsigned int time) {
     mMinTime = time;
 }
 
@@ -82,13 +87,12 @@ inline void TimeRemainBonusObjective::SetTime( unsigned int time )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( Mission* mission )
+// Parameters:  (Mission* mission)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void TimeRemainBonusObjective::SetMission( Mission* mission )
-{
+inline void TimeRemainBonusObjective::SetMission(Mission *mission) {
     mMission = mission;
 }
 

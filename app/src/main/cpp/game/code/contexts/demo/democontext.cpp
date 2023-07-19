@@ -88,7 +88,7 @@
 extern bool g_inDemoMode;
 
 // Static pointer to instance of singleton.
-DemoContext* DemoContext::spInstance = NULL;
+DemoContext *DemoContext::spInstance = NULL;
 
 const unsigned int DEMO_LOOP_TIME = 60000; // in msec
 
@@ -112,14 +112,12 @@ const unsigned int DEMO_LOOP_TIME = 60000; // in msec
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-DemoContext* DemoContext::GetInstance()
-{
-    if( spInstance == NULL )
-    {
+DemoContext *DemoContext::GetInstance() {
+    if (spInstance == NULL) {
         spInstance = new DemoContext;
-        rAssert( spInstance );
+        rAssert(spInstance);
     }
-    
+
     return spInstance;
 }
 
@@ -134,9 +132,8 @@ DemoContext* DemoContext::GetInstance()
 //
 //==============================================================================
 DemoContext::DemoContext()
-:   m_demoLoopTime( DEMO_LOOP_TIME ),
-    m_elapsedTime( -1 )
-{
+        : m_demoLoopTime(DEMO_LOOP_TIME),
+          m_elapsedTime(-1) {
 }
 
 //==============================================================================
@@ -149,8 +146,7 @@ DemoContext::DemoContext()
 // Return:      N/A.
 //
 //==============================================================================
-DemoContext::~DemoContext()
-{
+DemoContext::~DemoContext() {
 }
 
 //******************************************************************************
@@ -164,18 +160,17 @@ DemoContext::~DemoContext()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ContextEnum previousContext )
+// Parameters:  (ContextEnum previousContext)
 //
 // Return:      void 
 //
 //=============================================================================
-void DemoContext::OnStart( ContextEnum previousContext )
-{
+void DemoContext::OnStart(ContextEnum previousContext) {
     // Common to all playing contexts.
     //
-    PlayingContext::OnStart( previousContext );
+    PlayingContext::OnStart(previousContext);
 
-    GetInputManager()->SetGameState( Input::ACTIVE_FRONTEND );
+    GetInputManager()->SetGameState(Input::ACTIVE_FRONTEND);
 
     // We count the number of demos run.
     //
@@ -185,9 +180,9 @@ void DemoContext::OnStart( ContextEnum previousContext )
 
     ////////////////////////////////////////////////////////////
     // RenderManager 
-    RenderManager* rm = GetRenderManager();
-    RenderLayer* rl = rm->mpLayer( RenderEnums::LevelSlot );
-    rAssert( rl );
+    RenderManager *rm = GetRenderManager();
+    RenderLayer *rl = rm->mpLayer(RenderEnums::LevelSlot);
+    rAssert(rl);
 
 #ifdef DEBUGWATCH
     // bootstrap vehicleai renderer
@@ -197,59 +192,59 @@ void DemoContext::OnStart( ContextEnum previousContext )
     ////////////////////////////////////////////////////////////
     // Cameras set up
     unsigned int iNumPlayers = GetGameplayManager()->GetNumPlayers();
-    rl->SetNumViews( iNumPlayers );
+    rl->SetNumViews(iNumPlayers);
     rl->SetUpViewCam();
 
-  	p3d::inventory->SelectSection("Default");
-    tLightGroup* sun = p3d::find<tLightGroup>("sun");   
-    rAssert( sun );
-    rm->SetLevelLayerLights( sun );
+    p3d::inventory->SelectSection("Default");
+    tLightGroup *sun = p3d::find<tLightGroup>("sun");
+    rAssert(sun);
+    rm->SetLevelLayerLights(sun);
 
     float aspect = p3d::display->IsWidescreen() ? (16.0f / 9.0f) : (4.0f / 3.0f);
 
     unsigned int view = 0;
 
-    tPointCamera* cam = static_cast<tPointCamera*>( rl->pCam( view ) );
-    rAssert( dynamic_cast<tPointCamera*> ( cam ) != NULL );
-    rAssert( cam );
+    tPointCamera *cam = static_cast<tPointCamera *>(rl->pCam(view));
+    rAssert(dynamic_cast<tPointCamera *>(cam) != NULL);
+    rAssert(cam);
 
-    SuperCamCentral* scc = GetSuperCamManager()->GetSCC( view );
-    rAssert( scc );
+    SuperCamCentral *scc = GetSuperCamManager()->GetSCC(view);
+    rAssert(scc);
 
-    scc->SetCamera( cam );
+    scc->SetCamera(cam);
 
-    FollowCam* fc = new FollowCam( FollowCam::FOLLOW_NEAR );
-    fc->SetAspect( aspect );
+    FollowCam *fc = new FollowCam(FollowCam::FOLLOW_NEAR);
+    fc->SetAspect(aspect);
     fc->CopyToData();
-    scc->RegisterSuperCam( fc );
+    scc->RegisterSuperCam(fc);
 
-    fc = new FollowCam( FollowCam::FOLLOW_FAR );
-    fc->SetAspect( aspect );
+    fc = new FollowCam(FollowCam::FOLLOW_FAR);
+    fc->SetAspect(aspect);
     fc->CopyToData();
-    scc->RegisterSuperCam( fc );
+    scc->RegisterSuperCam(fc);
 
-    SuperCam* sc = new WalkerCam();
-    sc->SetAspect( aspect );
-    scc->RegisterSuperCam( sc );
+    SuperCam *sc = new WalkerCam();
+    sc->SetAspect(aspect);
+    scc->RegisterSuperCam(sc);
 
     sc = new ChaseCam();
-    sc->SetAspect( aspect );
-    scc->RegisterSuperCam( sc );
+    sc->SetAspect(aspect);
+    scc->RegisterSuperCam(sc);
 
     sc = new WrecklessCam();
-    sc->SetAspect( aspect );
-    scc->RegisterSuperCam( sc );
+    sc->SetAspect(aspect);
+    scc->RegisterSuperCam(sc);
 
     sc = new ConversationCam();
-    sc->SetAspect( aspect );
-    scc->RegisterSuperCam( sc );
+    sc->SetAspect(aspect);
+    scc->RegisterSuperCam(sc);
 
 
     ////////////////////////////////////////////////////////////
     // AvatarManager Bootstrapping
-    GetAvatarManager( )->EnterGame( );
+    GetAvatarManager()->EnterGame();
     /*
-    GetActionButtonManager( )->EnterGame( );
+    GetActionButtonManager()->EnterGame();
     */
 
     ////////////////////////////////////////////////////////////
@@ -259,7 +254,7 @@ void DemoContext::OnStart( ContextEnum previousContext )
     ////////////////////////////////////////////////////////////
     // PedestrianManager Init
     PedestrianManager::GetInstance()->Init();
-    
+
     // TODO: Move this into level pipe
     //Set up the sorting of the intersections and stuff.
     RoadManager::GetInstance()->CreateRoadNetwork();
@@ -284,12 +279,12 @@ void DemoContext::OnStart( ContextEnum previousContext )
     GetPresentationManager()->OnGameplayStart();
     */
 
-    GetGuiSystem()->HandleMessage( GUI_MSG_RUN_INGAME );
-    GetGuiSystem()->HandleMessage( GUI_MSG_RUN_DEMO ); // TC: must be called after GUI_MSG_RUN_INGAME
+    GetGuiSystem()->HandleMessage(GUI_MSG_RUN_INGAME);
+    GetGuiSystem()->HandleMessage(GUI_MSG_RUN_DEMO); // TC: must be called after GUI_MSG_RUN_INGAME
 
     GetGuiSystem()->RegisterUserInputHandlers();
 
-    GetGame()->SetTime( 0 );
+    GetGame()->SetTime(0);
 
     g_inDemoMode = true;
 }
@@ -299,14 +294,13 @@ void DemoContext::OnStart( ContextEnum previousContext )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ContextEnum nextContext )
+// Parameters:  (ContextEnum nextContext)
 //
 // Return:      void 
 //
 //=============================================================================
-void DemoContext::OnStop( ContextEnum nextContext )
-{
-    HeapMgr()->PushHeap (GMA_TEMP);
+void DemoContext::OnStop(ContextEnum nextContext) {
+    HeapMgr()->PushHeap(GMA_TEMP);
 
     //
     // This is called to prevent DMA of destroyed textures,
@@ -320,25 +314,24 @@ void DemoContext::OnStop( ContextEnum nextContext )
     GetCoinManager()->Destroy();
     GetSparkleManager()->Destroy();
     GetSkidmarkManager()->Destroy();
-	GetHitnRunManager()->Destroy();
+    GetHitnRunManager()->Destroy();
 
     StatePropDSG::RemoveAllSharedtPoses();
 
 
     const bool shutdown = true;
-    GetSuperCamManager()->Init( shutdown );
+    GetSuperCamManager()->Init(shutdown);
 
     TriggerVolumeTracker::GetInstance()->Cleanup();
 
     // Clean up lights!
     //
-    RenderLayer* rl = GetRenderManager()->mpLayer( RenderEnums::LevelSlot );
-    rAssert( rl );
-    for( unsigned int i = 0; i < rl->GetNumViews(); i++ )
-    {
-        rl->pView(i)->RemoveAllLights ();
-    }  
-  
+    RenderLayer *rl = GetRenderManager()->mpLayer(RenderEnums::LevelSlot);
+    rAssert(rl);
+    for (unsigned int i = 0; i < rl->GetNumViews(); i++) {
+        rl->pView(i)->RemoveAllLights();
+    }
+
 #ifdef DEBUGWATCH
     VehicleAIRender::Destroy();
 #endif
@@ -350,7 +343,7 @@ void DemoContext::OnStop( ContextEnum nextContext )
     //Destroy Avatars stuff first
 
     GetGameplayManager()->Finalize();
-    SetGameplayManager( NULL );
+    SetGameplayManager(NULL);
 
     GetAvatarManager()->Destroy();
 
@@ -362,14 +355,14 @@ void DemoContext::OnStop( ContextEnum nextContext )
     GetActorManager()->RemoveAllSpawnPoints();
 
     //We never entered.
-    //GetActionButtonManager( )->Destroy( );
-    
-	GetBreakablesManager()->FreeAllBreakables();
-	GetParticleManager()->ClearSystems();
-	GetRenderManager()->DumpAllLoadedData();
+    //GetActionButtonManager()->Destroy();
+
+    GetBreakablesManager()->FreeAllBreakables();
+    GetParticleManager()->ClearSystems();
+    GetRenderManager()->DumpAllLoadedData();
     SkidMarkGenerator::ReleaseShaders();
 
-    GetSoundManager()->OnGameplayEnd( true );
+    GetSoundManager()->OnGameplayEnd(true);
 
     PathManager::GetInstance()->Destroy();
 
@@ -383,11 +376,11 @@ void DemoContext::OnStop( ContextEnum nextContext )
     RoadManager::GetInstance()->Destroy();
 
     // release GUI in-game
-    GetGuiSystem()->HandleMessage( GUI_MSG_RELEASE_INGAME );
+    GetGuiSystem()->HandleMessage(GUI_MSG_RELEASE_INGAME);
 
     /*
     // enable screen clearing
-    GetRenderManager()->mpLayer(RenderEnums::GUI)->pView( 0 )->SetClearMask( PDDI_BUFFER_ALL );
+    GetRenderManager()->mpLayer(RenderEnums::GUI)->pView(0)->SetClearMask(PDDI_BUFFER_ALL);
     */
 
     // Cleanup the Avatar Manager
@@ -396,30 +389,30 @@ void DemoContext::OnStop( ContextEnum nextContext )
 
     // Flush out the special section used by physics to cache SkeletonInfos.
     //
-    p3d::inventory->RemoveSectionElements (SKELCACHE);
-    p3d::inventory->DeleteSection (SKELCACHE);
+    p3d::inventory->RemoveSectionElements(SKELCACHE);
+    p3d::inventory->DeleteSection(SKELCACHE);
 
     GetGuiSystem()->UnregisterUserInputHandlers();
 
     // enable screen clearing
     //
-    GetRenderManager()->mpLayer( RenderEnums::GUI )->pView( 0 )->SetClearMask( PDDI_BUFFER_ALL );
+    GetRenderManager()->mpLayer(RenderEnums::GUI)->pView(0)->SetClearMask(PDDI_BUFFER_ALL);
 
 #ifndef RAD_RELEASE
     // Dump out the contents of the inventory sections
     //
-    p3d::inventory->Dump (true);
+    p3d::inventory->Dump(true);
 #endif
 
     AnimatedIcon::ShutdownAnimatedIcons();
     GetAnimEntityDSGManager()->RemoveAll();
 
-    HeapMgr()->PopHeap (GMA_TEMP);
+    HeapMgr()->PopHeap(GMA_TEMP);
 
 
     // Common to all playing contexts.
     //
-    PlayingContext::OnStop( nextContext );
+    PlayingContext::OnStop(nextContext);
 }
 
 //=============================================================================
@@ -427,33 +420,26 @@ void DemoContext::OnStop( ContextEnum nextContext )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void DemoContext::OnUpdate( unsigned int elapsedTime )
-{
-    if ( !mQuitting )
-    {
+void DemoContext::OnUpdate(unsigned int elapsedTime) {
+    if (!mQuitting) {
         bool cont = true;
 
-        if( m_elapsedTime != -1 )
-        {
-            m_elapsedTime += static_cast<int>( elapsedTime );
-            if( m_elapsedTime > static_cast<int>( m_demoLoopTime ) )
-            {
-                if ( GetLoadingManager()->IsLoading() )
-                {
+        if (m_elapsedTime != -1) {
+            m_elapsedTime += static_cast<int>(elapsedTime);
+            if (m_elapsedTime > static_cast<int>(m_demoLoopTime)) {
+                if (GetLoadingManager()->IsLoading()) {
                     //HACK!
                     //Oops!  Can't quit yet!
-                    m_elapsedTime -= static_cast<int>( elapsedTime );
-                }
-                else
-                {
+                    m_elapsedTime -= static_cast<int>(elapsedTime);
+                } else {
                     // demo loop time expired, quit out of demo
                     //
-                    GetGuiSystem()->HandleMessage( GUI_MSG_QUIT_DEMO );
+                    GetGuiSystem()->HandleMessage(GUI_MSG_QUIT_DEMO);
 
                     m_elapsedTime = -1;
                     mQuitting = true; //Now we're quitting
@@ -462,22 +448,21 @@ void DemoContext::OnUpdate( unsigned int elapsedTime )
             }
         }
 
-        if ( cont )
-        {
-            float timeins = (float)(elapsedTime) / 1000.0f;
-            GetAvatarManager()->Update( timeins );
+        if (cont) {
+            float timeins = (float) (elapsedTime) / 1000.0f;
+            GetAvatarManager()->Update(timeins);
 
-            GetCharacterManager()->GarbageCollect( );
+            GetCharacterManager()->GarbageCollect();
 
             ///////////////////////////////////////////////////////////////
             // Update Particles
-            GetParticleManager()->Update( elapsedTime );
-            GetBreakablesManager()->Update( elapsedTime );
-            GetAnimEntityDSGManager()->Update( elapsedTime );
+            GetParticleManager()->Update(elapsedTime);
+            GetBreakablesManager()->Update(elapsedTime);
+            GetAnimEntityDSGManager()->Update(elapsedTime);
 
             ///////////////////////////////////////////////////////////////
             // Update Gameplay Manager
-            GetGameplayManager()->Update( elapsedTime );
+            GetGameplayManager()->Update(elapsedTime);
 
             ///////////////////////////////////////////////////////////////
             // Update Physics
@@ -488,43 +473,43 @@ void DemoContext::OnUpdate( unsigned int elapsedTime )
             // ordering is important. Unless other parts of code change, we must call
             // this before WorldPhysManager::Update() because PedestrianManager
             // sets the flags for all characters to be updated in WorldPhys Update 
-            PedestrianManager::GetInstance()->Update( elapsedTime );
+            PedestrianManager::GetInstance()->Update(elapsedTime);
 
             /*
             ///////////////////////////////////////////////////////////////
             // Update PresentationManager
-            GetPresentationManager()->Update( elapsedTime );
+            GetPresentationManager()->Update(elapsedTime);
             */
 
             ///////////////////////////////////////////////////////////////
             // Update Trigger volumes
-            GetTriggerVolumeTracker()->Update( elapsedTime );
+            GetTriggerVolumeTracker()->Update(elapsedTime);
 
             ///////////////////////////////////////////////////////////////
             // Update Traffic
-            TrafficManager::GetInstance()->Update( elapsedTime );
+            TrafficManager::GetInstance()->Update(elapsedTime);
 
             /*
             ///////////////////////////////////////////////////////////////
             // Update Interiors
-            GetInteriorManager()->Update( elapsedTime );
+            GetInteriorManager()->Update(elapsedTime);
             */
 
             //extra updates
-            GetFootprintManager()->Update( elapsedTime );
+            GetFootprintManager()->Update(elapsedTime);
             BEGIN_PROFILE("SkidmarkManager");
-            GetSkidmarkManager()->Update( elapsedTime );
+            GetSkidmarkManager()->Update(elapsedTime);
             END_PROFILE("SkidmarkManager");
-            ActorManager::GetInstance()->Update( elapsedTime );
-            GetCoinManager()->Update( elapsedTime );
-            GetSparkleManager()->Update( elapsedTime );
-            GetHitnRunManager()->Update( elapsedTime );
+            ActorManager::GetInstance()->Update(elapsedTime);
+            GetCoinManager()->Update(elapsedTime);
+            GetSparkleManager()->Update(elapsedTime);
+            GetHitnRunManager()->Update(elapsedTime);
         }
     } //!mQuitting
 
     // Common to all playing contexts.
     //
-    PlayingContext::OnUpdate( elapsedTime );
+    PlayingContext::OnUpdate(elapsedTime);
 }
 
 //=============================================================================
@@ -537,8 +522,7 @@ void DemoContext::OnUpdate( unsigned int elapsedTime )
 // Return:      void 
 //
 //=============================================================================
-void DemoContext::OnSuspend()
-{
+void DemoContext::OnSuspend() {
     // Common to all playing contexts.
     //
     PlayingContext::OnSuspend();
@@ -554,8 +538,7 @@ void DemoContext::OnSuspend()
 // Return:      void 
 //
 //=============================================================================
-void DemoContext::OnResume()
-{
+void DemoContext::OnResume() {
     // Common to all playing contexts.
     //
     PlayingContext::OnResume();

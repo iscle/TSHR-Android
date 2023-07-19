@@ -24,9 +24,9 @@
 // Forward References
 //===========================================================================
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Page;
+
     class Sprite;
 }
 
@@ -34,30 +34,33 @@ namespace Scrooby
 // Interface Definitions
 //===========================================================================
 
-class HudCountDown : public HudEventHandler
-{
+class HudCountDown : public HudEventHandler {
 private:
     typedef HudEventHandler Parent;
 
 public:
-    HudCountDown( Scrooby::Page* pPage );
+    HudCountDown(Scrooby::Page *pPage);
+
     virtual ~HudCountDown();
 
     virtual void Start();
+
     virtual void Stop();
-    virtual void Update( float elapsedTime );
+
+    virtual void Update(float elapsedTime);
 
 protected:
     void OnStart();
+
     void QueueDisableInput();
 
 private:
     void GetNextSequenceUnit();
 
-    Scrooby::Sprite* m_countDownMessage;
+    Scrooby::Sprite *m_countDownMessage;
 
-    MissionStage* m_missionStage;
-    MissionStage::CountdownSequenceUnit* m_currentSequenceUnit;
+    MissionStage *m_missionStage;
+    MissionStage::CountdownSequenceUnit *m_currentSequenceUnit;
     int m_nextSequenceIndex;
     bool m_InputDisablePending;
 

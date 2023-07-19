@@ -30,42 +30,46 @@ class Actor;
 //=============================================================================
 
 class ActorPlayer : public PositionCarrier,
-                    public SimpsonsSoundPlayerCallback
-{
+                    public SimpsonsSoundPlayerCallback {
 public:
     ActorPlayer();
+
     virtual ~ActorPlayer();
 
-    bool IsActive() { return( m_actor != NULL ); }
-    virtual void Activate( Actor* theActor ) = 0;
+    bool IsActive() { return (m_actor != NULL); }
+
+    virtual void Activate(Actor *theActor) = 0;
 
     virtual void ServiceOncePerFrame();
 
     //
     // PositionCarrier functions
     //
-    void GetPosition( radSoundVector& position );
-    void GetVelocity( radSoundVector& velocity );
+    void GetPosition(radSoundVector &position);
+
+    void GetVelocity(radSoundVector &velocity);
 
     //
     // SimpsonsSoundPlayerCallback functions
     //
     virtual void OnSoundReady();
+
     virtual void OnPlaybackComplete();
 
 protected:
-    void playSound( positionalSoundSettings* settings, const char* resourceName, Actor* theActor );
+    void playSound(positionalSoundSettings *settings, const char *resourceName, Actor *theActor);
 
     virtual void deactivate();
 
-    Actor* m_actor;
+    Actor *m_actor;
 
     PositionalSoundPlayer m_player;
 
 private:
     //Prevent wasteful constructor creation.
-    ActorPlayer( const ActorPlayer& actorplayer );
-    ActorPlayer& operator=( const ActorPlayer& actorplayer );
+    ActorPlayer(const ActorPlayer &actorplayer);
+
+    ActorPlayer &operator=(const ActorPlayer &actorplayer);
 };
 
 //*****************************************************************************

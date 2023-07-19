@@ -26,8 +26,11 @@
 #include <render/culling/swaparray.h>
 
 class Road;
+
 class CNavVertex;
+
 class TriggerLocator;
+
 class AnimEntityDSG;
 
 // somewhat arbitrary limit of MAX_ROADS way intersection.
@@ -53,101 +56,108 @@ const int MAX_ROADS = 8;
 #define IS_ENTITY
 #endif
 
-class Intersection IS_ENTITY
-{
+class Intersection IS_ENTITY {
 public:
-	Intersection(  );
-    Intersection( TriggerLocator* pLocator );
-	~Intersection( void );
-    
-    enum Type
-    {
+    Intersection();
+
+    Intersection(TriggerLocator *pLocator);
+
+    ~Intersection(void);
+
+    enum Type {
         NO_STOP,
         N_WAY
-    };    
-    
+    };
+
     Type GetType() const;
-    void SetType( Type type );
-	// Get the count of Roads into the intersection.
-	//unsigned int SizeRoadsIn( void ) const { return mnRoadsIn; }
 
-	// Get the count of Roads out of the intersection.
-	//unsigned int SizeRoadsOut( void ) const { return mnRoadsOut; }
+    void SetType(Type type);
+    // Get the count of Roads into the intersection.
+    //unsigned int SizeRoadsIn(void) const { return mnRoadsIn; }
 
-	// Get the count of Roads into and out of the intersection.
-	//unsigned int SizeRoads( void ) const { return mnRoadsIn + mnRoadsOut; }
+    // Get the count of Roads out of the intersection.
+    //unsigned int SizeRoadsOut(void) const { return mnRoadsOut; }
+
+    // Get the count of Roads into and out of the intersection.
+    //unsigned int SizeRoads(void) const { return mnRoadsIn + mnRoadsOut; }
 
     // add a road to the in list.
-    void AddRoadIn( Road *pRoad );
+    void AddRoadIn(Road *pRoad);
 
     // add a road to the out list.
-    void AddRoadOut( Road *pRoad );
+    void AddRoadOut(Road *pRoad);
 
-    void FindGoodTrafficLane( const Road& road, 
-                              unsigned int preferredLaneIndex, 
-                              Lane*& outLane, 
-                              unsigned int& outLaneIndex );
+    void FindGoodTrafficLane(const Road &road,
+                             unsigned int preferredLaneIndex,
+                             Lane *&outLane,
+                             unsigned int &outLaneIndex);
 
-    void GetLeftTurnForTraffic( const Road& inRoad, 
+    void GetLeftTurnForTraffic(const Road &inRoad,
+                               unsigned int preferredLaneIndex,
+                               Road *&outRoad,
+                               Lane *&outLane,
+                               unsigned int &outLaneIndex);
+
+    void GetRightTurnForTraffic(const Road &inRoad,
                                 unsigned int preferredLaneIndex,
-                                Road*& outRoad, 
-                                Lane*& outLane, 
-                                unsigned int& outLaneIndex );
+                                Road *&outRoad,
+                                Lane *&outLane,
+                                unsigned int &outLaneIndex);
 
-    void GetRightTurnForTraffic( const Road& inRoad, 
-                                 unsigned int preferredLaneIndex,
-                                 Road*& outRoad, 
-                                 Lane*& outLane, 
-                                 unsigned int& outLaneIndex );
-
-    void GetStraightForTraffic( const Road& inRoad, 
-                                unsigned int preferredLaneIndex,
-                                Road*& outRoad, 
-                                Lane*& outLane, 
-                                unsigned int& outLaneIndex );
+    void GetStraightForTraffic(const Road &inRoad,
+                               unsigned int preferredLaneIndex,
+                               Road *&outRoad,
+                               Lane *&outLane,
+                               unsigned int &outLaneIndex);
 
     // So easy, it's almost free!
     //
-    const Road* GetRoadIn( unsigned int index ) const;
-    const Road* GetRoadOut( unsigned int index ) const;
+    const Road *GetRoadIn(unsigned int index) const;
+
+    const Road *GetRoadOut(unsigned int index) const;
+
     unsigned int GetNumRoadsIn() const;
+
     unsigned int GetNumRoadsOut() const;
 
-	// Is the intersection clear of all cars.
-	//
-	bool IsIntersectionClear( void ) const;
+    // Is the intersection clear of all cars.
+    //
+    bool IsIntersectionClear(void) const;
 
-	// Simulate the intersection when there are cars nearby.
-	//
-	void Update( unsigned int dt );
+    // Simulate the intersection when there are cars nearby.
+    //
+    void Update(unsigned int dt);
 
-	// advance the traffic in roads 'RoadMask' according to light state.
-	//
-	void AdvanceTraffic( unsigned int RoadMask, unsigned int state ) const;
+    // advance the traffic in roads 'RoadMask' according to light state.
+    //
+    void AdvanceTraffic(unsigned int RoadMask, unsigned int state) const;
 
-	// returns the Intersection location in world space.
-	//
-    void GetLocation( rmt::Vector& location ) const;
-    void SetLocation( rmt::Vector& location );
+    // returns the Intersection location in world space.
+    //
+    void GetLocation(rmt::Vector &location) const;
+
+    void SetLocation(rmt::Vector &location);
 
     // Temp method to display.
     //
-    void Render( void ) const;
+    void Render(void) const;
 
-    void SetRadius( float radius );
-    float GetRadius( void ) const
-    { return mfRadius; }
+    void SetRadius(float radius);
+
+    float GetRadius(void) const { return mfRadius; }
 
     // Sorts the roads into clockwise order.
     //
-    void SortRoads( void );
+    void SortRoads(void);
 
-    void SetName( const char* name );
+    void SetName(const char *name);
+
     tUID GetNameUID() const;
 
-    bool IsPointInIntersection( rmt::Vector& point ) const;
+    bool IsPointInIntersection(rmt::Vector &point) const;
 
-    TrafficControl* GetTrafficControl();
+    TrafficControl *GetTrafficControl();
+
     void AdvanceNextWaitingRoad();
 
     // Works only for non-big intersections
@@ -160,92 +170,91 @@ public:
     // whose "shortest" descriptive is defined using the road cost augmented 
     // by AGAINST_TRAFFIC_COST_MULTIPLIER
     //
-    void GetOtherIntersection( 
-        bool useMultiplier, 
-        Intersection* knownIntersection, 
-        Intersection*& otherIntersection,
-        RoadManager::ShortestRoad*& road );
+    void GetOtherIntersection(
+            bool useMultiplier,
+            Intersection *knownIntersection,
+            Intersection *&otherIntersection,
+            RoadManager::ShortestRoad *&road);
 
-    void LinkAnimEntity( AnimEntityDSG* ipAnimEntity, int iIndex )
-    {
+    void LinkAnimEntity(AnimEntityDSG *ipAnimEntity, int iIndex) {
         int i = iIndex - mpAnimEntityList.mUseSize + 1;
-        if(i>0)  mpAnimEntityList.AddUse(i);
+        if (i > 0) mpAnimEntityList.AddUse(i);
 
         mpAnimEntityList[iIndex] = ipAnimEntity;
     }
 
-    AnimEntityDSG* AnimEntity(int iIndex)
-    {
+    AnimEntityDSG *AnimEntity(int iIndex) {
         return mpAnimEntityList[iIndex];
     }
 
 public:
-    SwapArray<Road*> mWaitingRoads; // list of roads waiting for a turn to go
-    SwapArray<Road*> mOutgoingShortcuts;
-    SwapArray<RoadManager::ShortestRoad> mShortestRoadsToAdjacentIntersectionsWithMultiplier;
-    SwapArray<RoadManager::ShortestRoad> mShortestRoadsToAdjacentIntersectionsNoMultiplier;
-    RoadManager::BigIntersection* mBigIntersection;
+    SwapArray<Road *> mWaitingRoads; // list of roads waiting for a turn to go
+    SwapArray<Road *> mOutgoingShortcuts;
+    SwapArray <RoadManager::ShortestRoad> mShortestRoadsToAdjacentIntersectionsWithMultiplier;
+    SwapArray <RoadManager::ShortestRoad> mShortestRoadsToAdjacentIntersectionsNoMultiplier;
+    RoadManager::BigIntersection *mBigIntersection;
     int mIndex; // index to RoadManager::mIntersections[pool==0] list
 
 private:
-    SwapArray<AnimEntityDSG*> mpAnimEntityList;
-	// methods
-	//
+    SwapArray<AnimEntityDSG *> mpAnimEntityList;
+    // methods
+    //
 
-	// Find the road pointer in the road list.
-	//
-	int FindRoadIn( const Road* pRoad ) const;
+    // Find the road pointer in the road list.
+    //
+    int FindRoadIn(const Road *pRoad) const;
 
-	// Find the road pointer in the road list.
-	//
-	int FindRoadOut( const Road* pRoad ) const;
+    // Find the road pointer in the road list.
+    //
+    int FindRoadOut(const Road *pRoad) const;
 
-    void PopulateShortestRoads( SwapArray<RoadManager::ShortestRoad>& roadsToAdjacentInts, bool useMultiplier );
+    void PopulateShortestRoads(SwapArray <RoadManager::ShortestRoad> &roadsToAdjacentInts,
+                               bool useMultiplier);
 
 private:  // data
-	// Roads are Clockwise ordered.
-	//
-	//		0
-	//		|
-	//		|
-	//3 ____|____ 1
-	//		|
-	//		|
-	//		|
-	//		2
-	//
-	// a list of the roads leading in to this intersection.
-	//
-	Road* mRoadListIn[ MAX_ROADS ];
+    // Roads are Clockwise ordered.
+    //
+    //		0
+    //		|
+    //		|
+    //3 ____|____ 1
+    //		|
+    //		|
+    //		|
+    //		2
+    //
+    // a list of the roads leading in to this intersection.
+    //
+    Road *mRoadListIn[MAX_ROADS];
 
-	// a list of the roads leading out of this intersection.
-	//
-	Road* mRoadListOut[ MAX_ROADS ];
+    // a list of the roads leading out of this intersection.
+    //
+    Road *mRoadListOut[MAX_ROADS];
 
     //
-	// A pointer to the traffic control object for this intersection.
-	// & the different controls this intersection might have
+    // A pointer to the traffic control object for this intersection.
+    // & the different controls this intersection might have
     //
-	TrafficControl* mpTrafficControl;
+    TrafficControl *mpTrafficControl;
     TrafficLight mLightControl;
     NWayStop mNWayControl;
 
 
-	// the actual number of roads in. <= MAX_ROADS.
-	//
-	unsigned int mnRoadsIn;
+    // the actual number of roads in. <= MAX_ROADS.
+    //
+    unsigned int mnRoadsIn;
 
-	// the actual number of roads out. <= MAX_ROADS.
-	//
-	unsigned int mnRoadsOut;
+    // the actual number of roads out. <= MAX_ROADS.
+    //
+    unsigned int mnRoadsOut;
 
-	// the location of the intersection in world space.
-	//
-	rmt::Vector mLocation;
+    // the location of the intersection in world space.
+    //
+    rmt::Vector mLocation;
 
-	// the rotation around the y vector of the intersection.
-	//
-	float mfRotation;
+    // the rotation around the y vector of the intersection.
+    //
+    float mfRotation;
 
     float mfRadius;
 
@@ -255,58 +264,52 @@ private:  // data
 };
 
 
-
-inline void Intersection::SetName( const char* name )
-{
+inline void Intersection::SetName(const char *name) {
 #ifdef TOOLS
-    tEntity::SetName( name );
+    tEntity::SetName(name);
 #endif
-    mNameUID = tEntity::MakeUID( name );
+    mNameUID = tEntity::MakeUID(name);
 }
-inline tUID Intersection::GetNameUID() const
-{
+
+inline tUID Intersection::GetNameUID() const {
     return mNameUID;
 }
-inline void Intersection::SetLocation( rmt::Vector& location )
-{
+
+inline void Intersection::SetLocation(rmt::Vector &location) {
     mLocation = location;
 }
-inline void Intersection::SetRadius( float radius )
-{
+
+inline void Intersection::SetRadius(float radius) {
     mfRadius = radius;
 }
-inline const Road* Intersection::GetRoadIn( unsigned int index ) const
-{
-    if(index >= mnRoadsIn)
-    {
+
+inline const Road *Intersection::GetRoadIn(unsigned int index) const {
+    if (index >= mnRoadsIn) {
         return NULL;
     }
 
-    return mRoadListIn[ index ];
+    return mRoadListIn[index];
 }
-inline const Road* Intersection::GetRoadOut( unsigned int index ) const
-{
-    if(index >= mnRoadsOut)
-    {
+
+inline const Road *Intersection::GetRoadOut(unsigned int index) const {
+    if (index >= mnRoadsOut) {
         return NULL;
     }
 
-    return mRoadListOut[ index ];
+    return mRoadListOut[index];
 }
-inline unsigned int Intersection::GetNumRoadsIn() const
-{
+
+inline unsigned int Intersection::GetNumRoadsIn() const {
     return mnRoadsIn;
 }
-inline unsigned int Intersection::GetNumRoadsOut() const
-{
+
+inline unsigned int Intersection::GetNumRoadsOut() const {
     return mnRoadsOut;
 }
-inline TrafficControl* Intersection::GetTrafficControl() 
-{
+
+inline TrafficControl *Intersection::GetTrafficControl() {
     return mpTrafficControl;
 }
-
-
 
 
 #endif

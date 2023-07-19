@@ -28,13 +28,14 @@
 //
 //=============================================================================
 
-class TimeOutCondition : public MissionCondition
-{
+class TimeOutCondition : public MissionCondition {
 public:
     TimeOutCondition();
+
     virtual ~TimeOutCondition();
 
-    virtual void Update( unsigned int elapsedTime );
+    virtual void Update(unsigned int elapsedTime);
+
     void SetViolated(bool flag);
 
     //void SetHitNRun() { mHitNRun = true; };
@@ -47,8 +48,9 @@ private:
     bool mDone;
 
     //Prevent wasteful constructor creation.
-    TimeOutCondition( const TimeOutCondition& timeoutcondition );
-    TimeOutCondition& operator=( const TimeOutCondition& timeoutcondition );
+    TimeOutCondition(const TimeOutCondition &timeoutcondition);
+
+    TimeOutCondition &operator=(const TimeOutCondition &timeoutcondition);
 };
 
 

@@ -28,6 +28,7 @@
 //===========================================================================
 
 class SurveillanceCam;
+
 class Actor;
 //===========================================================================
 // Constants, Typedefs, and Macro Definitions (needed by external clients)
@@ -39,41 +40,47 @@ class Actor;
 //===========================================================================
 
 
-class CutCamBehaviour : public Behaviour, public EventListener
-{
-    public:
-        CutCamBehaviour( float radius );
-        virtual ~CutCamBehaviour();
-        virtual void Apply( Actor*, unsigned int timeInMS );
-        virtual void HandleEvent( EventEnum id, void* pEventData );
+class CutCamBehaviour : public Behaviour, public EventListener {
+public:
+    CutCamBehaviour(float radius);
 
-        virtual void Activate();
-        virtual void Deactivate();
+    virtual ~CutCamBehaviour();
 
-    protected:
-        
-        float m_TriggerRadiusSqr;
-        bool m_SwitchingEnabled;
+    virtual void Apply(Actor *, unsigned int timeInMS);
 
-        // Camera for use when the character gets really close to the camera
-        // and wants to switch to using it
-        SurveillanceCam* mpCamera;
-        bool m_CutCamViewActivated;
-        unsigned int m_SuperCamID;
-        bool m_Registered; // Is the camera registered with the supercam central
-        Actor* m_ParentActor;
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
-        void SwitchToCutCam();
-        void RevertCamera();
+    virtual void Activate();
+
+    virtual void Deactivate();
+
+protected:
+
+    float m_TriggerRadiusSqr;
+    bool m_SwitchingEnabled;
+
+    // Camera for use when the character gets really close to the camera
+    // and wants to switch to using it
+    SurveillanceCam *mpCamera;
+    bool m_CutCamViewActivated;
+    unsigned int m_SuperCamID;
+    bool m_Registered; // Is the camera registered with the supercam central
+    Actor *m_ParentActor;
+
+    void SwitchToCutCam();
+
+    void RevertCamera();
 
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow CutCamBehaviour from being copied and assigned.
-        CutCamBehaviour( const CutCamBehaviour& );
-        CutCamBehaviour& operator=( const CutCamBehaviour& );
-    private:
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow CutCamBehaviour from being copied and assigned.
+    CutCamBehaviour(const CutCamBehaviour &);
+
+    CutCamBehaviour &operator=(const CutCamBehaviour &);
+
+private:
 
 };
 

@@ -49,18 +49,17 @@
 //
 //==============================================================================
 SimpleAnimationPlayer::SimpleAnimationPlayer() :
-    mpMasterController( NULL ),
-    mCycleMode( DEFAULT_CYCLE_MODE ),
-    mpCamera( NULL ),
-    mpViewCamera( NULL ),
-    mbSetCamera( false ),
-    mIntroFrames(0),
-    mOutroFrames(0),
-    mInIntro(false)
-{
-    strcpy( msCamera, "" );
-    strcpy( msController, "" );
-    strcpy( msAnimation, "" );
+        mpMasterController(NULL),
+        mCycleMode(DEFAULT_CYCLE_MODE),
+        mpCamera(NULL),
+        mpViewCamera(NULL),
+        mbSetCamera(false),
+        mIntroFrames(0),
+        mOutroFrames(0),
+        mInIntro(false) {
+    strcpy(msCamera, "");
+    strcpy(msController, "");
+    strcpy(msAnimation, "");
 }
 
 //==============================================================================
@@ -73,9 +72,8 @@ SimpleAnimationPlayer::SimpleAnimationPlayer() :
 // Return:      N/A.
 //
 //==============================================================================
-SimpleAnimationPlayer::~SimpleAnimationPlayer()
-{
-    tRefCounted::Release( mpViewCamera );
+SimpleAnimationPlayer::~SimpleAnimationPlayer() {
+    tRefCounted::Release(mpViewCamera);
 }
 
 //=============================================================================
@@ -83,22 +81,21 @@ SimpleAnimationPlayer::~SimpleAnimationPlayer()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void SimpleAnimationPlayer::Update( unsigned int elapsedTime )
-{
-    if ( (GetState() == ANIM_PLAYING) && mpMasterController)
-    {
-        if(mOutroFrames && (mpMasterController->GetFrame() > static_cast<float>(mNumFrames - mOutroFrames)))
-        {
-            mpMasterController->SetFrameRange(static_cast<float>(mNumFrames - mOutroFrames), static_cast<float>(mNumFrames));
+void SimpleAnimationPlayer::Update(unsigned int elapsedTime) {
+    if ((GetState() == ANIM_PLAYING) && mpMasterController) {
+        if (mOutroFrames &&
+            (mpMasterController->GetFrame() > static_cast<float>(mNumFrames - mOutroFrames))) {
+            mpMasterController->SetFrameRange(static_cast<float>(mNumFrames - mOutroFrames),
+                                              static_cast<float>(mNumFrames));
             mpMasterController->SetCycleMode(FORCE_CYCLIC);
         }
 
-        mpMasterController->Advance( static_cast<float>(elapsedTime) );
+        mpMasterController->Advance(static_cast<float>(elapsedTime));
     }
 }
 
@@ -114,14 +111,12 @@ void SimpleAnimationPlayer::Update( unsigned int elapsedTime )
 // Return:      
 //
 //==============================================================================
-void SimpleAnimationPlayer::Rewind()
-{
-    if(mpMasterController)
-    {
+void SimpleAnimationPlayer::Rewind() {
+    if (mpMasterController) {
         mpMasterController->Reset();
         mpMasterController->Advance(0.0f);
 
-        SetState( ANIM_LOADED );
+        SetState(ANIM_LOADED);
     }
 }
 
@@ -135,20 +130,17 @@ void SimpleAnimationPlayer::Rewind()
 // Return:      void 
 //
 //=============================================================================
-void SimpleAnimationPlayer::ClearData()
-{
+void SimpleAnimationPlayer::ClearData() {
     AnimationPlayer::ClearData();
 
-    if( mpMasterController != NULL )
-    {
+    if (mpMasterController != NULL) {
         mpMasterController->Release();
         mpMasterController = NULL;
     }
 
     mCycleMode = DEFAULT_CYCLE_MODE;
 
-    if( mpCamera != NULL )
-    {
+    if (mpCamera != NULL) {
         mpCamera->Release();
         mpCamera = NULL;
         mbSetCamera = false;
@@ -160,19 +152,17 @@ void SimpleAnimationPlayer::ClearData()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( char* controller, char* camera, char* animation )
+// Parameters:  (char* controller, char* camera, char* animation)
 //
 // Return:      void 
 //
 //=============================================================================
-void SimpleAnimationPlayer::SetNameData( char* controller, char* camera, char* animation )
-{
-    strcpy( msController, controller );
-    if( camera != NULL )
-    {
-        strcpy( msCamera, camera );
+void SimpleAnimationPlayer::SetNameData(char *controller, char *camera, char *animation) {
+    strcpy(msController, controller);
+    if (camera != NULL) {
+        strcpy(msCamera, camera);
     }
-    strcpy( msAnimation, animation );
+    strcpy(msAnimation, animation);
 }
 
 //******************************************************************************
@@ -191,32 +181,28 @@ void SimpleAnimationPlayer::SetNameData( char* controller, char* camera, char* a
 // Return:      void 
 //
 //=============================================================================
-void SimpleAnimationPlayer::DoLoaded()
-{
-    tRefCounted::Assign(mpMasterController, p3d::find<tMultiController>( msController ));
+void SimpleAnimationPlayer::DoLoaded() {
+    tRefCounted::Assign(mpMasterController, p3d::find<tMultiController>(msController));
 
-    if(mpMasterController)
-    {
+    if (mpMasterController) {
         // reset to the first frame, and update (so evrything is in the correct 
         // place if we display before calling update again)
         mpMasterController->Reset();
         mpMasterController->SetFrame(0);
         mpMasterController->Advance(0.0f);
 
-        mpMasterController->SetCycleMode( mCycleMode );
+        mpMasterController->SetCycleMode(mCycleMode);
 
         mNumFrames = rmt::FtoL(mpMasterController->GetNumFrames());
 
-        if(mIntroFrames != 0)
-        {
-            mpMasterController->SetFrameRange(0.0f, (float)mIntroFrames);
-            mpMasterController->SetCycleMode( FORCE_CYCLIC );
+        if (mIntroFrames != 0) {
+            mpMasterController->SetFrameRange(0.0f, (float) mIntroFrames);
+            mpMasterController->SetCycleMode(FORCE_CYCLIC);
         }
     }
 
-    if( strlen( msCamera ) > 0 )
-    {
-        tRefCounted::Assign(mpCamera,p3d::find<tCamera>( msCamera ));
+    if (strlen(msCamera) > 0) {
+        tRefCounted::Assign(mpCamera, p3d::find<tCamera>(msCamera));
     }
 
     mbSetCamera = false;
@@ -232,36 +218,32 @@ void SimpleAnimationPlayer::DoLoaded()
 // Return:      void 
 //
 //=============================================================================
-void SimpleAnimationPlayer::DoRender()
-{
-    if(!mpMasterController)
-    {
+void SimpleAnimationPlayer::DoRender() {
+    if (!mpMasterController) {
         Stop();
         return;
     }
 
-    if ( !mbSetCamera && mpCamera != NULL )
-    {
-        tView* view = p3d::context->GetView();
-        rAssert( view );
+    if (!mbSetCamera && mpCamera != NULL) {
+        tView *view = p3d::context->GetView();
+        rAssert(view);
 
         mpViewCamera = view->GetCamera();
         mpViewCamera->AddRef();
 
-        view->SetCamera( mpCamera );
+        view->SetCamera(mpCamera);
 
         mbSetCamera = true;
     }
 
-    if ( (mpMasterController->GetFrame() >= mpMasterController->GetNumFrames()) && (mOutroFrames == 0))
-    {
-        if ( mbSetCamera )
-        {
-            tView* view = p3d::context->GetView();
-            rAssert( view );
+    if ((mpMasterController->GetFrame() >= mpMasterController->GetNumFrames()) &&
+        (mOutroFrames == 0)) {
+        if (mbSetCamera) {
+            tView *view = p3d::context->GetView();
+            rAssert(view);
 
-            view->SetCamera( mpViewCamera );
-            tRefCounted::Release( mpViewCamera );
+            view->SetCamera(mpViewCamera);
+            tRefCounted::Release(mpViewCamera);
         }
 
         Stop();
@@ -269,30 +251,24 @@ void SimpleAnimationPlayer::DoRender()
 }
 
 
-void SimpleAnimationPlayer::SetIntroLoop(unsigned nFrames)
-{
+void SimpleAnimationPlayer::SetIntroLoop(unsigned nFrames) {
     mIntroFrames = nFrames;
 }
 
-void SimpleAnimationPlayer::SetOutroLoop(unsigned nFrames)
-{
+void SimpleAnimationPlayer::SetOutroLoop(unsigned nFrames) {
     mOutroFrames = nFrames;
 }
 
-void SimpleAnimationPlayer::Play(void)
-{
+void SimpleAnimationPlayer::Play(void) {
     AnimationPlayer::Play();
 
-    if(mIntroFrames)
-    {
+    if (mIntroFrames) {
         mInIntro = true;
     }
 }
 
-void SimpleAnimationPlayer::DoneIntro(void)
-{
-    if(mpMasterController)
-    {
+void SimpleAnimationPlayer::DoneIntro(void) {
+    if (mpMasterController) {
         mInIntro = false;
         mpMasterController->SetFrameRange(0.0f, static_cast<float>(mNumFrames));
         mpMasterController->SetCycleMode(mCycleMode);

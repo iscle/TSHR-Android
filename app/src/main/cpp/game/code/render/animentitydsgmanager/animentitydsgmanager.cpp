@@ -43,15 +43,15 @@ const int MAX_NUM_STATEPROPS = 300;
 const int MAX_NUM_STATEPROPS = 250;
 #endif
 
-const char* PIGEON_IDLE_ANIM_DSG = "pidgeon_A_group";
-const char* PIGEON_FLY_ANIM_DSG = "pidgeon_B_group";
+const char *PIGEON_IDLE_ANIM_DSG = "pidgeon_A_group";
+const char *PIGEON_FLY_ANIM_DSG = "pidgeon_B_group";
 
 //===========================================================================
 // Global Data, Local Data, Local Classes
 //===========================================================================
 
 // Singleton instance pointer
-AnimEntityDSGManager* AnimEntityDSGManager::spInstance = NULL;
+AnimEntityDSGManager *AnimEntityDSGManager::spInstance = NULL;
 
 //===========================================================================
 // Member Functions
@@ -70,15 +70,14 @@ AnimEntityDSGManager* AnimEntityDSGManager::spInstance = NULL;
 //
 //===========================================================================
 
-AnimEntityDSGManager* AnimEntityDSGManager::CreateInstance()
-{
-MEMTRACK_PUSH_GROUP( "AnimEntityDSGManager" );
-    rAssert( spInstance == NULL );
+AnimEntityDSGManager *AnimEntityDSGManager::CreateInstance() {
+    MEMTRACK_PUSH_GROUP("AnimEntityDSGManager");
+    rAssert(spInstance == NULL);
 
     spInstance = new(GMA_PERSISTENT) AnimEntityDSGManager;
-    rAssert( spInstance != NULL );
-    
-MEMTRACK_POP_GROUP( "AnimEntityDSGManager" );
+    rAssert(spInstance != NULL);
+
+    MEMTRACK_POP_GROUP("AnimEntityDSGManager");
     return spInstance;
 }
 
@@ -95,12 +94,12 @@ MEMTRACK_POP_GROUP( "AnimEntityDSGManager" );
 //
 //===========================================================================
 
-AnimEntityDSGManager* AnimEntityDSGManager::GetInstance()
-{
-    rAssert ( spInstance != NULL);
+AnimEntityDSGManager *AnimEntityDSGManager::GetInstance() {
+    rAssert(spInstance != NULL);
 
-    return spInstance; 
+    return spInstance;
 }
+
 //===========================================================================
 // AnimEntityDSGManager::DestroyInstance
 //===========================================================================
@@ -113,12 +112,11 @@ AnimEntityDSGManager* AnimEntityDSGManager::GetInstance()
 // Return:
 //
 //===========================================================================
-void AnimEntityDSGManager::DestroyInstance()
-{
-    rAssert( spInstance != NULL );
+void AnimEntityDSGManager::DestroyInstance() {
+    rAssert(spInstance != NULL);
 
-    delete( GMA_PERSISTENT, spInstance );
-    spInstance = NULL; 
+    delete (GMA_PERSISTENT, spInstance);
+    spInstance = NULL;
 }
 //===========================================================================
 // AnimEntityDSGManager::AnimEntityDSGManager
@@ -138,21 +136,21 @@ void AnimEntityDSGManager::DestroyInstance()
 //			None
 //===========================================================================
 
-AnimEntityDSGManager::AnimEntityDSGManager()
-{
-	// Allocate the array of pointers
-	// Don't worry too much about allocating too many since there it will
-	// be the only array in existence
+AnimEntityDSGManager::AnimEntityDSGManager() {
+    // Allocate the array of pointers
+    // Don't worry too much about allocating too many since there it will
+    // be the only array in existence
 
     mpFloatingRightWayArrows.Allocate(6);
     mpFloatingWrongWayArrows.Allocate(6);
 
-	mEntityList.Allocate( MAX_NUM_ANIM_ENTITY_DSGS );
-    mCollEntityList.Allocate( MAX_NUM_ANIM_ENTITY_DSGS );
-	mMultiControllerlist.Allocate( MAX_NUM_MULTICONTROLLERS );
-    mStatePropList.Allocate( MAX_NUM_STATEPROPS );
-	GetEventManager()->AddListener( this, (EventEnum)( EVENT_LOCATOR + LocatorEvent::PARKED_BIRDS ) );
+    mEntityList.Allocate(MAX_NUM_ANIM_ENTITY_DSGS);
+    mCollEntityList.Allocate(MAX_NUM_ANIM_ENTITY_DSGS);
+    mMultiControllerlist.Allocate(MAX_NUM_MULTICONTROLLERS);
+    mStatePropList.Allocate(MAX_NUM_STATEPROPS);
+    GetEventManager()->AddListener(this, (EventEnum)(EVENT_LOCATOR + LocatorEvent::PARKED_BIRDS));
 }
+
 //===========================================================================
 // AnimEntityDSGManager::~AnimEntityDSGManager
 //===========================================================================
@@ -168,18 +166,19 @@ AnimEntityDSGManager::AnimEntityDSGManager()
 //		None
 //
 //===========================================================================
-AnimEntityDSGManager::~AnimEntityDSGManager()
-{
-	RemoveAll();
-	mEntityList.Clear();
-	mCollEntityList.Clear();
-	mMultiControllerlist.Clear();
+AnimEntityDSGManager::~AnimEntityDSGManager() {
+    RemoveAll();
+    mEntityList.Clear();
+    mCollEntityList.Clear();
+    mMultiControllerlist.Clear();
     mStatePropList.Clear();
-	mpFloatingRightWayArrows.Clear();
-	mpFloatingWrongWayArrows.Clear();
-	
-    GetEventManager()->RemoveListener( this, (EventEnum)( EVENT_LOCATOR + LocatorEvent::PARKED_BIRDS ) );
+    mpFloatingRightWayArrows.Clear();
+    mpFloatingWrongWayArrows.Clear();
+
+    GetEventManager()->RemoveListener(this,
+                                      (EventEnum)(EVENT_LOCATOR + LocatorEvent::PARKED_BIRDS));
 }
+
 //===========================================================================
 // AnimEntityDSGManager::Add
 //===========================================================================
@@ -196,11 +195,10 @@ AnimEntityDSGManager::~AnimEntityDSGManager()
 //			None.
 //
 //===========================================================================
-void AnimEntityDSGManager::Add( AnimCollisionEntityDSG* pDSG )
-{
-    rAssert( pDSG != NULL );
+void AnimEntityDSGManager::Add(AnimCollisionEntityDSG *pDSG) {
+    rAssert(pDSG != NULL);
     pDSG->AddRef();
-    mCollEntityList.Add( pDSG );
+    mCollEntityList.Add(pDSG);
 }
 
 
@@ -220,24 +218,18 @@ void AnimEntityDSGManager::Add( AnimCollisionEntityDSG* pDSG )
 //			None.
 //
 //===========================================================================
-void AnimEntityDSGManager::Add( AnimEntityDSG* pEntity )
-{
-	rAssert( pEntity != NULL );
+void AnimEntityDSGManager::Add(AnimEntityDSG *pEntity) {
+    rAssert(pEntity != NULL);
 
-    if( pEntity->AddToUpdateList() )
-    {
+    if (pEntity->AddToUpdateList()) {
         pEntity->AddRef();
-	    mEntityList.Add( pEntity );
+        mEntityList.Add(pEntity);
         return;
     }
-    if( pEntity->TrackSeparately() )
-    {
-        if(pEntity->TrackSeparately()%2==0)
-        {
+    if (pEntity->TrackSeparately()) {
+        if (pEntity->TrackSeparately() % 2 == 0) {
             mpFloatingWrongWayArrows.Add(pEntity);//[pEntity->TrackSeparately()-1] = pEntity;
-        }
-        else
-        {
+        } else {
             mpFloatingRightWayArrows.Add(pEntity);//[pEntity->TrackSeparately()-1] = pEntity;
         }
 
@@ -246,14 +238,12 @@ void AnimEntityDSGManager::Add( AnimEntityDSG* pEntity )
     }
 }
 
-void AnimEntityDSGManager::Add( StatePropDSG* prop )
-{
-    for (int i=0;i<mStatePropList.mUseSize;i++)
-    {
-        assert( mStatePropList[i] != prop );
+void AnimEntityDSGManager::Add(StatePropDSG *prop) {
+    for (int i = 0; i < mStatePropList.mUseSize; i++) {
+        assert(mStatePropList[i] != prop);
     }
 
-    mStatePropList.Add( prop );
+    mStatePropList.Add(prop);
 }
 
 
@@ -273,20 +263,18 @@ void AnimEntityDSGManager::Add( StatePropDSG* prop )
 //			None
 //
 //===========================================================================
-void AnimEntityDSGManager::Remove( AnimEntityDSG* pEntity )
-{
-	// Is it possible to insert multiple copies of the same pointer?
-	// Lets assume it is, and if it isn't we aren't really saving
-	// much by breaking early
-	for( int i = 0 ; i < mEntityList.mUseSize ; ++i)
-	{
-		if( mEntityList[i] == pEntity )
-		{
-			mEntityList[ i ]->Release();
-			mEntityList.Remove( i );
-		}
-	}
+void AnimEntityDSGManager::Remove(AnimEntityDSG *pEntity) {
+    // Is it possible to insert multiple copies of the same pointer?
+    // Lets assume it is, and if it isn't we aren't really saving
+    // much by breaking early
+    for (int i = 0; i < mEntityList.mUseSize; ++i) {
+        if (mEntityList[i] == pEntity) {
+            mEntityList[i]->Release();
+            mEntityList.Remove(i);
+        }
+    }
 }
+
 //===========================================================================
 // AnimEntityDSGManager::Remove
 //===========================================================================
@@ -303,28 +291,22 @@ void AnimEntityDSGManager::Remove( AnimEntityDSG* pEntity )
 //			None
 //
 //===========================================================================
-void AnimEntityDSGManager::Remove( AnimCollisionEntityDSG* pEntity )
-{
-	// Is it possible to insert multiple copies of the same pointer?
-	// Lets assume it is, and if it isn't we aren't really saving
-	// much by breaking early
-	for( int i = 0 ; i < mCollEntityList.mUseSize ; ++i)
-	{
-		if( mCollEntityList[i] == pEntity )
-		{
-			mCollEntityList[ i ]->Release();
-			mCollEntityList.Remove( i );
-		}
-	}
+void AnimEntityDSGManager::Remove(AnimCollisionEntityDSG *pEntity) {
+    // Is it possible to insert multiple copies of the same pointer?
+    // Lets assume it is, and if it isn't we aren't really saving
+    // much by breaking early
+    for (int i = 0; i < mCollEntityList.mUseSize; ++i) {
+        if (mCollEntityList[i] == pEntity) {
+            mCollEntityList[i]->Release();
+            mCollEntityList.Remove(i);
+        }
+    }
 }
 
-void AnimEntityDSGManager::Remove( StatePropDSG* pProp )
-{
-    for ( int i = 0 ; i < mStatePropList.mUseSize ; i++ )
-    {
-        if ( mStatePropList[ i ] == pProp )
-        {
-            mStatePropList.Remove( i );
+void AnimEntityDSGManager::Remove(StatePropDSG *pProp) {
+    for (int i = 0; i < mStatePropList.mUseSize; i++) {
+        if (mStatePropList[i] == pProp) {
+            mStatePropList.Remove(i);
             break;
         }
     }
@@ -346,35 +328,29 @@ void AnimEntityDSGManager::Remove( StatePropDSG* pProp )
 //		None
 //
 //===========================================================================
-void AnimEntityDSGManager::RemoveAll()
-{
-    for(int i=mpFloatingRightWayArrows.mUseSize-1; i>-1; i--)
-	{
-		mpFloatingRightWayArrows[ i ]->Release();
-	}
+void AnimEntityDSGManager::RemoveAll() {
+    for (int i = mpFloatingRightWayArrows.mUseSize - 1; i > -1; i--) {
+        mpFloatingRightWayArrows[i]->Release();
+    }
 
-    for(int i=mpFloatingWrongWayArrows.mUseSize-1; i>-1; i--)
-	{
-		mpFloatingWrongWayArrows[ i ]->Release();
-	}
+    for (int i = mpFloatingWrongWayArrows.mUseSize - 1; i > -1; i--) {
+        mpFloatingWrongWayArrows[i]->Release();
+    }
 
-    for (int i = 0 ; i < mEntityList.mUseSize ; ++i )
-	{
-		mEntityList[ i ]->Release();
-	}
-	for (int i = 0 ; i < mCollEntityList.mUseSize ; ++i )
-	{
-		mCollEntityList[ i ]->Release();
-	}
-	for (int i = 0 ; i < mMultiControllerlist.mUseSize ; ++i )
-	{
-		mMultiControllerlist[ i ]->Release();
-	}
-	mpFloatingRightWayArrows.ClearUse();
-	mpFloatingWrongWayArrows.ClearUse();
-	mEntityList.ClearUse();
-	mCollEntityList.ClearUse();
-	mMultiControllerlist.ClearUse();
+    for (int i = 0; i < mEntityList.mUseSize; ++i) {
+        mEntityList[i]->Release();
+    }
+    for (int i = 0; i < mCollEntityList.mUseSize; ++i) {
+        mCollEntityList[i]->Release();
+    }
+    for (int i = 0; i < mMultiControllerlist.mUseSize; ++i) {
+        mMultiControllerlist[i]->Release();
+    }
+    mpFloatingRightWayArrows.ClearUse();
+    mpFloatingWrongWayArrows.ClearUse();
+    mEntityList.ClearUse();
+    mCollEntityList.ClearUse();
+    mMultiControllerlist.ClearUse();
     mStatePropList.ClearUse();
 }
 //===========================================================================
@@ -393,49 +369,44 @@ void AnimEntityDSGManager::RemoveAll()
 //
 //===========================================================================
 #ifdef BREAK_DOWN_PROFILE
-    #define ANIM_PROFILE_BEGIN(atime)  atime = radTimeGetMicroseconds(); 
-    #define ANIM_PROFILE_END(atime, aname)    atime = radTimeGetMicroseconds() - atime; if(atime>90) rReleasePrintf("Advance on %s takes %u us.\n", aname, atime); 
+#define ANIM_PROFILE_BEGIN(atime)  atime = radTimeGetMicroseconds();
+#define ANIM_PROFILE_END(atime, aname)    atime = radTimeGetMicroseconds() - atime; if(atime>90) rReleasePrintf("Advance on %s takes %u us.\n", aname, atime);
 #else
-    #define ANIM_PROFILE_BEGIN(atime) 
-    #define ANIM_PROFILE_END(atime, aname) 
+#define ANIM_PROFILE_BEGIN(atime)
+#define ANIM_PROFILE_END(atime, aname)
 #endif
 
-void AnimEntityDSGManager::Update( unsigned int elapsedTime )
-{
-	float fElapsedTime = static_cast<float>(elapsedTime);
-	float elapsedTimeSeconds = fElapsedTime * 0.001f;
+void AnimEntityDSGManager::Update(unsigned int elapsedTime) {
+    float fElapsedTime = static_cast<float>(elapsedTime);
+    float elapsedTimeSeconds = fElapsedTime * 0.001f;
 
-    #ifdef BREAK_DOWN_PROFILE
-        unsigned int updateTime;
-    #endif //BREAK_DOWN_PROFILE
+#ifdef BREAK_DOWN_PROFILE
+    unsigned int updateTime;
+#endif //BREAK_DOWN_PROFILE
 
     int i;
 
-	for (i = 0 ; i < mEntityList.mUseSize ; ++i)
-	{
+    for (i = 0; i < mEntityList.mUseSize; ++i) {
         ANIM_PROFILE_BEGIN(updateTime)
-		mEntityList[ i ]->Update( elapsedTimeSeconds );
+        mEntityList[i]->Update(elapsedTimeSeconds);
         ANIM_PROFILE_END(updateTime, mEntityList[i]->GetName())
-	}
-	for (i = 0 ; i < mCollEntityList.mUseSize ; ++i)
-	{
+    }
+    for (i = 0; i < mCollEntityList.mUseSize; ++i) {
         ANIM_PROFILE_BEGIN(updateTime)
-        mCollEntityList[ i ]->AdvanceAnimation( elapsedTimeSeconds );            
+        mCollEntityList[i]->AdvanceAnimation(elapsedTimeSeconds);
         ANIM_PROFILE_END(updateTime, mCollEntityList[i]->GetName())
-	}
-    for (i = 0 ; i < mStatePropList.mUseSize ; ++i)
-    {
+    }
+    for (i = 0; i < mStatePropList.mUseSize; ++i) {
         ANIM_PROFILE_BEGIN(updateTime)
-        mStatePropList[ i ]->AdvanceAnimation( fElapsedTime );
+        mStatePropList[i]->AdvanceAnimation(fElapsedTime);
         ANIM_PROFILE_END(updateTime, mStatePropList[i]->GetName())
     }
 
-	for (i = 0 ; i < mMultiControllerlist.mUseSize ; ++i)
-	{
+    for (i = 0; i < mMultiControllerlist.mUseSize; ++i) {
         ANIM_PROFILE_BEGIN(updateTime)
-		mMultiControllerlist[ i ]->Advance( fElapsedTime );
+        mMultiControllerlist[i]->Advance(fElapsedTime);
         ANIM_PROFILE_END(updateTime, mMultiControllerlist[i]->GetName())
-	}
+    }
 }
 
 //===========================================================================
@@ -454,25 +425,22 @@ void AnimEntityDSGManager::Update( unsigned int elapsedTime )
 //		none.
 //
 //===========================================================================
-void AnimEntityDSGManager::Add( tMultiController* pController )
-{
-	bool found = false;
-	for (int i = 0 ; i < mMultiControllerlist.mUseSize ; i++)
-	{
-		if ( mMultiControllerlist[ i ] == pController )
-		{
-			found = true;
-			break;
-		}
-	}
+void AnimEntityDSGManager::Add(tMultiController *pController) {
+    bool found = false;
+    for (int i = 0; i < mMultiControllerlist.mUseSize; i++) {
+        if (mMultiControllerlist[i] == pController) {
+            found = true;
+            break;
+        }
+    }
 
 
-	if ( found == false )
-	{
-		mMultiControllerlist.Add( pController );
-		pController->AddRef();
-	}
+    if (found == false) {
+        mMultiControllerlist.Add(pController);
+        pController->AddRef();
+    }
 }
+
 //===========================================================================
 // AnimEntityDSGManager::Remove
 //===========================================================================
@@ -488,17 +456,14 @@ void AnimEntityDSGManager::Add( tMultiController* pController )
 //		none.
 //
 //===========================================================================
-void AnimEntityDSGManager::Remove( tMultiController* pController )
-{
-	for (int i = 0 ; i < mMultiControllerlist.mUseSize ; i++)
-	{
-		if ( mMultiControllerlist[ i ] == pController )
-		{
-			pController->Release();
-			mMultiControllerlist.Remove( i );
-			break;
-		}
-	}
+void AnimEntityDSGManager::Remove(tMultiController *pController) {
+    for (int i = 0; i < mMultiControllerlist.mUseSize; i++) {
+        if (mMultiControllerlist[i] == pController) {
+            pController->Release();
+            mMultiControllerlist.Remove(i);
+            break;
+        }
+    }
 }
 //===========================================================================
 // AnimEntityDSGManager::HandleEvent
@@ -516,48 +481,43 @@ void AnimEntityDSGManager::Remove( tMultiController* pController )
 //
 //===========================================================================
 
-void AnimEntityDSGManager::HandleEvent( EventEnum id, void* pEventData )
-{
+void AnimEntityDSGManager::HandleEvent(EventEnum id, void *pEventData) {
 
 
-	switch( id )
-	{
-	case EVENT_LOCATOR + LocatorEvent::PARKED_BIRDS:
-		{
-			// The character has walked into the zone of range of the birds.
-			// We must make them fly away, but only if they are on the ground actually playing
-			// Stop the original idle animation. Remove it from the DSG.
-			// Find the second animation of the birds flying away. Insert it into the DSG and start it off
-			
-			AnimEntityDSG* pIdleAnim = p3d::find< AnimEntityDSG >( PIGEON_IDLE_ANIM_DSG );
-			rAssertMsg( pIdleAnim != NULL, "Pigeon idle animation not found" );
-			
+    switch (id) {
+        case EVENT_LOCATOR + LocatorEvent::PARKED_BIRDS: {
+            // The character has walked into the zone of range of the birds.
+            // We must make them fly away, but only if they are on the ground actually playing
+            // Stop the original idle animation. Remove it from the DSG.
+            // Find the second animation of the birds flying away. Insert it into the DSG and start it off
+
+            AnimEntityDSG *pIdleAnim = p3d::find<AnimEntityDSG>(PIGEON_IDLE_ANIM_DSG);
+            rAssertMsg(pIdleAnim != NULL, "Pigeon idle animation not found");
+
             //chuck:if the animation isn't loaded yet don't play it
-            if(pIdleAnim != NULL)
-            {
-			    if ( pIdleAnim && pIdleAnim->GetVisibility() )
-			    {
+            if (pIdleAnim != NULL) {
+                if (pIdleAnim && pIdleAnim->GetVisibility()) {
 
-				    AnimEntityDSG* pTriggerAnim = p3d::find< AnimEntityDSG >( PIGEON_FLY_ANIM_DSG );
-				    rAssertMsg( pTriggerAnim != NULL, "Pigeons flying animation not found" );
+                    AnimEntityDSG *pTriggerAnim = p3d::find<AnimEntityDSG>(PIGEON_FLY_ANIM_DSG);
+                    rAssertMsg(pTriggerAnim != NULL, "Pigeons flying animation not found");
 
-				    pIdleAnim->PlayAnimation( false );
-				    pIdleAnim->SetVisibility( false );
+                    pIdleAnim->PlayAnimation(false);
+                    pIdleAnim->SetVisibility(false);
 
                     pTriggerAnim->Reset();
-				    pTriggerAnim->PlayAnimation( true );
-				    pTriggerAnim->SetVisibility( true );
+                    pTriggerAnim->PlayAnimation(true);
+                    pTriggerAnim->SetVisibility(true);
 
-                    GetEventManager()->TriggerEvent( EVENT_PLAY_BIRD_SOUND );
-			    }
+                    GetEventManager()->TriggerEvent(EVENT_PLAY_BIRD_SOUND);
+                }
             }
 
-		}
-		break;
+        }
+            break;
 
-	default:
-		rAssert(false);
-		break;
-	}
+        default:
+            rAssert(false);
+            break;
+    }
 }
 

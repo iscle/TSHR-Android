@@ -46,8 +46,7 @@
 // Return:      N/A.
 //
 //==============================================================================
-SoundFileHandler::SoundFileHandler()
-{
+SoundFileHandler::SoundFileHandler() {
 }
 
 //==============================================================================
@@ -60,8 +59,7 @@ SoundFileHandler::SoundFileHandler()
 // Return:      N/A.
 //
 //==============================================================================
-SoundFileHandler::~SoundFileHandler()
-{
+SoundFileHandler::~SoundFileHandler() {
 }
 
 //=============================================================================
@@ -76,11 +74,10 @@ SoundFileHandler::~SoundFileHandler()
 // Return:     void 
 //
 //=============================================================================
-void SoundFileHandler::LoadFile( const char* filename, 
-                                 FileHandler::LoadFileCallback* pCallback,
-                                 void* pUserData,
-                                 GameMemoryAllocator heap )
-{
+void SoundFileHandler::LoadFile(const char *filename,
+                                FileHandler::LoadFileCallback *pCallback,
+                                void *pUserData,
+                                GameMemoryAllocator heap) {
     mpCallback = pCallback;
     mpUserData = pUserData;
 
@@ -88,7 +85,7 @@ void SoundFileHandler::LoadFile( const char* filename,
     // Pass the load request on to the sound system, giving it this object
     // for notification of completion
     //
-    GetSoundManager()->LoadSoundFile( filename, this );
+    GetSoundManager()->LoadSoundFile(filename, this);
 }
 
 //=============================================================================
@@ -101,12 +98,11 @@ void SoundFileHandler::LoadFile( const char* filename,
 // Return:      void 
 //
 //=============================================================================
-void SoundFileHandler::LoadFileSync( const char* filename )
-{
+void SoundFileHandler::LoadFileSync(const char *filename) {
     //
     // This shouldn't get called.  We don't do synchronous in sound.
     //
-    rAssert( false );
+    rAssert(false);
 }
 
 //=============================================================================
@@ -119,10 +115,9 @@ void SoundFileHandler::LoadFileSync( const char* filename )
 // Return:      void 
 //
 //=============================================================================
-void SoundFileHandler::LoadCompleted()
-{
-    rAssert( mpCallback != NULL );
-    mpCallback->OnLoadFileComplete( mpUserData );
+void SoundFileHandler::LoadCompleted() {
+    rAssert(mpCallback != NULL);
+    mpCallback->OnLoadFileComplete(mpUserData);
 }
 
 //******************************************************************************

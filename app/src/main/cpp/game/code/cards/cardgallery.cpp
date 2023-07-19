@@ -25,25 +25,25 @@
 #include <raddebugwatch.hpp>
 
 // Static pointer to instance of singleton.
-CardGallery* CardGallery::spInstance = NULL;
+CardGallery *CardGallery::spInstance = NULL;
 
 #ifdef DEBUGWATCH
-    static const char* WATCHER_NAMESPACE = "Card Gallery";
-    static unsigned int s_wAddCollectedCard;
-    static void AddCardToGallery()
-    {
-        GetCardGallery()->AddCollectedCardByID( s_wAddCollectedCard );
-    }
+static const char* WATCHER_NAMESPACE = "Card Gallery";
+static unsigned int s_wAddCollectedCard;
+static void AddCardToGallery()
+{
+    GetCardGallery()->AddCollectedCardByID(s_wAddCollectedCard);
+}
 
-    static void AddAllCardsToGallery()
-    {
-        GetCardGallery()->AddAllCollectedCards();
-    }
+static void AddAllCardsToGallery()
+{
+    GetCardGallery()->AddAllCollectedCards();
+}
 
-    static void RemoveAllCardsFromGallery()
-    {
-        GetCardGallery()->RemoveAllCollectedCards();
-    }
+static void RemoveAllCardsFromGallery()
+{
+    GetCardGallery()->RemoveAllCollectedCards();
+}
 #endif
 
 //===========================================================================
@@ -57,46 +57,38 @@ const unsigned int NUM_BITS_PER_BYTE = 8;
 //===========================================================================
 
 CardList::CardList()
-:   m_numCards( 0 )
-{
-    memset( m_cards, 0, sizeof( m_cards ) );
+        : m_numCards(0) {
+    memset(m_cards, 0, sizeof(m_cards));
 }
 
 void
-CardList::Add( Card* card )
-{
-    rAssert( card != NULL );
-    rAssert( m_numCards < static_cast<int>( NUM_CARDS_PER_LEVEL ) );
+CardList::Add(Card *card) {
+    rAssert(card != NULL);
+    rAssert(m_numCards < static_cast<int>(NUM_CARDS_PER_LEVEL));
 
     unsigned int slot = card->GetLevelID() - 1;
-    rAssert( slot < NUM_CARDS_PER_LEVEL );
+    rAssert(slot < NUM_CARDS_PER_LEVEL);
 
-    if( m_cards[ slot ] == NULL )
-    {
-        m_cards[ slot ] = card;
+    if (m_cards[slot] == NULL) {
+        m_cards[slot] = card;
         m_numCards++;
-    }
-    else
-    {
-        rAssertMsg( 0, "WARNING: *** Card already collected!" );
+    } else {
+        rAssertMsg(0, "WARNING: *** Card already collected!");
     }
 }
 
 bool
-CardList::Remove( unsigned int cardID )
-{
+CardList::Remove(unsigned int cardID) {
     bool cardFound = false;
 
     // find card with cardID
     //
-    for( int i = 0; i < m_numCards; i++ )
-    {
-        rAssert( m_cards[ i ] );
+    for (int i = 0; i < m_numCards; i++) {
+        rAssert(m_cards[i]);
 
-        if( m_cards[ i ]->GetID() == cardID )
-        {
+        if (m_cards[i]->GetID() == cardID) {
             // found it! now remove it
-            m_cards[ i ] = NULL;
+            m_cards[i] = NULL;
             m_numCards--;
 
             cardFound = true;
@@ -108,9 +100,8 @@ CardList::Remove( unsigned int cardID )
 }
 
 void
-CardList::Empty()
-{
-    memset( m_cards, 0, sizeof( m_cards ) );
+CardList::Empty() {
+    memset(m_cards, 0, sizeof(m_cards));
     m_numCards = 0;
 }
 
@@ -127,23 +118,22 @@ CardList::Empty()
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-CardGallery* CardGallery::CreateInstance()
-{
-MEMTRACK_PUSH_GROUP( "CardGallery" );
-    #ifdef RAD_GAMECUBE
-        HeapMgr()->PushHeap( GMA_GC_VMM );
-    #else
-        HeapMgr()->PushHeap( GMA_PERSISTENT );
-    #endif
-        spInstance = new(GMA_PERSISTENT) CardGallery;
-    rAssert( spInstance != NULL );
+CardGallery *CardGallery::CreateInstance() {
+    MEMTRACK_PUSH_GROUP("CardGallery");
+#ifdef RAD_GAMECUBE
+    HeapMgr()->PushHeap(GMA_GC_VMM);
+#else
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
+#endif
+    spInstance = new(GMA_PERSISTENT) CardGallery;
+    rAssert(spInstance != NULL);
 
-    #ifdef RAD_GAMECUBE
-        HeapMgr()->PopHeap( GMA_GC_VMM );
-    #else
-        HeapMgr()->PopHeap( GMA_PERSISTENT );
-    #endif
- MEMTRACK_POP_GROUP( "CardGallery" );
+#ifdef RAD_GAMECUBE
+    HeapMgr()->PopHeap(GMA_GC_VMM);
+#else
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
+#endif
+    MEMTRACK_POP_GROUP("CardGallery");
     return spInstance;
 }
 
@@ -158,9 +148,8 @@ MEMTRACK_PUSH_GROUP( "CardGallery" );
 // Return:      None.
 //
 //==============================================================================
-void CardGallery::DestroyInstance()
-{
-    rAssert( spInstance != NULL );
+void CardGallery::DestroyInstance() {
+    rAssert(spInstance != NULL);
 
     delete spInstance;
     spInstance = NULL;
@@ -180,9 +169,8 @@ void CardGallery::DestroyInstance()
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-CardGallery* CardGallery::GetInstance()
-{
-    rAssert( spInstance != NULL );
+CardGallery *CardGallery::GetInstance() {
+    rAssert(spInstance != NULL);
 
     return spInstance;
 }
@@ -200,22 +188,21 @@ CardGallery* CardGallery::GetInstance()
 //
 //===========================================================================
 CardGallery::CardGallery()
-:   m_cardsDB( NULL ),
-    m_numCollectedCards( 0 )
-{
+        : m_cardsDB(NULL),
+          m_numCollectedCards(0) {
 #ifdef RAD_GAMECUBE
-    HeapMgr()->PushHeap( GMA_GC_VMM );
+    HeapMgr()->PushHeap(GMA_GC_VMM);
 #else
-    HeapMgr()->PushHeap( GMA_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 #endif
 
     m_cardsDB = new CardsDB();
-    rAssert( m_cardsDB );
+    rAssert(m_cardsDB);
 
 #ifdef RAD_GAMECUBE
-    HeapMgr()->PopHeap( GMA_GC_VMM );
+    HeapMgr()->PopHeap(GMA_GC_VMM);
 #else
-    HeapMgr()->PopHeap( GMA_PERSISTENT );
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
 #endif
 }
 
@@ -231,12 +218,10 @@ CardGallery::CardGallery()
 // Return:      
 //
 //===========================================================================
-CardGallery::~CardGallery()
-{
-    GetCheatInputSystem()->UnregisterCallback( this );
+CardGallery::~CardGallery() {
+    GetCheatInputSystem()->UnregisterCallback(this);
 
-    if( m_cardsDB != NULL )
-    {
+    if (m_cardsDB != NULL) {
         delete m_cardsDB;
         m_cardsDB = NULL;
     }
@@ -255,47 +240,45 @@ CardGallery::~CardGallery()
 //
 //===========================================================================
 void
-CardGallery::Init()
-{
+CardGallery::Init() {
     // load cards into database
     //
-    rAssert( m_cardsDB );
+    rAssert(m_cardsDB);
     m_cardsDB->LoadCards();
 
     // determine number of bytes needed for loading/saving
     //
     unsigned int numDataBytes = m_cardsDB->GetNumCards() / NUM_BITS_PER_BYTE;
-    if( m_cardsDB->GetNumCards() % NUM_BITS_PER_BYTE > 0 )
-    {
+    if (m_cardsDB->GetNumCards() % NUM_BITS_PER_BYTE > 0) {
         numDataBytes++; // round up number of bytes
     }
 
     // register collected cards data for loading/saving
     //
-    GetGameDataManager()->RegisterGameData( this, numDataBytes, "Card Gallery" );
+    GetGameDataManager()->RegisterGameData(this, numDataBytes, "Card Gallery");
 
     // register callback for "Collect All Cards" cheat
     //
-    GetCheatInputSystem()->RegisterCallback( this );
+    GetCheatInputSystem()->RegisterCallback(this);
 
 #ifdef DEBUGWATCH
-    radDbgWatchAddUnsignedInt( &s_wAddCollectedCard,
+    radDbgWatchAddUnsignedInt(&s_wAddCollectedCard,
                                "Add Collectible Card",
                                WATCHER_NAMESPACE,
                                (RADDEBUGWATCH_CALLBACK)AddCardToGallery,
                                NULL,
                                0,
-                               MAX_NUM_CARDS - 1 );
+                               MAX_NUM_CARDS - 1);
 
-    radDbgWatchAddFunction( "Add All Collectible Cards",
+    radDbgWatchAddFunction("Add All Collectible Cards",
                             (RADDEBUGWATCH_CALLBACK)AddAllCardsToGallery,
                             NULL,
-                            WATCHER_NAMESPACE );
+                            WATCHER_NAMESPACE);
 
-    radDbgWatchAddFunction( "Remove All Collectible Cards",
+    radDbgWatchAddFunction("Remove All Collectible Cards",
                             (RADDEBUGWATCH_CALLBACK)RemoveAllCardsFromGallery,
                             NULL,
-                            WATCHER_NAMESPACE );
+                            WATCHER_NAMESPACE);
 #endif
 }
 
@@ -311,17 +294,15 @@ CardGallery::Init()
 // Return:      
 //
 //===========================================================================
-Card*
-CardGallery::AddCollectedCardByID( unsigned int cardID )
-{
-    rAssert( m_cardsDB );
+Card *
+CardGallery::AddCollectedCardByID(unsigned int cardID) {
+    rAssert(m_cardsDB);
 
     // get card by ID from DB, and add it to collected cards
     //
-    Card* collectedCard = m_cardsDB->GetCardByID( cardID );
-    if( collectedCard != NULL )
-    {
-        this->AddCollectedCard( collectedCard );
+    Card *collectedCard = m_cardsDB->GetCardByID(cardID);
+    if (collectedCard != NULL) {
+        this->AddCollectedCard(collectedCard);
     }
 
     return collectedCard;
@@ -339,21 +320,17 @@ CardGallery::AddCollectedCardByID( unsigned int cardID )
 // Return:      
 //
 //===========================================================================
-Card*
-CardGallery::AddCollectedCardByName( tUID cardName )
-{
-    rAssert( m_cardsDB );
+Card *
+CardGallery::AddCollectedCardByName(tUID cardName) {
+    rAssert(m_cardsDB);
 
     // get card by name from DB, and add it to collected cards
     //
-    Card* collectedCard = m_cardsDB->GetCardByName( cardName );
-    if( collectedCard != NULL )
-    {
-        this->AddCollectedCard( collectedCard );
-    }
-    else
-    {
-        rAssertMsg( false, "ERROR: *** Card not found!" );
+    Card *collectedCard = m_cardsDB->GetCardByName(cardName);
+    if (collectedCard != NULL) {
+        this->AddCollectedCard(collectedCard);
+    } else {
+        rAssertMsg(false, "ERROR: *** Card not found!");
     }
 
     return collectedCard;
@@ -372,15 +349,12 @@ CardGallery::AddCollectedCardByName( tUID cardName )
 //
 //===========================================================================
 void
-CardGallery::AddAllCollectedCards()
-{
-    for( unsigned int i = 0; i < MAX_NUM_CARDS; i++ )
-    {
-        rAssert( m_cardsDB != NULL );
-        Card* card = m_cardsDB->GetCardByID( i );
-        if( card != NULL )
-        {
-            this->AddCollectedCard( card );
+CardGallery::AddAllCollectedCards() {
+    for (unsigned int i = 0; i < MAX_NUM_CARDS; i++) {
+        rAssert(m_cardsDB != NULL);
+        Card *card = m_cardsDB->GetCardByID(i);
+        if (card != NULL) {
+            this->AddCollectedCard(card);
         }
     }
 }
@@ -398,11 +372,9 @@ CardGallery::AddAllCollectedCards()
 //
 //===========================================================================
 void
-CardGallery::RemoveAllCollectedCards()
-{
-    for( unsigned int i = 0; i < NUM_LEVELS; i++ )
-    {
-        m_collectedCards[ i ].Empty();
+CardGallery::RemoveAllCollectedCards() {
+    for (unsigned int i = 0; i < NUM_LEVELS; i++) {
+        m_collectedCards[i].Empty();
     }
 
     m_numCollectedCards = 0;
@@ -420,11 +392,10 @@ CardGallery::RemoveAllCollectedCards()
 // Return:      
 //
 //===========================================================================
-const CardList*
-CardGallery::GetCollectedCards( unsigned int level ) const
-{
-    rAssert( level < NUM_LEVELS );
-    return( &(m_collectedCards[ level ]) );
+const CardList *
+CardGallery::GetCollectedCards(unsigned int level) const {
+    rAssert(level < NUM_LEVELS);
+    return (&(m_collectedCards[level]));
 }
 
 //=============================================================================
@@ -432,23 +403,20 @@ CardGallery::GetCollectedCards( unsigned int level ) const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( tUID cardName )
+// Parameters:  (tUID cardName)
 //
 // Return:      bool 
 //
 //=============================================================================
-bool CardGallery::IsCardCollected( tUID cardName ) const
-{
+bool CardGallery::IsCardCollected(tUID cardName) const {
     bool cardCollected = false;
 
-    rAssert( m_cardsDB );
-    Card* card = m_cardsDB->GetCardByName( cardName );
-    if( card != NULL )
-    {
+    rAssert(m_cardsDB);
+    Card *card = m_cardsDB->GetCardByName(cardName);
+    if (card != NULL) {
         int level = card->GetLevel() - 1;
         int levelID = card->GetLevelID() - 1;
-        if( m_collectedCards[ level ].m_cards[ levelID ] != NULL )
-        {
+        if (m_collectedCards[level].m_cards[levelID] != NULL) {
             cardCollected = true;
         }
     }
@@ -467,14 +435,11 @@ bool CardGallery::IsCardCollected( tUID cardName ) const
 // Return:      number of card decks completed
 //
 //=============================================================================
-int CardGallery::GetNumCardDecksCompleted() const
-{
+int CardGallery::GetNumCardDecksCompleted() const {
     int numDecksCompleted = 0;
 
-    for( unsigned int i = 0; i < NUM_LEVELS; i++ )
-    {
-        if( this->IsCardDeckComplete( i ) )
-        {
+    for (unsigned int i = 0; i < NUM_LEVELS; i++) {
+        if (this->IsCardDeckComplete(i)) {
             numDecksCompleted++;
         }
     }
@@ -492,11 +457,10 @@ int CardGallery::GetNumCardDecksCompleted() const
 // Return:      true/false
 //
 //=============================================================================
-bool CardGallery::IsCardDeckComplete( unsigned int level ) const
-{
-    rAssert( level < NUM_LEVELS );
+bool CardGallery::IsCardDeckComplete(unsigned int level) const {
+    rAssert(level < NUM_LEVELS);
 
-    return( m_collectedCards[ level ].m_numCards == static_cast<int>( NUM_CARDS_PER_LEVEL ) );
+    return (m_collectedCards[level].m_numCards == static_cast<int>(NUM_CARDS_PER_LEVEL));
 }
 
 //===========================================================================
@@ -512,21 +476,18 @@ bool CardGallery::IsCardDeckComplete( unsigned int level ) const
 //
 //===========================================================================
 void
-CardGallery::LoadData( const GameDataByte* dataBuffer,
-                       unsigned int numBytes )
-{
+CardGallery::LoadData(const GameDataByte *dataBuffer,
+                      unsigned int numBytes) {
     // remove all collected cards first
     //
     this->RemoveAllCollectedCards();
 
     // add new set of collected cards from loaded data
     //
-    for( unsigned int i = 0; i < numBytes * NUM_BITS_PER_BYTE; i++ )
-    {
+    for (unsigned int i = 0; i < numBytes * NUM_BITS_PER_BYTE; i++) {
         unsigned int dataBufferIndex = i / NUM_BITS_PER_BYTE;
-        if( (dataBuffer[ dataBufferIndex ] & (1 << i % NUM_BITS_PER_BYTE)) > 0 )
-        {
-            this->AddCollectedCardByID( i );
+        if ((dataBuffer[dataBufferIndex] & (1 << i % NUM_BITS_PER_BYTE)) > 0) {
+            this->AddCollectedCardByID(i);
         }
     }
 }
@@ -544,36 +505,28 @@ CardGallery::LoadData( const GameDataByte* dataBuffer,
 //
 //===========================================================================
 void
-CardGallery::SaveData( GameDataByte* dataBuffer,
-                       unsigned int numBytes )
-{
-    if( CommandLineOptions::Get( CLO_MEMCARD_CHEAT ) )
-    {
+CardGallery::SaveData(GameDataByte *dataBuffer,
+                      unsigned int numBytes) {
+    if (CommandLineOptions::Get(CLO_MEMCARD_CHEAT)) {
         // turn on all bits, and save
         //
-        memset( dataBuffer, ~0, numBytes );
-    }
-    else
-    {
+        memset(dataBuffer, ~0, numBytes);
+    } else {
         // clear data buffer first
         //
-        for( unsigned int byteIndex = 0; byteIndex < numBytes; byteIndex++ )
-        {
-            dataBuffer[ byteIndex ] = 0;
+        for (unsigned int byteIndex = 0; byteIndex < numBytes; byteIndex++) {
+            dataBuffer[byteIndex] = 0;
         }
 
         // save collected cards using bit-masking algorithm
         //
-        for( unsigned int i = 0; i < NUM_LEVELS; i++ )
-        {
-            for( unsigned int j = 0; j < NUM_CARDS_PER_LEVEL; j++ )
-            {
-                if( m_collectedCards[ i ].m_cards[ j ] != NULL )
-                {
-                    unsigned int cardID = m_collectedCards[ i ].m_cards[ j ]->GetID();
+        for (unsigned int i = 0; i < NUM_LEVELS; i++) {
+            for (unsigned int j = 0; j < NUM_CARDS_PER_LEVEL; j++) {
+                if (m_collectedCards[i].m_cards[j] != NULL) {
+                    unsigned int cardID = m_collectedCards[i].m_cards[j]->GetID();
 
                     unsigned int dataBufferIndex = cardID / NUM_BITS_PER_BYTE;
-                    dataBuffer[ dataBufferIndex ] |= (1 << (cardID % NUM_BITS_PER_BYTE));
+                    dataBuffer[dataBufferIndex] |= (1 << (cardID % NUM_BITS_PER_BYTE));
                 }
             }
         }
@@ -593,10 +546,8 @@ CardGallery::SaveData( GameDataByte* dataBuffer,
 //
 //===========================================================================
 void
-CardGallery::OnCheatEntered( eCheatID cheatID, bool isEnabled )
-{
-    if( cheatID == CHEAT_ID_UNLOCK_CARDS )
-    {
+CardGallery::OnCheatEntered(eCheatID cheatID, bool isEnabled) {
+    if (cheatID == CHEAT_ID_UNLOCK_CARDS) {
         // remove all cards from gallery first
         //
         this->RemoveAllCollectedCards();
@@ -624,15 +575,14 @@ CardGallery::OnCheatEntered( eCheatID cheatID, bool isEnabled )
 //
 //===========================================================================
 void
-CardGallery::AddCollectedCard( Card* newCard )
-{
-    rAssert( newCard != NULL );
+CardGallery::AddCollectedCard(Card *newCard) {
+    rAssert(newCard != NULL);
     unsigned int level = newCard->GetLevel() - 1;
-    rAssert( level < NUM_LEVELS );
-    m_collectedCards[ level ].Add( newCard );
+    rAssert(level < NUM_LEVELS);
+    m_collectedCards[level].Add(newCard);
 
-    rDebugPrintf( "Card Gallery: Collected Card %d-%d\n",
-                    newCard->GetLevel(), newCard->GetLevelID() );
+    rDebugPrintf("Card Gallery: Collected Card %d-%d\n",
+                 newCard->GetLevel(), newCard->GetLevelID());
 
     m_numCollectedCards++;
 }

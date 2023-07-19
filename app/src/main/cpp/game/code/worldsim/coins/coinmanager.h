@@ -25,7 +25,9 @@
 // Forward References
 //========================================
 class Vehicle;
+
 class tDrawable;
+
 class tTexture;
 
 //=============================================================================
@@ -35,46 +37,59 @@ class tTexture;
 //
 //=============================================================================
 class CoinManager : public EventListener,
-                    public ICheatEnteredCallback
-{
+                    public ICheatEnteredCallback {
 public:
     CoinManager();
-	~CoinManager();
 
-	static CoinManager* GetInstance( void );
-	static CoinManager* CreateInstance( void );
-    static void DestroyInstance( void );
+    ~CoinManager();
 
-    void Init( void );
-    void Destroy( void );
-    void SetCoinDrawable( tDrawable* Drawable );
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    static CoinManager *GetInstance(void);
 
-    void Update( int ElapsedMS ); // Elapsed milliseconds.
-    void Render( void ); // Draw coins. Do simple frustum and distance check on them.
-    void HUDRender( void ); // Draw any HUD animations.
+    static CoinManager *CreateInstance(void);
 
-    int GetBankValue( void ) const; // How much is in the bank.
-    void AdjustBankValue( int DeltaCoins ); // Adjust the bank value without any visual SFX.
-    void CollectCoins( int Count ); // Collect coins with sound SFX.
-    void LoseCoins( int Count, const rmt::Vector* Position = 0 ); // decrease bank value with visual SFX.
+    static void DestroyInstance(void);
+
+    void Init(void);
+
+    void Destroy(void);
+
+    void SetCoinDrawable(tDrawable *Drawable);
+
+    virtual void HandleEvent(EventEnum id, void *pEventData);
+
+    void Update(int ElapsedMS); // Elapsed milliseconds.
+    void Render(void); // Draw coins. Do simple frustum and distance check on them.
+    void HUDRender(void); // Draw any HUD animations.
+
+    int GetBankValue(void) const; // How much is in the bank.
+    void AdjustBankValue(int DeltaCoins); // Adjust the bank value without any visual SFX.
+    void CollectCoins(int Count); // Collect coins with sound SFX.
+    void
+    LoseCoins(int Count, const rmt::Vector *Position = 0); // decrease bank value with visual SFX.
     // spawn coins from this position. If in car, the coin actually just go to the player, unless the Force
     //parameter is true.
-    void SpawnCoins( int Count, const rmt::Vector& Position, const rmt::Vector* Direction = 0, bool Force = false );
-    void SpawnCoins( int Count, const rmt::Vector& Position, float GroundY, const rmt::Vector* Direction = 0, bool Force = false ); // spawn coins and force specific ground value.
-	void SpawnInstantCoins(int Count, const rmt::Vector& Position);
+    void SpawnCoins(int Count, const rmt::Vector &Position, const rmt::Vector *Direction = 0,
+                    bool Force = false);
 
-    void AddWorldCoin( const rmt::Vector& Position, tUID Sector ); // Place a coin to sit happily in a zone until the zone unloads.
+    void SpawnCoins(int Count, const rmt::Vector &Position, float GroundY,
+                    const rmt::Vector *Direction = 0,
+                    bool Force = false); // spawn coins and force specific ground value.
+    void SpawnInstantCoins(int Count, const rmt::Vector &Position);
 
-    void SetHUDCoin( int X, int Y, bool IsShowing = true );
-    void AddFlyDownCoin(void); // Create an animation of a single coin zipping down from the HUD counter.
-	void ClearHUDCoins(void); // Remove all HUD coins.
+    void AddWorldCoin(const rmt::Vector &Position,
+                      tUID Sector); // Place a coin to sit happily in a zone until the zone unloads.
 
-    bool DrawAfterGui() const { return mDrawAfterGui;}
-    void SetDrawAfterGui(bool d) { mDrawAfterGui = d;}
+    void SetHUDCoin(int X, int Y, bool IsShowing = true);
 
-    enum eCoinState
-    {
+    void
+    AddFlyDownCoin(void); // Create an animation of a single coin zipping down from the HUD counter.
+    void ClearHUDCoins(void); // Remove all HUD coins.
+
+    bool DrawAfterGui() const { return mDrawAfterGui; }
+
+    void SetDrawAfterGui(bool d) { mDrawAfterGui = d; }
+
+    enum eCoinState {
         CS_Inactive,
         CS_InitialSpawning,     // Coins aren't collectable during this time.
         CS_SpawnToCollect,      // Coins spawn and then are collected on first bounce.
@@ -89,48 +104,56 @@ public:
         CS_NUM_STATES
     };
 
-    tDrawable* GetCoinDrawable( void ) const { return m_pCoinDrawable; }
-    const rmt::Sphere& GetCoinBounding( void ) const { return mCoinBounding; }
+    tDrawable *GetCoinDrawable(void) const { return m_pCoinDrawable; }
 
-    virtual void OnCheatEntered( eCheatID cheatID, bool isEnabled );
+    const rmt::Sphere &GetCoinBounding(void) const { return mCoinBounding; }
+
+    virtual void OnCheatEntered(eCheatID cheatID, bool isEnabled);
 
 protected:
     //Prevent wasteful constructor creation.
-	CoinManager( const CoinManager& That );
-	CoinManager& operator=( const CoinManager& That );
+    CoinManager(const CoinManager &That);
 
-    void OnVehicleDestroyed( Vehicle* DestroyedVehicle );
+    CoinManager &operator=(const CoinManager &That);
+
+    void OnVehicleDestroyed(Vehicle *DestroyedVehicle);
+
     struct ActiveCoin;
-    void SpawnCoin( ActiveCoin& Coin, const rmt::Vector& Start, float Ground, const rmt::Vector* Direction = 0, bool InstaCollect = false );
-    void CheckCollection( ActiveCoin& Coin, const rmt::Vector& AvatarPos, float RangeMultiplier = 1.0f );
-    void RemoveWorldCoins( tUID Sector );
-    void AddGlint( ActiveCoin& Coin, const rmt::Vector& ToCamera, const rmt::Vector& CoinAxis, const rmt::Vector& CameraRight );
 
-    void UpdateCollecting( ActiveCoin& Coin, const rmt::Vector& AvatarPos );
-    void UpdateSpawning(ActiveCoin& Coin, const rmt::Vector& AvatarPos, float DeltaSeconds);
-    void UpdateHUDFlying( ActiveCoin& Coin );
+    void SpawnCoin(ActiveCoin &Coin, const rmt::Vector &Start, float Ground,
+                   const rmt::Vector *Direction = 0, bool InstaCollect = false);
 
-    static CoinManager* spCoinManager;
+    void
+    CheckCollection(ActiveCoin &Coin, const rmt::Vector &AvatarPos, float RangeMultiplier = 1.0f);
 
-    tDrawable* m_pCoinDrawable;
+    void RemoveWorldCoins(tUID Sector);
+
+    void AddGlint(ActiveCoin &Coin, const rmt::Vector &ToCamera, const rmt::Vector &CoinAxis,
+                  const rmt::Vector &CameraRight);
+
+    void UpdateCollecting(ActiveCoin &Coin, const rmt::Vector &AvatarPos);
+
+    void UpdateSpawning(ActiveCoin &Coin, const rmt::Vector &AvatarPos, float DeltaSeconds);
+
+    void UpdateHUDFlying(ActiveCoin &Coin);
+
+    static CoinManager *spCoinManager;
+
+    tDrawable *m_pCoinDrawable;
     rmt::Sphere mCoinBounding;
 
-    struct ActiveCoin
-    {
-        ActiveCoin() : State( CS_Inactive ) {};
-        union
-        {
+    struct ActiveCoin {
+        ActiveCoin() : State(CS_Inactive) {};
+        union {
 #ifdef RAD_GAMECUBE
             rmt::Vector Velocity;
             tUID Sector;
 #else
-            struct
-            {
+            struct {
                 rmt::Vector Velocity;
             };
 
-            struct
-            {
+            struct {
                 tUID Sector;
                 short PersistentObjectID;
             };
@@ -147,9 +170,9 @@ protected:
         eCoinState State;
     };
 
-    ActiveCoin* GetInactiveCoin( void );
+    ActiveCoin *GetInactiveCoin(void);
 
-    ActiveCoin* mActiveCoins;
+    ActiveCoin *mActiveCoins;
     short mNumActiveCoins;
     short mNextInactiveCoin;
     short mNumHUDFlying; // So we can early out of the HUD render.
@@ -163,6 +186,6 @@ protected:
 };
 
 // A little syntactic sugar for getting at this singleton.
-inline CoinManager* GetCoinManager() { return( CoinManager::GetInstance() ); }
+inline CoinManager *GetCoinManager() { return (CoinManager::GetInstance()); }
 
 #endif //COINMANAGER_H

@@ -30,36 +30,39 @@
 //=============================================================================
 
 class WaspSoundPlayer : public ActorPlayer,
-                        public EventListener
-{
-    public:
-        WaspSoundPlayer();
-        virtual ~WaspSoundPlayer();
+                        public EventListener {
+public:
+    WaspSoundPlayer();
 
-        //
-        // ActorPlayer functions
-        //
-        void Activate( Actor* theActor );
-        void OnPlaybackComplete();
+    virtual ~WaspSoundPlayer();
 
-        //
-        // EventListener functions
-        //
-        void HandleEvent( EventEnum id, void* pEventData );
+    //
+    // ActorPlayer functions
+    //
+    void Activate(Actor *theActor);
 
-    private:
-        //Prevent wasteful constructor creation.
-        WaspSoundPlayer( const WaspSoundPlayer& waspsoundplayer );
-        WaspSoundPlayer& operator=( const WaspSoundPlayer& waspsoundplayer );
+    void OnPlaybackComplete();
 
-        void playWaspSound( const char* soundName, Actor* theActor );
+    //
+    // EventListener functions
+    //
+    void HandleEvent(EventEnum id, void *pEventData);
 
-        void deactivate();
-        void safeStop();
+private:
+    //Prevent wasteful constructor creation.
+    WaspSoundPlayer(const WaspSoundPlayer &waspsoundplayer);
 
-        bool m_isFadingIn;
-        bool m_attacking;
-        bool m_blowingUp;
+    WaspSoundPlayer &operator=(const WaspSoundPlayer &waspsoundplayer);
+
+    void playWaspSound(const char *soundName, Actor *theActor);
+
+    void deactivate();
+
+    void safeStop();
+
+    bool m_isFadingIn;
+    bool m_attacking;
+    bool m_blowingUp;
 };
 
 //*****************************************************************************

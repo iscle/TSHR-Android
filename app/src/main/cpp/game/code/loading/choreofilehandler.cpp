@@ -50,11 +50,10 @@
 //
 //==============================================================================
 ChoreoFileHandler::ChoreoFileHandler()
-:
-m_state( NONE ),
-mScriptString( 0 ),
-mpScriptFile( 0 )
-{
+        :
+        m_state(NONE),
+        mScriptString(0),
+        mpScriptFile(0) {
 }
 
 //==============================================================================
@@ -67,8 +66,7 @@ mpScriptFile( 0 )
 // Return:      N/A.
 //
 //==============================================================================
-ChoreoFileHandler::~ChoreoFileHandler()
-{
+ChoreoFileHandler::~ChoreoFileHandler() {
 }
 
 
@@ -85,16 +83,15 @@ ChoreoFileHandler::~ChoreoFileHandler()
 // Return:      None.
 //
 //==============================================================================
-void ChoreoFileHandler::LoadFile 
-(
-    const char* filename, 
-    FileHandler::LoadFileCallback* pCallback,
-    void* pUserData,
-    GameMemoryAllocator heap
-)
-{
-    rAssert( filename );
-    rAssert( pCallback );
+void ChoreoFileHandler::LoadFile
+        (
+                const char *filename,
+                FileHandler::LoadFileCallback *pCallback,
+                void *pUserData,
+                GameMemoryAllocator heap
+        ) {
+    rAssert(filename);
+    rAssert(pCallback);
 
     mpCallback = pCallback;
 
@@ -108,8 +105,8 @@ void ChoreoFileHandler::LoadFile
                 OpenExisting,
                 NormalPriority);
     P3DASSERT(mpScriptFile != 0);
-    mpScriptFile->AddCompletionCallback( this, (void*)pUserData );
-    
+    mpScriptFile->AddCompletionCallback(this, (void *) pUserData);
+
 
 }
 
@@ -126,35 +123,32 @@ void ChoreoFileHandler::LoadFile
 // Return:      None.
 //
 //==============================================================================
-void ChoreoFileHandler::OnFileOperationsComplete( void* pUserData )
-{
-    switch ( m_state )
-    {
-    case OPENFILE:
-        {
-            
-MEMTRACK_PUSH_GROUP( "ChoreoFileHandler" );
+void ChoreoFileHandler::OnFileOperationsComplete(void *pUserData) {
+    switch (m_state) {
+        case OPENFILE: {
+
+            MEMTRACK_PUSH_GROUP("ChoreoFileHandler");
             unsigned length = mpScriptFile->GetSize();
-            mScriptString = new(GMA_TEMP) char [length + 1];
-            mpScriptFile->ReadAsync( mScriptString, length );
-            mpScriptFile->AddCompletionCallback( this, (void*)pUserData );
+            mScriptString = new(GMA_TEMP) char[length + 1];
+            mpScriptFile->ReadAsync(mScriptString, length);
+            mpScriptFile->AddCompletionCallback(this, (void *) pUserData);
             m_state = READDATA;
-MEMTRACK_POP_GROUP("ChoreoFileHandler");
+            MEMTRACK_POP_GROUP("ChoreoFileHandler");
 
             break;
         }
-    case READDATA:
-        {
+        case READDATA: {
             unsigned length = mpScriptFile->GetSize();
             mScriptString[length] = '\0';
-            
-            p3d::inventory->PushSection( );
-            p3d::inventory->SelectSection( GetSectionName() );
+
+            p3d::inventory->PushSection();
+            p3d::inventory->SelectSection(GetSectionName());
             HeapMgr()->PushHeap(GMA_LEVEL_ZONE);
-            bool rc = choreo::ReadFromScriptString(mScriptString, mpScriptFile->GetFilename(), p3d::inventory );
+            bool rc = choreo::ReadFromScriptString(mScriptString, mpScriptFile->GetFilename(),
+                                                   p3d::inventory);
             HeapMgr()->PopHeap(GMA_LEVEL_ZONE);
             p3d::inventory->PopSection();
-            rAssertMsg( rc, "Choreo Script load error\n" );
+            rAssertMsg(rc, "Choreo Script load error\n");
 
             delete[] mScriptString;
             mScriptString = 0;
@@ -165,13 +159,12 @@ MEMTRACK_POP_GROUP("ChoreoFileHandler");
             //
             // Percolate the callback up to the client. This must be done last!!!
             //
-            mpCallback->OnLoadFileComplete( pUserData );
+            mpCallback->OnLoadFileComplete(pUserData);
 
             break;
         }
-    default:
-        {
-            rAssert( 0 );
+        default: {
+            rAssert(0);
             break;
         }
     }
@@ -190,21 +183,19 @@ MEMTRACK_POP_GROUP("ChoreoFileHandler");
 // Return:      None.
 //
 //==============================================================================
-void ChoreoFileHandler::LoadFileSync( const char* filename )
-{
+void ChoreoFileHandler::LoadFileSync(const char *filename) {
     rReleasePrintf("\n\n!!!!!! TRC VIOLATION, USE ASYNC!!!!!!!\n\n");
-    rAssert( false );
+    rAssert(false);
 
-    rAssert( filename );
+    rAssert(filename);
 
     p3d::inventory->PushSection();
-    p3d::inventory->SelectSection( GetSectionName() );
-    bool result = p3d::load( filename );
+    p3d::inventory->SelectSection(GetSectionName());
+    bool result = p3d::load(filename);
     p3d::inventory->PopSection();
 
-    rAssert( result = true );
+    rAssert(result = true);
 }
-
 
 
 //==============================================================================
@@ -218,11 +209,10 @@ void ChoreoFileHandler::LoadFileSync( const char* filename )
 // Return:      
 //
 //==============================================================================
-void ChoreoFileHandler::SetSectionName( const char* sectionName )
-{
-    rAssert( sectionName );
+void ChoreoFileHandler::SetSectionName(const char *sectionName) {
+    rAssert(sectionName);
 
-    strcpy( mcSectionName, sectionName );
+    strcpy(mcSectionName, sectionName);
 }
 
 //******************************************************************************

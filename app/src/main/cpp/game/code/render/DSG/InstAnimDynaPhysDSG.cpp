@@ -65,11 +65,10 @@
 //===========================================================================
 
 InstAnimDynaPhysDSG::InstAnimDynaPhysDSG()
-: mpCompDraw( NULL ),
-mpMultiController( NULL ),
-mpActionButton( NULL )
-{
-    CLASSTRACKER_CREATE( InstAnimDynaPhysDSG );
+        : mpCompDraw(NULL),
+          mpMultiController(NULL),
+          mpActionButton(NULL) {
+    CLASSTRACKER_CREATE(InstAnimDynaPhysDSG);
 }
 //===========================================================================
 // InstAnimDynaPhysDSG::~InstAnimDynaPhysDSG
@@ -85,23 +84,19 @@ mpActionButton( NULL )
 //
 //===========================================================================
 
-InstAnimDynaPhysDSG::~InstAnimDynaPhysDSG()
-{
-    CLASSTRACKER_DESTROY( InstAnimDynaPhysDSG );
-	if ( mpCompDraw != NULL )
-	{
-		mpCompDraw->Release();
-		mpCompDraw = NULL;
-	}
-	if ( mpMultiController != NULL )
-	{
-		GetAnimEntityDSGManager()->Remove( mpMultiController );
+InstAnimDynaPhysDSG::~InstAnimDynaPhysDSG() {
+    CLASSTRACKER_DESTROY(InstAnimDynaPhysDSG);
+    if (mpCompDraw != NULL) {
+        mpCompDraw->Release();
+        mpCompDraw = NULL;
+    }
+    if (mpMultiController != NULL) {
+        GetAnimEntityDSGManager()->Remove(mpMultiController);
 
-		mpMultiController->Release();
-		mpMultiController = NULL;
-	}
-    if ( mpActionButton != NULL )
-    {
+        mpMultiController->Release();
+        mpMultiController = NULL;
+    }
+    if (mpActionButton != NULL) {
         // We don't addref this mpactionbutton (though perhaps we should)
         // The actionbuttonhandler owns this DSG object, if we addrefed the button
         // we would have problems trying to destroy both if the kept references to
@@ -109,10 +104,9 @@ InstAnimDynaPhysDSG::~InstAnimDynaPhysDSG()
         // Wierd Travis-inherited code and an annoying cyclic dependency. 
         mpActionButton = NULL;
     }
-    if ( mpPose != NULL )
-    {
+    if (mpPose != NULL) {
         mpPose->Release();
-        mpPose = NULL ;
+        mpPose = NULL;
     }
 }
 
@@ -130,24 +124,21 @@ InstAnimDynaPhysDSG::~InstAnimDynaPhysDSG()
 //
 //===========================================================================
 
-void InstAnimDynaPhysDSG::Display()
-{
-    if(IS_DRAW_LONG) return;
+void InstAnimDynaPhysDSG::Display() {
+    if (IS_DRAW_LONG) return;
 #ifdef PROFILER_ENABLED
     char profileName[] = "  InstAnimDynaPhysDSG Display";
 #endif
     DSG_BEGIN_PROFILE(profileName)
-    if(CastsShadow()) 
-    {
+    if (CastsShadow()) {
         BillboardQuadManager::Enable();
     }
 
-	p3d::pddi->PushMultMatrix(PDDI_MATRIX_MODELVIEW, &mMatrix);
-	mpCompDraw->Display();
-	p3d::pddi->PopMatrix(PDDI_MATRIX_MODELVIEW);
+    p3d::pddi->PushMultMatrix(PDDI_MATRIX_MODELVIEW, &mMatrix);
+    mpCompDraw->Display();
+    p3d::pddi->PopMatrix(PDDI_MATRIX_MODELVIEW);
 
-    if(CastsShadow())
-    {
+    if (CastsShadow()) {
         BillboardQuadManager::Disable();
         DisplaySimpleShadow();
     }
@@ -168,66 +159,65 @@ void InstAnimDynaPhysDSG::Display()
 //
 //===========================================================================
 
-void InstAnimDynaPhysDSG::DisplayBoundingBox( tColour colour )
-{
+void InstAnimDynaPhysDSG::DisplayBoundingBox(tColour colour) {
 #ifndef RAD_RELEASE
-	p3d::pddi->PushMatrix(PDDI_MATRIX_MODELVIEW);
-	p3d::pddi->MultMatrix(PDDI_MATRIX_MODELVIEW,&mMatrix);
+    p3d::pddi->PushMatrix(PDDI_MATRIX_MODELVIEW);
+    p3d::pddi->MultMatrix(PDDI_MATRIX_MODELVIEW, &mMatrix);
 
 
-	pddiPrimStream* stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.low.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.low.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.low.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
-	p3d::pddi->EndPrims(stream);
+    pddiPrimStream *stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
+    p3d::pddi->EndPrims(stream);
 
-	stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.high.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.high.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
-	p3d::pddi->EndPrims(stream);
+    stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
+    p3d::pddi->EndPrims(stream);
 
-	stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.high.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.low.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.low.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
-	p3d::pddi->EndPrims(stream);
+    stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
+    p3d::pddi->EndPrims(stream);
 
-	stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.high.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.low.z);
-	stream->Colour(colour);
-	stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
-	p3d::pddi->EndPrims(stream);	
+    stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
+    p3d::pddi->EndPrims(stream);
 
-	p3d::pddi->PopMatrix(PDDI_MATRIX_MODELVIEW);
+    p3d::pddi->PopMatrix(PDDI_MATRIX_MODELVIEW);
 #endif
 }
 
@@ -248,7 +238,7 @@ void InstAnimDynaPhysDSG::DisplayBoundingBox( tColour colour )
 /*
 void InstAnimDynaPhysDSG::GetBoundingBox(rmt::Box3D* box)
 {
-	rAssert( box != NULL );
+	rAssert(box != NULL);
     (box->low).Add(mBBox.low, mPosn);
     (box->high).Add(mBBox.high, mPosn);
 
@@ -269,7 +259,7 @@ void InstAnimDynaPhysDSG::GetBoundingBox(rmt::Box3D* box)
 //
 //===========================================================================
 /*
-void InstAnimDynaPhysDSG::GetBoundingSphere( rmt::Sphere* pSphere )
+void InstAnimDynaPhysDSG::GetBoundingSphere(rmt::Sphere* pSphere)
 {
     (pSphere->centre).Add(mSphere.centre, mPosn);
     pSphere->radius = mSphere.radius;
@@ -291,168 +281,161 @@ void InstAnimDynaPhysDSG::GetBoundingSphere( rmt::Sphere* pSphere )
 //===========================================================================
 
 
-void InstAnimDynaPhysDSG::LoadSetUp(	CollisionAttributes*  ipCollAttr,
-										const rmt::Matrix&    iMatrix, 
-										tCompositeDrawable*	  ipCompDrawable,
-										tMultiController*	  ipMultiController,
-										tEntityStore*		  ipSearchStore )
-{
+void InstAnimDynaPhysDSG::LoadSetUp(CollisionAttributes *ipCollAttr,
+                                    const rmt::Matrix &iMatrix,
+                                    tCompositeDrawable *ipCompDrawable,
+                                    tMultiController *ipMultiController,
+                                    tEntityStore *ipSearchStore) {
 
-	rAssert( ipCollAttr != NULL );
-	rAssert( ipCompDrawable != NULL );
-	rAssert( ipMultiController != NULL );
+    rAssert(ipCollAttr != NULL);
+    rAssert(ipCompDrawable != NULL);
+    rAssert(ipMultiController != NULL);
 
-	// Clone the composite drawable, and most importantly, clone its pose. We want a 
-	// seperate pose for each composite drawable.
-	mpCompDraw = ipCompDrawable->Clone();
-	mpCompDraw->SetPose( ipCompDrawable->GetPose () );
-	
-	//	mpCompDraw = ipCompDrawable;
-	
-	mpCompDraw->AddRef();
+    // Clone the composite drawable, and most importantly, clone its pose. We want a
+    // seperate pose for each composite drawable.
+    mpCompDraw = ipCompDrawable->Clone();
+    mpCompDraw->SetPose(ipCompDrawable->GetPose());
+
+    //	mpCompDraw = ipCompDrawable;
+
+    mpCompDraw->AddRef();
 
 
-	mpMultiController = ipMultiController;
-	mpMultiController->AddRef();
-	GetAnimEntityDSGManager()->Add( mpMultiController );
+    mpMultiController = ipMultiController;
+    mpMultiController->AddRef();
+    GetAnimEntityDSGManager()->Add(mpMultiController);
 
-	mMatrix = iMatrix;
-	// Setup the physics
-    tPose* p3dPose = mpCompDraw->GetPose();
+    mMatrix = iMatrix;
+    // Setup the physics
+    tPose *p3dPose = mpCompDraw->GetPose();
     p3dPose->Evaluate();
 
-	// the sim library doesn't have RTTI enabled. When I upcast this, there will be no RTTI check, if
-	// someone changes this to something other than SimStateArticulated, make absolutely sure that everything changes in this file
-	// I can only imagine what horrific errors will result from a bad static_cast downcast.
+    // the sim library doesn't have RTTI enabled. When I upcast this, there will be no RTTI check, if
+    // someone changes this to something other than SimStateArticulated, make absolutely sure that everything changes in this file
+    // I can only imagine what horrific errors will result from a bad static_cast downcast.
 
-	// The current sim library doesn't appear to dump anything in the store, it only uses
-	// it to find the collision and physics objects out of it using the name as the parameter to p3d::find<>
-	mpPose = new poser::Pose( p3dPose );
+    // The current sim library doesn't appear to dump anything in the store, it only uses
+    // it to find the collision and physics objects out of it using the name as the parameter to p3d::find<>
+    mpPose = new poser::Pose(p3dPose);
     mpPose->AddRef();
 
     // The sim library does in fact add something to the store, the above comment notwithstanding.
     // So we wrap this call in a PushSection/PopSection.
     //
-    p3d::inventory->PushSection( );
-    p3d::inventory->SelectSection( "Default" );
+    p3d::inventory->PushSection();
+    p3d::inventory->SelectSection("Default");
 
-	sim::SimState* pSimState = sim::SimStateArticulated::CreateSimStateArticulated( mpCompDraw->GetUID(),mpPose, sim::SimStateAttribute_Default, ipSearchStore );
-    if ( pSimState != NULL )
-    {
-	    // Convert the articulated object into a rigid body, requiring fewer CPU computations
-	    // and avoiding a lot of the nonsense involved with bounding box sub-volumes
-	    sim::SimStateArticulated* pArty = static_cast< sim::SimStateArticulated* > ( pSimState );
+    sim::SimState *pSimState = sim::SimStateArticulated::CreateSimStateArticulated(
+            mpCompDraw->GetUID(), mpPose, sim::SimStateAttribute_Default, ipSearchStore);
+    if (pSimState != NULL) {
+        // Convert the articulated object into a rigid body, requiring fewer CPU computations
+        // and avoiding a lot of the nonsense involved with bounding box sub-volumes
+        sim::SimStateArticulated *pArty = static_cast<sim::SimStateArticulated *>(pSimState);
         // Sanity check on type
-        rAssert( dynamic_cast< sim::SimStateArticulated* > (pSimState) != NULL );
+        rAssert(dynamic_cast<sim::SimStateArticulated *>(pSimState) != NULL);
         pArty->ConvertToRigidBody();
-	    rAssertMsg( pArty->ConvertedToRigidBody(), "This articulated object cannot be converted to a rigid body, aborting."  );
+        rAssertMsg(pArty->ConvertedToRigidBody(),
+                   "This articulated object cannot be converted to a rigid body, aborting.");
+    } else {
+        pSimState = sim::SimState::CreateSimState(mpCompDraw->GetUID(),
+                                                  sim::SimStateAttribute_Default, ipSearchStore);
+        rAssertMsg(pSimState != NULL,
+                   "Cannot load object as either a simstate or simstatearticulated!");
     }
-    else
-    {
-        pSimState = sim::SimState::CreateSimState( mpCompDraw->GetUID(), sim::SimStateAttribute_Default, ipSearchStore );
-        rAssertMsg( pSimState != NULL, "Cannot load object as either a simstate or simstatearticulated!" );
-    }
 
-    p3d::inventory->PopSection( );
+    p3d::inventory->PopSection();
 
-	pSimState->SetControl(sim::simAICtrl);
-    pSimState->SetTransform(mMatrix);   
+    pSimState->SetControl(sim::simAICtrl);
+    pSimState->SetTransform(mMatrix);
 
 
-
-	pSimState->GetCollisionObject()->GetCollisionVolume()->UpdateAll();
+    pSimState->GetCollisionObject()->GetCollisionVolume()->UpdateAll();
     // Needed for SetSimState to work because of tRefCounted::Assign
     pSimState->AddRef();
-	
-    mpPhysObj = (sim::PhysicsObject*)(pSimState->GetSimulatedObject());
-	pSimState->mAIRefIndex = PhysicsAIRef::redBrickPhizMoveableAnim;
+
+    mpPhysObj = (sim::PhysicsObject * )(pSimState->GetSimulatedObject());
+    pSimState->mAIRefIndex = PhysicsAIRef::redBrickPhizMoveableAnim;
 
     SetCollisionAttributes(ipCollAttr);
 
     pSimState->mAIRefPointer = this;
-    SetSimState( pSimState );
+    SetSimState(pSimState);
     mpCompDraw->ProcessShaders(*this);
 
     pSimState->Release();
 
-    
+
 }
-bool InstAnimDynaPhysDSG::Break()
-{
+
+bool InstAnimDynaPhysDSG::Break() {
     bool success;
     success = InstDynaPhysDSG::Break();
-    if ( mpActionButton != NULL )
-    {
+    if (mpActionButton != NULL) {
         mpActionButton->GameObjectDestroyed();
     }
     return success;
 }
 
-void InstAnimDynaPhysDSG::Update( float deltaTime )
-{
+void InstAnimDynaPhysDSG::Update(float deltaTime) {
 
     // If an action button is tied to this thing, update it
-	if ( mpActionButton )
-	{
-		//mpActionButton->Update( deltaTime );
-	}
-     mpPhysObj->Update( deltaTime );    
-    
-	sim::CollisionObject* collObj = mpSimStateObj->GetCollisionObject();
-    if ( collObj->HasMoved( ) || collObj->HasRelocated( )  )
-    {
+    if (mpActionButton) {
+        //mpActionButton->Update(deltaTime);
+    }
+    mpPhysObj->Update(deltaTime);
+
+    sim::CollisionObject *collObj = mpSimStateObj->GetCollisionObject();
+    if (collObj->HasMoved() || collObj->HasRelocated()) {
         collObj->Update();
-		// Save the old matrix
+        // Save the old matrix
         rmt::Box3D oldBox;
-		//GetBoundingBox( &oldBox );
+        //GetBoundingBox(&oldBox);
         (oldBox.low).Add(mBBox.low, mPosn);
         (oldBox.high).Add(mBBox.high, mPosn);
 
 
-		// Bounding box automatically changes when mPosn changes
+        // Bounding box automatically changes when mPosn changes
         mMatrix = mpSimStateObj->GetTransform();
         mPosn = mpSimStateObj->GetPosition();
-		// Move the object in the DSG
-        WorldRenderLayer* pWorldRenderLayer = static_cast< WorldRenderLayer* > (GetRenderManager()->mpLayer( mRenderLayer ));
+        // Move the object in the DSG
+        WorldRenderLayer *pWorldRenderLayer = static_cast<WorldRenderLayer *>(GetRenderManager()->mpLayer(
+                mRenderLayer));
         // Sanity check
-        rAssert( dynamic_cast<WorldRenderLayer*>(pWorldRenderLayer) != NULL );
-        pWorldRenderLayer->pWorldScene()->Move( oldBox, this );   
-	}    
+        rAssert(dynamic_cast<WorldRenderLayer *>(pWorldRenderLayer) != NULL);
+        pWorldRenderLayer->pWorldScene()->Move(oldBox, this);
+    }
 }
 
 
+void InstAnimDynaPhysDSG::SetTransform(const rmt::Matrix &transform) {
+    mMatrix = transform;
+    // Matrix is reset, recompute the bounding box and move it
+    // in the DSG(Warning, this assumes that the user actually has it IN
+    // the DSG. This was always the case for DSG objects so lets not break
+    // tradition
+    rmt::Box3D oldBox;
+    GetBoundingBox(&oldBox);
 
+    // Bounding box relies on mPosn, lets update it
+    mPosn = transform.Row(3);
 
-void InstAnimDynaPhysDSG::SetTransform( const rmt::Matrix& transform )
-{
-	mMatrix = transform;
-	// Matrix is reset, recompute the bounding box and move it
-	// in the DSG( Warning, this assumes that the user actually has it IN
-	// the DSG. This was always the case for DSG objects so lets not break 
-	// tradition
-	rmt::Box3D oldBox;
-	GetBoundingBox( &oldBox );
-
-	// Bounding box relies on mPosn, lets update it 
-	mPosn = transform.Row(3);
-
-    WorldRenderLayer* pWorldRenderLayer = static_cast< WorldRenderLayer* > (GetRenderManager()->mpLayer( mRenderLayer ));
+    WorldRenderLayer *pWorldRenderLayer = static_cast<WorldRenderLayer *>(GetRenderManager()->mpLayer(
+            mRenderLayer));
     // Sanity check
-    rAssert( dynamic_cast<WorldRenderLayer*>(pWorldRenderLayer) != NULL );
-    pWorldRenderLayer->pWorldScene()->Move( oldBox, this );   
+    rAssert(dynamic_cast<WorldRenderLayer *>(pWorldRenderLayer) != NULL);
+    pWorldRenderLayer->pWorldScene()->Move(oldBox, this);
 
-	// Finally, tell physics what our new transform matrix 
-	mpSimStateObj->SetTransform( transform );
-	mpSimStateObj->GetCollisionObject()->SetHasRelocated( true );
-	mpSimStateObj->GetCollisionObject()->SetHasMoved( true );
-	mpSimStateObj->GetCollisionObject()->Update();
+    // Finally, tell physics what our new transform matrix
+    mpSimStateObj->SetTransform(transform);
+    mpSimStateObj->GetCollisionObject()->SetHasRelocated(true);
+    mpSimStateObj->GetCollisionObject()->SetHasMoved(true);
+    mpSimStateObj->GetCollisionObject()->Update();
 
-    sim::CollisionObject* collObj = mpSimStateObj->GetCollisionObject();
+    sim::CollisionObject *collObj = mpSimStateObj->GetCollisionObject();
 
 }
 
-void InstAnimDynaPhysDSG::SetAction( ActionButton::AnimSwitch* pActionButton )
-{
+void InstAnimDynaPhysDSG::SetAction(ActionButton::AnimSwitch *pActionButton) {
     // Don't increment refcount. TBJ's animcolldsg does increment the refcount, however
     // the bee cameras are in essence owned by the actionbuttonhandler thats calling
     // SetAction. Refcounting in the reverse direction will cause major problems when the 
@@ -460,96 +443,84 @@ void InstAnimDynaPhysDSG::SetAction( ActionButton::AnimSwitch* pActionButton )
     mpActionButton = pActionButton;
 }
 
-AnimDynaPhysWrapper::AnimDynaPhysWrapper():
-mCompDraw( NULL ),
-mMultiController( NULL ),
-mPhysicsObject( NULL ),
-mCollisionObject( NULL ),
-mHasAlpha( false ),
-mStatePropData( NULL ),
-mHasAnimations( false )
-{
+AnimDynaPhysWrapper::AnimDynaPhysWrapper() :
+        mCompDraw(NULL),
+        mMultiController(NULL),
+        mPhysicsObject(NULL),
+        mCollisionObject(NULL),
+        mHasAlpha(false),
+        mStatePropData(NULL),
+        mHasAnimations(false) {
 
 }
 
-AnimDynaPhysWrapper::~AnimDynaPhysWrapper()
-{
-	if ( mCompDraw != NULL )
-	{
-		mCompDraw->Release();
-		mCompDraw = NULL;
-	}
-	if ( mMultiController != NULL )
-	{
-		mMultiController->Release();
-		mMultiController = NULL;
-	}
-	if ( mPhysicsObject != NULL )
-	{
-		mPhysicsObject->Release();
-		mPhysicsObject = NULL;
-	}
-	if ( mCollisionObject != NULL )
-	{
-		mCollisionObject->Release();
-		mCollisionObject = NULL;
-	}
-    if ( mStatePropData != NULL )
-    {
+AnimDynaPhysWrapper::~AnimDynaPhysWrapper() {
+    if (mCompDraw != NULL) {
+        mCompDraw->Release();
+        mCompDraw = NULL;
+    }
+    if (mMultiController != NULL) {
+        mMultiController->Release();
+        mMultiController = NULL;
+    }
+    if (mPhysicsObject != NULL) {
+        mPhysicsObject->Release();
+        mPhysicsObject = NULL;
+    }
+    if (mCollisionObject != NULL) {
+        mCollisionObject->Release();
+        mCollisionObject = NULL;
+    }
+    if (mStatePropData != NULL) {
         mStatePropData->Release();
         mStatePropData = NULL;
     }
 }
 
-float AnimDynaPhysWrapper::GetVolume()const
-{
-	rAssert( mPhysicsObject != NULL );
-    
+float AnimDynaPhysWrapper::GetVolume() const {
+    rAssert(mPhysicsObject != NULL);
+
 #ifndef FINAL
-    if (mPhysicsObject == NULL)
-    {
-        char outbuffer [255];
-        sprintf(outbuffer,"Error: %s is missing a Dynamic Bounding Volume \n",this->GetName()); 
-        rTuneAssertMsg( 0,outbuffer );
+    if (mPhysicsObject == NULL) {
+        char outbuffer[255];
+        sprintf(outbuffer, "Error: %s is missing a Dynamic Bounding Volume \n", this->GetName());
+        rTuneAssertMsg(0, outbuffer);
     }
 #endif
 
-	return mPhysicsObject->GetVolume();    
+    return mPhysicsObject->GetVolume();
 }
 
-tCompositeDrawable* AnimDynaPhysWrapper::GetDrawable()const
-{
-	return mCompDraw;
+tCompositeDrawable *AnimDynaPhysWrapper::GetDrawable() const {
+    return mCompDraw;
 }
 
-tMultiController* AnimDynaPhysWrapper::GetController()const
-{
-	return mMultiController;
+tMultiController *AnimDynaPhysWrapper::GetController() const {
+    return mMultiController;
 }
 
-CStatePropData* AnimDynaPhysWrapper::GetStatePropData()const
-{
+CStatePropData *AnimDynaPhysWrapper::GetStatePropData() const {
     return mStatePropData;
 }
 
 
-bool AnimDynaPhysWrapper::HasAlpha()const
-{
-	return mHasAlpha;
+bool AnimDynaPhysWrapper::HasAlpha() const {
+    return mHasAlpha;
 }
 
-InstAnimDynaPhysDSG* AnimDynaPhysWrapper::CreateDSGObject( CollisionAttributes *pAttr, const rmt::Matrix& transform, GameMemoryAllocator heap )
-{
-	// allocate a new dynaphys object
-	InstAnimDynaPhysDSG* pDSG = new (heap) InstAnimDynaPhysDSG;	
+InstAnimDynaPhysDSG *
+AnimDynaPhysWrapper::CreateDSGObject(CollisionAttributes *pAttr, const rmt::Matrix &transform,
+                                     GameMemoryAllocator heap) {
+    // allocate a new dynaphys object
+    InstAnimDynaPhysDSG *pDSG = new(heap) InstAnimDynaPhysDSG;
 
-	// set it up via loadsetup
-	pDSG->LoadSetUp( pAttr, transform, 
-					 mCompDraw, mMultiController, NULL ); 
+    // set it up via loadsetup
+    pDSG->LoadSetUp(pAttr, transform,
+                    mCompDraw, mMultiController, NULL);
 
-	pDSG->mTranslucent = true;
+    pDSG->mTranslucent = true;
 
-	return pDSG;
+    return pDSG;
 }
 
 

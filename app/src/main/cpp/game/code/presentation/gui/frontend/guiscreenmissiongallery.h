@@ -31,41 +31,47 @@ class CGuiMenu2D;
 // Interface Definitions
 //===========================================================================
 class CGuiScreenMissionGallery : public CGuiScreen,
-                                 public LoadingManager::ProcessRequestsCallback
-{
+                                 public LoadingManager::ProcessRequestsCallback {
 public:
-    CGuiScreenMissionGallery( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenMissionGallery(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenMissionGallery();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    virtual CGuiMenu* HasMenu() { return m_pMenu; }
+    virtual CGuiMenu *HasMenu() { return m_pMenu; }
 
     // Implements LoadingManager::ProcessRequestsCallback
     //
-    virtual void OnProcessRequestsComplete( void* pUserData );
+    virtual void OnProcessRequestsComplete(void *pUserData);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
-    void OnUpdate( unsigned int elapsedTime );
-    void SetMenuAlpha( float alpha );
-    void OnMenuSelectionMade( int selection );
+    void OnUpdate(unsigned int elapsedTime);
+
+    void SetMenuAlpha(float alpha);
+
+    void OnMenuSelectionMade(int selection);
+
     void OnStartMission();
+
 #ifdef RAD_WIN32
-    void SetVisibilityForAllOtherMenuItems( bool bDisable );
+    void SetVisibilityForAllOtherMenuItems(bool bDisable);
 #endif
 
     int LoadMissionImages();
+
     void UnloadMissionImages();
 
-    enum eMenuItem
-    {
+    enum eMenuItem {
         MISSION_1,
         MISSION_2,
         MISSION_3,
@@ -78,13 +84,12 @@ private:
         NUM_MISSIONS_PER_LEVEL
     };
 
-    CGuiMenu2D* m_pMenu;
-    Scrooby::Group* m_menuGroup;
+    CGuiMenu2D *m_pMenu;
+    Scrooby::Group *m_menuGroup;
 
-    bool m_isMissionImagesLoaded : 1;
+    bool m_isMissionImagesLoaded: 1;
 
-    enum eScreenState
-    {
+    enum eScreenState {
         SCREEN_STATE_NORMAL,
         SCREEN_STATE_GOTO_VIEW,
         SCREEN_STATE_VIEWING,
@@ -97,9 +102,9 @@ private:
     unsigned int m_elapsedTime;
     rmt::Vector m_projectileVelocity;
 
-    Scrooby::Layer* m_missionInfo;
-    Scrooby::Text* m_missionNum;
-    Scrooby::Text* m_missionTitle;
+    Scrooby::Layer *m_missionInfo;
+    Scrooby::Text *m_missionNum;
+    Scrooby::Text *m_missionTitle;
 
     int m_selectedMission;
 

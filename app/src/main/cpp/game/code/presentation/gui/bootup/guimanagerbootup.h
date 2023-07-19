@@ -19,7 +19,7 @@
 // Nested Includes
 //===========================================================================
 #include <presentation/gui/guimanager.h>
-#include <memory\srrmemory.h> // Needed for my STL allocations to go on the right heap
+#include <memory/srrmemory.h> // Needed for my STL allocations to go on the right heap
 
 #include <queue>
 
@@ -30,17 +30,20 @@
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiManagerBootUp : public CGuiManager
-{
+class CGuiManagerBootUp : public CGuiManager {
 public:
-    CGuiManagerBootUp( Scrooby::Project* pProject, CGuiEntity* pParent );
+    CGuiManagerBootUp(Scrooby::Project *pProject, CGuiEntity *pParent);
+
     virtual ~CGuiManagerBootUp();
 
     virtual void Populate();
-    virtual void Start( CGuiWindow::eGuiWindowID initialWindow = CGuiWindow::GUI_WINDOW_ID_UNDEFINED );
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+
+    virtual void
+    Start(CGuiWindow::eGuiWindowID initialWindow = CGuiWindow::GUI_WINDOW_ID_UNDEFINED);
+
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
 private:
 
@@ -50,16 +53,17 @@ private:
 
     // No copying or assignment. Declare but don't define.
     //
-    CGuiManagerBootUp( const CGuiManagerBootUp& );
-    CGuiManagerBootUp& operator= ( const CGuiManagerBootUp& );
+    CGuiManagerBootUp(const CGuiManagerBootUp &);
+
+    CGuiManagerBootUp &operator=(const CGuiManagerBootUp &);
 
     CGuiWindow::eGuiWindowID PopNextScreenInQueue();
 
     //---------------------------------------------------------------------
     // Private Data
     //---------------------------------------------------------------------
-    typedef std::deque< CGuiWindow::eGuiWindowID, s2alloc<CGuiWindow::eGuiWindowID> > WindowIDVector;
-    std::queue<CGuiWindow::eGuiWindowID, WindowIDVector> m_bootupScreenQueue;
+    typedef std::deque <CGuiWindow::eGuiWindowID, s2alloc<CGuiWindow::eGuiWindowID>> WindowIDVector;
+    std::queue <CGuiWindow::eGuiWindowID, WindowIDVector> m_bootupScreenQueue;
 
 };
 

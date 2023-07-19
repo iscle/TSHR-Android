@@ -28,26 +28,28 @@
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenCreditsPostFMV : public CGuiScreenViewCredits
-{
+class CGuiScreenCreditsPostFMV : public CGuiScreenViewCredits {
 public:
-    CGuiScreenCreditsPostFMV( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenCreditsPostFMV(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenCreditsPostFMV();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
     virtual void OnScrollingDone();
 
-    Scrooby::Sprite* m_kang;
-    Scrooby::Sprite* m_kodos;
+    Scrooby::Sprite *m_kang;
+    Scrooby::Sprite *m_kodos;
 
 };
 

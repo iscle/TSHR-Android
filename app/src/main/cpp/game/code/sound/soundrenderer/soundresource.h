@@ -39,114 +39,123 @@ class daSoundResourceData;
 // This contains the type of resource.
 //
 class daSoundResourceData
-    :
-    public IDaSoundResource
-{
+        :
+                public IDaSoundResource {
 public:
-    
-    virtual void AddRef( void );
-    virtual void Release( void );
+
+    virtual void AddRef(void);
+
+    virtual void Release(void);
 
     //
     // Constructor and destructor
     //
-    daSoundResourceData( );
-    virtual ~daSoundResourceData( );
+    daSoundResourceData();
+
+    virtual ~daSoundResourceData();
 
     //
     // IDaSoundResourceData and IDaSoundResource
     //    
     virtual void AddFilename
-    (
-        const char* newFileName,
-        float trim
-    );
+            (
+                    const char *newFileName,
+                    float trim
+            );
 
-    inline virtual unsigned int GetNumFiles( void );
-    
-    virtual void GetFileNameAt( unsigned int index, char* buffer, unsigned int max );
-    virtual void GetFileKeyAt( unsigned int index, char * buffer, unsigned int max );
-    
+    inline virtual unsigned int GetNumFiles(void);
+
+    virtual void GetFileNameAt(unsigned int index, char *buffer, unsigned int max);
+
+    virtual void GetFileKeyAt(unsigned int index, char *buffer, unsigned int max);
+
     virtual void SetPitchRange
-    (
-        float minPitch,
-        float maxPitch
-    );
+            (
+                    float minPitch,
+                    float maxPitch
+            );
+
     virtual void GetPitchRange
-    (
-        float* pMinPitch,
-        float* pMaxPitch
-    );
-    
+            (
+                    float *pMinPitch,
+                    float *pMaxPitch
+            );
+
     virtual void SetTrimRange
-    (
-        float minTrim,
-        float maxTrim
-    );
+            (
+                    float minTrim,
+                    float maxTrim
+            );
+
     virtual void GetTrimRange
-    (
-        float* pMinTrim,
-        float* pMaxTrim
-    );
-    
-    virtual void SetTrim( float trim );
-    
-    virtual void SetStreaming( bool streaming );
-    virtual bool GetStreaming( void );
+            (
+                    float *pMinTrim,
+                    float *pMaxTrim
+            );
 
-    virtual void SetLooping( bool looping );
-    virtual bool GetLooping( void );
+    virtual void SetTrim(float trim);
 
-    virtual Type GetType( void );
-    virtual void SetSoundGroup( Sound::daSoundGroup soundGroup );
-    virtual Sound::daSoundGroup GetSoundGroup( void );
+    virtual void SetStreaming(bool streaming);
 
-    virtual void CaptureResource( void );
-    virtual bool IsCaptured( void );
-    virtual void ReleaseResource( void );
+    virtual bool GetStreaming(void);
+
+    virtual void SetLooping(bool looping);
+
+    virtual bool GetLooping(void);
+
+    virtual Type GetType(void);
+
+    virtual void SetSoundGroup(Sound::daSoundGroup soundGroup);
+
+    virtual Sound::daSoundGroup GetSoundGroup(void);
+
+    virtual void CaptureResource(void);
+
+    virtual bool IsCaptured(void);
+
+    virtual void ReleaseResource(void);
 
     // COMPOSERS ONLY!!
-    virtual void Play( void );
-       
+    virtual void Play(void);
+
     //
     // The pitch variation
     //
     short m_MinPitch;
     short m_MaxPitch;
-    
+
     //
     // The sound files for this resource
     //
-    
+
     union FileId {
-        char * m_pName;
+        char *m_pName;
         radKey32 m_Key;
     };
-   
-    FileId * m_pFileIds;
-    
-    
+
+    FileId *m_pFileIds;
+
+
     //
     // The trim variation
     //
     unsigned char m_MinTrim;
     unsigned char m_MaxTrim;
-    
+
     unsigned char m_Flags;
 
     unsigned char m_NumFiles;
-    
+
     //
     // Hold a capture counter
     //
-    unsigned char                       m_CaptureCount;
-    unsigned char                       m_SoundGroup;    
+    unsigned char m_CaptureCount;
+    unsigned char m_SoundGroup;
 };
 
-inline unsigned int daSoundResourceData::GetNumFiles( void )
-{
+inline unsigned int daSoundResourceData::GetNumFiles(void) {
     return m_NumFiles;
 }
-    
+
 #endif //_SOUNDRESOURCE_HPP
 

@@ -18,7 +18,7 @@
 // Nested Includes
 //===========================================================================
 
-#include <p3d\drawable.hpp>
+#include <p3d/drawable.hpp>
 
 //===========================================================================
 // Forward References
@@ -48,26 +48,26 @@
 //      steady state.
 //
 //===========================================================================
-class Footprint : public tDrawable
-{
-    public:
-        Footprint();
-        virtual ~Footprint();
-            
-        virtual void Display();   
+class Footprint : public tDrawable {
+public:
+    Footprint();
+
+    virtual ~Footprint();
+
+    virtual void Display();
 
 
-    protected:
+protected:
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow Footprint from being copied and assigned.
-        Footprint( const Footprint& );
-        Footprint& operator=( const Footprint& );
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow Footprint from being copied and assigned.
+    Footprint(const Footprint &);
+
+    Footprint &operator=(const Footprint &);
 
 };
-
 
 
 #endif

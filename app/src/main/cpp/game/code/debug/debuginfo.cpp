@@ -89,11 +89,11 @@ DebugInfo::DebugInfo() :
 {
     for(int i=0; i<MaxSections; i++)
     {
-    	_ppSections[i] = NULL;
+        _ppSections[i] = NULL;
     }
 
-    radDbgWatchAddFunction( "Next Section", (RADDEBUGWATCH_CALLBACK)Next, 0, "DebugInfo" );
-    radDbgWatchAddFunction( "Toggle Display", (RADDEBUGWATCH_CALLBACK)Switch, 0, "DebugInfo" );
+    radDbgWatchAddFunction("Next Section", (RADDEBUGWATCH_CALLBACK)Next, 0, "DebugInfo");
+    radDbgWatchAddFunction("Toggle Display", (RADDEBUGWATCH_CALLBACK)Switch, 0, "DebugInfo");
 }
 
 
@@ -101,11 +101,11 @@ DebugInfo::DebugInfo() :
 // DebugInfo::~DebugInfo
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 DebugInfo::~DebugInfo()
@@ -116,13 +116,13 @@ DebugInfo::~DebugInfo()
     }
 
     if(_shader)
-    	_shader->Release();
+        _shader->Release();
 
     int i;
     for(i=0; i<MaxSections; i++)
     {
-    	if(_ppSections[i])
-    		delete (GMA_DEBUG, _ppSections[i]);
+        if(_ppSections[i])
+            delete (GMA_DEBUG, _ppSections[i]);
     }
 }
 
@@ -131,22 +131,22 @@ DebugInfo::~DebugInfo()
 // DebugInfo::CreateInstance
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void DebugInfo::CreateInstance()
 {
-MEMTRACK_PUSH_GROUP( "DebugInfo" );
-    HeapMgr()->PushHeap( GMA_DEBUG );
+MEMTRACK_PUSH_GROUP("DebugInfo");
+    HeapMgr()->PushHeap(GMA_DEBUG);
 
     _Instance = new DebugInfo;
 
-    HeapMgr()->PopHeap ( GMA_DEBUG );
-MEMTRACK_POP_GROUP( "DebugInfo" );
+    HeapMgr()->PopHeap (GMA_DEBUG);
+MEMTRACK_POP_GROUP("DebugInfo");
 }
 
 
@@ -156,29 +156,29 @@ MEMTRACK_POP_GROUP( "DebugInfo" );
 //
 // Description: Creates a new section
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
-void DebugInfo::CreateNewSection( const char* section )
+void DebugInfo::CreateNewSection(const char* section)
 {
-    HeapMgr()->PushHeap( GMA_DEBUG );
+    HeapMgr()->PushHeap(GMA_DEBUG);
     //Lazy section allocation
     if(_ppSections[_NumSection])
     {
-    	_ppSections[_NumSection]->Reset( section );
+        _ppSections[_NumSection]->Reset(section);
     }
     else
     {
-        if( _pDebugFont == NULL )
+        if(_pDebugFont == NULL)
         {
             //
             // find the font
             //
             _pDebugFont = p3d::find<tTextureFont>("adlibn_20");
 
-            if( _pDebugFont == NULL )
+            if(_pDebugFont == NULL)
             {
                 // Convert memory buffer into a texturefont.
                 //
@@ -190,22 +190,22 @@ void DebugInfo::CreateNewSection( const char* section )
             _pDebugFont->AddRef();
         }
 
-        _ppSections[_NumSection] = new Section( _pDebugFont, section );
+        _ppSections[_NumSection] = new Section(_pDebugFont, section);
     }
     //_pStack[_StackSize++] = _NumSection;
     _NumSection++;
-    HeapMgr()->PopHeap( GMA_DEBUG );
+    HeapMgr()->PopHeap(GMA_DEBUG);
 }
 
 //==============================================================================
 // DebugInfo::DestroyInstance
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void DebugInfo::DestroyInstance()
@@ -218,11 +218,11 @@ void DebugInfo::DestroyInstance()
 // DebugInfo::GetInstance
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 DebugInfo* DebugInfo::GetInstance()
@@ -248,23 +248,23 @@ DebugInfo* DebugInfo::GetInstance()
 //==============================================================================
 void DebugInfo::InitializeStaticVariables()
 {
-    GetInstance()->CreateNewSection( "Vehicle Terrain Type" );
-    GetInstance()->CreateNewSection( "Vehicle Shit" );
+    GetInstance()->CreateNewSection("Vehicle Terrain Type");
+    GetInstance()->CreateNewSection("Vehicle Shit");
 }
 
 //==============================================================================
 // DebugInfo::OnSwitch
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
-void DebugInfo::OnSwitch() 
-{ 
+void DebugInfo::OnSwitch()
+{
     _mode = (Mode) ((_mode + 1) % MODE_MAX);
 
     if(_mode == OFF)
@@ -282,7 +282,7 @@ void DebugInfo::OnSwitch()
         _isRenderEnabled = true;
         _isBackgroundEnabled = false;
     }
-    
+
 }
 
 
@@ -290,16 +290,16 @@ void DebugInfo::OnSwitch()
 // DebugInfo::Push
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 bool DebugInfo::Push(char* szSection)
 {
-MEMTRACK_PUSH_GROUP( "DebugInfo" );
+MEMTRACK_PUSH_GROUP("DebugInfo");
     HeapMgr()->PushHeap (GMA_DEBUG);
 
     rAssert(szSection);
@@ -311,23 +311,23 @@ MEMTRACK_PUSH_GROUP( "DebugInfo" );
     //Check for exsisting section
     for(i=0;i<_NumSection;i++)
     {
-    	//look for the global section (NULL) or a matching name
-    	const char* szName = _ppSections[i]->GetName();
-    	if(0==strcmp(szSection,szName))
-    	{
-    		_pStack[_StackSize++] = i;
-    		bFound = true;
-    		break;
-    	}
+        //look for the global section (NULL) or a matching name
+        const char* szName = _ppSections[i]->GetName();
+        if(0==strcmp(szSection,szName))
+        {
+            _pStack[_StackSize++] = i;
+            bFound = true;
+            break;
+        }
     }
     //Create a new section
     if(!bFound)
     {
-        CreateNewSection( szSection );
+        CreateNewSection(szSection);
     }
-MEMTRACK_POP_GROUP( "DebugInfo" );
+MEMTRACK_POP_GROUP("DebugInfo");
     HeapMgr()->PopHeap (GMA_DEBUG);
-    
+
     //Return true if this is the current section
     return (bFound && i==_CurrentSection);
 }
@@ -337,11 +337,11 @@ MEMTRACK_POP_GROUP( "DebugInfo" );
 // DebugInfo::GetCurrentSection
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 const char* DebugInfo::GetCurrentSection()
@@ -350,7 +350,7 @@ const char* DebugInfo::GetCurrentSection()
     if (pSect && _isRenderEnabled)
         return (pSect->GetName());
     else
-    	return (NULL);
+        return (NULL);
 }
 
 
@@ -358,17 +358,17 @@ const char* DebugInfo::GetCurrentSection()
 // DebugInfo::Pop
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void DebugInfo::Pop()
 {
-    rAssert( _NumSection > 0 );
-    rAssert( _StackSize >= 0 );
+    rAssert(_NumSection> 0);
+    rAssert(_StackSize>= 0);
     --_StackSize;
 }
 
@@ -378,11 +378,11 @@ void DebugInfo::Pop()
 // int SignedMod
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 
 //==============================================================================
@@ -398,11 +398,11 @@ int SignedMod(int a, int b)
 // DebugInfo::Toggle
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void DebugInfo::Toggle(int step)
@@ -416,11 +416,11 @@ void DebugInfo::Toggle(int step)
 // DebugInfo::SetAutoReset
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void DebugInfo::SetAutoReset(bool autoreset)
@@ -437,11 +437,11 @@ void DebugInfo::SetAutoReset(bool autoreset)
 // DebugInfo::Reset
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void DebugInfo::Reset(char* sectionName)
@@ -457,11 +457,11 @@ void DebugInfo::Reset(char* sectionName)
 // DebugInfo::AddLine
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void DebugInfo::AddLine(const rmt::Vector& a, const rmt::Vector& b, tColour colour)
@@ -477,11 +477,11 @@ void DebugInfo::AddLine(const rmt::Vector& a, const rmt::Vector& b, tColour colo
 // DebugInfo::AddHVector
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void DebugInfo::AddHVector(rmt::Vector o, rmt::Vector v, float h, tColour colour)
@@ -500,11 +500,11 @@ void DebugInfo::AddHVector(rmt::Vector o, rmt::Vector v, float h, tColour colour
 // DebugInfo::AddStar
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void DebugInfo::AddStar(const rmt::Vector& vx, tColour colour, float scale)
@@ -512,17 +512,17 @@ void DebugInfo::AddStar(const rmt::Vector& vx, tColour colour, float scale)
     rAssert(_NumSection>0);
     rAssert(_StackSize>0);
 
-    //Draw a kind of star 
+    //Draw a kind of star
     rmt::Vector a, b;
     a = b = vx;
     a.x += scale; b.x -= scale;
-    AddLine( a, b, colour );
+    AddLine(a, b, colour);
     a = b = vx;
     a.y += scale; b.y -= scale;
-    AddLine( a, b, colour );
+    AddLine(a, b, colour);
     a = b = vx;
     a.z += scale; b.z -= scale;
-    AddLine( a, b, colour );
+    AddLine(a, b, colour);
 }
 
 
@@ -530,11 +530,11 @@ void DebugInfo::AddStar(const rmt::Vector& vx, tColour colour, float scale)
 // DebugInfo::AddBox
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void DebugInfo::AddBox(const rmt::Vector& a, const rmt::Vector& b, tColour colour)
@@ -542,12 +542,12 @@ void DebugInfo::AddBox(const rmt::Vector& a, const rmt::Vector& b, tColour colou
     //Draw all 12 lines that make up the box
     for(int i=0;i<4;i++)
     {
-    	AddLine(rmt::Vector((i&2)?a.x:b.x,(i&1)?a.y:b.y,a.z),
-    		rmt::Vector((i&2)?a.x:b.x,(i&1)?a.y:b.y,b.z),colour);
-    	AddLine(rmt::Vector((i&2)?a.x:b.x,a.y,(i&1)?a.z:b.z),
-    		rmt::Vector((i&2)?a.x:b.x,b.y,(i&1)?a.z:b.z),colour);
-    	AddLine(rmt::Vector(a.x,(i&2)?a.y:b.y,(i&1)?a.z:b.z),
-    		rmt::Vector(b.x,(i&2)?a.y:b.y,(i&1)?a.z:b.z),colour);
+        AddLine(rmt::Vector((i&2)?a.x:b.x,(i&1)?a.y:b.y,a.z),
+            rmt::Vector((i&2)?a.x:b.x,(i&1)?a.y:b.y,b.z),colour);
+        AddLine(rmt::Vector((i&2)?a.x:b.x,a.y,(i&1)?a.z:b.z),
+            rmt::Vector((i&2)?a.x:b.x,b.y,(i&1)?a.z:b.z),colour);
+        AddLine(rmt::Vector(a.x,(i&2)?a.y:b.y,(i&1)?a.z:b.z),
+            rmt::Vector(b.x,(i&2)?a.y:b.y,(i&1)?a.z:b.z),colour);
     }
 }
 
@@ -556,11 +556,11 @@ void DebugInfo::AddBox(const rmt::Vector& a, const rmt::Vector& b, tColour colou
 // DebugInfo::AddBox
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void DebugInfo::AddBox(const rmt::Vector &center, const float r, tColour colour)
@@ -577,27 +577,27 @@ void DebugInfo::AddBox(const rmt::Vector &center, const float r, tColour colour)
 // DebugInfo::AddCircle
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
-void DebugInfo::AddCircle( const rmt::Vector& center, const float r, tColour colour )
+void DebugInfo::AddCircle(const rmt::Vector& center, const float r, tColour colour)
 {
     rmt::Vector a,b;
     int i;
     int n = 8;
-    for( i = 0; i < n; i++ )
+    for(i = 0; i <n; i++)
     {
-        a.x = center.x + r * rmt::Cos( i * rmt::PI_2 / n );
-    	a.y = center.y;
-        a.z = center.z + r * rmt::Sin( i * rmt::PI_2 / n );
-    	b.x = center.x + r * rmt::Cos( ( i + 1 ) * rmt::PI_2 / n );
-    	b.y = center.y;
-    	b.z = center.z + r * rmt::Sin( ( i + 1 ) * rmt::PI_2 / n );
-    	AddLine( a, b, colour );
+        a.x = center.x + r * rmt::Cos(i * rmt::PI_2 / n);
+        a.y = center.y;
+        a.z = center.z + r * rmt::Sin(i * rmt::PI_2 / n);
+        b.x = center.x + r * rmt::Cos((i + 1) * rmt::PI_2 / n);
+        b.y = center.y;
+        b.z = center.z + r * rmt::Sin((i + 1) * rmt::PI_2 / n);
+        AddLine(a, b, colour);
     }
 }
 
@@ -606,11 +606,11 @@ void DebugInfo::AddCircle( const rmt::Vector& center, const float r, tColour col
 // DebugInfo::AddText
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void DebugInfo::AddText(const char *szName, const rmt::Vector &pos, tColour colour)
@@ -626,11 +626,11 @@ void DebugInfo::AddText(const char *szName, const rmt::Vector &pos, tColour colo
 // DebugInfo::AddScreenLine
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void DebugInfo::AddScreenLine(const rmt::Vector& a, const rmt::Vector& b, tColour colour)
@@ -646,14 +646,14 @@ void DebugInfo::AddScreenLine(const rmt::Vector& a, const rmt::Vector& b, tColou
 // DebugInfo::AddScreenText
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
-void DebugInfo::AddScreenText(const char* szName, tColour colour )
+void DebugInfo::AddScreenText(const char* szName, tColour colour)
 {
     rAssert(_NumSection>0);
     rAssert(_StackSize>0);
@@ -666,14 +666,14 @@ void DebugInfo::AddScreenText(const char* szName, tColour colour )
 // DebugInfo::AddScreenText
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
-void DebugInfo::AddScreenText(const char* szName, const rmt::Vector &a, tColour colour )
+void DebugInfo::AddScreenText(const char* szName, const rmt::Vector &a, tColour colour)
 {
     rAssert(_NumSection>0);
     rAssert(_StackSize>0);
@@ -686,11 +686,11 @@ void DebugInfo::AddScreenText(const char* szName, const rmt::Vector &a, tColour 
 // DebugInfo::RenderBackground
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void DebugInfo::RenderBackground()
@@ -700,14 +700,14 @@ void DebugInfo::RenderBackground()
     pddiProjectionMode mode = p3d::pddi->GetProjectionMode();
     p3d::pddi->SetProjectionMode(PDDI_PROJECTION_DEVICE);
     p3d::pddi->SetCullMode(PDDI_CULL_NONE);
-    
-    if( _shader == NULL )
+
+    if(_shader == NULL)
     {
         //
         // init the shader
         //
         _shader = p3d::device->NewShader("simple");
-        _shader->SetInt(PDDI_SP_SHADEMODE, PDDI_SHADE_FLAT); 
+        _shader->SetInt(PDDI_SP_SHADEMODE, PDDI_SHADE_FLAT);
     }
     _shader->SetInt(PDDI_SP_BLENDMODE, PDDI_BLEND_ALPHA);
 
@@ -720,7 +720,7 @@ void DebugInfo::RenderBackground()
     float width, height;
     width = (float)p3d::display->GetWidth();
     height = (float)p3d::display->GetHeight();
-    pddiColour colour(0, 0, 0, 200); 
+    pddiColour colour(0, 0, 0, 200);
 
     stream->Colour(colour); stream->Coord(0,      height, nearplane);
     stream->Colour(colour); stream->Coord(width,  height, nearplane);
@@ -741,11 +741,11 @@ void DebugInfo::RenderBackground()
 // DebugInfo::Render
 //==============================================================================
 //
-// Description: 
+// Description:
 //
-// Parameters:  
+// Parameters:
 //
-// Return:      
+// Return:
 //
 //==============================================================================
 void DebugInfo::Render()
@@ -766,7 +766,7 @@ void DebugInfo::Render()
     p3d::pddi->DrawString(sectionName, 40, 50, tColour(0,255,255));
 
     // render the current section
-   	pSect->Render();
+       pSect->Render();
 
     //Clear all the sections after we display
     int i;

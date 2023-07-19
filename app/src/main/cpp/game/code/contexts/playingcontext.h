@@ -30,29 +30,33 @@
 // Synopsis:    
 //
 //=============================================================================
-class PlayingContext : public Context
-{
-    public:
-        virtual void OnHandleEvent( EventEnum id, void* pEventData );
+class PlayingContext : public Context {
+public:
+    virtual void OnHandleEvent(EventEnum id, void *pEventData);
 
-    protected:
-        // constructor and destructor are protected to force singleton implementation
-        PlayingContext();
-        virtual ~PlayingContext();
+protected:
+    // constructor and destructor are protected to force singleton implementation
+    PlayingContext();
 
-        virtual void OnStart( ContextEnum previousContext );
-        virtual void OnStop( ContextEnum nextContext );
-        virtual void OnUpdate( unsigned int elapsedTime );
-        
-        virtual void OnSuspend();
-        virtual void OnResume();
+    virtual ~PlayingContext();
 
-        bool mQuitting;
+    virtual void OnStart(ContextEnum previousContext);
 
-    private:
-        // Declared but not defined to prevent copying and assignment.
-        PlayingContext( const PlayingContext& );
-        PlayingContext& operator=( const PlayingContext& );
+    virtual void OnStop(ContextEnum nextContext);
+
+    virtual void OnUpdate(unsigned int elapsedTime);
+
+    virtual void OnSuspend();
+
+    virtual void OnResume();
+
+    bool mQuitting;
+
+private:
+    // Declared but not defined to prevent copying and assignment.
+    PlayingContext(const PlayingContext &);
+
+    PlayingContext &operator=(const PlayingContext &);
 
 };
 

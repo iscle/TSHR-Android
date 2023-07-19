@@ -59,11 +59,10 @@
 
 using namespace ActionButton;
 
-PlayAnimOnce::PlayAnimOnce( ActionEventLocator* pActionEventLocator )
-: PlayAnim( pActionEventLocator ),
-mWasPressed( false )
-{
-        
+PlayAnimOnce::PlayAnimOnce(ActionEventLocator *pActionEventLocator)
+        : PlayAnim(pActionEventLocator),
+          mWasPressed(false) {
+
 }
 
 //===========================================================================
@@ -80,54 +79,47 @@ mWasPressed( false )
 //      
 //
 //===========================================================================
-PlayAnimOnce::~PlayAnimOnce()
-{
+PlayAnimOnce::~PlayAnimOnce() {
     //
     // Make good and sure this thing isn't going to play sound anymore
     //
-    GetEventManager()->TriggerEvent( EVENT_STOP_ANIMATION_SOUND, this );
+    GetEventManager()->TriggerEvent(EVENT_STOP_ANIMATION_SOUND, this);
 }
 
-bool PlayAnimOnce::OnButtonPressed( Character* pCharacter, Sequencer* pSeq )
-{
+bool PlayAnimOnce::OnButtonPressed(Character *pCharacter, Sequencer *pSeq) {
     bool success;
-    if ( mWasPressed == false )
-    {
+    if (mWasPressed == false) {
         // Don't think, play the animation, then remove this actionbuttonhandler from the manager
 
         // Force the animation to be NOT cyclic.
         //
-        tMultiController* pAnimController = GetAnimController();
+        tMultiController *pAnimController = GetAnimController();
 
-        pAnimController->SetCycleMode( FORCE_NON_CYCLIC );
-        pAnimController->SetFrame( 0.0f );
-        
+        pAnimController->SetCycleMode(FORCE_NON_CYCLIC);
+        pAnimController->SetFrame(0.0f);
+
         // Action will assign this value which will start the animation.
         //
-        Action* pAction = 0;
+        Action *pAction = 0;
         float fDirection = 1.0f;
         pSeq->BeginSequence();
-        pAction = new AssignValueToFloat( GetAnimationDirection( ), fDirection );
-        pSeq->AddAction( pAction );
-        pSeq->EndSequence( );
+        pAction = new AssignValueToFloat(GetAnimationDirection(), fDirection);
+        pSeq->AddAction(pAction);
+        pSeq->EndSequence();
 
         // Disallow the pressing of this button ever again
         mWasPressed = true;
-        for (unsigned int i = 0 ; i < GetActionEventLocator()->GetNumTriggers() ; i++)
-        {
-            TriggerVolume* pTriggerVolume = GetActionEventLocator()->GetTriggerVolume( i );
-            GetTriggerVolumeTracker()->RemoveTrigger( pTriggerVolume );  
+        for (unsigned int i = 0; i < GetActionEventLocator()->GetNumTriggers(); i++) {
+            TriggerVolume *pTriggerVolume = GetActionEventLocator()->GetTriggerVolume(i);
+            GetTriggerVolumeTracker()->RemoveTrigger(pTriggerVolume);
         }
-        if( mSoundName != NULL )
-        {
-            AnimSoundData data( mSoundName, mSettingsName );
+        if (mSoundName != NULL) {
+            AnimSoundData data(mSoundName, mSettingsName);
 
-            GetEventManager()->TriggerEvent( EVENT_START_ANIMATION_SOUND, &data );
+            GetEventManager()->TriggerEvent(EVENT_START_ANIMATION_SOUND, &data);
         }
         success = true;
-    }
-    else
-    {
+    } else {
         success = false;
     }
     return success;
@@ -148,12 +140,10 @@ bool PlayAnimOnce::OnButtonPressed( Character* pCharacter, Sequencer* pSeq )
 //
 //===========================================================================
 
-void 
-PlayAnimOnce::PositionCharacter( Character* pCharacter, Sequencer* pSeq )
-{
-    if ( mWasPressed == false )
-    {
-        AnimSwitch::PositionCharacter( pCharacter, pSeq );
+void
+PlayAnimOnce::PositionCharacter(Character *pCharacter, Sequencer *pSeq) {
+    if (mWasPressed == false) {
+        AnimSwitch::PositionCharacter(pCharacter, pSeq);
     }
 }
 

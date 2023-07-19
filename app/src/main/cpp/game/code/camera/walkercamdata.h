@@ -29,60 +29,76 @@
 //
 //=============================================================================
 
-class WalkerCamData
-{
+class WalkerCamData {
 public:
     WalkerCamData();
+
     virtual ~WalkerCamData() {};
 
-    void SetLag( float lag );
+    void SetLag(float lag);
+
     float GetLag() const;
 
-    void SetMinFOV( float min );
+    void SetMinFOV(float min);
+
     float GetMinFOV() const;
 
-    void SetMaxFOV( float max );
+    void SetMaxFOV(float max);
+
     float GetMaxFOV() const;
 
-    void SetFOVLag( float lag );
+    void SetFOVLag(float lag);
+
     float GetFOVLag() const;
 
-    void SetMinMagnitude( float mag );
+    void SetMinMagnitude(float mag);
+
     float GetMinMagnitude() const;
 
-    void SetMaxMagnitude( float mag );
+    void SetMaxMagnitude(float mag);
+
     float GetMaxMagnitude() const;
 
-    void SetElevation( float elev );
+    void SetElevation(float elev);
+
     float GetElevation() const;
 
-    void SetRotation( float rot );
+    void SetRotation(float rot);
+
     float GetRotation() const;
 
-    void SetMagnitude( float mag );
+    void SetMagnitude(float mag);
+
     float GetMagnitude() const;
 
-    void SetRotationIncrement( float inc );
+    void SetRotationIncrement(float inc);
+
     float GetRotationIncrement() const;
 
     //This is the offset from the target
-    void GetTargetOffset( rmt::Vector* offset ) const;
-    void SetTargetOffset( rmt::Vector offset );
+    void GetTargetOffset(rmt::Vector *offset) const;
+
+    void SetTargetOffset(rmt::Vector offset);
 
     float GetTargetLag() const;
-    void  SetTargetLag( float lag );
+
+    void SetTargetLag(float lag);
 
     float GetTargetJumpLag() const;
-    void  SetTargetJumpLag( float lag );
 
-    unsigned int    GetLandingTransitionTime() const;
-    void            SetLandingTransitionTime( unsigned int time );
+    void SetTargetJumpLag(float lag);
+
+    unsigned int GetLandingTransitionTime() const;
+
+    void SetLandingTransitionTime(unsigned int time);
 
     float GetUpAngle() const;
-    void  SetUpAngle( float angle );
-    
+
+    void SetUpAngle(float angle);
+
     float GetCollisionLag() const;
-    void SetCollisionLag( float lag );
+
+    void SetCollisionLag(float lag);
 
     float mLag;
 
@@ -113,8 +129,9 @@ public:
 
 private:
     //Prevent wasteful constructor creation.
-    WalkerCamData( const WalkerCamData& walkercamdata );
-    WalkerCamData& operator=( const WalkerCamData& walkercamdata );
+    WalkerCamData(const WalkerCamData &walkercamdata);
+
+    WalkerCamData &operator=(const WalkerCamData &walkercamdata);
 };
 
 //*****************************************************************************
@@ -134,23 +151,22 @@ private:
 //
 //=============================================================================
 inline WalkerCamData::WalkerCamData() :
-    mLag( 0.08f ),
-    mMinFOV( SUPERCAM_DEFAULT_MIN_FOV ), //Fudge...
-    mMaxFOV( SUPERCAM_DEFAULT_MAX_FOV ), //Fudge...
-    mFOVLag( SUPERCAM_DEFAULT_FOV_LAG ),
-    mMinMagnitude( 4.26f ),
-    mMaxMagnitude( 9.0f ),
-    mElevation( 1.36f ),
-    mRotation( rmt::PI_BY2 ),
-    mMagnitude( ((mMaxMagnitude - mMinMagnitude) / 2.0f) + mMinMagnitude ),
-    mRotationIncrement( 0.4f ),
-    mTargetLag( 0.044f ),
-    mJumpLag( 0.3f ),
-    mUpAngle( 2.44f ),
-    mLandingTransitionTime( 2000 ),
-    mCollisionLag( 0.15f )
-{
-    mTargetOffset.Set( 0.0f, 1.0f, 0.0f );
+        mLag(0.08f),
+        mMinFOV(SUPERCAM_DEFAULT_MIN_FOV), //Fudge...
+        mMaxFOV(SUPERCAM_DEFAULT_MAX_FOV), //Fudge...
+        mFOVLag(SUPERCAM_DEFAULT_FOV_LAG),
+        mMinMagnitude(4.26f),
+        mMaxMagnitude(9.0f),
+        mElevation(1.36f),
+        mRotation(rmt::PI_BY2),
+        mMagnitude(((mMaxMagnitude - mMinMagnitude) / 2.0f) + mMinMagnitude),
+        mRotationIncrement(0.4f),
+        mTargetLag(0.044f),
+        mJumpLag(0.3f),
+        mUpAngle(2.44f),
+        mLandingTransitionTime(2000),
+        mCollisionLag(0.15f) {
+    mTargetOffset.Set(0.0f, 1.0f, 0.0f);
 }
 
 //=============================================================================
@@ -158,13 +174,12 @@ inline WalkerCamData::WalkerCamData() :
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float lag )
+// Parameters:  (float lag)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCamData::SetLag( float lag )
-{
+inline void WalkerCamData::SetLag(float lag) {
     mLag = lag;
 }
 
@@ -178,8 +193,7 @@ inline void WalkerCamData::SetLag( float lag )
 // Return:      float 
 //
 //=============================================================================
-inline float WalkerCamData::GetLag() const
-{
+inline float WalkerCamData::GetLag() const {
     return mLag;
 }
 
@@ -188,13 +202,12 @@ inline float WalkerCamData::GetLag() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float min )
+// Parameters:  (float min)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCamData::SetMinFOV( float min )
-{
+inline void WalkerCamData::SetMinFOV(float min) {
     mMinFOV = min;
 }
 
@@ -208,8 +221,7 @@ inline void WalkerCamData::SetMinFOV( float min )
 // Return:      float 
 //
 //=============================================================================
-inline float WalkerCamData::GetMinFOV() const
-{
+inline float WalkerCamData::GetMinFOV() const {
     return mMinFOV;
 }
 
@@ -218,13 +230,12 @@ inline float WalkerCamData::GetMinFOV() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float max )
+// Parameters:  (float max)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCamData::SetMaxFOV( float max )
-{
+inline void WalkerCamData::SetMaxFOV(float max) {
     mMaxFOV = max;
 }
 
@@ -238,8 +249,7 @@ inline void WalkerCamData::SetMaxFOV( float max )
 // Return:      float 
 //
 //=============================================================================
-inline float WalkerCamData::GetMaxFOV() const
-{
+inline float WalkerCamData::GetMaxFOV() const {
     return mMaxFOV;
 }
 
@@ -248,13 +258,12 @@ inline float WalkerCamData::GetMaxFOV() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float lag )
+// Parameters:  (float lag)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCamData::SetFOVLag( float lag )
-{
+inline void WalkerCamData::SetFOVLag(float lag) {
     mFOVLag = lag;
 }
 
@@ -268,8 +277,7 @@ inline void WalkerCamData::SetFOVLag( float lag )
 // Return:      float 
 //
 //=============================================================================
-inline float WalkerCamData::GetFOVLag() const
-{
+inline float WalkerCamData::GetFOVLag() const {
     return mFOVLag;
 }
 
@@ -278,13 +286,12 @@ inline float WalkerCamData::GetFOVLag() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float mag )
+// Parameters:  (float mag)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCamData::SetMinMagnitude( float mag )
-{
+inline void WalkerCamData::SetMinMagnitude(float mag) {
     mMinMagnitude = mag;
 }
 
@@ -298,8 +305,7 @@ inline void WalkerCamData::SetMinMagnitude( float mag )
 // Return:      float 
 //
 //=============================================================================
-inline float WalkerCamData::GetMinMagnitude() const
-{
+inline float WalkerCamData::GetMinMagnitude() const {
     return mMinMagnitude;
 }
 
@@ -308,13 +314,12 @@ inline float WalkerCamData::GetMinMagnitude() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float mag )
+// Parameters:  (float mag)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCamData::SetMaxMagnitude( float mag )
-{
+inline void WalkerCamData::SetMaxMagnitude(float mag) {
     mMaxMagnitude = mag;
 }
 
@@ -328,8 +333,7 @@ inline void WalkerCamData::SetMaxMagnitude( float mag )
 // Return:      float 
 //
 //=============================================================================
-inline float WalkerCamData::GetMaxMagnitude() const
-{
+inline float WalkerCamData::GetMaxMagnitude() const {
     return mMaxMagnitude;
 }
 
@@ -338,13 +342,12 @@ inline float WalkerCamData::GetMaxMagnitude() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float elev )
+// Parameters:  (float elev)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCamData::SetElevation( float elev )
-{
+inline void WalkerCamData::SetElevation(float elev) {
     mElevation = elev;
 }
 
@@ -358,8 +361,7 @@ inline void WalkerCamData::SetElevation( float elev )
 // Return:      float 
 //
 //=============================================================================
-inline float WalkerCamData::GetElevation() const
-{
+inline float WalkerCamData::GetElevation() const {
     return mElevation;
 }
 
@@ -368,13 +370,12 @@ inline float WalkerCamData::GetElevation() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float rot )
+// Parameters:  (float rot)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCamData::SetRotation( float rot )
-{
+inline void WalkerCamData::SetRotation(float rot) {
     mRotation = rot;
 }
 
@@ -388,8 +389,7 @@ inline void WalkerCamData::SetRotation( float rot )
 // Return:      float 
 //
 //=============================================================================
-inline float WalkerCamData::GetRotation() const
-{
+inline float WalkerCamData::GetRotation() const {
     return mRotation;
 }
 
@@ -398,13 +398,12 @@ inline float WalkerCamData::GetRotation() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float mag )
+// Parameters:  (float mag)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCamData::SetMagnitude( float mag )
-{
+inline void WalkerCamData::SetMagnitude(float mag) {
     mMagnitude = mag;
 }
 
@@ -418,8 +417,7 @@ inline void WalkerCamData::SetMagnitude( float mag )
 // Return:      float 
 //
 //=============================================================================
-inline float WalkerCamData::GetMagnitude() const
-{
+inline float WalkerCamData::GetMagnitude() const {
     return mMagnitude;
 }
 
@@ -428,13 +426,12 @@ inline float WalkerCamData::GetMagnitude() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float inc )
+// Parameters:  (float inc)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCamData::SetRotationIncrement( float inc )
-{
+inline void WalkerCamData::SetRotationIncrement(float inc) {
     mRotationIncrement = inc;
 }
 
@@ -448,8 +445,7 @@ inline void WalkerCamData::SetRotationIncrement( float inc )
 // Return:      float 
 //
 //=============================================================================
-inline float WalkerCamData::GetRotationIncrement() const
-{
+inline float WalkerCamData::GetRotationIncrement() const {
     return mRotationIncrement;
 }
 
@@ -459,14 +455,13 @@ inline float WalkerCamData::GetRotationIncrement() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* offset )
+// Parameters:  (rmt::Vector* offset)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCamData::GetTargetOffset( rmt::Vector* offset ) const
-{
-    *offset = mTargetOffset;   
+inline void WalkerCamData::GetTargetOffset(rmt::Vector *offset) const {
+    *offset = mTargetOffset;
 }
 
 //=============================================================================
@@ -474,13 +469,12 @@ inline void WalkerCamData::GetTargetOffset( rmt::Vector* offset ) const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector offset )
+// Parameters:  (rmt::Vector offset)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCamData::SetTargetOffset( rmt::Vector offset )
-{
+inline void WalkerCamData::SetTargetOffset(rmt::Vector offset) {
     mTargetOffset = offset;
 }
 
@@ -494,8 +488,7 @@ inline void WalkerCamData::SetTargetOffset( rmt::Vector offset )
 // Return:      float 
 //
 //=============================================================================
-inline float WalkerCamData::GetTargetLag() const
-{
+inline float WalkerCamData::GetTargetLag() const {
     return mTargetLag;
 }
 
@@ -504,13 +497,12 @@ inline float WalkerCamData::GetTargetLag() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float lag )
+// Parameters:  (float lag)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCamData::SetTargetLag( float lag )
-{
+inline void WalkerCamData::SetTargetLag(float lag) {
     mTargetLag = lag;
 }
 
@@ -524,8 +516,7 @@ inline void WalkerCamData::SetTargetLag( float lag )
 // Return:      float 
 //
 //=============================================================================
-inline float WalkerCamData::GetTargetJumpLag() const
-{
+inline float WalkerCamData::GetTargetJumpLag() const {
     return mJumpLag;
 }
 
@@ -534,13 +525,12 @@ inline float WalkerCamData::GetTargetJumpLag() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float lag )
+// Parameters:  (float lag)
 //
 // Return:      void  
 //
 //=============================================================================
-inline void  WalkerCamData::SetTargetJumpLag( float lag )
-{
+inline void WalkerCamData::SetTargetJumpLag(float lag) {
     mJumpLag = lag;
 }
 
@@ -554,8 +544,7 @@ inline void  WalkerCamData::SetTargetJumpLag( float lag )
 // Return:      unsigned int 
 //
 //=============================================================================
-inline unsigned int WalkerCamData::GetLandingTransitionTime() const
-{
+inline unsigned int WalkerCamData::GetLandingTransitionTime() const {
     return mLandingTransitionTime;
 }
 
@@ -564,13 +553,12 @@ inline unsigned int WalkerCamData::GetLandingTransitionTime() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int time )
+// Parameters:  (unsigned int time)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCamData::SetLandingTransitionTime( unsigned int time )
-{
+inline void WalkerCamData::SetLandingTransitionTime(unsigned int time) {
     mLandingTransitionTime = time;
 }
 
@@ -584,8 +572,7 @@ inline void WalkerCamData::SetLandingTransitionTime( unsigned int time )
 // Return:      float 
 //
 //=============================================================================
-inline float WalkerCamData::GetUpAngle() const
-{
+inline float WalkerCamData::GetUpAngle() const {
     return mUpAngle;
 }
 
@@ -594,13 +581,12 @@ inline float WalkerCamData::GetUpAngle() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float angle )
+// Parameters:  (float angle)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCamData::SetUpAngle( float angle )
-{
+inline void WalkerCamData::SetUpAngle(float angle) {
     mUpAngle = angle;
 }
 
@@ -614,8 +600,7 @@ inline void WalkerCamData::SetUpAngle( float angle )
 // Return:      float 
 //
 //=============================================================================
-inline float WalkerCamData::GetCollisionLag() const
-{
+inline float WalkerCamData::GetCollisionLag() const {
     return mCollisionLag;
 }
 
@@ -624,13 +609,12 @@ inline float WalkerCamData::GetCollisionLag() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float lag )
+// Parameters:  (float lag)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WalkerCamData::SetCollisionLag( float lag )
-{
+inline void WalkerCamData::SetCollisionLag(float lag) {
     mCollisionLag = lag;
 }
 

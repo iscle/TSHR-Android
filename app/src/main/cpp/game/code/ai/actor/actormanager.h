@@ -30,6 +30,7 @@
 //===========================================================================
 
 class Actor;
+
 class ActorDSG;
 
 //===========================================================================
@@ -49,94 +50,122 @@ class ActorDSG;
 //
 //
 //===========================================================================
-class ActorManager : public EventListener
-{
-    public:
-        ActorManager();
-        ~ActorManager();
-        
-        // Adds an actor into the world
-        void AddActor( Actor* );
-        // Adds an actor into the bank. Basically a list of inactive actors
-        // that can be brought up for use when the avatar enters a spawn point
-        // or when an object fires a projectile
-        void AddActorToBank( Actor* );
+class ActorManager : public EventListener {
+public:
+    ActorManager();
 
-        Actor* GetActorByName( const char* name );
-        Actor* GetActorByUID( tUID name );
-        std::vector< Actor*, s2alloc< Actor* > > GetActorsByType( const char* typeName );
+    ~ActorManager();
 
+    // Adds an actor into the world
+    void AddActor(Actor *);
 
-        void RemoveActor( int index, bool removeFromDSG = true );
-        void RemoveActorByDSGPointer( ActorDSG* dsgObject, bool removeFromDSG = true );
-        void RemoveAllActors();
+    // Adds an actor into the bank. Basically a list of inactive actors
+    // that can be brought up for use when the avatar enters a spawn point
+    // or when an object fires a projectile
+    void AddActorToBank(Actor *);
 
-        // Spawn point functions
-        void AddSpawnPoint( SpawnPoint* );
-        void FireProjectile( tUID typeName, const rmt::Vector& position, const rmt::Vector& direction, unsigned int id );
-        SpawnPoint* GetSpawnPointByName( const char* name );
-        void RemoveAllSpawnPoints();
+    Actor *GetActorByName(const char *name);
 
-        // Creates a new actor in the world
-        Actor* CreateActor( tUID typeName, tUID instanceName, const rmt::Matrix& transform );
+    Actor *GetActorByUID(tUID name);
+
+    std::vector<Actor *, s2alloc < Actor * >>
+
+    GetActorsByType(
+    const char *typeName
+    );
 
 
-        // Update all actors
-        void Update( unsigned int timeInMS );
+    void RemoveActor(int index, bool removeFromDSG = true);
 
-        // Inherited from class EventListener
-        virtual void HandleEvent( EventEnum id, void* pEventData );
+    void RemoveActorByDSGPointer(ActorDSG *dsgObject, bool removeFromDSG = true);
 
-        static ActorManager* CreateInstance();
-        static ActorManager* GetInstance();
-        static void DestroyInstance();
+    void RemoveAllActors();
 
-        static float ActorRemovalRangeSqr;
+    // Spawn point functions
+    void AddSpawnPoint(SpawnPoint *);
 
-    protected:
+    void FireProjectile(tUID typeName, const rmt::Vector &position, const rmt::Vector &direction,
+                        unsigned int id);
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow ActorManager from being copied and assigned.
-        ActorManager( const ActorManager& );
-        ActorManager& operator=( const ActorManager& );
+    SpawnPoint *GetSpawnPointByName(const char *name);
 
-        void SetupConsoleFunctions();
-        bool WithinAliveRange( int index );
-        // Console functions
-        static void AddFlyingActor( int argc, char** argv );
-        static void AddFlyingActorByLocator( int argc, char** argv );
-        static void AddBehaviour( int argc, char** argv );
-        static void AddRespawnBehaviourPosition( int argc, char** argv );
-        static void SetCollisionAttributes( int argc, char** argv );
-        static void AddSpawnPointScript( int argc, char** argv );
-        static void AddSpawnPointByLocatorScript( int argc, char** argv );
-        static void SetProjectileStats( int argc, char** argv );
-        static void PreallocateActors( int argc, char** argv ); 
-        static void SetActorRotationSpeed( int argc, char** argv );
-        static void AddShield( int argc, char** argv );
+    void RemoveAllSpawnPoints();
+
+    // Creates a new actor in the world
+    Actor *CreateActor(tUID typeName, tUID instanceName, const rmt::Matrix &transform);
+
+
+    // Update all actors
+    void Update(unsigned int timeInMS);
+
+    // Inherited from class EventListener
+    virtual void HandleEvent(EventEnum id, void *pEventData);
+
+    static ActorManager *CreateInstance();
+
+    static ActorManager *GetInstance();
+
+    static void DestroyInstance();
+
+    static float ActorRemovalRangeSqr;
+
+protected:
+
 private:
-        static ActorManager* sp_Instance;
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow ActorManager from being copied and assigned.
+    ActorManager(const ActorManager &);
 
-        SwapArray< Actor* > m_ActorList;
-        SwapArray< SpawnPoint* > m_SpawnPointList;
+    ActorManager &operator=(const ActorManager &);
 
-        // List of allocated but unused actors
-        SwapArray< Actor* > m_ActorBank;
-        // List of actors that will be removed at the end of an Update cycle
-        // not a temporary variable because I want to get rid of dynamic allocations at runtime
+    void SetupConsoleFunctions();
 
-        // List of actors that are flagged for removal. They will not be updated
-        // and will not be available for reuse until next frame, when they will be moved into the
-        // bank
-        // The removequeue is equivalent to the breakablemanager::removequeue. When you want to
-        // remove an object, but can't because it still inside the physics system
-        SwapArray< Actor* > m_RemoveQueue;
+    bool WithinAliveRange(int index);
+
+    // Console functions
+    static void AddFlyingActor(int argc, char **argv);
+
+    static void AddFlyingActorByLocator(int argc, char **argv);
+
+    static void AddBehaviour(int argc, char **argv);
+
+    static void AddRespawnBehaviourPosition(int argc, char **argv);
+
+    static void SetCollisionAttributes(int argc, char **argv);
+
+    static void AddSpawnPointScript(int argc, char **argv);
+
+    static void AddSpawnPointByLocatorScript(int argc, char **argv);
+
+    static void SetProjectileStats(int argc, char **argv);
+
+    static void PreallocateActors(int argc, char **argv);
+
+    static void SetActorRotationSpeed(int argc, char **argv);
+
+    static void AddShield(int argc, char **argv);
+
+private:
+    static ActorManager *sp_Instance;
+
+    SwapArray<Actor *> m_ActorList;
+    SwapArray<SpawnPoint *> m_SpawnPointList;
+
+    // List of allocated but unused actors
+    SwapArray<Actor *> m_ActorBank;
+    // List of actors that will be removed at the end of an Update cycle
+    // not a temporary variable because I want to get rid of dynamic allocations at runtime
+
+    // List of actors that are flagged for removal. They will not be updated
+    // and will not be available for reuse until next frame, when they will be moved into the
+    // bank
+    // The removequeue is equivalent to the breakablemanager::removequeue. When you want to
+    // remove an object, but can't because it still inside the physics system
+    SwapArray<Actor *> m_RemoveQueue;
 };
 
-inline ActorManager* GetActorManager()
-{
+inline ActorManager *GetActorManager() {
     return ActorManager::GetInstance();
 }
 

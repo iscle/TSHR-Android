@@ -21,10 +21,15 @@
 
 
 class tCompositeDrawableLoader;
+
 class tMultiControllerLoader;
+
 class tFrameControllerLoader;
+
 class AnimEntityDSG;
+
 class tEntityStore;
+
 class tMultiController;
 
 //===========================================================================
@@ -43,44 +48,44 @@ class tMultiController;
 //      steady state.
 //
 //===========================================================================
-class AnimDSGLoader 
-: public tSimpleChunkHandler,
-  public IWrappedLoader 
-{
+class AnimDSGLoader
+        : public tSimpleChunkHandler,
+          public IWrappedLoader {
 public:
-   AnimDSGLoader();
-   virtual ~AnimDSGLoader();
- 
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   void SetRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    AnimDSGLoader();
 
-   void ModRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    virtual ~AnimDSGLoader();
 
-   ///////////////////////////////////////////////////////////////////////
-   // tSimpleChunkHandler
-   ///////////////////////////////////////////////////////////////////////
-   virtual tEntity* LoadObject(tChunkFile* file, tEntityStore* store);
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
+
+    void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
+
+    ///////////////////////////////////////////////////////////////////////
+    // tSimpleChunkHandler
+    ///////////////////////////////////////////////////////////////////////
+    virtual tEntity *LoadObject(tChunkFile *file, tEntityStore *store);
 
 protected:
-   tCompositeDrawableLoader*    mpCompDLoader;
-   tMultiControllerLoader*      mpMCLoader;
-   tFrameControllerLoader*		mpFCLoader;
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   //ChunkListenerCallback*  mpListenerCB;
-   //void* mpUserData;
+    tCompositeDrawableLoader *mpCompDLoader;
+    tMultiControllerLoader *mpMCLoader;
+    tFrameControllerLoader *mpFCLoader;
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    //ChunkListenerCallback*  mpListenerCB;
+    //void* mpUserData;
 
-    AnimEntityDSG* LoadAnimAtIntersections( tCompositeDrawable* ipCompD, 
-                                            tMultiController* ipAnimMC, 
-                                            tEntityStore* ipStore,
-                                            bool iHasAlpha,
-                                            char* ipName,
-                                            int   iLinkEnum);
+    AnimEntityDSG *LoadAnimAtIntersections(tCompositeDrawable *ipCompD,
+                                           tMultiController *ipAnimMC,
+                                           tEntityStore *ipStore,
+                                           bool iHasAlpha,
+                                           char *ipName,
+                                           int iLinkEnum);
 
 private:
 };

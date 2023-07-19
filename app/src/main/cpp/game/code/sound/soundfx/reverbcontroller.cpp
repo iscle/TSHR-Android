@@ -51,43 +51,39 @@
 //
 //==============================================================================
 ReverbController::ReverbController() :
-    m_targetGain( 0.0f ),
-    m_currentGain( 0.0f ),
-    m_fadeInMultiplier( 1.0f ),
-    m_fadeOutMultiplier( 1.0f ),
-    m_lastReverb( NULL ),
-    m_queuedReverb( NULL )
-{
+        m_targetGain(0.0f),
+        m_currentGain(0.0f),
+        m_fadeInMultiplier(1.0f),
+        m_fadeOutMultiplier(1.0f),
+        m_lastReverb(NULL),
+        m_queuedReverb(NULL) {
     unsigned int event;
-    EventManager* eventMgr = GetEventManager();
+    EventManager *eventMgr = GetEventManager();
 
-    rAssert( eventMgr != NULL );
+    rAssert(eventMgr != NULL);
 
     //
     // Register all of the ambience events
     //
-    for( event = EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_CITY;
-            event < EVENT_LOCATOR + LocatorEvent::PARKED_BIRDS;
-            ++event )
-    {
-        eventMgr->AddListener( this, static_cast<EventEnum>(event) );
+    for (event = EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_CITY;
+         event < EVENT_LOCATOR + LocatorEvent::PARKED_BIRDS;
+         ++event) {
+        eventMgr->AddListener(this, static_cast<EventEnum>(event));
     }
-	eventMgr->AddListener(this, EVENT_MISSION_RESET);
-	eventMgr->AddListener(this, EVENT_MISSION_CHARACTER_RESET);
+    eventMgr->AddListener(this, EVENT_MISSION_RESET);
+    eventMgr->AddListener(this, EVENT_MISSION_CHARACTER_RESET);
 
     // bmc -- add registering of extra ambient sound events (placeholder and otherwise)
-    for( event = EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_COUNTRY_NIGHT;
-            event <= EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PLACEHOLDER9;
-            ++event )
-    {
-        eventMgr->AddListener( this, static_cast<EventEnum>(event) );
+    for (event = EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_COUNTRY_NIGHT;
+         event <= EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PLACEHOLDER9;
+         ++event) {
+        eventMgr->AddListener(this, static_cast<EventEnum>(event));
     }
 
-    for( event = EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_SEASIDE_NIGHT;
-            event <= EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PLACEHOLDER16;
-            ++event )
-    {
-        eventMgr->AddListener( this, static_cast<EventEnum>(event) );
+    for (event = EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_SEASIDE_NIGHT;
+         event <= EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PLACEHOLDER16;
+         ++event) {
+        eventMgr->AddListener(this, static_cast<EventEnum>(event));
     }
     // bmc
 
@@ -104,9 +100,8 @@ ReverbController::ReverbController() :
 // Return:      N/A.
 //
 //==============================================================================
-ReverbController::~ReverbController()
-{
-    GetEventManager()->RemoveAll( this );
+ReverbController::~ReverbController() {
+    GetEventManager()->RemoveAll(this);
 }
 
 //=============================================================================
@@ -119,9 +114,8 @@ ReverbController::~ReverbController()
 // Return: None
 //
 //=============================================================================
-void ReverbController::SetReverbGain( float gain )
-{
-    ::radSoundHalSystemGet()->SetAuxGain( REVERB_AUX_EFFECT_NUMBER, gain );
+void ReverbController::SetReverbGain(float gain) {
+    ::radSoundHalSystemGet()->SetAuxGain(REVERB_AUX_EFFECT_NUMBER, gain);
 }
 
 //=============================================================================
@@ -136,59 +130,57 @@ void ReverbController::SetReverbGain( float gain )
 // Return:      void 
 //
 //=============================================================================
-void ReverbController::HandleEvent( EventEnum id, void* pEventData )
-{
-    reverbSettings* settingsObj = NULL;
-    reverbSettings* oldSettings = m_lastReverb;
+void ReverbController::HandleEvent(EventEnum id, void *pEventData) {
+    reverbSettings *settingsObj = NULL;
+    reverbSettings *oldSettings = m_lastReverb;
 
-    switch( id )
-    {
+    switch (id) {
         case EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PP_ROOM_1:
-            settingsObj = getReverbSettings( "pproom1" );
+            settingsObj = getReverbSettings("pproom1");
             break;
 
         case EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PP_ROOM_2:
-            settingsObj = getReverbSettings( "pproom2" );
+            settingsObj = getReverbSettings("pproom2");
             break;
 
         case EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PP_ROOM_3:
-            settingsObj = getReverbSettings( "pproom3" );
+            settingsObj = getReverbSettings("pproom3");
             break;
 
         case EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PP_TUNNEL_1:
-            settingsObj = getReverbSettings( "PP_tunnel_01" );
+            settingsObj = getReverbSettings("PP_tunnel_01");
             break;
 
         case EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_PP_TUNNEL_2:
-            settingsObj = getReverbSettings( "PP_tunnel_02" );
+            settingsObj = getReverbSettings("PP_tunnel_02");
             break;
 
         case EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_BURNS_TUNNEL:
-            settingsObj = getReverbSettings( "burns_tunnel" );
+            settingsObj = getReverbSettings("burns_tunnel");
             break;
 
         case EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_MANSION_INTERIOR:
-            settingsObj = getReverbSettings( "mansion_interior" );
+            settingsObj = getReverbSettings("mansion_interior");
             break;
 
         case EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_SEWERS:
-            settingsObj = getReverbSettings( "sewers" );
+            settingsObj = getReverbSettings("sewers");
             break;
 
         case EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_STONE_CUTTER_TUNNEL:
-            settingsObj = getReverbSettings( "stonecuttertunnel" );
+            settingsObj = getReverbSettings("stonecuttertunnel");
             break;
 
         case EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_STONE_CUTTER_HALL:
-            settingsObj = getReverbSettings( "stonecutterhall" );
+            settingsObj = getReverbSettings("stonecutterhall");
             break;
 
         case EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_STADIUM_TUNNEL:
-            settingsObj = getReverbSettings( "stadiumtunnel" );
+            settingsObj = getReverbSettings("stadiumtunnel");
             break;
 
         case EVENT_LOCATOR + LocatorEvent::AMBIENT_SOUND_KRUSTYLU_EXTERIOR:
-            settingsObj = getReverbSettings( "krustylu" );
+            settingsObj = getReverbSettings("krustylu");
             break;
 
         default:
@@ -201,26 +193,22 @@ void ReverbController::HandleEvent( EventEnum id, void* pEventData )
             break;
     }
 
-    if( settingsObj != NULL )
-    {
+    if (settingsObj != NULL) {
         //
         // No sense in switching to something we're already doing.  That only
         // seems to lead to unnecessary clicks on PS2 anyway.
         //
-        if( settingsObj != oldSettings )
-        {
-            if( m_currentGain > 0.0f )
-            {
+        if (settingsObj != oldSettings) {
+            if (m_currentGain > 0.0f) {
                 //
                 // We can't do a sudden switch without hearing popping.  Queue up this
                 // switch to occur after we fade out
                 //
-                prepareFadeSettings( 0.0f, settingsObj->GetFadeInTime(), settingsObj->GetFadeOutTime() );
+                prepareFadeSettings(0.0f, settingsObj->GetFadeInTime(),
+                                    settingsObj->GetFadeOutTime());
                 m_queuedReverb = m_lastReverb;
-            }
-            else
-            {
-                SetReverbOn( settingsObj );
+            } else {
+                SetReverbOn(settingsObj);
             }
         }
     }
@@ -236,41 +224,32 @@ void ReverbController::HandleEvent( EventEnum id, void* pEventData )
 // Return:      void 
 //
 //=============================================================================
-void ReverbController::ServiceOncePerFrame( unsigned int elapsedTime )
-{
-    if( m_currentGain == m_targetGain )
-    {
-        if( ( m_targetGain == 0.0f )
-            && ( m_queuedReverb != NULL ) )
-        {
+void ReverbController::ServiceOncePerFrame(unsigned int elapsedTime) {
+    if (m_currentGain == m_targetGain) {
+        if ((m_targetGain == 0.0f)
+            && (m_queuedReverb != NULL)) {
             //
             // We're done fading out, now we can make the switch and fade
             // back in
             //
-            SetReverbOn( m_queuedReverb );
+            SetReverbOn(m_queuedReverb);
             m_queuedReverb = NULL;
         }
 
         return;
-    }
-    else if( m_currentGain < m_targetGain )
-    {
-        m_currentGain += ( elapsedTime * m_fadeInMultiplier );
-        if( m_currentGain > m_targetGain )
-        {
+    } else if (m_currentGain < m_targetGain) {
+        m_currentGain += (elapsedTime * m_fadeInMultiplier);
+        if (m_currentGain > m_targetGain) {
             m_currentGain = m_targetGain;
         }
-    }
-    else
-    {
-        m_currentGain -= ( elapsedTime * m_fadeOutMultiplier );
-        if( m_currentGain < m_targetGain )
-        {
+    } else {
+        m_currentGain -= (elapsedTime * m_fadeOutMultiplier);
+        if (m_currentGain < m_targetGain) {
             m_currentGain = m_targetGain;
         }
     }
 
-    SetReverbGain( m_currentGain );
+    SetReverbGain(m_currentGain);
 }
 
 //=============================================================================
@@ -283,10 +262,8 @@ void ReverbController::ServiceOncePerFrame( unsigned int elapsedTime )
 // Return:      void 
 //
 //=============================================================================
-void ReverbController::PauseReverb()
-{
-    if( m_lastReverb != NULL )
-    {
+void ReverbController::PauseReverb() {
+    if (m_lastReverb != NULL) {
         SetReverbOff();
     }
 }
@@ -301,11 +278,9 @@ void ReverbController::PauseReverb()
 // Return:      void 
 //
 //=============================================================================
-void ReverbController::UnpauseReverb()
-{
-    if( m_lastReverb != NULL )
-    {
-        SetReverbOn( m_lastReverb );
+void ReverbController::UnpauseReverb() {
+    if (m_lastReverb != NULL) {
+        SetReverbOn(m_lastReverb);
     }
 }
 
@@ -315,13 +290,13 @@ void ReverbController::UnpauseReverb()
 //
 //******************************************************************************
 
-void ReverbController::registerReverbEffect( IRadSoundHalEffect* reverbEffect )
-{
-    ::radSoundHalSystemGet()->SetAuxEffect( REVERB_AUX_EFFECT_NUMBER, reverbEffect );
-    ::radSoundHalSystemGet()->SetAuxGain( REVERB_AUX_EFFECT_NUMBER, 0.0f );
+void ReverbController::registerReverbEffect(IRadSoundHalEffect *reverbEffect) {
+    ::radSoundHalSystemGet()->SetAuxEffect(REVERB_AUX_EFFECT_NUMBER, reverbEffect);
+    ::radSoundHalSystemGet()->SetAuxGain(REVERB_AUX_EFFECT_NUMBER, 0.0f);
 
-    Sound::daSoundRenderingManagerGet()->GetTheListener()->SetEnvironmentAuxSend( REVERB_AUX_EFFECT_NUMBER );
-    Sound::daSoundRenderingManagerGet()->GetTheListener()->SetEnvEffectsEnabled( true );
+    Sound::daSoundRenderingManagerGet()->GetTheListener()->SetEnvironmentAuxSend(
+            REVERB_AUX_EFFECT_NUMBER);
+    Sound::daSoundRenderingManagerGet()->GetTheListener()->SetEnvEffectsEnabled(true);
 }
 
 //=============================================================================
@@ -337,26 +312,19 @@ void ReverbController::registerReverbEffect( IRadSoundHalEffect* reverbEffect )
 // Return:      void 
 //
 //=============================================================================
-void ReverbController::prepareFadeSettings( float targetGain, float fadeInTime, float fadeOutTime )
-{
+void ReverbController::prepareFadeSettings(float targetGain, float fadeInTime, float fadeOutTime) {
     m_targetGain = targetGain;
 
     m_fadeInMultiplier = fadeInTime;
-    if( m_fadeInMultiplier == 0.0f )
-    {
+    if (m_fadeInMultiplier == 0.0f) {
         m_fadeInMultiplier = 1.0f;
-    }
-    else
-    {
+    } else {
         m_fadeInMultiplier = 1.0f / m_fadeInMultiplier;
     }
     m_fadeOutMultiplier = fadeOutTime;
-    if( m_fadeOutMultiplier == 0.0f )
-    {
+    if (m_fadeOutMultiplier == 0.0f) {
         m_fadeOutMultiplier = 1.0f;
-    }
-    else
-    {
+    } else {
         m_fadeOutMultiplier = 1.0f / m_fadeInMultiplier;
     }
 }
@@ -371,8 +339,7 @@ void ReverbController::prepareFadeSettings( float targetGain, float fadeInTime, 
 // Return:      void 
 //
 //=============================================================================
-void ReverbController::startFadeOut()
-{
+void ReverbController::startFadeOut() {
     m_targetGain = 0.0f;
 }
 
@@ -392,19 +359,17 @@ void ReverbController::startFadeOut()
 // Return:      void 
 //
 //=============================================================================
-reverbSettings* ReverbController::getReverbSettings( const char* objName )
-{
-    IRadNameSpace* nameSpace;
+reverbSettings *ReverbController::getReverbSettings(const char *objName) {
+    IRadNameSpace *nameSpace;
 
     nameSpace = Sound::daSoundRenderingManagerGet()->GetTuningNamespace();
-    rAssert( nameSpace != NULL );
-    
-    if ( objName != NULL )
-    {
-    	rTunePrintf( "\n\nAUDIO: Reverb Settings: [%s]\n\n\n", objName );
+    rAssert(nameSpace != NULL);
+
+    if (objName != NULL) {
+        rTunePrintf("\n\nAUDIO: Reverb Settings: [%s]\n\n\n", objName);
     }
 
-    m_lastReverb = static_cast<reverbSettings*>(nameSpace->GetInstance( objName ));
+    m_lastReverb = static_cast<reverbSettings *>(nameSpace->GetInstance(objName));
 
-    return( m_lastReverb );
+    return (m_lastReverb);
 }

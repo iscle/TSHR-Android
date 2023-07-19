@@ -22,7 +22,9 @@
 #ifdef WORLD_BUILDER
 #include "eventenum.h"
 #else
+
 #include <events/eventenum.h>
+
 #endif
 
 //========================================
@@ -35,22 +37,23 @@
 //           of events.
 //
 //==============================================================================
-class EventListener
-{
-    public:
-    
-        EventListener();
-        virtual ~EventListener();
+class EventListener {
+public:
 
-        // Derived classes must implement this method to receive
-        // event notification.
-        virtual void HandleEvent( EventEnum id, void* pEventData ) = 0;
+    EventListener();
 
-    private:
-        
-        // Declared but not defined to prevent copying and assignment.
-        EventListener( const EventListener& );
-        EventListener& operator=( const EventListener& );
+    virtual ~EventListener();
+
+    // Derived classes must implement this method to receive
+    // event notification.
+    virtual void HandleEvent(EventEnum id, void *pEventData) = 0;
+
+private:
+
+    // Declared but not defined to prevent copying and assignment.
+    EventListener(const EventListener &);
+
+    EventListener &operator=(const EventListener &);
 };
 
 

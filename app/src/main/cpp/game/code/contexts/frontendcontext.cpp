@@ -43,7 +43,7 @@
 //******************************************************************************
 
 // Static pointer to instance of singleton.
-FrontEndContext* FrontEndContext::spInstance = NULL;
+FrontEndContext *FrontEndContext::spInstance = NULL;
 
 //******************************************************************************
 //
@@ -65,14 +65,12 @@ FrontEndContext* FrontEndContext::spInstance = NULL;
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-FrontEndContext* FrontEndContext::GetInstance()
-{
-    if( spInstance == NULL )
-    {
+FrontEndContext *FrontEndContext::GetInstance() {
+    if (spInstance == NULL) {
         spInstance = new(GMA_PERSISTENT) FrontEndContext;
-        rAssert( spInstance );
+        rAssert(spInstance);
     }
-    
+
     return spInstance;
 }
 
@@ -86,8 +84,7 @@ FrontEndContext* FrontEndContext::GetInstance()
 // Return:      N/A.
 //
 //==============================================================================
-FrontEndContext::FrontEndContext()
-{
+FrontEndContext::FrontEndContext() {
 }
 
 //==============================================================================
@@ -100,8 +97,7 @@ FrontEndContext::FrontEndContext()
 // Return:      N/A.
 //
 //==============================================================================
-FrontEndContext::~FrontEndContext()
-{
+FrontEndContext::~FrontEndContext() {
 }
 
 
@@ -116,20 +112,18 @@ FrontEndContext::~FrontEndContext()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ContextEnum previousContext )
+// Parameters:  (ContextEnum previousContext)
 //
 // Return:      void 
 //
 //=============================================================================
-void FrontEndContext::OnStart( ContextEnum previousContext )
-{
-    SetMemoryIdentification( "FEContext" );
-    MEMTRACK_PUSH_FLAG( "Front End" );
+void FrontEndContext::OnStart(ContextEnum previousContext) {
+    SetMemoryIdentification("FEContext");
+    MEMTRACK_PUSH_FLAG("Front End");
 
-    HeapMgr()->PushHeap( GMA_LEVEL_FE );
+    HeapMgr()->PushHeap(GMA_LEVEL_FE);
 
-    if( previousContext != CONTEXT_BOOTUP )
-    {
+    if (previousContext != CONTEXT_BOOTUP) {
         HeapMgr()->PrepareHeapsFeCleanup();
         LEAK_DETECTION_CHECKPOINT();
         HeapMgr()->PrepareHeapsFeSetup();
@@ -144,25 +138,23 @@ void FrontEndContext::OnStart( ContextEnum previousContext )
 
         // tell GUI system to run backend during loading
         //
-        GetGuiSystem()->HandleMessage( GUI_MSG_RUN_BACKEND );
+        GetGuiSystem()->HandleMessage(GUI_MSG_RUN_BACKEND);
 
         // initialize GUI frontend mode (and load resources)
-        GetGuiSystem()->HandleMessage( GUI_MSG_INIT_FRONTEND );
+        GetGuiSystem()->HandleMessage(GUI_MSG_INIT_FRONTEND);
 
-        GetLoadingManager()->AddCallback( this );
-    }
-    else
-    {
+        GetLoadingManager()->AddCallback(this);
+    } else {
         // Start the front end.
         LEAK_DETECTION_CHECKPOINT();
-        this->StartFrontEnd( CGuiWindow::GUI_SCREEN_ID_SPLASH );
+        this->StartFrontEnd(CGuiWindow::GUI_SCREEN_ID_SPLASH);
     }
 
-    GetInputManager()->ToggleRumble( false );
+    GetInputManager()->ToggleRumble(false);
 
     GetGuiSystem()->RegisterUserInputHandlers();
 
-    GetInputManager()->SetGameState( Input::ACTIVE_FRONTEND );
+    GetInputManager()->SetGameState(Input::ACTIVE_FRONTEND);
 }
 
 //=============================================================================
@@ -170,30 +162,29 @@ void FrontEndContext::OnStart( ContextEnum previousContext )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ContextEnum nextContext )
+// Parameters:  (ContextEnum nextContext)
 //
 // Return:      void 
 //
 //=============================================================================
-void FrontEndContext::OnStop( ContextEnum nextContext )
-{
+void FrontEndContext::OnStop(ContextEnum nextContext) {
     GetGuiSystem()->UnregisterUserInputHandlers();
 
     // release GUI frontend
-    GetGuiSystem()->HandleMessage( GUI_MSG_RELEASE_FRONTEND );
+    GetGuiSystem()->HandleMessage(GUI_MSG_RELEASE_FRONTEND);
 
     //
     // Notify the sound system that the front end is stopping
     //
     GetSoundManager()->OnFrontEndEnd();
 
-    GetInputManager()->SetGameState( Input::ACTIVE_ALL );
+    GetInputManager()->SetGameState(Input::ACTIVE_ALL);
 
     HeapMgr()->PopHeap(GMA_LEVEL_FE);
 
-    MEMTRACK_POP_FLAG( "" );
+    MEMTRACK_POP_FLAG("");
 
-    SetMemoryIdentification( "FEContext Finished" );
+    SetMemoryIdentification("FEContext Finished");
 }
 
 //=============================================================================
@@ -201,20 +192,19 @@ void FrontEndContext::OnStop( ContextEnum nextContext )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void FrontEndContext::OnUpdate( unsigned int elapsedTime )
-{
+void FrontEndContext::OnUpdate(unsigned int elapsedTime) {
     // update game data manager
     //
-    GetGameDataManager()->Update( elapsedTime );
+    GetGameDataManager()->Update(elapsedTime);
 
     // update GUI system
     //
-    GetGuiSystem()->Update( elapsedTime );
+    GetGuiSystem()->Update(elapsedTime);
 
     //Chuck: adding this so that the rewards manager reflects changes found in the charactersheet.
     GetRewardsManager()->SynchWithCharacterSheet();
@@ -230,8 +220,7 @@ void FrontEndContext::OnUpdate( unsigned int elapsedTime )
 // Return:      void 
 //
 //=============================================================================
-void FrontEndContext::OnSuspend()
-{
+void FrontEndContext::OnSuspend() {
 }
 
 //=============================================================================
@@ -244,8 +233,7 @@ void FrontEndContext::OnSuspend()
 // Return:      void 
 //
 //=============================================================================
-void FrontEndContext::OnResume()
-{
+void FrontEndContext::OnResume() {
 }
 
 //=============================================================================
@@ -253,13 +241,12 @@ void FrontEndContext::OnResume()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void FrontEndContext::OnHandleEvent( EventEnum id, void* pEventData )
-{
+void FrontEndContext::OnHandleEvent(EventEnum id, void *pEventData) {
 }
 
 //=============================================================================
@@ -272,28 +259,22 @@ void FrontEndContext::OnHandleEvent( EventEnum id, void* pEventData )
 // Return:      void 
 //
 //=============================================================================
-void FrontEndContext::OnProcessRequestsComplete( void* pUserData )
-{
+void FrontEndContext::OnProcessRequestsComplete(void *pUserData) {
     // tell GUI system to quit backend
     //
-    GetGuiSystem()->HandleMessage( GUI_MSG_QUIT_BACKEND );
+    GetGuiSystem()->HandleMessage(GUI_MSG_QUIT_BACKEND);
 
 #ifndef RAD_DEMO
-    if( GetGuiSystem()->IsSplashScreenFinished() )
-    {
-        if( GetGuiSystem()->IsShowCreditsUponReturnToFE() )
-        {
-            this->StartFrontEnd( CGuiWindow::GUI_SCREEN_ID_VIEW_CREDITS );
+    if (GetGuiSystem()->IsSplashScreenFinished()) {
+        if (GetGuiSystem()->IsShowCreditsUponReturnToFE()) {
+            this->StartFrontEnd(CGuiWindow::GUI_SCREEN_ID_VIEW_CREDITS);
+        } else {
+            this->StartFrontEnd(CGuiWindow::GUI_SCREEN_ID_MAIN_MENU);
         }
-        else
-        {
-            this->StartFrontEnd( CGuiWindow::GUI_SCREEN_ID_MAIN_MENU );
-        }
-    }
-    else
+    } else
 #endif
     {
-        this->StartFrontEnd( CGuiWindow::GUI_SCREEN_ID_SPLASH );
+        this->StartFrontEnd(CGuiWindow::GUI_SCREEN_ID_SPLASH);
     }
 }
 
@@ -313,10 +294,9 @@ void FrontEndContext::OnProcessRequestsComplete( void* pUserData )
 // Return:      void 
 //
 //=============================================================================
-void FrontEndContext::StartFrontEnd( unsigned int initialScreen )
-{
+void FrontEndContext::StartFrontEnd(unsigned int initialScreen) {
     // Start up GUI frontend manager
-    GetGuiSystem()->HandleMessage( GUI_MSG_RUN_FRONTEND, initialScreen );
+    GetGuiSystem()->HandleMessage(GUI_MSG_RUN_FRONTEND, initialScreen);
 
     //
     // Notify the sound system that the front end is starting

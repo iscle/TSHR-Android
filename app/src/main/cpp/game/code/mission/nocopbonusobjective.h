@@ -28,29 +28,34 @@
 //
 //=============================================================================
 
-class NoCopBonusObjective  : public BonusObjective, public EventListener
-{
+class NoCopBonusObjective : public BonusObjective, public EventListener {
 public:
     NoCopBonusObjective();
+
     virtual ~NoCopBonusObjective();
 
     virtual void Initialize();
+
     virtual void Finalize();
+
     virtual unsigned int GetNumericData();
 
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
 protected:
     virtual void OnReset();
+
     virtual void OnStart();
-    virtual void OnUpdate( unsigned int milliseconds );
+
+    virtual void OnUpdate(unsigned int milliseconds);
 
 private:
     unsigned int mElapsedTime;
 
     //Prevent wasteful constructor creation.
-    NoCopBonusObjective( const NoCopBonusObjective& nocopbonusobjective );
-    NoCopBonusObjective& operator=( const NoCopBonusObjective& nocopbonusobjective );
+    NoCopBonusObjective(const NoCopBonusObjective &nocopbonusobjective);
+
+    NoCopBonusObjective &operator=(const NoCopBonusObjective &nocopbonusobjective);
 };
 
 //*****************************************************************************
@@ -69,8 +74,7 @@ private:
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int NoCopBonusObjective::GetNumericData()
-{
+inline unsigned int NoCopBonusObjective::GetNumericData() {
     return mElapsedTime;
 }
 

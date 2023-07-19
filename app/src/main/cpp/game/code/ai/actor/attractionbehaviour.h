@@ -31,6 +31,7 @@
 //===========================================================================
 
 class Actor;
+
 class Avatar;
 
 
@@ -44,46 +45,52 @@ class Avatar;
 //===========================================================================
 
 
-class AttractionBehaviour : public Behaviour, public EventListener
-{
-    public:
-        AttractionBehaviour( float minWatchDistance, float maxWatchDistance, float speedKPH );
-        virtual ~AttractionBehaviour();
-        virtual void Apply( Actor*, unsigned int timeInMS );
-        virtual void HandleEvent( EventEnum id, void* pEventData );
+class AttractionBehaviour : public Behaviour, public EventListener {
+public:
+    AttractionBehaviour(float minWatchDistance, float maxWatchDistance, float speedKPH);
 
-        virtual void Activate();
-        virtual void Deactivate();
+    virtual ~AttractionBehaviour();
 
-        bool IsMovementDisabled()const { return m_Speed <= 0.0f; }
+    virtual void Apply(Actor *, unsigned int timeInMS);
 
-        enum State 
-        {   
-            eIdle,
-            eWatching
-        };
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
-    protected:
-        
-        State m_CurrentState;
-        float m_SensoryRangeSqr;
-        float m_MinWatchDistanceSqr;
-        float m_MaxWatchDistanceSqr;
-        float m_WatchDistanceFromAvatar;
-        float m_Speed;
-        bool m_ForceFindNewWatchPosition;
-        Actor* m_ParentActor;
+    virtual void Activate();
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow AttractionBehaviour from being copied and assigned.
-        AttractionBehaviour( const AttractionBehaviour& );
-        AttractionBehaviour& operator=( const AttractionBehaviour& );
-    private:
+    virtual void Deactivate();
 
-        bool WithinSensoryRange( const Actor& actor, const Avatar& avatar )const;
-        bool FindNewWatchPosition( const Actor& actor, const rmt::Vector& avatarPosition, rmt::Vector* result )const;
+    bool IsMovementDisabled() const { return m_Speed <= 0.0f; }
+
+    enum State {
+        eIdle,
+        eWatching
+    };
+
+protected:
+
+    State m_CurrentState;
+    float m_SensoryRangeSqr;
+    float m_MinWatchDistanceSqr;
+    float m_MaxWatchDistanceSqr;
+    float m_WatchDistanceFromAvatar;
+    float m_Speed;
+    bool m_ForceFindNewWatchPosition;
+    Actor *m_ParentActor;
+
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow AttractionBehaviour from being copied and assigned.
+    AttractionBehaviour(const AttractionBehaviour &);
+
+    AttractionBehaviour &operator=(const AttractionBehaviour &);
+
+private:
+
+    bool WithinSensoryRange(const Actor &actor, const Avatar &avatar) const;
+
+    bool FindNewWatchPosition(const Actor &actor, const rmt::Vector &avatarPosition,
+                              rmt::Vector *result) const;
 };
 
 #endif

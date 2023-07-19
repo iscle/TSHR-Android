@@ -29,36 +29,35 @@
 //
 //******************************************************************************
 
-struct CreditInfo
-{
+struct CreditInfo {
     int lineNumber;
     radKey32 dialogName;
 };
 
 #ifdef PAL
-    const int PAL_OFFSET = +16; // due to additional VUG localization team
+const int PAL_OFFSET = +16; // due to additional VUG localization team
 #else
-    const int PAL_OFFSET = 0;
+const int PAL_OFFSET = 0;
 #endif
 
 static CreditInfo s_creditDialogTable[] =
-{
-    { 7, ::radMakeKey32( "pubcredits" ) },
-    { 55, ::radMakeKey32( "foxcredits" ) },
-    { 178 + PAL_OFFSET, ::radMakeKey32( "radproducer" ) },
-    { 190 + PAL_OFFSET, ::radMakeKey32( "radlead" ) },
-    { 204 + PAL_OFFSET, ::radMakeKey32( "raddesign" ) },
-    { 221 + PAL_OFFSET, ::radMakeKey32( "radworld" ) },
-    { 230 + PAL_OFFSET, ::radMakeKey32( "radmodel" ) },
-    { 235 + PAL_OFFSET, ::radMakeKey32( "radfx" ) },
-    { 242 + PAL_OFFSET, ::radMakeKey32( "radfmvart" ) },
-    { 251 + PAL_OFFSET, ::radMakeKey32( "radfeart" ) },
-    { 260 + PAL_OFFSET, ::radMakeKey32( "radprog" ) },
-    { 279 + PAL_OFFSET, ::radMakeKey32( "radtest" ) },
-    { 289 + PAL_OFFSET, ::radMakeKey32( "radsound" ) }
-};
+        {
+                {7,                ::radMakeKey32("pubcredits")},
+                {55,               ::radMakeKey32("foxcredits")},
+                {178 + PAL_OFFSET, ::radMakeKey32("radproducer")},
+                {190 + PAL_OFFSET, ::radMakeKey32("radlead")},
+                {204 + PAL_OFFSET, ::radMakeKey32("raddesign")},
+                {221 + PAL_OFFSET, ::radMakeKey32("radworld")},
+                {230 + PAL_OFFSET, ::radMakeKey32("radmodel")},
+                {235 + PAL_OFFSET, ::radMakeKey32("radfx")},
+                {242 + PAL_OFFSET, ::radMakeKey32("radfmvart")},
+                {251 + PAL_OFFSET, ::radMakeKey32("radfeart")},
+                {260 + PAL_OFFSET, ::radMakeKey32("radprog")},
+                {279 + PAL_OFFSET, ::radMakeKey32("radtest")},
+                {289 + PAL_OFFSET, ::radMakeKey32("radsound")}
+        };
 
-static int s_creditDialogTableSize = sizeof( s_creditDialogTable ) / sizeof( CreditInfo );
+static int s_creditDialogTableSize = sizeof(s_creditDialogTable) / sizeof(CreditInfo);
 
 //******************************************************************************
 //
@@ -76,12 +75,10 @@ static int s_creditDialogTableSize = sizeof( s_creditDialogTable ) / sizeof( Cre
 // Return:      N/A.
 //
 //==============================================================================
-SoundFXLogic::SoundFXLogic()
-{
+SoundFXLogic::SoundFXLogic() {
     unsigned int i;
 
-    for( i = 0; i < s_numSFXPlayers; i++ )
-    {
+    for (i = 0; i < s_numSFXPlayers; i++) {
         m_soundPlayers[i].isKillable = true;
     }
 }
@@ -96,8 +93,7 @@ SoundFXLogic::SoundFXLogic()
 // Return:      N/A.
 //
 //==============================================================================
-SoundFXLogic::~SoundFXLogic()
-{
+SoundFXLogic::~SoundFXLogic() {
 }
 
 //=============================================================================
@@ -110,9 +106,8 @@ SoundFXLogic::~SoundFXLogic()
 // Return:      void 
 //
 //=============================================================================
-void SoundFXLogic::UnregisterEventListeners()
-{
-    GetEventManager()->RemoveAll( this );
+void SoundFXLogic::UnregisterEventListeners() {
+    GetEventManager()->RemoveAll(this);
 }
 
 //=============================================================================
@@ -128,26 +123,20 @@ void SoundFXLogic::UnregisterEventListeners()
 // Return:      SFXPlayer pointer if one available, NULL otherwise
 //
 //=============================================================================
-SFXPlayer* SoundFXLogic::GetAvailableSFXPlayer( unsigned int* index )
-{
+SFXPlayer *SoundFXLogic::GetAvailableSFXPlayer(unsigned int *index) {
     unsigned int i;
     int lastKillable = -1;
 
     //
     // First, look for free players
     //
-    for( i = 0; i < s_numSFXPlayers; i++ )
-    {
-        if( !m_soundPlayers[i].soundPlayer.IsInUse() )
-        {
-            if( index != NULL )
-            {
+    for (i = 0; i < s_numSFXPlayers; i++) {
+        if (!m_soundPlayers[i].soundPlayer.IsInUse()) {
+            if (index != NULL) {
                 *index = i;
             }
-            return( &(m_soundPlayers[i]) );
-        }
-        else if( m_soundPlayers[i].isKillable )
-        {
+            return (&(m_soundPlayers[i]));
+        } else if (m_soundPlayers[i].isKillable) {
             lastKillable = i;
         }
     }
@@ -155,17 +144,13 @@ SFXPlayer* SoundFXLogic::GetAvailableSFXPlayer( unsigned int* index )
     //
     // If we get this far, all players are in use.  Kill a player if we can
     //
-    if( lastKillable != -1 )
-    {
-        if( index != NULL )
-        {
+    if (lastKillable != -1) {
+        if (index != NULL) {
             *index = lastKillable;
         }
-        return( &(m_soundPlayers[lastKillable]) );
-    }
-    else
-    {
-        return( NULL );
+        return (&(m_soundPlayers[lastKillable]));
+    } else {
+        return (NULL);
     }
 }
 
@@ -188,43 +173,37 @@ SFXPlayer* SoundFXLogic::GetAvailableSFXPlayer( unsigned int* index )
 // Return:      true if sound played, false otherwise
 //
 //=============================================================================
-bool SoundFXLogic::playSFXSound( const char* resource, bool killable, 
-                                 bool useCallback, unsigned int* index,
-                                 float trim, float pitch )
-{
-    SFXPlayer* player;
+bool SoundFXLogic::playSFXSound(const char *resource, bool killable,
+                                bool useCallback, unsigned int *index,
+                                float trim, float pitch) {
+    SFXPlayer *player;
     bool success = false;
-    SimpsonsSoundPlayerCallback* callbackObj = NULL;
+    SimpsonsSoundPlayerCallback *callbackObj = NULL;
 
     //
     // Get a player if possible
     //
-    player = GetAvailableSFXPlayer( index );
+    player = GetAvailableSFXPlayer(index);
 
-    if( player != NULL )
-    {
-        if( player->soundPlayer.IsInUse() )
-        {
+    if (player != NULL) {
+        if (player->soundPlayer.IsInUse()) {
             player->soundPlayer.Stop();
         }
 
-        if( useCallback )
-        {
+        if (useCallback) {
             callbackObj = this;
         }
-        player->soundPlayer.PlaySound( resource, callbackObj );
-        player->soundPlayer.SetTrim( trim );
-        player->soundPlayer.SetPitch( pitch );
+        player->soundPlayer.PlaySound(resource, callbackObj);
+        player->soundPlayer.SetTrim(trim);
+        player->soundPlayer.SetPitch(pitch);
         player->isKillable = killable;
 
         success = true;
-    }
-    else
-    {
-        rDebugString( "Dropped sound effect, no player available\n" );
+    } else {
+        rDebugString("Dropped sound effect, no player available\n");
     }
 
-    return( success );
+    return (success);
 }
 
 //=============================================================================
@@ -238,8 +217,7 @@ bool SoundFXLogic::playSFXSound( const char* resource, bool killable,
 // Return:      void 
 //
 //=============================================================================
-void SoundFXLogic::ServiceOncePerFrame( unsigned int elapsedTime )
-{
+void SoundFXLogic::ServiceOncePerFrame(unsigned int elapsedTime) {
 }
 
 //=============================================================================
@@ -253,8 +231,7 @@ void SoundFXLogic::ServiceOncePerFrame( unsigned int elapsedTime )
 // Return:      void 
 //
 //=============================================================================
-void SoundFXLogic::OnSoundReady()
-{
+void SoundFXLogic::OnSoundReady() {
 }
 
 //=============================================================================
@@ -268,8 +245,7 @@ void SoundFXLogic::OnSoundReady()
 // Return:      void 
 //
 //=============================================================================
-void SoundFXLogic::OnPlaybackComplete()
-{
+void SoundFXLogic::OnPlaybackComplete() {
 }
 
 //=============================================================================
@@ -283,8 +259,7 @@ void SoundFXLogic::OnPlaybackComplete()
 // Return:      void 
 //
 //=============================================================================
-void SoundFXLogic::Cleanup()
-{
+void SoundFXLogic::Cleanup() {
 }
 
 //******************************************************************************
@@ -303,20 +278,18 @@ void SoundFXLogic::Cleanup()
 // Return:      void 
 //
 //=============================================================================
-void SoundFXLogic::playCreditLine( int lineNumber )
-{
+void SoundFXLogic::playCreditLine(int lineNumber) {
     int i;
     DialogEventData data;
 
-    for( i = 0; i < s_creditDialogTableSize; i++ )
-    {
-        if( lineNumber == s_creditDialogTable[i].lineNumber )
-        {
-            data.charUID1 = tEntity::MakeUID( "kang" );
-            data.charUID2 = tEntity::MakeUID( "kodos" );
+    for (i = 0; i < s_creditDialogTableSize; i++) {
+        if (lineNumber == s_creditDialogTable[i].lineNumber) {
+            data.charUID1 = tEntity::MakeUID("kang");
+            data.charUID2 = tEntity::MakeUID("kodos");
             data.dialogName = s_creditDialogTable[i].dialogName;
 
-            GetEventManager()->TriggerEvent( EVENT_IN_GAMEPLAY_CONVERSATION, static_cast<void*>(&data) );
+            GetEventManager()->TriggerEvent(EVENT_IN_GAMEPLAY_CONVERSATION,
+                                            static_cast<void *>(&data));
         }
     }
 }

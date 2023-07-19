@@ -22,11 +22,14 @@
 // Forward References
 //========================================
 #ifdef DEBUGWATCH
-    void AddVariablesToWatcher();
+void AddVariablesToWatcher();
 #else
-    inline void AddVariablesToWatcher(){};
+
+inline void AddVariablesToWatcher() {};
 #endif //DEBUGWATCH
+
 void CreateSingletons();
+
 void DestroySingletons();
 
 //========================================

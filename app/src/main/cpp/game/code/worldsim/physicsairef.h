@@ -26,24 +26,23 @@
 //
 //=============================================================================
 
-namespace PhysicsAIRef
-{
-    enum 
-    { 
+namespace PhysicsAIRef {
+    enum {
         redBrickPhizDefault = 0,
-            redBrickVehicle, 
-            redBrickPhizVehicleGroundPlane, 
-            redBrickPhizMoveableGroundPlane,    // might not need to differnetiate here!
-            redBrickPhizFence,    // might not need to differnetiate here!
-            redBrickPhizStatic = 1 << 16,
-            redBrickPhizMoveable = 1 << 17,   // don't think we actually need to differentiate between moveable and moveableinstance
-            PlayerCharacter,
-            NPCharacter,
-            redBrickPhizMoveableAnim = 1 << 18, 
-            CameraSphere,
-            StateProp,
-            ActorStateProp,
-            redBrickPhizLast 
+        redBrickVehicle,
+        redBrickPhizVehicleGroundPlane,
+        redBrickPhizMoveableGroundPlane,    // might not need to differnetiate here!
+        redBrickPhizFence,    // might not need to differnetiate here!
+        redBrickPhizStatic = 1 << 16,
+        redBrickPhizMoveable = 1
+                << 17,   // don't think we actually need to differentiate between moveable and moveableinstance
+        PlayerCharacter,
+        NPCharacter,
+        redBrickPhizMoveableAnim = 1 << 18,
+        CameraSphere,
+        StateProp,
+        ActorStateProp,
+        redBrickPhizLast
     }; // phizGround, phizStatic, phizMoveableAnim, phizMoveable, phizCamera, phizLast };
 };
 

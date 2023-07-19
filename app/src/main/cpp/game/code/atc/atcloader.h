@@ -31,21 +31,22 @@
 //
 //=============================================================================
 
-class ATCLoader: public tSimpleChunkHandler
-{
+class ATCLoader : public tSimpleChunkHandler {
 public:
     ATCLoader();
-	virtual ~ATCLoader();
+
+    virtual ~ATCLoader();
 
 private:
 
 
     //Prevent wasteful constructor creation.
-	ATCLoader( const ATCLoader&  atcloader);
-	ATCLoader& operator=( const ATCLoader& atc );
+    ATCLoader(const ATCLoader &atcloader);
+
+    ATCLoader &operator=(const ATCLoader &atc);
 
     // P3D chunk loader.
-    virtual tEntity* LoadObject(tChunkFile* f, tEntityStore* store);
+    virtual tEntity *LoadObject(tChunkFile *f, tEntityStore *store);
 
 };
 

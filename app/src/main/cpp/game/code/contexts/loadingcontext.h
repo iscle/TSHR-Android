@@ -32,34 +32,38 @@
 //
 //=============================================================================
 class LoadingContext : public Context,
-                       public LoadingManager::ProcessRequestsCallback
-{
-    public:
-        virtual void OnHandleEvent( EventEnum id, void* pEventData );
+                       public LoadingManager::ProcessRequestsCallback {
+public:
+    virtual void OnHandleEvent(EventEnum id, void *pEventData);
 
-        //
-        // LoadingManager::ProcessRequestsCallback
-        //
-        virtual void OnProcessRequestsComplete( void* pUserData );
+    //
+    // LoadingManager::ProcessRequestsCallback
+    //
+    virtual void OnProcessRequestsComplete(void *pUserData);
 
-    protected:
-        // constructor and destructor are protected to force singleton implementation
-        LoadingContext();
-        virtual ~LoadingContext();
+protected:
+    // constructor and destructor are protected to force singleton implementation
+    LoadingContext();
 
-        virtual void OnStart( ContextEnum previousContext );
-        virtual void OnStop( ContextEnum nextContext );
-        virtual void OnUpdate( unsigned int elapsedTime );
-        
-        virtual void OnSuspend();
-        virtual void OnResume();
+    virtual ~LoadingContext();
 
-        virtual void PrepareNewHeaps() = 0;
+    virtual void OnStart(ContextEnum previousContext);
 
-    private:
-        // Declared but not defined to prevent copying and assignment.
-        LoadingContext( const LoadingContext& );
-        LoadingContext& operator=( const LoadingContext& );
+    virtual void OnStop(ContextEnum nextContext);
+
+    virtual void OnUpdate(unsigned int elapsedTime);
+
+    virtual void OnSuspend();
+
+    virtual void OnResume();
+
+    virtual void PrepareNewHeaps() = 0;
+
+private:
+    // Declared but not defined to prevent copying and assignment.
+    LoadingContext(const LoadingContext &);
+
+    LoadingContext &operator=(const LoadingContext &);
 
 };
 

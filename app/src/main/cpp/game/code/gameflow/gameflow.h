@@ -37,70 +37,76 @@ class Context;
 // Synopsis:    The game "loop"
 //
 //=============================================================================
-class GameFlow : public IRadTimerCallback
-{
-    public:
+class GameFlow : public IRadTimerCallback {
+public:
 
-        // Static Methods (for creating and getting an instance of the game)
-        static GameFlow* CreateInstance();
-        static GameFlow* GetInstance();
-        static void  DestroyInstance();
+    // Static Methods (for creating and getting an instance of the game)
+    static GameFlow *CreateInstance();
 
-        // Functions to change the context.
-        void PushContext( ContextEnum context );
-        void PopContext();
-        void SetContext( ContextEnum context );
+    static GameFlow *GetInstance();
 
-        // Implement IRadTimerCallback interface.
-        // This member is called whenever the timer expires.
-        void OnTimerDone( unsigned int elapsedtime, void* pUserData );
-        
-        ContextEnum GetCurrentContext() const { return mCurrentContext; }
-        ContextEnum GetNextContext() const { return mNextContext; }
+    static void DestroyInstance();
 
-        Context* GetContext( ContextEnum which ) const { return mpContexts[which];  }
+    // Functions to change the context.
+    void PushContext(ContextEnum context);
+
+    void PopContext();
+
+    void SetContext(ContextEnum context);
+
+    // Implement IRadTimerCallback interface.
+    // This member is called whenever the timer expires.
+    void OnTimerDone(unsigned int elapsedtime, void *pUserData);
+
+    ContextEnum GetCurrentContext() const { return mCurrentContext; }
+
+    ContextEnum GetNextContext() const { return mNextContext; }
+
+    Context *GetContext(ContextEnum which) const { return mpContexts[which]; }
 /*
-        bool GetQuickStartLoading( void ) const { return mQuickStartLoading; }
-        void SetQuickStartLoading( bool IsQuickStartLoading ) { mQuickStartLoading = IsQuickStartLoading; }
+        bool GetQuickStartLoading(void) const { return mQuickStartLoading; }
+        void SetQuickStartLoading(bool IsQuickStartLoading) { mQuickStartLoading = IsQuickStartLoading; }
 */
-    private:
+private:
 
-        // Declared but not defined to prevent copying and assignment.
-        GameFlow( const GameFlow& );
-        GameFlow& operator=( const GameFlow& );
+    // Declared but not defined to prevent copying and assignment.
+    GameFlow(const GameFlow &);
 
-        // Constructor - these are private to prevent anybody else from 
-        // creating me.
-        GameFlow();
-        virtual ~GameFlow();
+    GameFlow &operator=(const GameFlow &);
 
-        // This member is called when the gameflow is being initialized.
-        void Initialize();
+    // Constructor - these are private to prevent anybody else from
+    // creating me.
+    GameFlow();
 
-        // The one and only GameFlow instance.
-        static GameFlow* spInstance;
+    virtual ~GameFlow();
 
-        // Timer for gameflow updates.
-        IRadTimer* mpITimer;
+    // This member is called when the gameflow is being initialized.
+    void Initialize();
 
-        // Contexts
-        ContextEnum mCurrentContext;
-        ContextEnum mNextContext;
-        
-        typedef std::vector< ContextEnum, s2alloc<ContextEnum> > ContextEnumSequence;
-        typedef std::stack< ContextEnum, ContextEnumSequence > ContextStack;
+    // The one and only GameFlow instance.
+    static GameFlow *spInstance;
 
-        ContextStack mContextStack;
-        
-        Context* mpContexts[NUM_CONTEXTS];
-        bool mQuickStartLoading : 1;
+    // Timer for gameflow updates.
+    IRadTimer *mpITimer;
+
+    // Contexts
+    ContextEnum mCurrentContext;
+    ContextEnum mNextContext;
+
+    typedef std::vector <ContextEnum, s2alloc<ContextEnum>> ContextEnumSequence;
+    typedef std::stack <ContextEnum, ContextEnumSequence> ContextStack;
+
+    ContextStack mContextStack;
+
+    Context *mpContexts[NUM_CONTEXTS];
+    bool mQuickStartLoading: 1;
 };
 
 
 //
 // A little syntactic sugar for getting at this singleton.
 //
-inline GameFlow* GetGameFlow() { return( GameFlow::GetInstance() ); }
+inline GameFlow *GetGameFlow() { return (GameFlow::GetInstance()); }
 
 
 #endif

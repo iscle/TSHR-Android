@@ -33,176 +33,320 @@
 //=============================================================================
 
 class globalSettings : public IGlobalSettings,
-                       public radLinkedClass< globalSettings >,
-                       public radRefCount
-{
-    public:
-        IMPLEMENT_REFCOUNTED( "globalSettings" );
+                       public radLinkedClass<globalSettings>,
+                       public radRefCount {
+public:
+    IMPLEMENT_REFCOUNTED("globalSettings");
 
-        globalSettings();
-        virtual ~globalSettings();
+    globalSettings();
 
-        //
-        // Volume controls
-        //
-        void SetMasterVolume( float volume );
+    virtual ~globalSettings();
 
-        void SetSfxVolume( float volume );
-        float GetSfxVolume() { return( m_sfxVolume ); }
+    //
+    // Volume controls
+    //
+    void SetMasterVolume(float volume);
 
-        void SetCarVolume( float volume );
-        float GetCarVolume() { return( m_carVolume ); }
+    void SetSfxVolume(float volume);
 
-        void SetMusicVolume( float volume );
-        float GetMusicVolume() { return( m_musicVolume ); }
+    float GetSfxVolume() { return (m_sfxVolume); }
 
-        void SetDialogueVolume( float volume );
-        float GetDialogueVolume() { return( m_dialogueVolume ); }
+    void SetCarVolume(float volume);
 
-        void SetAmbienceVolume( float volume );
-        float GetAmbienceVolume() { return( m_ambienceVolume ); }
-        
-        //
-        // Ducking controls
-        //
-        float GetDuckVolume( Sound::DuckSituations situation, Sound::DuckVolumes volume ) { return( m_duckVolumes[situation].duckVolume[volume] ); }
+    float GetCarVolume() { return (m_carVolume); }
 
-        void SetPauseSfxVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_PAUSE, Sound::DUCK_SFX, volume ); }
-        void SetPauseCarVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_PAUSE, Sound::DUCK_CAR, volume ); }
-        void SetPauseMusicVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_PAUSE, Sound::DUCK_MUSIC, volume ); }
-        void SetPauseDialogueVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_PAUSE, Sound::DUCK_DIALOG, volume ); }
-        void SetPauseAmbienceVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_PAUSE, Sound::DUCK_AMBIENCE, volume ); }
+    void SetMusicVolume(float volume);
 
-        void SetMissionScreenSfxVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_MISSION, Sound::DUCK_SFX, volume ); }
-        void SetMissionScreenCarVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_MISSION, Sound::DUCK_CAR, volume ); }
-        void SetMissionScreenMusicVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_MISSION, Sound::DUCK_MUSIC, volume ); }
-        void SetMissionScreenDialogueVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_MISSION, Sound::DUCK_DIALOG, volume ); }
-        void SetMissionScreenAmbienceVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_MISSION, Sound::DUCK_AMBIENCE, volume ); }
+    float GetMusicVolume() { return (m_musicVolume); }
 
-        void SetLetterboxSfxVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_LETTERBOX, Sound::DUCK_SFX, volume ); }
-        void SetLetterboxCarVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_LETTERBOX, Sound::DUCK_CAR, volume ); }
-        void SetLetterboxMusicVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_LETTERBOX, Sound::DUCK_MUSIC, volume ); }
-        void SetLetterboxDialogueVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_LETTERBOX, Sound::DUCK_DIALOG, volume ); }
-        void SetLetterboxAmbienceVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_LETTERBOX, Sound::DUCK_AMBIENCE, volume ); }
+    void SetDialogueVolume(float volume);
 
-        void SetDialogueSfxVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_DIALOG, Sound::DUCK_SFX, volume ); }
-        void SetDialogueCarVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_DIALOG, Sound::DUCK_CAR, volume ); }
-        void SetDialogueMusicVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_DIALOG, Sound::DUCK_MUSIC, volume ); }
-        void SetDialogueDialogueVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_DIALOG, Sound::DUCK_DIALOG, volume ); }
-        void SetDialogueAmbienceVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_DIALOG, Sound::DUCK_AMBIENCE, volume ); }
+    float GetDialogueVolume() { return (m_dialogueVolume); }
 
-        void SetStoreSfxVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_STORE, Sound::DUCK_SFX, volume ); }
-        void SetStoreCarVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_STORE, Sound::DUCK_CAR, volume ); }
-        void SetStoreMusicVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_STORE, Sound::DUCK_MUSIC, volume ); }
-        void SetStoreDialogueVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_STORE, Sound::DUCK_DIALOG, volume ); }
-        void SetStoreAmbienceVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_STORE, Sound::DUCK_AMBIENCE, volume ); }
+    void SetAmbienceVolume(float volume);
 
-        void SetOnFootSfxVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_ONFOOT, Sound::DUCK_SFX, volume ); }
-        void SetOnFootCarVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_ONFOOT, Sound::DUCK_CAR, volume ); }
-        void SetOnFootMusicVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_ONFOOT, Sound::DUCK_MUSIC, volume ); }
-        void SetOnFootDialogueVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_ONFOOT, Sound::DUCK_DIALOG, volume ); }
-        void SetOnFootAmbienceVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_ONFOOT, Sound::DUCK_AMBIENCE, volume ); }
+    float GetAmbienceVolume() { return (m_ambienceVolume); }
 
-        void SetMinigameSfxVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_MINIGAME, Sound::DUCK_SFX, volume ); }
-        void SetMinigameCarVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_MINIGAME, Sound::DUCK_CAR, volume ); }
-        void SetMinigameMusicVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_MINIGAME, Sound::DUCK_MUSIC, volume ); }
-        void SetMinigameDialogueVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_MINIGAME, Sound::DUCK_DIALOG, volume ); }
-        void SetMinigameAmbienceVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_MINIGAME, Sound::DUCK_AMBIENCE, volume ); }
+    //
+    // Ducking controls
+    //
+    float GetDuckVolume(Sound::DuckSituations situation,
+                        Sound::DuckVolumes volume) { return (m_duckVolumes[situation].duckVolume[volume]); }
 
-        void SetJustMusicSfxVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_JUST_MUSIC, Sound::DUCK_SFX, volume ); }
-        void SetJustMusicCarVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_JUST_MUSIC, Sound::DUCK_CAR, volume ); }
-        void SetJustMusicMusicVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_JUST_MUSIC, Sound::DUCK_MUSIC, volume ); }
-        void SetJustMusicDialogueVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_JUST_MUSIC, Sound::DUCK_DIALOG, volume ); }
-        void SetJustMusicAmbienceVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_JUST_MUSIC, Sound::DUCK_AMBIENCE, volume ); }
+    void SetPauseSfxVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_PAUSE, Sound::DUCK_SFX, volume);
+    }
 
-        void SetCreditsSfxVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_CREDITS, Sound::DUCK_SFX, volume ); }
-        void SetCreditsCarVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_CREDITS, Sound::DUCK_CAR, volume ); }
-        void SetCreditsMusicVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_CREDITS, Sound::DUCK_MUSIC, volume ); }
-        void SetCreditsDialogueVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_CREDITS, Sound::DUCK_DIALOG, volume ); }
-        void SetCreditsAmbienceVolume( float volume ) { setDuckVolume( Sound::DUCK_SIT_CREDITS, Sound::DUCK_AMBIENCE, volume ); }
+    void SetPauseCarVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_PAUSE, Sound::DUCK_CAR, volume);
+    }
 
-        //
-        // Car controls
-        //
-        void SetPeeloutMin( float min );
-        float GetPeeloutMin() { return( m_peeloutMin ); }
+    void SetPauseMusicVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_PAUSE, Sound::DUCK_MUSIC, volume);
+    }
 
-        void SetPeeloutMax( float max );
-        float GetPeeloutMax() { return( m_peeloutMax ); }
+    void SetPauseDialogueVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_PAUSE, Sound::DUCK_DIALOG, volume);
+    }
 
-        void SetPeeloutMaxTrim( float trim );
-        float GetPeeloutMaxTrim() { return( m_peeloutMaxTrim ); }
+    void SetPauseAmbienceVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_PAUSE, Sound::DUCK_AMBIENCE, volume);
+    }
 
-        void SetSkidRoadClipName( const char* clipName );
-        const char* GetSkidRoadClipName() { return( m_roadSkidClip ); }
+    void SetMissionScreenSfxVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_MISSION, Sound::DUCK_SFX, volume);
+    }
 
-        void SetSkidDirtClipName( const char* clipName );
-        const char* GetSkidDirtClipName() { return( m_dirtSkidClip ); }
+    void SetMissionScreenCarVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_MISSION, Sound::DUCK_CAR, volume);
+    }
 
-        //
-        // Footstep sounds
-        //
-        void SetFootstepRoadClipName( const char* clipName );
-        const char* GetFootstepRoadClipName() { return( m_roadFootstepClip ); }
+    void SetMissionScreenMusicVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_MISSION, Sound::DUCK_MUSIC, volume);
+    }
 
-        void SetFootstepMetalClipName( const char* clipName );
-        const char* GetFootstepMetalClipName() { return( m_metalFootstepClip ); }
+    void SetMissionScreenDialogueVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_MISSION, Sound::DUCK_DIALOG, volume);
+    }
 
-        void SetFootstepWoodClipName( const char* clipName );
-        const char* GetFootstepWoodClipName() { return( m_woodFootstepClip ); }
+    void SetMissionScreenAmbienceVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_MISSION, Sound::DUCK_AMBIENCE, volume);
+    }
 
-        //
-        // Coin pitches
-        //
-        void SetCoinPitch( float pitch );
-        float GetCoinPitch( unsigned int index );
-        unsigned int GetNumCoinPitches() { return( m_coinPitchCount ); }
+    void SetLetterboxSfxVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_LETTERBOX, Sound::DUCK_SFX, volume);
+    }
 
-    private:
+    void SetLetterboxCarVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_LETTERBOX, Sound::DUCK_CAR, volume);
+    }
 
-        //Prevent wasteful constructor creation.
-        globalSettings( const globalSettings& original );
-        globalSettings& operator=( const globalSettings& rhs );
+    void SetLetterboxMusicVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_LETTERBOX, Sound::DUCK_MUSIC, volume);
+    }
 
-        void setDuckVolume( Sound::DuckSituations situation, Sound::DuckVolumes volumeToSet, float volume );
+    void SetLetterboxDialogueVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_LETTERBOX, Sound::DUCK_DIALOG, volume);
+    }
 
-        //
-        // Ducking settings
-        //
-        Sound::DuckVolumeSet m_duckVolumes[Sound::NUM_DUCK_SITUATIONS];
+    void SetLetterboxAmbienceVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_LETTERBOX, Sound::DUCK_AMBIENCE, volume);
+    }
 
-        //
-        // Car settings
-        //
-        float m_peeloutMin;
-        float m_peeloutMax;
-        float m_peeloutMaxTrim;
+    void SetDialogueSfxVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_DIALOG, Sound::DUCK_SFX, volume);
+    }
 
-        char* m_roadSkidClip;
-        char* m_dirtSkidClip;
+    void SetDialogueCarVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_DIALOG, Sound::DUCK_CAR, volume);
+    }
 
-        //
-        // Footsteps
-        //
-        char* m_roadFootstepClip;
-        char* m_metalFootstepClip;
-        char* m_woodFootstepClip;
+    void SetDialogueMusicVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_DIALOG, Sound::DUCK_MUSIC, volume);
+    }
 
-        //
-        // Coin pitches
-        //
-        static const unsigned int s_maxCoinPitches = 10;
-        float m_coinPitches[s_maxCoinPitches];
-        unsigned int m_coinPitchCount;
+    void SetDialogueDialogueVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_DIALOG, Sound::DUCK_DIALOG, volume);
+    }
 
-        //
-        // Hack!!
-        //
-        float m_ambienceVolume;
-        float m_musicVolume;
-        float m_sfxVolume;
-        float m_dialogueVolume;
-        float m_carVolume;
+    void SetDialogueAmbienceVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_DIALOG, Sound::DUCK_AMBIENCE, volume);
+    }
+
+    void SetStoreSfxVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_STORE, Sound::DUCK_SFX, volume);
+    }
+
+    void SetStoreCarVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_STORE, Sound::DUCK_CAR, volume);
+    }
+
+    void SetStoreMusicVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_STORE, Sound::DUCK_MUSIC, volume);
+    }
+
+    void SetStoreDialogueVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_STORE, Sound::DUCK_DIALOG, volume);
+    }
+
+    void SetStoreAmbienceVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_STORE, Sound::DUCK_AMBIENCE, volume);
+    }
+
+    void SetOnFootSfxVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_ONFOOT, Sound::DUCK_SFX, volume);
+    }
+
+    void SetOnFootCarVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_ONFOOT, Sound::DUCK_CAR, volume);
+    }
+
+    void SetOnFootMusicVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_ONFOOT, Sound::DUCK_MUSIC, volume);
+    }
+
+    void SetOnFootDialogueVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_ONFOOT, Sound::DUCK_DIALOG, volume);
+    }
+
+    void SetOnFootAmbienceVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_ONFOOT, Sound::DUCK_AMBIENCE, volume);
+    }
+
+    void SetMinigameSfxVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_MINIGAME, Sound::DUCK_SFX, volume);
+    }
+
+    void SetMinigameCarVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_MINIGAME, Sound::DUCK_CAR, volume);
+    }
+
+    void SetMinigameMusicVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_MINIGAME, Sound::DUCK_MUSIC, volume);
+    }
+
+    void SetMinigameDialogueVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_MINIGAME, Sound::DUCK_DIALOG, volume);
+    }
+
+    void SetMinigameAmbienceVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_MINIGAME, Sound::DUCK_AMBIENCE, volume);
+    }
+
+    void SetJustMusicSfxVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_JUST_MUSIC, Sound::DUCK_SFX, volume);
+    }
+
+    void SetJustMusicCarVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_JUST_MUSIC, Sound::DUCK_CAR, volume);
+    }
+
+    void SetJustMusicMusicVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_JUST_MUSIC, Sound::DUCK_MUSIC, volume);
+    }
+
+    void SetJustMusicDialogueVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_JUST_MUSIC, Sound::DUCK_DIALOG, volume);
+    }
+
+    void SetJustMusicAmbienceVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_JUST_MUSIC, Sound::DUCK_AMBIENCE, volume);
+    }
+
+    void SetCreditsSfxVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_CREDITS, Sound::DUCK_SFX, volume);
+    }
+
+    void SetCreditsCarVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_CREDITS, Sound::DUCK_CAR, volume);
+    }
+
+    void SetCreditsMusicVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_CREDITS, Sound::DUCK_MUSIC, volume);
+    }
+
+    void SetCreditsDialogueVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_CREDITS, Sound::DUCK_DIALOG, volume);
+    }
+
+    void SetCreditsAmbienceVolume(float volume) {
+        setDuckVolume(Sound::DUCK_SIT_CREDITS, Sound::DUCK_AMBIENCE, volume);
+    }
+
+    //
+    // Car controls
+    //
+    void SetPeeloutMin(float min);
+
+    float GetPeeloutMin() { return (m_peeloutMin); }
+
+    void SetPeeloutMax(float max);
+
+    float GetPeeloutMax() { return (m_peeloutMax); }
+
+    void SetPeeloutMaxTrim(float trim);
+
+    float GetPeeloutMaxTrim() { return (m_peeloutMaxTrim); }
+
+    void SetSkidRoadClipName(const char *clipName);
+
+    const char *GetSkidRoadClipName() { return (m_roadSkidClip); }
+
+    void SetSkidDirtClipName(const char *clipName);
+
+    const char *GetSkidDirtClipName() { return (m_dirtSkidClip); }
+
+    //
+    // Footstep sounds
+    //
+    void SetFootstepRoadClipName(const char *clipName);
+
+    const char *GetFootstepRoadClipName() { return (m_roadFootstepClip); }
+
+    void SetFootstepMetalClipName(const char *clipName);
+
+    const char *GetFootstepMetalClipName() { return (m_metalFootstepClip); }
+
+    void SetFootstepWoodClipName(const char *clipName);
+
+    const char *GetFootstepWoodClipName() { return (m_woodFootstepClip); }
+
+    //
+    // Coin pitches
+    //
+    void SetCoinPitch(float pitch);
+
+    float GetCoinPitch(unsigned int index);
+
+    unsigned int GetNumCoinPitches() { return (m_coinPitchCount); }
+
+private:
+
+    //Prevent wasteful constructor creation.
+    globalSettings(const globalSettings &original);
+
+    globalSettings &operator=(const globalSettings &rhs);
+
+    void
+    setDuckVolume(Sound::DuckSituations situation, Sound::DuckVolumes volumeToSet, float volume);
+
+    //
+    // Ducking settings
+    //
+    Sound::DuckVolumeSet m_duckVolumes[Sound::NUM_DUCK_SITUATIONS];
+
+    //
+    // Car settings
+    //
+    float m_peeloutMin;
+    float m_peeloutMax;
+    float m_peeloutMaxTrim;
+
+    char *m_roadSkidClip;
+    char *m_dirtSkidClip;
+
+    //
+    // Footsteps
+    //
+    char *m_roadFootstepClip;
+    char *m_metalFootstepClip;
+    char *m_woodFootstepClip;
+
+    //
+    // Coin pitches
+    //
+    static const unsigned int s_maxCoinPitches = 10;
+    float m_coinPitches[s_maxCoinPitches];
+    unsigned int m_coinPitchCount;
+
+    //
+    // Hack!!
+    //
+    float m_ambienceVolume;
+    float m_musicVolume;
+    float m_sfxVolume;
+    float m_dialogueVolume;
+    float m_carVolume;
 };
 
 //=============================================================================
@@ -213,11 +357,10 @@ class globalSettings : public IGlobalSettings,
 // Create a CarSoundParameters object
 //
 void GlobalSettingsObjCreate
-(
-    IGlobalSettings** ppSoundResource,
-    radMemoryAllocator allocator
-);
-
+        (
+                IGlobalSettings **ppSoundResource,
+                radMemoryAllocator allocator
+        );
 
 
 #endif // GLOBALSETTINGS_H

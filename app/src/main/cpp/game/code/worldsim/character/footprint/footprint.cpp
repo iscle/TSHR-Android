@@ -31,19 +31,16 @@
 // Member Functions
 //===========================================================================
 
-Footprint::Footprint()
-{
+Footprint::Footprint() {
 
 }
 
-Footprint::~Footprint()
-{
+Footprint::~Footprint() {
 
 }
 
 void
-Footprint::Display()
-{
+Footprint::Display() {
 
 }
 

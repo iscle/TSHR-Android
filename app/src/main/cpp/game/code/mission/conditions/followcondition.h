@@ -28,32 +28,37 @@
 //
 //=============================================================================
 
-class FollowCondition : public VehicleCondition
-{
+class FollowCondition : public VehicleCondition {
 public:
     FollowCondition();
+
     virtual ~FollowCondition();
 
-    void SetMaxDistance( float maxDist );
+    void SetMaxDistance(float maxDist);
+
     float GetMaxDistance();
 
-    void SetMinDistance( float minDist );
+    void SetMinDistance(float minDist);
+
     float GetMinDistance();
-    
-    virtual void Update( unsigned int elapsedTime );
+
+    virtual void Update(unsigned int elapsedTime);
 
     bool IsChaseCondition();
+
     bool IsClose();
 
 protected:
     void OnInitialize();
+
     void OnFinalize();
 
 private:
 
     //Prevent wasteful constructor creation.
-    FollowCondition( const FollowCondition& followcondition );
-    FollowCondition& operator=( const FollowCondition& followcondition );
+    FollowCondition(const FollowCondition &followcondition);
+
+    FollowCondition &operator=(const FollowCondition &followcondition);
 
     float CalculateDistanceToTarget();
 
@@ -70,13 +75,12 @@ private:
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float maxDist )
+// Parameters:  (float maxDist)
 //
 // Return:      inline 
 //
 //=============================================================================
-inline void FollowCondition::SetMaxDistance( float maxDist )
-{
+inline void FollowCondition::SetMaxDistance(float maxDist) {
     mMaxDistance = maxDist;
 }
 
@@ -90,8 +94,7 @@ inline void FollowCondition::SetMaxDistance( float maxDist )
 // Return:      inline 
 //
 //=============================================================================
-inline float FollowCondition::GetMaxDistance()
-{
+inline float FollowCondition::GetMaxDistance() {
     return mMaxDistance;
 }
 
@@ -100,13 +103,12 @@ inline float FollowCondition::GetMaxDistance()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float minDist )
+// Parameters:  (float minDist)
 //
 // Return:      inline 
 //
 //=============================================================================
-inline void FollowCondition::SetMinDistance( float minDist )
-{
+inline void FollowCondition::SetMinDistance(float minDist) {
     mMinDistance = minDist;
 }
 
@@ -120,8 +122,7 @@ inline void FollowCondition::SetMinDistance( float minDist )
 // Return:      inline 
 //
 //=============================================================================
-inline float FollowCondition::GetMinDistance()
-{
+inline float FollowCondition::GetMinDistance() {
     return mMinDistance;
 }
 

@@ -1,6 +1,7 @@
 #include <input/Keyboard.h>
 
 #define DIRECTINPUT_VERSION 0x0800
+
 #include <dinput.h>
 
 //--------------------------------------------------------
@@ -8,13 +9,11 @@
 //--------------------------------------------------------
 
 Keyboard::Keyboard()
-: RealController( KEYBOARD )
-{
+        : RealController(KEYBOARD) {
     ClearMappedButtons();
 }
 
-Keyboard::~Keyboard()
-{
+Keyboard::~Keyboard() {
 }
 
 //==============================================================================
@@ -29,8 +28,7 @@ Keyboard::~Keyboard()
 //
 //==============================================================================
 
-bool Keyboard::IsValidInput( int dxKey ) const
-{
+bool Keyboard::IsValidInput(int dxKey) const {
     return dxKey >= DIK_ESCAPE && dxKey <= DIK_MEDIASELECT;
 }
 
@@ -46,10 +44,8 @@ bool Keyboard::IsValidInput( int dxKey ) const
 //
 //==============================================================================
 
-bool Keyboard::IsBannedInput( int dxKey ) const
-{
-    switch( dxKey )
-    {
+bool Keyboard::IsBannedInput(int dxKey) const {
+    switch (dxKey) {
         case DIK_LMENU:
         case DIK_RMENU:
         case DIK_LWIN:
@@ -74,21 +70,17 @@ bool Keyboard::IsBannedInput( int dxKey ) const
 //
 //==============================================================================
 
-bool Keyboard::SetMap( int dxKey, eDirectionType dir, int virtualButton )
-{
-    rAssert( dxKey >= 0 && dxKey < NUM_KEYBOARD_BUTTONS );
-    rAssert( virtualButton >= 0 && virtualButton < Input::MaxPhysicalButtons );
-    rAssert( dir == DIR_UP );
+bool Keyboard::SetMap(int dxKey, eDirectionType dir, int virtualButton) {
+    rAssert(dxKey >= 0 && dxKey < NUM_KEYBOARD_BUTTONS);
+    rAssert(virtualButton >= 0 && virtualButton < Input::MaxPhysicalButtons);
+    rAssert(dir == DIR_UP);
 
-    eMapType maptype = VirtualInputs::GetType( virtualButton );
-    
-    if( dxKey >= 0 && dxKey < NUM_KEYBOARD_BUTTONS )
-    {
-        m_ButtonMap[ maptype ][ dxKey ] = virtualButton;
+    eMapType maptype = VirtualInputs::GetType(virtualButton);
+
+    if (dxKey >= 0 && dxKey < NUM_KEYBOARD_BUTTONS) {
+        m_ButtonMap[maptype][dxKey] = virtualButton;
         return true;
-    }
-    else
-    {
+    } else {
         return false;
     }
 }
@@ -106,17 +98,15 @@ bool Keyboard::SetMap( int dxKey, eDirectionType dir, int virtualButton )
 //
 //==============================================================================
 
-void Keyboard::ClearMap( int dxKey, eDirectionType dir, int virtualButton )
-{
-    rAssert( dxKey >= 0 && dxKey < NUM_KEYBOARD_BUTTONS );
-    rAssert( virtualButton >= 0 && virtualButton < Input::MaxPhysicalButtons );
-    rAssert( dir == DIR_UP );
+void Keyboard::ClearMap(int dxKey, eDirectionType dir, int virtualButton) {
+    rAssert(dxKey >= 0 && dxKey < NUM_KEYBOARD_BUTTONS);
+    rAssert(virtualButton >= 0 && virtualButton < Input::MaxPhysicalButtons);
+    rAssert(dir == DIR_UP);
 
-    eMapType maptype = VirtualInputs::GetType( virtualButton );
+    eMapType maptype = VirtualInputs::GetType(virtualButton);
 
-    if( dxKey >= 0 && dxKey < NUM_KEYBOARD_BUTTONS )
-    {
-        m_ButtonMap[ maptype ][ dxKey ] = Input::INVALID_CONTROLLERID;
+    if (dxKey >= 0 && dxKey < NUM_KEYBOARD_BUTTONS) {
+        m_ButtonMap[maptype][dxKey] = Input::INVALID_CONTROLLERID;
     }
 }
 
@@ -135,16 +125,12 @@ void Keyboard::ClearMap( int dxKey, eDirectionType dir, int virtualButton )
 //
 //==============================================================================
 
-int Keyboard::GetMap( int dxKey, eDirectionType dir, eMapType map ) const
-{
-    rAssert( dxKey >= 0 && dxKey < NUM_KEYBOARD_BUTTONS );
- 
-    if( dir == DIR_UP )
-    {
-        return m_ButtonMap[ map ][ dxKey ];
-    }
-    else
-    {
+int Keyboard::GetMap(int dxKey, eDirectionType dir, eMapType map) const {
+    rAssert(dxKey >= 0 && dxKey < NUM_KEYBOARD_BUTTONS);
+
+    if (dir == DIR_UP) {
+        return m_ButtonMap[map][dxKey];
+    } else {
         return Input::INVALID_CONTROLLERID;
     }
 }
@@ -161,9 +147,8 @@ int Keyboard::GetMap( int dxKey, eDirectionType dir, eMapType map ) const
 //
 //==============================================================================
 
-void Keyboard::ClearMappedButtons()
-{
-    memset( &m_ButtonMap, Input::INVALID_CONTROLLERID, sizeof( m_ButtonMap ) );
+void Keyboard::ClearMappedButtons() {
+    memset(&m_ButtonMap, Input::INVALID_CONTROLLERID, sizeof(m_ButtonMap));
 }
 
 //==============================================================================
@@ -179,36 +164,30 @@ void Keyboard::ClearMappedButtons()
 //
 //==============================================================================
 
-void Keyboard::MapInputToDICode()
-{
-    if( m_InputToDICode != NULL )
-    {
-        delete [] m_InputToDICode;
+void Keyboard::MapInputToDICode() {
+    if (m_InputToDICode != NULL) {
+        delete[] m_InputToDICode;
         m_InputToDICode = NULL;
     }
 
-    if( m_radController != NULL )
-    {
+    if (m_radController != NULL) {
         // Get the number of input points
         m_numInputPoints = m_radController->GetNumberOfInputPoints();
 
         // Set up a cleared index -> di map.
-        m_InputToDICode = new int[ m_numInputPoints ];
+        m_InputToDICode = new int[m_numInputPoints];
 
-        for( int i = 0; i < m_numInputPoints; i++ )
-        {
-            m_InputToDICode[ i ] = Input::INVALID_CONTROLLERID;
+        for (int i = 0; i < m_numInputPoints; i++) {
+            m_InputToDICode[i] = Input::INVALID_CONTROLLERID;
         }
 
         // Reverse the di -> index map into what we want.
-        for( int di = DIK_ESCAPE; di <= NUM_KEYBOARD_BUTTONS; di++ )
-        {
-            int inputpoint = VirtualKeyToIndex[ di ];
+        for (int di = DIK_ESCAPE; di <= NUM_KEYBOARD_BUTTONS; di++) {
+            int inputpoint = VirtualKeyToIndex[di];
 
-            if( inputpoint >= 0 &&
-                inputpoint < m_numInputPoints )
-            {
-                m_InputToDICode[ inputpoint ] = di;
+            if (inputpoint >= 0 &&
+                inputpoint < m_numInputPoints) {
+                m_InputToDICode[inputpoint] = di;
             }
         }
     }

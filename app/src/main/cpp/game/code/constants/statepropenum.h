@@ -21,15 +21,12 @@
 // Constants, Typedefs, and Macro Definitions (needed by external clients)
 //===========================================================================
 
-namespace StatePropEnum
-{
-    enum Events
-    {
-        
+namespace StatePropEnum {
+    enum Events {
+
     };
 
-    enum Callbacks
-    {
+    enum Callbacks {
         eStateChange = -1, // The only callback thats reserved for use by the stateprop system
         eRemoveFromWorld = 0,
         eSpawn5Coins = 1,

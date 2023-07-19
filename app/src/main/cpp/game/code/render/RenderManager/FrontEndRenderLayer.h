@@ -33,37 +33,45 @@
 // Synopsis:   The FrontEndRenderLayer
 //
 //========================================================================
-class FrontEndRenderLayer : public RenderLayer
-{
+class FrontEndRenderLayer : public RenderLayer {
 public:
-   FrontEndRenderLayer();
-   ~FrontEndRenderLayer();
+    FrontEndRenderLayer();
 
-   ///////////////////////////////////////////////////////////////////////
-   // Render Interface
-   ///////////////////////////////////////////////////////////////////////
-   virtual void Render();
+    ~FrontEndRenderLayer();
 
-   ///////////////////////////////////////////////////////////////////////
-   // Resource Interfaces
-   ///////////////////////////////////////////////////////////////////////
-   // Guts; Renderable Type Things
-   virtual void   AddGuts( tDrawable* ipDrawable );
-   virtual void   AddGuts( tGeometry* ipGeometry );
-   virtual void   AddGuts( IntersectDSG* ipIntersectDSG );
-   virtual void   AddGuts( StaticEntityDSG* ipStaticEntityDSG );
-   virtual void   AddGuts( StaticPhysDSG* ipStaticPhysDSG );
-   virtual void   AddGuts( Scrooby::App* ipScroobyApp );
-   virtual void   SetUpGuts();
-   virtual void   NullifyGuts();
+    ///////////////////////////////////////////////////////////////////////
+    // Render Interface
+    ///////////////////////////////////////////////////////////////////////
+    virtual void Render();
+
+    ///////////////////////////////////////////////////////////////////////
+    // Resource Interfaces
+    ///////////////////////////////////////////////////////////////////////
+    // Guts; Renderable Type Things
+    virtual void AddGuts(tDrawable *ipDrawable);
+
+    virtual void AddGuts(tGeometry *ipGeometry);
+
+    virtual void AddGuts(IntersectDSG *ipIntersectDSG);
+
+    virtual void AddGuts(StaticEntityDSG *ipStaticEntityDSG);
+
+    virtual void AddGuts(StaticPhysDSG *ipStaticPhysDSG);
+
+    virtual void AddGuts(Scrooby::App *ipScroobyApp);
+
+    virtual void SetUpGuts();
+
+    virtual void NullifyGuts();
 
 protected:
-    Scrooby::App* mpScroobyApp;
+    Scrooby::App *mpScroobyApp;
 
 private:
     void DrawCoinObject();
+
 #ifdef DEBUGWATCH
-   unsigned int mDebugRenderTime;
+    unsigned int mDebugRenderTime;
 #endif
 
 };

@@ -21,6 +21,7 @@
 // Forward References
 //========================================
 class Vehicle;
+
 class Lane;
 
 
@@ -30,105 +31,110 @@ class Lane;
 //
 //=============================================================================
 
-class TrafficVehicle
-{
+class TrafficVehicle {
 public:
     TrafficVehicle();
+
     virtual ~TrafficVehicle();
 
-    Vehicle*    GetVehicle() const;
-    void        SetVehicle( Vehicle* vehicle );
+    Vehicle *GetVehicle() const;
 
-    Lane*       GetLane() const;
-    void        SetLane( Lane* lane );
+    void SetVehicle(Vehicle *vehicle);
 
-    bool        GetIsActive() const;
-    void        SetIsActive( bool active );
+    Lane *GetLane() const;
 
-    bool        HasHusk() const;
-    void        SetHasHusk( bool yes );
+    void SetLane(Lane *lane);
 
-    Vehicle*    GetHusk();
-    void        SetHusk( Vehicle* husk );
+    bool GetIsActive() const;
+
+    void SetIsActive(bool active);
+
+    bool HasHusk() const;
+
+    void SetHasHusk(bool yes);
+
+    Vehicle *GetHusk();
+
+    void SetHusk(Vehicle *husk);
 
     //int         mActiveListIndex;
     unsigned int mMillisecondsDeactivated;
-    bool        mCanBeResurrected;
+    bool mCanBeResurrected;
 
     unsigned int mMillisecondsOutOfSight;
-    bool        mOutOfSight;
+    bool mOutOfSight;
 
-    
 
 private:
 
-    Vehicle* mVehicle;
-    Vehicle* mHusk;
+    Vehicle *mVehicle;
+    Vehicle *mHusk;
 
     bool mIsActive;      // Active = being used as traffic car
-    Lane* mLane;         // Pointer to Lane to whose list of vehicles this
-                         //  traffic vehicle has been added.
+    Lane *mLane;         // Pointer to Lane to whose list of vehicles this
+    //  traffic vehicle has been added.
     bool mHasHusk;
 
 private:
     //Prevent wasteful constructor creation.
-    TrafficVehicle( const TrafficVehicle& trafficvehicle );
-    TrafficVehicle& operator=( const TrafficVehicle& trafficvehicle );
+    TrafficVehicle(const TrafficVehicle &trafficvehicle);
+
+    TrafficVehicle &operator=(const TrafficVehicle &trafficvehicle);
 };
+
 inline TrafficVehicle::TrafficVehicle() :
-    //mActiveListIndex( -1 ),
-    mMillisecondsDeactivated( 0 ),
-    mCanBeResurrected( true ),
-    mMillisecondsOutOfSight( 0 ),
-    mOutOfSight( true ),
-    mVehicle( NULL ),
-    mHusk( NULL ),
-    mIsActive( false ),
-    mLane( NULL ),
-    mHasHusk( false )
-{
+//mActiveListIndex(-1),
+        mMillisecondsDeactivated(0),
+        mCanBeResurrected(true),
+        mMillisecondsOutOfSight(0),
+        mOutOfSight(true),
+        mVehicle(NULL),
+        mHusk(NULL),
+        mIsActive(false),
+        mLane(NULL),
+        mHasHusk(false) {
 }
-inline TrafficVehicle::~TrafficVehicle()
-{
+
+inline TrafficVehicle::~TrafficVehicle() {
 }
-inline Vehicle* TrafficVehicle::GetVehicle() const
-{
+
+inline Vehicle *TrafficVehicle::GetVehicle() const {
     return mVehicle;
 }
-inline void TrafficVehicle::SetVehicle( Vehicle* vehicle )
-{
+
+inline void TrafficVehicle::SetVehicle(Vehicle *vehicle) {
     mVehicle = vehicle;
 }
-inline Lane* TrafficVehicle::GetLane() const
-{
+
+inline Lane *TrafficVehicle::GetLane() const {
     return mLane;
 }
-inline void TrafficVehicle::SetLane( Lane* lane )
-{
+
+inline void TrafficVehicle::SetLane(Lane *lane) {
     mLane = lane;
 }
-inline bool TrafficVehicle::GetIsActive() const
-{
+
+inline bool TrafficVehicle::GetIsActive() const {
     return mIsActive;
 }
-inline void TrafficVehicle::SetIsActive( bool active )
-{
+
+inline void TrafficVehicle::SetIsActive(bool active) {
     mIsActive = active;
 }
-inline bool TrafficVehicle::HasHusk() const
-{
+
+inline bool TrafficVehicle::HasHusk() const {
     return mHasHusk;
 }
-inline void TrafficVehicle::SetHasHusk( bool yes )
-{
+
+inline void TrafficVehicle::SetHasHusk(bool yes) {
     mHasHusk = yes;
 }
-inline Vehicle* TrafficVehicle::GetHusk()
-{
+
+inline Vehicle *TrafficVehicle::GetHusk() {
     return mHusk;
 }
-inline void TrafficVehicle::SetHusk( Vehicle* husk )
-{
+
+inline void TrafficVehicle::SetHusk(Vehicle *husk) {
     mHusk = husk;
 }
 

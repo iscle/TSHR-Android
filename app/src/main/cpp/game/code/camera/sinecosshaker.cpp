@@ -26,10 +26,12 @@
 // Project Includes
 //========================================
 #ifndef WORLD_BUILDER
+
 #include <camera/SineCosShaker.h>
 #include <camera/SuperCam.h>
 #include <camera/supercamconstants.h>
 #include <events/eventdata.h>
+
 #else
 #include "SineCosShaker.h"
 #include "SuperCam.h"
@@ -62,18 +64,17 @@
 //
 //==============================================================================
 SineCosShaker::SineCosShaker() :
-    mTime( 180 ),
-    mCurrentTime( 0 ),
-    mSpeed( 0.0f ),
-    mCamera( NULL ),
-    mIsCameraRelative( true ),
-    mAmpYIncrement( 0.942478f ),
-    mAmplitudeY( 0.87f ),
-    mAmpScale( 1.0f ),
-    mAmpScaleMax( 1.10f ),
-    mLooping( false )
-{
-    mDirection.Set( 0.0f, 1.0f, 0.0f );
+        mTime(180),
+        mCurrentTime(0),
+        mSpeed(0.0f),
+        mCamera(NULL),
+        mIsCameraRelative(true),
+        mAmpYIncrement(0.942478f),
+        mAmplitudeY(0.87f),
+        mAmpScale(1.0f),
+        mAmpScaleMax(1.10f),
+        mLooping(false) {
+    mDirection.Set(0.0f, 1.0f, 0.0f);
 }
 
 //==============================================================================
@@ -86,9 +87,8 @@ SineCosShaker::SineCosShaker() :
 // Return:      N/A.
 //
 //==============================================================================
-SineCosShaker::~SineCosShaker()
-{
-    tRefCounted::Release( mCamera );
+SineCosShaker::~SineCosShaker() {
+    tRefCounted::Release(mCamera);
 }
 
 //=============================================================================
@@ -96,14 +96,13 @@ SineCosShaker::~SineCosShaker()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( tCamera* camera )
+// Parameters:  (tCamera* camera)
 //
 // Return:      void 
 //
 //=============================================================================
-void SineCosShaker::SetCamera( tPointCamera* camera )
-{
-    tRefCounted::Assign( mCamera, camera );
+void SineCosShaker::SetCamera(tPointCamera *camera) {
+    tRefCounted::Assign(mCamera, camera);
 }
 
 //=============================================================================
@@ -111,48 +110,43 @@ void SineCosShaker::SetCamera( tPointCamera* camera )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* pos, 
+// Parameters:  (rmt::Vector* pos,
 //                rmt::Vector* targ, 
-//                unsigned int milliseconds )
+//                unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void SineCosShaker::ShakeCamera( rmt::Vector* pos, 
-                                 rmt::Vector* targ, 
-                                 unsigned int milliseconds )
-{
-    if ( mCurrentTime < mTime || mLooping )
-    {
+void SineCosShaker::ShakeCamera(rmt::Vector *pos,
+                                rmt::Vector *targ,
+                                unsigned int milliseconds) {
+    if (mCurrentTime < mTime || mLooping) {
         //This is to adjust interpolation when we're running substeps.
-        float timeMod = (float)milliseconds / EXPECTED_FRAME_RATE * mSpeed;
-        
-        mAmplitudeY += mAmpYIncrement * timeMod;
-        
-        float amp = rmt::Sin( mAmplitudeY );
+        float timeMod = (float) milliseconds / EXPECTED_FRAME_RATE * mSpeed;
 
-        if ( !mLooping )
-        {
-            mAmpScale = mAmpScaleMax - ( ( mAmpScaleMax ) * ( (float)mCurrentTime / (float)mTime ) );
-        }
-        else
-        {
+        mAmplitudeY += mAmpYIncrement * timeMod;
+
+        float amp = rmt::Sin(mAmplitudeY);
+
+        if (!mLooping) {
+            mAmpScale = mAmpScaleMax - ((mAmpScaleMax) * ((float) mCurrentTime / (float) mTime));
+        } else {
             mAmpScale = 1.0f;
         }
 
 
         rmt::Vector dir = mDirection;
-//        rmt::Vector dir = rmt::Vector( 1.0f, 0.0f, 0.0f );
+//        rmt::Vector dir = rmt::Vector(1.0f, 0.0f, 0.0f);
 
 //        const rmt::Matrix mat = mCamera->GetWorldToCameraMatrix();
 
-//        dir.Transform( mat );
+//        dir.Transform(mat);
 //        dir.NormalizeSafe();
-//        dir.Scale( amp * mAmpScale );  
+//        dir.Scale(amp * mAmpScale);
 
-        dir.Scale( amp * mAmpScale );   
+        dir.Scale(amp * mAmpScale);
 
-        pos->Sub( dir );
+        pos->Sub(dir);
     }
 
     mCurrentTime += milliseconds;
@@ -168,15 +162,14 @@ void SineCosShaker::ShakeCamera( rmt::Vector* pos,
 // Return:      void 
 //
 //=============================================================================
-void SineCosShaker::RegisterDebugInfo()
-{
+void SineCosShaker::RegisterDebugInfo() {
 #ifdef DEBUGWATCH
-    radDbgWatchAddUnsignedInt( &mTime, "Total Time", "SuperCam\\Shaker\\SineCos", NULL, NULL, 0, 10000 );
-    radDbgWatchAddFloat( &mSpeed, "Speed", "SuperCam\\Shaker\\SineCos", NULL, NULL, 0.0f, 100.0f );
-    radDbgWatchAddFloat( &mAmpYIncrement, "Amplitude Y Increment", "SuperCam\\Shaker\\SineCos", NULL, NULL, 0.0f, rmt::PI_2 );
-    radDbgWatchAddFloat( &mAmpScaleMax, "Amplitude Scale Max", "SuperCam\\Shaker\\SineCos", NULL, NULL, 0.0f, 100.0f );
-    radDbgWatchAddBoolean( &mIsCameraRelative, "Camera Relative", "SuperCam\\Shaker\\SineCos" );
-    radDbgWatchAddBoolean( &mLooping, "Loop", "SuperCam\\Shaker\\SineCos" );
+    radDbgWatchAddUnsignedInt(&mTime, "Total Time", "SuperCam\\Shaker\\SineCos", NULL, NULL, 0, 10000);
+    radDbgWatchAddFloat(&mSpeed, "Speed", "SuperCam\\Shaker\\SineCos", NULL, NULL, 0.0f, 100.0f);
+    radDbgWatchAddFloat(&mAmpYIncrement, "Amplitude Y Increment", "SuperCam\\Shaker\\SineCos", NULL, NULL, 0.0f, rmt::PI_2);
+    radDbgWatchAddFloat(&mAmpScaleMax, "Amplitude Scale Max", "SuperCam\\Shaker\\SineCos", NULL, NULL, 0.0f, 100.0f);
+    radDbgWatchAddBoolean(&mIsCameraRelative, "Camera Relative", "SuperCam\\Shaker\\SineCos");
+    radDbgWatchAddBoolean(&mLooping, "Loop", "SuperCam\\Shaker\\SineCos");
 #endif
 }
 
@@ -190,15 +183,14 @@ void SineCosShaker::RegisterDebugInfo()
 // Return:      void 
 //
 //=============================================================================
-void SineCosShaker::UnregisterDebugInfo()
-{
+void SineCosShaker::UnregisterDebugInfo() {
 #ifdef DEBUGWATCH
-    radDbgWatchDelete( &mTime );
-    radDbgWatchDelete( &mSpeed );
-    radDbgWatchDelete( &mAmpYIncrement );
-    radDbgWatchDelete( &mAmpScaleMax );
-    radDbgWatchDelete( &mIsCameraRelative );
-    radDbgWatchDelete( &mLooping );
+    radDbgWatchDelete(&mTime);
+    radDbgWatchDelete(&mSpeed);
+    radDbgWatchDelete(&mAmpYIncrement);
+    radDbgWatchDelete(&mAmpScaleMax);
+    radDbgWatchDelete(&mIsCameraRelative);
+    radDbgWatchDelete(&mLooping);
 #endif
 }
 
@@ -207,15 +199,14 @@ void SineCosShaker::UnregisterDebugInfo()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const ShakeEventData* data )
+// Parameters:  (const ShakeEventData* data)
 //
 // Return:      void 
 //
 //=============================================================================
-void SineCosShaker::SetShakeData( const ShakeEventData* data )
-{
+void SineCosShaker::SetShakeData(const ShakeEventData *data) {
     mDirection = data->direction;
-    SetLooping( data->looping );
+    SetLooping(data->looping);
 }
 
 //******************************************************************************

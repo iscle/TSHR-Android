@@ -28,34 +28,39 @@
 //
 //=============================================================================
 
-class FMVObjective :    public MissionObjective,
-                        public PresentationEvent::PresentationEventCallBack
-{
+class FMVObjective : public MissionObjective,
+                     public PresentationEvent::PresentationEventCallBack {
 public:
-    enum { FMV_FILE_NAME_LEN = 13 }; // Enforce 8.3 filenaming.
+    enum {
+        FMV_FILE_NAME_LEN = 13
+    }; // Enforce 8.3 filenaming.
 
     FMVObjective();
+
     virtual ~FMVObjective();
 
-    void SetFileName( const char* name );
+    void SetFileName(const char *name);
+
     void SetMusicStop() { mMusicStop = true; }
 
 protected:
     virtual void OnInitialize();
+
     virtual void OnFinalize() {}; // nop.
-    virtual void OnPresentationEventBegin( PresentationEvent* pEvent ) {};  // nop.
-    virtual void OnPresentationEventLoadComplete( PresentationEvent* pEvent ) {};   // nop.
-    virtual void OnPresentationEventEnd( PresentationEvent* pEvent );
+    virtual void OnPresentationEventBegin(PresentationEvent *pEvent) {};  // nop.
+    virtual void OnPresentationEventLoadComplete(PresentationEvent *pEvent) {};   // nop.
+    virtual void OnPresentationEventEnd(PresentationEvent *pEvent);
 
 private:
-    char mFileName[ FMV_FILE_NAME_LEN ];
+    char mFileName[FMV_FILE_NAME_LEN];
     bool mMusicStop;
 
 //    FMVEventData mFMVEventData;
 
     //Prevent wasteful constructor creation.
-    FMVObjective( const FMVObjective& That );
-    FMVObjective& operator=( const FMVObjective& That );
+    FMVObjective(const FMVObjective &That);
+
+    FMVObjective &operator=(const FMVObjective &That);
 };
 
 

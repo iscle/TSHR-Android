@@ -39,9 +39,8 @@
 // Return:      N/A.
 //
 //===========================================================================
-CGuiEntity::CGuiEntity( CGuiEntity* pParent )
-:   m_pParent( pParent )
-{
+CGuiEntity::CGuiEntity(CGuiEntity *pParent)
+        : m_pParent(pParent) {
 }
 
 //===========================================================================
@@ -56,6 +55,5 @@ CGuiEntity::CGuiEntity( CGuiEntity* pParent )
 // Return:      N/A.
 //
 //===========================================================================
-CGuiEntity::~CGuiEntity()
-{
+CGuiEntity::~CGuiEntity() {
 }

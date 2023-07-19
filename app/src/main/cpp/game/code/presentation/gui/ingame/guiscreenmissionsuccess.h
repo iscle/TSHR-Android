@@ -28,20 +28,23 @@
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenMissionSuccess : 
-    public CGuiScreenMissionBase
-{
+class CGuiScreenMissionSuccess :
+        public CGuiScreenMissionBase {
 public:
-    CGuiScreenMissionSuccess( Scrooby::Screen* pScreen, CGuiEntity* pParent );
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    CGuiScreenMissionSuccess(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
+
     virtual void InitIntro();
+
 protected:
     virtual void OutroDone();
+
 private:
-    Scrooby::Text* m_PattyAndSelmaTitle;
-    Scrooby::Text* m_PattyAndSelmaInfo;
+    Scrooby::Text *m_PattyAndSelmaTitle;
+    Scrooby::Text *m_PattyAndSelmaInfo;
 };
 
 #endif // GUISCREENMISSIONSUCCESS_H

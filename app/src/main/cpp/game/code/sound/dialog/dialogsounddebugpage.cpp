@@ -43,16 +43,14 @@
 // Return:      N/A.
 //
 //=============================================================================
-DialogSoundDebugPage::DialogSoundDebugPage( unsigned int pageNum, SoundDebugDisplay* master ) :
-    SoundDebugPage( pageNum, master )
-{
+DialogSoundDebugPage::DialogSoundDebugPage(unsigned int pageNum, SoundDebugDisplay *master) :
+        SoundDebugPage(pageNum, master) {
     unsigned int i;
 
     //
     // Mark queue entries as empty by setting event ID to NUM_EVENTS
     //
-    for( i = 0; i < MAX_QUEUE_SIZE; i++ )
-    {
+    for (i = 0; i < MAX_QUEUE_SIZE; i++) {
         m_queueData[i].eventID = NUM_EVENTS;
     }
 }
@@ -67,8 +65,7 @@ DialogSoundDebugPage::DialogSoundDebugPage( unsigned int pageNum, SoundDebugDisp
 // Return:      N/A.
 //
 //=============================================================================
-DialogSoundDebugPage::~DialogSoundDebugPage()
-{
+DialogSoundDebugPage::~DialogSoundDebugPage() {
 }
 
 //=============================================================================
@@ -82,12 +79,10 @@ DialogSoundDebugPage::~DialogSoundDebugPage()
 // Return:      void 
 //
 //=============================================================================
-void DialogSoundDebugPage::SetQueueLength( unsigned int size )
-{
+void DialogSoundDebugPage::SetQueueLength(unsigned int size) {
     unsigned int i;
 
-    for( i = size; i < MAX_QUEUE_SIZE; i++ )
-    {
+    for (i = size; i < MAX_QUEUE_SIZE; i++) {
         m_queueData[i].eventID = NUM_EVENTS;
     }
 }
@@ -97,23 +92,21 @@ void DialogSoundDebugPage::SetQueueLength( unsigned int size )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int position, EventEnum event, unsigned int mission, unsigned int level, tUID theCharacter, DialogPriority priority, unsigned int msecsRemaining )
+// Parameters:  (unsigned int position, EventEnum event, unsigned int mission, unsigned int level, tUID theCharacter, DialogPriority priority, unsigned int msecsRemaining)
 //
 // Return:      void 
 //
 //=============================================================================
-void DialogSoundDebugPage::SetQueueEntry( unsigned int position,
-                                          EventEnum event,
-                                          unsigned int mission,
-                                          unsigned int level,
-                                          tUID theCharacter,
-                                          DialogPriority priority,
-                                          unsigned int msecsRemaining )
-{
-    QueueInfo* data;
+void DialogSoundDebugPage::SetQueueEntry(unsigned int position,
+                                         EventEnum event,
+                                         unsigned int mission,
+                                         unsigned int level,
+                                         tUID theCharacter,
+                                         DialogPriority priority,
+                                         unsigned int msecsRemaining) {
+    QueueInfo *data;
 
-    if( position >= MAX_QUEUE_SIZE )
-    {
+    if (position >= MAX_QUEUE_SIZE) {
         //
         // Don't bother displaying too much stuff
         //
@@ -147,20 +140,18 @@ void DialogSoundDebugPage::SetQueueEntry( unsigned int position,
 // Return:      void 
 //
 //=============================================================================
-void DialogSoundDebugPage::fillLineBuffer( int lineNum, char* buffer )
-{
-    switch( lineNum )
-    {
+void DialogSoundDebugPage::fillLineBuffer(int lineNum, char *buffer) {
+    switch (lineNum) {
         case 0:
-            strcpy( buffer, "Now playing:" );
+            strcpy(buffer, "Now playing:");
             break;
 
         case 1:
-            fillQueueText( buffer, 0 );
+            fillQueueText(buffer, 0);
             break;
 
         case 3:
-            strcpy( buffer, "Queued:" );
+            strcpy(buffer, "Queued:");
             break;
 
         case 4:
@@ -172,7 +163,7 @@ void DialogSoundDebugPage::fillLineBuffer( int lineNum, char* buffer )
         case 10:
         case 11:
         case 12:
-            fillQueueText( buffer, lineNum - 3 );
+            fillQueueText(buffer, lineNum - 3);
             break;
 
         default:
@@ -191,9 +182,8 @@ void DialogSoundDebugPage::fillLineBuffer( int lineNum, char* buffer )
 // Return:      Line count 
 //
 //=============================================================================
-int DialogSoundDebugPage::getNumLines()
-{
-    return( 13 );
+int DialogSoundDebugPage::getNumLines() {
+    return (13);
 }
 
 //*****************************************************************************
@@ -214,30 +204,26 @@ int DialogSoundDebugPage::getNumLines()
 // Return:      void 
 //
 //=============================================================================
-void DialogSoundDebugPage::fillQueueText( char* buffer, unsigned int index )
-{
-    QueueInfo* info;
+void DialogSoundDebugPage::fillQueueText(char *buffer, unsigned int index) {
+    QueueInfo *info;
     char eventName[30];
     char characterName[10];
 
-    rAssert( index >= 0 );
-    rAssert( index <= MAX_QUEUE_SIZE );
-    rAssert( buffer != NULL );
+    rAssert(index >= 0);
+    rAssert(index <= MAX_QUEUE_SIZE);
+    rAssert(buffer != NULL);
 
     info = &m_queueData[index];
-    if( info->eventID != NUM_EVENTS )
-    {
-        DialogLine::FillEventName( eventName, 30, info->eventID );
-        DialogLine::FillCharacterName( characterName, 10, info->theCharacter );
-        sprintf( buffer, "Event: %s Char: %s Pri: %d L%dM%d",
-                 eventName,
-                 characterName,
-                 info->priority,
-                 info->level,
-                 info->mission );
-    }
-    else
-    {
+    if (info->eventID != NUM_EVENTS) {
+        DialogLine::FillEventName(eventName, 30, info->eventID);
+        DialogLine::FillCharacterName(characterName, 10, info->theCharacter);
+        sprintf(buffer, "Event: %s Char: %s Pri: %d L%dM%d",
+                eventName,
+                characterName,
+                info->priority,
+                info->level,
+                info->mission);
+    } else {
         buffer[0] = '\0';
     }
 }

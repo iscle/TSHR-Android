@@ -34,24 +34,27 @@
 // Interface Definitions
 //===========================================================================
 
-class tNameInsensitive : public tName
-{
+class tNameInsensitive : public tName {
 private:
     typedef tName Parent;
 public:
     // various constructors
     tNameInsensitive();                   // default constructor, both uid and text will be invalid
-    tNameInsensitive( const char* name ); // sets text name and uid
-    tNameInsensitive( const tNameInsensitive& );     // copy from another 
+    tNameInsensitive(const char *name); // sets text name and uid
+    tNameInsensitive(const tNameInsensitive &);     // copy from another
 
-    const tNameInsensitive& operator=( const tNameInsensitive& other );
-    const tNameInsensitive& operator=( const char*             other );
-    void  SetText(const char* name);
+    const tNameInsensitive &operator=(const tNameInsensitive &other);
+
+    const tNameInsensitive &operator=(const char *other);
+
+    void SetText(const char *name);
 
 private:
-    const tNameInsensitive& operator=(const tName& other);
-    tNameInsensitive( const tName& );     // copy from another name - DO NOT PERMIT
-    void SetTextOnly(const char*); //set the text without changing the UID
+    const tNameInsensitive &operator=(const tName &other);
+
+    tNameInsensitive(const tName &);     // copy from another name - DO NOT PERMIT
+    void SetTextOnly(const char *); //set the text without changing the UID
     // the real data
 };
+
 #endif     //__NAMEINSENSITIVE_H_

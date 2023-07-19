@@ -47,27 +47,29 @@
 
 #define PROFILE_PARSER 0
 
-const char* gErrFileName = 0;
+const char *gErrFileName = 0;
 unsigned int gErrLineNum = ~0;
 
 //---------------------------------------------------------------------------//
 
 // Static pointer to instance of singleton.
-Console* Console::spInstance = 0;
+Console *Console::spInstance = 0;
 
 static char gConsoleEntry[Console::MAX_STRING_LENGTH];
 
 //log message buffers needed so the async writes to the log file don't bog
-static char* gConsoleMsgBuffer[2] = {0};
-static char* gConsoleMsgBufferPtr = 0;
+static char *gConsoleMsgBuffer[2] = {0};
+static char *gConsoleMsgBufferPtr = 0;
 static int gConsoleBufferIndex = 0;
 
 #ifdef RAD_GAMECUBE
-FBMemoryPool Console::FunctionTableEntry::sMemoryPool( sizeof(Console::FunctionTableEntry), Console::MAX_FUNCTIONS, GMA_GC_VMM );
-FBMemoryPool Console::AliasTableEntry::sMemoryPool( sizeof(Console::AliasTableEntry), Console::MAX_ALIASES, GMA_GC_VMM );
+FBMemoryPool Console::FunctionTableEntry::sMemoryPool(sizeof(Console::FunctionTableEntry), Console::MAX_FUNCTIONS, GMA_GC_VMM);
+FBMemoryPool Console::AliasTableEntry::sMemoryPool(sizeof(Console::AliasTableEntry), Console::MAX_ALIASES, GMA_GC_VMM);
 #else
-FBMemoryPool Console::FunctionTableEntry::sMemoryPool( sizeof(Console::FunctionTableEntry), Console::MAX_FUNCTIONS, GMA_PERSISTENT );
-FBMemoryPool Console::AliasTableEntry::sMemoryPool( sizeof(Console::AliasTableEntry), Console::MAX_ALIASES, GMA_PERSISTENT );
+FBMemoryPool Console::FunctionTableEntry::sMemoryPool(sizeof(Console::FunctionTableEntry),
+                                                      Console::MAX_FUNCTIONS, GMA_PERSISTENT);
+FBMemoryPool Console::AliasTableEntry::sMemoryPool(sizeof(Console::AliasTableEntry),
+                                                   Console::MAX_ALIASES, GMA_PERSISTENT);
 #endif
 
 //=============================================================================
@@ -81,87 +83,74 @@ FBMemoryPool Console::AliasTableEntry::sMemoryPool( sizeof(Console::AliasTableEn
 // Return:      
 //
 //=============================================================================
-static bool cConsoleTrue( int argc, char** argv )
-{
+static bool cConsoleTrue(int argc, char **argv) {
     argc;
     argv;
-    return( true );
+    return (true);
 }
 
-static bool cConsoleFalse( int argc, char** argv )
-{
+static bool cConsoleFalse(int argc, char **argv) {
     argc;
     argv;
-    return( false );
+    return (false);
 }
 
-static void cConsoleExit(int argc, char **argv)
-{
+static void cConsoleExit(int argc, char **argv) {
     argc;
     argv;
     //does nothing, but the parser will terminate executing a script
 }
 
-static void cConsoleExec(int argc, char **argv)
-{
+static void cConsoleExec(int argc, char **argv) {
     GetConsole()->ExecuteScriptSync(argv[1], true);
 }
 
-static void cConsoleSetLogMode(int argc, char **argv)
-{
+static void cConsoleSetLogMode(int argc, char **argv) {
     argc;
-    if (! smStricmp(argv[1], "on"))
+    if (!smStricmp(argv[1], "on"))
         GetConsole()->SetConsoleLogMode(Console::LOGMODE_ON);
-    else if (! smStricmp(argv[1], "append"))
+    else if (!smStricmp(argv[1], "append"))
         GetConsole()->SetConsoleLogMode(Console::LOGMODE_APPEND);
     else
         GetConsole()->SetConsoleLogMode(Console::LOGMODE_OFF);
 }
 
-static void cConsoleFlushLog(int argc, char **argv)
-{
+static void cConsoleFlushLog(int argc, char **argv) {
     GetConsole()->FlushConsoleLogFile();
 }
 
-static void cConsoleEcho(int argc, char **argv)
-{
+static void cConsoleEcho(int argc, char **argv) {
     if (argc == 3)
         GetConsole()->Printf(atoi(argv[1]), argv[2]);
     else
         GetConsole()->Printf(argv[1]);
 }
 
-static void cConsoleError(int argc, char **argv)
-{
+static void cConsoleError(int argc, char **argv) {
     GetConsole()->Errorf(argv[1]);
 }
 
-static void cConsoleListFunctions(int argc, char **argv)
-{
+static void cConsoleListFunctions(int argc, char **argv) {
     argc;
     argv;
     GetConsole()->ListConsoleFunctions();
 }
 
-static void cConsoleListenChannel(int argc, char **argv)
-{
+static void cConsoleListenChannel(int argc, char **argv) {
     argc;
     GetConsole()->ConsoleListenChannel(atoi(argv[1]));
 }
 
-static void cConsoleBlockChannel(int argc, char **argv)
-{
+static void cConsoleBlockChannel(int argc, char **argv) {
     argc;
     GetConsole()->ConsoleBlockChannel(atoi(argv[1]));
 }
 
-static void cConsoleAlias(int argc, char **argv)
-{
+static void cConsoleAlias(int argc, char **argv) {
     GetConsole()->AddAlias(argv[1], argv[2], argc - 3, &argv[3]);
 }
 
-static void cWatcherExecConsoleCommand(void *)
-{
+static void cWatcherExecConsoleCommand(void *) {
     GetConsole()->Printf("==> %s", gConsoleEntry);
     GetConsole()->Evaluate(gConsoleEntry, "CMDLine");
 }
@@ -186,28 +175,27 @@ static void cWatcherExecConsoleCommand(void *)
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-Console* Console::CreateInstance()
-{
-MEMTRACK_PUSH_GROUP( "Console" );
-    rTuneAssert( spInstance == 0 );
+Console *Console::CreateInstance() {
+    MEMTRACK_PUSH_GROUP("Console");
+    rTuneAssert(spInstance == 0);
 
-    #ifdef RAD_GAMECUBE
-        HeapMgr()->PushHeap( GMA_GC_VMM );
-    #else
-        HeapMgr()->PushHeap( GMA_PERSISTENT );
-    #endif
+#ifdef RAD_GAMECUBE
+    HeapMgr()->PushHeap(GMA_GC_VMM);
+#else
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
+#endif
 
     spInstance = new Console;
-    rTuneAssert( spInstance );
+    rTuneAssert(spInstance);
 
-    #ifdef RAD_GAMECUBE
-        HeapMgr()->PopHeap( GMA_GC_VMM );
-    #else
-        HeapMgr()->PopHeap( GMA_PERSISTENT );
-    #endif
-   
+#ifdef RAD_GAMECUBE
+    HeapMgr()->PopHeap(GMA_GC_VMM);
+#else
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
+#endif
+
     Console::Initialize();
-MEMTRACK_POP_GROUP( "Console" );
+    MEMTRACK_POP_GROUP("Console");
 
     return spInstance;
 }
@@ -226,10 +214,9 @@ MEMTRACK_POP_GROUP( "Console" );
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-Console* Console::GetInstance()
-{
-    rTuneAssert( spInstance != 0 );
-    
+Console *Console::GetInstance() {
+    rTuneAssert(spInstance != 0);
+
     return spInstance;
 }
 
@@ -245,9 +232,8 @@ Console* Console::GetInstance()
 // Return:      None.
 //
 //==============================================================================
-void Console::DestroyInstance()
-{
-    rTuneAssert( spInstance != 0 );
+void Console::DestroyInstance() {
+    rTuneAssert(spInstance != 0);
 
     delete spInstance;
     spInstance = 0;
@@ -265,59 +251,58 @@ void Console::DestroyInstance()
 // Return:      
 //
 //==============================================================================
-bool Console::Initialize()
-{
+bool Console::Initialize() {
 //the console doesn't use remote drive in the release build
 #ifdef RAD_DEBUG
-MEMTRACK_PUSH_GROUP( "Console Initialize" );
+    MEMTRACK_PUSH_GROUP("Console Initialize");
 
-    if( !CommandLineOptions::Get( CLO_FIREWIRE ) )
-    {
-        //initialize the console log buffers
-        gConsoleMsgBuffer[0] = new(GMA_DEBUG) char[MAX_STRING_LENGTH * MAX_BUFFERS];
-        gConsoleMsgBuffer[1] = new(GMA_DEBUG) char[MAX_STRING_LENGTH * MAX_BUFFERS];
-        gConsoleMsgBufferPtr = gConsoleMsgBuffer[0];
-        gConsoleBufferIndex = 0;
-
-        //add a function to allow the program to generate a console.log file
-        GetConsole()->AddFunction("ifTrue", cConsoleTrue, "ifTrue() { } //returns true", 0, 0);
-        GetConsole()->AddFunction("ifFalse", cConsoleFalse, "ifFalse() { } //returns false", 0, 0);
-        GetConsole()->AddFunction("Exit", cConsoleExit, "Exit(msg);", 1, 1);
-        GetConsole()->AddFunction("ConsoleExec", cConsoleExec, "ConsoleExec(file);", 1, 1);
-        GetConsole()->AddFunction("ConsoleSetLogMode", cConsoleSetLogMode, "ConsoleSetLogMode(off/on/append);", 1, 1);
-        GetConsole()->AddFunction("ConsoleFlushLog", cConsoleFlushLog, "ConsoleFlushLog();", 0, 0);
-        GetConsole()->AddFunction("Echo", cConsoleEcho, "Echo([channel, ] msg);", 1, 2);
-        GetConsole()->AddFunction("Error", cConsoleError, "Error(msg);", 1, 1);
-        GetConsole()->AddFunction("ConsoleListFunctions", cConsoleListFunctions, "ConsoleListFunctions();", 0, 0);
-        GetConsole()->AddFunction("ConsoleListenChannel", cConsoleListenChannel, "ConsoleListenChannel(-1 or [0 .. 31]);", 1, 1);
-        GetConsole()->AddFunction("ConsoleBlockChannel", cConsoleBlockChannel, "ConsoleBlockChannel(-1 or [0 .. 31]);", 1, 1);
-        GetConsole()->AddFunction("Alias", cConsoleAlias, "Alias(aliasName, functionName, arg1, arg2, \"%1\", arg3, \"%2\", etc...);", 2, MAX_ARGS);
-
-        //add the console entry string and it's update function
-        radDbgWatchAddString(gConsoleEntry, sizeof(gConsoleEntry), "Console command", "\\", cWatcherExecConsoleCommand);
-
-        //add the debugconsole window as well...
-        radDebugConsoleCreate(&(spInstance->mDebugConsole), GMA_DEBUG);
-
-        if (spInstance->mDebugConsole)
+        if(!CommandLineOptions::Get(CLO_FIREWIRE))
         {
-            //set the title and background color
-            spInstance->mDebugConsole->SetTitle( "Fish Bulb Console" );
-            spInstance->mDebugConsole->SetBackgroundColor(RGB( 0, 0, 0x188 ));  
-            spInstance->mDebugConsole->Clear();
+            //initialize the console log buffers
+            gConsoleMsgBuffer[0] = new(GMA_DEBUG) char[MAX_STRING_LENGTH * MAX_BUFFERS];
+            gConsoleMsgBuffer[1] = new(GMA_DEBUG) char[MAX_STRING_LENGTH * MAX_BUFFERS];
+            gConsoleMsgBufferPtr = gConsoleMsgBuffer[0];
+            gConsoleBufferIndex = 0;
 
-            spInstance->mDebugConsole->SetCursorPosition(0, 0);
-            spInstance->mDebugConsole->SetTextColor(RGB(0xFF, 0xFF,0xFF));
+            //add a function to allow the program to generate a console.log file
+            GetConsole()->AddFunction("ifTrue", cConsoleTrue, "ifTrue() { } //returns true", 0, 0);
+            GetConsole()->AddFunction("ifFalse", cConsoleFalse, "ifFalse() { } //returns false", 0, 0);
+            GetConsole()->AddFunction("Exit", cConsoleExit, "Exit(msg);", 1, 1);
+            GetConsole()->AddFunction("ConsoleExec", cConsoleExec, "ConsoleExec(file);", 1, 1);
+            GetConsole()->AddFunction("ConsoleSetLogMode", cConsoleSetLogMode, "ConsoleSetLogMode(off/on/append);", 1, 1);
+            GetConsole()->AddFunction("ConsoleFlushLog", cConsoleFlushLog, "ConsoleFlushLog();", 0, 0);
+            GetConsole()->AddFunction("Echo", cConsoleEcho, "Echo([channel, ] msg);", 1, 2);
+            GetConsole()->AddFunction("Error", cConsoleError, "Error(msg);", 1, 1);
+            GetConsole()->AddFunction("ConsoleListFunctions", cConsoleListFunctions, "ConsoleListFunctions();", 0, 0);
+            GetConsole()->AddFunction("ConsoleListenChannel", cConsoleListenChannel, "ConsoleListenChannel(-1 or [0 .. 31]);", 1, 1);
+            GetConsole()->AddFunction("ConsoleBlockChannel", cConsoleBlockChannel, "ConsoleBlockChannel(-1 or [0 .. 31]);", 1, 1);
+            GetConsole()->AddFunction("Alias", cConsoleAlias, "Alias(aliasName, functionName, arg1, arg2, \"%1\", arg3, \"%2\", etc...);", 2, MAX_ARGS);
 
-            spInstance->mDebugConsoleCallback = new(GMA_DEBUG) DebugConsoleCallback();
-            spInstance->mDebugConsole->SetKeyboardInputCallback(spInstance->mDebugConsoleCallback);
-            spInstance->mDebugConsole->SetPointerInputCallback(spInstance->mDebugConsoleCallback);
+            //add the console entry string and it's update function
+            radDbgWatchAddString(gConsoleEntry, sizeof(gConsoleEntry), "Console command", "\\", cWatcherExecConsoleCommand);
 
-            //initialize the debug console line number
-            spInstance->mDebugConsoleLine = 0;
+            //add the debugconsole window as well...
+            radDebugConsoleCreate(&(spInstance->mDebugConsole), GMA_DEBUG);
+
+            if (spInstance->mDebugConsole)
+            {
+                //set the title and background color
+                spInstance->mDebugConsole->SetTitle("Fish Bulb Console");
+                spInstance->mDebugConsole->SetBackgroundColor(RGB(0, 0, 0x188));
+                spInstance->mDebugConsole->Clear();
+
+                spInstance->mDebugConsole->SetCursorPosition(0, 0);
+                spInstance->mDebugConsole->SetTextColor(RGB(0xFF, 0xFF,0xFF));
+
+                spInstance->mDebugConsoleCallback = new(GMA_DEBUG) DebugConsoleCallback();
+                spInstance->mDebugConsole->SetKeyboardInputCallback(spInstance->mDebugConsoleCallback);
+                spInstance->mDebugConsole->SetPointerInputCallback(spInstance->mDebugConsoleCallback);
+
+                //initialize the debug console line number
+                spInstance->mDebugConsoleLine = 0;
+            }
         }
-    }
-MEMTRACK_POP_GROUP( "Console Initialize" );
+    MEMTRACK_POP_GROUP("Console Initialize");
 #endif
 
     return (true);
@@ -336,18 +321,15 @@ MEMTRACK_POP_GROUP( "Console Initialize" );
 //
 //==============================================================================
 Console::Console()
-:
-mpCallback( 0 )
-{
+        :
+        mpCallback(0) {
     // Initialize the tables
     int i = 0;
-    for( i = 0; i < MAX_FUNCTIONS; ++i )
-    {
+    for (i = 0; i < MAX_FUNCTIONS; ++i) {
         mFunctionTable[i] = 0;
     }
 
-    for( i = 0; i < MAX_ALIASES; ++i )
-    {
+    for (i = 0; i < MAX_ALIASES; ++i) {
         mAliasTable[i] = 0;
     }
 
@@ -356,26 +338,25 @@ mpCallback( 0 )
 
 
     //create the argv array
-    #ifdef RAD_GAMECUBE
-        HeapMgr()->PushHeap( GMA_GC_VMM );
-    #else
-        HeapMgr()->PushHeap( GMA_PERSISTENT );
-    #endif
+#ifdef RAD_GAMECUBE
+    HeapMgr()->PushHeap(GMA_GC_VMM);
+#else
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
+#endif
 
-    mArgv = new char*[MAX_ARGS];
-    mPrevArgv = new char*[MAX_ARGS];
-    
-    for( i = 0; i < MAX_ARGS; ++i )
-    {
+    mArgv = new char *[MAX_ARGS];
+    mPrevArgv = new char *[MAX_ARGS];
+
+    for (i = 0; i < MAX_ARGS; ++i) {
         mArgv[i] = new char[MAX_ARG_LENGTH];
         mPrevArgv[i] = new char[MAX_ARG_LENGTH];
     }
 
-    #ifdef RAD_GAMECUBE
-        HeapMgr()->PopHeap( GMA_GC_VMM );
-    #else
-        HeapMgr()->PopHeap( GMA_PERSISTENT );
-    #endif
+#ifdef RAD_GAMECUBE
+    HeapMgr()->PopHeap(GMA_GC_VMM);
+#else
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
+#endif
     //set the log file mode
     mLogFile = 0;
     mLogMode = LOGMODE_OFF;
@@ -390,7 +371,6 @@ mpCallback( 0 )
 }
 
 
-
 //==============================================================================
 // Console::~Console
 //==============================================================================
@@ -402,20 +382,18 @@ mpCallback( 0 )
 // Return:      
 //
 //==============================================================================
-Console::~Console()
-{
+Console::~Console() {
     //clean up the console
-    if( spInstance )
-    {
+    if (spInstance) {
 #ifdef RAD_DEBUG
-        if( spInstance->mDebugConsole )
+        if(spInstance->mDebugConsole)
         {
             spInstance->mDebugConsole->Release();
             delete spInstance->mDebugConsoleCallback;
         }
 #endif
 
-        if( spInstance->mLogFile )
+        if (spInstance->mLogFile)
             spInstance->mLogFile->WaitForCompletion();
     }
 
@@ -425,43 +403,37 @@ Console::~Console()
     delete [] gConsoleMsgBuffer[1];
     radDbgWatchDelete(gConsoleEntry);
 #endif
-    
+
     int i = 0;
 
     //delete the tables
-    for( i = 0; i < mFunctionCount; ++i )
-    {
-        if (mFunctionTable[i])
-        {
+    for (i = 0; i < mFunctionCount; ++i) {
+        if (mFunctionTable[i]) {
             delete mFunctionTable[i];
         }
-        
+
     }
 
-    for( i = 0; i < MAX_ALIASES; ++i )
-    {
-        if( mAliasTable[i] )
-        {
+    for (i = 0; i < MAX_ALIASES; ++i) {
+        if (mAliasTable[i]) {
             delete mAliasTable[i];
         }
-        
+
     }
 
 
     //delete the argv array
-    for( i = 0; i < MAX_ARGS; ++i )
-    {
-        delete [] mArgv[i];
-        delete [] mPrevArgv[i];
+    for (i = 0; i < MAX_ARGS; ++i) {
+        delete[] mArgv[i];
+        delete[] mPrevArgv[i];
     }
-        
-    delete [] mArgv;
-    delete [] mPrevArgv;
+
+    delete[] mArgv;
+    delete[] mPrevArgv;
 
 
     //close the logfile
-    if( mLogFile )
-    {
+    if (mLogFile) {
         FlushLogFile();
         mLogFile->Release();
     }
@@ -479,8 +451,7 @@ Console::~Console()
 // Return:      
 //
 //==============================================================================
-bool Console::SetConsoleLogMode(int logMode)
-{
+bool Console::SetConsoleLogMode(int logMode) {
 #ifndef RAD_DEBUG
     return (false);
 #else
@@ -492,17 +463,14 @@ bool Console::SetConsoleLogMode(int logMode)
 #endif
 }
 
-bool Console::SetLogMode(int logMode)
-{
+bool Console::SetLogMode(int logMode) {
     //no work to do if we're not actually changing the mode
     if (logMode == mLogMode)
         return (true);
 
-    switch (logMode)
-    {
+    switch (logMode) {
         case LOGMODE_OFF:
-            if (mLogFile)
-            {
+            if (mLogFile) {
                 mLogFile->WaitForCompletion();
                 mLogFile->Release();
                 mLogFile = 0;
@@ -511,22 +479,19 @@ bool Console::SetLogMode(int logMode)
             return (true);
 
         case LOGMODE_ON:
-            if (!mLogFile)
-            {
+            if (!mLogFile) {
                 char fullPath[256];
 // RM                sprintf(fullPath, "%sconsole.log", ResourceManager::GetInstance()->GetRemoteDriveName());
-                ::radFileOpen(&mLogFile, fullPath, true, CreateAlways, NormalPriority, 0, RADMEMORY_ALLOC_TEMP);
-                if (mLogFile)
-                {
+                ::radFileOpen(&mLogFile, fullPath, true, CreateAlways, NormalPriority, 0,
+                              RADMEMORY_ALLOC_TEMP);
+                if (mLogFile) {
                     const char *msg = "\r\n******** CONSOLE LOG OPENED ********\r\n";
                     mLogFile->WaitForCompletion();
-                    mLogFile->WriteAsync(msg, strlen(msg)); 
+                    mLogFile->WriteAsync(msg, strlen(msg));
                     mLogFile->WaitForCompletion();
                     mLogMode = logMode;
                     return (true);
-                }
-                else
-                {
+                } else {
                     mLogMode = LOGMODE_OFF;
                     return (false);
                 }
@@ -534,25 +499,22 @@ bool Console::SetLogMode(int logMode)
             return (true);
 
         case LOGMODE_APPEND:
-            if (!mLogFile)
-            {
+            if (!mLogFile) {
                 char fullPath[256];
 // RM               sprintf(fullPath, "%sconsole.log", ResourceManager::GetInstance()->GetRemoteDriveName());
-                ::radFileOpen(&mLogFile, fullPath, true, OpenAlways, NormalPriority, 0, RADMEMORY_ALLOC_TEMP);
-                if (mLogFile)
-                {
+                ::radFileOpen(&mLogFile, fullPath, true, OpenAlways, NormalPriority, 0,
+                              RADMEMORY_ALLOC_TEMP);
+                if (mLogFile) {
                     const char *msg = "\r\n******** CONSOLE LOG OPENED ********\r\n";
                     mLogFile->WaitForCompletion();
                     int fileSize = mLogFile->GetSize();
                     mLogFile->SetPositionAsync(fileSize);
                     mLogFile->WaitForCompletion();
-                    mLogFile->WriteAsync(msg, strlen(msg)); 
+                    mLogFile->WriteAsync(msg, strlen(msg));
                     mLogFile->WaitForCompletion();
                     mLogMode = logMode;
                     return (true);
-                }
-                else
-                {
+                } else {
                     mLogMode = LOGMODE_OFF;
                     return (false);
                 }
@@ -576,8 +538,7 @@ bool Console::SetLogMode(int logMode)
 // Return:      
 //
 //==============================================================================
-void Console::Printf(char *fmt, ...)
-{
+void Console::Printf(char *fmt, ...) {
 #ifdef RAD_DEBUG
     //make sure we have a console
     if (!spInstance)
@@ -591,7 +552,7 @@ void Console::Printf(char *fmt, ...)
     va_end(args);
 
     // do some tune printf for designers
-    rTunePrintf( message );
+    rTunePrintf(message);
 
     //record the message to the console log file
     spInstance->LogMessage(0, message);
@@ -600,8 +561,7 @@ void Console::Printf(char *fmt, ...)
 
 //for now, it does the same as Printf()...  should also echo
 //to an error page in the DebugInfo stuff Chakib is working on!
-void Console::Errorf(char *fmt, ...)
-{
+void Console::Errorf(char *fmt, ...) {
 #ifdef RAD_DEBUG
     //make sure we have a console
     if (!spInstance)
@@ -619,8 +579,7 @@ void Console::Errorf(char *fmt, ...)
 #endif
 }
 
-void Console::Printf(int channel, char *fmt, ...)
-{
+void Console::Printf(int channel, char *fmt, ...) {
 #ifdef RAD_DEBUG
     //make sure we have a console
     if (!spInstance)
@@ -631,7 +590,7 @@ void Console::Printf(int channel, char *fmt, ...)
     //prefix the message with the channel number
     sprintf(message, "ch%d ", channel);
     char *msgPtr;
-    if (channel >= 10)
+    if (channel>= 10)
         msgPtr = &message[5];
     else
         msgPtr = &message[4];
@@ -643,7 +602,7 @@ void Console::Printf(int channel, char *fmt, ...)
     va_end(args);
 
     // do some tune printf for designers
-    rTunePrintf( message );
+    rTunePrintf(message);
 
     //record the message to the console log file
     spInstance->LogMessage(channel, message);
@@ -662,8 +621,7 @@ void Console::Printf(int channel, char *fmt, ...)
 // Return:      
 //
 //==============================================================================
-void Console::AssertFatal(char *fmt, ...)
-{
+void Console::AssertFatal(char *fmt, ...) {
     char msgFmt[512];
     sprintf(msgFmt, "File: %s, line: %d  %s", gErrFileName, gErrLineNum, fmt);
     char message[MAX_STRING_LENGTH];
@@ -680,7 +638,7 @@ void Console::AssertFatal(char *fmt, ...)
     this->FlushLogFile();
 
     //pop the assert
-    rTuneAssertMsg( 0, message );
+    rTuneAssertMsg(0, message);
 }
 
 
@@ -695,8 +653,7 @@ void Console::AssertFatal(char *fmt, ...)
 // Return:      
 //
 //==============================================================================
-void Console::AssertWarn(char *fmt, ...)
-{
+void Console::AssertWarn(char *fmt, ...) {
     char msgFmt[512];
     sprintf(msgFmt, "File: %s, line: %d  %s", gErrFileName, gErrLineNum, fmt);
     char message[MAX_STRING_LENGTH];
@@ -728,13 +685,12 @@ void Console::AssertWarn(char *fmt, ...)
 // Return:      
 //
 //==============================================================================
-void Console::LogMessage(int channel, char* msg, bool warning)
-{
+void Console::LogMessage(int channel, char *msg, bool warning) {
     //see if we're listening to this channel
     int listenChannel = channel;
     if (channel < 0 || channel > 31)
         listenChannel = 0;
-    if (! (mChannelMask & (1 << listenChannel)))
+    if (!(mChannelMask & (1 << listenChannel)))
         return;
 
     //append an '\r\n' to the end of every message
@@ -753,16 +709,14 @@ void Console::LogMessage(int channel, char* msg, bool warning)
 #endif
 
     //write the msg out to the console.log (buffered)
-    if (mLogMode == LOGMODE_ON || mLogMode == LOGMODE_APPEND)
-    {
+    if (mLogMode == LOGMODE_ON || mLogMode == LOGMODE_APPEND) {
         //see if there's enough room in the buffer to store the string
         int bytesUsed = int(gConsoleMsgBufferPtr) - int(gConsoleMsgBuffer[gConsoleBufferIndex]);
         int bytesLeft = (MAX_STRING_LENGTH * MAX_BUFFERS) - bytesUsed;
         int strLength = strlen(logMessage);
 
         //if we don't have space, wait for file completion, then start using the next buffer
-        if (bytesUsed > 0 && bytesLeft < strLength)
-        {
+        if (bytesUsed > 0 && bytesLeft < strLength) {
             mLogFile->WaitForCompletion();
             mLogFile->WriteAsync(gConsoleMsgBuffer[gConsoleBufferIndex], bytesUsed);
             gConsoleBufferIndex = 1 - gConsoleBufferIndex;
@@ -789,8 +743,7 @@ void Console::LogMessage(int channel, char* msg, bool warning)
 // Return:      
 //
 //==============================================================================
-void Console::FlushConsoleLogFile()
-{
+void Console::FlushConsoleLogFile() {
     //flush the log file in case we're about to crash
     spInstance->FlushLogFile();
 }
@@ -807,10 +760,8 @@ void Console::FlushConsoleLogFile()
 // Return:      
 //
 //==============================================================================
-void Console::FlushLogFile()
-{
-    if (mLogMode == LOGMODE_ON || mLogMode == LOGMODE_APPEND)
-    {
+void Console::FlushLogFile() {
+    if (mLogMode == LOGMODE_ON || mLogMode == LOGMODE_APPEND) {
         //see if there's enough room in the buffer to store the string
         int bytesUsed = int(gConsoleMsgBufferPtr) - int(gConsoleMsgBuffer[gConsoleBufferIndex]);
 
@@ -870,7 +821,7 @@ static const char* FormatDebugConsoleString(const char *text, bool consoleEntry)
     //pad the string with spaces
     formatString[MAX_STRING_LEN] = '\0';
     int strlength = strlen(formatString);
-    if (strlength < MAX_STRING_LEN)
+    if (strlength <MAX_STRING_LEN)
         memset(&formatString[strlength], ' ', MAX_STRING_LEN - strlength);
     formatString[MAX_STRING_LEN] = '\0';
 
@@ -948,15 +899,14 @@ void Console::SetDebugConsoleEntry(const char *text, int cursorPosition)
 // Return:      
 //
 //==============================================================================
-void Console::ConsoleListenChannel(int channel)
-{
+void Console::ConsoleListenChannel(int channel) {
     //make sure we have a console
     if (!spInstance)
         return;
 
-    if (channel <= -2 || channel > 31)
-    {
-        Printf("Console error - invalid channel: %d.  Specify -1 for all channels, or 0 to 31", channel);
+    if (channel <= -2 || channel > 31) {
+        Printf("Console error - invalid channel: %d.  Specify -1 for all channels, or 0 to 31",
+               channel);
         return;
     }
 
@@ -975,15 +925,14 @@ void Console::ConsoleListenChannel(int channel)
 // Return:      
 //
 //==============================================================================
-void Console::ConsoleBlockChannel(int channel)
-{
+void Console::ConsoleBlockChannel(int channel) {
     //make sure we have a console
     if (!spInstance)
         return;
 
-    if (channel <= -2 || channel > 31)
-    {
-        Printf("Console error - invalid channel: %d.  Specify -1 for all channels, or 0 to 31", channel);
+    if (channel <= -2 || channel > 31) {
+        Printf("Console error - invalid channel: %d.  Specify -1 for all channels, or 0 to 31",
+               channel);
         return;
     }
 
@@ -1002,8 +951,7 @@ void Console::ConsoleBlockChannel(int channel)
 // Return:      
 //
 //==============================================================================
-void Console::ListenChannel(int channel)
-{
+void Console::ListenChannel(int channel) {
     //validate params
     if (channel <= -2 || channel > 31)
         return;
@@ -1026,8 +974,7 @@ void Console::ListenChannel(int channel)
 // Return:      
 //
 //==============================================================================
-void Console::BlockChannel(int channel)
-{
+void Console::BlockChannel(int channel) {
     //validate params
     if (channel <= -2 || channel > 31)
         return;
@@ -1051,8 +998,7 @@ void Console::BlockChannel(int channel)
 // Return:      
 //
 //==============================================================================
-void Console::ListConsoleFunctions()
-{
+void Console::ListConsoleFunctions() {
     if (!spInstance)
         return;
 
@@ -1071,10 +1017,9 @@ void Console::ListConsoleFunctions()
 // Return:      
 //
 //==============================================================================
-void Console::ListFunctions()
-{
-    //for (int i = 0; i < mFunctionCount; i++)
-        //Printf(mFunctionTable[i]->help.GetText());
+void Console::ListFunctions() {
+    //for (int i = 0; i <mFunctionCount; i++)
+    //Printf(mFunctionTable[i]->help.GetText());
 }
 
 
@@ -1090,18 +1035,17 @@ void Console::ListFunctions()
 //
 //==============================================================================
 bool Console::AddFunction
-(
-    const char* name,
-    CONSOLE_FUNCTION funcPtr,
-    const char* helpString,
-    int minArgs,
-    int maxArgs
-)
-{
+        (
+                const char *name,
+                CONSOLE_FUNCTION funcPtr,
+                const char *helpString,
+                int minArgs,
+                int maxArgs
+        ) {
     //make sure we've initialized the global console
-    if (!spInstance)
-    {
-        rDebugString("Error - Console::AddFunction():  Console::Initialize() hasn't been called yet.");
+    if (!spInstance) {
+        rDebugString(
+                "Error - Console::AddFunction():  Console::Initialize() hasn't been called yet.");
         return (false);
     }
 
@@ -1121,24 +1065,22 @@ bool Console::AddFunction
 //
 //==============================================================================
 bool Console::AddFunction
-(
-    const char* name,
-    CONSOLE_BOOL_FUNCTION funcPtr,
-    const char* helpString,
-    int minArgs,
-    int maxArgs
-)
-{
+        (
+                const char *name,
+                CONSOLE_BOOL_FUNCTION funcPtr,
+                const char *helpString,
+                int minArgs,
+                int maxArgs
+        ) {
     //make sure we've initialized the global console
-    if (!spInstance)
-    {
-        rDebugString("Error - Console::AddFunction():  Console::Initialize() hasn't been called yet.");
+    if (!spInstance) {
+        rDebugString(
+                "Error - Console::AddFunction():  Console::Initialize() hasn't been called yet.");
         return (false);
     }
 
     return (spInstance->AddFunc(name, 0, funcPtr, helpString, minArgs, maxArgs));
 }
-
 
 
 //==============================================================================
@@ -1153,63 +1095,54 @@ bool Console::AddFunction
 //
 //==============================================================================
 bool Console::AddFunc
-(
-    const char* name,           
-    CONSOLE_FUNCTION funcPtr,
-    CONSOLE_BOOL_FUNCTION boolFuncPtr,
-    const char* helpString,
-    int minArgs,
-    int maxArgs
-)
-{
+        (
+                const char *name,
+                CONSOLE_FUNCTION funcPtr,
+                CONSOLE_BOOL_FUNCTION boolFuncPtr,
+                const char *helpString,
+                int minArgs,
+                int maxArgs
+        ) {
     //validate the input
-    if (!name || !name[0] || strlen(name) >= MAX_STRING_LENGTH)
-    {
+    if (!name || !name[0] || strlen(name) >= MAX_STRING_LENGTH) {
         rDebugString("Error - Console::AddFunction():  invalid function name specified.\n");
         return (false);
     }
-    if (!helpString || strlen(helpString) >= MAX_STRING_LENGTH)
-    {
+    if (!helpString || strlen(helpString) >= MAX_STRING_LENGTH) {
         rDebugString("Error - Console::AddFunction():  invalid help string specified.\n");
         return (false);
     }
-    if (!funcPtr && !boolFuncPtr)
-    {
+    if (!funcPtr && !boolFuncPtr) {
         rDebugString("Error - Console::AddFunction():  no CONSOLE_FUNCTION specified.\n");
         return (false);
     }
-    if (minArgs < 0)
-    {
+    if (minArgs < 0) {
         rDebugString("Error - Console::AddFunction():  invalid minArgs specified.\n");
         return (false);
     }
-    if (maxArgs < minArgs || maxArgs > MAX_ARGS)
-    {
+    if (maxArgs < minArgs || maxArgs > MAX_ARGS) {
         rDebugString("Error - Console::AddFunction():  invalid maxArgs specified.\n");
         return (false);
     }
 
     //make sure we have room for one more
-    if( mFunctionCount >= MAX_FUNCTIONS )
-    {
-        rDebugString("Error - Console::AddFunction():  Maximum number of functions has been reached.\n");
+    if (mFunctionCount >= MAX_FUNCTIONS) {
+        rDebugString(
+                "Error - Console::AddFunction():  Maximum number of functions has been reached.\n");
         return (false);
     }
-    
+
 #ifdef RAD_GAMECUBE
-    HeapMgr()->PushHeap( GMA_GC_VMM );
+    HeapMgr()->PushHeap(GMA_GC_VMM);
 #else
-    HeapMgr()->PushHeap( GMA_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 #endif
-   
+
     //create the new function
-    FunctionTableEntry* newFunction;
-    if( funcPtr )
-    {
+    FunctionTableEntry *newFunction;
+    if (funcPtr) {
         newFunction = new FunctionTableEntry(name, funcPtr, helpString, minArgs, maxArgs);
-    }
-    else
-    {
+    } else {
         newFunction = new FunctionTableEntry(name, boolFuncPtr, helpString, minArgs, maxArgs);
     }
 
@@ -1221,9 +1154,9 @@ bool Console::AddFunc
     mFunctionCount++;
 
 #ifdef RAD_GAMECUBE
-    HeapMgr()->PopHeap( GMA_GC_VMM );
+    HeapMgr()->PopHeap(GMA_GC_VMM);
 #else
-    HeapMgr()->PopHeap( GMA_PERSISTENT );
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
 #endif
 
     // return success condition
@@ -1243,17 +1176,16 @@ bool Console::AddFunc
 //
 //==============================================================================
 bool Console::AddAlias
-(
-    const char* name, 
-    const char* functionName, 
-    int argc, 
-    char** argv
-)
-{
+        (
+                const char *name,
+                const char *functionName,
+                int argc,
+                char **argv
+        ) {
     //make sure we've initialized the global console
-    if (!spInstance)
-    {
-        rDebugString("Error - Console::AddFunction():  Console::Initialize() hasn't been called yet.");
+    if (!spInstance) {
+        rDebugString(
+                "Error - Console::AddFunction():  Console::Initialize() hasn't been called yet.");
         return (false);
     }
 
@@ -1273,40 +1205,37 @@ bool Console::AddAlias
 //
 //==============================================================================
 bool Console::AddFunctionAlias
-(
-    const char* name, 
-    const char* functionName, 
-    int argc, 
-    char** argv 
-)
-{
+        (
+                const char *name,
+                const char *functionName,
+                int argc,
+                char **argv
+        ) {
     //validate the input
-    if (!name || !name[0] || strlen(name) >= MAX_STRING_LENGTH)
-    {
+    if (!name || !name[0] || strlen(name) >= MAX_STRING_LENGTH) {
         rDebugString("Error - Console::AddFunctionAlias():  invalid function name specified.\n");
         return (false);
     }
 
     //make sure we have room for one more
-    if (mAliasCount >= MAX_FUNCTIONS)
-    {
-        rDebugString("Error - Console::AddFunctionAlias():  Maximum number of alias' has been reached.\n");
+    if (mAliasCount >= MAX_FUNCTIONS) {
+        rDebugString(
+                "Error - Console::AddFunctionAlias():  Maximum number of alias' has been reached.\n");
         return (false);
     }
-    
+
 #ifdef RAD_GAMECUBE
-    HeapMgr()->PushHeap( GMA_GC_VMM );
+    HeapMgr()->PushHeap(GMA_GC_VMM);
 #else
-    HeapMgr()->PushHeap( GMA_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 #endif
 
     //create the new alias
-    AliasTableEntry* newAlias = new AliasTableEntry(name, functionName, argc, argv);
+    AliasTableEntry *newAlias = new AliasTableEntry(name, functionName, argc, argv);
 
     //insert the new alias into the table alphabetically
     int index = 0;
-    while (index < mAliasCount)
-    {
+    while (index < mAliasCount) {
         if (smStricmp(mAliasTable[index]->name, name) > 0)
             break;
 
@@ -1324,9 +1253,9 @@ bool Console::AddFunctionAlias
     mAliasCount++;
 
 #ifdef RAD_GAMECUBE
-    HeapMgr()->PopHeap( GMA_GC_VMM );
+    HeapMgr()->PopHeap(GMA_GC_VMM);
 #else
-    HeapMgr()->PopHeap( GMA_PERSISTENT );
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
 #endif
 
     // return success condition
@@ -1345,17 +1274,16 @@ bool Console::AddFunctionAlias
 // Return:      
 //
 //==============================================================================
-const tNameInsensitive& Console::TabCompleteFunction
-(
-    const char* tabString, 
-    const char* curFunction
-)
-{
-    static tNameInsensitive error( "ERROR" );
+const tNameInsensitive &Console::TabCompleteFunction
+        (
+                const char *tabString,
+                const char *curFunction
+        ) {
+    static tNameInsensitive error("ERROR");
     //make sure we've initialized the global console
-    if (!spInstance)
-    {
-        rDebugString("Error - Console::TabCompleteFunction():  Console::Initialize() hasn't been called yet.");
+    if (!spInstance) {
+        rDebugString(
+                "Error - Console::TabCompleteFunction():  Console::Initialize() hasn't been called yet.");
         return error;
     }
 
@@ -1374,90 +1302,82 @@ const tNameInsensitive& Console::TabCompleteFunction
 // Return:      
 //
 //==============================================================================
-const tNameInsensitive& Console::TabComplete
-(
-    const char* tabString, 
-    const char* curFunction
-)
-{
+const tNameInsensitive &Console::TabComplete
+        (
+                const char *tabString,
+                const char *curFunction
+        ) {
     int i;
-    static tNameInsensitive error( "ERROR" );
+    static tNameInsensitive error("ERROR");
     //sanity check
-    if (! tabString || ! tabString[0])
-    {
-        rAssert( false );
+    if (!tabString || !tabString[0]) {
+        rAssert(false);
         return error;
     }
 
     //find the first function beginning with the tabString
     //note - functions are stored alphabetically...
     int firstFunctionIndex = -1;
-    for (i = 0; i < mFunctionCount; i++)
-    {
-        if (! smStrincmp(tabString, mFunctionTable[i]->name.GetText(), strlen(tabString)))
-        {
+    for (i = 0; i < mFunctionCount; i++) {
+        if (!smStrincmp(tabString, mFunctionTable[i]->name.GetText(), strlen(tabString))) {
             firstFunctionIndex = i;
             break;
         }
     }
 
     //if no function was found, return 0
-    if (firstFunctionIndex < 0)
-    {
-        rAssert( false );
+    if (firstFunctionIndex < 0) {
+        rAssert(false);
         return error;
     }
 
     //if there's no current function, return the first function we found
-    if (! curFunction || ! curFunction[0])
+    if (!curFunction || !curFunction[0])
         return (mFunctionTable[firstFunctionIndex]->name);
 
     //if the current function doesn't contain the tabString, ???
     if (smStrincmp(tabString, curFunction, strlen(tabString)))
         return (mFunctionTable[firstFunctionIndex]->name);
-        
+
     //search for the next function that contains the tabstring, but follows the curFunction
     int curFunctionIndex = -1;
-    for (i = firstFunctionIndex; i < mFunctionCount; i++)
-    {
-        if ( mFunctionTable[i]->name == curFunction )
-        {
+    for (i = firstFunctionIndex; i < mFunctionCount; i++) {
+        if (mFunctionTable[i]->name == curFunction) {
             curFunctionIndex = i;
             break;
         }
-    } 
+    }
 
     //if no current function was found, return the first function
     if (curFunctionIndex < 0 || curFunctionIndex == mFunctionCount - 1)
         return (mFunctionTable[firstFunctionIndex]->name);
 
     //see if the next function also contains the tabString
-    if (! smStrincmp(tabString, mFunctionTable[curFunctionIndex + 1]->name.GetText(), strlen(tabString)))
+    if (!smStrincmp(tabString, mFunctionTable[curFunctionIndex + 1]->name.GetText(),
+                    strlen(tabString)))
         return (mFunctionTable[curFunctionIndex + 1]->name);
 
-    //otherwise, return the first function found again
+        //otherwise, return the first function found again
     else
         return (mFunctionTable[firstFunctionIndex]->name);
 }
 
 //---------------------------------------------------------------------------//
 
-static const char* gWhiteSpace = " \t\r\n";
-static const char* gEndOfToken = " \t\r\n,();[]{}+/*!@#$%^&:\"<>?'`~";
+static const char *gWhiteSpace = " \t\r\n";
+static const char *gEndOfToken = " \t\r\n,();[]{}+/*!@#$%^&:\"<>?'`~";
 
-char *Console::SkipWhiteSpace(const char *string)
-{
+char *Console::SkipWhiteSpace(const char *string) {
     //this function should never be called with an invalid string
-    char *temp = const_cast<char*>(string);
-    while (true)
-    {
+    char *temp = const_cast<char *>(string);
+    while (true) {
         //break on an end of string character
         if (*temp == '\0')
             break;
 
         //break when a non-white space character is found
         char *found = strchr(gWhiteSpace, *temp);
-        if (! found)
+        if (!found)
             break;
 
         //see if we found an eol char
@@ -1467,7 +1387,7 @@ char *Console::SkipWhiteSpace(const char *string)
         //check the next character
         temp++;
     }
-    
+
     return (temp);
 }
 
@@ -1483,16 +1403,13 @@ char *Console::SkipWhiteSpace(const char *string)
 // Return:      
 //
 //==============================================================================
-bool Console::FoundComment(char** stringPtr)
-{
+bool Console::FoundComment(char **stringPtr) {
     char *tokenPtr = *stringPtr;
-    if (*tokenPtr == '/')
-    {
+    if (*tokenPtr == '/') {
         tokenPtr++;
 
         //see if we've found a line comment
-        if (*tokenPtr == '/')
-        {
+        if (*tokenPtr == '/') {
             while (*tokenPtr != '\r' && *tokenPtr != '\n' && *tokenPtr != '\0')
                 tokenPtr++;
 
@@ -1505,15 +1422,12 @@ bool Console::FoundComment(char** stringPtr)
             return (true);
         }
 
-        //else see if we've found a block comment
-        else if (*tokenPtr == '*')
-        {
+            //else see if we've found a block comment
+        else if (*tokenPtr == '*') {
             //here we search for the end of the block:  */
-            while (true)
-            {
+            while (true) {
                 tokenPtr++;
-                while (*tokenPtr != '*' && *tokenPtr != '\0')
-                {
+                while (*tokenPtr != '*' && *tokenPtr != '\0') {
                     //increment the line count
                     if (*tokenPtr == '\n')
                         mLineNumber++;
@@ -1522,18 +1436,15 @@ bool Console::FoundComment(char** stringPtr)
                 }
 
                 //see if we've found the end of the file
-                if (*tokenPtr == '\0')
-                {
+                if (*tokenPtr == '\0') {
                     *stringPtr = tokenPtr;
                     return (true);
                 }
-                
-                //else see if we've found the end of the comment block
-                else
-                {
+
+                    //else see if we've found the end of the comment block
+                else {
                     tokenPtr++;
-                    if (*tokenPtr == '/')
-                    {
+                    if (*tokenPtr == '/') {
                         tokenPtr++;
                         *stringPtr = tokenPtr;
                         return (true);
@@ -1542,12 +1453,12 @@ bool Console::FoundComment(char** stringPtr)
             }
         }
 
-        //else no comment found
+            //else no comment found
         else
             return (false);
     }
 
-    //else no commment found
+        //else no commment found
     else
         return (false);
 }
@@ -1564,21 +1475,18 @@ bool Console::FoundComment(char** stringPtr)
 // Return:      
 //
 //==============================================================================
-char* Console::FindTokenEnd( const char* string )
-{
+char *Console::FindTokenEnd(const char *string) {
     //this function should never be called with an invalid string
-    char *temp = const_cast<char*>(string);
+    char *temp = const_cast<char *>(string);
     bool finished = false;
-    while (true)
-    {
+    while (true) {
         //break on an end of string character
         if (*temp == '\0')
             break;
 
         //break on an end of token character
         char *found = strchr(gEndOfToken, *temp);
-        if (found)
-        {
+        if (found) {
             //see if we found an eol char
             if (*found == '\n')
                 mLineNumber++;
@@ -1589,7 +1497,7 @@ char* Console::FindTokenEnd( const char* string )
         //neither was found, check the next character
         temp++;
     }
-    
+
     return (temp);
 }
 
@@ -1605,10 +1513,9 @@ char* Console::FindTokenEnd( const char* string )
 // Return:      
 //
 //==============================================================================
-bool Console::ReadToken(char **stringPtr, const char *requiredToken)
-{
+bool Console::ReadToken(char **stringPtr, const char *requiredToken) {
     //validate parameters
-    if (! stringPtr || ! *stringPtr || !requiredToken)
+    if (!stringPtr || !*stringPtr || !requiredToken)
         return (false);
 
     //read the next token
@@ -1616,7 +1523,7 @@ bool Console::ReadToken(char **stringPtr, const char *requiredToken)
     char *token = GetNextToken(stringPtr, tempBuffer);
 
     //if we don't have a token, or it doesn't match what we're looking for, return false
-    if (! token || smStricmp(token, requiredToken))
+    if (!token || smStricmp(token, requiredToken))
         return (false);
 
     //everything is ok, return true
@@ -1635,20 +1542,18 @@ bool Console::ReadToken(char **stringPtr, const char *requiredToken)
 // Return:      
 //
 //==============================================================================
-char* Console::GetNextToken(char **stringPtr, char *tokenBuffer)
-{
+char *Console::GetNextToken(char **stringPtr, char *tokenBuffer) {
     //validate parameters
-    if (! stringPtr || ! *stringPtr || !tokenBuffer)
+    if (!stringPtr || !*stringPtr || !tokenBuffer)
         return (0);
 
     char *tokenPtr = *stringPtr;
     char *tokenEnd = 0;
 
     //skip comments and white space until we reach the beginning of a valid token
-    while (true)
-    {
+    while (true) {
         tokenPtr = SkipWhiteSpace(tokenPtr);
-        if (! FoundComment(&tokenPtr))
+        if (!FoundComment(&tokenPtr))
             break;
     }
 
@@ -1657,20 +1562,18 @@ char* Console::GetNextToken(char **stringPtr, char *tokenBuffer)
         return (0);
 
     //if the token is enclosed in quotes, search for the end quote
-    if (*tokenPtr == '\"')
-    {
+    if (*tokenPtr == '\"') {
         tokenEnd = tokenPtr + 1;
-        while (true)
-        {
+        while (true) {
             tokenEnd = strchr(tokenEnd, '\"');
-            if (! tokenEnd)
+            if (!tokenEnd)
                 return (0);
 
             //make sure the previous character isn't a '\\'
             if (*(tokenEnd - 1) == '\\')
                 tokenEnd++;
 
-            //otherwise, we've found our matching quotes
+                //otherwise, we've found our matching quotes
             else
                 break;
         }
@@ -1685,14 +1588,12 @@ char* Console::GetNextToken(char **stringPtr, char *tokenBuffer)
         return (tokenBuffer);
     }
 
-    //else find the end of the token
-    else
-    {
+        //else find the end of the token
+    else {
         tokenEnd = FindTokenEnd(tokenPtr);
 
         //if 0 was returned, the token ends on a '\0'
-        if (! tokenEnd)
-        {
+        if (!tokenEnd) {
             //copy the token to the tokenBuffer
             strcpy(tokenBuffer, tokenPtr);
 
@@ -1701,9 +1602,8 @@ char* Console::GetNextToken(char **stringPtr, char *tokenBuffer)
             return (tokenBuffer);
         }
 
-        //if the tokenEnd == the tokenPtr, the token is either a '\0', or one of the token end chars
-        else if (tokenEnd == tokenPtr)
-        {
+            //if the tokenEnd == the tokenPtr, the token is either a '\0', or one of the token end chars
+        else if (tokenEnd == tokenPtr) {
             //copy the character into the tokenBuffer
             tokenBuffer[0] = *tokenPtr;
             tokenBuffer[1] = '\0';
@@ -1711,10 +1611,7 @@ char* Console::GetNextToken(char **stringPtr, char *tokenBuffer)
             //update the next position in the string
             *stringPtr = tokenEnd + 1;
             return (tokenBuffer);
-        } 
-
-        else
-        {
+        } else {
             //copy the token into the tokenBuffer
             int strLength = tokenEnd - tokenPtr;
             strncpy(tokenBuffer, tokenPtr, strLength);
@@ -1739,171 +1636,153 @@ char* Console::GetNextToken(char **stringPtr, char *tokenBuffer)
 // Return:      
 //
 //==============================================================================
-bool Console::Evaluate( const char* string, const char* fileName )
-{
-    rTuneAssert( string != 0 );
+bool Console::Evaluate(const char *string, const char *fileName) {
+    rTuneAssert(string != 0);
 
 #if PROFILE_PARSER
     float curTime = 0.0f, elapsedTime = 0.0f, totalTime = 0.0f;
 #endif
 
     // make sure we have a real string
-    if( !string[0] )
-    {
-        return( false );
+    if (!string[0]) {
+        return (false);
     }
 
     // intialize the file name line number
-    strcpy( mFileName, fileName );
+    strcpy(mFileName, fileName);
     mLineNumber = 1;
 
     // setup the string ptr
-    char* stringPtr = const_cast<char*>(string);
+    char *stringPtr = const_cast<char *>(string);
 
     // process the string until it's finished
     int readEndBracketLevel = 0;
     bool negateCondition = false;
-    
-    do 
-    {
+
+    do {
 
 #if !PROFILE_PARSER
-//      Sound::daSoundManagerService( );
+//      Sound::daSoundManagerService();
 #endif
 
         // first, get the function name
-        char* token = this->GetNextToken( &stringPtr, mArgv[0] );
+        char *token = this->GetNextToken(&stringPtr, mArgv[0]);
 
         // if no function name found, we're finished
-        if( !token )
-        {
-            if( readEndBracketLevel > 0 )
-            {
-                this->Printf( "ConERR file %s line %d - expecting '}'.", mFileName, mLineNumber );
-                rTuneAssert( 0 );
-                return( false );
+        if (!token) {
+            if (readEndBracketLevel > 0) {
+                this->Printf("ConERR file %s line %d - expecting '}'.", mFileName, mLineNumber);
+                rTuneAssert(0);
+                return (false);
             }
             break;
         }
 
         // it's possible we might read an end bracket - skip past it...
-        while( !smStricmp(token, "}") )
-        {
-            if( readEndBracketLevel <= 0 )
-            {
-                this->Printf( "ConERR file %s line %d - unexpected '}' found.", mFileName, mLineNumber );
-                rTuneAssert( 0 );
-                return( false );
+        while (!smStricmp(token, "}")) {
+            if (readEndBracketLevel <= 0) {
+                this->Printf("ConERR file %s line %d - unexpected '}' found.", mFileName,
+                             mLineNumber);
+                rTuneAssert(0);
+                return (false);
             }
 
             // otherwise, set the bool, and read the next token
             readEndBracketLevel--;
-            token = GetNextToken( &stringPtr, mArgv[0] );
+            token = GetNextToken(&stringPtr, mArgv[0]);
 
             // if no function name found, we're finished
-            if( !token )
-            {
-                if( readEndBracketLevel > 0 )
-                {
+            if (!token) {
+                if (readEndBracketLevel > 0) {
                     this->Printf("ConERR file %s line %d - expecting '}'.", mFileName, mLineNumber);
-                    rTuneAssert( 0 );
-                    return( false );
+                    rTuneAssert(0);
+                    return (false);
+                } else {
+                    return (true);
                 }
-                else
-                {
-                    return( true );
-                }
-                
+
             }
         }
         mArgc = 1;
 
         // see if we read a "!" symbol before a conditional function call...
-        if( !strcmp( token, "!") )
-        {
+        if (!strcmp(token, "!")) {
             // set the bool
             negateCondition = true;
 
             //read the next token (should be function name)
             token = GetNextToken(&stringPtr, mArgv[0]);
 
-            if (! token)
-            {
+            if (!token) {
                 Printf("ConERR file %s line %d - unexpected '!'.", mFileName, mLineNumber);
-                rTuneAssert( 0 );
+                rTuneAssert(0);
                 return (false);
             }
         }
 
         //mArgv[0] currently contains the function name
         //next token should be an '('
-        if (! ReadToken(&stringPtr, "("))
-        {
-            Printf("ConERR file %s line %d - unable to process function %s.  Expecting '('", mFileName, mLineNumber, mArgv[0]);
-            rTuneAssert( 0 );
+        if (!ReadToken(&stringPtr, "(")) {
+            Printf("ConERR file %s line %d - unable to process function %s.  Expecting '('",
+                   mFileName, mLineNumber, mArgv[0]);
+            rTuneAssert(0);
             return (false);
         }
 
         //some bools to ensure proper syntax
         bool canReadBrace = true;
         bool mustReadComma = false;
-        do
-        {
+        do {
             //make sure we haven't run out of arguments
-            if (mArgc >= MAX_ARGS)
-            {
-                Printf("ConERR file %s line %d - unable to process function %s.  Too many args.", mFileName, mLineNumber, mArgv[0]);
-                rTuneAssert( 0 );
+            if (mArgc >= MAX_ARGS) {
+                Printf("ConERR file %s line %d - unable to process function %s.  Too many args.",
+                       mFileName, mLineNumber, mArgv[0]);
+                rTuneAssert(0);
                 return (false);
             }
 
             //get the next argument
             token = GetNextToken(&stringPtr, mArgv[mArgc]);
-            if (! token)
-            {
-                Printf("ConERR file %s line %d - unable to process function %s.  Expecting ')'", mFileName, mLineNumber, mArgv[0]);
-                rTuneAssert( 0 );
+            if (!token) {
+                Printf("ConERR file %s line %d - unable to process function %s.  Expecting ')'",
+                       mFileName, mLineNumber, mArgv[0]);
+                rTuneAssert(0);
                 return (false);
             }
 
             //if we've read a ')', the next token should be a ';' and we've found our function
-            if (! smStricmp(token, ")"))
-            {
+            if (!smStricmp(token, ")")) {
                 //make sure we can read a ')'
-                if (! canReadBrace)
-                {
-                    Printf("ConERR file %s line %d - unable to process function %s.  Extra ',' found.", mFileName, mLineNumber, mArgv[0]);
-                    rTuneAssert( 0 );
+                if (!canReadBrace) {
+                    Printf("ConERR file %s line %d - unable to process function %s.  Extra ',' found.",
+                           mFileName, mLineNumber, mArgv[0]);
+                    rTuneAssert(0);
                     return (false);
                 }
 
                 //our function and it's arguments is complete
                 break;
             }
-            
-            //else the next token is an argument or a comma
-            else
-            {
-                if (mustReadComma)
-                {
-                    if (smStricmp(token, ","))
-                    {
-                        Printf("ConERR file %s line %d - unable to process function %s.  Args must be separated by a ','", mFileName, mLineNumber, mArgv[0]);
-                        rTuneAssert( 0 );
+
+                //else the next token is an argument or a comma
+            else {
+                if (mustReadComma) {
+                    if (smStricmp(token, ",")) {
+                        Printf("ConERR file %s line %d - unable to process function %s.  Args must be separated by a ','",
+                               mFileName, mLineNumber, mArgv[0]);
+                        rTuneAssert(0);
                         return (false);
                     }
 
-                    //else we read our comma in correctly
-                    else
-                    {
+                        //else we read our comma in correctly
+                    else {
                         mustReadComma = false;
                         canReadBrace = false;
                     }
                 }
 
-                //otherwise the next token is a valid argument
-                else
-                {
+                    //otherwise the next token is a valid argument
+                else {
                     mArgc++;
                     mustReadComma = true;
                     canReadBrace = true;
@@ -1916,17 +1795,14 @@ bool Console::Evaluate( const char* string, const char* fileName )
         //search the table looking for the matching function
         //first, search the alias table...
         int i;
-        for (i = 0; i < mAliasCount; i++)
-        {
-            if (! smStricmp(mAliasTable[i]->name, mArgv[0]))
-            {
+        for (i = 0; i < mAliasCount; i++) {
+            if (!smStricmp(mAliasTable[i]->name, mArgv[0])) {
                 //copy the original set of args
 
                 int mPrevArgc = mArgc;
                 int j;
-                for( j = 0; j < mPrevArgc; ++j )
-                {
-                    strcpy( mPrevArgv[j], mArgv[j] );
+                for (j = 0; j < mPrevArgc; ++j) {
+                    strcpy(mPrevArgv[j], mArgv[j]);
                 }
 
 
@@ -1936,38 +1812,33 @@ bool Console::Evaluate( const char* string, const char* fileName )
 
                 //do the argument substitution
                 bool argcSet = false;
-                for (j = 0; j < alias->argc; j++)
-                {
+                for (j = 0; j < alias->argc; j++) {
                     //see if the variable is a substitution (%1, %2, etc...)
-                    if (alias->argv[j][0] == '%')
-                    {
+                    if (alias->argv[j][0] == '%') {
                         //copy the given argment in
                         int index = alias->argv[j][1] - '0';
 
-                        if( index < mPrevArgc )
-                        {
-                            strcpy( mArgv[j + 1], mPrevArgv[index] );
+                        if (index < mPrevArgc) {
+                            strcpy(mArgv[j + 1], mPrevArgv[index]);
                         }
-                        //once we get to an argument which has not been provided
-                        //the substitutions are complete...
-                        else
-                        {
+                            //once we get to an argument which has not been provided
+                            //the substitutions are complete...
+                        else {
                             //set the argc
                             mArgc = j + 1;
                             argcSet = true;
                             break;
                         }
                     }
-                    
-                    //else use the alias's argument
-                    else
-                    {
+
+                        //else use the alias's argument
+                    else {
                         strcpy(mArgv[j + 1], alias->argv[j]);
                     }
                 }
 
                 //if we used the entire set of args from the alias, set the argc count
-                if (! argcSet)
+                if (!argcSet)
                     mArgc = alias->argc + 1;
 
                 break;
@@ -1982,63 +1853,61 @@ bool Console::Evaluate( const char* string, const char* fileName )
 
         std::map<radKey32, int>::const_iterator lookup;
         lookup = mFunctionLookup.find(radMakeCaseInsensitiveKey32(mArgv[0]));
-        
+
         {
-            if( lookup != mFunctionLookup.end() )
-            {
+            if (lookup != mFunctionLookup.end()) {
                 i = lookup->second;
-                rTuneAssert( mFunctionTable[i]->name == mArgv[0] );  // make sure there wasn't a hash collision
+                rTuneAssert(mFunctionTable[i]->name ==
+                            mArgv[0]);  // make sure there wasn't a hash collision
 
                 //call the function
                 found = true;
 
                 //now make sure the argument count is correct
-                if ((mArgc - 1) >= mFunctionTable[i]->minArgs && (mArgc - 1) <= mFunctionTable[i]->maxArgs)
-                {
+                if ((mArgc - 1) >= mFunctionTable[i]->minArgs &&
+                    (mArgc - 1) <= mFunctionTable[i]->maxArgs) {
                     //conditional function call
-                    if (mFunctionTable[i]->isConditional)
-                    {
+                    if (mFunctionTable[i]->isConditional) {
                         //make sure we read the opening brace '{'
-                        if (! ReadToken(&stringPtr, "{"))
-                        {
-                            Printf("ConERR file %s line %d - unable to process function %s.  Expecting '{'", mFileName, mLineNumber, mArgv[0]);
-                            rTuneAssert( 0 );
+                        if (!ReadToken(&stringPtr, "{")) {
+                            Printf("ConERR file %s line %d - unable to process function %s.  Expecting '{'",
+                                   mFileName, mLineNumber, mArgv[0]);
+                            rTuneAssert(0);
                             return (false);
                         }
 
                         isConditional = true;
                         readEndBracketLevel++;
-                        conditionalResult = (mFunctionTable[i]->functionPointer.boolReturn)(mArgc, (char**)mArgv);
+                        conditionalResult = (mFunctionTable[i]->functionPointer.boolReturn)(mArgc,
+                                                                                            (char **) mArgv);
                         if (negateCondition)
-                            conditionalResult = (! conditionalResult);
+                            conditionalResult = (!conditionalResult);
                         negateCondition = false;
                     }
-                    //non conditional function call
-                    else
-                    {
+                        //non conditional function call
+                    else {
                         //make sure we're not trying to negate a non-conditional function
-                        if (negateCondition)
-                        {
-                            Printf("ConERR file %s line %d - trying to negate non-conditional function %s.", mFileName, mLineNumber, mArgv[0]);
-                            rTuneAssert( 0 );
+                        if (negateCondition) {
+                            Printf("ConERR file %s line %d - trying to negate non-conditional function %s.",
+                                   mFileName, mLineNumber, mArgv[0]);
+                            rTuneAssert(0);
                             return (false);
                         }
                         //make sure the function call ends with a ';'
-                        if (! ReadToken(&stringPtr, ";"))
-                        {
-                            Printf("ConERR file %s line %d - unable to process function %s.  Expecting ';'", mFileName, mLineNumber, mArgv[0]);
-                            rTuneAssert( 0 );
+                        if (!ReadToken(&stringPtr, ";")) {
+                            Printf("ConERR file %s line %d - unable to process function %s.  Expecting ';'",
+                                   mFileName, mLineNumber, mArgv[0]);
+                            rTuneAssert(0);
                             return (false);
                         }
 
                         isConditional = false;
                         negateCondition = false;
 
-                        (mFunctionTable[i]->functionPointer.voidReturn)(mArgc, (char**)mArgv);
+                        (mFunctionTable[i]->functionPointer.voidReturn)(mArgc, (char **) mArgv);
 
                         //see if the function was "exit"
-                        if (! smStricmp(mArgv[0], "exit"))
-                        {
+                        if (!smStricmp(mArgv[0], "exit")) {
                             //print out any exit messages
                             if (mArgc >= 2)
                                 GetConsole()->Printf(mArgv[1]);
@@ -2049,23 +1918,22 @@ bool Console::Evaluate( const char* string, const char* fileName )
                     }
                 }
 
-                //else print out the help string, but continue processing the string
-                else
-                {
-                    Printf("ConERR file %s line %d - invalid arg list for function: %s()", mFileName, mLineNumber, mArgv[0]);
+                    //else print out the help string, but continue processing the string
+                else {
+                    Printf("ConERR file %s line %d - invalid arg list for function: %s()",
+                           mFileName, mLineNumber, mArgv[0]);
                     //Printf(mFunctionTable[i]->help);
 
-                    rTuneAssert( 0 );
+                    rTuneAssert(0);
 
                     //even though the function couldn't be called, still need to read in
                     //either the ';' or the '{ ... }'
-                    if (mFunctionTable[i]->isConditional)
-                    {
+                    if (mFunctionTable[i]->isConditional) {
                         //make sure we read the opening brace '{'
-                        if (! ReadToken(&stringPtr, "{"))
-                        {
-                            Printf("ConERR file %s line %d - unable to process function %s.  Expecting '{'", mFileName, mLineNumber, mArgv[0]);
-                            rTuneAssert( 0 );
+                        if (!ReadToken(&stringPtr, "{")) {
+                            Printf("ConERR file %s line %d - unable to process function %s.  Expecting '{'",
+                                   mFileName, mLineNumber, mArgv[0]);
+                            rTuneAssert(0);
                             return (false);
                         }
 
@@ -2073,31 +1941,28 @@ bool Console::Evaluate( const char* string, const char* fileName )
                         readEndBracketLevel++;
 
                         //skip past everything until we find the closing bracket
-                        while (readEndBracketLevel > balanceBrackets)
-                        {
+                        while (readEndBracketLevel > balanceBrackets) {
                             char *token = GetNextToken(&stringPtr, mArgv[0]);
-                            if (! token)
-                            {
-                                Printf("ConERR file %s line %d - end bracket for function %s not found.", mFileName, mLineNumber, mArgv[0]);
-                                rTuneAssert( 0 );
+                            if (!token) {
+                                Printf("ConERR file %s line %d - end bracket for function %s not found.",
+                                       mFileName, mLineNumber, mArgv[0]);
+                                rTuneAssert(0);
                                 return (false);
                             }
 
-                            //see if we read another '{'
-                            else if (! smStricmp(token, "{"))
+                                //see if we read another '{'
+                            else if (!smStricmp(token, "{"))
                                 readEndBracketLevel++;
 
-                            else if (! smStricmp(token, "}"))
+                            else if (!smStricmp(token, "}"))
                                 readEndBracketLevel--;
                         }
-                    }
-                    else
-                    {
+                    } else {
                         //make sure the function call ends with a ';'
-                        if (! ReadToken(&stringPtr, ";"))
-                        {
-                            Printf("ConERR file %s line %d - unable to process function %s.  Expecting ';'", mFileName, mLineNumber, mArgv[0]);
-                            rTuneAssert( 0 );
+                        if (!ReadToken(&stringPtr, ";")) {
+                            Printf("ConERR file %s line %d - unable to process function %s.  Expecting ';'",
+                                   mFileName, mLineNumber, mArgv[0]);
+                            rTuneAssert(0);
                             return (false);
                         }
                     }
@@ -2106,37 +1971,32 @@ bool Console::Evaluate( const char* string, const char* fileName )
         }
 
         //if we didn't find the function, print an error msg, but go on to the next...
-        if (! found)
-        {
-            Printf("ConERR file %s line %d - console function not found: %s", mFileName, mLineNumber, mArgv[0]);
-            rTuneAssert( 0 );
+        if (!found) {
+            Printf("ConERR file %s line %d - console function not found: %s", mFileName,
+                   mLineNumber, mArgv[0]);
+            rTuneAssert(0);
 
             //since the function couldn't be found, don't forget to skip past the ';'
-            if (! ReadToken(&stringPtr, ";"))
-            {
-                Printf("ConERR file %s line %d - unable to process function %s.  Expecting ';'", mFileName, mLineNumber, mArgv[0]);
-                rTuneAssert( 0 );
+            if (!ReadToken(&stringPtr, ";")) {
+                Printf("ConERR file %s line %d - unable to process function %s.  Expecting ';'",
+                       mFileName, mLineNumber, mArgv[0]);
+                rTuneAssert(0);
                 return (false);
             }
         }
 
         //if the function is conditional, and the result is false
         //skip past until we find the closing brace...
-        if (isConditional && ! conditionalResult)
-        {
+        if (isConditional && !conditionalResult) {
             //skip past everything until we find the closing bracket
-            while (true)
-            {
+            while (true) {
                 char *token = GetNextToken(&stringPtr, mArgv[0]);
-                if (! token)
-                {
-                    Printf("ConERR file %s line %d - end bracket for function %s not found.", mFileName, mLineNumber, mArgv[0]);
-                    rTuneAssert( 0 );
+                if (!token) {
+                    Printf("ConERR file %s line %d - end bracket for function %s not found.",
+                           mFileName, mLineNumber, mArgv[0]);
+                    rTuneAssert(0);
                     return (false);
-                }
-
-                else if (! smStricmp(token, "}"))
-                {
+                } else if (!smStricmp(token, "}")) {
                     readEndBracketLevel--;
                     break;
                 }
@@ -2146,12 +2006,11 @@ bool Console::Evaluate( const char* string, const char* fileName )
     } while (true);
 
 #if PROFILE_PARSER
-GetConsole()->Printf("DEBUG total time spent calling functions: %.3f", totalTime);
+    GetConsole()->Printf("DEBUG total time spent calling functions: %.3f", totalTime);
 #endif
 
     return (true);
 }
-
 
 
 //==============================================================================
@@ -2165,14 +2024,13 @@ GetConsole()->Printf("DEBUG total time spent calling functions: %.3f", totalTime
 // Return:      
 //
 //==============================================================================
-void Console::ExecuteScriptSync( const char* filename, bool reload )
-{
+void Console::ExecuteScriptSync(const char *filename, bool reload) {
 #if PROFILE_PARSER
-float curTime = GameManager::GetRealTime();
-GetConsole()->Printf("Console loading script file %s\n", filename);
+    float curTime = GameManager::GetRealTime();
+    GetConsole()->Printf("Console loading script file %s\n", filename);
 #endif
 
-    GetLoadingManager()->LoadSync( FILEHANDLER_CONSOLE, filename );
+    GetLoadingManager()->LoadSync(FILEHANDLER_CONSOLE, filename);
 }
 
 
@@ -2187,15 +2045,11 @@ GetConsole()->Printf("Console loading script file %s\n", filename);
 // Return:      
 //
 //==============================================================================
-bool Console::atob( const char* value )
-{
-    if( atoi(value) != 0 || !smStricmp(value, "true") )
-    {
-        return( true );
-    }
-    else
-    {
-        return( false );
+bool Console::atob(const char *value) {
+    if (atoi(value) != 0 || !smStricmp(value, "true")) {
+        return (true);
+    } else {
+        return (false);
     }
 }
 
@@ -2212,18 +2066,18 @@ bool Console::atob( const char* value )
 //
 //==============================================================================
 void Console::ExecuteScript
-( 
-    const char* filename, 
-    Console::ExecuteScriptCallback* pCallback, 
-    void* pUserData, 
-    bool reload
-)
-{
-    rTuneAssert( filename != 0 );
-    rTuneAssert( pCallback != 0 );
-    
+        (
+                const char *filename,
+                Console::ExecuteScriptCallback *pCallback,
+                void *pUserData,
+                bool reload
+        ) {
+    rTuneAssert(filename != 0);
+    rTuneAssert(pCallback != 0);
+
     mpCallback = pCallback;
-    GetLoadingManager()->AddRequest( FILEHANDLER_CONSOLE, filename, HeapMgr()->GetCurrentHeap(), this, pUserData );
+    GetLoadingManager()->AddRequest(FILEHANDLER_CONSOLE, filename, HeapMgr()->GetCurrentHeap(),
+                                    this, pUserData);
 }
 
 //==============================================================================
@@ -2237,9 +2091,8 @@ void Console::ExecuteScript
 // Return:      
 //
 //==============================================================================
-void Console::OnProcessRequestsComplete( void* pUserData )
-{
-    mpCallback->OnExecuteScriptComplete( pUserData );    
+void Console::OnProcessRequestsComplete(void *pUserData) {
+    mpCallback->OnExecuteScriptComplete(pUserData);
 }
 
 
@@ -2261,21 +2114,21 @@ void Console::OnProcessRequestsComplete( void* pUserData )
 //
 //==============================================================================
 Console::FunctionTableEntry::FunctionTableEntry
-( 
-    const char* in_name, 
-    CONSOLE_FUNCTION in_func, 
-    const char* in_help, 
-    int in_minArgs, 
-    int in_maxArgs 
-)
-    :
-    minArgs( in_minArgs ),
-    maxArgs( in_maxArgs ),
-    isConditional( false )
-{
-    rTuneAssert( in_func != 0 );
-    rTuneAssert( strlen( in_name ) < MAX_FUNCTION_NAME );
-    rTuneWarningMsg( strlen( in_help ) < MAX_HELP_LENGTH, "Help text too long.  Text has been truncated.\n" );
+        (
+                const char *in_name,
+                CONSOLE_FUNCTION in_func,
+                const char *in_help,
+                int in_minArgs,
+                int in_maxArgs
+        )
+        :
+        minArgs(in_minArgs),
+        maxArgs(in_maxArgs),
+        isConditional(false) {
+    rTuneAssert(in_func != 0);
+    rTuneAssert(strlen(in_name) < MAX_FUNCTION_NAME);
+    rTuneWarningMsg(strlen(in_help) < MAX_HELP_LENGTH,
+                    "Help text too long.  Text has been truncated.\n");
 
     functionPointer.voidReturn = in_func;
     name = in_name;
@@ -2295,21 +2148,20 @@ Console::FunctionTableEntry::FunctionTableEntry
 //
 //==============================================================================
 Console::FunctionTableEntry::FunctionTableEntry
-(
-    const char* in_name,
-    CONSOLE_BOOL_FUNCTION in_func,
-    const char* in_help, 
-    int in_minArgs, 
-    int in_maxArgs 
-)
-    :
-    minArgs( in_minArgs ),
-    maxArgs( in_maxArgs ),
-    isConditional( true )
-{
-    rTuneAssert( in_func != 0 );
-    rTuneAssert( strlen( in_name ) < MAX_FUNCTION_NAME );
-    rTuneAssert( strlen( in_help ) < MAX_HELP_LENGTH );
+        (
+                const char *in_name,
+                CONSOLE_BOOL_FUNCTION in_func,
+                const char *in_help,
+                int in_minArgs,
+                int in_maxArgs
+        )
+        :
+        minArgs(in_minArgs),
+        maxArgs(in_maxArgs),
+        isConditional(true) {
+    rTuneAssert(in_func != 0);
+    rTuneAssert(strlen(in_name) < MAX_FUNCTION_NAME);
+    rTuneAssert(strlen(in_help) < MAX_HELP_LENGTH);
 
     functionPointer.boolReturn = in_func;
     name = in_name;
@@ -2329,26 +2181,24 @@ Console::FunctionTableEntry::FunctionTableEntry
 //
 //==============================================================================
 Console::AliasTableEntry::AliasTableEntry
-( 
-    const char* srcName, 
-    const char* funcName, 
-    int srcArgc, 
-    char** srcArgv 
-)
-{
-    rTuneAssert( strlen( srcName ) < MAX_ALIAS_NAME );
-    rTuneAssert( strlen( funcName ) < MAX_FUNCTION_NAME );
-    rTuneAssert( srcArgc < MAX_ARGS );
+        (
+                const char *srcName,
+                const char *funcName,
+                int srcArgc,
+                char **srcArgv
+        ) {
+    rTuneAssert(strlen(srcName) < MAX_ALIAS_NAME);
+    rTuneAssert(strlen(funcName) < MAX_FUNCTION_NAME);
+    rTuneAssert(srcArgc < MAX_ARGS);
 
-    strcpy( name, srcName );
-    strcpy( functionName, funcName );
+    strcpy(name, srcName);
+    strcpy(functionName, funcName);
 
     argc = srcArgc;
 
     int i;
-    for( i = 0; i < argc; ++i )
-    {
-        rTuneAssert( strlen( srcArgv[i]) < MAX_ARG_LENGTH );
+    for (i = 0; i < argc; ++i) {
+        rTuneAssert(strlen(srcArgv[i]) < MAX_ARG_LENGTH);
         strcpy(argv[i], srcArgv[i]);
     }
 }

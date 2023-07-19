@@ -56,8 +56,7 @@ tUID DialogList::s_nelsonKey = 0;
 tUID DialogList::s_raceZombie1 = 0;
 tUID DialogList::s_raceZombie2 = 0;
 
-enum pedDialogType
-{
+enum pedDialogType {
     PED_MALE1,
     PED_MALE2,
     PED_FEMALE1,
@@ -74,8 +73,7 @@ enum pedDialogType
     PED_NUM_TYPES
 };
 
-enum skinDialogType
-{
+enum skinDialogType {
     SKIN_APU,
     SKIN_BART,
     SKIN_HOMER,
@@ -103,178 +101,174 @@ enum skinDialogType
     SKIN_NUM_TYPES
 };
 
-struct pedTypeInfo
-{
-    radInt64      pedUID;
-    const char*   pedName;
+struct pedTypeInfo {
+    radInt64 pedUID;
+    const char *pedName;
     pedDialogType dialogGroup;
 };
 
 static pedTypeInfo pedestrianNameTable[] =
-{
-    { 0, "boy",          PED_BOY1    },
-    { 0, "boy2",         PED_BOY2    },
-    { 0, "boy3",         PED_BOY1    },
-    { 0, "bum",          PED_MALE1   },
-    { 0, "busm1",        PED_MALE2   },
-    { 0, "busm2",        PED_MALE1   },
-    { 0, "busw1",        PED_FEMALE1 },
-    { 0, "const1",       PED_MALE2   },
-    { 0, "const2",       PED_MALE1   },
-    { 0, "farmr1",       PED_MALE2   },
-    { 0, "fem1",         PED_FEMALE2 },
-    { 0, "fem2",         PED_FEMALE1 },
-    { 0, "fem3",         PED_FEMALE2 },
-    { 0, "fem4",         PED_FEMALE1 },
-    { 0, "girl1",        PED_GIRL1   },
-    { 0, "girl2",        PED_GIRL2   },
-    { 0, "hooker",       PED_FEMALE2 },
-    { 0, "joger1",       PED_FEMALE1 },
-    { 0, "joger2",       PED_MALE1   },
-    { 0, "male1",        PED_MALE2   },
-    { 0, "male2",        PED_MALE1   },
-    { 0, "male3",        PED_MALE2   },
-    { 0, "male4",        PED_MALE1   },
-    { 0, "male5",        PED_MALE2   },
-    { 0, "male6",        PED_MALE1   },
-    { 0, "mobstr",       PED_MALE2   },
-    { 0, "nuclear",      PED_MALE1   },
-    { 0, "olady1",       PED_FEMALE2 },
-    { 0, "olady2",       PED_FEMALE1 },
-    { 0, "olady3",       PED_FEMALE2 },
-    { 0, "rednk1",       PED_BOY2    },
-    { 0, "rednk2",       PED_BOY1    },
-    { 0, "sail1",        PED_MALE2   },
-    { 0, "sail2",        PED_MALE1   },
-    { 0, "sail3",        PED_MALE2   },
-    { 0, "sail4",        PED_MALE1   },
-    { 0, "witch",        PED_GIRL1   },
-    { 0, "frankenstein", PED_BOY2    },
-    { 0, "zfem1",        PED_ZOMBIE3 },
-    { 0, "zfem5",        PED_ZOMBIE3 },
-    { 0, "zmale1",       PED_ZOMBIE1 },
-    { 0, "zmale3",       PED_ZOMBIE2 },
-    { 0, "zmale4",       PED_ZOMBIE4 }
-};
+        {
+                {0, "boy",          PED_BOY1},
+                {0, "boy2",         PED_BOY2},
+                {0, "boy3",         PED_BOY1},
+                {0, "bum",          PED_MALE1},
+                {0, "busm1",        PED_MALE2},
+                {0, "busm2",        PED_MALE1},
+                {0, "busw1",        PED_FEMALE1},
+                {0, "const1",       PED_MALE2},
+                {0, "const2",       PED_MALE1},
+                {0, "farmr1",       PED_MALE2},
+                {0, "fem1",         PED_FEMALE2},
+                {0, "fem2",         PED_FEMALE1},
+                {0, "fem3",         PED_FEMALE2},
+                {0, "fem4",         PED_FEMALE1},
+                {0, "girl1",        PED_GIRL1},
+                {0, "girl2",        PED_GIRL2},
+                {0, "hooker",       PED_FEMALE2},
+                {0, "joger1",       PED_FEMALE1},
+                {0, "joger2",       PED_MALE1},
+                {0, "male1",        PED_MALE2},
+                {0, "male2",        PED_MALE1},
+                {0, "male3",        PED_MALE2},
+                {0, "male4",        PED_MALE1},
+                {0, "male5",        PED_MALE2},
+                {0, "male6",        PED_MALE1},
+                {0, "mobstr",       PED_MALE2},
+                {0, "nuclear",      PED_MALE1},
+                {0, "olady1",       PED_FEMALE2},
+                {0, "olady2",       PED_FEMALE1},
+                {0, "olady3",       PED_FEMALE2},
+                {0, "rednk1",       PED_BOY2},
+                {0, "rednk2",       PED_BOY1},
+                {0, "sail1",        PED_MALE2},
+                {0, "sail2",        PED_MALE1},
+                {0, "sail3",        PED_MALE2},
+                {0, "sail4",        PED_MALE1},
+                {0, "witch",        PED_GIRL1},
+                {0, "frankenstein", PED_BOY2},
+                {0, "zfem1",        PED_ZOMBIE3},
+                {0, "zfem5",        PED_ZOMBIE3},
+                {0, "zmale1",       PED_ZOMBIE1},
+                {0, "zmale3",       PED_ZOMBIE2},
+                {0, "zmale4",       PED_ZOMBIE4}
+        };
 
-static unsigned int pedestrianTableLength = sizeof( pedestrianNameTable ) / sizeof( pedTypeInfo );
+static unsigned int pedestrianTableLength = sizeof(pedestrianNameTable) / sizeof(pedTypeInfo);
 
-struct skinTypeInfo
-{
-    radInt64       skinUID;
-    const char*    skinName;
+struct skinTypeInfo {
+    radInt64 skinUID;
+    const char *skinName;
     skinDialogType dialogGroup;
 };
 
 static skinTypeInfo skinNameTable[] =
-{
-    { 0, "a_american", SKIN_APU    },
-    { 0, "a_army",     SKIN_APU    },
-    { 0, "a_besharp",  SKIN_APU    },
-    { 0, "b_football", SKIN_BART   },
-    { 0, "b_hugo",     SKIN_BART   },
-    { 0, "b_man",      SKIN_BART   },
-    { 0, "b_military", SKIN_BART   },
-    { 0, "b_ninja",    SKIN_BART   },
-    { 0, "b_tall",     SKIN_BART   },
-    { 0, "h_donut",    SKIN_HOMER  },
-    { 0, "h_evil",     SKIN_HOMER  },
-    { 0, "h_fat",      SKIN_HOMER  },
-    { 0, "h_scuzzy",   SKIN_HOMER  },
-    { 0, "h_stcrobe",  SKIN_HOMER  },
-    { 0, "h_undrwr",   SKIN_HOMER  },
-    { 0, "reward_homer", SKIN_HOMER },
-    { 0, "l_cool",     SKIN_LISA   },
-    { 0, "l_florida",  SKIN_LISA   },
-    { 0, "l_jersey",   SKIN_LISA   },
-    { 0, "m_pink",     SKIN_MARGE  },
-    { 0, "m_police",   SKIN_MARGE  },
-    { 0, "m_prison",   SKIN_MARGE  },
-    { 0, "brn_unf",    SKIN_BARNEY },
-    { 0, "reward_barney", SKIN_BARNEY },
-    { 0, "b_milhouse", SKIN_MILHOUSE },
-    { 0, "b_nelson",   SKIN_NELSON },
-    { 0, "b_ralph",    SKIN_RALPH },
-    { 0, "b_cletus",   SKIN_CLETUS },
-    { 0, "b_zmale1",   SKIN_ZOMBIE1 },
-    { 0, "b_zmale3",   SKIN_ZOMBIE2 },
-    { 0, "b_zfem5",    SKIN_ZOMBIE3 },
-    { 0, "b_zmale4",   SKIN_ZOMBIE4 },
-    { 0, "b_zfem1",    SKIN_ZOMBIE3 },
-    { 0, "b_skinner", SKIN_SKINNER },
-    { 0, "b_grandpa", SKIN_GRANDPA },
-    { 0, "b_cbg", SKIN_CBG },
-    { 0, "b_barney", SKIN_BARNEY },
-    { 0, "b_frink", SKIN_FRINK },
-    { 0, "b_snake", SKIN_SNAKE },
-    { 0, "b_smithers", SKIN_SMITHERS },
-    { 0, "reward_otto", SKIN_OTTO },
-    { 0, "reward_willie", SKIN_WILLIE },
-    { 0, "reward_kearney", SKIN_KEARNEY }
-};
+        {
+                {0, "a_american",     SKIN_APU},
+                {0, "a_army",         SKIN_APU},
+                {0, "a_besharp",      SKIN_APU},
+                {0, "b_football",     SKIN_BART},
+                {0, "b_hugo",         SKIN_BART},
+                {0, "b_man",          SKIN_BART},
+                {0, "b_military",     SKIN_BART},
+                {0, "b_ninja",        SKIN_BART},
+                {0, "b_tall",         SKIN_BART},
+                {0, "h_donut",        SKIN_HOMER},
+                {0, "h_evil",         SKIN_HOMER},
+                {0, "h_fat",          SKIN_HOMER},
+                {0, "h_scuzzy",       SKIN_HOMER},
+                {0, "h_stcrobe",      SKIN_HOMER},
+                {0, "h_undrwr",       SKIN_HOMER},
+                {0, "reward_homer",   SKIN_HOMER},
+                {0, "l_cool",         SKIN_LISA},
+                {0, "l_florida",      SKIN_LISA},
+                {0, "l_jersey",       SKIN_LISA},
+                {0, "m_pink",         SKIN_MARGE},
+                {0, "m_police",       SKIN_MARGE},
+                {0, "m_prison",       SKIN_MARGE},
+                {0, "brn_unf",        SKIN_BARNEY},
+                {0, "reward_barney",  SKIN_BARNEY},
+                {0, "b_milhouse",     SKIN_MILHOUSE},
+                {0, "b_nelson",       SKIN_NELSON},
+                {0, "b_ralph",        SKIN_RALPH},
+                {0, "b_cletus",       SKIN_CLETUS},
+                {0, "b_zmale1",       SKIN_ZOMBIE1},
+                {0, "b_zmale3",       SKIN_ZOMBIE2},
+                {0, "b_zfem5",        SKIN_ZOMBIE3},
+                {0, "b_zmale4",       SKIN_ZOMBIE4},
+                {0, "b_zfem1",        SKIN_ZOMBIE3},
+                {0, "b_skinner",      SKIN_SKINNER},
+                {0, "b_grandpa",      SKIN_GRANDPA},
+                {0, "b_cbg",          SKIN_CBG},
+                {0, "b_barney",       SKIN_BARNEY},
+                {0, "b_frink",        SKIN_FRINK},
+                {0, "b_snake",        SKIN_SNAKE},
+                {0, "b_smithers",     SKIN_SMITHERS},
+                {0, "reward_otto",    SKIN_OTTO},
+                {0, "reward_willie",  SKIN_WILLIE},
+                {0, "reward_kearney", SKIN_KEARNEY}
+        };
 
-static unsigned int skinTableLength = sizeof( skinNameTable ) / sizeof( skinTypeInfo );
+static unsigned int skinTableLength = sizeof(skinNameTable) / sizeof(skinTypeInfo);
 
-struct pedDialogGroupInfo
-{
+struct pedDialogGroupInfo {
     radInt64 pedUID;
-    const char* pedName;
+    const char *pedName;
 };
 
 //
 // Size must be PED_NUM_TYPES
 //
 static pedDialogGroupInfo dialogGroupTable[] =
-{
-    { 0, "male1"   },
-    { 0, "male2"   },
-    { 0, "fem1"    },
-    { 0, "fem2"    },
-    { 0, "boy1"    },
-    { 0, "boy2"    },
-    { 0, "girl1"   },
-    { 0, "girl2"   },
-    { 0, "zombie1" },
-    { 0, "zombie2" },
-    { 0, "zombie3" },
-    { 0, "zombie4" }
-};
+        {
+                {0, "male1"},
+                {0, "male2"},
+                {0, "fem1"},
+                {0, "fem2"},
+                {0, "boy1"},
+                {0, "boy2"},
+                {0, "girl1"},
+                {0, "girl2"},
+                {0, "zombie1"},
+                {0, "zombie2"},
+                {0, "zombie3"},
+                {0, "zombie4"}
+        };
 
-struct skinDialogGroupInfo
-{
-    radInt64    charUID;
-    const char* charName;
+struct skinDialogGroupInfo {
+    radInt64 charUID;
+    const char *charName;
 };
 
 //
 // Size must be SKIN_NUM_TYPES
 //
 static skinDialogGroupInfo skinDialogGroupTable[] =
-{
-    { 0, "apu"    },
-    { 0, "bart"   },
-    { 0, "homer"  },
-    { 0, "lisa"   },
-    { 0, "marge"  },
-    { 0, "barney" },
-    { 0, "milhouse" },
-    { 0, "nelson" },
-    { 0, "ralph" },
-    { 0, "cletus" },
-    { 0, "zombie1" },
-    { 0, "zombie2" },
-    { 0, "zombie3" },
-    { 0, "zombie4" },
-    { 0, "otto" },
-    { 0, "willie" },
-    { 0, "kearney" },
-    { 0, "skinner" },
-    { 0, "grandpa" },
-    { 0, "cbg" },
-    { 0, "frink" },
-    { 0, "snake" },
-    { 0, "smithers" }
-};
+        {
+                {0, "apu"},
+                {0, "bart"},
+                {0, "homer"},
+                {0, "lisa"},
+                {0, "marge"},
+                {0, "barney"},
+                {0, "milhouse"},
+                {0, "nelson"},
+                {0, "ralph"},
+                {0, "cletus"},
+                {0, "zombie1"},
+                {0, "zombie2"},
+                {0, "zombie3"},
+                {0, "zombie4"},
+                {0, "otto"},
+                {0, "willie"},
+                {0, "kearney"},
+                {0, "skinner"},
+                {0, "grandpa"},
+                {0, "cbg"},
+                {0, "frink"},
+                {0, "snake"},
+                {0, "smithers"}
+        };
 
 //
 // Debug flag
@@ -297,50 +291,44 @@ bool DialogList::s_showDialogSpew = false;
 // Return:      N/A.
 //
 //==============================================================================
-DialogList::DialogList()
-{
+DialogList::DialogList() {
     unsigned int i;
 
     //
     // Lazy initialization
     //
-    if( s_introKey == 0 )
-    {
-        s_introKey = ::radMakeKey32( "intro" );
-        s_aztecKey = ::radMakeKey32( "aztec" );
-        s_milhouseKey = tEntity::MakeUID( "milhouse" );
-        s_nelsonKey = tEntity::MakeUID( "nelson" );
-        s_raceZombie1 = tEntity::MakeUID( "zmale3" );
-        s_raceZombie2 = tEntity::MakeUID( "zfem1" );
+    if (s_introKey == 0) {
+        s_introKey = ::radMakeKey32("intro");
+        s_aztecKey = ::radMakeKey32("aztec");
+        s_milhouseKey = tEntity::MakeUID("milhouse");
+        s_nelsonKey = tEntity::MakeUID("nelson");
+        s_raceZombie1 = tEntity::MakeUID("zmale3");
+        s_raceZombie2 = tEntity::MakeUID("zfem1");
 
         //
         // Also do the tables of UIDs we use to identify peds and skins
         //
-        for( i = 0; i < pedestrianTableLength; i++ )
-        {
-            pedestrianNameTable[i].pedUID = tEntity::MakeUID( pedestrianNameTable[i].pedName );
+        for (i = 0; i < pedestrianTableLength; i++) {
+            pedestrianNameTable[i].pedUID = tEntity::MakeUID(pedestrianNameTable[i].pedName);
         }
 
-        for( i = 0; i < PED_NUM_TYPES; i++ )
-        {
-            dialogGroupTable[i].pedUID = tEntity::MakeUID( dialogGroupTable[i].pedName );
+        for (i = 0; i < PED_NUM_TYPES; i++) {
+            dialogGroupTable[i].pedUID = tEntity::MakeUID(dialogGroupTable[i].pedName);
         }
 
-        for( i = 0; i < skinTableLength; i++ )
-        {
-            skinNameTable[i].skinUID = tEntity::MakeUID( skinNameTable[i].skinName );
+        for (i = 0; i < skinTableLength; i++) {
+            skinNameTable[i].skinUID = tEntity::MakeUID(skinNameTable[i].skinName);
         }
 
-        for( i = 0; i < SKIN_NUM_TYPES; i++ )
-        {
-            skinDialogGroupTable[i].charUID = tEntity::MakeUID( skinDialogGroupTable[i].charName );
+        for (i = 0; i < SKIN_NUM_TYPES; i++) {
+            skinDialogGroupTable[i].charUID = tEntity::MakeUID(skinDialogGroupTable[i].charName);
         }
 
         //
         // Debug spew
         //
-        radDbgWatchAddBoolean( &s_showDialogSpew, "Show Dialog Spew", "Sound Info" );
-        radDbgWatchAddFunction( "Print Dialog Coverage", &dumpDialogCoverage, this, "Sound Info" );
+        radDbgWatchAddBoolean(&s_showDialogSpew, "Show Dialog Spew", "Sound Info");
+        radDbgWatchAddFunction("Print Dialog Coverage", &dumpDialogCoverage, this, "Sound Info");
     }
 }
 
@@ -354,8 +342,7 @@ DialogList::DialogList()
 // Return:      N/A.
 //
 //==============================================================================
-DialogList::~DialogList()
-{
+DialogList::~DialogList() {
 }
 
 //=============================================================================
@@ -370,39 +357,33 @@ DialogList::~DialogList()
 // Return:      void 
 //
 //=============================================================================
-void DialogList::OrganizeDialog( IRadNameSpace* namespaceObj )
-{
+void DialogList::OrganizeDialog(IRadNameSpace *namespaceObj) {
     int mission;
     int level;
-    IDaSoundResource* resource;
-    DialogLine* newLine;
+    IDaSoundResource *resource;
+    DialogLine *newLine;
     ConversationMatcher matcher;
-    SelectableDialogList* dialogList;
-    SelectableDialog* foundDialog;
+    SelectableDialogList *dialogList;
+    SelectableDialog *foundDialog;
 
     //
     // Go through the list of sound resources looking for dialog
     //
-    resource = reinterpret_cast< IDaSoundResource* >( namespaceObj->GetFirst( NULL) );
-    while( resource != NULL )
-    {
-        if( isIndividualLine( resource ) )
-        {
+    resource = reinterpret_cast<IDaSoundResource *>(namespaceObj->GetFirst(NULL));
+    while (resource != NULL) {
+        if (isIndividualLine(resource)) {
             //
             // Resource is dialog but not conversation.  Create a DialogLine object
             // to hold the information about it and store it in the appropriate list.
             //
 #ifdef RAD_GAMECUBE
-            newLine = new( GMA_GC_VMM ) DialogLine( resource );
+            newLine = new(GMA_GC_VMM) DialogLine(resource);
 #else
-            newLine = new( GMA_PERSISTENT ) DialogLine( resource );
-#endif     
-            if( newLine->IsLevelSpecific() )
-            {
+            newLine = new(GMA_PERSISTENT) DialogLine(resource);
+#endif
+            if (newLine->IsLevelSpecific()) {
                 dialogList = &(m_missionLists[newLine->GetLevel() - 1][newLine->GetMission()]);
-            }
-            else
-            {
+            } else {
                 dialogList = &m_genericDialogList;
             }
 
@@ -410,26 +391,21 @@ void DialogList::OrganizeDialog( IRadNameSpace* namespaceObj )
             // Search the list.  If we've already got a dialog for the same situation, lump
             // this one in with it, otherwise stash it straight into the list
             //
-            foundDialog = searchDialogList( newLine->GetEvent(), newLine->GetCharacterUID(), 0,
-                                            *dialogList, 0, newLine->IsVillainLine(), false );
-            HeapMgr()->PushHeap( GMA_AUDIO_PERSISTENT );
-            if( foundDialog != NULL )
-            {
-                foundDialog->AddMatchingDialog( *newLine, *dialogList );
+            foundDialog = searchDialogList(newLine->GetEvent(), newLine->GetCharacterUID(), 0,
+                                           *dialogList, 0, newLine->IsVillainLine(), false);
+            HeapMgr()->PushHeap(GMA_AUDIO_PERSISTENT);
+            if (foundDialog != NULL) {
+                foundDialog->AddMatchingDialog(*newLine, *dialogList);
+            } else {
+                dialogList->push_back(newLine);
             }
-            else
-            {
-                dialogList->push_back( newLine );
-            }
-            HeapMgr()->PopHeap( GMA_AUDIO_PERSISTENT );
-        }
-        else if( isConversationLine( resource ) )
-        {
+            HeapMgr()->PopHeap(GMA_AUDIO_PERSISTENT);
+        } else if (isConversationLine(resource)) {
             //
             // Resource is part of a conversation.  Give it to the object
             // responsible for matching the pieces together
             //
-            matcher.AddNewLine( resource );
+            matcher.AddNewLine(resource);
         }
         //
         // Otherwise, this isn't dialog, so we don't have to do anything with it
@@ -438,26 +414,25 @@ void DialogList::OrganizeDialog( IRadNameSpace* namespaceObj )
         //
         // Next resource in the list
         //
-        resource = reinterpret_cast< IDaSoundResource* >( namespaceObj->GetNext( NULL) );
+        resource = reinterpret_cast<IDaSoundResource *>(namespaceObj->GetNext(NULL));
     }
 
     //
     // Do a sanity check on the conversations
     //
-    rAssert( matcher.AreAllConversationsComplete() );
+    rAssert(matcher.AreAllConversationsComplete());
 
     //
     // Add the completed conversations to the appropriate lists
     //
-    for( level = 0; level < GameplayManager::MAX_LEVELS; level++ )
-    {
-        for( mission = 0; mission < GameplayManager::MAX_MISSIONS; mission++ )
-        {
-            matcher.AddConversationsToList( level + 1, mission, m_missionLists[level][mission] );
+    for (level = 0; level < GameplayManager::MAX_LEVELS; level++) {
+        for (mission = 0; mission < GameplayManager::MAX_MISSIONS; mission++) {
+            matcher.AddConversationsToList(level + 1, mission, m_missionLists[level][mission]);
         }
     }
 
-    matcher.AddConversationsToList( SelectableDialog::NO_LEVEL, SelectableDialog::NO_MISSION, m_genericDialogList );
+    matcher.AddConversationsToList(SelectableDialog::NO_LEVEL, SelectableDialog::NO_MISSION,
+                                   m_genericDialogList);
 }
 
 //=============================================================================
@@ -479,37 +454,33 @@ void DialogList::OrganizeDialog( IRadNameSpace* namespaceObj )
 //              event, or NULL if nothing found
 //
 //=============================================================================
-SelectableDialog* DialogList::FindDialogForEvent( EventEnum id,
-                                                  Character* character1, 
-                                                  Character* character2,
-                                                  tUID charUID1,
-                                                  tUID charUID2,
-                                                  radKey32 convKey,
-                                                  bool isVillain )
-{
+SelectableDialog *DialogList::FindDialogForEvent(EventEnum id,
+                                                 Character *character1,
+                                                 Character *character2,
+                                                 tUID charUID1,
+                                                 tUID charUID2,
+                                                 radKey32 convKey,
+                                                 bool isVillain) {
     int mission;
     tUID char1UID;
     tUID char2UID;
     char nameBuffer[20];
     unsigned int aztecNumber;
-    GameplayManager* gameplayMgr = NULL;
+    GameplayManager *gameplayMgr = NULL;
     // For indexing purposes, levels count from zero.
     int level;
-    SelectableDialog* dialogMatch = NULL;
-    Mission* missionObj;
+    SelectableDialog *dialogMatch = NULL;
+    Mission *missionObj;
 
-    if( GetGameFlow()->GetCurrentContext() == CONTEXT_FRONTEND )
-    {
+    if (GetGameFlow()->GetCurrentContext() == CONTEXT_FRONTEND) {
         //
         // Playing dialog in front end, so any level will do
         //
         level = 0;
         missionObj = NULL;
-    }
-    else
-    {
+    } else {
         gameplayMgr = GetGameplayManager();
-        rAssert( gameplayMgr != NULL );
+        rAssert(gameplayMgr != NULL);
 
         level = gameplayMgr->GetCurrentLevelIndex() - RenderEnums::L1;
         missionObj = gameplayMgr->GetCurrentMission();
@@ -520,30 +491,20 @@ SelectableDialog* DialogList::FindDialogForEvent( EventEnum id,
     // event, those only happen during missions even if we're in Sunday Drive
     // (they're the conversations that start the missions) so just start looking there.
     //
-    if( missionObj != NULL )
-    {
-        if( ( !(gameplayMgr->IsSuperSprint()) )
-            && ( (!(missionObj->IsSundayDrive()) )
-            || ( id == EVENT_CONVERSATION_INIT_DIALOG )
-            || ( id == EVENT_TUTORIAL_DIALOG_PLAY ) ) )
-        {
-            if( id == EVENT_TUTORIAL_DIALOG_PLAY )
-            {
+    if (missionObj != NULL) {
+        if ((!(gameplayMgr->IsSuperSprint()))
+            && ((!(missionObj->IsSundayDrive()))
+                || (id == EVENT_CONVERSATION_INIT_DIALOG)
+                || (id == EVENT_TUTORIAL_DIALOG_PLAY))) {
+            if (id == EVENT_TUTORIAL_DIALOG_PLAY) {
                 mission = DialogLine::TUTORIAL_MISSION_NUMBER;
-            }
-            else if( missionObj->IsBonusMission() )
-            {
+            } else if (missionObj->IsBonusMission()) {
                 mission = DialogLine::BONUS_MISSION_NUMBER;
-            }
-            else if( missionObj->IsRaceMission() )
-            {
-                mission = DialogLine::FIRST_RACE_MISSION_NUMBER + 
-                    ( gameplayMgr->GetCurrentMissionNum() - GameplayManager::MAX_MISSIONS );
-            }
-            else
-            {
-                if( convKey == s_introKey )
-                {
+            } else if (missionObj->IsRaceMission()) {
+                mission = DialogLine::FIRST_RACE_MISSION_NUMBER +
+                          (gameplayMgr->GetCurrentMissionNum() - GameplayManager::MAX_MISSIONS);
+            } else {
+                if (convKey == s_introKey) {
                     //
                     // Stinky race missions.  The "intro" conversation happens before we've
                     // started the race.  I can't rename them to simple L1, since characters like Homer
@@ -552,42 +513,33 @@ SelectableDialog* DialogList::FindDialogForEvent( EventEnum id,
                     // whoever the driver is), we need to check if either character is Milhouse, Nelson,
                     // Ralph, or their zombie counterparts
                     //
-                    rAssert( character1 != NULL );
-                    rAssert( character2 != NULL );
+                    rAssert(character1 != NULL);
+                    rAssert(character2 != NULL);
 
-                    char1UID = getPuppetUID( character1 );
-                    char2UID = getPuppetUID( character2 );
-                    if( ( char1UID == s_milhouseKey )
-                        || ( char2UID == s_milhouseKey ) 
-                        || ( char1UID == s_raceZombie1 )
-                        || ( char2UID == s_raceZombie1 ) )
-                    {
+                    char1UID = getPuppetUID(character1);
+                    char2UID = getPuppetUID(character2);
+                    if ((char1UID == s_milhouseKey)
+                        || (char2UID == s_milhouseKey)
+                        || (char1UID == s_raceZombie1)
+                        || (char2UID == s_raceZombie1)) {
                         mission = DialogLine::FIRST_RACE_MISSION_NUMBER;
-                    }
-                    else if( ( char1UID == s_nelsonKey )
-                        || ( char2UID == s_nelsonKey ) 
-                        || ( char1UID == s_raceZombie2 )
-                        || ( char2UID == s_raceZombie2 ) )
-                    {
+                    } else if ((char1UID == s_nelsonKey)
+                               || (char2UID == s_nelsonKey)
+                               || (char1UID == s_raceZombie2)
+                               || (char2UID == s_raceZombie2)) {
                         mission = DialogLine::FIRST_RACE_MISSION_NUMBER + 1;
-                    }
-                    else
-                    {
+                    } else {
                         //
                         // This had better be Ralph or zombie Ralph
                         //
                         mission = DialogLine::FIRST_RACE_MISSION_NUMBER + 2;
                     }
-                }
-                else if( level == 0 )
-                {
+                } else if (level == 0) {
                     //
                     // Stinky level 1, tutorial mission screws everything up
                     //
                     mission = gameplayMgr->GetCurrentMissionIndex();
-                }
-                else
-                {
+                } else {
                     mission = gameplayMgr->GetCurrentMissionIndex() + 1;
 
 #ifdef RAD_E3
@@ -599,8 +551,7 @@ SelectableDialog* DialogList::FindDialogForEvent( EventEnum id,
 #endif
                 }
 
-                if ( convKey == s_aztecKey )
-                {
+                if (convKey == s_aztecKey) {
                     //
                     // Another stinky hack.  The teen at the Aztec needs randomized conversations.
                     // Conversations don't really randomize because the conversation builder assumes
@@ -608,71 +559,63 @@ SelectableDialog* DialogList::FindDialogForEvent( EventEnum id,
                     // key isn't a straightforward randomization on the caller's end, since it's
                     // a scripted value.  I'll handle it here.
                     //
-                    aztecNumber = ( rand() % 4 ) + 1;
-                    sprintf( nameBuffer, "aztec%d", aztecNumber );
-                    convKey = ::radMakeKey32( nameBuffer );
+                    aztecNumber = (rand() % 4) + 1;
+                    sprintf(nameBuffer, "aztec%d", aztecNumber);
+                    convKey = ::radMakeKey32(nameBuffer);
                 }
             }
 
-            if( s_showDialogSpew )
-            {
-                rTuneString( "Searching mission-specific dialog\n" );
+            if (s_showDialogSpew) {
+                rTuneString("Searching mission-specific dialog\n");
             }
 
-            if( character1 == NULL )
-            {
+            if (character1 == NULL) {
                 // Already have UIDs
-                dialogMatch = searchDialogList( id, charUID1, charUID2, m_missionLists[level][mission], convKey, isVillain );
-            }
-            else
-            {
+                dialogMatch = searchDialogList(id, charUID1, charUID2,
+                                               m_missionLists[level][mission], convKey, isVillain);
+            } else {
                 // Take UID from character objects
-                dialogMatch = searchDialogList( id, character1, character2, m_missionLists[level][mission], convKey, isVillain );
+                dialogMatch = searchDialogList(id, character1, character2,
+                                               m_missionLists[level][mission], convKey, isVillain);
             }
         }
     }
 
-    if( dialogMatch == NULL )
-    {
+    if (dialogMatch == NULL) {
         //
         // No mission-specific dialog, search the level-specific stuff
         //
-        if( s_showDialogSpew )
-        {
-            rTuneString( "Searching level-specific dialog\n" );
+        if (s_showDialogSpew) {
+            rTuneString("Searching level-specific dialog\n");
         }
 
-        if( character1 == NULL )
-        {
-            dialogMatch = searchDialogList( id, charUID1, charUID2, m_missionLists[level][0], convKey, isVillain );
-        }
-        else
-        {
-            dialogMatch = searchDialogList( id, character1, character2, m_missionLists[level][0], convKey, isVillain );
+        if (character1 == NULL) {
+            dialogMatch = searchDialogList(id, charUID1, charUID2, m_missionLists[level][0],
+                                           convKey, isVillain);
+        } else {
+            dialogMatch = searchDialogList(id, character1, character2, m_missionLists[level][0],
+                                           convKey, isVillain);
         }
 
-        if( dialogMatch == NULL )
-        {
+        if (dialogMatch == NULL) {
             //
             // No mission- or level-specific dialog, search the generic list
             //
-            if( s_showDialogSpew )
-            {
-                rTuneString( "Searching generic dialog\n" );
+            if (s_showDialogSpew) {
+                rTuneString("Searching generic dialog\n");
             }
 
-            if( character1 == NULL )
-            {
-                dialogMatch = searchDialogList( id, charUID1, charUID2, m_genericDialogList, convKey, isVillain );
-            }
-            else
-            {
-                dialogMatch = searchDialogList( id, character1, character2, m_genericDialogList, convKey, isVillain );
+            if (character1 == NULL) {
+                dialogMatch = searchDialogList(id, charUID1, charUID2, m_genericDialogList, convKey,
+                                               isVillain);
+            } else {
+                dialogMatch = searchDialogList(id, character1, character2, m_genericDialogList,
+                                               convKey, isVillain);
             }
         }
     }
 
-    return( dialogMatch );
+    return (dialogMatch);
 }
 
 //=============================================================================
@@ -686,39 +629,32 @@ SelectableDialog* DialogList::FindDialogForEvent( EventEnum id,
 // Return:      Character* if match found, NULL otherwise
 //
 //=============================================================================
-Character* DialogList::GetStinkySkinPointer( tUID charUID )
-{
+Character *DialogList::GetStinkySkinPointer(tUID charUID) {
     int skinType;
     unsigned int i;
-    Character* charPtr;
+    Character *charPtr;
 
-    for( skinType = 0; skinType < SKIN_NUM_TYPES; skinType++ )
-    {
-        if( skinDialogGroupTable[skinType].charUID == charUID )
-        {
+    for (skinType = 0; skinType < SKIN_NUM_TYPES; skinType++) {
+        if (skinDialogGroupTable[skinType].charUID == charUID) {
             break;
         }
     }
 
-    if( skinType == SKIN_NUM_TYPES )
-    {
+    if (skinType == SKIN_NUM_TYPES) {
         //
         // No skin exists for given character
         //
-        return( NULL );
+        return (NULL);
     }
 
     //
     // At this point, the character has skins.  Look for a match.
     //
-    for( i = 0; i < skinTableLength; i++ )
-    {
-        if( skinNameTable[i].dialogGroup == skinType )
-        {
-            charPtr = GetCharacterManager()->GetCharacterByName( skinNameTable[i].skinUID );
-            if( charPtr != NULL )
-            {
-                return( charPtr );
+    for (i = 0; i < skinTableLength; i++) {
+        if (skinNameTable[i].dialogGroup == skinType) {
+            charPtr = GetCharacterManager()->GetCharacterByName(skinNameTable[i].skinUID);
+            if (charPtr != NULL) {
+                return (charPtr);
             }
         }
     }
@@ -726,7 +662,7 @@ Character* DialogList::GetStinkySkinPointer( tUID charUID )
     //
     // No skins found
     //
-    return( NULL );
+    return (NULL);
 }
 
 //******************************************************************************
@@ -746,13 +682,12 @@ Character* DialogList::GetStinkySkinPointer( tUID charUID )
 // Return:      true if role field found, false otherwise
 //
 //=============================================================================
-bool DialogList::hasOneLinerPrefix( const char* name )
-{
-    return( ( name[1] == '_' )
-            && ( ( name[0] == 'W' )
-                 || ( name[0] == 'D' )
-                 || ( name[0] == 'P' )
-                 || ( name[0] == 'V' ) ) );
+bool DialogList::hasOneLinerPrefix(const char *name) {
+    return ((name[1] == '_')
+            && ((name[0] == 'W')
+                || (name[0] == 'D')
+                || (name[0] == 'P')
+                || (name[0] == 'V')));
 }
 
 //=============================================================================
@@ -765,28 +700,27 @@ bool DialogList::hasOneLinerPrefix( const char* name )
 // Return:      true if one-liner, false otherwise
 //
 //=============================================================================
-bool DialogList::isIndividualLine( IDaSoundResource* resource )
-{
+bool DialogList::isIndividualLine(IDaSoundResource *resource) {
     char tempBuffer[FILENAME_BUFFER_LEN];
     char buffer[FILENAME_BUFFER_LEN];
 
     //
     // Get the first filename belonging to the resource.  Don't bother checking
-    // for >1 file---if they exist, then the names had better be interchangable.
+    // for>1 file---if they exist, then the names had better be interchangable.
     //
     tempBuffer[0] = '\0';
-    resource->GetFileNameAt( 0, tempBuffer, FILENAME_BUFFER_LEN );
-    rAssert( strlen( tempBuffer ) > 0 );
+    resource->GetFileNameAt(0, tempBuffer, FILENAME_BUFFER_LEN);
+    rAssert(strlen(tempBuffer) > 0);
 
-    DialogLine::StripDirectoryCrud( tempBuffer, buffer, FILENAME_BUFFER_LEN );
+    DialogLine::StripDirectoryCrud(tempBuffer, buffer, FILENAME_BUFFER_LEN);
 
     //
     // Simple test: we'll call it a line if it has at least two underscores
     // and no "C_" prefix
     //
-    return( ( !hasConversationPrefix( buffer ) )
-            && ( hasOneLinerPrefix( buffer ) )
-            && ( underscoreCount( buffer ) > 1 ) );
+    return ((!hasConversationPrefix(buffer))
+            && (hasOneLinerPrefix(buffer))
+            && (underscoreCount(buffer) > 1));
 }
 
 //=============================================================================
@@ -800,27 +734,26 @@ bool DialogList::isIndividualLine( IDaSoundResource* resource )
 // Return:      true if conversation line, false otherwise
 //
 //=============================================================================
-bool DialogList::isConversationLine( IDaSoundResource* resource )
-{
+bool DialogList::isConversationLine(IDaSoundResource *resource) {
     char tempBuffer[FILENAME_BUFFER_LEN];
     char buffer[FILENAME_BUFFER_LEN];
 
     //
     // Get the first filename belonging to the resource.  Don't bother checking
-    // for >1 file---if they exist, then the names had better be interchangable.
+    // for>1 file---if they exist, then the names had better be interchangable.
     //
     tempBuffer[0] = '\0';
-    resource->GetFileNameAt( 0, tempBuffer, FILENAME_BUFFER_LEN );
-    rAssert( strlen( tempBuffer ) > 0 );
+    resource->GetFileNameAt(0, tempBuffer, FILENAME_BUFFER_LEN);
+    rAssert(strlen(tempBuffer) > 0);
 
-    DialogLine::StripDirectoryCrud( tempBuffer, buffer, FILENAME_BUFFER_LEN );
+    DialogLine::StripDirectoryCrud(tempBuffer, buffer, FILENAME_BUFFER_LEN);
 
     //
     // Test: line belongs to conversation if it has at least three underscores
     // and a "C_" prefix
     //
-    return( hasConversationPrefix( buffer ) &&
-            ( underscoreCount( buffer ) > 3 ) );
+    return (hasConversationPrefix(buffer) &&
+            (underscoreCount(buffer) > 3));
 }
 
 //=============================================================================
@@ -833,23 +766,20 @@ bool DialogList::isConversationLine( IDaSoundResource* resource )
 // Return:      number of underscores found
 //
 //=============================================================================
-unsigned int DialogList::underscoreCount( const char* name )
-{
+unsigned int DialogList::underscoreCount(const char *name) {
     unsigned int i = 0;
     unsigned int count = 0;
 
 
-    while( name[i] != '\0' )
-    {
-        if( name[i] == '_' )
-        {
+    while (name[i] != '\0') {
+        if (name[i] == '_') {
             ++count;
         }
 
         i++;
     }
 
-    return( count );
+    return (count);
 }
 
 //=============================================================================
@@ -857,41 +787,34 @@ unsigned int DialogList::underscoreCount( const char* name )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, tUID characterUID1, tUID characterUID2, SelectableDialog* list )
+// Parameters:  (EventEnum id, tUID characterUID1, tUID characterUID2, SelectableDialog* list)
 //
 // Return:      SelectableDialog
 //
 //=============================================================================
-SelectableDialog* DialogList::searchDialogList( EventEnum id, Character* character1, 
-                                                Character* character2, SelectableDialogList& list,
-                                                radKey32 convName, bool isVillain )
-{
+SelectableDialog *DialogList::searchDialogList(EventEnum id, Character *character1,
+                                               Character *character2, SelectableDialogList &list,
+                                               radKey32 convName, bool isVillain) {
     tUID UID1 = 0;
     tUID UID2 = 0;
 
-    if( character1 == NULL )
-    {
+    if (character1 == NULL) {
         UID1 = 0;
-    }
-    else
-    {
+    } else {
         //
         // Can't just get the character UID, since they're not guaranteed to be consistent
         // with the model you see on the screen.  Need the skeleton UID, it appears
         //
-        UID1 = getPuppetUID( character1 );
+        UID1 = getPuppetUID(character1);
     }
 
-    if( character2 == NULL )
-    {
+    if (character2 == NULL) {
         UID2 = 0;
-    }
-    else
-    {
-        UID2 = getPuppetUID( character2 );
+    } else {
+        UID2 = getPuppetUID(character2);
     }
 
-    return( searchDialogList( id, UID1, UID2, list, convName, isVillain, true ) );
+    return (searchDialogList(id, UID1, UID2, list, convName, isVillain, true));
 }
 
 //=============================================================================
@@ -899,18 +822,17 @@ SelectableDialog* DialogList::searchDialogList( EventEnum id, Character* charact
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, tUID driverUID, SelectableDialogList& list )
+// Parameters:  (EventEnum id, tUID driverUID, SelectableDialogList& list)
 //
 // Return:      SelectableDialog
 //
 //=============================================================================
-SelectableDialog* DialogList::searchDialogList( EventEnum id, tUID characterUID1, 
-                                                tUID characterUID2,
-                                                SelectableDialogList& list,
-                                                radKey32 convName,
-                                                bool isVillain )
-{
-    return( searchDialogList( id, characterUID1, characterUID2, list, convName, isVillain, true ) );
+SelectableDialog *DialogList::searchDialogList(EventEnum id, tUID characterUID1,
+                                               tUID characterUID2,
+                                               SelectableDialogList &list,
+                                               radKey32 convName,
+                                               bool isVillain) {
+    return (searchDialogList(id, characterUID1, characterUID2, list, convName, isVillain, true));
 }
 
 //=============================================================================
@@ -926,127 +848,103 @@ SelectableDialog* DialogList::searchDialogList( EventEnum id, tUID characterUID1
 //              it exists, NULL otherwise
 //
 //=============================================================================
-SelectableDialog* DialogList::searchDialogList( EventEnum id, tUID characterUID1,
-                                                tUID characterUID2, SelectableDialogList& list,
-                                                radKey32 convName, bool isVillain, bool fuzzyPedMatch )
-{
+SelectableDialog *DialogList::searchDialogList(EventEnum id, tUID characterUID1,
+                                               tUID characterUID2, SelectableDialogList &list,
+                                               radKey32 convName, bool isVillain,
+                                               bool fuzzyPedMatch) {
     char eventName[30];
     char char1Name[30];
     char char2Name[30];
     char convBuffer[30];
     char villain[3];
-    SelectableDialog* currentDialog;
+    SelectableDialog *currentDialog;
     SelectableDialogList::const_iterator iter = list.begin();
-    SelectableDialog* returnValue = NULL;
+    SelectableDialog *returnValue = NULL;
 
-    if( s_showDialogSpew )
-    {
+    if (s_showDialogSpew) {
         //
         // Print a message for the stuff we're trying to match with
         //
-        DialogLine::FillEventName( eventName, 30, id );
-        DialogLine::FillCharacterName( char1Name, 30, characterUID1 );
-        DialogLine::FillCharacterName( char2Name, 30, characterUID2 );
-        if( convName != 0 )
-        {
-            sprintf( convBuffer, ", conv %d", convName );
-        }
-        else
-        {
+        DialogLine::FillEventName(eventName, 30, id);
+        DialogLine::FillCharacterName(char1Name, 30, characterUID1);
+        DialogLine::FillCharacterName(char2Name, 30, characterUID2);
+        if (convName != 0) {
+            sprintf(convBuffer, ", conv %d", convName);
+        } else {
             convBuffer[0] = '\0';
         }
-        if( isVillain )
-        {
+        if (isVillain) {
             villain[0] = 'V';
-        }
-        else
-        {
+        } else {
             villain[0] = 'W';
         }
         villain[1] = '\0';
-        rTunePrintf( "Dialog: Looking for event %s, char1 %s, char2 %s %s %s\n",
-                     eventName, char1Name, char2Name, villain, convBuffer );
+        rTunePrintf("Dialog: Looking for event %s, char1 %s, char2 %s %s %s\n",
+                    eventName, char1Name, char2Name, villain, convBuffer);
     }
 
-    for( ; iter != list.end(); ++iter )
-    {
+    for (; iter != list.end(); ++iter) {
         currentDialog = *iter;
 
-        if( s_showDialogSpew )
-        {
+        if (s_showDialogSpew) {
             //
             // Print a message for the stuff we're currently looking at
             //
-            DialogLine::FillEventName( eventName, 30, currentDialog->GetEvent() );
-            DialogLine::FillCharacterName( char1Name, 30, currentDialog->GetDialogLineCharacterUID( 1 ) );
+            DialogLine::FillEventName(eventName, 30, currentDialog->GetEvent());
+            DialogLine::FillCharacterName(char1Name, 30,
+                                          currentDialog->GetDialogLineCharacterUID(1));
 
-            if( currentDialog->GetNumDialogLines() > 1 )
-            {
-                DialogLine::FillCharacterName( char2Name, 30, currentDialog->GetDialogLineCharacterUID( 2 ) );
-            }
-            else
-            {
+            if (currentDialog->GetNumDialogLines() > 1) {
+                DialogLine::FillCharacterName(char2Name, 30,
+                                              currentDialog->GetDialogLineCharacterUID(2));
+            } else {
                 char2Name[0] = '-';
                 char2Name[1] = '\0';
             }
 
-            if( convName != 0 )
-            {
-                sprintf( convBuffer, ", conv %d", currentDialog->GetConversationName() );
-            }
-            else
-            {
+            if (convName != 0) {
+                sprintf(convBuffer, ", conv %d", currentDialog->GetConversationName());
+            } else {
                 convBuffer[0] = '\0';
             }
 
-            if( currentDialog->IsVillainLine() )
-            {
+            if (currentDialog->IsVillainLine()) {
                 villain[0] = 'V';
-            }
-            else
-            {
+            } else {
                 villain[0] = 'W';
             }
             villain[1] = '\0';
 
-            rTunePrintf( "Dialog: Matching against event %s, char1 %s, char2 %s %s %s\n",
-                eventName, char1Name, char2Name, villain, convBuffer );
+            rTunePrintf("Dialog: Matching against event %s, char1 %s, char2 %s %s %s\n",
+                        eventName, char1Name, char2Name, villain, convBuffer);
         }
 
-        if( ( currentDialog->GetEvent() == id ) 
-            && ( currentDialog->IsVillainLine() == isVillain )
+        if ((currentDialog->GetEvent() == id)
+            && (currentDialog->IsVillainLine() == isVillain)
             // If a conversation name is supplied, that has to match
-            && ( ( convName == 0 )
-                 || ( currentDialog->GetConversationName() == convName ) ) )
-        {
-            if( currentDialog->GetNumDialogLines() == 1 )
-            {
+            && ((convName == 0)
+                || (currentDialog->GetConversationName() == convName))) {
+            if (currentDialog->GetNumDialogLines() == 1) {
                 //
                 // Match either character
                 //
-                if( characterMatches( characterUID1, currentDialog, fuzzyPedMatch ) 
-                    || characterMatches( characterUID2, currentDialog, fuzzyPedMatch ) )
-                {
+                if (characterMatches(characterUID1, currentDialog, fuzzyPedMatch)
+                    || characterMatches(characterUID2, currentDialog, fuzzyPedMatch)) {
                     returnValue = currentDialog;
                 }
-            }
-            else
-            {
+            } else {
                 //
                 // Multi-line dialog.  Match both.
                 //
-                if( characterMatches( characterUID1, currentDialog, fuzzyPedMatch ) 
-                    && characterMatches( characterUID2, currentDialog, fuzzyPedMatch ) )
-                {
+                if (characterMatches(characterUID1, currentDialog, fuzzyPedMatch)
+                    && characterMatches(characterUID2, currentDialog, fuzzyPedMatch)) {
                     returnValue = currentDialog;
                 }
             }
 
-            if( returnValue != NULL )
-            {
-                if( s_showDialogSpew )
-                {
-                    rTunePrintf( "Dialog: Match found\n" );
+            if (returnValue != NULL) {
+                if (s_showDialogSpew) {
+                    rTunePrintf("Dialog: Match found\n");
                 }
 
                 //
@@ -1057,7 +955,7 @@ SelectableDialog* DialogList::searchDialogList( EventEnum id, tUID characterUID1
         }
     }
 
-    return( returnValue );
+    return (returnValue);
 }
 
 //=============================================================================
@@ -1074,17 +972,15 @@ SelectableDialog* DialogList::searchDialogList( EventEnum id, tUID characterUID1
 // Return:      true if match, false otherwise
 //
 //=============================================================================
-bool DialogList::characterMatches( tUID characterUID, SelectableDialog* dialog,
-                                   bool fuzzyPedMatch )
-{
+bool DialogList::characterMatches(tUID characterUID, SelectableDialog *dialog,
+                                  bool fuzzyPedMatch) {
     unsigned int i;
     tUID effectiveUID;  // Unix humour.  Nyuck!
     pedDialogType dialogType;
     bool switchMade = false;
 
-    if( characterUID == static_cast< tUID >( 0 ) )
-    {
-        return( false );
+    if (characterUID == static_cast<tUID>(0)) {
+        return (false);
     }
 
     //
@@ -1100,12 +996,9 @@ bool DialogList::characterMatches( tUID characterUID, SelectableDialog* dialog,
     //
     effectiveUID = characterUID;
 
-    if( fuzzyPedMatch )
-    {
-        for( i = 0; i < pedestrianTableLength; i++ )
-        {
-            if( effectiveUID == static_cast< tUID >( pedestrianNameTable[i].pedUID ) )
-            {
+    if (fuzzyPedMatch) {
+        for (i = 0; i < pedestrianTableLength; i++) {
+            if (effectiveUID == static_cast<tUID>(pedestrianNameTable[i].pedUID)) {
                 //
                 // Is ped, map new UID
                 //
@@ -1115,12 +1008,10 @@ bool DialogList::characterMatches( tUID characterUID, SelectableDialog* dialog,
                 // TODO: leave zombie3 as zombie3 for E3.
                 //
                 dialogType = pedestrianNameTable[i].dialogGroup;
-                if( ( dialogType == PED_ZOMBIE1 )
-                    && ( dialog->GetEvent() != EVENT_CONVERSATION_INIT_DIALOG ) 
-                    && ( dialog->GetEvent() != EVENT_IN_GAMEPLAY_CONVERSATION ) )
-                {
-                    if( ( rand() % 2 ) == 0 )
-                    {
+                if ((dialogType == PED_ZOMBIE1)
+                    && (dialog->GetEvent() != EVENT_CONVERSATION_INIT_DIALOG)
+                    && (dialog->GetEvent() != EVENT_IN_GAMEPLAY_CONVERSATION)) {
+                    if ((rand() % 2) == 0) {
                         dialogType = PED_ZOMBIE2;
                     }
                 }
@@ -1131,15 +1022,12 @@ bool DialogList::characterMatches( tUID characterUID, SelectableDialog* dialog,
             }
         }
 
-        if( !switchMade )
-        {
+        if (!switchMade) {
             //
             // Not a ped, check for skins
             //
-            for( i = 0; i < skinTableLength; i++ )
-            {
-                if( effectiveUID == static_cast< tUID >( skinNameTable[i].skinUID ) )
-                {
+            for (i = 0; i < skinTableLength; i++) {
+                if (effectiveUID == static_cast<tUID>(skinNameTable[i].skinUID)) {
                     //
                     // Is skin, map new UID
                     //
@@ -1150,7 +1038,7 @@ bool DialogList::characterMatches( tUID characterUID, SelectableDialog* dialog,
         }
     }
 
-    return( dialog->UsesCharacter( effectiveUID ) );
+    return (dialog->UsesCharacter(effectiveUID));
 }
 
 //=============================================================================
@@ -1158,99 +1046,86 @@ bool DialogList::characterMatches( tUID characterUID, SelectableDialog* dialog,
 //=============================================================================
 // Description: Get UID for Choreo puppet for character
 //
-// Parameters:  ( Character* characterPtr )
+// Parameters:  (Character* characterPtr)
 //
 // Return:      tUID if skeleton found, 0 otherwise
 //
 //=============================================================================
-tUID DialogList::getPuppetUID( Character* characterPtr )
-{
-    const char* modelName;
-    rAssert( characterPtr != NULL );
+tUID DialogList::getPuppetUID(Character *characterPtr) {
+    const char *modelName;
+    rAssert(characterPtr != NULL);
 
-    modelName = GetCharacterManager()->GetModelName( characterPtr );
-    if( modelName != NULL )
-    {
-        return( tEntity::MakeUID( modelName ) );
-    }
-    else
-    {
-        return( 0 );
+    modelName = GetCharacterManager()->GetModelName(characterPtr);
+    if (modelName != NULL) {
+        return (tEntity::MakeUID(modelName));
+    } else {
+        return (0);
     }
 }
 
-void DialogList::dumpDialogCoverage( void* userData )
-{
+void DialogList::dumpDialogCoverage(void *userData) {
 #ifndef RAD_RELEASE
     SelectableDialogList::const_iterator iter;
     int i, j;
-    SelectableDialog* currentDialog;
+    SelectableDialog *currentDialog;
     char eventName[30];
     char char1Name[30];
     char char2Name[30];
     char convBuffer[30];
-    DialogList* listObj = static_cast<DialogList*>(userData);
+    DialogList *listObj = static_cast<DialogList *>(userData);
 
-    for( i = 0; i < GameplayManager::MAX_LEVELS; i++ )
-    {
-        for( j = 0; j < GameplayManager::MAX_MISSIONS+1; j++ )
-        {
-            rTunePrintf( "\nDialogue for level %d mission %d list\n", i, j );
+    for (i = 0; i < GameplayManager::MAX_LEVELS; i++) {
+        for (j = 0; j < GameplayManager::MAX_MISSIONS + 1; j++) {
+            rTunePrintf("\nDialogue for level %d mission %d list\n", i, j);
 
             iter = listObj->m_missionLists[i][j].begin();
-            for( ; iter != listObj->m_missionLists[i][j].end(); ++iter )
-            {
+            for (; iter != listObj->m_missionLists[i][j].end(); ++iter) {
                 currentDialog = *iter;
-                if( currentDialog != NULL )
-                {
-                    DialogLine::FillEventName( eventName, 30, currentDialog->GetEvent() );
-                    DialogLine::FillCharacterName( char1Name, 30, currentDialog->GetDialogLineCharacterUID( 1 ) );
+                if (currentDialog != NULL) {
+                    DialogLine::FillEventName(eventName, 30, currentDialog->GetEvent());
+                    DialogLine::FillCharacterName(char1Name, 30,
+                                                  currentDialog->GetDialogLineCharacterUID(1));
 
-                    if( currentDialog->GetNumDialogLines() > 1 )
-                    {
-                        DialogLine::FillCharacterName( char2Name, 30, currentDialog->GetDialogLineCharacterUID( 2 ) );
-                    }
-                    else
-                    {
+                    if (currentDialog->GetNumDialogLines() > 1) {
+                        DialogLine::FillCharacterName(char2Name, 30,
+                                                      currentDialog->GetDialogLineCharacterUID(2));
+                    } else {
                         char2Name[0] = '-';
                         char2Name[1] = '\0';
                     }
 
-                    sprintf( convBuffer, ", conv %d", currentDialog->GetConversationName() );
+                    sprintf(convBuffer, ", conv %d", currentDialog->GetConversationName());
 
-                    rTunePrintf( "Dialog: Event %s, char1 %s, char2 %s%s : ",
-                        eventName, char1Name, char2Name, convBuffer );
+                    rTunePrintf("Dialog: Event %s, char1 %s, char2 %s%s : ",
+                                eventName, char1Name, char2Name, convBuffer);
                     currentDialog->PrintPlayedStatus();
                 }
             }
         }
     }
 
-    rTuneString( "\nGeneric dialogue list:\n" );
+    rTuneString("\nGeneric dialogue list:\n");
 
     iter = listObj->m_genericDialogList.begin();
-    for( ; iter != listObj->m_genericDialogList.end(); ++iter )
-    {
+    for (; iter != listObj->m_genericDialogList.end(); ++iter) {
         currentDialog = *iter;
-        if( currentDialog != NULL )
-        {
-            DialogLine::FillEventName( eventName, 30, currentDialog->GetEvent() );
-            DialogLine::FillCharacterName( char1Name, 30, currentDialog->GetDialogLineCharacterUID( 1 ) );
+        if (currentDialog != NULL) {
+            DialogLine::FillEventName(eventName, 30, currentDialog->GetEvent());
+            DialogLine::FillCharacterName(char1Name, 30,
+                                          currentDialog->GetDialogLineCharacterUID(1));
 
-            if( currentDialog->GetNumDialogLines() > 1 )
-            {
-                DialogLine::FillCharacterName( char2Name, 30, currentDialog->GetDialogLineCharacterUID( 2 ) );
-            }
-            else
-            {
+            if (currentDialog->GetNumDialogLines() > 1) {
+                DialogLine::FillCharacterName(char2Name, 30,
+                                              currentDialog->GetDialogLineCharacterUID(2));
+            } else {
                 char2Name[0] = '-';
                 char2Name[1] = '\0';
             }
 
-            sprintf( convBuffer, ", conv %d", currentDialog->GetConversationName() );
+            sprintf(convBuffer, ", conv %d", currentDialog->GetConversationName());
 
-            rTunePrintf( "Dialog: Event %s, char1 %s, char2 %s%s : ",
-                eventName, char1Name, char2Name, convBuffer );
+            rTunePrintf("Dialog: Event %s, char1 %s, char2 %s%s : ",
+                        eventName, char1Name, char2Name, convBuffer);
             currentDialog->PrintPlayedStatus();
         }
     }

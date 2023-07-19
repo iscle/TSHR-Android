@@ -48,12 +48,10 @@
 // Return:      N/A.
 //
 //=============================================================================
-CoinObjective::CoinObjective()
-    
-{
+CoinObjective::CoinObjective() {
     mbFeeCollected = false;
-    mCoinFee = 0;    
-   
+    mCoinFee = 0;
+
 }
 
 //=============================================================================
@@ -66,8 +64,7 @@ CoinObjective::CoinObjective()
 // Return:      N/A.
 //
 //=============================================================================
-CoinObjective::~CoinObjective()
-{
+CoinObjective::~CoinObjective() {
 
 }
 
@@ -76,44 +73,36 @@ CoinObjective::~CoinObjective()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void CoinObjective::HandleEvent( EventEnum id, void* pEventData )
-{
-    switch (id)
-    {
-    case EVENT_ATTEMPT_TO_ENTER_GAMBLERACE:
-        {
+void CoinObjective::HandleEvent(EventEnum id, void *pEventData) {
+    switch (id) {
+        case EVENT_ATTEMPT_TO_ENTER_GAMBLERACE: {
             //check if player has enough tokens to enter race
-            if (GetCoinManager()->GetBankValue() >= mCoinFee)
-            {
+            if (GetCoinManager()->GetBankValue() >= mCoinFee) {
                 mbFeeCollected = true;
                 GetEventManager()->TriggerEvent(EVENT_ENTER_GAMBLERACE_SUCCESS);
                 int subtract_coins = 0;
                 subtract_coins -= mCoinFee;
                 GetCoinManager()->AdjustBankValue(subtract_coins);
                 SetFinished(true);
-            }
-            else
-            {
+            } else {
                 GetEventManager()->TriggerEvent(EVENT_ENTER_GAMBLERACE_FAILURE);
                 GetEventManager()->TriggerEvent(EVENT_TREE_OF_WOE_NEGATIVE_FEEDBACK);
                 mbFeeCollected = false;
             }
             break;
         }
-    default :
-        {
+        default : {
             //Should never enter here
             rAssert(0);
         }
     }
 
-    
-    
+
 }
 
 
@@ -133,9 +122,8 @@ void CoinObjective::HandleEvent( EventEnum id, void* pEventData )
 // Return:      void 
 //
 //=============================================================================
-void CoinObjective::OnInitialize()
-{
-    GetEventManager()->AddListener(this,EVENT_ATTEMPT_TO_ENTER_GAMBLERACE);    
+void CoinObjective::OnInitialize() {
+    GetEventManager()->AddListener(this, EVENT_ATTEMPT_TO_ENTER_GAMBLERACE);
 }
 
 //=============================================================================
@@ -148,52 +136,41 @@ void CoinObjective::OnInitialize()
 // Return:      void 
 //
 //=============================================================================
-void CoinObjective::OnFinalize()
-{
+void CoinObjective::OnFinalize() {
     GetEventManager()->RemoveAll(this);
 }
 
 
-void CoinObjective::Update(unsigned int elaspedTime)
-{
+void CoinObjective::Update(unsigned int elaspedTime) {
     OnUpdate(elaspedTime);
 }
 
 
-void CoinObjective::OnUpdate(unsigned int elaspedTime)
-{
-    if (mbFeeCollected == true)
-    {
+void CoinObjective::OnUpdate(unsigned int elaspedTime) {
+    if (mbFeeCollected == true) {
         SetFinished(true);
-    }
-    else
-    {
+    } else {
         GetGameplayManager()->AbortCurrentMission();
     }
 }
 
 
-bool CoinObjective::PayCoinFee()
-{  
-   if ( GetCharacterSheetManager()->GetNumberOfTokens( GetGameplayManager()->GetCurrentLevelIndex()) > mCoinFee)
-   {
-       //subtract token from character sheet and set mbFinished to true
-       return true;
-   }
-   else
-   {
+bool CoinObjective::PayCoinFee() {
+    if (GetCharacterSheetManager()->GetNumberOfTokens(
+            GetGameplayManager()->GetCurrentLevelIndex()) > mCoinFee) {
+        //subtract token from character sheet and set mbFinished to true
+        return true;
+    } else {
         return false;
-   }
+    }
 }
 
 
-void CoinObjective::SetCoinFee(int coins)
-{
-    mCoinFee= coins;
+void CoinObjective::SetCoinFee(int coins) {
+    mCoinFee = coins;
 }
 
-int CoinObjective::GetCoinAmount()
-{
+int CoinObjective::GetCoinAmount() {
     return mCoinFee;
 }
 

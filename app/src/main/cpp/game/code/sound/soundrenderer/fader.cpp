@@ -33,7 +33,7 @@ using namespace Sound;
 //
 //******************************************************************************
 
-Fader* Fader::s_faderUpdateList = NULL;
+Fader *Fader::s_faderUpdateList = NULL;
 
 //******************************************************************************
 //
@@ -51,21 +51,20 @@ Fader* Fader::s_faderUpdateList = NULL;
 // Return:      N/A.
 //
 //==============================================================================
-Fader::Fader( globalSettings* duckSettings, 
-              DuckSituations situation,
-              daSoundPlayerManager& playerMgr,
-              IDaSoundTuner& tuner ) :
-    m_duckSituation( situation ),
-    m_playerManager( playerMgr ),
-    m_tuner( tuner )
-{
+Fader::Fader(globalSettings *duckSettings,
+             DuckSituations situation,
+             daSoundPlayerManager &playerMgr,
+             IDaSoundTuner &tuner) :
+        m_duckSituation(situation),
+        m_playerManager(playerMgr),
+        m_tuner(tuner) {
     m_Time = 750;
     m_In = true;
     m_State = FadedIn;
     m_callback = NULL;
     m_nextUpdatableFader = NULL;
 
-    ReinitializeFader( duckSettings );
+    ReinitializeFader(duckSettings);
 }
 
 //==============================================================================
@@ -78,10 +77,8 @@ Fader::Fader( globalSettings* duckSettings,
 // Return:      N/A.
 //
 //==============================================================================
-Fader::~Fader()
-{
-    if( s_faderUpdateList != NULL )
-    {
+Fader::~Fader() {
+    if (s_faderUpdateList != NULL) {
         removeFromUpdateList();
     }
 }
@@ -89,9 +86,8 @@ Fader::~Fader()
 //========================================================================
 // Fader::SetTime
 //========================================================================
-    
-void Fader::SetTime( unsigned int milliseconds )
-{
+
+void Fader::SetTime(unsigned int milliseconds) {
     m_Time = milliseconds;
 }
 
@@ -99,8 +95,7 @@ void Fader::SetTime( unsigned int milliseconds )
 // Fader::GetTime
 //========================================================================
 
-unsigned int Fader::GetTime( void )
-{
+unsigned int Fader::GetTime(void) {
     return m_Time;
 }
 
@@ -108,27 +103,25 @@ unsigned int Fader::GetTime( void )
 // Fader::BroadCast
 //========================================================================
 
-void Fader::BroadCast( void )
-{
-    m_playerManager.PlayerFaderVolumeChange( SOUND_EFFECTS, m_currentVolumes.duckVolume[DUCK_SFX] );
-    m_playerManager.PlayerFaderVolumeChange( CARSOUND, m_currentVolumes.duckVolume[DUCK_CAR] );
-    m_playerManager.PlayerFaderVolumeChange( DIALOGUE, m_currentVolumes.duckVolume[DUCK_DIALOG] );
-    m_playerManager.PlayerFaderVolumeChange( MUSIC, m_currentVolumes.duckVolume[DUCK_MUSIC] );
-    m_playerManager.PlayerFaderVolumeChange( AMBIENCE, m_currentVolumes.duckVolume[DUCK_AMBIENCE] );
+void Fader::BroadCast(void) {
+    m_playerManager.PlayerFaderVolumeChange(SOUND_EFFECTS, m_currentVolumes.duckVolume[DUCK_SFX]);
+    m_playerManager.PlayerFaderVolumeChange(CARSOUND, m_currentVolumes.duckVolume[DUCK_CAR]);
+    m_playerManager.PlayerFaderVolumeChange(DIALOGUE, m_currentVolumes.duckVolume[DUCK_DIALOG]);
+    m_playerManager.PlayerFaderVolumeChange(MUSIC, m_currentVolumes.duckVolume[DUCK_MUSIC]);
+    m_playerManager.PlayerFaderVolumeChange(AMBIENCE, m_currentVolumes.duckVolume[DUCK_AMBIENCE]);
 
-    m_tuner.SetFaderGroupTrim( DUCK_SFX, m_currentVolumes.duckVolume[DUCK_SFX] );
-    m_tuner.SetFaderGroupTrim( DUCK_CAR, m_currentVolumes.duckVolume[DUCK_CAR] );
-    m_tuner.SetFaderGroupTrim( DUCK_DIALOG, m_currentVolumes.duckVolume[DUCK_DIALOG] );
-    m_tuner.SetFaderGroupTrim( DUCK_MUSIC, m_currentVolumes.duckVolume[DUCK_MUSIC] );
-    m_tuner.SetFaderGroupTrim( DUCK_AMBIENCE, m_currentVolumes.duckVolume[DUCK_AMBIENCE] );
+    m_tuner.SetFaderGroupTrim(DUCK_SFX, m_currentVolumes.duckVolume[DUCK_SFX]);
+    m_tuner.SetFaderGroupTrim(DUCK_CAR, m_currentVolumes.duckVolume[DUCK_CAR]);
+    m_tuner.SetFaderGroupTrim(DUCK_DIALOG, m_currentVolumes.duckVolume[DUCK_DIALOG]);
+    m_tuner.SetFaderGroupTrim(DUCK_MUSIC, m_currentVolumes.duckVolume[DUCK_MUSIC]);
+    m_tuner.SetFaderGroupTrim(DUCK_AMBIENCE, m_currentVolumes.duckVolume[DUCK_AMBIENCE]);
 }
 
 //========================================================================
 // Fader::Fade
 //========================================================================
 
-void Fader::Fade( bool in, DuckVolumeSet* initialVolumes, DuckVolumeSet* targetVolumes )
-{
+void Fader::Fade(bool in, DuckVolumeSet *initialVolumes, DuckVolumeSet *targetVolumes) {
     unsigned int i;
 
     m_In = in;
@@ -137,82 +130,63 @@ void Fader::Fade( bool in, DuckVolumeSet* initialVolumes, DuckVolumeSet* targetV
     // Set current values to whatever we're fading from and target values
     // to whatever we're fading to
     //
-    if( initialVolumes != NULL )
-    {
-        for( i = 0; i < NUM_DUCK_VOLUMES; i++ )
-        {
+    if (initialVolumes != NULL) {
+        for (i = 0; i < NUM_DUCK_VOLUMES; i++) {
             m_currentVolumes.duckVolume[i] = initialVolumes->duckVolume[i];
         }
-    }
-    else
-    {
-        for( i = 0; i < NUM_DUCK_VOLUMES; i++ )
-        {
-            if( m_In )
-            {
+    } else {
+        for (i = 0; i < NUM_DUCK_VOLUMES; i++) {
+            if (m_In) {
                 m_currentVolumes.duckVolume[i] = m_globalDuckSettings.duckVolume[i];
-            }
-            else
-            {
+            } else {
                 m_currentVolumes.duckVolume[i] = 1.0f;
             }
         }
     }
 
-    if( targetVolumes != NULL )
-    {
-        for( i = 0; i < NUM_DUCK_VOLUMES; i++ )
-        {
+    if (targetVolumes != NULL) {
+        for (i = 0; i < NUM_DUCK_VOLUMES; i++) {
             m_targetVolumes.duckVolume[i] = targetVolumes->duckVolume[i];
         }
-    }
-    else
-    {
-        for( i = 0; i < NUM_DUCK_VOLUMES; i++ )
-        {
-            if( m_In )
-            {
+    } else {
+        for (i = 0; i < NUM_DUCK_VOLUMES; i++) {
+            if (m_In) {
                 m_targetVolumes.duckVolume[i] = 1.0f;
-            }
-            else
-            {
+            } else {
                 m_targetVolumes.duckVolume[i] = m_globalDuckSettings.duckVolume[i];
             }
         }
     }
-    
+
     //
     // Now calculate the time steps
     //
-    for( i = 0; i < NUM_DUCK_VOLUMES; i++ )
-    {
-        if ( m_Time == 0 )
-        {
+    for (i = 0; i < NUM_DUCK_VOLUMES; i++) {
+        if (m_Time == 0) {
             // avoid divide by zero
 
             m_stepValues[i] = FLT_MAX / 10.0f; // Some arbitrarily large number
-        }
-        else
-        {		
-            m_stepValues[i] = ( rmt::Fabs( m_currentVolumes.duckVolume[i] - m_targetVolumes.duckVolume[i] ) ) / ( m_Time );
+        } else {
+            m_stepValues[i] =
+                    (rmt::Fabs(m_currentVolumes.duckVolume[i] - m_targetVolumes.duckVolume[i])) /
+                    (m_Time);
         }
     }
 
-    setState( );
+    setState();
 
-    addToUpdateList( );    
+    addToUpdateList();
 }
 
 //========================================================================
 // Fader::RegisterStateCallback
 //========================================================================
 
-void Fader::RegisterStateCallback( FaderStateChangeCallback* callback )
-{
+void Fader::RegisterStateCallback(FaderStateChangeCallback *callback) {
     //
     // I'm assuming only one callback is set at a time
     //
-    rAssert( m_callback == NULL );
+    rAssert(m_callback == NULL);
     m_callback = callback;
 }
 
@@ -220,13 +194,12 @@ void Fader::RegisterStateCallback( FaderStateChangeCallback* callback )
 // Fader::UnRegisterStateCallback
 //========================================================================
 
-void Fader::UnRegisterStateCallback( FaderStateChangeCallback* callback )
-{
+void Fader::UnRegisterStateCallback(FaderStateChangeCallback *callback) {
     //
     // Accept the callback as a parameter to test my assumption that
     // we only set one at a time
     //
-    rAssert( m_callback == callback );
+    rAssert(m_callback == callback);
 
     m_callback = NULL;
 }
@@ -235,8 +208,7 @@ void Fader::UnRegisterStateCallback( FaderStateChangeCallback* callback )
 // Fader::GetState
 //========================================================================
 
-Fader::State Fader::GetState( void )
-{
+Fader::State Fader::GetState(void) {
     unsigned int i;
     float targetValue;
     State currentState = m_In ? FadedIn : FadedOut;
@@ -245,62 +217,48 @@ Fader::State Fader::GetState( void )
     // Test each of the fading volumes.  If one of them hasn't hit
     // the target yet, we're still fading
     //
-    for( i = 0; i < NUM_DUCK_VOLUMES; i++ )
-    {
+    for (i = 0; i < NUM_DUCK_VOLUMES; i++) {
         targetValue = m_In ? 1.0f : m_globalDuckSettings.duckVolume[i];
 
-        if( m_currentVolumes.duckVolume[i] != targetValue )
-        {
+        if (m_currentVolumes.duckVolume[i] != targetValue) {
             currentState = m_In ? FadingIn : FadingOut;
             break;
         }
     }
 
-    return( currentState );
+    return (currentState);
 }
 
 //========================================================================
 // Fader::OnTimerDone
 //========================================================================
 
-void Fader::Update( unsigned int elapsed )
-{
+void Fader::Update(unsigned int elapsed) {
     unsigned int i;
     float stepValue;
     bool allTargetsHit = true;
 
-    for( i = 0; i < NUM_DUCK_VOLUMES; i++ )
-    {
+    for (i = 0; i < NUM_DUCK_VOLUMES; i++) {
         stepValue = m_stepValues[i] * elapsed; // adjust for game chug.
-        
-        if ( stepValue >= radSoundVolumeChangeThreshold )
-        {
+
+        if (stepValue >= radSoundVolumeChangeThreshold) {
             stepValue = radSoundVolumeChangeThreshold;
         }
 
-        if ( m_currentVolumes.duckVolume[i] < m_targetVolumes.duckVolume[i] )
-        {
+        if (m_currentVolumes.duckVolume[i] < m_targetVolumes.duckVolume[i]) {
             m_currentVolumes.duckVolume[i] += stepValue;
 
-            if ( m_currentVolumes.duckVolume[i] >= m_targetVolumes.duckVolume[i] )
-            {
+            if (m_currentVolumes.duckVolume[i] >= m_targetVolumes.duckVolume[i]) {
                 m_currentVolumes.duckVolume[i] = m_targetVolumes.duckVolume[i];
-            }
-            else
-            {
+            } else {
                 allTargetsHit = false;
             }
-        }
-        else if ( m_currentVolumes.duckVolume[i] > m_targetVolumes.duckVolume[i] )
-        {
+        } else if (m_currentVolumes.duckVolume[i] > m_targetVolumes.duckVolume[i]) {
             m_currentVolumes.duckVolume[i] -= stepValue;
 
-            if ( m_currentVolumes.duckVolume[i] <= m_targetVolumes.duckVolume[i] )
-            {
+            if (m_currentVolumes.duckVolume[i] <= m_targetVolumes.duckVolume[i]) {
                 m_currentVolumes.duckVolume[i] = m_targetVolumes.duckVolume[i];
-            }
-            else
-            {
+            } else {
                 allTargetsHit = false;
             }
         }
@@ -309,11 +267,10 @@ void Fader::Update( unsigned int elapsed )
 
     BroadCast();
 
-    if ( allTargetsHit )
-    {
-        removeFromUpdateList( );
+    if (allTargetsHit) {
+        removeFromUpdateList();
 
-        setState( );
+        setState();
     }
 }
 
@@ -327,14 +284,12 @@ void Fader::Update( unsigned int elapsed )
 // Return:      void 
 //
 //=============================================================================
-void Fader::UpdateAllFaders( unsigned int elapsedTime )
-{
-    Fader* currFader;
+void Fader::UpdateAllFaders(unsigned int elapsedTime) {
+    Fader *currFader;
 
     currFader = s_faderUpdateList;
-    while( currFader != NULL )
-    {
-        currFader->Update( elapsedTime );
+    while (currFader != NULL) {
+        currFader->Update(elapsedTime);
         currFader = currFader->m_nextUpdatableFader;
     }
 }
@@ -344,25 +299,20 @@ void Fader::UpdateAllFaders( unsigned int elapsedTime )
 //=============================================================================
 // Description: Get the ducking parameters from the global settings object
 //
-// Parameters:  ( globalSettings* settingObj )
+// Parameters:  (globalSettings* settingObj)
 //
 // Return:      void 
 //
 //=============================================================================
-void Fader::ReinitializeFader( globalSettings* settingObj )
-{
+void Fader::ReinitializeFader(globalSettings *settingObj) {
     unsigned int i;
 
-    for( i = 0; i < NUM_DUCK_VOLUMES; i++ )
-    {
-        if( settingObj == NULL )
-        {
+    for (i = 0; i < NUM_DUCK_VOLUMES; i++) {
+        if (settingObj == NULL) {
             m_globalDuckSettings.duckVolume[i] = 0.0f;
-        }
-        else
-        {
-            m_globalDuckSettings.duckVolume[i] = 
-                settingObj->GetDuckVolume( m_duckSituation, static_cast<Sound::DuckVolumes>(i) );
+        } else {
+            m_globalDuckSettings.duckVolume[i] =
+                    settingObj->GetDuckVolume(m_duckSituation, static_cast<Sound::DuckVolumes>(i));
         }
     }
 }
@@ -377,8 +327,7 @@ void Fader::ReinitializeFader( globalSettings* settingObj )
 // Return:      void 
 //
 //=============================================================================
-void Fader::Stop()
-{
+void Fader::Stop() {
     removeFromUpdateList();
 }
 
@@ -392,16 +341,13 @@ void Fader::Stop()
 // Fader::setState
 //========================================================================
 
-void Fader::setState( void )
-{
-    
-    if ( GetState( ) != m_State )
-    {
-        m_State = GetState( );
+void Fader::setState(void) {
 
-        if( m_callback != NULL )
-        {
-            m_callback->OnStateChange( m_State );
+    if (GetState() != m_State) {
+        m_State = GetState();
+
+        if (m_callback != NULL) {
+            m_callback->OnStateChange(m_State);
         }
     }
 }
@@ -409,10 +355,8 @@ void Fader::setState( void )
 //========================================================================
 // Fader::addToUpdateList
 //========================================================================
-void Fader::addToUpdateList()
-{
-    if( !faderInUpdateList() )
-    {
+void Fader::addToUpdateList() {
+    if (!faderInUpdateList()) {
         //
         // Order doesn't matter, add it to the head of the list
         //
@@ -424,29 +368,23 @@ void Fader::addToUpdateList()
 //========================================================================
 // Fader::removeFromUpdateList
 //========================================================================
-void Fader::removeFromUpdateList()
-{
-    Fader* currentFader;
-    
+void Fader::removeFromUpdateList() {
+    Fader *currentFader;
+
     //
     // Search for position in list.  The list is usually one or two faders,
     // I think, so don't bother with double-linked lists.
     //
-    if( s_faderUpdateList == this )
-    {
+    if (s_faderUpdateList == this) {
         s_faderUpdateList = m_nextUpdatableFader;
-    }
-    else
-    {
+    } else {
         currentFader = s_faderUpdateList;
-        while( ( currentFader != NULL )
-               && ( currentFader->m_nextUpdatableFader != this ) )
-        {
+        while ((currentFader != NULL)
+               && (currentFader->m_nextUpdatableFader != this)) {
             currentFader = currentFader->m_nextUpdatableFader;
         }
 
-        if( currentFader != NULL )
-        {
+        if (currentFader != NULL) {
             currentFader->m_nextUpdatableFader = m_nextUpdatableFader;
         }
     }
@@ -464,20 +402,17 @@ void Fader::removeFromUpdateList()
 // Return:      true if in list, false otherwise 
 //
 //=============================================================================
-bool Fader::faderInUpdateList()
-{
-    Fader* currFader;
+bool Fader::faderInUpdateList() {
+    Fader *currFader;
 
     currFader = s_faderUpdateList;
-    while( currFader != NULL )
-    {
-        if( currFader == this )
-        {
-            return( true );
+    while (currFader != NULL) {
+        if (currFader == this) {
+            return (true);
         }
 
         currFader = currFader->m_nextUpdatableFader;
     }
 
-    return( false );
+    return (false);
 }

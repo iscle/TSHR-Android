@@ -44,9 +44,8 @@
 //
 //==============================================================================
 CameraPlayer::CameraPlayer() :
-    mpAnimation( NULL )
-{
-    SetExclusive( false );    
+        mpAnimation(NULL) {
+    SetExclusive(false);
 }
 
 //==============================================================================
@@ -59,8 +58,7 @@ CameraPlayer::CameraPlayer() :
 // Return:      N/A.
 //
 //==============================================================================
-CameraPlayer::~CameraPlayer()
-{
+CameraPlayer::~CameraPlayer() {
 }
 
 //=============================================================================
@@ -73,12 +71,10 @@ CameraPlayer::~CameraPlayer()
 // Return:      void 
 //
 //=============================================================================
-void CameraPlayer::ClearData()
-{
+void CameraPlayer::ClearData() {
     SimpleAnimationPlayer::ClearData();
 
-    if( mpAnimation != NULL )
-    {
+    if (mpAnimation != NULL) {
         mpAnimation->Release();
         mpAnimation = NULL;
     }
@@ -100,12 +96,11 @@ void CameraPlayer::ClearData()
 // Return:      void 
 //
 //=============================================================================
-void CameraPlayer::DoLoaded()
-{
+void CameraPlayer::DoLoaded() {
     SimpleAnimationPlayer::DoLoaded();
-    
-    mpAnimation = p3d::find<tAnimation>( GetAnimationName() );
-    rAssert( mpAnimation );
+
+    mpAnimation = p3d::find<tAnimation>(GetAnimationName());
+    rAssert(mpAnimation);
     mpAnimation->AddRef();
 }
 

@@ -28,10 +28,10 @@
 //
 //=============================================================================
 
-class WalkerCamDataChunk : public tEntity
-{
+class WalkerCamDataChunk : public tEntity {
 public:
     WalkerCamDataChunk() {};
+
     virtual ~WalkerCamDataChunk() {};
 
     unsigned int mID;
@@ -45,8 +45,9 @@ public:
 private:
 
     //Prevent wasteful constructor creation.
-    WalkerCamDataChunk( const WalkerCamDataChunk& walkercamdatachunk );
-    WalkerCamDataChunk& operator=( const WalkerCamDataChunk& walkercamdatachunk );
+    WalkerCamDataChunk(const WalkerCamDataChunk &walkercamdatachunk);
+
+    WalkerCamDataChunk &operator=(const WalkerCamDataChunk &walkercamdatachunk);
 };
 
 

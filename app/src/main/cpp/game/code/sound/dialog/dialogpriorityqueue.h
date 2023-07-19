@@ -38,60 +38,66 @@ class SelectableDialog;
 //=============================================================================
 
 class DialogPriorityQueue : public DialogLineCompleteCallback,
-                            public DialogCompleteCallback
-{
-    public:
-        DialogPriorityQueue();
-        virtual ~DialogPriorityQueue();
+                            public DialogCompleteCallback {
+public:
+    DialogPriorityQueue();
 
-        void AddDialogToQueue( SelectableDialog& dialog, rmt::Vector* posn = NULL );
-        
-        bool StopCurrentDialog();
-        bool StopAllDialog();
+    virtual ~DialogPriorityQueue();
 
-        void PauseDialog();
-        void UnpauseDialog();
+    void AddDialogToQueue(SelectableDialog &dialog, rmt::Vector *posn = NULL);
 
-        void OnDialogLineComplete();
-        void OnDialogComplete();
+    bool StopCurrentDialog();
 
-        void ServiceOncePerFrame();
+    bool StopAllDialog();
 
-    private:
-        //Prevent wasteful constructor creation.
-        DialogPriorityQueue( const DialogPriorityQueue& original );
-        DialogPriorityQueue& operator=( const DialogPriorityQueue& rhs );
+    void PauseDialog();
 
-        void advanceQueue();
-        void serviceDebugPage();
-        void playDialog( rmt::Vector* posn );
+    void UnpauseDialog();
+
+    void OnDialogLineComplete();
+
+    void OnDialogComplete();
+
+    void ServiceOncePerFrame();
+
+private:
+    //Prevent wasteful constructor creation.
+    DialogPriorityQueue(const DialogPriorityQueue &original);
+
+    DialogPriorityQueue &operator=(const DialogPriorityQueue &rhs);
+
+    void advanceQueue();
+
+    void serviceDebugPage();
+
+    void playDialog(rmt::Vector *posn);
 
 #ifdef SOUND_DEBUG_INFO_ENABLED
-        DialogSoundDebugPage m_debugPage;
+    DialogSoundDebugPage m_debugPage;
 #endif
 
-        //
-        // Dialog sound players.  Two needed so that we can queue up a second
-        // line while the first is playing.
-        //
-        SimpsonsSoundPlayer m_player1;
-        SimpsonsSoundPlayer m_player2;
+    //
+    // Dialog sound players.  Two needed so that we can queue up a second
+    // line while the first is playing.
+    //
+    SimpsonsSoundPlayer m_player1;
+    SimpsonsSoundPlayer m_player2;
 
-        PositionalSoundPlayer m_positionalPlayer1;
-        PositionalSoundPlayer m_positionalPlayer2;
+    PositionalSoundPlayer m_positionalPlayer1;
+    PositionalSoundPlayer m_positionalPlayer2;
 
-        //
-        // Points to whatever's playing right this instant.  Stored separately
-        // from the waiting queue objects.
-        //
-        DialogQueueElement* m_nowPlaying;
+    //
+    // Points to whatever's playing right this instant.  Stored separately
+    // from the waiting queue objects.
+    //
+    DialogQueueElement *m_nowPlaying;
 
-        //
-        // The queue
-        //
-        DialogQueueType m_dialogQueue;
+    //
+    // The queue
+    //
+    DialogQueueType m_dialogQueue;
 
-        bool m_permitQueueAdvance;
+    bool m_permitQueueAdvance;
 };
 
 

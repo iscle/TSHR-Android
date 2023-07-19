@@ -28,25 +28,27 @@
 //
 //=============================================================================
 
-class OutOfBoundsCondition : public MissionCondition
-{
+class OutOfBoundsCondition : public MissionCondition {
 public:
     OutOfBoundsCondition();
+
     virtual ~OutOfBoundsCondition();
-   
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
     bool IsClose();
 
 protected:
     virtual void OnInitialize();
+
     virtual void OnFinalize();
 
 private:
 
     //Prevent wasteful constructor creation.
-    OutOfBoundsCondition( const OutOfBoundsCondition& outofboundscondition );
-    OutOfBoundsCondition& operator=( const OutOfBoundsCondition& outofboundscondition );
+    OutOfBoundsCondition(const OutOfBoundsCondition &outofboundscondition);
+
+    OutOfBoundsCondition &operator=(const OutOfBoundsCondition &outofboundscondition);
 };
 
 

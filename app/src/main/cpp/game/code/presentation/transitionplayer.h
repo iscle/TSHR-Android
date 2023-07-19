@@ -32,49 +32,50 @@ class RenderLayer;
 //
 //=============================================================================
 
-class TransitionPlayer : public AnimationPlayer
-{
-    public:
-        TransitionPlayer();
-        virtual ~TransitionPlayer();
+class TransitionPlayer : public AnimationPlayer {
+public:
+    TransitionPlayer();
 
-        enum TransitionType
-        {
-            TRANS_CROSSFADE,
-            TRANS_WIPE_RIGHT,
-            TRANS_TO_BLACK,
-            TRANS_FROM_BLACK,
-            NUM_TRANS
-        };
+    virtual ~TransitionPlayer();
 
-        struct TransitionInfo
-        {
-            RenderEnums::LayerEnum layer1;
-            RenderEnums::LayerEnum layer2;
-            unsigned int length;
-            TransitionType type;
-        };
+    enum TransitionType {
+        TRANS_CROSSFADE,
+        TRANS_WIPE_RIGHT,
+        TRANS_TO_BLACK,
+        TRANS_FROM_BLACK,
+        NUM_TRANS
+    };
 
-        void SetTransition( TransitionInfo* info );
+    struct TransitionInfo {
+        RenderEnums::LayerEnum layer1;
+        RenderEnums::LayerEnum layer2;
+        unsigned int length;
+        TransitionType type;
+    };
 
-        virtual void Update( unsigned int elapsedTime );
-    protected:
-        virtual void DoUpdate( unsigned int elapsedTime );
+    void SetTransition(TransitionInfo *info);
 
-        virtual void DoLoaded() {};
-        virtual void DoRender();
-        
-    private:
+    virtual void Update(unsigned int elapsedTime);
 
-        //Prevent wasteful constructor creation.
-        TransitionPlayer( const TransitionPlayer& transitionPlayer );
-        TransitionPlayer& operator=( const TransitionPlayer& transitionPlayer );
+protected:
+    virtual void DoUpdate(unsigned int elapsedTime);
 
-        RenderLayer* mpLayer1;
-        RenderLayer* mpLayer2;
+    virtual void DoLoaded() {};
 
-        TransitionInfo msInfo;
-        unsigned int miIndex;
+    virtual void DoRender();
+
+private:
+
+    //Prevent wasteful constructor creation.
+    TransitionPlayer(const TransitionPlayer &transitionPlayer);
+
+    TransitionPlayer &operator=(const TransitionPlayer &transitionPlayer);
+
+    RenderLayer *mpLayer1;
+    RenderLayer *mpLayer2;
+
+    TransitionInfo msInfo;
+    unsigned int miIndex;
 };
 
 

@@ -29,34 +29,38 @@
 //
 //=============================================================================
 
-class TunerDebugPage : public SoundDebugPage
-{
-    public:
-        TunerDebugPage();
-        virtual ~TunerDebugPage();
+class TunerDebugPage : public SoundDebugPage {
+public:
+    TunerDebugPage();
 
-        void SetDuckLevel( Sound::DuckSituations situation, Sound::DuckVolumes volumeType, float volume );
-        void SetFinalDuckLevel( Sound::DuckVolumes volumeType, float volume );
-        void SetUserVolume( Sound::DuckVolumes volumeType, float volume );
+    virtual ~TunerDebugPage();
 
-    protected:
-        //
-        // Pure virtual functions from SoundDebugPage
-        //
-        void fillLineBuffer( int lineNum, char* buffer );
-        int getNumLines();
+    void SetDuckLevel(Sound::DuckSituations situation, Sound::DuckVolumes volumeType, float volume);
 
-    private:
-        //Prevent wasteful constructor creation.
-        TunerDebugPage( const TunerDebugPage& tunerdebugpage );
-        TunerDebugPage& operator=( const TunerDebugPage& tunerdebugpage );
+    void SetFinalDuckLevel(Sound::DuckVolumes volumeType, float volume);
 
-        //
-        // Ducking info
-        //
-        Sound::DuckVolumeSet m_duckLevels[Sound::NUM_DUCK_SITUATIONS];
-        Sound::DuckVolumeSet m_finalDuckLevel;
-        Sound::DuckVolumeSet m_userVolumes;
+    void SetUserVolume(Sound::DuckVolumes volumeType, float volume);
+
+protected:
+    //
+    // Pure virtual functions from SoundDebugPage
+    //
+    void fillLineBuffer(int lineNum, char *buffer);
+
+    int getNumLines();
+
+private:
+    //Prevent wasteful constructor creation.
+    TunerDebugPage(const TunerDebugPage &tunerdebugpage);
+
+    TunerDebugPage &operator=(const TunerDebugPage &tunerdebugpage);
+
+    //
+    // Ducking info
+    //
+    Sound::DuckVolumeSet m_duckLevels[Sound::NUM_DUCK_SITUATIONS];
+    Sound::DuckVolumeSet m_finalDuckLevel;
+    Sound::DuckVolumeSet m_userVolumes;
 };
 
 //*****************************************************************************

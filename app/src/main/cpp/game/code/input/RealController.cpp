@@ -12,41 +12,35 @@
 /******************************************************************************
 	Construction/Destruction
  *****************************************************************************/
-RealController::RealController( eControllerType type )
-:   m_radController(NULL),
-    m_eControllerType(type),
-    m_bConnected(false),
-    m_InputToDICode(NULL),
-    m_numInputPoints(0)
-{
+RealController::RealController(eControllerType type)
+        : m_radController(NULL),
+          m_eControllerType(type),
+          m_bConnected(false),
+          m_InputToDICode(NULL),
+          m_numInputPoints(0) {
 }
 
-RealController::~RealController()
-{
-    if( m_InputToDICode != NULL )
-    {
-        delete [] m_InputToDICode;
+RealController::~RealController() {
+    if (m_InputToDICode != NULL) {
+        delete[] m_InputToDICode;
     }
 }
 
 //--------------------------------------------------------
 // Init
 //--------------------------------------------------------
-void RealController::Init( IRadController* pRadController )
-{
+void RealController::Init(IRadController *pRadController) {
 //	rAssert(!m_radController);
-	if( !m_radController )
-    {
-		m_radController = pRadController;
+    if (!m_radController) {
+        m_radController = pRadController;
 
         MapInputToDICode();
     }
 }
 
-void RealController::Release()
-{
-	if( m_radController )
-		m_radController = NULL;
+void RealController::Release() {
+    if (m_radController)
+        m_radController = NULL;
 }
 
 //==============================================================================
@@ -61,8 +55,7 @@ void RealController::Release()
 //
 //==============================================================================
 
-bool RealController::IsInputAxis( int dxKey ) const
-{
+bool RealController::IsInputAxis(int dxKey) const {
     return false;
 }
 
@@ -78,8 +71,7 @@ bool RealController::IsInputAxis( int dxKey ) const
 //
 //==============================================================================
 
-bool RealController::IsMouseAxis( int dxKey ) const
-{
+bool RealController::IsMouseAxis(int dxKey) const {
     return false;
 }
 
@@ -95,8 +87,7 @@ bool RealController::IsMouseAxis( int dxKey ) const
 //
 //==============================================================================
 
-bool RealController::IsPovHat( int dxKey ) const
-{
+bool RealController::IsPovHat(int dxKey) const {
     return false;
 }
 
@@ -112,8 +103,7 @@ bool RealController::IsPovHat( int dxKey ) const
 //
 //==============================================================================
 
-bool RealController::IsBannedInput( int dxKey ) const
-{
+bool RealController::IsBannedInput(int dxKey) const {
     return false;
 }
 
@@ -129,59 +119,50 @@ bool RealController::IsBannedInput( int dxKey ) const
 //
 //==============================================================================
 
-const char* RealController::GetInputName( int dxKey ) const
-{
-    if( IsValidInput( dxKey ) )
-    {
-        for( int i = 0; i < m_numInputPoints; i++ )
-        {
-            if( GetDICode( i ) == dxKey )
-            {
-                IRadControllerInputPoint* pInputPoint = m_radController->GetInputPointByIndex( i );
-                rAssert( pInputPoint != NULL );
+const char *RealController::GetInputName(int dxKey) const {
+    if (IsValidInput(dxKey)) {
+        for (int i = 0; i < m_numInputPoints; i++) {
+            if (GetDICode(i) == dxKey) {
+                IRadControllerInputPoint *pInputPoint = m_radController->GetInputPointByIndex(i);
+                rAssert(pInputPoint != NULL);
 
                 return pInputPoint->GetName();
             }
         }
     }
 
-    rAssert( false );
+    rAssert(false);
     return NULL;
 }
 
-void RealController::AddInputPoints( IRadControllerInputPoint* pInputPoint )
-{
-	rAssert(pInputPoint);
+void RealController::AddInputPoints(IRadControllerInputPoint *pInputPoint) {
+    rAssert(pInputPoint);
 
     // Check if the input point is already in the list.
-    for( INPUTPOINTITER iter = m_inputPointList.begin(); iter != m_inputPointList.end(); iter++ )
-    {
-        if( *iter == pInputPoint )
-        {
+    for (INPUTPOINTITER iter = m_inputPointList.begin(); iter != m_inputPointList.end(); iter++) {
+        if (*iter == pInputPoint) {
             return;
         }
     }
-    
+
     // Add the point.
-	m_inputPointList.push_back( pInputPoint );	
+    m_inputPointList.push_back(pInputPoint);
 }
 
-void RealController::ReleaseInputPoints( UserController* parent )
-{
-	INPUTPOINTITER iter;
+void RealController::ReleaseInputPoints(UserController *parent) {
+    INPUTPOINTITER iter;
 
-	for( iter = m_inputPointList.begin(); iter != m_inputPointList.end(); iter++ )
-	{
-		IRadControllerInputPoint* pInputPoint = *iter;
-        if( pInputPoint )
-        {
-			pInputPoint->UnRegisterControllerInputPointCallback( static_cast< IRadControllerInputPointCallback* >( parent ) );
+    for (iter = m_inputPointList.begin(); iter != m_inputPointList.end(); iter++) {
+        IRadControllerInputPoint *pInputPoint = *iter;
+        if (pInputPoint) {
+            pInputPoint->UnRegisterControllerInputPointCallback(
+                    static_cast<IRadControllerInputPointCallback *>(parent));
         }
-	}
-	// after unregistering, we don't need this point anymore.
-	m_inputPointList.clear();
+    }
+    // after unregistering, we don't need this point anymore.
+    m_inputPointList.clear();
 }
-	
+
 //==============================================================================
 // RealController::GetDICode
 //==============================================================================
@@ -195,16 +176,12 @@ void RealController::ReleaseInputPoints( UserController* parent )
 //
 //==============================================================================
 
-int RealController::GetDICode( int inputpoint ) const
-{
-    rAssert( inputpoint >= 0 && inputpoint < m_numInputPoints );
+int RealController::GetDICode(int inputpoint) const {
+    rAssert(inputpoint >= 0 && inputpoint < m_numInputPoints);
 
-    if( m_InputToDICode != NULL && inputpoint >= 0 && inputpoint < m_numInputPoints )
-    {
-        return m_InputToDICode[ inputpoint ];
-    }
-    else
-    {
+    if (m_InputToDICode != NULL && inputpoint >= 0 && inputpoint < m_numInputPoints) {
+        return m_InputToDICode[inputpoint];
+    } else {
         return Input::INVALID_CONTROLLERID;
     }
 }

@@ -46,9 +46,8 @@
 // Return:      N/A.
 //
 //=============================================================================
-LeaveInteriorCondition::LeaveInteriorCondition()
-{
-    this->SetType( COND_LEAVE_INTERIOR );
+LeaveInteriorCondition::LeaveInteriorCondition() {
+    this->SetType(COND_LEAVE_INTERIOR);
 }
 
 //=============================================================================
@@ -61,8 +60,7 @@ LeaveInteriorCondition::LeaveInteriorCondition()
 // Return:      N/A.
 //
 //=============================================================================
-LeaveInteriorCondition::~LeaveInteriorCondition()
-{
+LeaveInteriorCondition::~LeaveInteriorCondition() {
 }
 
 //******************************************************************************
@@ -76,19 +74,17 @@ LeaveInteriorCondition::~LeaveInteriorCondition()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void LeaveInteriorCondition::HandleEvent( EventEnum id, void* pEventData )
-{
-    if ( id == (EVENT_LOCATOR + LocatorEvent::INTERIOR_EXIT) )
-    {
-        SetLeaveInterior( true );
+void LeaveInteriorCondition::HandleEvent(EventEnum id, void *pEventData) {
+    if (id == (EVENT_LOCATOR + LocatorEvent::INTERIOR_EXIT)) {
+        SetLeaveInterior(true);
     }
 
-    MissionCondition::HandleEvent( id, pEventData );
+    MissionCondition::HandleEvent(id, pEventData);
 }
 
 //=============================================================================
@@ -102,12 +98,11 @@ void LeaveInteriorCondition::HandleEvent( EventEnum id, void* pEventData )
 // Return:      True if close, false otherwise 
 //
 //=============================================================================
-bool LeaveInteriorCondition::IsClose()
-{
+bool LeaveInteriorCondition::IsClose() {
     //
     // There's nothing tense about leaving a building
     //
-    return( false );
+    return (false);
 }
 
 //******************************************************************************
@@ -126,9 +121,8 @@ bool LeaveInteriorCondition::IsClose()
 // Return:      void 
 //
 //=============================================================================
-void LeaveInteriorCondition::OnInitialize()
-{
-    GetEventManager()->AddListener( this, (EventEnum)(EVENT_LOCATOR + LocatorEvent::INTERIOR_EXIT) );
+void LeaveInteriorCondition::OnInitialize() {
+    GetEventManager()->AddListener(this, (EventEnum)(EVENT_LOCATOR + LocatorEvent::INTERIOR_EXIT));
 }
 
 //=============================================================================
@@ -141,9 +135,9 @@ void LeaveInteriorCondition::OnInitialize()
 // Return:      void 
 //
 //=============================================================================
-void LeaveInteriorCondition::OnFinalize()
-{
-    GetEventManager()->RemoveListener( this, (EventEnum)(EVENT_LOCATOR + LocatorEvent::INTERIOR_EXIT) );
+void LeaveInteriorCondition::OnFinalize() {
+    GetEventManager()->RemoveListener(this,
+                                      (EventEnum)(EVENT_LOCATOR + LocatorEvent::INTERIOR_EXIT));
 }
 
 //*****************************************************************************

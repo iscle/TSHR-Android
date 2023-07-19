@@ -31,32 +31,35 @@ class CGuiMenu;
 // Interface Definitions
 //===========================================================================
 class CGuiScreenOptions : public CGuiScreen,
-                          public ICheatEnteredCallback
-{
+                          public ICheatEnteredCallback {
 public:
-    CGuiScreenOptions( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenOptions(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenOptions();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    virtual void OnCheatEntered( eCheatID cheatID, bool isEnabled );
-    virtual CGuiMenu* HasMenu() { return m_pMenu; }
+    virtual void OnCheatEntered(eCheatID cheatID, bool isEnabled);
+
+    virtual CGuiMenu *HasMenu() { return m_pMenu; }
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
-    void UpdateCheatsDisplay( int cheatID );
+    void UpdateCheatsDisplay(int cheatID);
 
     void ProgressiveModeTestBegin();
+
     void OnProgressiveModeTestEnd();
 
-    enum eMenuItem
-    {
+    enum eMenuItem {
 #ifdef RAD_WIN32
         MENU_ITEM_DISPLAY,
 #endif
@@ -69,10 +72,10 @@ private:
         NUM_MENU_ITEMS
     };
 
-    CGuiMenu* m_pMenu;
+    CGuiMenu *m_pMenu;
 
-    Scrooby::Page* m_cheatsPage;
-    Scrooby::Layer* m_cheatsOverlay;
+    Scrooby::Page *m_cheatsPage;
+    Scrooby::Layer *m_cheatsOverlay;
     int m_startingCheatID;
 
     int m_elapsedProgressiveModeTestTime;

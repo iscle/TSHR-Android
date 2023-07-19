@@ -48,11 +48,10 @@
 // Return:      N/A.
 //
 //==============================================================================
-XboxReverbController::XboxReverbController()
-{
-    m_reverbInterface = ::radSoundHalEffectI3DL2ReverbXBoxCreate( GMA_PERSISTENT );
+XboxReverbController::XboxReverbController() {
+    m_reverbInterface = ::radSoundHalEffectI3DL2ReverbXBoxCreate(GMA_PERSISTENT);
 
-    registerReverbEffect( m_reverbInterface );
+    registerReverbEffect(m_reverbInterface);
 }
 
 //==============================================================================
@@ -65,8 +64,7 @@ XboxReverbController::XboxReverbController()
 // Return:      N/A.
 //
 //==============================================================================
-XboxReverbController::~XboxReverbController()
-{
+XboxReverbController::~XboxReverbController() {
     m_reverbInterface->Release();
     m_reverbInterface = NULL;
 }
@@ -81,27 +79,25 @@ XboxReverbController::~XboxReverbController()
 // Return:      void 
 //
 //=============================================================================
-void XboxReverbController::SetReverbOn( reverbSettings* settings )
-{
-    if( settings != NULL )
-    {
-        rReleaseString( "Settings not null\n" );
-        SetReverbGain( settings->GetGain() );
-        m_reverbInterface->SetRoom( settings->GetXboxRoom() );
-        m_reverbInterface->SetRoomHF( settings->GetXboxRoomHF() );
-        m_reverbInterface->SetRoomRolloffFactor( settings->GetXboxRoomRolloffFactor() );
-        m_reverbInterface->SetDecayTime( settings->GetXboxDecayTime() );
-        m_reverbInterface->SetDecayHFRatio( settings->GetXboxDecayHFRatio() );
-        m_reverbInterface->SetReflections( settings->GetXboxReflections() );
-        m_reverbInterface->SetReflectionsDelay( settings->GetXboxReflectionsDelay() );
-        m_reverbInterface->SetReverb( settings->GetXboxReverb() );
-        m_reverbInterface->SetReverbDelay( settings->GetXboxReverbDelay() );
-        m_reverbInterface->SetDiffusion( settings->GetXboxDiffusion() );
-        m_reverbInterface->SetDensity( settings->GetXboxDensity() );
-        m_reverbInterface->SetHFReference( settings->GetXboxHFReference() );
+void XboxReverbController::SetReverbOn(reverbSettings *settings) {
+    if (settings != NULL) {
+        rReleaseString("Settings not null\n");
+        SetReverbGain(settings->GetGain());
+        m_reverbInterface->SetRoom(settings->GetXboxRoom());
+        m_reverbInterface->SetRoomHF(settings->GetXboxRoomHF());
+        m_reverbInterface->SetRoomRolloffFactor(settings->GetXboxRoomRolloffFactor());
+        m_reverbInterface->SetDecayTime(settings->GetXboxDecayTime());
+        m_reverbInterface->SetDecayHFRatio(settings->GetXboxDecayHFRatio());
+        m_reverbInterface->SetReflections(settings->GetXboxReflections());
+        m_reverbInterface->SetReflectionsDelay(settings->GetXboxReflectionsDelay());
+        m_reverbInterface->SetReverb(settings->GetXboxReverb());
+        m_reverbInterface->SetReverbDelay(settings->GetXboxReverbDelay());
+        m_reverbInterface->SetDiffusion(settings->GetXboxDiffusion());
+        m_reverbInterface->SetDensity(settings->GetXboxDensity());
+        m_reverbInterface->SetHFReference(settings->GetXboxHFReference());
 
-        prepareFadeSettings( settings->GetGain(), settings->GetFadeInTime(),
-                             settings->GetFadeOutTime() );
+        prepareFadeSettings(settings->GetGain(), settings->GetFadeInTime(),
+                            settings->GetFadeOutTime());
     }
 }
 
@@ -115,8 +111,7 @@ void XboxReverbController::SetReverbOn( reverbSettings* settings )
 // Return:      void 
 //
 //=============================================================================
-void XboxReverbController::SetReverbOff()
-{
+void XboxReverbController::SetReverbOff() {
     startFadeOut();
 }
 

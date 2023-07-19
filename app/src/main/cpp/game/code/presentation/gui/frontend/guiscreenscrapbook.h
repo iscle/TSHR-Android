@@ -29,35 +29,37 @@ class CGuiMenu;
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenScrapBook : public CGuiScreen
-{
+class CGuiScreenScrapBook : public CGuiScreen {
 public:
-    CGuiScreenScrapBook( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenScrapBook(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenScrapBook();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
-    virtual CGuiMenu* HasMenu() { return m_pMenu; }
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
+
+    virtual CGuiMenu *HasMenu() { return m_pMenu; }
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
-    enum eMenuItem
-    {
+    enum eMenuItem {
         MENU_OPEN_BOOK,
         MENU_GAME_STATS,
 
         NUM_MENU_ITEMS
     };
 
-    void OnMenuSelectionMade( eMenuItem selection );
+    void OnMenuSelectionMade(eMenuItem selection);
 
-    CGuiMenu* m_pMenu;
-    Scrooby::Group* m_krustySticker;
+    CGuiMenu *m_pMenu;
+    Scrooby::Group *m_krustySticker;
 
 };
 

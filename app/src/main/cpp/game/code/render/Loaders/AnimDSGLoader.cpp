@@ -34,7 +34,6 @@
 #include <roads/intersection.h>
 
 
-
 //========================================================================
 // AnimDSGLoader::AnimDSGLoader
 //========================================================================
@@ -49,20 +48,20 @@
 //
 //========================================================================
 AnimDSGLoader::AnimDSGLoader() :
-tSimpleChunkHandler(SRR2::ChunkID::ANIM_DSG)
-{
+        tSimpleChunkHandler(SRR2::ChunkID::ANIM_DSG) {
     mpCompDLoader = new(GMA_PERSISTENT) tCompositeDrawableLoader;
     mpCompDLoader->AddRef();
 
-    mpMCLoader    = new(GMA_PERSISTENT) tMultiControllerLoader;
+    mpMCLoader = new(GMA_PERSISTENT) tMultiControllerLoader;
     mpMCLoader->AddRef();
-    
-    mpFCLoader    = new(GMA_PERSISTENT) tFrameControllerLoader;
+
+    mpFCLoader = new(GMA_PERSISTENT) tFrameControllerLoader;
     mpFCLoader->AddRef();
 
-    mpListenerCB  = NULL;
-    mUserData     = -1;
+    mpListenerCB = NULL;
+    mUserData = -1;
 }
+
 //========================================================================
 // AnimDSGLoader::~AnimDSGLoader
 //========================================================================
@@ -76,13 +75,13 @@ tSimpleChunkHandler(SRR2::ChunkID::ANIM_DSG)
 // Constraints: None.
 //
 //========================================================================
-AnimDSGLoader::~AnimDSGLoader()
-{
+AnimDSGLoader::~AnimDSGLoader() {
     mpCompDLoader->Release();
     mpMCLoader->Release();
-	mpFCLoader->Release();
+    mpFCLoader->Release();
 
 }
+
 ///////////////////////////////////////////////////////////////////////
 // tSimpleChunkHandler
 ///////////////////////////////////////////////////////////////////////
@@ -99,67 +98,60 @@ AnimDSGLoader::~AnimDSGLoader()
 // Constraints: None.
 //
 //========================================================================
-tEntity* AnimDSGLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
-    IEntityDSG::msDeletionsSafe=true;
+tEntity *AnimDSGLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
+    IEntityDSG::msDeletionsSafe = true;
     char name[255];
     f->GetPString(name);
 
     int version = f->GetLong();
     int HasAlpha = f->GetLong();
 
-    tCompositeDrawable* pCompD = NULL;
-    tMultiController* pAnimMC = NULL;
+    tCompositeDrawable *pCompD = NULL;
+    tMultiController *pAnimMC = NULL;
 
-    while(f->ChunksRemaining())
-    {      
+    while (f->ChunksRemaining()) {
         f->BeginChunk();
-        switch(f->GetCurrentID())
-        {
-            case P3D_COMPOSITE_DRAWABLE:
-            {
-                pCompD = (tCompositeDrawable*)mpCompDLoader->LoadObject(f,store);
-				if( store->TestCollision( pCompD->GetUID(), pCompD ) )
-				{
-					HandleCollision( pCompD );
-					pCompD = NULL;
-				}
-				else
-				{
-					store->Store(pCompD);
-				}
-				rAssert( pCompD );
+        switch (f->GetCurrentID()) {
+            case P3D_COMPOSITE_DRAWABLE: {
+                pCompD = (tCompositeDrawable *) mpCompDLoader->LoadObject(f, store);
+                if (store->TestCollision(pCompD->GetUID(), pCompD)) {
+                    HandleCollision(pCompD);
+                    pCompD = NULL;
+                } else {
+                    store->Store(pCompD);
+                }
+                rAssert(pCompD);
                 break;
             }
-			case P3D_MULTI_CONTROLLER:
-				pAnimMC = static_cast<tMultiController*>(mpMCLoader->LoadObject( f, store ));
-				break;
+            case P3D_MULTI_CONTROLLER:
+                pAnimMC = static_cast<tMultiController *>(mpMCLoader->LoadObject(f, store));
+                break;
 
-            case Pure3D::Animation::FrameControllerData::FRAME_CONTROLLER:
-            {
-                tFrameController* pFC = static_cast<tFrameController*>(mpFCLoader->LoadObject(f,store));
+            case Pure3D::Animation::FrameControllerData::FRAME_CONTROLLER: {
+                tFrameController *pFC = static_cast<tFrameController *>(mpFCLoader->LoadObject(f,
+                                                                                               store));
                 pFC->AddRef();
-                if(!store->TestCollision(pFC->GetUID(), pFC))
-                {
-				    store->Store( pFC );
+                if (!store->TestCollision(pFC->GetUID(), pFC)) {
+                    store->Store(pFC);
                 }
                 pFC->Release();
                 break;
             }
-			case Pure3D::BillboardObject::QUAD_GROUP:
-			{
+            case Pure3D::BillboardObject::QUAD_GROUP: {
 
-				BillboardWrappedLoader::OverrideLoader( true );
-                BillboardWrappedLoader* pBBQLoader = static_cast<BillboardWrappedLoader*>(AllWrappers::GetInstance()->mpLoader(AllWrappers::msBillboard));
-                tBillboardQuadGroup* pGroup = static_cast<tBillboardQuadGroup*>( pBBQLoader->LoadObject(f, store) );
-				rAssert( pGroup != NULL );
-				store->Store( pGroup );	
-				BillboardWrappedLoader::OverrideLoader( false );
-				break;
-			}
+                BillboardWrappedLoader::OverrideLoader(true);
+                BillboardWrappedLoader *pBBQLoader = static_cast<BillboardWrappedLoader *>(AllWrappers::GetInstance()->mpLoader(
+                        AllWrappers::msBillboard));
+                tBillboardQuadGroup *pGroup = static_cast<tBillboardQuadGroup *>(pBBQLoader->LoadObject(
+                        f, store));
+                rAssert(pGroup != NULL);
+                store->Store(pGroup);
+                BillboardWrappedLoader::OverrideLoader(false);
+                break;
+            }
 
             default:
-				rAssertMsg( 0, "Unknown chunk found in AnimDSG chunk" );
+                rAssertMsg(0, "Unknown chunk found in AnimDSG chunk");
                 break;
         } // switch
         f->EndChunk();
@@ -170,37 +162,33 @@ tEntity* AnimDSGLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     // to break (ie, "most robust") implementation I can come up with, since it 
     // needs to be in by tomorrow morning.
     //
-    AnimEntityDSG *pAnimDSG; 
+    AnimEntityDSG *pAnimDSG;
 
-    tUID darrowUID  = tName::MakeUID("darrow");
-    tUID warrowUID  = tName::MakeUID("warrow");
-    tUID nameUID    = tName::MakeUID(name); 
+    tUID darrowUID = tName::MakeUID("darrow");
+    tUID warrowUID = tName::MakeUID("warrow");
+    tUID nameUID = tName::MakeUID(name);
     int linkEnum = 0;
-    if( nameUID==darrowUID || nameUID==warrowUID )
-    {
-        if( nameUID==warrowUID )
+    if (nameUID == darrowUID || nameUID == warrowUID) {
+        if (nameUID == warrowUID)
             linkEnum = 1;
 
         bool bHasAlpha = (HasAlpha != 0);
         pAnimDSG = LoadAnimAtIntersections(pCompD, pAnimMC, store, bHasAlpha, name, linkEnum);
-    }
-    else
-    {
+    } else {
         pAnimDSG = new AnimEntityDSG;
         pAnimDSG->SetName(name);
 
-        if(HasAlpha)
-        {
+        if (HasAlpha) {
             pAnimDSG->mTranslucent = true;
         }
 
-        rmt::Vector tempPosn(0.0f,0.0f,0.0f); 
+        rmt::Vector tempPosn(0.0f, 0.0f, 0.0f);
         pAnimDSG->LoadSetUp(pCompD, pAnimMC, store, tempPosn);
 
-        mpListenerCB->OnChunkLoaded( pAnimDSG, mUserData, _id );
+        mpListenerCB->OnChunkLoaded(pAnimDSG, mUserData, _id);
     }
 
-    IEntityDSG::msDeletionsSafe=false;
+    IEntityDSG::msDeletionsSafe = false;
     return pAnimDSG;
 }
 
@@ -217,45 +205,42 @@ tEntity* AnimDSGLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 // Constraints: None.
 //
 //========================================================================
-AnimEntityDSG* AnimDSGLoader::LoadAnimAtIntersections
-( 
-    tCompositeDrawable* ipCompD, 
-    tMultiController* ipAnimMC, 
-    tEntityStore* ipStore,
-    bool iHasAlpha,
-    char* ipName,
-    int iLinkEnum
-)
-{
+AnimEntityDSG *AnimDSGLoader::LoadAnimAtIntersections
+        (
+                tCompositeDrawable *ipCompD,
+                tMultiController *ipAnimMC,
+                tEntityStore *ipStore,
+                bool iHasAlpha,
+                char *ipName,
+                int iLinkEnum
+        ) {
     rmt::Vector IntersectionPosn;
     AnimEntityDSG *pAnimDSG = NULL;
-    RoadManager* pRoadManager = RoadManager::GetInstance();
-    for( int i = pRoadManager->GetNumIntersectionsUsed()-1; i>-1; i--)
-    {
+    RoadManager *pRoadManager = RoadManager::GetInstance();
+    for (int i = pRoadManager->GetNumIntersectionsUsed() - 1; i > -1; i--) {
         pAnimDSG = new AnimEntityDSG;
 
         pAnimDSG->SetName(ipName);
 
         // Only add one instance to update list, because
         // otherwise the animation get updated too many times
-        pAnimDSG->SetAddToUpdateList( i == 0 );
+        pAnimDSG->SetAddToUpdateList(i == 0);
 
-        if(iHasAlpha)
-        {
+        if (iHasAlpha) {
             pAnimDSG->mTranslucent = true;
         }
 
         pRoadManager->FindIntersection(i)->GetLocation(IntersectionPosn);
 
-        pAnimDSG->LoadSetUp(ipCompD, ipAnimMC, ipStore, IntersectionPosn );
+        pAnimDSG->LoadSetUp(ipCompD, ipAnimMC, ipStore, IntersectionPosn);
 
         pAnimDSG->SetVisibility(false);
 
         pRoadManager->FindIntersection(i)->LinkAnimEntity(pAnimDSG, iLinkEnum);
 
-        mpListenerCB->OnChunkLoaded( pAnimDSG, mUserData, _id );
+        mpListenerCB->OnChunkLoaded(pAnimDSG, mUserData, _id);
     }
- 
+
     ///////////////////////////////////////////////////////////////////////////
     // Special Case for the one arrow that is used to float arround, not bound 
     // to an intersection
@@ -263,26 +248,25 @@ AnimEntityDSG* AnimDSGLoader::LoadAnimAtIntersections
     // Now includes 5 floaters the longer road segments
     //
     ///////////////////////////////////////////////////////////////////////////
-    for(int i=11+iLinkEnum; i>0; i-=2)
-    {
+    for (int i = 11 + iLinkEnum; i > 0; i -= 2) {
         pAnimDSG = new AnimEntityDSG;
 
         pAnimDSG->SetName(ipName);
 
         // Only add one instance to update list, because
         // otherwise the animation get updated too many times
-        pAnimDSG->SetAddToUpdateList( false );
+        pAnimDSG->SetAddToUpdateList(false);
 
-        if(iHasAlpha)
-        {
+        if (iHasAlpha) {
             pAnimDSG->mTranslucent = true;
         }
 
-        pAnimDSG->LoadSetUp(ipCompD, ipAnimMC, ipStore, IntersectionPosn );
+        pAnimDSG->LoadSetUp(ipCompD, ipAnimMC, ipStore, IntersectionPosn);
         pAnimDSG->SetVisibility(false);
-        pAnimDSG->SetTrackSeparately(i); //index into the stored array as well as whether to track separately bool
+        pAnimDSG->SetTrackSeparately(
+                i); //index into the stored array as well as whether to track separately bool
 
-        mpListenerCB->OnChunkLoaded( pAnimDSG, mUserData, _id );
+        mpListenerCB->OnChunkLoaded(pAnimDSG, mUserData, _id);
     }
     //////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////
@@ -308,21 +292,19 @@ AnimEntityDSG* AnimDSGLoader::LoadAnimAtIntersections
 //
 //========================================================================
 void AnimDSGLoader::SetRegdListener
-(
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
-   //
-   // Follow protocol; notify old Listener, that it has been 
-   // "disconnected".
-   //
-   if( mpListenerCB != NULL )
-   {
-      mpListenerCB->OnChunkLoaded( NULL, iUserData, 0 );
-   }
-   mpListenerCB  = pListenerCB;
-   mUserData     = iUserData;
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
+    //
+    // Follow protocol; notify old Listener, that it has been
+    // "disconnected".
+    //
+    if (mpListenerCB != NULL) {
+        mpListenerCB->OnChunkLoaded(NULL, iUserData, 0);
+    }
+    mpListenerCB = pListenerCB;
+    mUserData = iUserData;
 }
 
 //========================================================================
@@ -339,17 +321,16 @@ void AnimDSGLoader::SetRegdListener
 //
 //========================================================================
 void AnimDSGLoader::ModRegdListener
-( 
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
 #if 0
-   char DebugBuf[255];
-   sprintf( DebugBuf, "AnimDSGLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB );
-   rDebugString( DebugBuf );
+    char DebugBuf[255];
+    sprintf(DebugBuf, "AnimDSGLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB);
+    rDebugString(DebugBuf);
 #endif
-   rAssert( pListenerCB == mpListenerCB );
+    rAssert(pListenerCB == mpListenerCB);
 
-   mUserData = iUserData;
+    mUserData = iUserData;
 }

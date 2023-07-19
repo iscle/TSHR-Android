@@ -31,27 +31,44 @@
 //#include <render/Culling/SpatialTree.h>
 
 class IEntityDSG;
+
 class IntersectDSG;
+
 class StaticEntityDSG;
+
 class StaticPhysDSG;
+
 class SpatialTree;
+
 class FenceEntityDSG;
+
 class AnimCollisionEntityDSG;
+
 class AnimEntityDSG;
+
 class DynaPhysDSG;
+
 class TriggerVolume;
+
 class WorldSphereDSG;
+
 class RoadSegment;
+
 class PathSegment;
+
 class tCamera;
+
 class tDrawable;
+
 class tGeometry;
+
 class tMultiController;
+
 class tName;
+
 class tView;
 
-namespace Scrooby
-{
+namespace Scrooby {
     class App;
 }
 
@@ -68,113 +85,150 @@ namespace Scrooby
 //                   management                       --Devin  [4/18/2002]
 //
 //========================================================================
-class RenderLayer 
-{
+class RenderLayer {
 public:
-   RenderLayer();
-   ~RenderLayer();
+    RenderLayer();
 
-   ///////////////////////////////////////////////////////////////////////
-   // Render Interface
-   ///////////////////////////////////////////////////////////////////////
-   virtual void Render();
+    ~RenderLayer();
 
-   ///////////////////////////////////////////////////////////////////////
-   // Resource Interfaces
-   ///////////////////////////////////////////////////////////////////////
-   // Setup all components to their default initial states
-   void DoAllSetups();
-   // Guts; Renderable Type Things
-   virtual void   AddGuts( tDrawable* ipDrawable );
-   virtual void   AddGuts( tGeometry* ipGeometry );
-   virtual void   AddGuts( IntersectDSG* ipIntersectDSG );
-   virtual void   AddGuts( StaticEntityDSG* ipStaticEntityDSG );
-   virtual void   AddGuts( StaticPhysDSG* ipStaticPhysDSG );
-   virtual void   AddGuts( FenceEntityDSG* ipFenceEntityDSG );
-   virtual void   AddGuts( Scrooby::App* ipScroobyApp );
-   virtual void   AddGuts( SpatialTree* ipSpatialTree );
-   virtual void   AddGuts( AnimCollisionEntityDSG* ipAnimCollDSG );
-   virtual void   AddGuts( AnimEntityDSG* ipAnimDSG );
-   virtual void   AddGuts( DynaPhysDSG* ipDynaPhysDSG );
-   virtual void   AddGuts( TriggerVolume* ipTriggerVolume );
-   virtual void   AddGuts( WorldSphereDSG* ipWorldSphere );
-   virtual void   AddGuts( RoadSegment* ipRoadSegment );
-   virtual void   AddGuts( PathSegment* ipPathSegment );
-   virtual void   RemoveGuts( tDrawable* ipDrawable );
-   virtual void   RemoveGuts( IEntityDSG* ipEDSG );
-   virtual void	  RemoveGuts( tMultiController* ipZoneController );
+    ///////////////////////////////////////////////////////////////////////
+    // Render Interface
+    ///////////////////////////////////////////////////////////////////////
+    virtual void Render();
 
-   virtual void   SetUpGuts();
-   virtual void   NullifyGuts();
+    ///////////////////////////////////////////////////////////////////////
+    // Resource Interfaces
+    ///////////////////////////////////////////////////////////////////////
+    // Setup all components to their default initial states
+    void DoAllSetups();
 
-   bool HasGuts( tDrawable* guts );
+    // Guts; Renderable Type Things
+    virtual void AddGuts(tDrawable *ipDrawable);
 
-   // Other; Other Layer Resources of interest
-   // NOTE: if you want the Cam, you can & should get it through the 
-   // SuperCam system, unless you're Cary.
-   tCamera*       pCam( unsigned int viewIndex );
-   tView*         pView( unsigned int viewIndex );
-   float&         rAlpha();
-   void           SetUpViewCam();
-   void           NullifyViewCam();
-   // Load Related interfaces
-   virtual void   DoPreStaticLoad();
-   virtual void   DoPostStaticLoad();
-   virtual void   DumpAllDynaLoads(unsigned int start, SwapArray<tRefCounted*>& irEntityDeletionList);   
-   virtual void   DumpDynaLoad(tName& irGiveItAFuckinName, SwapArray<tRefCounted*>& irEntityDeletionList);
-   virtual bool   DoPreDynaLoad(tName& irGiveItAFuckinName);
-   virtual void   DoPostDynaLoad();
+    virtual void AddGuts(tGeometry *ipGeometry);
 
-   ///////////////////////////////////////////////////////////////////////
-   //Exported Class/State Manipulators
-   ///////////////////////////////////////////////////////////////////////
-   void           Kill();        // RenderReady||Frozen >> Dead
-   void		      Resurrect();   // Dead                >> RenderReady
-   void           FreezeCorpse();// Dead                >> Frozen 
-   void           Freeze();      // RenderReady         >> Frozen 
-   void		      Thaw();        // Frozen              >> RenderReady
-   void           Chill( void ); // To frozen, but remembers old state.
-   void           Warm( void );  // Restores state remember by Chill.
+    virtual void AddGuts(IntersectDSG *ipIntersectDSG);
 
-   ///////////////////////////////////////////////////////////////////////
-   //Exported Class/State
-   ///////////////////////////////////////////////////////////////////////
-   enum eExportedState
-   {
-      msDead,
-      msFrozen,
-      msRenderReady
-   };
-   eExportedState mExportedState;
-   eExportedState mPreviousState;
-   bool IsDead();
-   bool IsFrozen();
-   bool IsRenderReady();
+    virtual void AddGuts(StaticEntityDSG *ipStaticEntityDSG);
 
-   void SetNumViews( unsigned int numViews ) { mNumViews = numViews; }
-   unsigned int GetNumViews() { return( mNumViews ); }
-   void SetBeginView( bool BeginView ) { mIsBeginView = BeginView; }
-   bool IsBeginView( void ) const { return mIsBeginView; }
+    virtual void AddGuts(StaticPhysDSG *ipStaticPhysDSG);
+
+    virtual void AddGuts(FenceEntityDSG *ipFenceEntityDSG);
+
+    virtual void AddGuts(Scrooby::App *ipScroobyApp);
+
+    virtual void AddGuts(SpatialTree *ipSpatialTree);
+
+    virtual void AddGuts(AnimCollisionEntityDSG *ipAnimCollDSG);
+
+    virtual void AddGuts(AnimEntityDSG *ipAnimDSG);
+
+    virtual void AddGuts(DynaPhysDSG *ipDynaPhysDSG);
+
+    virtual void AddGuts(TriggerVolume *ipTriggerVolume);
+
+    virtual void AddGuts(WorldSphereDSG *ipWorldSphere);
+
+    virtual void AddGuts(RoadSegment *ipRoadSegment);
+
+    virtual void AddGuts(PathSegment *ipPathSegment);
+
+    virtual void RemoveGuts(tDrawable *ipDrawable);
+
+    virtual void RemoveGuts(IEntityDSG *ipEDSG);
+
+    virtual void RemoveGuts(tMultiController *ipZoneController);
+
+    virtual void SetUpGuts();
+
+    virtual void NullifyGuts();
+
+    bool HasGuts(tDrawable *guts);
+
+    // Other; Other Layer Resources of interest
+    // NOTE: if you want the Cam, you can & should get it through the
+    // SuperCam system, unless you're Cary.
+    tCamera *pCam(unsigned int viewIndex);
+
+    tView *pView(unsigned int viewIndex);
+
+    float &rAlpha();
+
+    void SetUpViewCam();
+
+    void NullifyViewCam();
+
+    // Load Related interfaces
+    virtual void DoPreStaticLoad();
+
+    virtual void DoPostStaticLoad();
+
+    virtual void
+    DumpAllDynaLoads(unsigned int start, SwapArray<tRefCounted *> &irEntityDeletionList);
+
+    virtual void
+    DumpDynaLoad(tName &irGiveItAFuckinName, SwapArray<tRefCounted *> &irEntityDeletionList);
+
+    virtual bool DoPreDynaLoad(tName &irGiveItAFuckinName);
+
+    virtual void DoPostDynaLoad();
+
+    ///////////////////////////////////////////////////////////////////////
+    //Exported Class/State Manipulators
+    ///////////////////////////////////////////////////////////////////////
+    void Kill();        // RenderReady||Frozen>> Dead
+    void Resurrect();   // Dead>> RenderReady
+    void FreezeCorpse();// Dead>> Frozen
+    void Freeze();      // RenderReady>> Frozen
+    void Thaw();        // Frozen>> RenderReady
+    void Chill(void); // To frozen, but remembers old state.
+    void Warm(void);  // Restores state remember by Chill.
+
+    ///////////////////////////////////////////////////////////////////////
+    //Exported Class/State
+    ///////////////////////////////////////////////////////////////////////
+    enum eExportedState {
+        msDead,
+        msFrozen,
+        msRenderReady
+    };
+    eExportedState mExportedState;
+    eExportedState mPreviousState;
+
+    bool IsDead();
+
+    bool IsFrozen();
+
+    bool IsRenderReady();
+
+    void SetNumViews(unsigned int numViews) { mNumViews = numViews; }
+
+    unsigned int GetNumViews() { return (mNumViews); }
+
+    void SetBeginView(bool BeginView) { mIsBeginView = BeginView; }
+
+    bool IsBeginView(void) const { return mIsBeginView; }
 
 protected:
-   virtual bool IsGutsSetup();
-   virtual bool IsViewCamSetup( unsigned int viewIndex );
-   //Called by constructor
-   void OnRenderLayerInit();
+    virtual bool IsGutsSetup();
 
-   //Static Data
-   enum
-   {
-      msMaxGuts=10
-   };
+    virtual bool IsViewCamSetup(unsigned int viewIndex);
 
-   //Member data
-   tView*        mpView[ MAX_PLAYERS ];
-   float         mAlpha;
+    //Called by constructor
+    void OnRenderLayerInit();
 
-   SwapArray<tDrawable*> mpGuts;
+    //Static Data
+    enum {
+        msMaxGuts = 10
+    };
 
-   bool mIsBeginView : 1;
+    //Member data
+    tView *mpView[MAX_PLAYERS];
+    float mAlpha;
+
+    SwapArray<tDrawable *> mpGuts;
+
+    bool mIsBeginView: 1;
     unsigned int mNumViews;
 };
 

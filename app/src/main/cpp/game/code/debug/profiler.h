@@ -20,8 +20,8 @@
 // Forward References
 //========================================
 
-#if !defined( RAD_RELEASE ) && !defined( WORLD_BUILDER ) && !defined( RAD_MW ) && !defined( RAD_WIN32 )
-    #define PROFILER_ENABLED
+#if !defined(RAD_RELEASE) && !defined(WORLD_BUILDER) && !defined(RAD_MW) && !defined(RAD_WIN32)
+#define PROFILER_ENABLED
 #endif // RAD_RELEASE
 
 
@@ -37,38 +37,38 @@
 
 #ifndef PROFILER_ENABLED
 
-    #define CREATE_PROFILER()     
-    #define DESTROY_PROFILER()    
+#define CREATE_PROFILER()
+#define DESTROY_PROFILER()
 
-    #define BEGIN_PROFILE(string)
-    #define END_PROFILE(string)
+#define BEGIN_PROFILE(string)
+#define END_PROFILE(string)
 
-    #define BEGIN_PROFILER_FRAME()
-    #define END_PROFILER_FRAME()
+#define BEGIN_PROFILER_FRAME()
+#define END_PROFILER_FRAME()
 
-	#define RENDER_PROFILER()
+#define RENDER_PROFILER()
 
-    #define SNSTART(id, txt)
-    #define SNSTOP(id)
+#define SNSTART(id, txt)
+#define SNSTOP(id)
 
 #else
 
 #ifdef SNTUNER
 #include <SNTuner.h>
-    #define SNSTART(id, txt)  snStartMarker(id, txt)
-    #define SNSTOP(id)   snStopMarker(id);
+#define SNSTART(id, txt)  snStartMarker(id, txt)
+#define SNSTOP(id)   snStopMarker(id);
 #endif
 
-    #define CREATE_PROFILER()       if(!(CommandLineOptions::Get(CLO_DESIGNER) || CommandLineOptions::Get(CLO_FIREWIRE))) { Profiler::CreateInstance(); }
-    #define DESTROY_PROFILER()      if(!(CommandLineOptions::Get(CLO_DESIGNER) || CommandLineOptions::Get(CLO_FIREWIRE))) { Profiler::DestroyInstance(); }
+#define CREATE_PROFILER()       if(!(CommandLineOptions::Get(CLO_DESIGNER) || CommandLineOptions::Get(CLO_FIREWIRE))) { Profiler::CreateInstance(); }
+#define DESTROY_PROFILER()      if(!(CommandLineOptions::Get(CLO_DESIGNER) || CommandLineOptions::Get(CLO_FIREWIRE))) { Profiler::DestroyInstance(); }
 
-    #define BEGIN_PROFILE(string)   if(!(CommandLineOptions::Get(CLO_DESIGNER) || CommandLineOptions::Get(CLO_FIREWIRE))) { GetProfiler()->BeginProfile(string); }
-    #define END_PROFILE(string)     if(!(CommandLineOptions::Get(CLO_DESIGNER) || CommandLineOptions::Get(CLO_FIREWIRE))) { GetProfiler()->EndProfile(string); }
+#define BEGIN_PROFILE(string)   if(!(CommandLineOptions::Get(CLO_DESIGNER) || CommandLineOptions::Get(CLO_FIREWIRE))) { GetProfiler()->BeginProfile(string); }
+#define END_PROFILE(string)     if(!(CommandLineOptions::Get(CLO_DESIGNER) || CommandLineOptions::Get(CLO_FIREWIRE))) { GetProfiler()->EndProfile(string); }
 
-    #define BEGIN_PROFILER_FRAME()  if(!(CommandLineOptions::Get(CLO_DESIGNER) || CommandLineOptions::Get(CLO_FIREWIRE))) { GetProfiler()->BeginFrame(); }
-    #define END_PROFILER_FRAME()    if(!(CommandLineOptions::Get(CLO_DESIGNER) || CommandLineOptions::Get(CLO_FIREWIRE))) { GetProfiler()->EndFrame(); }
+#define BEGIN_PROFILER_FRAME()  if(!(CommandLineOptions::Get(CLO_DESIGNER) || CommandLineOptions::Get(CLO_FIREWIRE))) { GetProfiler()->BeginFrame(); }
+#define END_PROFILER_FRAME()    if(!(CommandLineOptions::Get(CLO_DESIGNER) || CommandLineOptions::Get(CLO_FIREWIRE))) { GetProfiler()->EndFrame(); }
 
-	#define RENDER_PROFILER()		if(!(CommandLineOptions::Get(CLO_DESIGNER) || CommandLineOptions::Get(CLO_FIREWIRE))) { GetProfiler()->Render(); }
+#define RENDER_PROFILER()        if(!(CommandLineOptions::Get(CLO_DESIGNER) || CommandLineOptions::Get(CLO_FIREWIRE))) { GetProfiler()->Render(); }
 
 
 #define MAX_PROFILER_DEPTH  32
@@ -87,119 +87,123 @@
 //              steady state.
 //
 //===========================================================================
-class Profiler
-{
-    public:
-        
-        static Profiler* CreateInstance();
-        static Profiler* GetInstance();
-        static void DestroyInstance();
+class Profiler {
+public:
 
-        void Init();
+    static Profiler *CreateInstance();
 
-        void BeginProfile( const char* name );
-        void EndProfile( const char* name );
-        
-        void BeginFrame();
-        void EndFrame();
+    static Profiler *GetInstance();
 
-        void ToggleDisplay() { sDisplay = !sDisplay; }
-        void NextPage();
+    static void DestroyInstance();
 
-        void Render();
+    void Init();
 
-        //
-        // Watcher tunable
-        //
-        static int sRed;
-        static int sGreen;
-        static int sBlue;
-        static int sPage;
-        static int sLeftOffset;
-        static int sTopOffset;
-        static bool sDisplay;
-        static bool sDumpToOutput;
+    void BeginProfile(const char *name);
 
-    private:
+    void EndProfile(const char *name);
+
+    void BeginFrame();
+
+    void EndFrame();
+
+    void ToggleDisplay() { sDisplay = !sDisplay; }
+
+    void NextPage();
+
+    void Render();
+
+    //
+    // Watcher tunable
+    //
+    static int sRed;
+    static int sGreen;
+    static int sBlue;
+    static int sPage;
+    static int sLeftOffset;
+    static int sTopOffset;
+    static bool sDisplay;
+    static bool sDumpToOutput;
+
+private:
 
 
-        Profiler();
-        ~Profiler();
+    Profiler();
+
+    ~Profiler();
 
 
-        void StoreProfileHistory( tUID nameUID,
-                                  float percent,
-                                  float elapsedTime, 
-                                  float sampleTime, 
-                                  float totalTime );
-        
-        void GetProfileHistory( tUID nameUID, 
-                                float* ave, 
-                                float* min, 
-                                float* max , 
-                                float* sample, 
-                                float* total );
-        struct ProfileSample 
-        {
-           bool bValid;                         // Whether the data is valid
-           tUID uid;                            // Hashed name for comparisons.
-           unsigned int iProfileInstances;      // # of times ProfileBegin called
-           float        fStartTime;            // The current open profile start time
-           float        fAccumulator;          // All samples this frame added together
-           float        fChildrenSampleTime;   // Time taken by all children
-           float        fSampleTime;           // Time for a single pass  
-           float        fTotalTime;            // Time for all passess 
-           unsigned int iNumParents;            // Number of profile parents
-           bool         isOpen;                 // Is the profile section open?
-           char         szName[256];            // Name of sample
-        };
+    void StoreProfileHistory(tUID nameUID,
+                             float percent,
+                             float elapsedTime,
+                             float sampleTime,
+                             float totalTime);
 
-        struct ProfileSampleHistory 
-        {
-           tUID uid;           //Hased name for comparisons
-           float fAve;         //Average time per frame (percentage)
-           float fMin;         //Minimum time per frame (percentage)
-           float fMax;         //Maximum time per frame (percentage)
-           float fSampleAve;
-           float fSampleTotal;
-        };
+    void GetProfileHistory(tUID nameUID,
+                           float *ave,
+                           float *min,
+                           float *max,
+                           float *sample,
+                           float *total);
 
-        static Profiler* spInstance;
+    struct ProfileSample {
+        bool bValid;                         // Whether the data is valid
+        tUID uid;                            // Hashed name for comparisons.
+        unsigned int iProfileInstances;      // # of times ProfileBegin called
+        float fStartTime;            // The current open profile start time
+        float fAccumulator;          // All samples this frame added together
+        float fChildrenSampleTime;   // Time taken by all children
+        float fSampleTime;           // Time for a single pass
+        float fTotalTime;            // Time for all passess
+        unsigned int iNumParents;            // Number of profile parents
+        bool isOpen;                 // Is the profile section open?
+        char szName[256];            // Name of sample
+    };
 
-        ProfileSample        *AllocSample(void);
-        ProfileSampleHistory *AllocHistory(void);
+    struct ProfileSampleHistory {
+        tUID uid;           //Hased name for comparisons
+        float fAve;         //Average time per frame (percentage)
+        float fMin;         //Minimum time per frame (percentage)
+        float fMax;         //Maximum time per frame (percentage)
+        float fSampleAve;
+        float fSampleTotal;
+    };
 
-        enum
-        {
-            NUM_SAMPLES = 256, // Must be power of two for hash table
-            NUM_VISIBLE_LINES = 15,
-            NUM_VISIBLE_PANES = 1 + ((NUM_SAMPLES-1) / NUM_VISIBLE_LINES )
-        };
+    static Profiler *spInstance;
 
-        HashTable<ProfileSample>        *mOpenSampleStore;
-        HashTable<ProfileSampleHistory> *mOpenHistoryStore;
+    ProfileSample *AllocSample(void);
 
-        ProfileSample mSamples[NUM_SAMPLES];
-        ProfileSampleHistory mHistory[NUM_SAMPLES];
+    ProfileSampleHistory *AllocHistory(void);
 
-        unsigned int mOpenStack[MAX_PROFILER_DEPTH];
-        int          mOpenStackTop;
+    enum {
+        NUM_SAMPLES = 256, // Must be power of two for hash table
+        NUM_VISIBLE_LINES = 15,
+        NUM_VISIBLE_PANES = 1 + ((NUM_SAMPLES - 1) / NUM_VISIBLE_LINES)
+    };
 
-        float mStartProfile;
-        float mEndProfile;
-        
-        float mFrameRate;
-        float mFrameRateAdjusted;
-        
-        float mDisplayTime;
-        unsigned int mNextSampleAllocIndex;
-        unsigned int mNextHistoryAllocIndex;
+    HashTable <ProfileSample> *mOpenSampleStore;
+    HashTable <ProfileSampleHistory> *mOpenHistoryStore;
 
-        static bool sEnableCollection;
+    ProfileSample mSamples[NUM_SAMPLES];
+    ProfileSampleHistory mHistory[NUM_SAMPLES];
+
+    unsigned int mOpenStack[MAX_PROFILER_DEPTH];
+    int mOpenStackTop;
+
+    float mStartProfile;
+    float mEndProfile;
+
+    float mFrameRate;
+    float mFrameRateAdjusted;
+
+    float mDisplayTime;
+    unsigned int mNextSampleAllocIndex;
+    unsigned int mNextHistoryAllocIndex;
+
+    static bool sEnableCollection;
 };
 
 // A little syntactic sugar for getting at this singleton.
-inline Profiler* GetProfiler() { return( Profiler::GetInstance() ); }
+inline Profiler *GetProfiler() { return (Profiler::GetInstance()); }
 
 #endif // PROFILER_ENABLED
 

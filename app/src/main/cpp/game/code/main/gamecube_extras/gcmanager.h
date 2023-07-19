@@ -28,20 +28,20 @@
 //
 //=============================================================================
 
-class GCManager : public IRadTimerCallback
-{
+class GCManager : public IRadTimerCallback {
 public:
-    static GCManager* GetInstance();
+    static GCManager *GetInstance();
 
     void Init();
 
     void Reset();
-    void PerformReset( bool displaySplash = true, bool launchIPL = false );
+
+    void PerformReset(bool displaySplash = true, bool launchIPL = false);
 
     //For IRadTimerCallback
-    void OnTimerDone( unsigned int elapsedTime, void * pUserData ); 
-    
-    void ChangeResolution( int x, int y, int bpp );
+    void OnTimerDone(unsigned int elapsedTime, void *pUserData);
+
+    void ChangeResolution(int x, int y, int bpp);
 
     void DoProgressiveScanTest();
 
@@ -51,7 +51,7 @@ public:
     void TestForReset();
 
 private:
-    static GCManager* mInstance;
+    static GCManager *mInstance;
 
     bool mReset;
     bool mDoingReset;
@@ -60,17 +60,20 @@ private:
     unsigned int mResetTime[PAD_MAX_CONTROLLERS];
 
     // Timer for updates.
-    IRadTimer* mTimer;
+    IRadTimer *mTimer;
 
     GCManager();
+
     virtual ~GCManager();
 
     void ControllerReset();
+
     void StopEverything();
 
     //Prevent wasteful constructor creation.
-    GCManager( const GCManager& gcmanager );
-    GCManager& operator=( const GCManager& gcmanager );
+    GCManager(const GCManager &gcmanager);
+
+    GCManager &operator=(const GCManager &gcmanager);
 };
 
 

@@ -28,20 +28,22 @@
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenPauseSound : public CGuiScreenSound
-{
+class CGuiScreenPauseSound : public CGuiScreenSound {
 public:
-    CGuiScreenPauseSound( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenPauseSound(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenPauseSound();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 };
 

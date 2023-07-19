@@ -23,6 +23,7 @@
 //========================================
 struct AnimSoundDSGData;
 struct radSoundVector;
+
 class AnimCollisionEntityDSG;
 
 //=============================================================================
@@ -31,34 +32,39 @@ class AnimCollisionEntityDSG;
 //
 //=============================================================================
 
-class AnimObjSoundPlayer : public PositionCarrier
-{
-    public:
-        AnimObjSoundPlayer();
-        virtual ~AnimObjSoundPlayer();
+class AnimObjSoundPlayer : public PositionCarrier {
+public:
+    AnimObjSoundPlayer();
 
-        bool IsActive() { return( m_identity != NULL ); }
-        bool UsesObject( AnimCollisionEntityDSG* soundObject ) { return( soundObject == m_identity ); }
-        void Activate( AnimSoundDSGData* soundData );
-        void Deactivate();
+    virtual ~AnimObjSoundPlayer();
 
-        void ServiceOncePerFrame();
+    bool IsActive() { return (m_identity != NULL); }
 
-        //
-        // PositionCarrier functions
-        //
-        void GetPosition( radSoundVector& position );
-        void GetVelocity( radSoundVector& velocity );
+    bool UsesObject(AnimCollisionEntityDSG *soundObject) { return (soundObject == m_identity); }
 
-    private:
-        //Prevent wasteful constructor creation.
-        AnimObjSoundPlayer( const AnimObjSoundPlayer& animobjsoundplayer );
-        AnimObjSoundPlayer& operator=( const AnimObjSoundPlayer& animobjsoundplayer );
+    void Activate(AnimSoundDSGData *soundData);
 
-        tPose::Joint* m_joint;
-        AnimCollisionEntityDSG* m_identity;
+    void Deactivate();
 
-        PositionalSoundPlayer m_player;
+    void ServiceOncePerFrame();
+
+    //
+    // PositionCarrier functions
+    //
+    void GetPosition(radSoundVector &position);
+
+    void GetVelocity(radSoundVector &velocity);
+
+private:
+    //Prevent wasteful constructor creation.
+    AnimObjSoundPlayer(const AnimObjSoundPlayer &animobjsoundplayer);
+
+    AnimObjSoundPlayer &operator=(const AnimObjSoundPlayer &animobjsoundplayer);
+
+    tPose::Joint *m_joint;
+    AnimCollisionEntityDSG *m_identity;
+
+    PositionalSoundPlayer m_player;
 };
 
 //*****************************************************************************

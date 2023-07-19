@@ -47,9 +47,8 @@
 //
 //==============================================================================
 WrecklessEventListener::WrecklessEventListener() :
-    mPlayerID( -1 )
-{
-    mLastPosition.Set( 0.0f, 0.0f, 0.0f );
+        mPlayerID(-1) {
+    mLastPosition.Set(0.0f, 0.0f, 0.0f);
 }
 
 //==============================================================================
@@ -62,8 +61,7 @@ WrecklessEventListener::WrecklessEventListener() :
 // Return:      N/A.
 //
 //==============================================================================
-WrecklessEventListener::~WrecklessEventListener()
-{
+WrecklessEventListener::~WrecklessEventListener() {
 }
 
 //=============================================================================
@@ -71,21 +69,18 @@ WrecklessEventListener::~WrecklessEventListener()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void WrecklessEventListener::HandleEvent( EventEnum id, void* pEventData )
-{
-    if ( id == (EVENT_LOCATOR + LocatorEvent::CAMERA_CUT) )
-    {
-        EventLocator* evtLoc = static_cast<EventLocator*>(pEventData);
-        rAssert( evtLoc );
+void WrecklessEventListener::HandleEvent(EventEnum id, void *pEventData) {
+    if (id == (EVENT_LOCATOR + LocatorEvent::CAMERA_CUT)) {
+        EventLocator *evtLoc = static_cast<EventLocator *>(pEventData);
+        rAssert(evtLoc);
 
-        if ( evtLoc->GetPlayerID() == (unsigned int) mPlayerID && evtLoc->GetPlayerEntered() )
-        {
-            evtLoc->GetLocation( &mLastPosition );
+        if (evtLoc->GetPlayerID() == (unsigned int) mPlayerID && evtLoc->GetPlayerEntered()) {
+            evtLoc->GetLocation(&mLastPosition);
         }
     }
 }

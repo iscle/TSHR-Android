@@ -6,19 +6,18 @@
 
 //////// FORWARD DECLARATIONS /////////
 class Character;
+
 class MouthFlapper;
 ///////////////////////////////////////
 
 class CharacterController
-:
-public tRefCounted
-{
+        :
+                public tRefCounted {
 public:
-    enum eIntention
-	{
+    enum eIntention {
         NONE,
-		LeftStickX,
-		LeftStickY,
+        LeftStickX,
+        LeftStickY,
         DoAction,   // DUSIT [Nov 6,2002]: "Action" conflicts with class name
         Jump,
         Dash,
@@ -33,7 +32,7 @@ public:
         MouseLookRight,
 #endif
         NUM_INPUTS, // "real" inputs (stuff with buttons) goes 
-                    // before this, things that are only triggerd by AI go after
+        // before this, things that are only triggerd by AI go after
         Dodge,
         Cringe,
         TurnRight,
@@ -42,47 +41,49 @@ public:
         CelebrateBig,
         WaveHello,
         WaveGoodbye
-	};
+    };
 
-    CharacterController( void );
-    virtual ~CharacterController( void );
+    CharacterController(void);
 
-    virtual void Update( float timeins ) {};
-	virtual void GetDirection(  rmt::Vector& outDirection ) = 0;
-    virtual float GetValue( int buttonId ) const = 0;
-    virtual bool IsButtonDown( int buttonId ) const = 0;
-    virtual int  TimeSinceChange( int buttonId ) const { return IsButtonDown(buttonId) ? 0 : 5000; };
-    
-    Character* GetCharacter( ) const;
-    virtual void SetCharacter( Character* pCharacter );
+    virtual ~CharacterController(void);
 
-    virtual void SetIntention( eIntention intention )
-    {
-        if( mActive )
-        {
+    virtual void Update(float timeins) {};
+
+    virtual void GetDirection(rmt::Vector &outDirection) = 0;
+
+    virtual float GetValue(int buttonId) const = 0;
+
+    virtual bool IsButtonDown(int buttonId) const = 0;
+
+    virtual int TimeSinceChange(int buttonId) const { return IsButtonDown(buttonId) ? 0 : 5000; };
+
+    Character *GetCharacter() const;
+
+    virtual void SetCharacter(Character *pCharacter);
+
+    virtual void SetIntention(eIntention intention) {
+        if (mActive) {
             mIntention = intention;
         }
     }
-    eIntention GetIntention( void ) const
-    {
+
+    eIntention GetIntention(void) const {
         return mIntention;
     }
 
-    void PreserveIntention( eIntention intention )
-    {
+    void PreserveIntention(eIntention intention) {
         mPreserveIntention = intention;
     }
 
-    void ClearIntention( void )
-    {
+    void ClearIntention(void) {
         mIntention = mPreserveIntention;
         mPreserveIntention = NONE;
     }
 
-    void SetActive( bool active ) { mActive = active; }
+    void SetActive(bool active) { mActive = active; }
 
 protected:
-    Character* mpCharacter;
+    Character *mpCharacter;
     eIntention mIntention;
     eIntention mPreserveIntention;
     bool mActive;
@@ -94,25 +95,30 @@ protected:
 ////////////////////////////////////////////////////////////
 
 class NPCController
-:
-public CharacterController
-{
+        :
+                public CharacterController {
 public: // METHODS
-    NPCController( void );
-    virtual ~NPCController( void );
+    NPCController(void);
 
-    virtual void Update( float seconds );
+    virtual ~NPCController(void);
+
+    virtual void Update(float seconds);
+
     virtual float GetSpeedMps() const;
-    virtual void SetSpeedMps( float fSpeedMps );
-    virtual void SetDirection( const rmt::Vector& inDirection );
-    virtual void GetDirection( rmt::Vector& outDirection );
-    virtual float GetValue( int buttonId ) const;
-    virtual bool IsButtonDown( int buttonId ) const;
 
-    void SetCharacter( Character *pCharacter );
+    virtual void SetSpeedMps(float fSpeedMps);
 
-    enum State
-    {   
+    virtual void SetDirection(const rmt::Vector &inDirection);
+
+    virtual void GetDirection(rmt::Vector &outDirection);
+
+    virtual float GetValue(int buttonId) const;
+
+    virtual bool IsButtonDown(int buttonId) const;
+
+    void SetCharacter(Character *pCharacter);
+
+    enum State {
         // We enumerate here, all the different states specific to 
         // NPC behavior controller... which are essentially substates 
         // of the character's locomotion state (in character's statemanager)
@@ -128,69 +134,84 @@ public: // METHODS
         NONE,           // limbo... do nothing... stand there... don't resume following path
         NUM_STATES
     };
-    virtual State GetState() const
-    {
+
+    virtual State GetState() const {
         return mState;
     }
-    void TransitToState( State state );
 
-    bool AddNPCWaypoint( const rmt::Vector& pt );
+    void TransitToState(State state);
+
+    bool AddNPCWaypoint(const rmt::Vector &pt);
+
     void ClearNPCWaypoints();
 
     void StartTalking();
+
     void StopTalking();
+
     void IncitePanic();
+
     void QuellPanic();
 
     void TeleportToPath(void);
-    void SetTempWaypont(const rmt::Vector&);
+
+    void SetTempWaypont(const rmt::Vector &);
+
     void ClearTempWaypoint(void);
 
 public: // MEMBERS
 
-    enum { MAX_NPC_WAYPOINTS = 32 };
+    enum {
+        MAX_NPC_WAYPOINTS = 32
+    };
 
     bool mOffPath;
-    MouthFlapper* mMouthFlapper;
+    MouthFlapper *mMouthFlapper;
     int mMillisecondsInTalk;
-    NPCController* mTalkTarget;
+    NPCController *mTalkTarget;
     bool mListening; // if in talking state but mouth not flapping
 
 protected: // METHODS
 
-    virtual void OnOffPath( rmt::Vector lastPos, rmt::Vector currPos );
-    virtual void GetAllowedPathOffset( rmt::Vector& offset );
+    virtual void OnOffPath(rmt::Vector lastPos, rmt::Vector currPos);
+
+    virtual void GetAllowedPathOffset(rmt::Vector &offset);
+
     virtual float GetFollowPathSpeedMps() const;
-    virtual void FollowPath( float seconds );
+
+    virtual void FollowPath(float seconds);
+
     virtual void OnReachedWaypoint();
 
     // detect collision with player vehicle and set dodge intention.
     // returns true if need to dodge, false otherwise...
-    virtual void DetectAndDodge( float seconds );
-    virtual void TraversePath( float seconds );
+    virtual void DetectAndDodge(float seconds);
 
-    bool Detect( float seconds, float& hisVel );
+    virtual void TraversePath(float seconds);
+
+    bool Detect(float seconds, float &hisVel);
+
     void PerformDodge();
+
     void PerformCringe();
 
 protected: // MEMBERS
 
     // This struct is filled in the Detect call before PerformDodge is called
     // and used from within PerformDodge to determine direction of dodge.
-    struct DodgeInfo
-    {
+    struct DodgeInfo {
         bool wasSetThisFrame;
         rmt::Vector playerRightSide;
         bool myPosIsOnPlayersRightSide;
     };
-    DodgeInfo mDodgeInfo; 
+    DodgeInfo mDodgeInfo;
 
     State mState;
     float mSecondsInStopped;
     float mSpeedMps;
     rmt::Vector mNormalizedDodgeDir; // Normalized 
 
-    rmt::Vector mNPCWaypoints[ MAX_NPC_WAYPOINTS ];
+    rmt::Vector mNPCWaypoints[MAX_NPC_WAYPOINTS];
     int mNumNPCWaypoints;
     int mCurrNPCWaypoint;
 
@@ -209,30 +230,28 @@ private: // MEMBERS
     rmt::Vector mDirection;
 };
 
-inline void NPCController::ClearNPCWaypoints()
-{
+inline void NPCController::ClearNPCWaypoints() {
     mNumNPCWaypoints = 0;
     mCurrNPCWaypoint = -1;
 }
 
-inline float NPCController::GetSpeedMps() const
-{
+inline float NPCController::GetSpeedMps() const {
     return mSpeedMps;
 }
-inline void NPCController::SetSpeedMps( float fSpeedMps )
-{
+
+inline void NPCController::SetSpeedMps(float fSpeedMps) {
     mSpeedMps = fSpeedMps;
 }
-inline void NPCController::SetDirection( const rmt::Vector& inDirection )
-{
+
+inline void NPCController::SetDirection(const rmt::Vector &inDirection) {
     mDirection = inDirection;
 }
-inline float NPCController::GetValue( int buttonId ) const
-{
+
+inline float NPCController::GetValue(int buttonId) const {
     return 0.0f;
 }
-inline bool NPCController::IsButtonDown( int buttonId ) const
-{
+
+inline bool NPCController::IsButtonDown(int buttonId) const {
     return false;
 }
 
@@ -242,26 +261,33 @@ inline bool NPCController::IsButtonDown( int buttonId ) const
 
 
 class CharacterMappable;
+
 class tCamera;
 
 class PhysicalController
-:
-public CharacterController
-{
+        :
+                public CharacterController {
 public:
-    PhysicalController( void );
-    virtual ~PhysicalController( void );
+    PhysicalController(void);
 
-    virtual void GetDirection( rmt::Vector& outDirection );
-    virtual float GetValue( int buttonId ) const;
-    virtual bool IsButtonDown( int buttonId ) const;
-    virtual int  TimeSinceChange( int buttonId ) const;
-    virtual void SetIntention( eIntention intention ) {};
+    virtual ~PhysicalController(void);
 
-    CharacterMappable* GetCharacterMappable( void ) const;
-    void SetCharacterMappable( CharacterMappable* pMappable );
+    virtual void GetDirection(rmt::Vector &outDirection);
+
+    virtual float GetValue(int buttonId) const;
+
+    virtual bool IsButtonDown(int buttonId) const;
+
+    virtual int TimeSinceChange(int buttonId) const;
+
+    virtual void SetIntention(eIntention intention) {};
+
+    CharacterMappable *GetCharacterMappable(void) const;
+
+    void SetCharacterMappable(CharacterMappable *pMappable);
+
 private:
-    CharacterMappable* mpCharacterMappable;
+    CharacterMappable *mpCharacterMappable;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -276,30 +302,34 @@ private:
 class CameraRelativeCharacterControllerEventHandler;
 
 class CameraRelativeCharacterController
-:
-public PhysicalController
-{
+        :
+                public PhysicalController {
 public:
 
-	CameraRelativeCharacterController( void );
-    virtual ~CameraRelativeCharacterController( void );
+    CameraRelativeCharacterController(void);
 
-	void Create( Character* pCharacter, CharacterMappable* pCharacterMappable );
-	void GetDirection( rmt::Vector& outDirection );
-    virtual void SetIntention( eIntention intention );
-    
-    void SetCamera( tCamera* pCamera );
+    virtual ~CameraRelativeCharacterController(void);
+
+    void Create(Character *pCharacter, CharacterMappable *pCharacterMappable);
+
+    void GetDirection(rmt::Vector &outDirection);
+
+    virtual void SetIntention(eIntention intention);
+
+    void SetCamera(tCamera *pCamera);
 
 
 protected:
-    friend class CameraRelativeCharacterControllerEventHandler; 
-    void HandleEvent( int id, void* pEventData );
-private: 
+    friend class CameraRelativeCharacterControllerEventHandler;
 
-	// Don't much like this pointer here.
-	//
-	tCamera* mpCamera;
-    CameraRelativeCharacterControllerEventHandler* mpEventHandler;
+    void HandleEvent(int id, void *pEventData);
+
+private:
+
+    // Don't much like this pointer here.
+    //
+    tCamera *mpCamera;
+    CameraRelativeCharacterControllerEventHandler *mpEventHandler;
     bool mbCameraChange;
     rmt::Vector mLastDirection;
     rmt::Matrix mLastCameraMatrix;

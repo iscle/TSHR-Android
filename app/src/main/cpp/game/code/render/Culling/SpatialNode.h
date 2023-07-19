@@ -12,14 +12,23 @@
 //#include <render/DSG/IntersectDSG.h>
 
 class StaticEntityDSG;
+
 class StaticPhysDSG;
+
 class IntersectDSG;
+
 class DynaPhysDSG;
+
 class FenceEntityDSG;
+
 class AnimCollisionEntityDSG;
+
 class TriggerVolume;
+
 class RoadSegment;
+
 class PathSegment;
+
 class AnimEntityDSG;
 
 //////////////////////////////////////////////////////////////////////////
@@ -33,35 +42,35 @@ class AnimEntityDSG;
 //    volumes contained in the child nodes
 //
 
-class SpatialNode 
-{
+class SpatialNode {
 public:
-   SpatialNode();
-   ~SpatialNode();
+    SpatialNode();
 
-   //This plane should be move the the contig bin node, to improve cache hits
-   AAPlane3f         mSubDivPlane;
+    ~SpatialNode();
 
-   NodeSwapArray<StaticEntityDSG*>          mSEntityElems; //mSpatialElems;
-   SwapArray<StaticPhysDSG*>                mSPhysElems;   //mDynamicElems;
-   SwapArray<IntersectDSG*>                 mIntersectElems;
-   NodeSwapArray<DynaPhysDSG*>              mDPhysElems;
-   SwapArray<FenceEntityDSG*>               mFenceElems;
-   NodeSwapArray<AnimCollisionEntityDSG*>   mAnimCollElems;
-   NodeSwapArray<AnimEntityDSG*>            mAnimElems;
-   SwapArray<TriggerVolume*>                mTrigVolElems;
-   SwapArray<RoadSegment*>                  mRoadSegmentElems;
-   SwapArray<PathSegment*>				    mPathSegmentElems;
-   //Debug
-   BoxPts   mBBox;
+    //This plane should be move the the contig bin node, to improve cache hits
+    AAPlane3f mSubDivPlane;
+
+    NodeSwapArray<StaticEntityDSG *> mSEntityElems; //mSpatialElems;
+    SwapArray<StaticPhysDSG *> mSPhysElems;   //mDynamicElems;
+    SwapArray<IntersectDSG *> mIntersectElems;
+    NodeSwapArray<DynaPhysDSG *> mDPhysElems;
+    SwapArray<FenceEntityDSG *> mFenceElems;
+    NodeSwapArray<AnimCollisionEntityDSG *> mAnimCollElems;
+    NodeSwapArray<AnimEntityDSG *> mAnimElems;
+    SwapArray<TriggerVolume *> mTrigVolElems;
+    SwapArray<RoadSegment *> mRoadSegmentElems;
+    SwapArray<PathSegment *> mPathSegmentElems;
+    //Debug
+    BoxPts mBBox;
 
 protected:
 };
 
 
-inline SpatialNode::SpatialNode(){}
+inline SpatialNode::SpatialNode() {}
 
-inline SpatialNode::~SpatialNode(){}
+inline SpatialNode::~SpatialNode() {}
 
 
 #endif

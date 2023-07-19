@@ -46,11 +46,10 @@
 // Return:      N/A.
 //
 //==============================================================================
-ScroobyFileHandler::ScroobyFileHandler()
-{
+ScroobyFileHandler::ScroobyFileHandler() {
     mpCallback = NULL;
     mpUserData = NULL;
-    mcSectionName[ 0 ] = '\0';
+    mcSectionName[0] = '\0';
 }
 
 //==============================================================================
@@ -63,8 +62,7 @@ ScroobyFileHandler::ScroobyFileHandler()
 // Return:      N/A.
 //
 //==============================================================================
-ScroobyFileHandler::~ScroobyFileHandler()
-{
+ScroobyFileHandler::~ScroobyFileHandler() {
 }
 
 
@@ -81,26 +79,25 @@ ScroobyFileHandler::~ScroobyFileHandler()
 // Return:      None.
 //
 //==============================================================================
-void ScroobyFileHandler::LoadFile 
-(
-    const char* filename, 
-    FileHandler::LoadFileCallback* pCallback,
-    void* pUserData,
-    GameMemoryAllocator heap
-)
-{
-    rAssert( filename );
-    rAssert( pCallback );
+void ScroobyFileHandler::LoadFile
+        (
+                const char *filename,
+                FileHandler::LoadFileCallback *pCallback,
+                void *pUserData,
+                GameMemoryAllocator heap
+        ) {
+    rAssert(filename);
+    rAssert(pCallback);
 
     mpCallback = pCallback;
     mpUserData = pUserData;
 
-    HeapMgr()->PushHeap (GMA_PERSISTENT);
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
     // load scrooby project
-    Scrooby::App::GetInstance()->LoadProject( filename, this, mcSectionName, heap );
+    Scrooby::App::GetInstance()->LoadProject(filename, this, mcSectionName, heap);
 
-    HeapMgr()->PopHeap (GMA_PERSISTENT);
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
 
 
@@ -116,17 +113,16 @@ void ScroobyFileHandler::LoadFile
 // Return:      None.
 //
 //==============================================================================
-void ScroobyFileHandler::OnProjectLoadComplete( Scrooby::Project* pProject )
-{
-    rAssert( mpCallback );
+void ScroobyFileHandler::OnProjectLoadComplete(Scrooby::Project *pProject) {
+    rAssert(mpCallback);
 
     // notify GUI system that the project is loaded, and pass reference to
     // project using the first message parameter
     //
-    GetGuiSystem()->HandleMessage( GUI_MSG_PROJECT_LOAD_COMPLETE, (unsigned int)pProject );
+    GetGuiSystem()->HandleMessage(GUI_MSG_PROJECT_LOAD_COMPLETE, (unsigned int) pProject);
 
     // notify client that async loading is completed
-    mpCallback->OnLoadFileComplete( mpUserData );
+    mpCallback->OnLoadFileComplete(mpUserData);
 }
 
 
@@ -141,9 +137,8 @@ void ScroobyFileHandler::OnProjectLoadComplete( Scrooby::Project* pProject )
 // Return:      None.
 //
 //==============================================================================
-void ScroobyFileHandler::LoadFileSync( const char* filename )
-{
-    rAssertMsg( 0, "ERROR: Synchronous loading not supported by Scrooby!\n" );
+void ScroobyFileHandler::LoadFileSync(const char *filename) {
+    rAssertMsg(0, "ERROR: Synchronous loading not supported by Scrooby!\n");
 }
 
 //==============================================================================
@@ -157,11 +152,10 @@ void ScroobyFileHandler::LoadFileSync( const char* filename )
 // Return:      
 //
 //==============================================================================
-void ScroobyFileHandler::SetSectionName( const char* sectionName )
-{
-    rAssert( sectionName );
+void ScroobyFileHandler::SetSectionName(const char *sectionName) {
+    rAssert(sectionName);
 
-    strcpy( mcSectionName, sectionName );
+    strcpy(mcSectionName, sectionName);
 }
 
 //******************************************************************************

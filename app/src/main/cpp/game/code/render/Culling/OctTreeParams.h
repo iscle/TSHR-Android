@@ -11,20 +11,20 @@
 //    -All data necessary for which only a single instance is needed 
 //       for the persistence of an OctTree
 //
-class OctTreeParams
-{
+class OctTreeParams {
 public:
-   OctTreeParams();
-   ~OctTreeParams();
+    OctTreeParams();
 
-   //
-   // The lowest possible value boundary at which space can be divided 
-   //
-   float mSpaceGranularity;
-   //
-   // The extents of the world being bound by the OctTree (X,Y,Z)
-   //
-   rmt::Box3D  mBounds; 
+    ~OctTreeParams();
+
+    //
+    // The lowest possible value boundary at which space can be divided
+    //
+    float mSpaceGranularity;
+    //
+    // The extents of the world being bound by the OctTree (X,Y,Z)
+    //
+    rmt::Box3D mBounds;
 protected:
 };
 

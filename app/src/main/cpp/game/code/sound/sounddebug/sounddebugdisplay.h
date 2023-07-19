@@ -23,8 +23,7 @@
 //========================================
 class SoundDebugPage;
 
-namespace Sound
-{
+namespace Sound {
     class daSoundRenderingManager;
 }
 
@@ -35,50 +34,53 @@ namespace Sound
 //
 //=============================================================================
 
-class SoundDebugDisplay
-{
-    public:
-        SoundDebugDisplay( Sound::daSoundRenderingManager* renderMgr );
-        virtual ~SoundDebugDisplay();
+class SoundDebugDisplay {
+public:
+    SoundDebugDisplay(Sound::daSoundRenderingManager *renderMgr);
 
-        void Render();
+    virtual ~SoundDebugDisplay();
 
-        void RegisterPage( SoundDebugPage* page );
-        void DeregisterPage( SoundDebugPage* page );
+    void Render();
 
-        static const int MAX_DEBUG_PAGES = 5;
+    void RegisterPage(SoundDebugPage *page);
 
-        //
-        // Watcher tunables
-        //
-        static bool s_isVisible;
-        static int s_red;
-        static int s_green;
-        static int s_blue;
-        // Text position
-        static int s_leftOffset; 
-        static int s_topOffset;
-        // Displayed page
-        static unsigned int s_page;
-        static bool s_dumpToWindow;
-        // Name display radius
-        static float s_radius;
-        // Type info
-        static bool s_dumpTypeInfoToWindow;
+    void DeregisterPage(SoundDebugPage *page);
 
-    private:
-        //Prevent wasteful constructor creation.
-        SoundDebugDisplay( const SoundDebugDisplay& original );
-        SoundDebugDisplay& operator=( const SoundDebugDisplay& rhs );
+    static const int MAX_DEBUG_PAGES = 5;
 
-        void renderPositionAndHeapInfo( rmt::Vector* position );
-        void renderNearbyObjectNames( rmt::Vector* position );
+    //
+    // Watcher tunables
+    //
+    static bool s_isVisible;
+    static int s_red;
+    static int s_green;
+    static int s_blue;
+    // Text position
+    static int s_leftOffset;
+    static int s_topOffset;
+    // Displayed page
+    static unsigned int s_page;
+    static bool s_dumpToWindow;
+    // Name display radius
+    static float s_radius;
+    // Type info
+    static bool s_dumpTypeInfoToWindow;
 
-        void renderTextLine( const char* text, int leftPosn, int topPosn, tColour& colour );
+private:
+    //Prevent wasteful constructor creation.
+    SoundDebugDisplay(const SoundDebugDisplay &original);
 
-        SoundDebugPage* m_debugPages[MAX_DEBUG_PAGES];
+    SoundDebugDisplay &operator=(const SoundDebugDisplay &rhs);
 
-        Sound::daSoundRenderingManager* m_renderMgr;
+    void renderPositionAndHeapInfo(rmt::Vector *position);
+
+    void renderNearbyObjectNames(rmt::Vector *position);
+
+    void renderTextLine(const char *text, int leftPosn, int topPosn, tColour &colour);
+
+    SoundDebugPage *m_debugPages[MAX_DEBUG_PAGES];
+
+    Sound::daSoundRenderingManager *m_renderMgr;
 };
 
 

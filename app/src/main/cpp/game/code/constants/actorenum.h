@@ -17,10 +17,8 @@
 // Constants, Typedefs, and Macro Definitions (needed by external clients)
 //===========================================================================
 
-namespace ActorEnum
-{
-    enum FlyingActorStates
-    {
+namespace ActorEnum {
+    enum FlyingActorStates {
         eFadeIn = 0,
         eUnaggressive = 1,
         eTransitionToReadyToAttack = 2,

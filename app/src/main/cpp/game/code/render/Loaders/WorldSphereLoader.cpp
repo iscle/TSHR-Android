@@ -59,34 +59,34 @@
 //
 //========================================================================
 WorldSphereLoader::WorldSphereLoader() :
-tSimpleChunkHandler(SRR2::ChunkID::WORLD_SPHERE_DSG)
-{
+        tSimpleChunkHandler(SRR2::ChunkID::WORLD_SPHERE_DSG) {
 
-	mpCompDLoader = new(GMA_PERSISTENT) tCompositeDrawableLoader;
-	mpCompDLoader->AddRef();
+    mpCompDLoader = new(GMA_PERSISTENT) tCompositeDrawableLoader;
+    mpCompDLoader->AddRef();
 
-    mpMCLoader    = new(GMA_PERSISTENT) tMultiControllerLoader;
+    mpMCLoader = new(GMA_PERSISTENT) tMultiControllerLoader;
     mpMCLoader->AddRef();
 
-    mpBillBoardQuadLoader = new (GMA_PERSISTENT) tBillboardQuadGroupLoader;
-	mpBillBoardQuadLoader->AddRef();
+    mpBillBoardQuadLoader = new(GMA_PERSISTENT) tBillboardQuadGroupLoader;
+    mpBillBoardQuadLoader->AddRef();
 
-	mpAnimLoader = new (GMA_PERSISTENT) tAnimationLoader;
-	mpAnimLoader->AddRef();
+    mpAnimLoader = new(GMA_PERSISTENT) tAnimationLoader;
+    mpAnimLoader->AddRef();
 
-	mpSkelLoader = new (GMA_PERSISTENT) tSkeletonLoader;
-	mpSkelLoader->AddRef();
+    mpSkelLoader = new(GMA_PERSISTENT) tSkeletonLoader;
+    mpSkelLoader->AddRef();
 
-	mpFCLoader = new (GMA_PERSISTENT) tFrameControllerLoader;
-	mpFCLoader->AddRef();
+    mpFCLoader = new(GMA_PERSISTENT) tFrameControllerLoader;
+    mpFCLoader->AddRef();
 
-	mpLensFlareLoader = new (GMA_PERSISTENT) LensFlareLoader;
-	mpLensFlareLoader->AddRef();
+    mpLensFlareLoader = new(GMA_PERSISTENT) LensFlareLoader;
+    mpLensFlareLoader->AddRef();
 
 
-    mpListenerCB  = NULL;
-    mUserData     = -1;
+    mpListenerCB = NULL;
+    mUserData = -1;
 }
+
 //========================================================================
 // WorldSphereLoader::
 //========================================================================
@@ -100,17 +100,17 @@ tSimpleChunkHandler(SRR2::ChunkID::WORLD_SPHERE_DSG)
 // Constraints: None.
 //
 //========================================================================
-WorldSphereLoader::~WorldSphereLoader()
-{
-	mpCompDLoader->Release();
+WorldSphereLoader::~WorldSphereLoader() {
+    mpCompDLoader->Release();
     mpMCLoader->Release();
-	mpBillBoardQuadLoader->Release();
+    mpBillBoardQuadLoader->Release();
 
-	mpAnimLoader->Release();
-	mpSkelLoader->Release();
-	mpFCLoader->Release();
-	mpLensFlareLoader->Release();
+    mpAnimLoader->Release();
+    mpSkelLoader->Release();
+    mpFCLoader->Release();
+    mpLensFlareLoader->Release();
 }
+
 ///////////////////////////////////////////////////////////////////////
 // tSimpleChunkHandler
 ///////////////////////////////////////////////////////////////////////
@@ -127,9 +127,8 @@ WorldSphereLoader::~WorldSphereLoader()
 // Constraints: None.
 //
 //========================================================================
-tEntity* WorldSphereLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
-    IEntityDSG::msDeletionsSafe=true;
+tEntity *WorldSphereLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
+    IEntityDSG::msDeletionsSafe = true;
     char name[255];
     f->GetPString(name);
 
@@ -138,86 +137,83 @@ tEntity* WorldSphereLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     WorldSphereDSG *pWorldSphereDSG = new WorldSphereDSG;
     pWorldSphereDSG->SetName(name);
 
-    tMultiController* pMC = NULL;
+    tMultiController *pMC = NULL;
 
     pWorldSphereDSG->SetNumMeshes(f->GetLong());
 
-	pWorldSphereDSG->SetNumBillBoardQuadGroups( f->GetLong() );
+    pWorldSphereDSG->SetNumBillBoardQuadGroups(f->GetLong());
 
-    while(f->ChunksRemaining())
-    {      
+    while (f->ChunksRemaining()) {
         f->BeginChunk();
-		int id = f->GetCurrentID();
-        switch(f->GetCurrentID())
-        {
-            case Pure3D::Mesh::MESH:
-            {
-                GeometryWrappedLoader* pGeoLoader = (GeometryWrappedLoader*)AllWrappers::GetInstance()->mpLoader(AllWrappers::msGeometry) ;
-                tGeometry* pGeo = (tGeometry*)pGeoLoader->LoadObject(f, store);
-				store->Store( pGeo );
+        int id = f->GetCurrentID();
+        switch (f->GetCurrentID()) {
+            case Pure3D::Mesh::MESH: {
+                GeometryWrappedLoader *pGeoLoader = (GeometryWrappedLoader *) AllWrappers::GetInstance()->mpLoader(
+                        AllWrappers::msGeometry);
+                tGeometry *pGeo = (tGeometry *) pGeoLoader->LoadObject(f, store);
+                store->Store(pGeo);
                 pWorldSphereDSG->AddMesh(pGeo);
                 break;
             }
-			case P3D_COMPOSITE_DRAWABLE:
-			{
-				tCompositeDrawable* pCompDraw = static_cast<tCompositeDrawable*>( mpCompDLoader->LoadObject( f, store ) );
-				pWorldSphereDSG->SetCompositeDrawable( pCompDraw );	
-				store->Store( pCompDraw );				
-			}
-			break;
-			case P3D_SKELETON:
-				{
-				tSkeleton* pSkeleton = static_cast<tSkeleton*>(mpSkelLoader->LoadObject( f, store ));
-				rAssert( pSkeleton != NULL );
-				store->Store( pSkeleton );
+            case P3D_COMPOSITE_DRAWABLE: {
+                tCompositeDrawable *pCompDraw = static_cast<tCompositeDrawable *>(mpCompDLoader->LoadObject(
+                        f, store));
+                pWorldSphereDSG->SetCompositeDrawable(pCompDraw);
+                store->Store(pCompDraw);
+            }
+                break;
+            case P3D_SKELETON: {
+                tSkeleton *pSkeleton = static_cast<tSkeleton *>(mpSkelLoader->LoadObject(f, store));
+                rAssert(pSkeleton != NULL);
+                store->Store(pSkeleton);
 
-				break;
-				}     
-			case SRR2::ChunkID::LENS_FLARE_DSG:
-				{
-				LensFlareDSG* pLensFlare = static_cast<LensFlareDSG*>(mpLensFlareLoader->LoadObject( f, store ));
-				pWorldSphereDSG->SetFlare( pLensFlare );
-				store->Store( pLensFlare );
-				}
-				break;
-			case Pure3D::Animation::AnimationData::ANIMATION:
-				{
-				tAnimation* pAnimation = static_cast<tAnimation*>(mpAnimLoader->LoadObject( f, store ));
-				rAssert( pAnimation != NULL );
-				store->Store( pAnimation );				
-				break;
-				}
-			case Pure3D::Animation::FrameControllerData::FRAME_CONTROLLER:
-				{
-				tFrameController* pFC = static_cast<tFrameController*>(mpFCLoader->LoadObject( f, store ) );
-				pFC->SetCycleMode( FORCE_CYCLIC );
-				rAssert( pFC != NULL );
-				store->Store( pFC );
-				}
-				break;
-            case P3D_MULTI_CONTROLLER:
-            {
-                pMC = static_cast<tMultiController*>(mpMCLoader->LoadObject(f,store));
-				rAssert( pMC != NULL );
-				pWorldSphereDSG->SetMultiController(pMC);
-
-				store->Store( pMC );	
                 break;
             }
-			case Pure3D::BillboardObject::QUAD_GROUP:
-			{
+            case SRR2::ChunkID::LENS_FLARE_DSG: {
+                LensFlareDSG *pLensFlare = static_cast<LensFlareDSG *>(mpLensFlareLoader->LoadObject(
+                        f, store));
+                pWorldSphereDSG->SetFlare(pLensFlare);
+                store->Store(pLensFlare);
+            }
+                break;
+            case Pure3D::Animation::AnimationData::ANIMATION: {
+                tAnimation *pAnimation = static_cast<tAnimation *>(mpAnimLoader->LoadObject(f,
+                                                                                            store));
+                rAssert(pAnimation != NULL);
+                store->Store(pAnimation);
+                break;
+            }
+            case Pure3D::Animation::FrameControllerData::FRAME_CONTROLLER: {
+                tFrameController *pFC = static_cast<tFrameController *>(mpFCLoader->LoadObject(f,
+                                                                                               store));
+                pFC->SetCycleMode(FORCE_CYCLIC);
+                rAssert(pFC != NULL);
+                store->Store(pFC);
+            }
+                break;
+            case P3D_MULTI_CONTROLLER: {
+                pMC = static_cast<tMultiController *>(mpMCLoader->LoadObject(f, store));
+                rAssert(pMC != NULL);
+                pWorldSphereDSG->SetMultiController(pMC);
 
-				BillboardWrappedLoader::OverrideLoader( true );
-                BillboardWrappedLoader* pBBQLoader = static_cast<BillboardWrappedLoader*>(AllWrappers::GetInstance()->mpLoader(AllWrappers::msBillboard));
+                store->Store(pMC);
+                break;
+            }
+            case Pure3D::BillboardObject::QUAD_GROUP: {
 
-                tBillboardQuadGroup* pGroup = static_cast<tBillboardQuadGroup*>( pBBQLoader->LoadObject(f, store) );
-				rAssert( pGroup != NULL );
-				pWorldSphereDSG->AddBillBoardQuadGroup( pGroup );
-				store->Store( pGroup );	
-				BillboardWrappedLoader::OverrideLoader( false );
-				
-				break;
-			}
+                BillboardWrappedLoader::OverrideLoader(true);
+                BillboardWrappedLoader *pBBQLoader = static_cast<BillboardWrappedLoader *>(AllWrappers::GetInstance()->mpLoader(
+                        AllWrappers::msBillboard));
+
+                tBillboardQuadGroup *pGroup = static_cast<tBillboardQuadGroup *>(pBBQLoader->LoadObject(
+                        f, store));
+                rAssert(pGroup != NULL);
+                pWorldSphereDSG->AddBillBoardQuadGroup(pGroup);
+                store->Store(pGroup);
+                BillboardWrappedLoader::OverrideLoader(false);
+
+                break;
+            }
 
             default:
                 break;
@@ -225,13 +221,14 @@ tEntity* WorldSphereLoader::LoadObject(tChunkFile* f, tEntityStore* store)
         f->EndChunk();
     } // while
 
-	LensFlareDSG* pFlare = NULL;
+    LensFlareDSG *pFlare = NULL;
 
 
-    mpListenerCB->OnChunkLoaded( pWorldSphereDSG, mUserData, _id );
-    IEntityDSG::msDeletionsSafe=false;
+    mpListenerCB->OnChunkLoaded(pWorldSphereDSG, mUserData, _id);
+    IEntityDSG::msDeletionsSafe = false;
     return pWorldSphereDSG;
 }
+
 ///////////////////////////////////////////////////////////////////////
 // IWrappedLoader
 ///////////////////////////////////////////////////////////////////////
@@ -251,21 +248,19 @@ tEntity* WorldSphereLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 //
 //========================================================================
 void WorldSphereLoader::SetRegdListener
-(
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
-   //
-   // Follow protocol; notify old Listener, that it has been 
-   // "disconnected".
-   //
-   if( mpListenerCB != NULL )
-   {
-      mpListenerCB->OnChunkLoaded( NULL, iUserData, 0 );
-   }
-   mpListenerCB  = pListenerCB;
-   mUserData     = iUserData;
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
+    //
+    // Follow protocol; notify old Listener, that it has been
+    // "disconnected".
+    //
+    if (mpListenerCB != NULL) {
+        mpListenerCB->OnChunkLoaded(NULL, iUserData, 0);
+    }
+    mpListenerCB = pListenerCB;
+    mUserData = iUserData;
 }
 
 //========================================================================
@@ -282,19 +277,18 @@ void WorldSphereLoader::SetRegdListener
 //
 //========================================================================
 void WorldSphereLoader::ModRegdListener
-( 
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
 #if 0
-   char DebugBuf[255];
-   sprintf( DebugBuf, "WorldSphereLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB );
-   rDebugString( DebugBuf );
+    char DebugBuf[255];
+    sprintf(DebugBuf, "WorldSphereLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB);
+    rDebugString(DebugBuf);
 #endif
-   rAssert( pListenerCB == mpListenerCB );
+    rAssert(pListenerCB == mpListenerCB);
 
-   mUserData = iUserData;
+    mUserData = iUserData;
 }
 //************************************************************************
 //

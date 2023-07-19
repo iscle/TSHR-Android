@@ -29,52 +29,53 @@
 //
 //=============================================================================
 class P3DFileHandler : public tLoadRequest::Callback,
-					   public FileHandler
-                       
-{
-    public:
+                       public FileHandler {
+public:
 
-        P3DFileHandler();
-        virtual ~P3DFileHandler();
+    P3DFileHandler();
 
-        //
-        // Implement FileHandler interface.
-        //
-        virtual void LoadFile( const char* filename, 
-                               FileHandler::LoadFileCallback* pCallback,
-                               void* pUserData,
-                               GameMemoryAllocator heap );
-        
-        virtual void LoadFileSync( const char* filename );
+    virtual ~P3DFileHandler();
 
-        //
-        // Implement tLoadRequest::Callback interface.
-        //
-        virtual void Done( tLoadStatus status, tLoadRequest *load );
-        virtual void AddRef( void )
-        {
-			radLoadObject::AddRef();
-        }
-		virtual void Release( void )
-        {
-			radLoadObject::Release();
-        }  
+    //
+    // Implement FileHandler interface.
+    //
+    virtual void LoadFile(const char *filename,
+                          FileHandler::LoadFileCallback *pCallback,
+                          void *pUserData,
+                          GameMemoryAllocator heap);
 
-        //
-        // Specify which P3D inventory section to load the file into.
-        //
-        void SetSectionName( const char* sectionName );
-        const char* GetSectionName() { return( mcSectionName ); }
+    virtual void LoadFileSync(const char *filename);
 
-    private:
-  
-        // Prevent wasteful constructor creation.
-        P3DFileHandler( const P3DFileHandler& p3dfilehandler );
-        P3DFileHandler& operator=( const P3DFileHandler& p3dfilehandler );
+    //
+    // Implement tLoadRequest::Callback interface.
+    //
+    virtual void Done(tLoadStatus status, tLoadRequest *load);
 
-        char mcSectionName[32];
-        void* mpUserData;
-        int m_RefCount;
+    virtual void AddRef(void) {
+        radLoadObject::AddRef();
+    }
+
+    virtual void Release(void) {
+        radLoadObject::Release();
+    }
+
+    //
+    // Specify which P3D inventory section to load the file into.
+    //
+    void SetSectionName(const char *sectionName);
+
+    const char *GetSectionName() { return (mcSectionName); }
+
+private:
+
+    // Prevent wasteful constructor creation.
+    P3DFileHandler(const P3DFileHandler &p3dfilehandler);
+
+    P3DFileHandler &operator=(const P3DFileHandler &p3dfilehandler);
+
+    char mcSectionName[32];
+    void *mpUserData;
+    int m_RefCount;
 };
 
 

@@ -49,11 +49,11 @@
 //
 //========================================================================
 TreeDSGLoader::TreeDSGLoader() :
-tSimpleChunkHandler(SRR2::ChunkID::TREE_DSG)
-{
-   mpListenerCB  = NULL;
-   mUserData     = -1;
+        tSimpleChunkHandler(SRR2::ChunkID::TREE_DSG) {
+    mpListenerCB = NULL;
+    mUserData = -1;
 }
+
 ///////////////////////////////////////////////////////////////////////
 // tSimpleChunkHandler
 ///////////////////////////////////////////////////////////////////////
@@ -70,32 +70,28 @@ tSimpleChunkHandler(SRR2::ChunkID::TREE_DSG)
 // Constraints: None.
 //
 //========================================================================
-tEntity* TreeDSGLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
-    IEntityDSG::msDeletionsSafe=true;
+tEntity *TreeDSGLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
+    IEntityDSG::msDeletionsSafe = true;
     int nNodes = f->GetLong();
-    
+
     Bounds3f bounds;
 
     f->GetData(&bounds.mMin, 3, tFile::DWORD);
     f->GetData(&bounds.mMax, 3, tFile::DWORD);
 
-    SpatialTree* pSpatialTree = new SpatialTree;
+    SpatialTree *pSpatialTree = new SpatialTree;
 
-    pSpatialTree->SetTo(nNodes,bounds);
+    pSpatialTree->SetTo(nNodes, bounds);
 
-    ContiguousBinNode< SpatialNode >* pCurNode=pSpatialTree->GetRoot();
-    for(int i=0 ; 
-        f->ChunksRemaining(); 
-        i++, pCurNode++)
-    {
-        rAssert(i<nNodes);
+    ContiguousBinNode <SpatialNode> *pCurNode = pSpatialTree->GetRoot();
+    for (int i = 0;
+         f->ChunksRemaining();
+         i++, pCurNode++) {
+        rAssert(i < nNodes);
 
         f->BeginChunk();
-        switch(f->GetCurrentID())
-        {
-            case SRR2::ChunkID::CONTIGUOUS_BIN_NODE:
-            {
+        switch (f->GetCurrentID()) {
+            case SRR2::ChunkID::CONTIGUOUS_BIN_NODE: {
                 pCurNode->SetSubTreeSize(f->GetLong());
                 pCurNode->LinkParent(f->GetLong());
                 f->BeginChunk();
@@ -103,29 +99,28 @@ tEntity* TreeDSGLoader::LoadObject(tChunkFile* f, tEntityStore* store)
                 // WET PAINT Do not Touch!! Talk to Devin first.
                 // Violation leads to the Tree of Woe
                 //////////////////////////////////////////////////////////////////////////                
-                    pCurNode->mData.mSubDivPlane.mAxis         = f->GetChar(); 
-                    pCurNode->mData.mSubDivPlane.mPosn         = f->GetFloat(); 
-		            pCurNode->mData.mSEntityElems.mUseSize     = f->GetLong();	
-                    pCurNode->mData.mSPhysElems.mUseSize       = f->GetLong(); 
-                    pCurNode->mData.mIntersectElems.mUseSize   = f->GetLong(); 
-                    pCurNode->mData.mDPhysElems.mUseSize       = f->GetLong(); 
-                    pCurNode->mData.mFenceElems.mUseSize       = f->GetLong(); 
-                    pCurNode->mData.mRoadSegmentElems.mUseSize = f->GetLong(); 
-					pCurNode->mData.mPathSegmentElems.mUseSize = f->GetLong(); 
-                    pCurNode->mData.mAnimElems.mUseSize        = f->GetLong()+1;
-                    pCurNode->mData.mAnimCollElems.mUseSize    = 1; 
+                pCurNode->mData.mSubDivPlane.mAxis = f->GetChar();
+                pCurNode->mData.mSubDivPlane.mPosn = f->GetFloat();
+                pCurNode->mData.mSEntityElems.mUseSize = f->GetLong();
+                pCurNode->mData.mSPhysElems.mUseSize = f->GetLong();
+                pCurNode->mData.mIntersectElems.mUseSize = f->GetLong();
+                pCurNode->mData.mDPhysElems.mUseSize = f->GetLong();
+                pCurNode->mData.mFenceElems.mUseSize = f->GetLong();
+                pCurNode->mData.mRoadSegmentElems.mUseSize = f->GetLong();
+                pCurNode->mData.mPathSegmentElems.mUseSize = f->GetLong();
+                pCurNode->mData.mAnimElems.mUseSize = f->GetLong() + 1;
+                pCurNode->mData.mAnimCollElems.mUseSize = 1;
                 f->EndChunk();
 
-                if(pCurNode->IsRoot())
-                {
-                //////////////////////////////////////////////////////////////////////////
-                // WET PAINT Do not Touch!! Talk to Devin first.
-                // Violation leads to the Tree of Woe
-                //////////////////////////////////////////////////////////////////////////
-                    pCurNode->mData.mSEntityElems.mUseSize  += 100;
-                    pCurNode->mData.mDPhysElems.mUseSize    += 10;
+                if (pCurNode->IsRoot()) {
+                    //////////////////////////////////////////////////////////////////////////
+                    // WET PAINT Do not Touch!! Talk to Devin first.
+                    // Violation leads to the Tree of Woe
+                    //////////////////////////////////////////////////////////////////////////
+                    pCurNode->mData.mSEntityElems.mUseSize += 100;
+                    pCurNode->mData.mDPhysElems.mUseSize += 10;
                     pCurNode->mData.mAnimCollElems.mUseSize += 50;
-                    pCurNode->mData.mAnimElems.mUseSize     += 60;
+                    pCurNode->mData.mAnimElems.mUseSize += 60;
                 }
 
                 break;
@@ -136,12 +131,13 @@ tEntity* TreeDSGLoader::LoadObject(tChunkFile* f, tEntityStore* store)
                 break;
         } // switch
         f->EndChunk();
-    } 
+    }
 
-    mpListenerCB->OnChunkLoaded( pSpatialTree, mUserData, _id );
-    IEntityDSG::msDeletionsSafe=false;
+    mpListenerCB->OnChunkLoaded(pSpatialTree, mUserData, _id);
+    IEntityDSG::msDeletionsSafe = false;
     return NULL; //Screw you inventory! pSpatialTree;
 }
+
 ///////////////////////////////////////////////////////////////////////
 // IWrappedLoader
 ///////////////////////////////////////////////////////////////////////
@@ -161,21 +157,19 @@ tEntity* TreeDSGLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 //
 //========================================================================
 void TreeDSGLoader::SetRegdListener
-(
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
-   //
-   // Follow protocol; notify old Listener, that it has been 
-   // "disconnected".
-   //
-   if( mpListenerCB != NULL )
-   {
-      mpListenerCB->OnChunkLoaded( NULL, iUserData, 0 );
-   }
-   mpListenerCB  = pListenerCB;
-   mUserData     = iUserData;
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
+    //
+    // Follow protocol; notify old Listener, that it has been
+    // "disconnected".
+    //
+    if (mpListenerCB != NULL) {
+        mpListenerCB->OnChunkLoaded(NULL, iUserData, 0);
+    }
+    mpListenerCB = pListenerCB;
+    mUserData = iUserData;
 }
 
 //========================================================================
@@ -192,19 +186,18 @@ void TreeDSGLoader::SetRegdListener
 //
 //========================================================================
 void TreeDSGLoader::ModRegdListener
-( 
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
 #if 0
-   char DebugBuf[255];
-   sprintf( DebugBuf, "TreeDSGLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB );
-   rDebugString( DebugBuf );
+    char DebugBuf[255];
+    sprintf(DebugBuf, "TreeDSGLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB);
+    rDebugString(DebugBuf);
 #endif
-   rAssert( pListenerCB == mpListenerCB );
+    rAssert(pListenerCB == mpListenerCB);
 
-   mUserData = iUserData;
+    mUserData = iUserData;
 }
 //************************************************************************
 //

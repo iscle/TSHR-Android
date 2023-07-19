@@ -29,7 +29,7 @@
 //
 // Static pointer to instance of this singleton.
 //
-SuperCamManager* SuperCamManager::mspInstance = NULL;
+SuperCamManager *SuperCamManager::mspInstance = NULL;
 
 //************************************************************************
 //
@@ -50,14 +50,12 @@ SuperCamManager* SuperCamManager::mspInstance = NULL;
 // Constraints: None.
 //
 //========================================================================
-SuperCamManager* SuperCamManager::CreateInstance()
-{
-   if (mspInstance == NULL)
-   {
-       mspInstance = new(GMA_PERSISTENT) SuperCamManager;
-   }
+SuperCamManager *SuperCamManager::CreateInstance() {
+    if (mspInstance == NULL) {
+        mspInstance = new(GMA_PERSISTENT) SuperCamManager;
+    }
 
-   return mspInstance;
+    return mspInstance;
 }
 
 //========================================================================
@@ -73,9 +71,8 @@ SuperCamManager* SuperCamManager::CreateInstance()
 // Constraints: None.
 //
 //========================================================================
-SuperCamManager* SuperCamManager::GetInstance()
-{
-   return mspInstance;
+SuperCamManager *SuperCamManager::GetInstance() {
+    return mspInstance;
 }
 
 //========================================================================
@@ -91,10 +88,9 @@ SuperCamManager* SuperCamManager::GetInstance()
 // Constraints: None.
 //
 //========================================================================
-void  SuperCamManager::DestroyInstance()
-{
-   rAssert(mspInstance != NULL);
-   delete mspInstance;
+void SuperCamManager::DestroyInstance() {
+    rAssert(mspInstance != NULL);
+    delete mspInstance;
 }
 
 //=============================================================================
@@ -102,17 +98,15 @@ void  SuperCamManager::DestroyInstance()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool shutdown )
+// Parameters:  (bool shutdown)
 // 
 // Return:      void 
 //
 //=============================================================================
-void SuperCamManager::Init( bool shutdown )
-{
+void SuperCamManager::Init(bool shutdown) {
     int i;
-    for ( i = 0; i < MAX_PLAYERS; ++i )
-    {
-        mSCCs[ i ].Init( shutdown ); 
+    for (i = 0; i < MAX_PLAYERS; ++i) {
+        mSCCs[i].Init(shutdown);
     }
 }
 
@@ -130,9 +124,9 @@ void SuperCamManager::Init( bool shutdown )
 //
 //========================================================================
 /*
-SuperCamCentral& SuperCamManager::GetSCC( int iPlayer )
+SuperCamCentral& SuperCamManager::GetSCC(int iPlayer)
 {
-   rAssert( iPlayer < MAX_PLAYERS && iPlayer >= 0 );
+   rAssert(iPlayer <MAX_PLAYERS && iPlayer>= 0);
    return mSCCs[iPlayer];
 }
 */
@@ -147,14 +141,10 @@ SuperCamCentral& SuperCamManager::GetSCC( int iPlayer )
 // Return:      SuperCamCentral
 //
 //=============================================================================
-SuperCamCentral* SuperCamManager::GetSCC(int iPlayer)
-{
-    if(iPlayer < MAX_PLAYERS && iPlayer >= 0)
-    {
+SuperCamCentral *SuperCamManager::GetSCC(int iPlayer) {
+    if (iPlayer < MAX_PLAYERS && iPlayer >= 0) {
         return &(mSCCs[iPlayer]);
-    }
-    else
-    {
+    } else {
         return 0;
     }
 }
@@ -170,10 +160,9 @@ SuperCamCentral* SuperCamManager::GetSCC(int iPlayer)
 // Return:      void 
 //
 //=============================================================================
-void SuperCamManager::PreCollisionPrep()
-{
+void SuperCamManager::PreCollisionPrep() {
 //    int i;
-//    for( i = 0; i < MAX_PLAYERS; ++i )
+//    for(i = 0; i <MAX_PLAYERS; ++i)
 //    {
 //       mSCCs[i].PreCollisionPrep();
 //    }
@@ -196,20 +185,19 @@ void SuperCamManager::PreCollisionPrep()
 // Constraints: None.
 //
 //========================================================================
-void SuperCamManager::Update( unsigned int iElapsedTime, bool isFirstSubstep )
-{
+void SuperCamManager::Update(unsigned int iElapsedTime, bool isFirstSubstep) {
 //    int i;
 
     //TODO: This should get setup when going into the game.  Also, 
     //it should only initialize the number of players equal to the number
     //playing.
-//    for( i = 0; i < MAX_PLAYERS; ++i )
+//    for(i = 0; i <MAX_PLAYERS; ++i)
 //    {
 //       mSCCs[i].Update(iElapsedTime);
 //    }
 
     //We're not doing multiple views, so there!
-    mSCCs[ 0 ].Update( iElapsedTime, isFirstSubstep );
+    mSCCs[0].Update(iElapsedTime, isFirstSubstep);
 }
 
 //=============================================================================
@@ -222,14 +210,13 @@ void SuperCamManager::Update( unsigned int iElapsedTime, bool isFirstSubstep )
 // Return:      void 
 //
 //=============================================================================
-void SuperCamManager::SubmitStatics()
-{
+void SuperCamManager::SubmitStatics() {
 //    int i;    
 
-//    for(i = 0; i < GetGameplayManager()->GetNumPlayers(); i++)
+//    for(i = 0; i <GetGameplayManager()->GetNumPlayers(); i++)
 //    {
-        // TODO - should probably be a more robust way to tell which of these
-        // is active    
+    // TODO - should probably be a more robust way to tell which of these
+    // is active
 //        mSCCs[i].SubmitStatics();        
 //    }
     //We're not doing multiple views, so there!
@@ -241,17 +228,15 @@ void SuperCamManager::SubmitStatics()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int controllerID )
+// Parameters:  (int controllerID)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamManager::ToggleFirstPerson( int controllerID )
-{
+void SuperCamManager::ToggleFirstPerson(int controllerID) {
     int i;
-    for ( i = 0; i < GetGameplayManager()->GetNumPlayers(); ++i )
-    {
-        mSCCs[i].ToggleFirstPerson( controllerID );
+    for (i = 0; i < GetGameplayManager()->GetNumPlayers(); ++i) {
+        mSCCs[i].ToggleFirstPerson(controllerID);
     }
 }
 
@@ -280,8 +265,7 @@ void SuperCamManager::ToggleFirstPerson( int controllerID )
 // Constraints: None.
 //
 //========================================================================
-SuperCamManager::SuperCamManager()
-{
+SuperCamManager::SuperCamManager() {
 }
 
 //========================================================================
@@ -297,6 +281,5 @@ SuperCamManager::SuperCamManager()
 // Constraints: None.
 //
 //========================================================================
-SuperCamManager::~SuperCamManager()
-{
+SuperCamManager::~SuperCamManager() {
 }

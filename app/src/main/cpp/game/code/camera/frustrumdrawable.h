@@ -32,46 +32,48 @@
 //
 //=============================================================================
 
-class FrustrumDrawable : public tDrawable
-{
+class FrustrumDrawable : public tDrawable {
 public:
-    FrustrumDrawable() : mEnable( false ), mSphereScale( 1.0f ), mSuperCam( NULL ) {};
+    FrustrumDrawable() : mEnable(false), mSphereScale(1.0f), mSuperCam(NULL) {};
+
     virtual ~FrustrumDrawable() {};
 
     void Display();
 
-    void SetPoints( rmt::Vector collPos,
-                    rmt::Vector position, 
-                    rmt::Vector p0, 
-                    rmt::Vector p1, 
-                    rmt::Vector p2, 
-                    rmt::Vector p3 );
+    void SetPoints(rmt::Vector collPos,
+                   rmt::Vector position,
+                   rmt::Vector p0,
+                   rmt::Vector p1,
+                   rmt::Vector p2,
+                   rmt::Vector p3);
 
-    void SetColour( tColour colour );
+    void SetColour(tColour colour);
 
     void Enable() { mEnable = true; };
+
     void Disable() { mEnable = false; };
 
-    void SetScale( float scale ) { mSphereScale = scale; };
+    void SetScale(float scale) { mSphereScale = scale; };
 
-    void SetSuperCam( const SuperCam* cam ) { mSuperCam = cam; };
+    void SetSuperCam(const SuperCam *cam) { mSuperCam = cam; };
 
 private:
     rmt::Vector mColPos;
     rmt::Vector mPosition;
-    rmt::Vector mPoints[ 4 ];
+    rmt::Vector mPoints[4];
 
     tColour mColour;
 
-    bool mEnable : 1;
+    bool mEnable: 1;
 
     float mSphereScale;
 
-    const SuperCam* mSuperCam;
+    const SuperCam *mSuperCam;
 
     //Prevent wasteful constructor creation.
-    FrustrumDrawable( const FrustrumDrawable& frustrumdrawable );
-    FrustrumDrawable& operator=( const FrustrumDrawable& frustrumdrawable );
+    FrustrumDrawable(const FrustrumDrawable &frustrumdrawable);
+
+    FrustrumDrawable &operator=(const FrustrumDrawable &frustrumdrawable);
 };
 
 
@@ -91,15 +93,12 @@ private:
 // Return:      inline 
 //
 //=============================================================================
-inline void FrustrumDrawable::Display()
-{
-    if ( mEnable )
-    {
-        pddiPrimStream* stream;
-    
+inline void FrustrumDrawable::Display() {
+    if (mEnable) {
+        pddiPrimStream *stream;
+
         unsigned int i;
-        for ( i = 0; i < 4; ++i )
-        {
+        for (i = 0; i < 4; ++i) {
             stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINES, PDDI_V_C, 2);
             stream->Colour(mColour);
             stream->Coord(mPosition.x, mPosition.y, mPosition.z);
@@ -110,15 +109,14 @@ inline void FrustrumDrawable::Display()
 
         rmt::Vector circlePos = mColPos;
 
-        tShader* shader = new tShader("simple");
+        tShader *shader = new tShader("simple");
         shader->AddRef();
 
-        #ifndef RAD_RELEASE
-            P3DDrawSphere( mSphereScale, circlePos, *shader, tColour( 255, 0, 0 ) );
-        #endif
+#ifndef RAD_RELEASE
+        P3DDrawSphere(mSphereScale, circlePos, *shader, tColour(255, 0, 0));
+#endif
 
-        if ( mSuperCam )
-        {
+        if (mSuperCam) {
             mSuperCam->Display();
         }
 
@@ -131,30 +129,29 @@ inline void FrustrumDrawable::Display()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector collPos,
+// Parameters:  (rmt::Vector collPos,
 //                rmt::Vector position, 
 //                rmt::Vector p0, 
 //                rmt::Vector p1, 
 //                rmt::Vector p2, 
-//                rmt::Vector p3 )
+//                rmt::Vector p3)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void FrustrumDrawable::SetPoints( rmt::Vector collPos,
-                                         rmt::Vector position, 
-                                         rmt::Vector p0, 
-                                         rmt::Vector p1, 
-                                         rmt::Vector p2, 
-                                         rmt::Vector p3 )
-{
+inline void FrustrumDrawable::SetPoints(rmt::Vector collPos,
+                                        rmt::Vector position,
+                                        rmt::Vector p0,
+                                        rmt::Vector p1,
+                                        rmt::Vector p2,
+                                        rmt::Vector p3) {
     mColPos = collPos;
     mPosition = position;
 
-    mPoints[ 0 ] = p0;
-    mPoints[ 1 ] = p1;
-    mPoints[ 2 ] = p2;
-    mPoints[ 3 ] = p3;
+    mPoints[0] = p0;
+    mPoints[1] = p1;
+    mPoints[2] = p2;
+    mPoints[3] = p3;
 }
 
 //=============================================================================
@@ -162,13 +159,12 @@ inline void FrustrumDrawable::SetPoints( rmt::Vector collPos,
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( tColour colour )
+// Parameters:  (tColour colour)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void FrustrumDrawable::SetColour( tColour colour )
-{
+inline void FrustrumDrawable::SetColour(tColour colour) {
     mColour = colour;
 }
 

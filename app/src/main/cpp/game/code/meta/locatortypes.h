@@ -3,10 +3,8 @@
 
 //HEY, when you add a new type, make sure to add a string for it's name too!!!
 
-namespace LocatorType
-{
-    enum Type
-    {
+namespace LocatorType {
+    enum Type {
         EVENT,
         SCRIPT,
         GENERIC,
@@ -23,29 +21,29 @@ namespace LocatorType
         PED_GROUP,
         COIN,
         SPAWN_POINT,
-        
+
         NUM_TYPES
     };
 
-    const char* const Name[NUM_TYPES] = 
-    {
-        "Event",
-        "Script",
-        "Generic",
-        "Car Start",
-        "Spline",
-        "Dynamic Zone",
-        "Occlusion",
-        "Interior Entrance",
-        "Directional",
-        "Action",
-        "FOV",
-        "Breakable Camera",
-        "Static Camera",
-        "Ped Group",
-        "Coin",
-        "Spawn Point"
-    };
+    const char *const Name[NUM_TYPES] =
+            {
+                    "Event",
+                    "Script",
+                    "Generic",
+                    "Car Start",
+                    "Spline",
+                    "Dynamic Zone",
+                    "Occlusion",
+                    "Interior Entrance",
+                    "Directional",
+                    "Action",
+                    "FOV",
+                    "Breakable Camera",
+                    "Static Camera",
+                    "Ped Group",
+                    "Coin",
+                    "Spawn Point"
+            };
 }
 
 #endif

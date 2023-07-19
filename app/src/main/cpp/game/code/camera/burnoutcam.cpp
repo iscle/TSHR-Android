@@ -58,13 +58,12 @@ float BURNOUT_CAM_DIST = 0.1f;
 //
 //==============================================================================
 BurnoutCam::BurnoutCam() :
-    mRotation( -1.061069f ), //Along the side
-    mElevation( 1.29794f ),
-    mMagnitude( 5.7266f )
-{
+        mRotation(-1.061069f), //Along the side
+        mElevation(1.29794f),
+        mMagnitude(5.7266f) {
     mIm = InputManager::GetInstance();
 
-    mTargetOffset.Set( 0.0f, 0.0f, 0.0f );
+    mTargetOffset.Set(0.0f, 0.0f, 0.0f);
 }
 
 //==============================================================================
@@ -77,8 +76,7 @@ BurnoutCam::BurnoutCam() :
 // Return:      N/A.
 //
 //==============================================================================
-BurnoutCam::~BurnoutCam()
-{
+BurnoutCam::~BurnoutCam() {
 }
 
 //=============================================================================
@@ -86,111 +84,101 @@ BurnoutCam::~BurnoutCam()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void BurnoutCam::Update( unsigned int milliseconds )
-{
-    rAssert( mTarget );
+void BurnoutCam::Update(unsigned int milliseconds) {
+    rAssert(mTarget);
 
-    if ( GetFlag( (Flag)CUT ) )
-    {
+    if (GetFlag((Flag) CUT)) {
         //Reset the FOV.
-        SetFOV( SUPERCAM_FOV );//DEFAULT_FOV );
-        SetFlag( (Flag)CUT, false );
+        SetFOV(SUPERCAM_FOV);//DEFAULT_FOV);
+        SetFlag((Flag) CUT, false);
     }
-  
+
     //This is to adjust interpolation when we're running substeps.
     float timeMod = 1.0f;
-    
-    timeMod = (float)milliseconds / 16.0f;
- 
-    float xAxis = mIm->GetValue( s_secondaryControllerID, InputManager::LeftStickX );
-    float yAxis = mIm->GetValue( s_secondaryControllerID, InputManager::LeftStickY );
-    float zAxis = mIm->GetValue( s_secondaryControllerID, InputManager::LeftStickY );
-    float zToggle = mIm->GetValue( s_secondaryControllerID, InputManager::AnalogR1 );
 
-    if ( rmt::Fabs( zToggle ) > STICK_DEAD_ZONE && rmt::Fabs( zToggle ) <= 1.0f )
-    {
+    timeMod = (float) milliseconds / 16.0f;
+
+    float xAxis = mIm->GetValue(s_secondaryControllerID, InputManager::LeftStickX);
+    float yAxis = mIm->GetValue(s_secondaryControllerID, InputManager::LeftStickY);
+    float zAxis = mIm->GetValue(s_secondaryControllerID, InputManager::LeftStickY);
+    float zToggle = mIm->GetValue(s_secondaryControllerID, InputManager::AnalogR1);
+
+    if (rmt::Fabs(zToggle) > STICK_DEAD_ZONE && rmt::Fabs(zToggle) <= 1.0f) {
         //zToggled
         yAxis = 0.0f;
-    }
-    else
-    {
+    } else {
         zAxis = 0.0f;
     }
 
 
-    mRotation += ( xAxis * BURNOUT_CAM_INCREMENT * timeMod );
-    mElevation -= ( yAxis * BURNOUT_CAM_INCREMENT * timeMod );
-    mMagnitude -= ( zAxis * BURNOUT_CAM_DIST * timeMod );
+    mRotation += (xAxis * BURNOUT_CAM_INCREMENT * timeMod);
+    mElevation -= (yAxis * BURNOUT_CAM_INCREMENT * timeMod);
+    mMagnitude -= (zAxis * BURNOUT_CAM_DIST * timeMod);
 
-    if ( mElevation < 0.001f )
-    {
+    if (mElevation < 0.001f) {
         mElevation = 0.001f;
-    }
-    else if ( mElevation > rmt::PI - 0.05f )
-    {
+    } else if (mElevation > rmt::PI - 0.05f) {
         mElevation = rmt::PI - 0.05f;
     }
-    
-    if ( mMagnitude < 2.0f )
-    {
+
+    if (mMagnitude < 2.0f) {
         mMagnitude = 2.0f;
     }
 
     //This positions itself always relative to the target.
     rmt::Vector rod;
-    rmt::SphericalToCartesian( mMagnitude, mRotation, mElevation, &rod.x, &rod.z, &rod.y );
+    rmt::SphericalToCartesian(mMagnitude, mRotation, mElevation, &rod.x, &rod.z, &rod.y);
 
     //This is the position of the target.
     rmt::Vector targetPos;
-    mTarget->GetPosition( &targetPos );
+    mTarget->GetPosition(&targetPos);
 
     rmt::Vector desiredPos, desiredTarget;
 
     //Put this local to the targets heading.
     rmt::Vector heading;
-    mTarget->GetHeading( &heading );
+    mTarget->GetHeading(&heading);
 
     rmt::Vector vup;
-    mTarget->GetVUP( &vup );
+    mTarget->GetVUP(&vup);
 
     rmt::Matrix mat;
     mat.Identity();
 
-    mat.FillHeading( heading, vup );
+    mat.FillHeading(heading, vup);
 
-    rod.Transform( mat );
+    rod.Transform(mat);
 
-    desiredPos.Add( rod, targetPos );
+    desiredPos.Add(rod, targetPos);
 
     //Calculate the target of the camera.
-    if ( GetFlag( (Flag)FIRST_TIME ) )
-    {
+    if (GetFlag((Flag) FIRST_TIME)) {
         //Okay, if this is the first time we're going in, let's figure out where the camera target is
         //relative to the position of the target object.
         rmt::Vector camTargetPos;
-        GetTarget( &camTargetPos );
+        GetTarget(&camTargetPos);
 
-        mTargetOffset.Sub( camTargetPos, targetPos );
+        mTargetOffset.Sub(camTargetPos, targetPos);
 
         rmt::Matrix invMat;
         invMat = mat;
         invMat.Invert();
 
-        mTargetOffset.Transform( invMat );
+        mTargetOffset.Transform(invMat);
 
-        SetFlag( (Flag)FIRST_TIME, false );
+        SetFlag((Flag) FIRST_TIME, false);
     }
 
     desiredTarget = mTargetOffset;
-    desiredTarget.Transform( mat );
-    desiredTarget.Add( targetPos );
+    desiredTarget.Transform(mat);
+    desiredTarget.Add(targetPos);
 
-    SetCameraValues( milliseconds, desiredPos, desiredTarget );    
+    SetCameraValues(milliseconds, desiredPos, desiredTarget);
 }
 
 //******************************************************************************
@@ -209,15 +197,14 @@ void BurnoutCam::Update( unsigned int milliseconds )
 // Return:      void 
 //
 //=============================================================================
-void BurnoutCam::OnRegisterDebugControls()
-{
+void BurnoutCam::OnRegisterDebugControls() {
 #ifdef DEBUGWATCH
     char nameSpace[256];
-    sprintf( nameSpace, "SuperCam\\Player%d\\Burnout", GetPlayerID() );
+    sprintf(nameSpace, "SuperCam\\Player%d\\Burnout", GetPlayerID());
 
-    radDbgWatchAddFloat( &mElevation, "Elevation", nameSpace, NULL, NULL, 0.001f, rmt::PI - 0.05f );
-    radDbgWatchAddFloat( &mRotation, "Rotation", nameSpace, NULL, NULL, 0.0f, rmt::PI_2 );
-    radDbgWatchAddFloat( &mMagnitude, "Magnitude", nameSpace, NULL, NULL, 1.0f, 10.0f );
+    radDbgWatchAddFloat(&mElevation, "Elevation", nameSpace, NULL, NULL, 0.001f, rmt::PI - 0.05f);
+    radDbgWatchAddFloat(&mRotation, "Rotation", nameSpace, NULL, NULL, 0.0f, rmt::PI_2);
+    radDbgWatchAddFloat(&mMagnitude, "Magnitude", nameSpace, NULL, NULL, 1.0f, 10.0f);
 #endif
 }
 
@@ -231,11 +218,10 @@ void BurnoutCam::OnRegisterDebugControls()
 // Return:      void 
 //
 //=============================================================================
-void BurnoutCam::OnUnregisterDebugControls()
-{
+void BurnoutCam::OnUnregisterDebugControls() {
 #ifdef DEBUGWATCH
-    radDbgWatchDelete( &mElevation );
-    radDbgWatchDelete( &mRotation );
-    radDbgWatchDelete( &mMagnitude );
+    radDbgWatchDelete(&mElevation);
+    radDbgWatchDelete(&mRotation);
+    radDbgWatchDelete(&mMagnitude);
 #endif
 }

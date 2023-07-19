@@ -44,8 +44,7 @@
 // Return:      N/A.
 //
 //==============================================================================
-EventListener::EventListener()
-{
+EventListener::EventListener() {
 }
 
 
@@ -60,13 +59,12 @@ EventListener::EventListener()
 // Return:      N/A.
 //
 //==============================================================================
-EventListener::~EventListener()
-{
+EventListener::~EventListener() {
     //
     // Remove all references to this object from the EventManager cause
     // it's about to go away.
     //
-    GetEventManager()->RemoveAll( this );    
+    GetEventManager()->RemoveAll(this);
 }
 
 //******************************************************************************

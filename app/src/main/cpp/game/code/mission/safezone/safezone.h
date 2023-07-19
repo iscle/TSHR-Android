@@ -30,25 +30,29 @@ class CarStartLocator;
 //=============================================================================
 
 
-class SafeZone
-{
+class SafeZone {
 public:
-    SafeZone ();
-    SafeZone(CarStartLocator* locator,unsigned int radius);
-	virtual ~SafeZone();
+    SafeZone();
 
-    bool InsideZone( rmt::Vector vector);
-    rmt::Vector GetPosition ();
-    unsigned int GetRadius ();
-    
+    SafeZone(CarStartLocator *locator, unsigned int radius);
+
+    virtual ~SafeZone();
+
+    bool InsideZone(rmt::Vector vector);
+
+    rmt::Vector GetPosition();
+
+    unsigned int GetRadius();
+
 private:
-    CarStartLocator* mLocator;
-    unsigned int mRadius ;   
+    CarStartLocator *mLocator;
+    unsigned int mRadius;
 
-    
+
     //Prevent wasteful constructor creation.
-	SafeZone( const SafeZone& safezone );
-	SafeZone& operator=( const SafeZone& safezone );
+    SafeZone(const SafeZone &safezone);
+
+    SafeZone &operator=(const SafeZone &safezone);
 };
 
 

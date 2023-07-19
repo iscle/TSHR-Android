@@ -26,32 +26,43 @@
 //
 //=============================================================================
 
-class BonusObjective
-{
+class BonusObjective {
 public:
-    enum Type { NO_DAMAGE, NO_CHASE_COLLISIONS, TIME, POSITION, HIT_N };
+    enum Type {
+        NO_DAMAGE, NO_CHASE_COLLISIONS, TIME, POSITION, HIT_N
+    };
 
-    BonusObjective() : mType( NO_DAMAGE ) {};
+    BonusObjective() : mType(NO_DAMAGE) {};
+
     virtual ~BonusObjective() {};
 
     virtual void Initialize() = 0;
+
     virtual void Finalize() = 0;
+
     virtual unsigned int GetNumericData() = 0;  //All bonus objective have numeric data in common...
 
     void Reset();
+
     void Start();
-    void Update( unsigned int milliseconds );
+
+    void Update(unsigned int milliseconds);
 
     Type GetType() const;
+
     bool GetSuccessful() const;
-        
+
 protected:
     virtual void OnReset() {};
-    virtual void OnStart() {};
-    virtual void OnUpdate( unsigned int milliseconds ) {};
 
-    void SetType( Type type );
-    void SetSuccessful( bool successful );
+    virtual void OnStart() {};
+
+    virtual void OnUpdate(unsigned int milliseconds) {};
+
+    void SetType(Type type);
+
+    void SetSuccessful(bool successful);
+
     bool GetStarted() const;
 
 private:
@@ -59,9 +70,10 @@ private:
     bool mSuccessful;
     bool mStarted;
 
-        //Prevent wasteful constructor creation.
-    BonusObjective( const BonusObjective& bonusobjective );
-    BonusObjective& operator=( const BonusObjective& bonusobjective );
+    //Prevent wasteful constructor creation.
+    BonusObjective(const BonusObjective &bonusobjective);
+
+    BonusObjective &operator=(const BonusObjective &bonusobjective);
 };
 
 //*****************************************************************************
@@ -80,8 +92,7 @@ private:
 // Return:      void 
 //
 //=============================================================================
-inline void BonusObjective::Reset()
-{
+inline void BonusObjective::Reset() {
     mStarted = false;
     OnReset();
 }
@@ -96,8 +107,7 @@ inline void BonusObjective::Reset()
 // Return:      void 
 //
 //=============================================================================
-inline void BonusObjective::Start()
-{
+inline void BonusObjective::Start() {
     mStarted = true;
     OnStart();
 }
@@ -107,14 +117,13 @@ inline void BonusObjective::Start()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void BonusObjective::Update( unsigned int milliseconds )
-{
-    OnUpdate( milliseconds );
+inline void BonusObjective::Update(unsigned int milliseconds) {
+    OnUpdate(milliseconds);
 }
 
 //=============================================================================
@@ -127,8 +136,7 @@ inline void BonusObjective::Update( unsigned int milliseconds )
 // Return:      BonusObjective
 //
 //=============================================================================
-inline BonusObjective::Type BonusObjective::GetType() const
-{
+inline BonusObjective::Type BonusObjective::GetType() const {
     return mType;
 }
 
@@ -142,8 +150,7 @@ inline BonusObjective::Type BonusObjective::GetType() const
 // Return:      bool 
 //
 //=============================================================================
-inline bool BonusObjective::GetSuccessful() const
-{
+inline bool BonusObjective::GetSuccessful() const {
     return mSuccessful;
 }
 
@@ -159,13 +166,12 @@ inline bool BonusObjective::GetSuccessful() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( Type type )
+// Parameters:  (Type type)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void BonusObjective::SetType( Type type )
-{
+inline void BonusObjective::SetType(Type type) {
     mType = type;
 }
 
@@ -174,13 +180,12 @@ inline void BonusObjective::SetType( Type type )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool successful )
+// Parameters:  (bool successful)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void BonusObjective::SetSuccessful( bool successful )
-{
+inline void BonusObjective::SetSuccessful(bool successful) {
     mSuccessful = successful;
 }
 
@@ -194,8 +199,7 @@ inline void BonusObjective::SetSuccessful( bool successful )
 // Return:      bool 
 //
 //=============================================================================
-inline bool BonusObjective::GetStarted() const
-{
+inline bool BonusObjective::GetStarted() const {
     return mStarted;
 }
 

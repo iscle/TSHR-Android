@@ -36,7 +36,7 @@
 //
 //************************************************************************
 
-const char* VIS_TEST_NAME = "visibility_test";
+const char *VIS_TEST_NAME = "visibility_test";
 
 //************************************************************************
 //
@@ -57,18 +57,18 @@ const char* VIS_TEST_NAME = "visibility_test";
 //
 //========================================================================
 LensFlareLoader::LensFlareLoader() :
-tSimpleChunkHandler(SRR2::ChunkID::LENS_FLARE_DSG)
-{
+        tSimpleChunkHandler(SRR2::ChunkID::LENS_FLARE_DSG) {
 
-	mpCompDLoader = new(GMA_PERSISTENT) tCompositeDrawableLoader;
-	mpCompDLoader->AddRef();
+    mpCompDLoader = new(GMA_PERSISTENT) tCompositeDrawableLoader;
+    mpCompDLoader->AddRef();
 
-    mpBillBoardQuadLoader = new (GMA_PERSISTENT) tBillboardQuadGroupLoader;
-	mpBillBoardQuadLoader->AddRef();
+    mpBillBoardQuadLoader = new(GMA_PERSISTENT) tBillboardQuadGroupLoader;
+    mpBillBoardQuadLoader->AddRef();
 
-    mpListenerCB  = NULL;
-    mUserData     = -1;
+    mpListenerCB = NULL;
+    mUserData = -1;
 }
+
 //========================================================================
 // LensFlareLoader::
 //========================================================================
@@ -82,12 +82,12 @@ tSimpleChunkHandler(SRR2::ChunkID::LENS_FLARE_DSG)
 // Constraints: None.
 //
 //========================================================================
-LensFlareLoader::~LensFlareLoader()
-{
-	mpCompDLoader->Release();
-	mpBillBoardQuadLoader->Release();
+LensFlareLoader::~LensFlareLoader() {
+    mpCompDLoader->Release();
+    mpBillBoardQuadLoader->Release();
 
 }
+
 ///////////////////////////////////////////////////////////////////////
 // tSimpleChunkHandler
 ///////////////////////////////////////////////////////////////////////
@@ -104,56 +104,53 @@ LensFlareLoader::~LensFlareLoader()
 // Constraints: None.
 //
 //========================================================================
-tEntity* LensFlareLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
-    IEntityDSG::msDeletionsSafe=true;
+tEntity *LensFlareLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
+    IEntityDSG::msDeletionsSafe = true;
     char name[255];
     f->GetPString(name);
 
     int version = f->GetLong();
 
     LensFlareDSG *pLensFlareDSG = new LensFlareDSG;
-	pLensFlareDSG->SetNumBillBoardQuadGroups( f->GetLong() );
+    pLensFlareDSG->SetNumBillBoardQuadGroups(f->GetLong());
 
     // Composite drawable, hold onto a pointer so that we can
     // search through it after loading and pick out the bbqs
-    tCompositeDrawable* pCompDraw = NULL;
+    tCompositeDrawable *pCompDraw = NULL;
 
-    while(f->ChunksRemaining())
-    {      
+    while (f->ChunksRemaining()) {
         f->BeginChunk();
-		int id = f->GetCurrentID();
-        switch(f->GetCurrentID())
-        {
+        int id = f->GetCurrentID();
+        switch (f->GetCurrentID()) {
 
-			case P3D_COMPOSITE_DRAWABLE:
-			{
-				pCompDraw = static_cast<tCompositeDrawable*>( mpCompDLoader->LoadObject( f, store ) );
-				pLensFlareDSG->SetCompositeDrawable( pCompDraw );	
-				store->Store( pCompDraw );				
-			}
-			break;
-			case Pure3D::Mesh::MESH:
-				{
-		            GeometryWrappedLoader* pGeoLoader = (GeometryWrappedLoader*)AllWrappers::GetInstance()->mpLoader(AllWrappers::msGeometry);
-					tGeometry* pGeo = static_cast<tGeometry*>(pGeoLoader->LoadObject( f, store) );
-					store->Store( pGeo );
-				}
-				break;
+            case P3D_COMPOSITE_DRAWABLE: {
+                pCompDraw = static_cast<tCompositeDrawable *>(mpCompDLoader->LoadObject(f, store));
+                pLensFlareDSG->SetCompositeDrawable(pCompDraw);
+                store->Store(pCompDraw);
+            }
+                break;
+            case Pure3D::Mesh::MESH: {
+                GeometryWrappedLoader *pGeoLoader = (GeometryWrappedLoader *) AllWrappers::GetInstance()->mpLoader(
+                        AllWrappers::msGeometry);
+                tGeometry *pGeo = static_cast<tGeometry *>(pGeoLoader->LoadObject(f, store));
+                store->Store(pGeo);
+            }
+                break;
 
-			case Pure3D::BillboardObject::QUAD_GROUP:
-			{
+            case Pure3D::BillboardObject::QUAD_GROUP: {
 
-				BillboardWrappedLoader::OverrideLoader( true );
-                BillboardWrappedLoader* pBBQLoader = static_cast<BillboardWrappedLoader*>(AllWrappers::GetInstance()->mpLoader(AllWrappers::msBillboard));
+                BillboardWrappedLoader::OverrideLoader(true);
+                BillboardWrappedLoader *pBBQLoader = static_cast<BillboardWrappedLoader *>(AllWrappers::GetInstance()->mpLoader(
+                        AllWrappers::msBillboard));
 
-                tBillboardQuadGroup* pGroup = static_cast<tBillboardQuadGroup*>( pBBQLoader->LoadObject(f, store) );
-				rAssert( pGroup != NULL );
-				pLensFlareDSG->AddBillBoardQuadGroup( pGroup );
-				store->Store( pGroup );	
-				BillboardWrappedLoader::OverrideLoader( false );
-				break;
-			}
+                tBillboardQuadGroup *pGroup = static_cast<tBillboardQuadGroup *>(pBBQLoader->LoadObject(
+                        f, store));
+                rAssert(pGroup != NULL);
+                pLensFlareDSG->AddBillBoardQuadGroup(pGroup);
+                store->Store(pGroup);
+                BillboardWrappedLoader::OverrideLoader(false);
+                break;
+            }
 
             default:
                 break;
@@ -162,16 +159,16 @@ tEntity* LensFlareLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     } // while
 
 
-    SetOcclusionFlags( pCompDraw );
+    SetOcclusionFlags(pCompDraw);
 
 
-    if ( mpListenerCB != NULL )
-    {
-       // mpListenerCB->OnChunkLoaded( pLensFlareDSG, mUserData, _id );
+    if (mpListenerCB != NULL) {
+        // mpListenerCB->OnChunkLoaded(pLensFlareDSG, mUserData, _id);
     }
-    IEntityDSG::msDeletionsSafe=false;
+    IEntityDSG::msDeletionsSafe = false;
     return pLensFlareDSG;
 }
+
 ///////////////////////////////////////////////////////////////////////
 // IWrappedLoader
 ///////////////////////////////////////////////////////////////////////
@@ -191,21 +188,19 @@ tEntity* LensFlareLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 //
 //========================================================================
 void LensFlareLoader::SetRegdListener
-(
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
-   //
-   // Follow protocol; notify old Listener, that it has been 
-   // "disconnected".
-   //
-   if( mpListenerCB != NULL )
-   {
-      mpListenerCB->OnChunkLoaded( NULL, iUserData, 0 );
-   }
-   mpListenerCB  = pListenerCB;
-   mUserData     = iUserData;
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
+    //
+    // Follow protocol; notify old Listener, that it has been
+    // "disconnected".
+    //
+    if (mpListenerCB != NULL) {
+        mpListenerCB->OnChunkLoaded(NULL, iUserData, 0);
+    }
+    mpListenerCB = pListenerCB;
+    mUserData = iUserData;
 }
 
 //========================================================================
@@ -222,19 +217,18 @@ void LensFlareLoader::SetRegdListener
 //
 //========================================================================
 void LensFlareLoader::ModRegdListener
-( 
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
 #if 0
-   char DebugBuf[255];
-   sprintf( DebugBuf, "LensFlareLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB );
-   rDebugString( DebugBuf );
+    char DebugBuf[255];
+    sprintf(DebugBuf, "LensFlareLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB);
+    rDebugString(DebugBuf);
 #endif
-   rAssert( pListenerCB == mpListenerCB );
+    rAssert(pListenerCB == mpListenerCB);
 
-   mUserData = iUserData;
+    mUserData = iUserData;
 }
 //************************************************************************
 //
@@ -243,26 +237,21 @@ void LensFlareLoader::ModRegdListener
 //************************************************************************
 
 
-void LensFlareLoader::SetOcclusionFlags( tCompositeDrawable* compDraw )
-{
-    rAssert( compDraw != NULL );
+void LensFlareLoader::SetOcclusionFlags(tCompositeDrawable *compDraw) {
+    rAssert(compDraw != NULL);
     // Iterate through the drawable elements, looking for billboard quad groups
     // to set the occlusion flags on
     int currentBBQ = 0;
     float highestPriority = -FLT_MAX;
     int highestPriorityElement = -1;
-    for ( int i = 0 ; i < compDraw->GetNumDrawableElement() ; i++ )
-    {
-        tCompositeDrawable::DrawableElement* element = compDraw->GetDrawableElement(i);
-        if( element )
-        {
-            tBillboardQuadGroup* bbq = dynamic_cast< tBillboardQuadGroup* >( element->GetDrawable() );
-            if ( bbq )
-            {  
+    for (int i = 0; i < compDraw->GetNumDrawableElement(); i++) {
+        tCompositeDrawable::DrawableElement *element = compDraw->GetDrawableElement(i);
+        if (element) {
+            tBillboardQuadGroup *bbq = dynamic_cast<tBillboardQuadGroup *>(element->GetDrawable());
+            if (bbq) {
                 // Set to 1, occlusion test enabled on this one             
-                bbq->SetOcclusion( 1 );
-                if ( element->SortOrder() > highestPriority )
-                {
+                bbq->SetOcclusion(1);
+                if (element->SortOrder() > highestPriority) {
                     highestPriorityElement = i;
                     highestPriority = element->SortOrder();
                     currentBBQ++;
@@ -270,15 +259,14 @@ void LensFlareLoader::SetOcclusionFlags( tCompositeDrawable* compDraw )
             }
         }
     }
-    // Find the one that will be drawn first ( highest sort order ) and set its occlusion to 2
-    if ( highestPriorityElement != -1 )
-    {
-        tCompositeDrawable::DrawableElement* element = compDraw->GetDrawableElement(highestPriorityElement);
-        tBillboardQuadGroup* bbq = dynamic_cast< tBillboardQuadGroup* >( element->GetDrawable() );
-        rAssert( bbq != NULL );
-        if ( bbq )
-        {
-            bbq->SetOcclusion( 2 );
+    // Find the one that will be drawn first (highest sort order) and set its occlusion to 2
+    if (highestPriorityElement != -1) {
+        tCompositeDrawable::DrawableElement *element = compDraw->GetDrawableElement(
+                highestPriorityElement);
+        tBillboardQuadGroup *bbq = dynamic_cast<tBillboardQuadGroup *>(element->GetDrawable());
+        rAssert(bbq != NULL);
+        if (bbq) {
+            bbq->SetOcclusion(2);
         }
     }
 }

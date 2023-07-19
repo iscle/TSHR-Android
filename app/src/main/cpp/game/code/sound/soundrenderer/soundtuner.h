@@ -44,7 +44,7 @@ namespace Sound {
 // Prototypes
 //=============================================================================
 
-class daSoundTuner;
+    class daSoundTuner;
 
 //=============================================================================
 // Forward declarations
@@ -58,195 +58,208 @@ class daSoundTuner;
 // A fade state information structure stores necessary information about
 // an active fade.
 //
-class daSoundTuner_ActiveFadeInfo
-{
-public:
+    class daSoundTuner_ActiveFadeInfo {
+    public:
 
-    // Constructor and destructor
-    daSoundTuner_ActiveFadeInfo
-    (
-        Fader*                              pFader,
-        bool                                pFadingIn,
-        IDaSoundFadeState*                  pDoneCallback,
-        void*                               pCallbackUserData,
-        DuckVolumeSet*                      initialVolumes,
-        DuckVolumeSet*                      targetVolumes
-    );
-    virtual ~daSoundTuner_ActiveFadeInfo( );
+        // Constructor and destructor
+        daSoundTuner_ActiveFadeInfo
+                (
+                        Fader *pFader,
+                        bool pFadingIn,
+                        IDaSoundFadeState *pDoneCallback,
+                        void *pCallbackUserData,
+                        DuckVolumeSet *initialVolumes,
+                        DuckVolumeSet *targetVolumes
+                );
 
-    // Process the fader
-    bool ProcessFader();
+        virtual ~daSoundTuner_ActiveFadeInfo();
 
-    void StoreCurrentVolumes( DuckVolumeSet& volumeSet );
-    void StoreTargetSettings( DuckVolumeSet& volumeSet );
+        // Process the fader
+        bool ProcessFader();
 
-    Sound::DuckSituations GetSituation() { return( m_pFader->GetSituation() ); }
+        void StoreCurrentVolumes(DuckVolumeSet &volumeSet);
 
-private:
-    // Store the raw data
-    Fader*                                  m_pFader;
-    bool                                    m_FadingIn;
-    IDaSoundFadeState*                      m_pDoneCallback;
-    void*                                   m_pCallbackUserData;
-};
+        void StoreTargetSettings(DuckVolumeSet &volumeSet);
+
+        Sound::DuckSituations GetSituation() { return (m_pFader->GetSituation()); }
+
+    private:
+        // Store the raw data
+        Fader *m_pFader;
+        bool m_FadingIn;
+        IDaSoundFadeState *m_pDoneCallback;
+        void *m_pCallbackUserData;
+    };
 
 //
 // The sound tuner.  All controls associated with the tuner have
 // a scripted sister componenet available for composers to modify
 // using radtuner.
 //
-class daSoundTuner : public IDaSoundTuner,
-                     public radRefCount
-{
-public:
-    IMPLEMENT_REFCOUNTED( "daSoundTuner" );
+    class daSoundTuner : public IDaSoundTuner,
+                         public radRefCount {
+    public:
+        IMPLEMENT_REFCOUNTED("daSoundTuner");
 
-    //
-    // Constructor and destructor
-    //
-    daSoundTuner( );
-    virtual ~daSoundTuner( );
+        //
+        // Constructor and destructor
+        //
+        daSoundTuner();
 
-    //
-    // IDaSoundTuner
-    //
-    void Initialize( void );
-    void PostScriptLoadInitialize();
-    void ServiceOncePerFrame( unsigned int elapsedTime );
+        virtual ~daSoundTuner();
 
-    void SetSoundOutputMode
-    (
-        SoundOutputMode outputMode
-    );
-    SoundOutputMode GetSoundOutputMode( void );
+        //
+        // IDaSoundTuner
+        //
+        void Initialize(void);
 
-    void ActivateDuck
-    (
-        IDaSoundFadeState* pObject,
-        void* pUserData,
-        bool fadeIn
-    );
+        void PostScriptLoadInitialize();
 
-    void ActivateSituationalDuck( IDaSoundFadeState* pObject,
-        DuckSituations situation,
-        void* pUserData,
-        bool fadeIn );
+        void ServiceOncePerFrame(unsigned int elapsedTime);
 
-    void ResetDuck();
+        void SetSoundOutputMode
+                (
+                        SoundOutputMode outputMode
+                );
 
-    void SetMasterVolume( daTrimValue volume );
-    daTrimValue GetMasterVolume( void );
+        SoundOutputMode GetSoundOutputMode(void);
 
-    void SetDialogueVolume( daTrimValue volume );
-    daTrimValue GetDialogueVolume( void );
+        void ActivateDuck
+                (
+                        IDaSoundFadeState *pObject,
+                        void *pUserData,
+                        bool fadeIn
+                );
 
-    void SetMusicVolume( daTrimValue volume );
-    daTrimValue GetMusicVolume( void );
+        void ActivateSituationalDuck(IDaSoundFadeState *pObject,
+                                     DuckSituations situation,
+                                     void *pUserData,
+                                     bool fadeIn);
 
-    void SetAmbienceVolume( daTrimValue volume );
-    daTrimValue GetAmbienceVolume( void );
+        void ResetDuck();
 
-    void SetSfxVolume( daTrimValue volume );
-    daTrimValue GetSfxVolume( void );
+        void SetMasterVolume(daTrimValue volume);
 
-    void SetCarVolume( daTrimValue volume );
-    daTrimValue GetCarVolume( void );
+        daTrimValue GetMasterVolume(void);
 
-    daTrimValue GetGroupTrim( daSoundGroup group );
-    daTrimValue GetFaderGroupTrim( daSoundGroup group );
+        void SetDialogueVolume(daTrimValue volume);
 
-    void MuteNIS();
-    void UnmuteNIS();
+        daTrimValue GetDialogueVolume(void);
 
-    void SetFaderGroupTrim( Sound::DuckVolumes group, daTrimValue trim );
+        void SetMusicVolume(daTrimValue volume);
 
-    void FadeSounds( IDaSoundFadeState* pObject,
-                     void* pUserData,
-                     Fader* pFader,
-                     bool fadeIn,
-                     DuckVolumeSet* initialVolumes = NULL );
+        daTrimValue GetMusicVolume(void);
 
-    //
-    // IDaSoundWiring
-    //
-    void WirePath
-    (
-        daSoundGroup soundGroup,
-        const char* path
-    );
+        void SetAmbienceVolume(daTrimValue volume);
 
-    void WireGroup( daSoundGroup slaveGroup, daSoundGroup masterGroup );
+        daTrimValue GetAmbienceVolume(void);
 
-    //
-    // Sound group info
-    //
-    bool IsSlaveGroup( daSoundGroup slave, daSoundGroup master );
+        void SetSfxVolume(daTrimValue volume);
 
-protected:
-    //
-    // Helper function for wiring knob paths
-    //
-    struct WirePathInfo
-    {
-        const char*                         m_Path;
-        size_t                              m_PathLen;
-        daSoundGroup                        m_SoundGroup;
-    };
-    static void WireKnobToPathHelper
-    (
-        IDaSoundResource* pRes,
-        void* pUserData
-    );
+        daTrimValue GetSfxVolume(void);
 
-private:
+        void SetCarVolume(daTrimValue volume);
 
-    void activateDuckInternal( IDaSoundFadeState* pObject,
-                               void* pUserData,
-                               bool fadeOut,
-                               Fader* faderObj );
-    void calculateDuckedVolumes( DuckVolumeSet& volumes );
+        daTrimValue GetCarVolume(void);
 
-    void refreshFaderSettings();
+        daTrimValue GetGroupTrim(daSoundGroup group);
 
-    void serviceDebugInfo();
+        daTrimValue GetFaderGroupTrim(daSoundGroup group);
+
+        void MuteNIS();
+
+        void UnmuteNIS();
+
+        void SetFaderGroupTrim(Sound::DuckVolumes group, daTrimValue trim);
+
+        void FadeSounds(IDaSoundFadeState *pObject,
+                        void *pUserData,
+                        Fader *pFader,
+                        bool fadeIn,
+                        DuckVolumeSet *initialVolumes = NULL);
+
+        //
+        // IDaSoundWiring
+        //
+        void WirePath
+                (
+                        daSoundGroup soundGroup,
+                        const char *path
+                );
+
+        void WireGroup(daSoundGroup slaveGroup, daSoundGroup masterGroup);
+
+        //
+        // Sound group info
+        //
+        bool IsSlaveGroup(daSoundGroup slave, daSoundGroup master);
+
+    protected:
+        //
+        // Helper function for wiring knob paths
+        //
+        struct WirePathInfo {
+            const char *m_Path;
+            size_t m_PathLen;
+            daSoundGroup m_SoundGroup;
+        };
+
+        static void WireKnobToPathHelper
+                (
+                        IDaSoundResource *pRes,
+                        void *pUserData
+                );
+
+    private:
+
+        void activateDuckInternal(IDaSoundFadeState *pObject,
+                                  void *pUserData,
+                                  bool fadeOut,
+                                  Fader *faderObj);
+
+        void calculateDuckedVolumes(DuckVolumeSet &volumes);
+
+        void refreshFaderSettings();
+
+        void serviceDebugInfo();
 
 #ifdef SOUND_DEBUG_INFO_ENABLED
-    TunerDebugPage m_debugPage;
+        TunerDebugPage m_debugPage;
 #endif
 
-    //
-    // How many ducks to we have in progress?
-    //
-    DuckVolumeSet m_duckLevels[NUM_DUCK_SITUATIONS];
+        //
+        // How many ducks to we have in progress?
+        //
+        DuckVolumeSet m_duckLevels[NUM_DUCK_SITUATIONS];
 
-    DuckVolumeSet m_finalDuckLevels;
+        DuckVolumeSet m_finalDuckLevels;
 
-    //
-    // Store our duck faders
-    //
-    Fader* m_pDuckFade;
+        //
+        // Store our duck faders
+        //
+        Fader *m_pDuckFade;
 
-    Fader* m_situationFaders[NUM_DUCK_SITUATIONS];
+        Fader *m_situationFaders[NUM_DUCK_SITUATIONS];
 
-    //
-    // Group volume settings
-    //
-    float m_MasterVolume;
+        //
+        // Group volume settings
+        //
+        float m_MasterVolume;
 
-    DuckVolumeSet m_userVolumes;
+        DuckVolumeSet m_userVolumes;
 
-    //
-    // Our static sound group wirings
-    //
-    static short s_groupWirings[NUM_SOUND_GROUPS];
+        //
+        // Our static sound group wirings
+        //
+        static short s_groupWirings[NUM_SOUND_GROUPS];
 
-    daSoundTuner_ActiveFadeInfo* m_activeFadeInfo;
+        daSoundTuner_ActiveFadeInfo *m_activeFadeInfo;
 
-    //
-    // NIS hack
-    //
-    float m_NISTrim;
-};
+        //
+        // NIS hack
+        //
+        float m_NISTrim;
+    };
 
 } // Sound Namespace
 #endif //_SOUNDTUNER_HPP

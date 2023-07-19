@@ -26,8 +26,11 @@
 // Forward References
 //========================================
 class Locator;
+
 class Vehicle;
+
 class AnimatedIcon;
+
 class CollectionCondition;
 
 
@@ -37,50 +40,57 @@ class CollectionCondition;
 //
 //=============================================================================
 
-class CollectDumpedObjective : public CollectibleObjective
-{
+class CollectDumpedObjective : public CollectibleObjective {
 public:
-        CollectDumpedObjective();
-        virtual ~CollectDumpedObjective();
+    CollectDumpedObjective();
 
-        void BindCollectibleToWaypoint( int collectibleNum, unsigned int waypointNum );
-        void SetDumpVehicle( Vehicle* vehicle );
-        Vehicle* GetDumpVehicle() {return mDumpVehicle;}
+    virtual ~CollectDumpedObjective();
 
-        bool IsBumperCars() {return mBumperCars;}
+    void BindCollectibleToWaypoint(int collectibleNum, unsigned int waypointNum);
 
-        virtual void HandleEvent( EventEnum id, void* pEventData );
+    void SetDumpVehicle(Vehicle *vehicle);
+
+    Vehicle *GetDumpVehicle() { return mDumpVehicle; }
+
+    bool IsBumperCars() { return mBumperCars; }
+
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
 protected:
     virtual void OnInitCollectibles();
+
     virtual void OnInitCollectibleObjective();
+
     virtual void OnFinalizeCollectibleObjective();
-    virtual bool OnCollection( unsigned int collectibleNum, bool &shouldReset );
-    virtual void OnUpdateCollectibleObjective( unsigned int elapsedTimeMilliseconds );
+
+    virtual bool OnCollection(unsigned int collectibleNum, bool &shouldReset);
+
+    virtual void OnUpdateCollectibleObjective(unsigned int elapsedTimeMilliseconds);
 
     int FindFreeSlot(void);
 
-    CollectionCondition* mCondition;
+    CollectionCondition *mCondition;
 
 private:
 
-    Vehicle* mDumpVehicle;
-    WaypointAI* mDumpVehicleAI;
+    Vehicle *mDumpVehicle;
+    WaypointAI *mDumpVehicleAI;
 
-    enum { MAX_ICON_NAME = 32 };
+    enum {
+        MAX_ICON_NAME = 32
+    };
 
     unsigned int mNumUncollected;
 
-    struct DumpData
-    {
-        DumpData() : collectibleNum( -1 ), active( false ), collected( false ), lifetime(0) {};
+    struct DumpData {
+        DumpData() : collectibleNum(-1), active(false), collected(false), lifetime(0) {};
         int collectibleNum;
         bool active;
         bool collected;
         int lifetime;
     };
 
-    DumpData mDumpData[ MAX_COLLECTIBLES ];
+    DumpData mDumpData[MAX_COLLECTIBLES];
 
     bool mBumperCars;
     unsigned int mNumSpawned;
@@ -88,16 +98,17 @@ private:
     int mDumpTimeout;
     unsigned int mWhatToDump;
     bool mAmIDumping;
-    Vehicle* mAssaultCar;
+    Vehicle *mAssaultCar;
     unsigned int mMeDumpTimout;
     unsigned int mDumpLifetime;
     bool mTerminalDump;
 
-    AnimatedIcon* mAnimatedIcon;
+    AnimatedIcon *mAnimatedIcon;
 
     //Prevent wasteful constructor creation.
-    CollectDumpedObjective( const CollectDumpedObjective& collectdumpedobjective );
-    CollectDumpedObjective& operator=( const CollectDumpedObjective& collectdumpedobjective );
+    CollectDumpedObjective(const CollectDumpedObjective &collectdumpedobjective);
+
+    CollectDumpedObjective &operator=(const CollectDumpedObjective &collectdumpedobjective);
 };
 
 //*****************************************************************************

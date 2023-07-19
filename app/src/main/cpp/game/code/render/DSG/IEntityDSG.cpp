@@ -18,12 +18,14 @@
 #ifdef WORLD_BUILDER
 #include "IEntityDSG.h"
 #else
+
 #include <memory/classsizetracker.h>
 #include <meta/triggervolumetracker.h>
 #include <render/DSG/IEntityDSG.h>
 #include <render/Culling/SwapArray.h>
 #include <render/RenderManager/RenderManager.h>
 #include <p3d/shader.hpp>
+
 #endif //WORLD_BUILDER
 
 
@@ -34,7 +36,7 @@
 //************************************************************************
 bool IEntityDSG::msDeletionsSafe = false;
 #ifdef BREAK_DOWN_PROFILE
-    char IEntityDSG::msMarker = '_';
+char IEntityDSG::msMarker = '_';
 #endif
 
 //************************************************************************
@@ -56,10 +58,9 @@ bool IEntityDSG::msDeletionsSafe = false;
 //
 //========================================================================
 IEntityDSG::IEntityDSG() :
-    mTranslucent(0),
-    mpSpatialNode(NULL)
-{
-    CLASSTRACKER_CREATE( IEntityDSG );
+        mTranslucent(0),
+        mpSpatialNode(NULL) {
+    CLASSTRACKER_CREATE(IEntityDSG);
 #ifndef WORLD_BUILDER
     //if(msDeletionsSafe)
     //{
@@ -80,6 +81,7 @@ IEntityDSG::IEntityDSG() :
     mMicros = 0;
 #endif
 }
+
 //========================================================================
 // IEntityDSG::
 //========================================================================
@@ -93,23 +95,20 @@ IEntityDSG::IEntityDSG() :
 // Constraints: None.
 //
 //========================================================================
-tShader* IEntityDSG::Process(tShader* pShader)
-{
+tShader *IEntityDSG::Process(tShader *pShader) {
 #ifndef WORLD_BUILDER
-    if( mShaderName != "__none__" && 
-        mShaderName != pShader->GetNameObject() )
-    {
+    if (mShaderName != "__none__" &&
+        mShaderName != pShader->GetNameObject()) {
         //more than one shader, can't sort by shader
-       // rDebugPrintf("More than one Shader in IEntityDSG %s\n", this->GetName() );
-        mShaderName = "__none__"; 
-    }
-    else
-    {
+        // rDebugPrintf("More than one Shader in IEntityDSG %s\n", this->GetName());
+        mShaderName = "__none__";
+    } else {
         mShaderName = pShader->GetName();
     }
 #endif
     return pShader;
 }
+
 //========================================================================
 // EntityDSG::~IEntityDSG()
 //========================================================================
@@ -123,10 +122,10 @@ tShader* IEntityDSG::Process(tShader* pShader)
 // Constraints: None.
 //
 //========================================================================
-IEntityDSG::~IEntityDSG()
-{
-    CLASSTRACKER_DESTROY( IEntityDSG );
+IEntityDSG::~IEntityDSG() {
+    CLASSTRACKER_DESTROY(IEntityDSG);
 }
+
 //========================================================================
 // IEntityDSG::RenderUpdate()
 //========================================================================
@@ -140,11 +139,11 @@ IEntityDSG::~IEntityDSG()
 // Constraints: None.
 //
 //========================================================================
-void IEntityDSG::RenderUpdate()
-{
-   //Do Nothing for the base case
-   //Animated objects/textures will update here in subclasses
+void IEntityDSG::RenderUpdate() {
+    //Do Nothing for the base case
+    //Animated objects/textures will update here in subclasses
 }
+
 //========================================================================
 // IEntityDSG::
 //========================================================================
@@ -159,8 +158,8 @@ void IEntityDSG::RenderUpdate()
 //
 //========================================================================
 const tUID BAD_LIGHT = tEntity::MakeUID("l7_searchlights");
-void  IEntityDSG::SetRank(rmt::Vector& irRefPosn, rmt::Vector& irRefVect)
-{
+
+void IEntityDSG::SetRank(rmt::Vector &irRefPosn, rmt::Vector &irRefVect) {
 //    rmt::Vector posn;
 //    GetPosition(&posn);
     rmt::Vector temp;
@@ -173,21 +172,19 @@ void  IEntityDSG::SetRank(rmt::Vector& irRefPosn, rmt::Vector& irRefVect)
     temp.Scale(sphere.radius);
     sphere.centre.Sub(temp);
 
-    if(sphere.centre.Dot(irRefVect)<0.0f)
+    if (sphere.centre.Dot(irRefVect) < 0.0f)
         mRank = -sphere.centre.MagnitudeSqr();//-(1.75f*sphere.radius*sphere.radius);//posn.MagnitudeSqr();
     else
         mRank = sphere.centre.MagnitudeSqr();//-(1.75f*sphere.radius*sphere.radius);//posn.MagnitudeSqr();
-	
-	// Evil hack for L7 military spotlights
-	if(GetUID() == BAD_LIGHT)
-	{
-		mRank = FLT_MAX;
-	}
+
+    // Evil hack for L7 military spotlights
+    if (GetUID() == BAD_LIGHT) {
+        mRank = FLT_MAX;
+    }
     //posn.Sub(irRefPosn);
 }
 
-float IEntityDSG::Rank()
-{
+float IEntityDSG::Rank() {
     return mRank;
 }
 
@@ -202,10 +199,10 @@ bool IEntityDSG::IsDrawLong()
         Trans.Identity();
         Trans.FillTranslate(posn);
         p3d::pddi->PushMatrix(PDDI_MATRIX_MODELVIEW);
-	        p3d::pddi->MultMatrix(PDDI_MATRIX_MODELVIEW,&Trans);
+            p3d::pddi->MultMatrix(PDDI_MATRIX_MODELVIEW,&Trans);
             GetTriggerVolumeTracker()->mpTriggerSphere->Display();
         p3d::pddi->PopMatrix(PDDI_MATRIX_MODELVIEW);*/
-        rReleasePrintf("%s is taking %u us to draw.\n", GetName(), mMicros );
+        rReleasePrintf("%s is taking %u us to draw.\n", GetName(), mMicros);
         return false;
     }
     return false;

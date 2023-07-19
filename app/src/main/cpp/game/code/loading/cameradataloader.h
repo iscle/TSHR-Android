@@ -28,24 +28,26 @@
 //
 //=============================================================================
 
-class CameraDataLoader : public tChunkHandler
-{
+class CameraDataLoader : public tChunkHandler {
 public:
     CameraDataLoader();
+
     virtual ~CameraDataLoader();
 
     // P3D chunk loader.
-    virtual tLoadStatus Load(tChunkFile* f, tEntityStore* store);
+    virtual tLoadStatus Load(tChunkFile *f, tEntityStore *store);
 
     // P3D chunk id.
     virtual bool CheckChunkID(unsigned id);
+
     virtual unsigned int GetChunkID();
 
 private:
 
     //Prevent wasteful constructor creation.
-    CameraDataLoader( const CameraDataLoader& cameradataloader );
-    CameraDataLoader& operator=( const CameraDataLoader& cameradataloader );
+    CameraDataLoader(const CameraDataLoader &cameradataloader);
+
+    CameraDataLoader &operator=(const CameraDataLoader &cameradataloader);
 };
 
 //******************************************************************************
@@ -64,14 +66,12 @@ private:
 // Return:      bool 
 //
 //=============================================================================
-inline bool CameraDataLoader::CheckChunkID(unsigned id)
-{
-    return( SRR2::ChunkID::FOLLOWCAM == id || SRR2::ChunkID::WALKERCAM == id );
+inline bool CameraDataLoader::CheckChunkID(unsigned id) {
+    return (SRR2::ChunkID::FOLLOWCAM == id || SRR2::ChunkID::WALKERCAM == id);
 }
 
-inline unsigned int CameraDataLoader::GetChunkID()
-{
-	return SRR2::ChunkID::FOLLOWCAM | SRR2::ChunkID::WALKERCAM;
+inline unsigned int CameraDataLoader::GetChunkID() {
+    return SRR2::ChunkID::FOLLOWCAM | SRR2::ChunkID::WALKERCAM;
 }
 
 #endif //CAMERADATALOADER_H

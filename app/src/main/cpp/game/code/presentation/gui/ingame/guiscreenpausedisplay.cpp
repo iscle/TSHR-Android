@@ -34,12 +34,11 @@ const float CONTROLLER_IMAGE_CORRECTION_SCALE = 2.0f;
 //
 //===========================================================================
 CGuiScreenPauseDisplay::CGuiScreenPauseDisplay
-(
-	Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-)
-:   CGuiScreenDisplay( pScreen, pParent )
-{
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        : CGuiScreenDisplay(pScreen, pParent) {
 }
 
 
@@ -55,8 +54,7 @@ CGuiScreenPauseDisplay::CGuiScreenPauseDisplay
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenPauseDisplay::~CGuiScreenPauseDisplay()
-{
+CGuiScreenPauseDisplay::~CGuiScreenPauseDisplay() {
 }
 
 
@@ -73,34 +71,29 @@ CGuiScreenPauseDisplay::~CGuiScreenPauseDisplay()
 //
 //===========================================================================
 void CGuiScreenPauseDisplay::HandleMessage
-(
-	eGuiMessage message, 
-	unsigned int param1,
-	unsigned int param2 
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        switch( message )
-        {
-            case GUI_MSG_CONTROLLER_START:
-            {
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        switch (message) {
+            case GUI_MSG_CONTROLLER_START: {
                 // resume game
-                m_pParent->HandleMessage( GUI_MSG_UNPAUSE_INGAME );
+                m_pParent->HandleMessage(GUI_MSG_UNPAUSE_INGAME);
 
                 break;
             }
 
-            default:
-            {
+            default: {
                 break;
             }
         }
     }
 
-	// Propogate the message up the hierarchy.
-	//
-	CGuiScreenDisplay::HandleMessage( message, param1, param2 );
+    // Propogate the message up the hierarchy.
+    //
+    CGuiScreenDisplay::HandleMessage(message, param1, param2);
 }
 
 
@@ -116,8 +109,7 @@ void CGuiScreenPauseDisplay::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPauseDisplay::InitIntro()
-{
+void CGuiScreenPauseDisplay::InitIntro() {
     CGuiScreenDisplay::InitIntro();
 }
 
@@ -134,8 +126,7 @@ void CGuiScreenPauseDisplay::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPauseDisplay::InitRunning()
-{
+void CGuiScreenPauseDisplay::InitRunning() {
     CGuiScreenDisplay::InitRunning();
 }
 
@@ -152,8 +143,7 @@ void CGuiScreenPauseDisplay::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPauseDisplay::InitOutro()
-{
+void CGuiScreenPauseDisplay::InitOutro() {
     CGuiScreenDisplay::InitOutro();
 }
 

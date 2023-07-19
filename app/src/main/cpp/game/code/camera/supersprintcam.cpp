@@ -173,13 +173,12 @@ static float CAMERA_FOV[ RenderEnums::MAX_LEVEL - RenderEnums::numLevels ] =
 //
 //=============================================================================
 SuperSprintCam::SuperSprintCam() :
-    mNear( 150.0f ),
-    mFar( 800.0f ),
-    mFOV( rmt::PI_BY2 ),
-    mAspect( 4.0f / 3.0f ),
-    mLag( 0.05f ),
-    mDist( 10.0f )
-{
+        mNear(150.0f),
+        mFar(800.0f),
+        mFOV(rmt::PI_BY2),
+        mAspect(4.0f / 3.0f),
+        mLag(0.05f),
+        mDist(10.0f) {
 }
 
 //=============================================================================
@@ -192,8 +191,7 @@ SuperSprintCam::SuperSprintCam() :
 // Return:      N/A.
 //
 //=============================================================================
-SuperSprintCam::~SuperSprintCam()
-{
+SuperSprintCam::~SuperSprintCam() {
 }
 
 //*****************************************************************************
@@ -207,103 +205,99 @@ SuperSprintCam::~SuperSprintCam()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperSprintCam::Update( unsigned int milliseconds )
-{
-    if ( GetFlag( (Flag)FIRST_TIME ) )
-    {
+void SuperSprintCam::Update(unsigned int milliseconds) {
+    if (GetFlag((Flag) FIRST_TIME)) {
         //Get the position of the vector cam.
         //Find and set up the camera.
-        tVectorCamera* cam = p3d::find<tVectorCamera>("sprint_camShape");
+        tVectorCamera *cam = p3d::find<tVectorCamera>("sprint_camShape");
 
-//        mPos.Set( 4.847f, 240.5329f, -234.17244f );
-        mPos = CAMERA_SETTINGS[ GetGameplayManager()->GetCurrentLevelIndex() - 1 ];
-        mTarg.Set( 0.0f, 0.0f, 0.0f );
+//        mPos.Set(4.847f, 240.5329f, -234.17244f);
+        mPos = CAMERA_SETTINGS[GetGameplayManager()->GetCurrentLevelIndex() - 1];
+        mTarg.Set(0.0f, 0.0f, 0.0f);
 
-        mFOV = CAMERA_FOV[ GetGameplayManager()->GetCurrentLevelIndex() - 1 ];
-        SetFOV( mFOV );
+        mFOV = CAMERA_FOV[GetGameplayManager()->GetCurrentLevelIndex() - 1];
+        SetFOV(mFOV);
 
         mAspect = 4.0f / 3.0f;
-        SetAspect( mAspect );
+        SetAspect(mAspect);
 
-        mUp.Set( -0.019949f, 0.6996f, 0.714194f );
+        mUp.Set(-0.019949f, 0.6996f, 0.714194f);
 
-        mPosDelta.Set( 0.0f, 0.0f, 0.0f );
+        mPosDelta.Set(0.0f, 0.0f, 0.0f);
 
 #ifndef RAD_RELEASE
-//        InitMyController( s_secondaryControllerID );
+//        InitMyController(s_secondaryControllerID);
 #endif
-        SetFlag( (Flag)FIRST_TIME, false );
-    }
-    else
-    {
-#ifndef RAD_RELEASE     
+        SetFlag((Flag) FIRST_TIME, false);
+    } else {
+#ifndef RAD_RELEASE
 //        float x, y, z;
-//        x = mController->GetValue( SuperCamController::stickX );
-//        y = mController->GetValue( SuperCamController::leftStickY );
-//        z = mController->GetValue( SuperCamController::stickY );
+//        x = mController->GetValue(SuperCamController::stickX);
+//        y = mController->GetValue(SuperCamController::leftStickY);
+//        z = mController->GetValue(SuperCamController::stickY);
 
-//        if ( rmt::Epsilon( x, 0.0f, 0.001f ) && rmt::Epsilon( y, 0.0f, 0.001f ) && rmt::Epsilon( z, 0.0f, 0.001f ) )
+//        if (rmt::Epsilon(x, 0.0f, 0.001f) && rmt::Epsilon(y, 0.0f, 0.001f) && rmt::Epsilon(z, 0.0f, 0.001f))
 //        {
 #endif
-            GetPosition( &mPos );
-            GetTarget( &mTarg );
-            GetCameraUp( &mUp );
+        GetPosition(&mPos);
+        GetTarget(&mTarg);
+        GetCameraUp(&mUp);
 #ifndef RAD_RELEASE
 //        }
 //        else
 //        {
 //            //Use the controller values to move the camera.
 //
-//            rmt::Vector xMove( mDist, 0.0f, 0.0f );
-//            xMove.Scale( x );
+//            rmt::Vector xMove(mDist, 0.0f, 0.0f);
+//            xMove.Scale(x);
 //
-//            rmt::Vector yMove( 0.0f, -mDist, 0.0f );
-//            yMove.Scale( y );
+//            rmt::Vector yMove(0.0f, -mDist, 0.0f);
+//            yMove.Scale(y);
 //
-//            rmt::Vector zMove( 0.0f, 0.0f, mDist );
-//            zMove.Scale( z );
+//            rmt::Vector zMove(0.0f, 0.0f, mDist);
+//            zMove.Scale(z);
 //
-//            GetPosition( &mPos );
-//            rmt::Vector desiredPos( mPos );
-//            desiredPos.Add( xMove );
-//            desiredPos.Add( yMove );
-//            desiredPos.Add( zMove );
+//            GetPosition(&mPos);
+//            rmt::Vector desiredPos(mPos);
+//            desiredPos.Add(xMove);
+//            desiredPos.Add(yMove);
+//            desiredPos.Add(zMove);
 //
 //            float timeMod = milliseconds / 16.0f;
 //
 //            float lag = mLag * timeMod;
-//            CLAMP_TO_ONE( lag );
+//            CLAMP_TO_ONE(lag);
 //
-//            MotionCubic( &mPos.x, &mPosDelta.x, desiredPos.x, lag );
-//            MotionCubic( &mPos.y, &mPosDelta.y, desiredPos.y, lag );
-//            MotionCubic( &mPos.z, &mPosDelta.z, desiredPos.z, lag );
+//            MotionCubic(&mPos.x, &mPosDelta.x, desiredPos.x, lag);
+//            MotionCubic(&mPos.y, &mPosDelta.y, desiredPos.y, lag);
+//            MotionCubic(&mPos.z, &mPosDelta.z, desiredPos.z, lag);
 //        }
 #endif
     }
 
 #ifdef RAD_PS2
-    if ( (GetGameplayManager()->GetCurrentLevelIndex() + RenderEnums::B00) == RenderEnums::B06 )
+    if ((GetGameplayManager()->GetCurrentLevelIndex() + RenderEnums::B00) == RenderEnums::B06)
     {
-        SetNearPlane( 250.0f );  //HACK!
+        SetNearPlane(250.0f);  //HACK!
     }
     else
     {
-        SetNearPlane( mNear );
+        SetNearPlane(mNear);
     }
 #else
-    SetNearPlane( mNear );
+    SetNearPlane(mNear);
 #endif
-    SetFarPlane( mFar );
-    SetFOV( mFOV );
-    SetAspect( mAspect );
-    SetCameraValues( milliseconds, mPos, mTarg );
+    SetFarPlane(mFar);
+    SetFOV(mFOV);
+    SetAspect(mAspect);
+    SetCameraValues(milliseconds, mPos, mTarg);
 
-    SetFlag( (Flag)CUT, false );
+    SetFlag((Flag) CUT, false);
 }
 
 //=============================================================================
@@ -316,8 +310,7 @@ void SuperSprintCam::Update( unsigned int milliseconds )
 // Return:      void 
 //
 //=============================================================================
-void SuperSprintCam::OnInit()
-{
+void SuperSprintCam::OnInit() {
 }
 
 //=============================================================================
@@ -330,8 +323,7 @@ void SuperSprintCam::OnInit()
 // Return:      void 
 //
 //=============================================================================
-void SuperSprintCam::OnShutdown()
-{
+void SuperSprintCam::OnShutdown() {
 }
 
 //=============================================================================
@@ -344,24 +336,23 @@ void SuperSprintCam::OnShutdown()
 // Return:      void 
 //
 //=============================================================================
-void SuperSprintCam::OnRegisterDebugControls()
-{
+void SuperSprintCam::OnRegisterDebugControls() {
 #ifdef DEBUGWATCH
-    if ( mSprintCamCount == 0 )
+    if (mSprintCamCount == 0)
     {
         char nameSpace[256];
-        sprintf( nameSpace, "SuperCam\\SuperSprint" );
+        sprintf(nameSpace, "SuperCam\\SuperSprint");
 
-        radDbgWatchAddFloat( &mNear,   "mNear",   nameSpace, NULL, NULL, 1.0, 2000.0f );
-        radDbgWatchAddFloat( &mFar,    "mFar",    nameSpace, NULL, NULL, 1.0, 2000.0f );
-        radDbgWatchAddFloat( &mFOV,    "mFOV",    nameSpace, NULL, NULL, 0.001f,   rmt::PI );
-        radDbgWatchAddFloat( &mAspect, "mAspect", nameSpace, NULL, NULL, 0.001f,      3.0f );
+        radDbgWatchAddFloat(&mNear,   "mNear",   nameSpace, NULL, NULL, 1.0, 2000.0f);
+        radDbgWatchAddFloat(&mFar,    "mFar",    nameSpace, NULL, NULL, 1.0, 2000.0f);
+        radDbgWatchAddFloat(&mFOV,    "mFOV",    nameSpace, NULL, NULL, 0.001f,   rmt::PI);
+        radDbgWatchAddFloat(&mAspect, "mAspect", nameSpace, NULL, NULL, 0.001f,      3.0f);
 
-        radDbgWatchAddVector(&(mPos.x),  "mPos",    nameSpace, NULL, NULL, -2000.0f, 2000.0f );
-        radDbgWatchAddVector(&(mTarg.x), "mTarg",   nameSpace, NULL, NULL, -2000.0f, 2000.0f );
-        radDbgWatchAddVector(&(mUp.x),   "mUp",     nameSpace, NULL, NULL, -2000.0f, 2000.0f );
+        radDbgWatchAddVector(&(mPos.x),  "mPos",    nameSpace, NULL, NULL, -2000.0f, 2000.0f);
+        radDbgWatchAddVector(&(mTarg.x), "mTarg",   nameSpace, NULL, NULL, -2000.0f, 2000.0f);
+        radDbgWatchAddVector(&(mUp.x),   "mUp",     nameSpace, NULL, NULL, -2000.0f, 2000.0f);
 
-        radDbgWatchAddFloat( &mDist, "Dist", nameSpace, NULL, NULL, 1.0f, 1000.0f );
+        radDbgWatchAddFloat(&mDist, "Dist", nameSpace, NULL, NULL, 1.0f, 1000.0f);
     }
 #endif
     mSprintCamCount++;
@@ -377,21 +368,20 @@ void SuperSprintCam::OnRegisterDebugControls()
 // Return:      void 
 //
 //=============================================================================
-void SuperSprintCam::OnUnregisterDebugControls()
-{
+void SuperSprintCam::OnUnregisterDebugControls() {
 #ifdef DEBUGWATCH
-    if ( mSprintCamCount == 1 )
+    if (mSprintCamCount == 1)
     {
-        radDbgWatchDelete( &mNear );
-        radDbgWatchDelete( &mFar );
-        radDbgWatchDelete( &mFOV );
-        radDbgWatchDelete( &mAspect );
+        radDbgWatchDelete(&mNear);
+        radDbgWatchDelete(&mFar);
+        radDbgWatchDelete(&mFOV);
+        radDbgWatchDelete(&mAspect);
 
-        radDbgWatchDelete( &mPos.x );
-        radDbgWatchDelete( &mTarg.x );
-        radDbgWatchDelete( &mUp.x );
+        radDbgWatchDelete(&mPos.x);
+        radDbgWatchDelete(&mTarg.x);
+        radDbgWatchDelete(&mUp.x);
 
-        radDbgWatchDelete( &mDist );
+        radDbgWatchDelete(&mDist);
     }
 #endif
     mSprintCamCount--;

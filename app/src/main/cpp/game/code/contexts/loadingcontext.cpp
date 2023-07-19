@@ -60,8 +60,7 @@ static unsigned int g_Timer;
 // Return:      N/A.
 //
 //==============================================================================
-LoadingContext::LoadingContext()
-{
+LoadingContext::LoadingContext() {
 }
 
 //==============================================================================
@@ -74,8 +73,7 @@ LoadingContext::LoadingContext()
 // Return:      N/A.
 //
 //==============================================================================
-LoadingContext::~LoadingContext()
-{
+LoadingContext::~LoadingContext() {
 }
 
 //******************************************************************************
@@ -89,26 +87,24 @@ LoadingContext::~LoadingContext()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ContextEnum previousContext )
+// Parameters:  (ContextEnum previousContext)
 //
 // Return:      void 
 //
 //=============================================================================
-void LoadingContext::OnStart( ContextEnum previousContext )
-{
-    SetMemoryIdentification( "LoadingContext" );
+void LoadingContext::OnStart(ContextEnum previousContext) {
+    SetMemoryIdentification("LoadingContext");
 #ifndef FINAL
-    if( CommandLineOptions::Get( CLO_PRINT_LOAD_TIME ) )
-    {
+    if (CommandLineOptions::Get(CLO_PRINT_LOAD_TIME)) {
         g_Timer = radTimeGetMicroseconds();
     }
 #endif
 
-    MEMTRACK_PUSH_FLAG( "Loading Context" );
+    MEMTRACK_PUSH_FLAG("Loading Context");
 
     this->PrepareNewHeaps();
 
-    HeapMgr()->PushHeap( GMA_LEVEL_OTHER );
+    HeapMgr()->PushHeap(GMA_LEVEL_OTHER);
 
     // Note: *** Do NOT add any calls before the following GUI system call
     //           that will cause an AddRequest to the loading manager.
@@ -116,26 +112,26 @@ void LoadingContext::OnStart( ContextEnum previousContext )
     //           wants loaded for the loading screen.
     //
 
-    AnimatedIcon::InitAnimatedIcons( HeapMgr()->GetCurrentHeap() );
+    AnimatedIcon::InitAnimatedIcons(HeapMgr()->GetCurrentHeap());
 
     // no controller input while loading
     //
-    GetInputManager()->SetGameState( Input::ACTIVE_NONE );
+    GetInputManager()->SetGameState(Input::ACTIVE_NONE);
 
     // tell GUI system to run backend during loading
     //
-    GetGuiSystem()->HandleMessage( GUI_MSG_RUN_BACKEND );
+    GetGuiSystem()->HandleMessage(GUI_MSG_RUN_BACKEND);
 
 
     GetCoinManager()->Init();
     GetSparkleManager()->Init();
 
-	GetHitnRunManager()->Init();
+    GetHitnRunManager()->Init();
 
     // This is here since it needs to be in all modes.
     //
     const bool shutdown = false;
-    GetSuperCamManager()->Init( shutdown );
+    GetSuperCamManager()->Init(shutdown);
 
     GetVehicleCentral()->PreLoad();
 
@@ -154,15 +150,14 @@ void LoadingContext::OnStart( ContextEnum previousContext )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ContextEnum nextContext )
+// Parameters:  (ContextEnum nextContext)
 //
 // Return:      void 
 //
 //=============================================================================
-void LoadingContext::OnStop( ContextEnum nextContext )
-{
+void LoadingContext::OnStop(ContextEnum nextContext) {
 #ifdef RAD_WIN32
-    if( nextContext == CONTEXT_EXIT )
+    if(nextContext == CONTEXT_EXIT)
     {
         GetLoadingManager()->CancelPendingRequests();
         p3d::loadManager->CancelAll();
@@ -173,25 +168,24 @@ void LoadingContext::OnStop( ContextEnum nextContext )
 
     // tell GUI system to quit backend
     //
-    GetGuiSystem()->HandleMessage( GUI_MSG_QUIT_BACKEND );
+    GetGuiSystem()->HandleMessage(GUI_MSG_QUIT_BACKEND);
 
-    GetInputManager()->SetGameState( Input::ACTIVE_ALL );
+    GetInputManager()->SetGameState(Input::ACTIVE_ALL);
 
-    HeapMgr()->PopHeap( GMA_LEVEL_OTHER ); 
+    HeapMgr()->PopHeap(GMA_LEVEL_OTHER);
 #ifndef FINAL
-    if( CommandLineOptions::Get( CLO_PRINT_LOAD_TIME ) )
-    {
+    if (CommandLineOptions::Get(CLO_PRINT_LOAD_TIME)) {
         unsigned int stopTime = radTimeGetMicroseconds();
         unsigned int time = stopTime - g_Timer;
         float timeInSeconds = time / 1000000.0f;
-        rReleasePrintf( "Loading Time (s) = %f\n", timeInSeconds );
+        rReleasePrintf("Loading Time (s) = %f\n", timeInSeconds);
     }
 #endif
     AnimatedCam::TriggerMissionStartCamera();
-    MEMTRACK_POP_FLAG( "" );
-    SetMemoryIdentification( "LoadingContext Finished" );
+    MEMTRACK_POP_FLAG("");
+    SetMemoryIdentification("LoadingContext Finished");
 
-    GetInputManager()->EnableReset( true );
+    GetInputManager()->EnableReset(true);
 }
 
 //=============================================================================
@@ -199,16 +193,15 @@ void LoadingContext::OnStop( ContextEnum nextContext )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void LoadingContext::OnUpdate( unsigned int elapsedTime )
-{
+void LoadingContext::OnUpdate(unsigned int elapsedTime) {
     // update GUI system
     //
-    GetGuiSystem()->Update( elapsedTime );
+    GetGuiSystem()->Update(elapsedTime);
 }
 
 //=============================================================================
@@ -221,8 +214,7 @@ void LoadingContext::OnUpdate( unsigned int elapsedTime )
 // Return:      void 
 //
 //=============================================================================
-void LoadingContext::OnSuspend()
-{
+void LoadingContext::OnSuspend() {
 }
 
 //=============================================================================
@@ -235,8 +227,7 @@ void LoadingContext::OnSuspend()
 // Return:      void 
 //
 //=============================================================================
-void LoadingContext::OnResume()
-{
+void LoadingContext::OnResume() {
 }
 
 //=============================================================================
@@ -244,13 +235,12 @@ void LoadingContext::OnResume()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void LoadingContext::OnHandleEvent( EventEnum id, void* pEventData )
-{
+void LoadingContext::OnHandleEvent(EventEnum id, void *pEventData) {
 }
 
 //=============================================================================
@@ -258,13 +248,12 @@ void LoadingContext::OnHandleEvent( EventEnum id, void* pEventData )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( void* pUserData )
+// Parameters:  (void* pUserData)
 //
 // Return:      void 
 //
 //=============================================================================
-void LoadingContext::OnProcessRequestsComplete( void* pUserData )
-{
+void LoadingContext::OnProcessRequestsComplete(void *pUserData) {
     GetRenderManager()->DoPostLevelLoad();
 }
 

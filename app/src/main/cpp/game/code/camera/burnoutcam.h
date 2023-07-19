@@ -29,24 +29,25 @@ class InputManager;
 //
 //=============================================================================
 
-class BurnoutCam : public SuperCam
-{
+class BurnoutCam : public SuperCam {
 public:
     BurnoutCam();
-	virtual ~BurnoutCam();
+
+    virtual ~BurnoutCam();
 
     //Update: Called when you want the super cam to update its state.
-    void Update( unsigned int milliseconds );
+    void Update(unsigned int milliseconds);
 
     //Returns the name of the super cam.  
     //This can be used in the FE or debug info
-    const char* const GetName() const;
+    const char *const GetName() const;
 
     Type GetType();
 
     //These are for favourable support of this command
-    void SetTarget( ISuperCamTarget* target ); 
-    void AddTarget( ISuperCamTarget* target );
+    void SetTarget(ISuperCamTarget *target);
+
+    void AddTarget(ISuperCamTarget *target);
 
     unsigned int GetNumTargets() const;
 
@@ -58,20 +59,22 @@ protected:
 
 private:
 
-    ISuperCamTarget* mTarget;
+    ISuperCamTarget *mTarget;
 
-    InputManager* mIm;
+    InputManager *mIm;
 
     rmt::Vector mTargetOffset;
 
     //These functions are to allow real-time control of the settings of 
     //the supercam.
     virtual void OnRegisterDebugControls();
+
     virtual void OnUnregisterDebugControls();
 
     //Prevent wasteful constructor creation.
-	BurnoutCam( const BurnoutCam& burnoutcam );
-	BurnoutCam& operator=( const BurnoutCam& burnoutcam );
+    BurnoutCam(const BurnoutCam &burnoutcam);
+
+    BurnoutCam &operator=(const BurnoutCam &burnoutcam);
 };
 
 //*****************************************************************************
@@ -89,8 +92,7 @@ private:
 // Return:      const char* const 
 //
 //=============================================================================
-inline const char* const BurnoutCam::GetName() const
-{
+inline const char *const BurnoutCam::GetName() const {
     return "BURNOUT_CAM";
 }
 
@@ -104,8 +106,7 @@ inline const char* const BurnoutCam::GetName() const
 // Return:      Type 
 //
 //=============================================================================
-inline SuperCam::Type BurnoutCam::GetType()
-{
+inline SuperCam::Type BurnoutCam::GetType() {
     return BURNOUT_CAM;
 }
 
@@ -114,13 +115,12 @@ inline SuperCam::Type BurnoutCam::GetType()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void BurnoutCam::SetTarget( ISuperCamTarget* target )
-{
+inline void BurnoutCam::SetTarget(ISuperCamTarget *target) {
     mTarget = target;
 }
 
@@ -129,14 +129,13 @@ inline void BurnoutCam::SetTarget( ISuperCamTarget* target )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void BurnoutCam::AddTarget( ISuperCamTarget* target )
-{
-    rAssertMsg( false, "Only call SetTarget on the BurnoutCam" );
+inline void BurnoutCam::AddTarget(ISuperCamTarget *target) {
+    rAssertMsg(false, "Only call SetTarget on the BurnoutCam");
 }
 
 //=============================================================================
@@ -149,10 +148,8 @@ inline void BurnoutCam::AddTarget( ISuperCamTarget* target )
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int BurnoutCam::GetNumTargets() const
-{
-    if ( mTarget )
-    {
+inline unsigned int BurnoutCam::GetNumTargets() const {
+    if (mTarget) {
         return 1;
     }
 

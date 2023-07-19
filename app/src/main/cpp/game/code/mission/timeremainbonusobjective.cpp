@@ -44,10 +44,9 @@
 // Return:      N/A.
 //
 //=============================================================================
-TimeRemainBonusObjective::TimeRemainBonusObjective() : mMinTime( 0 )
-{
-    SetType( BonusObjective::TIME );
-    SetSuccessful( true );
+TimeRemainBonusObjective::TimeRemainBonusObjective() : mMinTime(0) {
+    SetType(BonusObjective::TIME);
+    SetSuccessful(true);
 }
 
 //=============================================================================
@@ -60,8 +59,7 @@ TimeRemainBonusObjective::TimeRemainBonusObjective() : mMinTime( 0 )
 // Return:      N/A.
 //
 //=============================================================================
-TimeRemainBonusObjective::~TimeRemainBonusObjective()
-{
+TimeRemainBonusObjective::~TimeRemainBonusObjective() {
 }
 
 //=============================================================================
@@ -74,8 +72,7 @@ TimeRemainBonusObjective::~TimeRemainBonusObjective()
 // Return:      void 
 //
 //=============================================================================
-void TimeRemainBonusObjective::Initialize()
-{
+void TimeRemainBonusObjective::Initialize() {
 }
 
 //=============================================================================
@@ -88,8 +85,7 @@ void TimeRemainBonusObjective::Initialize()
 // Return:      void 
 //
 //=============================================================================
-void TimeRemainBonusObjective::Finalize()
-{
+void TimeRemainBonusObjective::Finalize() {
 }
 
 //=============================================================================
@@ -102,11 +98,10 @@ void TimeRemainBonusObjective::Finalize()
 // Return:      unsigned 
 //
 //=============================================================================
-unsigned int TimeRemainBonusObjective::GetNumericData()
-{
-    rAssert( mMission );
+unsigned int TimeRemainBonusObjective::GetNumericData() {
+    rAssert(mMission);
 
-    return (static_cast<unsigned int>(mMission->GetMissionTimeLeftInMilliSeconds()) );
+    return (static_cast<unsigned int>(mMission->GetMissionTimeLeftInMilliSeconds()));
 }
 
 
@@ -126,9 +121,8 @@ unsigned int TimeRemainBonusObjective::GetNumericData()
 // Return:      void 
 //
 //=============================================================================
-void TimeRemainBonusObjective::OnReset()
-{
-    SetSuccessful( true );
+void TimeRemainBonusObjective::OnReset() {
+    SetSuccessful(true);
 }
 
 //=============================================================================
@@ -141,8 +135,7 @@ void TimeRemainBonusObjective::OnReset()
 // Return:      void 
 //
 //=============================================================================
-void TimeRemainBonusObjective::OnStart()
-{
+void TimeRemainBonusObjective::OnStart() {
     //Turn on the HUD.
 }
 
@@ -151,19 +144,16 @@ void TimeRemainBonusObjective::OnStart()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void TimeRemainBonusObjective::OnUpdate( unsigned int milliseconds )
-{
-    if ( GetStarted() && GetSuccessful() )
-    {
-        if ( mMission->GetMissionTimeLeftInMilliSeconds() > 0 && 
-             static_cast<unsigned int>(mMission->GetMissionTimeLeftInMilliSeconds()) < mMinTime )
-        {
-            SetSuccessful( false );
+void TimeRemainBonusObjective::OnUpdate(unsigned int milliseconds) {
+    if (GetStarted() && GetSuccessful()) {
+        if (mMission->GetMissionTimeLeftInMilliSeconds() > 0 &&
+            static_cast<unsigned int>(mMission->GetMissionTimeLeftInMilliSeconds()) < mMinTime) {
+            SetSuccessful(false);
             //Update the HUD
         }
     }

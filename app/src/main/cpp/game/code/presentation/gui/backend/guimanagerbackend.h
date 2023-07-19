@@ -29,40 +29,43 @@ const unsigned int IS_LOADING_GAMEPLAY = 1;
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiManagerBackEnd : public CGuiManager
-{
-    public:
+class CGuiManagerBackEnd : public CGuiManager {
+public:
 
-        CGuiManagerBackEnd( Scrooby::Project* pProject,
-                            CGuiEntity* pParent );
+    CGuiManagerBackEnd(Scrooby::Project *pProject,
+                       CGuiEntity *pParent);
 
-        virtual ~CGuiManagerBackEnd();
+    virtual ~CGuiManagerBackEnd();
 
-        virtual void Populate();
-        virtual void Start( CGuiWindow::eGuiWindowID initialWindow = CGuiWindow::GUI_WINDOW_ID_UNDEFINED );
-		virtual void HandleMessage( eGuiMessage message, 
-			                        unsigned int param1 = 0,
-									unsigned int param2 = 0 );
+    virtual void Populate();
 
-    private:
+    virtual void
+    Start(CGuiWindow::eGuiWindowID initialWindow = CGuiWindow::GUI_WINDOW_ID_UNDEFINED);
 
-        //---------------------------------------------------------------------
-        // Private Functions
-        //---------------------------------------------------------------------
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-        // No copying or assignment. Declare but don't define.
-        //
-        CGuiManagerBackEnd( const CGuiManagerBackEnd& );
-        CGuiManagerBackEnd& operator= ( const CGuiManagerBackEnd& );
+private:
 
-        void GotoLoadingScreen( unsigned int param1 );
+    //---------------------------------------------------------------------
+    // Private Functions
+    //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // Private Data
-        //---------------------------------------------------------------------
+    // No copying or assignment. Declare but don't define.
+    //
+    CGuiManagerBackEnd(const CGuiManagerBackEnd &);
 
-        bool m_isQuittingDemo;
-        bool m_isBackendPreRun;
+    CGuiManagerBackEnd &operator=(const CGuiManagerBackEnd &);
+
+    void GotoLoadingScreen(unsigned int param1);
+
+    //---------------------------------------------------------------------
+    // Private Data
+    //---------------------------------------------------------------------
+
+    bool m_isQuittingDemo;
+    bool m_isBackendPreRun;
 
 };
 

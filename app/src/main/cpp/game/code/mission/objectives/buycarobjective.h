@@ -27,24 +27,25 @@
 //
 //=============================================================================
 
-class BuyCarObjective : public MissionObjective
-{
+class BuyCarObjective : public MissionObjective {
 public:
     BuyCarObjective();
+
     virtual ~BuyCarObjective();
 
-    void SetVehicleName( const char* name );
+    void SetVehicleName(const char *name);
 
 protected:
 
-    virtual void OnUpdate( unsigned int elapsedTime );
+    virtual void OnUpdate(unsigned int elapsedTime);
 
 private:
-    char* mVehicleName;
+    char *mVehicleName;
 
     //Prevent wasteful constructor creation.
-    BuyCarObjective( const BuyCarObjective& buycarobjective );
-    BuyCarObjective& operator=( const BuyCarObjective& buycarobjective );
+    BuyCarObjective(const BuyCarObjective &buycarobjective);
+
+    BuyCarObjective &operator=(const BuyCarObjective &buycarobjective);
 };
 
 //*****************************************************************************

@@ -61,9 +61,8 @@ float TRACKER_CAM_MAX_DIST = 25.0f;
 //
 //==============================================================================
 TrackerCam::TrackerCam() :
-    mTarget( NULL ),
-    mFOVDelta( 0.0f )
-{
+        mTarget(NULL),
+        mFOVDelta(0.0f) {
     mIm = InputManager::GetInstance();
 }
 
@@ -77,8 +76,7 @@ TrackerCam::TrackerCam() :
 // Return:      N/A.
 //
 //==============================================================================
-TrackerCam::~TrackerCam()
-{
+TrackerCam::~TrackerCam() {
 }
 
 //=============================================================================
@@ -86,89 +84,81 @@ TrackerCam::~TrackerCam()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void TrackerCam::Update( unsigned int milliseconds )
-{
-    if ( GetFlag( (Flag)CUT ) )
-    {
+void TrackerCam::Update(unsigned int milliseconds) {
+    if (GetFlag((Flag) CUT)) {
         //Reset the FOV.
-        SetFOV( SUPERCAM_FOV );//DEFAULT_FOV );
-        SetFlag( (Flag)CUT, false );
+        SetFOV(SUPERCAM_FOV);//DEFAULT_FOV);
+        SetFlag((Flag) CUT, false);
     }
 
     //This is to adjust interpolation when we're running substeps.
-    float timeMod = (float)milliseconds / (float)16;
+    float timeMod = (float) milliseconds / (float) 16;
 
-    float xAxis = mIm->GetValue( s_secondaryControllerID, InputManager::LeftStickX );
-    float yAxis = mIm->GetValue( s_secondaryControllerID, InputManager::LeftStickY );
-    float zAxis = mIm->GetValue( s_secondaryControllerID, InputManager::LeftStickY );
-    float zToggle = mIm->GetValue( s_secondaryControllerID, InputManager::AnalogL1 );
-    float zoom = mIm->GetValue( s_secondaryControllerID, InputManager::AnalogR1 );
+    float xAxis = mIm->GetValue(s_secondaryControllerID, InputManager::LeftStickX);
+    float yAxis = mIm->GetValue(s_secondaryControllerID, InputManager::LeftStickY);
+    float zAxis = mIm->GetValue(s_secondaryControllerID, InputManager::LeftStickY);
+    float zToggle = mIm->GetValue(s_secondaryControllerID, InputManager::AnalogL1);
+    float zoom = mIm->GetValue(s_secondaryControllerID, InputManager::AnalogR1);
 
-    if ( rmt::Fabs( zToggle ) > STICK_DEAD_ZONE && rmt::Fabs( zToggle ) <= 1.0f )
-    {
+    if (rmt::Fabs(zToggle) > STICK_DEAD_ZONE && rmt::Fabs(zToggle) <= 1.0f) {
         //zToggled
         yAxis = 0.0f;
-    }
-    else
-    {
+    } else {
         zAxis = 0.0f;
     }
 
     rmt::Vector targetPos, camPos;
     rmt::Vector desiredPosition;
 
-    mTarget->GetPosition( &targetPos );
-    GetPosition( &camPos );
+    mTarget->GetPosition(&targetPos);
+    GetPosition(&camPos);
 
     desiredPosition = targetPos;
 
     //---------  Figure out where to move the camera...
-    
+
     rmt::Vector rod;
-    rod.Sub( camPos, targetPos );
+    rod.Sub(camPos, targetPos);
     float magnitude, rotation, elevation;
 
-    rmt::CartesianToSpherical( rod.x, rod.z, rod.y, &magnitude, &rotation, &elevation );
+    rmt::CartesianToSpherical(rod.x, rod.z, rod.y, &magnitude, &rotation, &elevation);
 
-    rotation += ( xAxis * TRACKER_CAM_INCREMENT * timeMod );
-    elevation -= ( yAxis * TRACKER_CAM_INCREMENT * timeMod );
-    magnitude -= ( zAxis * TRACKER_CAM_DIST * timeMod );
+    rotation += (xAxis * TRACKER_CAM_INCREMENT * timeMod);
+    elevation -= (yAxis * TRACKER_CAM_INCREMENT * timeMod);
+    magnitude -= (zAxis * TRACKER_CAM_DIST * timeMod);
 
-    if ( elevation < 0.05f )
-    {
+    if (elevation < 0.05f) {
         elevation = 0.05f;
-    }
-    else if ( elevation > rmt::PI_BY2 )
-    {
+    } else if (elevation > rmt::PI_BY2) {
         elevation = rmt::PI_BY2;
     }
-    
-    if ( magnitude < 2.0f )
-    {
+
+    if (magnitude < 2.0f) {
         magnitude = 2.0f;
     }
 
-    rmt::SphericalToCartesian( magnitude, rotation, elevation, &rod.x, &rod.z, &rod.y );
+    rmt::SphericalToCartesian(magnitude, rotation, elevation, &rod.x, &rod.z, &rod.y);
 
-    desiredPosition.Add( rod );
+    desiredPosition.Add(rod);
 
     //---------  Goofin' with the FOV
 
     rmt::Vector posToTarg;
-    posToTarg.Sub( targetPos, desiredPosition );
+    posToTarg.Sub(targetPos, desiredPosition);
     float dist = posToTarg.Magnitude(); //Square root!
     float FOV = GetFOV();
 
-    DoWrecklessZoom( dist, TRACKER_CAM_MIN_DIST, TRACKER_CAM_MAX_DIST, mData.GetMinFOV(), mData.GetMaxFOV(),  FOV, mFOVDelta, mData.GetFOVLag(), timeMod );
+    DoWrecklessZoom(dist, TRACKER_CAM_MIN_DIST, TRACKER_CAM_MAX_DIST, mData.GetMinFOV(),
+                    mData.GetMaxFOV(), FOV, mFOVDelta, mData.GetFOVLag(), timeMod);
 
-    SetFOV( FOV );
+    SetFOV(FOV);
 
-    SetCameraValues( milliseconds, desiredPosition, targetPos );
+    SetCameraValues(milliseconds, desiredPosition, targetPos);
 }
 
 //******************************************************************************
@@ -186,18 +176,17 @@ void TrackerCam::Update( unsigned int milliseconds )
 // Return:      void 
 //
 //=============================================================================
-void TrackerCam::OnRegisterDebugControls()
-{
+void TrackerCam::OnRegisterDebugControls() {
 #ifdef DEBUGWATCH
     char nameSpace[256];
-    sprintf( nameSpace, "SuperCam\\Player%d\\Tracker", GetPlayerID() );
+    sprintf(nameSpace, "SuperCam\\Player%d\\Tracker", GetPlayerID());
 
-    radDbgWatchAddFloat( &mData.mMinFOV, "Min FOV", nameSpace, NULL, NULL, 0.0f, rmt::PI );
-    radDbgWatchAddFloat( &mData.mMaxFOV, "Max FOV", nameSpace, NULL, NULL, 0.0f, rmt::PI );
-    radDbgWatchAddFloat( &mData.mFOVLag, "FOV Lag", nameSpace, NULL, NULL, 0.0f, 1.0f );
+    radDbgWatchAddFloat(&mData.mMinFOV, "Min FOV", nameSpace, NULL, NULL, 0.0f, rmt::PI);
+    radDbgWatchAddFloat(&mData.mMaxFOV, "Max FOV", nameSpace, NULL, NULL, 0.0f, rmt::PI);
+    radDbgWatchAddFloat(&mData.mFOVLag, "FOV Lag", nameSpace, NULL, NULL, 0.0f, 1.0f);
 
-    radDbgWatchAddFloat( &TRACKER_CAM_MIN_DIST, "Min Dist", nameSpace, NULL, NULL, 1.0f, 50.0f );
-    radDbgWatchAddFloat( &TRACKER_CAM_MAX_DIST, "Max Dist", nameSpace, NULL, NULL, 1.0f, 50.0f );
+    radDbgWatchAddFloat(&TRACKER_CAM_MIN_DIST, "Min Dist", nameSpace, NULL, NULL, 1.0f, 50.0f);
+    radDbgWatchAddFloat(&TRACKER_CAM_MAX_DIST, "Max Dist", nameSpace, NULL, NULL, 1.0f, 50.0f);
 #endif
 }
 
@@ -211,14 +200,13 @@ void TrackerCam::OnRegisterDebugControls()
 // Return:      void 
 //
 //=============================================================================
-void TrackerCam::OnUnregisterDebugControls()
-{
+void TrackerCam::OnUnregisterDebugControls() {
 #ifdef DEBUGWATCH
-    radDbgWatchDelete( &mData.mMinFOV );
-    radDbgWatchDelete( &mData.mMaxFOV );
-    radDbgWatchDelete( &mData.mFOVLag );
+    radDbgWatchDelete(&mData.mMinFOV);
+    radDbgWatchDelete(&mData.mMaxFOV);
+    radDbgWatchDelete(&mData.mFOVLag);
 
-    radDbgWatchDelete( &TRACKER_CAM_MIN_DIST );
-    radDbgWatchDelete( &TRACKER_CAM_MAX_DIST );
+    radDbgWatchDelete(&TRACKER_CAM_MIN_DIST);
+    radDbgWatchDelete(&TRACKER_CAM_MAX_DIST);
 #endif
 }

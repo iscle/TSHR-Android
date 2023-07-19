@@ -63,34 +63,32 @@
 //
 //===========================================================================
 CGuiScreenPlayMovie::CGuiScreenPlayMovie
-(
-    Scrooby::Screen* pScreen,
-    CGuiEntity* pParent,
-    eGuiWindowID windowID
-)
-:   CGuiScreen( pScreen, pParent, windowID ),
-    m_demoText( NULL ),
-    m_elapsedTime( 0 ),
-	m_IsSkippable(true)
-//    m_tvFrame( NULL )
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent,
+                eGuiWindowID windowID
+        )
+        : CGuiScreen(pScreen, pParent, windowID),
+          m_demoText(NULL),
+          m_elapsedTime(0),
+          m_IsSkippable(true)
+//    m_tvFrame(NULL)
 {
     // Retrieve the Scrooby drawing elements.
     //
-    Scrooby::Page* pPage = m_pScroobyScreen->GetPage( "Demo" );
-    if( pPage != NULL )
-    {
-        m_demoText = pPage->GetText( "Demo" );
-        rAssert( m_demoText != NULL );
+    Scrooby::Page *pPage = m_pScroobyScreen->GetPage("Demo");
+    if (pPage != NULL) {
+        m_demoText = pPage->GetText("Demo");
+        rAssert(m_demoText != NULL);
     }
 
 /*
     // background TV frame layer
     //
-    m_tvFrame = pPage->GetLayer( "TVFrame" );
+    m_tvFrame = pPage->GetLayer("TVFrame");
 */
 
-    if( windowID == GUI_SCREEN_ID_PLAY_MOVIE )
-    {
+    if (windowID == GUI_SCREEN_ID_PLAY_MOVIE) {
         // invert fading; ie. fade out during transition in, and vice versa
         //
         m_inverseFading = true;
@@ -110,8 +108,7 @@ CGuiScreenPlayMovie::CGuiScreenPlayMovie
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenPlayMovie::~CGuiScreenPlayMovie()
-{
+CGuiScreenPlayMovie::~CGuiScreenPlayMovie() {
 }
 
 
@@ -128,43 +125,37 @@ CGuiScreenPlayMovie::~CGuiScreenPlayMovie()
 //
 //===========================================================================
 void CGuiScreenPlayMovie::HandleMessage
-(
-	eGuiMessage message, 
-	unsigned int param1,
-	unsigned int param2 
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        switch( message )
-        {
-            case GUI_MSG_UPDATE:
-            {
-                GetPresentationManager()->Update( param1 );
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        switch (message) {
+            case GUI_MSG_UPDATE: {
+                GetPresentationManager()->Update(param1);
 
-                if( m_demoText != NULL )
-                {
+                if (m_demoText != NULL) {
                     m_elapsedTime += param1;
 
                     const unsigned int BLINK_PERIOD = 250;
-                    bool blinked = GuiSFX::Blink( m_demoText,
-                                                (float)m_elapsedTime,
-                                                (float)BLINK_PERIOD );
-                    if( blinked )
-                    {
+                    bool blinked = GuiSFX::Blink(m_demoText,
+                                                 (float) m_elapsedTime,
+                                                 (float) BLINK_PERIOD);
+                    if (blinked) {
                         m_elapsedTime %= BLINK_PERIOD;
                     }
                 }
 /*
-                if( m_state == GUI_WINDOW_STATE_OUTRO )
+                if(m_state == GUI_WINDOW_STATE_OUTRO)
                 {
-                    if( m_numTransitionsPending <= 0 )
+                    if(m_numTransitionsPending <= 0)
                     {
                         // restore the background TV frame
                         //
-                        if( m_tvFrame != NULL )
+                        if(m_tvFrame != NULL)
                         {
-                            m_tvFrame->SetVisible( true );
+                            m_tvFrame->SetVisible(true);
                         }
                     }
                 }
@@ -172,8 +163,7 @@ void CGuiScreenPlayMovie::HandleMessage
                 break;
             }
 
-            case GUI_MSG_CONTROLLER_BACK:
-            {
+            case GUI_MSG_CONTROLLER_BACK: {
                 // don't allow user to back out of screen, must be done
                 // by skipping movie
                 //
@@ -182,60 +172,59 @@ void CGuiScreenPlayMovie::HandleMessage
                 break;
             }
 
-            default:
-            {
+            default: {
                 break;
             }
         }
     }
 
-	// Propogate the message up the hierarchy.
-	//
-	CGuiScreen::HandleMessage( message, param1, param2 );
+    // Propogate the message up the hierarchy.
+    //
+    CGuiScreen::HandleMessage(message, param1, param2);
 }
 
 
 void
-CGuiScreenPlayMovie::SetMovieToPlay( const char* movieName, bool IsSkippable, bool KillMusic, bool IsLocalized )
-{
-    rAssert( movieName != NULL );
+CGuiScreenPlayMovie::SetMovieToPlay(const char *movieName, bool IsSkippable, bool KillMusic,
+                                    bool IsLocalized) {
+    rAssert(movieName != NULL);
 
-    FMVEvent* pEvent = NULL;
-    GetPresentationManager()->QueueFMV( &pEvent, this );
+    FMVEvent *pEvent = NULL;
+    GetPresentationManager()->QueueFMV(&pEvent, this);
 
-    strcpy( pEvent->fileName, movieName );
-    pEvent->SetRenderLayer( RenderEnums::PresentationSlot );
-    pEvent->SetAutoPlay( false );
-    pEvent->SetClearWhenDone( true );
-	pEvent->SetSkippable(IsSkippable);
+    strcpy(pEvent->fileName, movieName);
+    pEvent->SetRenderLayer(RenderEnums::PresentationSlot);
+    pEvent->SetAutoPlay(false);
+    pEvent->SetClearWhenDone(true);
+    pEvent->SetSkippable(IsSkippable);
 
 #ifdef PAL
-    if( IsLocalized )
+    if(IsLocalized)
     {
-        switch( CGuiTextBible::GetCurrentLanguage() )
+        switch(CGuiTextBible::GetCurrentLanguage())
         {
             case Scrooby::XL_FRENCH:
             {
-                pEvent->SetAudioIndex( FMVEvent::AUDIO_INDEX_FRENCH );
+                pEvent->SetAudioIndex(FMVEvent::AUDIO_INDEX_FRENCH);
 
                 break;
             }
             case Scrooby::XL_GERMAN:
             {
-                pEvent->SetAudioIndex( FMVEvent::AUDIO_INDEX_GERMAN );
+                pEvent->SetAudioIndex(FMVEvent::AUDIO_INDEX_GERMAN);
 
                 break;
             }
             case Scrooby::XL_SPANISH:
             {
-                pEvent->SetAudioIndex( FMVEvent::AUDIO_INDEX_SPANISH );
+                pEvent->SetAudioIndex(FMVEvent::AUDIO_INDEX_SPANISH);
 
                 break;
             }
             default:
             {
-                rAssert( CGuiTextBible::GetCurrentLanguage() == Scrooby::XL_ENGLISH );
-                pEvent->SetAudioIndex( FMVEvent::AUDIO_INDEX_ENGLISH );
+                rAssert(CGuiTextBible::GetCurrentLanguage() == Scrooby::XL_ENGLISH);
+                pEvent->SetAudioIndex(FMVEvent::AUDIO_INDEX_ENGLISH);
 
                 break;
             }
@@ -244,11 +233,10 @@ CGuiScreenPlayMovie::SetMovieToPlay( const char* movieName, bool IsSkippable, bo
     else
 #endif // PAL
     {
-        pEvent->SetAudioIndex( FMVEvent::AUDIO_INDEX_ENGLISH );
+        pEvent->SetAudioIndex(FMVEvent::AUDIO_INDEX_ENGLISH);
     }
 
-    if( KillMusic )
-    {
+    if (KillMusic) {
         pEvent->KillMusic();
     }
 }
@@ -259,13 +247,12 @@ CGuiScreenPlayMovie::SetMovieToPlay( const char* movieName, bool IsSkippable, bo
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( PresentationEvent* pEvent )
+// Parameters:  (PresentationEvent* pEvent)
 //
 // Return:      void 
 //
 //=============================================================================
-void CGuiScreenPlayMovie::OnPresentationEventBegin( PresentationEvent* pEvent )
-{
+void CGuiScreenPlayMovie::OnPresentationEventBegin(PresentationEvent *pEvent) {
     GetSoundManager()->StopForMovie();
 }
 
@@ -275,13 +262,12 @@ void CGuiScreenPlayMovie::OnPresentationEventBegin( PresentationEvent* pEvent )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( PresentationEvent* pEvent )
+// Parameters:  (PresentationEvent* pEvent)
 //
 // Return:      void 
 //
 //=============================================================================
-void CGuiScreenPlayMovie::OnPresentationEventLoadComplete( PresentationEvent* pEvent )
-{
+void CGuiScreenPlayMovie::OnPresentationEventLoadComplete(PresentationEvent *pEvent) {
 }
 
 
@@ -290,45 +276,35 @@ void CGuiScreenPlayMovie::OnPresentationEventLoadComplete( PresentationEvent* pE
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( PresentationEvent* pEvent )
+// Parameters:  (PresentationEvent* pEvent)
 //
 // Return:      void 
 //
 //=============================================================================
-void CGuiScreenPlayMovie::OnPresentationEventEnd( PresentationEvent* pEvent )
-{
-    if( GetPresentationManager()->IsQueueEmpty() )
-    {
+void CGuiScreenPlayMovie::OnPresentationEventEnd(PresentationEvent *pEvent) {
+    if (GetPresentationManager()->IsQueueEmpty()) {
         GetSoundManager()->ResumeAfterMovie();
 
-        if( m_ID == GUI_SCREEN_ID_PLAY_MOVIE_INTRO )
-        {
+        if (m_ID == GUI_SCREEN_ID_PLAY_MOVIE_INTRO) {
             // finished playing intro movie, now go to main menu
             //
-            m_pParent->HandleMessage( GUI_MSG_GOTO_SCREEN,
-                                      GUI_SCREEN_ID_INTRO_TRANSITION,
-                                      CLEAR_WINDOW_HISTORY );
-        }
-        else if( m_ID == GUI_SCREEN_ID_PLAY_MOVIE_NEW_GAME )
-        {
+            m_pParent->HandleMessage(GUI_MSG_GOTO_SCREEN,
+                                     GUI_SCREEN_ID_INTRO_TRANSITION,
+                                     CLEAR_WINDOW_HISTORY);
+        } else if (m_ID == GUI_SCREEN_ID_PLAY_MOVIE_NEW_GAME) {
             // finished playing new game movie, now quit the FE
             //
-            m_pParent->HandleMessage( GUI_MSG_QUIT_FRONTEND, 1 ); // 1 = one player
-        }
-        else
-        {
-            rAssert( m_guiManager );
+            m_pParent->HandleMessage(GUI_MSG_QUIT_FRONTEND, 1); // 1 = one player
+        } else {
+            rAssert(m_guiManager);
             eGuiWindowID previousScreen = m_guiManager->GetPreviousScreen();
-            if( previousScreen == GUI_SCREEN_ID_VIEW_MOVIES )
-            {
-                this->StartTransitionAnimation( 1005, 1035 );
-            }
-            else if( previousScreen == GUI_SCREEN_ID_OPTIONS )
-            {
-                this->StartTransitionAnimation( 630, 660 );
+            if (previousScreen == GUI_SCREEN_ID_VIEW_MOVIES) {
+                this->StartTransitionAnimation(1005, 1035);
+            } else if (previousScreen == GUI_SCREEN_ID_OPTIONS) {
+                this->StartTransitionAnimation(630, 660);
             }
 
-            m_pParent->HandleMessage( GUI_MSG_BACK_SCREEN );
+            m_pParent->HandleMessage(GUI_MSG_BACK_SCREEN);
         }
     }
 }
@@ -346,27 +322,25 @@ void CGuiScreenPlayMovie::OnPresentationEventEnd( PresentationEvent* pEvent )
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPlayMovie::InitIntro()
-{
-    rAssertMsg( !GetPresentationManager()->IsQueueEmpty(),
-                "ERROR: *** No movies were queued for playing!" );
+void CGuiScreenPlayMovie::InitIntro() {
+    rAssertMsg(!GetPresentationManager()->IsQueueEmpty(),
+               "ERROR: *** No movies were queued for playing!");
 
-    if( m_demoText != NULL )
-    {
-        m_demoText->SetVisible( false );
+    if (m_demoText != NULL) {
+        m_demoText->SetVisible(false);
         m_elapsedTime = 0;
     }
 
 #ifdef RAD_WIN32
-    GetInputManager()->GetFEMouse()->SetInGameMode( true );
+    GetInputManager()->GetFEMouse()->SetInGameMode(true);
 #endif
 
 /*
     // hide background TV frame so we can fade in/out the foreground one
     //
-    if( m_tvFrame != NULL )
+    if(m_tvFrame != NULL)
     {
-        m_tvFrame->SetVisible( false );
+        m_tvFrame->SetVisible(false);
     }
 */
 }
@@ -384,29 +358,26 @@ void CGuiScreenPlayMovie::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPlayMovie::InitRunning()
-{
-    if( m_ID == GUI_SCREEN_ID_PLAY_MOVIE_DEMO )
-    {
+void CGuiScreenPlayMovie::InitRunning() {
+    if (m_ID == GUI_SCREEN_ID_PLAY_MOVIE_DEMO) {
         // disable screen clearing for GUI render layer
         //
-        GetRenderManager()->mpLayer( RenderEnums::GUI )->pView( 0 )->SetClearMask( PDDI_BUFFER_DEPTH | PDDI_BUFFER_STENCIL );
-    }
-    else
-    {
-        GetRenderManager()->mpLayer( RenderEnums::GUI )->Chill();
+        GetRenderManager()->mpLayer(RenderEnums::GUI)->pView(0)->SetClearMask(
+                PDDI_BUFFER_DEPTH | PDDI_BUFFER_STENCIL);
+    } else {
+        GetRenderManager()->mpLayer(RenderEnums::GUI)->Chill();
     }
 
     GetPresentationManager()->GetFMVPlayer()->Play();
 
 #ifdef FINAL
-    if( m_ID == GUI_SCREEN_ID_PLAY_MOVIE_NEW_GAME )
+    if(m_ID == GUI_SCREEN_ID_PLAY_MOVIE_NEW_GAME)
     {
         // disable skipping of new game movie
         //
         FMVUserInputHandler* userInputHandler = GetPresentationManager()->GetFMVPlayer()->GetUserInputHandler();
-        rAssert( userInputHandler != NULL );
-        userInputHandler->SetEnabled( false );
+        rAssert(userInputHandler != NULL);
+        userInputHandler->SetEnabled(false);
     }
 #endif
 }
@@ -424,31 +395,27 @@ void CGuiScreenPlayMovie::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPlayMovie::InitOutro()
-{
-    if( m_ID == GUI_SCREEN_ID_PLAY_MOVIE_DEMO )
-    {
+void CGuiScreenPlayMovie::InitOutro() {
+    if (m_ID == GUI_SCREEN_ID_PLAY_MOVIE_DEMO) {
         // enable screen clearing
         //
-        GetRenderManager()->mpLayer(RenderEnums::GUI)->pView( 0 )->SetClearMask( PDDI_BUFFER_ALL );
-    }
-    else
-    {
-        GetRenderManager()->mpLayer( RenderEnums::GUI )->Warm();
+        GetRenderManager()->mpLayer(RenderEnums::GUI)->pView(0)->SetClearMask(PDDI_BUFFER_ALL);
+    } else {
+        GetRenderManager()->mpLayer(RenderEnums::GUI)->Warm();
     }
 
 #ifdef RAD_WIN32
-    GetInputManager()->GetFEMouse()->SetInGameMode( false );
+    GetInputManager()->GetFEMouse()->SetInGameMode(false);
 #endif
 
 #ifdef FINAL
-    if( m_ID == GUI_SCREEN_ID_PLAY_MOVIE_NEW_GAME )
+    if(m_ID == GUI_SCREEN_ID_PLAY_MOVIE_NEW_GAME)
     {
         // re-enable FMV user inputs
         //
         FMVUserInputHandler* userInputHandler = GetPresentationManager()->GetFMVPlayer()->GetUserInputHandler();
-        rAssert( userInputHandler != NULL );
-        userInputHandler->SetEnabled( true );
+        rAssert(userInputHandler != NULL);
+        userInputHandler->SetEnabled(true);
     }
 #endif
 }

@@ -11,9 +11,9 @@
 //       which make up an OctTree.
 //    -NOR the data solely salient to the individual processes that
 //       might be run on the OctTree.
-//    (ie, it's expected that only one OctTreeData instance exist )
-//    (for every OctTree, which is managed by an OctTreeManager   )
-//    (and consists of a series of linked OctTreeNode's           ) 
+//    (ie, it's expected that only one OctTreeData instance exist)
+//    (for every OctTree, which is managed by an OctTreeManager)
+//    (and consists of a series of linked OctTreeNode's)
 //
 // Useful to:
 //    -OctTreeNode
@@ -23,7 +23,6 @@
 #include <render/culling/OctTreeConst.h>
 #include <render/culling/OctTreeParams.h>
 #include <render/culling/CoordSubList.h>
-
 
 
 #endif

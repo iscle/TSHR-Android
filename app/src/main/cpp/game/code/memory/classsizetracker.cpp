@@ -31,8 +31,8 @@
 // Global Data, Local Data, Local Classes
 //
 //=============================================================================
-typedef std::map< tName, int > NAMEINTMAP;
-typedef std::map< tName, bool   > NAMEBOOLMAP;
+typedef std::map<tName, int> NAMEINTMAP;
+typedef std::map<tName, bool> NAMEBOOLMAP;
 NAMEINTMAP  g_NameToClassSize;
 NAMEINTMAP  g_NameToInt;
 NAMEINTMAP  g_TotalMemorySize;
@@ -46,9 +46,9 @@ bool        g_DisableClassTracker;
 //
 //=============================================================================
 
-bool operator<( const tName& left, const tName& right )
+bool operator<(const tName& left, const tName& right)
 {
-    return( left.GetUID() < right.GetUID() );
+    return(left.GetUID() <right.GetUID());
 }
 //==============================================================================
 // ClassSizeTracker::ClassSizeTracker()
@@ -65,7 +65,7 @@ bool operator<( const tName& left, const tName& right )
 //==============================================================================
 ClassSizeTracker::ClassSizeTracker()
 {
-    size_t size = sizeof( ClassSizeTracker );
+    size_t size = sizeof(ClassSizeTracker);
 }
 
 
@@ -82,33 +82,33 @@ ClassSizeTracker::ClassSizeTracker()
 // Constraints: None
 //
 //==============================================================================
-void ClassSizeTracker::RegisterClassSize( const tName& className, const unsigned int size )
+void ClassSizeTracker::RegisterClassSize(const tName& className, const unsigned int size)
 {
-    #ifdef SHUTOFFCLASSSIZETRACKER
+#ifdef SHUTOFFCLASSSIZETRACKER
         return;
-    #endif //SHUTOFFCLASSSIZETRACKER
-    if( !HeapManager::IsCreated() )
+#endif //SHUTOFFCLASSSIZETRACKER
+    if(!HeapManager::IsCreated())
     {
         return;
     }
-    HeapMgr()->PushHeap( GMA_DEFAULT );
+    HeapMgr()->PushHeap(GMA_DEFAULT);
     int& sizeInMap = g_NameToClassSize[ className ];
     sizeInMap = size;
 
     bool& addedYet = g_SizeAddedToWatcher[ className ];
-    if( !addedYet )
+    if(!addedYet)
     {
         bool watcherEnabled = radDebugWatchEnabled();
-        if( watcherEnabled )
+        if(watcherEnabled)
         {
             //
             // Add the variable to the watcher
             //
-            radDbgWatchAddInt( &sizeInMap, className.GetText(), "ClassSizeTracker", NULL, NULL, 0, 1000000, true );
+            radDbgWatchAddInt(&sizeInMap, className.GetText(), "ClassSizeTracker", NULL, NULL, 0, 1000000, true);
             addedYet = true;
         }
     }
-    HeapMgr()->PopHeap( GMA_DEFAULT );
+    HeapMgr()->PopHeap(GMA_DEFAULT);
 }
 
 //==============================================================================
@@ -124,15 +124,15 @@ void ClassSizeTracker::RegisterClassSize( const tName& className, const unsigned
 // Constraints: None
 //
 //==============================================================================
-void ClassSizeTracker::RegisterClassSize( const char* className, const unsigned int size )
+void ClassSizeTracker::RegisterClassSize(const char* className, const unsigned int size)
 {
-    #ifdef SHUTOFFCLASSSIZETRACKER
+#ifdef SHUTOFFCLASSSIZETRACKER
         return;
-    #endif //SHUTOFFCLASSSIZETRACKER
-    if( !HeapManager::IsCreated() )    {        return;    }
-    if( g_DisableClassTracker )        {        return;    }
+#endif //SHUTOFFCLASSSIZETRACKER
+    if(!HeapManager::IsCreated())    {        return;    }
+    if(g_DisableClassTracker)        {        return;    }
     g_DisableClassTracker = true;
-    RegisterClassSize( static_cast< tName >( className ), size );
+    RegisterClassSize(static_cast<tName>(className), size);
     g_DisableClassTracker = false;
 }
 
@@ -149,36 +149,36 @@ void ClassSizeTracker::RegisterClassSize( const char* className, const unsigned 
 // Constraints: None
 //
 //==============================================================================
-void ClassSizeTracker::RegisterCreation( const tName& className )
+void ClassSizeTracker::RegisterCreation(const tName& className)
 {
-    #ifdef SHUTOFFCLASSSIZETRACKER
+#ifdef SHUTOFFCLASSSIZETRACKER
         return;
-    #endif //SHUTOFFCLASSSIZETRACKER
+#endif //SHUTOFFCLASSSIZETRACKER
 
-    if( !HeapManager::IsCreated() )
+    if(!HeapManager::IsCreated())
     {
         return;
     }
-    HeapMgr()->PushHeap( GMA_DEFAULT );
+    HeapMgr()->PushHeap(GMA_DEFAULT);
     int& size = g_NameToInt[ className ];
     int& totalMemorySize = g_TotalMemorySize[ className ];
     ++size;
 
     bool& addedYet = g_AddedToWatcher[ className ];
-    if( !addedYet )
+    if(!addedYet)
     {
         bool watcherEnabled = radDebugWatchEnabled();
-        if( watcherEnabled )
+        if(watcherEnabled)
         {
             //
             // Add the variable to the watcher
             //
-            radDbgWatchAddInt( &size, className.GetText(), "ClassCountTracker", NULL, NULL, 0, 1000000, true );
-            radDbgWatchAddInt( &totalMemorySize, className.GetText(), "ClassTotalSize", NULL, NULL, 0, 1000000, true );
+            radDbgWatchAddInt(&size, className.GetText(), "ClassCountTracker", NULL, NULL, 0, 1000000, true);
+            radDbgWatchAddInt(&totalMemorySize, className.GetText(), "ClassTotalSize", NULL, NULL, 0, 1000000, true);
             addedYet = true;
         }
     }
-    HeapMgr()->PopHeap( GMA_DEFAULT );
+    HeapMgr()->PopHeap(GMA_DEFAULT);
 }
 
 //==============================================================================
@@ -194,17 +194,17 @@ void ClassSizeTracker::RegisterCreation( const tName& className )
 // Constraints: None
 //
 //==============================================================================
-void ClassSizeTracker::RegisterCreation( const char* className )
+void ClassSizeTracker::RegisterCreation(const char* className)
 {
-    #ifdef SHUTOFFCLASSSIZETRACKER
+#ifdef SHUTOFFCLASSSIZETRACKER
         return;
-    #endif //SHUTOFFCLASSSIZETRACKER
+#endif //SHUTOFFCLASSSIZETRACKER
 
-    if( !HeapManager::IsCreated() )    {        return;    }
-    if( g_DisableClassTracker )        {        return;    }
+    if(!HeapManager::IsCreated())    {        return;    }
+    if(g_DisableClassTracker)        {        return;    }
     g_DisableClassTracker = true;
     tName name = className;
-    RegisterCreation( name );
+    RegisterCreation(name);
     g_DisableClassTracker = false;
 }
 
@@ -221,19 +221,19 @@ void ClassSizeTracker::RegisterCreation( const char* className )
 // Constraints: None
 //
 //==============================================================================
-void ClassSizeTracker::RegisterDestruction( const tName& className )
+void ClassSizeTracker::RegisterDestruction(const tName& className)
 {
-    #ifdef SHUTOFFCLASSSIZETRACKER
+#ifdef SHUTOFFCLASSSIZETRACKER
         return;
-    #endif //SHUTOFFCLASSSIZETRACKER
+#endif //SHUTOFFCLASSSIZETRACKER
 
-    if( !HeapManager::IsCreated() )
+    if(!HeapManager::IsCreated())
     {
         return;
     }
 
     int& size = g_NameToInt[ className ];
-    --size;   
+    --size;
 }
 
 //==============================================================================
@@ -249,16 +249,16 @@ void ClassSizeTracker::RegisterDestruction( const tName& className )
 // Constraints: None
 //
 //==============================================================================
-void ClassSizeTracker::RegisterDestruction( const char* className )
+void ClassSizeTracker::RegisterDestruction(const char* className)
 {
-    #ifdef SHUTOFFCLASSSIZETRACKER
+#ifdef SHUTOFFCLASSSIZETRACKER
         return;
-    #endif //SHUTOFFCLASSSIZETRACKER
+#endif //SHUTOFFCLASSSIZETRACKER
 
-    if( !HeapManager::IsCreated() )    {        return;    }
-    if( g_DisableClassTracker )        {        return;    }
+    if(!HeapManager::IsCreated())    {        return;    }
+    if(g_DisableClassTracker)        {        return;    }
     g_DisableClassTracker = true;
-    RegisterDestruction( static_cast< tName >( className ) );
+    RegisterDestruction(static_cast<tName>(className));
     g_DisableClassTracker = false;
 }
 
@@ -275,13 +275,13 @@ void ClassSizeTracker::RegisterDestruction( const char* className )
 // Constraints: None
 //
 //==============================================================================
-void ClassSizeTracker::UpdateTotalMemorySize( const tName& className )
+void ClassSizeTracker::UpdateTotalMemorySize(const tName& className)
 {
-    #ifdef SHUTOFFCLASSSIZETRACKER
+#ifdef SHUTOFFCLASSSIZETRACKER
         return;
-    #endif //SHUTOFFCLASSSIZETRACKER
+#endif //SHUTOFFCLASSSIZETRACKER
 
-    if( !HeapManager::IsCreated() )
+    if(!HeapManager::IsCreated())
     {
         return;
     }
@@ -302,16 +302,16 @@ void ClassSizeTracker::UpdateTotalMemorySize( const tName& className )
 // Constraints: None
 //
 //==============================================================================
-void ClassSizeTracker::UpdateTotalMemorySize( const char* className )
+void ClassSizeTracker::UpdateTotalMemorySize(const char* className)
 {
-    #ifdef SHUTOFFCLASSSIZETRACKER
+#ifdef SHUTOFFCLASSSIZETRACKER
         return;
-    #endif //SHUTOFFCLASSSIZETRACKER
+#endif //SHUTOFFCLASSSIZETRACKER
 
-    if( !HeapManager::IsCreated() )    {        return;    }
-    if( g_DisableClassTracker )        {        return;    }
+    if(!HeapManager::IsCreated())    {        return;    }
+    if(g_DisableClassTracker)        {        return;    }
     g_DisableClassTracker = true;
-    UpdateTotalMemorySize( static_cast< tName >( className ) );
+    UpdateTotalMemorySize(static_cast<tName>(className));
     g_DisableClassTracker = false;
 }
 #endif RAD_RELEASE

@@ -25,7 +25,9 @@
 //===========================================================================
 
 class tAnimatedObject;
+
 class tAnimatedObjectFactory;
+
 class tAnimatedObjectFrameController;
 
 //===========================================================================
@@ -52,41 +54,48 @@ class tAnimatedObjectFrameController;
 //      steady state.
 //
 //===========================================================================
-class BreakableObjectDSG : public InstStatEntityDSG
-{
-    public:
-        BreakableObjectDSG();
-        ~BreakableObjectDSG();
-       
-        void Init( tAnimatedObjectFactory* pFactory, tAnimatedObjectFrameController* pController);
+class BreakableObjectDSG : public InstStatEntityDSG {
+public:
+    BreakableObjectDSG();
 
-        // Update time in milliseconds
-        void Update( float deltaTime );
-        void SetTransform( const rmt::Matrix& transform );
-        
-        void Reset();
-        int LastFrameReached();
- 
+    ~BreakableObjectDSG();
 
-        virtual void Display();
-        virtual void GetBoundingBox(rmt::Box3D* box);
-        virtual void GetBoundingSphere(rmt::Sphere* pSphere);
+    void Init(tAnimatedObjectFactory *pFactory, tAnimatedObjectFrameController *pController);
 
-        virtual rmt::Vector* pPosition();
-        virtual const rmt::Vector& rPosition();
-        virtual void GetPosition( rmt::Vector* ipPosn );
+    // Update time in milliseconds
+    void Update(float deltaTime);
 
-    protected:
+    void SetTransform(const rmt::Matrix &transform);
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow BreakableObjectDSG from being copied and assigned.
-        BreakableObjectDSG( const BreakableObjectDSG& );
-        BreakableObjectDSG& operator=( const BreakableObjectDSG& );
+    void Reset();
 
-        tAnimatedObject* mpObject;
-        tAnimatedObjectFrameController* mpController;
+    int LastFrameReached();
+
+
+    virtual void Display();
+
+    virtual void GetBoundingBox(rmt::Box3D *box);
+
+    virtual void GetBoundingSphere(rmt::Sphere *pSphere);
+
+    virtual rmt::Vector *pPosition();
+
+    virtual const rmt::Vector &rPosition();
+
+    virtual void GetPosition(rmt::Vector *ipPosn);
+
+protected:
+
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow BreakableObjectDSG from being copied and assigned.
+    BreakableObjectDSG(const BreakableObjectDSG &);
+
+    BreakableObjectDSG &operator=(const BreakableObjectDSG &);
+
+    tAnimatedObject *mpObject;
+    tAnimatedObjectFrameController *mpController;
 
 
 };

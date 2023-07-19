@@ -24,24 +24,24 @@
 #include <presentation/gui/guientity.h>
 #include <presentation/gui/guimenuitem.h>
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Page;
+
     class Drawable;
+
     class BoundedDrawable;
+
     class Sprite;
 }
 
-enum eMenuType
-{
+enum eMenuType {
     GUI_TEXT_MENU,
     GUI_SPRITE_MENU,
 
     NUM_MENU_TYPES
 };
 
-enum eMenuSpecialEffect
-{
+enum eMenuSpecialEffect {
     MENU_SFX_NONE = 0,
 
     MENU_SFX_COLOUR_PULSE = 1,
@@ -53,90 +53,102 @@ enum eMenuSpecialEffect
 //===========================================================================
 // Interface Definitions - CGuiMenu
 //===========================================================================
-class CGuiMenu : public CGuiEntity
-{
+class CGuiMenu : public CGuiEntity {
 public:
-    CGuiMenu( CGuiEntity* pParent,
-              int maxNumItems = 1,
-              eMenuType menuType = GUI_TEXT_MENU,
-              int specialEffects = MENU_SFX_SIZE_PULSE );
+    CGuiMenu(CGuiEntity *pParent,
+             int maxNumItems = 1,
+             eMenuType menuType = GUI_TEXT_MENU,
+             int specialEffects = MENU_SFX_SIZE_PULSE);
 
     virtual ~CGuiMenu();
 
-    void HandleMessage( eGuiMessage message, 
-                        unsigned int param1 = 0,
-                        unsigned int param2 = 0 );
+    void HandleMessage(eGuiMessage message,
+                       unsigned int param1 = 0,
+                       unsigned int param2 = 0);
 
-    GuiMenuItem* AddMenuItem( Scrooby::BoundedDrawable* pItem,
-                              Scrooby::BoundedDrawable* pItemValue = NULL,
-                              Scrooby::Polygon* pSlider = NULL,
-                              Scrooby::Sprite* pSliderImage = NULL,
-                              Scrooby::Sprite* pItemValueArrowL = NULL,
-                              Scrooby::Sprite* pItemValueArrowR = NULL,
-                              int attributes = ALL_ATTRIBUTES_ON );
+    GuiMenuItem *AddMenuItem(Scrooby::BoundedDrawable *pItem,
+                             Scrooby::BoundedDrawable *pItemValue = NULL,
+                             Scrooby::Polygon *pSlider = NULL,
+                             Scrooby::Sprite *pSliderImage = NULL,
+                             Scrooby::Sprite *pItemValueArrowL = NULL,
+                             Scrooby::Sprite *pItemValueArrowR = NULL,
+                             int attributes = ALL_ATTRIBUTES_ON);
 
-    void SetMenuItemEnabled( int index, bool enabled,
-                             bool changeVisibility = false );
+    void SetMenuItemEnabled(int index, bool enabled,
+                            bool changeVisibility = false);
 
-    bool IsMenuItemEnabled( int index );
+    bool IsMenuItemEnabled(int index);
 
-    void SetCursor( Scrooby::Drawable* pCursor ) { m_pCursor = pCursor; }
-    Scrooby::Drawable* GetCursor() const { return m_pCursor; }
+    void SetCursor(Scrooby::Drawable *pCursor) { m_pCursor = pCursor; }
+
+    Scrooby::Drawable *GetCursor() const { return m_pCursor; }
 
     // Reset Menu
     //
-    void Reset( int defaultSelection = 0 );
+    void Reset(int defaultSelection = 0);
 
     // Menu Highlight Colour
     //
-    void SetHighlightColour( bool isEnabled, tColour colour );
+    void SetHighlightColour(bool isEnabled, tColour colour);
+
     tColour GetHighlightColour() const { return m_highlightColour; }
 
-    void SetGreyOutEnabled( bool isEnabled ) { m_isGreyOutEnabled = isEnabled; }
+    void SetGreyOutEnabled(bool isEnabled) { m_isGreyOutEnabled = isEnabled; }
 
     // Selection Made Outline Colour
     //
-    void SetSelectionMadeOutlineColour( tColour colour ) { m_selectionMadeOutlineColour = colour; }
+    void SetSelectionMadeOutlineColour(tColour colour) { m_selectionMadeOutlineColour = colour; }
 
     // Set Selection Values and Value Counts
     //
-    void SetSelectionValue( int index, int value );
-    void SetSelectionValueCount( int index, int count );
+    void SetSelectionValue(int index, int value);
+
+    void SetSelectionValueCount(int index, int count);
 
     // Make Menu Selection and Query Menu Selection Made
     //
-    void MakeSelection( bool isSelectionMade = true );
+    void MakeSelection(bool isSelectionMade = true);
+
     bool HasSelectionBeenMade() const { return m_isSelectionMade; }
 
     // Set Specific Controller ID
     //
-    void SetControllerID( int controllerID );
+    void SetControllerID(int controllerID);
 
     // Menu Accessors
     //
-    GuiMenuItem* GetMenuItem( int index ) const;
+    GuiMenuItem *GetMenuItem(int index) const;
+
     int GetNumItems() const { return m_numItems; }
+
     int GetSelection() const { return m_selection; }
-    int GetSelectionValue( int index ) const;
+
+    int GetSelectionValue(int index) const;
 
 protected:
-    enum eSelection { NO_SELECTION = -1 };
+    enum eSelection {
+        NO_SELECTION = -1
+    };
 
-    void SelectItem( int index ); 
-    void UnselectItem( int index );
+    void SelectItem(int index);
 
-    void ChangeSelection( int deltaItems, bool isUserInput = true );
+    void UnselectItem(int index);
+
+    void ChangeSelection(int deltaItems, bool isUserInput = true);
+
 #ifdef RAD_WIN32
-    void SetNewSelection( int newSelection, bool isUserInput = false );
-    void OutlineSelection( bool bOutline = true );
+    void SetNewSelection(int newSelection, bool isUserInput = false);
+    void OutlineSelection(bool bOutline = true);
 #endif
-    void IncrementSelectionValue( bool isUserInput = true );
-    void DecrementSelectionValue( bool isUserInput = true );
+
+    void IncrementSelectionValue(bool isUserInput = true);
+
+    void DecrementSelectionValue(bool isUserInput = true);
 
     eMenuType m_menuType;
     short m_specialEffects; // bitmask
 
-    GuiMenuItem** m_menuItems;
+    GuiMenuItem **m_menuItems;
     int m_numItems;
 
     int m_selection;
@@ -144,18 +156,19 @@ protected:
     bool m_bIsSelectionOutlined;
     tColour m_selectionOutlineColour;
 #endif
-    Scrooby::Drawable* m_pCursor;
-    bool m_isSelectionMade : 1;
+    Scrooby::Drawable *m_pCursor;
+    bool m_isSelectionMade: 1;
 
 private:
-    void UpdateCurrentSelection( int elapsedTime );
-    void MoveCursor( int previousIndex, int nextIndex );
+    void UpdateCurrentSelection(int elapsedTime);
 
-    bool m_isHighlightEnabled : 1;
+    void MoveCursor(int previousIndex, int nextIndex);
+
+    bool m_isHighlightEnabled: 1;
     tColour m_highlightColour;
     tColour m_selectionMadeOutlineColour;
 
-    bool m_isGreyOutEnabled : 1;
+    bool m_isGreyOutEnabled: 1;
 
     unsigned int m_elapsedTime;
     int m_selectionMadeElapsedTime;
@@ -163,40 +176,36 @@ private:
     short m_controllerID;
 };
 
-inline void CGuiMenu::SetControllerID( int controllerID )
-{
-    m_controllerID = static_cast<short>( controllerID );
+inline void CGuiMenu::SetControllerID(int controllerID) {
+    m_controllerID = static_cast<short>(controllerID);
 }
 
-inline GuiMenuItem* CGuiMenu::GetMenuItem( int index ) const
-{
-    rAssert( index >= 0 && index < m_numItems );
-    return m_menuItems[ index ];
+inline GuiMenuItem *CGuiMenu::GetMenuItem(int index) const {
+    rAssert(index >= 0 && index < m_numItems);
+    return m_menuItems[index];
 }
 
-inline int CGuiMenu::GetSelectionValue( int index ) const
-{
-    rAssert( index >= 0 && index < m_numItems );
-    return m_menuItems[ index ]->GetItemValueIndex();
+inline int CGuiMenu::GetSelectionValue(int index) const {
+    rAssert(index >= 0 && index < m_numItems);
+    return m_menuItems[index]->GetItemValueIndex();
 }
 
 //===========================================================================
 // Interface Definitions - CGuiMenu2D
 //===========================================================================
-class CGuiMenu2D : public CGuiMenu
-{
+class CGuiMenu2D : public CGuiMenu {
 public:
-    CGuiMenu2D( CGuiEntity* pParent,
-                int numItems,
-                int numColumns,
-                eMenuType menuType = GUI_TEXT_MENU,
-                int specialEffects = MENU_SFX_SIZE_PULSE );
+    CGuiMenu2D(CGuiEntity *pParent,
+               int numItems,
+               int numColumns,
+               eMenuType menuType = GUI_TEXT_MENU,
+               int specialEffects = MENU_SFX_SIZE_PULSE);
 
     virtual ~CGuiMenu2D();
 
-    void HandleMessage( eGuiMessage message, 
-                        unsigned int param1 = 0,
-                        unsigned int param2 = 0 );
+    void HandleMessage(eGuiMessage message,
+                       unsigned int param1 = 0,
+                       unsigned int param2 = 0);
 
 private:
     short m_numColumns;
@@ -206,11 +215,9 @@ private:
 //===========================================================================
 // Interface Definitions - CGuiMenuPrompt
 //===========================================================================
-class CGuiMenuPrompt : public CGuiMenu
-{
+class CGuiMenuPrompt : public CGuiMenu {
 public:
-    enum ePromptResponse
-    {
+    enum ePromptResponse {
         RESPONSE_NO,
         RESPONSE_YES,
         RESPONSE_CONTINUE,
@@ -231,16 +238,19 @@ public:
 
     static const int MAX_NUM_RESPONSES = 3;
 
-    CGuiMenuPrompt( CGuiEntity* pParent,
-                    Scrooby::Page* pPage,
-                    int numResponses = MAX_NUM_RESPONSES,
-                    int specialEffects = MENU_SFX_SIZE_PULSE );
+    CGuiMenuPrompt(CGuiEntity *pParent,
+                   Scrooby::Page *pPage,
+                   int numResponses = MAX_NUM_RESPONSES,
+                   int specialEffects = MENU_SFX_SIZE_PULSE);
 
     virtual ~CGuiMenuPrompt();
 
-    void SetNumResponses( int numResponses );
-    void SetResponse( int index, ePromptResponse response );
-    ePromptResponse GetResponse( int index ) const;
+    void SetNumResponses(int numResponses);
+
+    void SetResponse(int index, ePromptResponse response);
+
+    ePromptResponse GetResponse(int index) const;
+
     ePromptResponse GetCurrentResponse() const;
 
 private:

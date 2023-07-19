@@ -33,73 +33,73 @@ class FileHandler
 //:
 //public IRefCount
 {
-    public:
-      
-        FileHandler(): m_RefCount( 0 ) {}
-        virtual ~FileHandler() {}
+public:
 
-        //----------------------------------------------------------------------
-        // ASYNCHRONOUS LOADING
-        //----------------------------------------------------------------------
+    FileHandler() : m_RefCount(0) {}
 
-        //
-        // Clients must implement this callback to be notified when the
-        // async load completes.
-        //
-        struct LoadFileCallback
-        {
-            virtual void OnLoadFileComplete( void* pUserData ) = 0;        
-        };
-        
-        //
-        // Load file asynchronously.
-        //
-        virtual void LoadFile( const char* filename, 
-                               FileHandler::LoadFileCallback* pCallback,
-                               void* pUserData,
-                               GameMemoryAllocator heap ) = 0;
+    virtual ~FileHandler() {}
 
-        //----------------------------------------------------------------------
-        // SYNCHRONOUS LOADING
-        //----------------------------------------------------------------------
-        
+    //----------------------------------------------------------------------
+    // ASYNCHRONOUS LOADING
+    //----------------------------------------------------------------------
+
+    //
+    // Clients must implement this callback to be notified when the
+    // async load completes.
+    //
+    struct LoadFileCallback {
+        virtual void OnLoadFileComplete(void *pUserData) = 0;
+    };
+
+    //
+    // Load file asynchronously.
+    //
+    virtual void LoadFile(const char *filename,
+                          FileHandler::LoadFileCallback *pCallback,
+                          void *pUserData,
+                          GameMemoryAllocator heap) = 0;
+
+    //----------------------------------------------------------------------
+    // SYNCHRONOUS LOADING
+    //----------------------------------------------------------------------
+
+    //
+    // Load file synchronously.
+    //
+    virtual void LoadFileSync(const char *filename) = 0;
+
+    virtual void AddRef(void) {
+        m_RefCount++;
+    }
+
+    virtual void Release(void) {
+        // Copy and paste from radobject.hpp
         //
-        // Load file synchronously.
-        //
-        virtual void LoadFileSync( const char* filename ) = 0;
-    
-        virtual void AddRef( void )
-        {
-            m_RefCount++;
+        rAssert(m_RefCount > 0 && m_RefCount < MAX_REFCOUNT);
+        m_RefCount--;
+        if (m_RefCount == 0) {
+            // Must avoid recursive destruction, set refcount to some high
+            // value.
+
+            m_RefCount = MAX_REFCOUNT / 2;
+
+            delete this;
         }
-		virtual void Release( void )
-        {
-            // Copy and paste from radobject.hpp
-            //
-            rAssert( m_RefCount > 0 && m_RefCount <  MAX_REFCOUNT );
-            m_RefCount--;
-            if (m_RefCount == 0 )
-            {
-			    // Must avoid recursive destruction, set refcount to some high
-			    // value.
+    }
 
-			    m_RefCount = MAX_REFCOUNT / 2;
+protected:
 
-                delete this;
-            }           
-        }
-    protected:
+    LoadFileCallback *mpCallback;
+    void *mpUserData;
 
-        LoadFileCallback* mpCallback;
-        void* mpUserData;
+private:
 
-    private:
+    // Declared but not defined to prevent copying and assignment.
+    FileHandler(const FileHandler &);
 
-        // Declared but not defined to prevent copying and assignment.
-        FileHandler( const FileHandler& );
-        FileHandler& operator=( const FileHandler& );
+    FileHandler &operator=(const FileHandler &);
 
-        int m_RefCount;
+    int m_RefCount;
 };
-                   
+
 #endif // FILEHANDLER_H

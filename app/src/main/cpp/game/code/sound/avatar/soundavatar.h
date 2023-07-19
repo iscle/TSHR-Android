@@ -35,42 +35,44 @@ class Avatar;
 //
 //=============================================================================
 
-class SoundAvatar : public EventListener
-{
-    public:
-        SoundAvatar( Avatar* avatarObj );
-        virtual ~SoundAvatar();
+class SoundAvatar : public EventListener {
+public:
+    SoundAvatar(Avatar *avatarObj);
 
-        void HandleEvent( EventEnum id, void* pEventData );
+    virtual ~SoundAvatar();
 
-        void UpdateOncePerFrame( unsigned int elapsedTime );
+    void HandleEvent(EventEnum id, void *pEventData);
 
-    private:
-        //Prevent wasteful constructor creation.
-        SoundAvatar();
-        SoundAvatar( const SoundAvatar& original );
-        SoundAvatar& operator=( const SoundAvatar& rhs );
-        
-        void syncCarSoundState();
+    void UpdateOncePerFrame(unsigned int elapsedTime);
 
-        //
-        // Avatar object that we're going to keep an eye on
-        //
-        Avatar* m_avatar;
+private:
+    //Prevent wasteful constructor creation.
+    SoundAvatar();
 
-        //
-        // Is the player in the car?
-        //
-        bool m_isInCar;
+    SoundAvatar(const SoundAvatar &original);
 
-        //
-        // Object for playing vehicle sounds
-        VehicleSoundPlayer m_vehicleSoundPlayer;
+    SoundAvatar &operator=(const SoundAvatar &rhs);
 
-        //
-        // Timer for character sprinting
-        //
-        unsigned int m_turboTimer;
+    void syncCarSoundState();
+
+    //
+    // Avatar object that we're going to keep an eye on
+    //
+    Avatar *m_avatar;
+
+    //
+    // Is the player in the car?
+    //
+    bool m_isInCar;
+
+    //
+    // Object for playing vehicle sounds
+    VehicleSoundPlayer m_vehicleSoundPlayer;
+
+    //
+    // Timer for character sprinting
+    //
+    unsigned int m_turboTimer;
 };
 
 

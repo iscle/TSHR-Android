@@ -28,46 +28,58 @@
 //
 //=============================================================================
 
-class VehicleSoundDebugPage : public SoundDebugPage
-{
-    public:
-        VehicleSoundDebugPage( unsigned int pageNum, SoundDebugDisplay* master );
-        virtual ~VehicleSoundDebugPage();
+class VehicleSoundDebugPage : public SoundDebugPage {
+public:
+    VehicleSoundDebugPage(unsigned int pageNum, SoundDebugDisplay *master);
 
-        void SetShiftInProgress( bool inProgress ) { m_shiftInProgress = inProgress; }
-        void SetCurrentGear( int gear ) { m_currentGear = gear; }
-        void SetCurrentSpeed( float speed ) { m_currentSpeed = speed; }
-        void SetShiftTime( unsigned int time ) { m_shiftTime = time; }
-        void SetDownshiftSpeed( float speed ) { m_downshiftSpeed = speed; }
-        void SetUpshiftSpeed( float speed ) { m_upshiftSpeed = speed; }
-        void SetCurrentPitch( float pitch ) { m_currentPitch = pitch; }
-        void SetDamageEnabled( bool isDamaged ) { m_isDamaged = isDamaged; }
-        void SetVehicleLife( float life ) { m_vehicleLife = life; }
-        void SetDamageThreshold( float threshold ) { m_damageThreshold = threshold; }
+    virtual ~VehicleSoundDebugPage();
 
-    protected:
-        //
-        // Pure virtual functions from SoundDebugPage
-        //
-        void fillLineBuffer( int lineNum, char* buffer );
-        int getNumLines();
+    void SetShiftInProgress(bool inProgress) { m_shiftInProgress = inProgress; }
 
-    private:
-        //Prevent wasteful constructor creation.
-        VehicleSoundDebugPage();
-        VehicleSoundDebugPage( const VehicleSoundDebugPage& original );
-        VehicleSoundDebugPage& operator=( const VehicleSoundDebugPage& rhs );
+    void SetCurrentGear(int gear) { m_currentGear = gear; }
 
-        bool m_shiftInProgress;
-        int m_currentGear;
-        float m_currentSpeed;
-        unsigned int m_shiftTime;
-        float m_downshiftSpeed;
-        float m_upshiftSpeed;
-        float m_currentPitch;
-        bool m_isDamaged;
-        float m_vehicleLife;
-        float m_damageThreshold;
+    void SetCurrentSpeed(float speed) { m_currentSpeed = speed; }
+
+    void SetShiftTime(unsigned int time) { m_shiftTime = time; }
+
+    void SetDownshiftSpeed(float speed) { m_downshiftSpeed = speed; }
+
+    void SetUpshiftSpeed(float speed) { m_upshiftSpeed = speed; }
+
+    void SetCurrentPitch(float pitch) { m_currentPitch = pitch; }
+
+    void SetDamageEnabled(bool isDamaged) { m_isDamaged = isDamaged; }
+
+    void SetVehicleLife(float life) { m_vehicleLife = life; }
+
+    void SetDamageThreshold(float threshold) { m_damageThreshold = threshold; }
+
+protected:
+    //
+    // Pure virtual functions from SoundDebugPage
+    //
+    void fillLineBuffer(int lineNum, char *buffer);
+
+    int getNumLines();
+
+private:
+    //Prevent wasteful constructor creation.
+    VehicleSoundDebugPage();
+
+    VehicleSoundDebugPage(const VehicleSoundDebugPage &original);
+
+    VehicleSoundDebugPage &operator=(const VehicleSoundDebugPage &rhs);
+
+    bool m_shiftInProgress;
+    int m_currentGear;
+    float m_currentSpeed;
+    unsigned int m_shiftTime;
+    float m_downshiftSpeed;
+    float m_upshiftSpeed;
+    float m_currentPitch;
+    bool m_isDamaged;
+    float m_vehicleLife;
+    float m_damageThreshold;
 };
 
 

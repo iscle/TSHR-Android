@@ -41,32 +41,38 @@
 //
 //
 //===========================================================================
-class ActorAnimation
-{
-    public:
-        ActorAnimation(){}
-        virtual ~ActorAnimation(){ }
-        virtual void SetState( int state )=0;
-        // Apply animation, return true/false indicating whether or not the returned animation is different
-        // from the given one
-        virtual bool Update( const rmt::Matrix& currTransform, rmt::Matrix* newTransform, float deltaTime, tCompositeDrawable* = NULL )=0;
+class ActorAnimation {
+public:
+    ActorAnimation() {}
 
-    protected:
-        
-            
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow ActorAnimation from being copied and assigned.
+    virtual ~ActorAnimation() {}
+
+    virtual void SetState(int state) = 0;
+
+    // Apply animation, return true/false indicating whether or not the returned animation is different
+    // from the given one
+    virtual bool
+    Update(const rmt::Matrix &currTransform, rmt::Matrix *newTransform, float deltaTime,
+           tCompositeDrawable * = NULL) = 0;
+
+protected:
+
+
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow ActorAnimation from being copied and assigned.
 };
 
-class StatePropDSGProcAnimator
-{
+class StatePropDSGProcAnimator {
 public:
     StatePropDSGProcAnimator() {};
+
     virtual ~StatePropDSGProcAnimator() {};
-    virtual void Advance( float Deltams ) {};
-    virtual void UpdateForRender( tCompositeDrawable* Drawable ) {};
+
+    virtual void Advance(float Deltams) {};
+
+    virtual void UpdateForRender(tCompositeDrawable *Drawable) {};
 };
 
 #endif

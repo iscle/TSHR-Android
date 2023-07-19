@@ -21,8 +21,7 @@
 // Interface Definitions
 //===========================================================================
 
-class ConfigString
-{
+class ConfigString {
 public:
     // The character used to tag sections.
     // Cannot be used in names.
@@ -36,8 +35,7 @@ public:
     static const int MaxLength = 80;
 
     // Defines the two modes that config strings can be in.
-    enum ConfigStringMode
-    {
+    enum ConfigStringMode {
         Read,
         Write
     };
@@ -46,39 +44,44 @@ public:
     // Creates a config string.
     // For reading, size is the size of the string buffer.
     // For writing, size is the max size of the buffer.
-    ConfigString( ConfigStringMode mode, int size );
+    ConfigString(ConfigStringMode mode, int size);
+
     ~ConfigString();
 
     // Returns the mode - read / write
     ConfigStringMode GetMode() const { return mMode; }
+
     // Returns the string buffer for reading/writing to a file.
-    char* GetBuffer() { return mBuffer; }
+    char *GetBuffer() { return mBuffer; }
+
     // Returns the size of hte string buffer.
     int GetSize() const { return mSize; }
-        
+
     // Reads the next section title, returning true if one is found.
-    bool ReadSection( char* section );
+    bool ReadSection(char *section);
+
     // Reads the next property.  these are bracketed by sections.
-    bool ReadProperty( char* property, char* value );
+    bool ReadProperty(char *property, char *value);
 
     // Writes a section.  These bracket properties.
-    void WriteSection( const char* section );
+    void WriteSection(const char *section);
+
     // Writes a property.
-    void WriteProperty( const char* property, const char* value );
+    void WriteProperty(const char *property, const char *value);
 
 private:
     // Reads the next non-empty line starting from the cursor.
     // Saves a max number of <MaxLength> characters to buffer, to avoid overflows.
     // The cursor is advanced to the end of the line regardless.
     // Returns true if a line is read, false if there are no more.
-    bool GetLine( char* buffer );
+    bool GetLine(char *buffer);
 
 private:
     ConfigStringMode mMode;
-    char*            mBuffer;
-    char*            mCursor;
+    char *mBuffer;
+    char *mCursor;
 
-    int              mSize;
+    int mSize;
 };
 
 #endif // CONFIGSTRING_H

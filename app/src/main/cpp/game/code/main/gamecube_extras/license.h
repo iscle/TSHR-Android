@@ -959,5 +959,5 @@
 
 static const unsigned int LICENSE_SIZE = 72771;
 
-static const char* LICENSE_NAME = "license.png";
+static const char *LICENSE_NAME = "license.png";
 

@@ -38,126 +38,127 @@
 //******************************************************************************
 
 EventTableEntry eventTable[] =
-{
-    { "GIC", 0, EVENT_GETINTOVEHICLE_START, 2500 },
-    { "GOC", 0, EVENT_GETOUTOFVEHICLE_START, 2500 },
-    { "convinit", 0, EVENT_CONVERSATION_INIT_DIALOG, 2500 },
-    { "noboxconv", 0, EVENT_IN_GAMEPLAY_CONVERSATION, 2500 },
-    { "tutorial", 0, EVENT_TUTORIAL_DIALOG_PLAY, 2500 },
-    { "Mcrash", 0, EVENT_MINOR_VEHICLE_CRASH, 2500 },
-    { "Bcrash", 0, EVENT_BIG_VEHICLE_CRASH, 2500 },
-    { "Arrive", 0, EVENT_DESTINATION_REACHED, 2500 },
-    { "Air", 0, EVENT_BIG_AIR, 2500 },
-    { "Burn", 0, EVENT_BURNOUT, 2500 },
-    { "ObjectW", 0, EVENT_COLLECT_OBJECT, 2500 },
-    { "Break", 0, EVENT_HIT_BREAKABLE, 2500 },
-    { "Mfail", 0, EVENT_MISSION_FAILURE, 4000 },
-    { "Mvic", 0, EVENT_MISSION_SUCCESS_DIALOG, 4000 },
-    { "Tail", 0, EVENT_TAIL_LOST_DIALOG, 2500 },
-    { "NewAI", 0, EVENT_CHASE_VEHICLE_PROXIMITY, 2500 },
-    { "Time", 0, EVENT_TIME_RUNNING_OUT, 2500 },
-    { "Pass", 0, EVENT_RACE_PASSED_AI, 2500 },
-    { "Passed", 0, EVENT_RACE_GOT_PASSED_BY_AI, 2500 },
-    { "Activate", 0, EVENT_BIG_RED_SWITCH_PRESSED, 250 },  // Make this quite short
-    { "Fall", 0, EVENT_DEATH_VOLUME_SOUND, 2500 },
-    { "Char", 0, EVENT_PEDESTRIAN_SMACKDOWN, 2500 },
-    { "HitByW", 0, EVENT_KICK_NPC_SOUND, 2500 },
-    { "BreakCa", 0, EVENT_BREAK_CAMERA_OR_BOX, 2500 },
-    { "Turbo", 0, EVENT_CHARACTER_TIRED_NOW, 2500 },
-    { "Springboard", 0, static_cast<EventEnum>(EVENT_LOCATOR + LocatorEvent::BOUNCEPAD), 2500 },
-    { "NHitByC", 0, EVENT_PEDESTRIAN_DODGE, 2500 },
-    { "HitByC", 0, EVENT_PLAYER_CAR_HIT_NPC, 2500 },
-    { "HitP", 0, EVENT_PLAYER_MAKES_LIGHT_OF_CAR_HITTING_NPC, 2500 },
-    { "Damage", 0, EVENT_BIG_CRASH, 2500 },
-    { "Door", 0, EVENT_WRONG_SIDE_DUMBASS, 2500 },
-    { "CarWay", 0, EVENT_TRAFFIC_IMPEDED, 2500 },
-    { "Doorbell", 0, EVENT_DING_DONG, 2500 },
-    { "Askride", 0, EVENT_PHONE_BOOTH_RIDE_REQUEST, 0 },
-    { "Ridereply", 0, EVENT_PHONE_BOOTH_NEW_VEHICLE_SELECTED, 0 },
-    { "Answer", 0, EVENT_PHONE_BOOTH_OLD_VEHICLE_RESELECTED, 0 },
-    { "HitCar", 0, EVENT_VILLAIN_CAR_HIT_PLAYER, 2500 },
-    { "Greeting", 0, EVENT_AMBIENT_GREETING, 2500 },
-    { "Idlereply", 0, EVENT_AMBIENT_RESPONSE, 0 },
-    { "Askfood", 0, EVENT_AMBIENT_ASKFOOD, 2500 },
-    { "Foodreply", 0, EVENT_AMBIENT_FOODREPLY, 0 },
-    { "CarBuy", 0, EVENT_HAGGLING_WITH_GIL, 2500 },
-    { "Dcar", 0, EVENT_BIG_BOOM_SOUND, 5000 },
-    { "Card", 0, EVENT_CARD_COLLECTED, 2500 },
-    { "Mstart", 0, EVENT_MISSION_BRIEFING_ACCEPTED, 0 }
-};
+        {
+                {"GIC",         0, EVENT_GETINTOVEHICLE_START,                      2500},
+                {"GOC",         0, EVENT_GETOUTOFVEHICLE_START,                     2500},
+                {"convinit",    0, EVENT_CONVERSATION_INIT_DIALOG,                  2500},
+                {"noboxconv",   0, EVENT_IN_GAMEPLAY_CONVERSATION,                  2500},
+                {"tutorial",    0, EVENT_TUTORIAL_DIALOG_PLAY,                      2500},
+                {"Mcrash",      0, EVENT_MINOR_VEHICLE_CRASH,                       2500},
+                {"Bcrash",      0, EVENT_BIG_VEHICLE_CRASH,                         2500},
+                {"Arrive",      0, EVENT_DESTINATION_REACHED,                       2500},
+                {"Air",         0, EVENT_BIG_AIR,                                   2500},
+                {"Burn",        0, EVENT_BURNOUT,                                   2500},
+                {"ObjectW",     0, EVENT_COLLECT_OBJECT,                            2500},
+                {"Break",       0, EVENT_HIT_BREAKABLE,                             2500},
+                {"Mfail",       0, EVENT_MISSION_FAILURE,                           4000},
+                {"Mvic",        0, EVENT_MISSION_SUCCESS_DIALOG,                    4000},
+                {"Tail",        0, EVENT_TAIL_LOST_DIALOG,                          2500},
+                {"NewAI",       0, EVENT_CHASE_VEHICLE_PROXIMITY,                   2500},
+                {"Time",        0, EVENT_TIME_RUNNING_OUT,                          2500},
+                {"Pass",        0, EVENT_RACE_PASSED_AI,                            2500},
+                {"Passed",      0, EVENT_RACE_GOT_PASSED_BY_AI,                     2500},
+                {"Activate",    0, EVENT_BIG_RED_SWITCH_PRESSED,                    250},  // Make this quite short
+                {"Fall",        0, EVENT_DEATH_VOLUME_SOUND,                        2500},
+                {"Char",        0, EVENT_PEDESTRIAN_SMACKDOWN,                      2500},
+                {"HitByW",      0, EVENT_KICK_NPC_SOUND,                            2500},
+                {"BreakCa",     0, EVENT_BREAK_CAMERA_OR_BOX,                       2500},
+                {"Turbo",       0, EVENT_CHARACTER_TIRED_NOW,                       2500},
+                {"Springboard", 0, static_cast<EventEnum>(EVENT_LOCATOR +
+                                                          LocatorEvent::BOUNCEPAD), 2500},
+                {"NHitByC",     0, EVENT_PEDESTRIAN_DODGE,                          2500},
+                {"HitByC",      0, EVENT_PLAYER_CAR_HIT_NPC,                        2500},
+                {"HitP",        0, EVENT_PLAYER_MAKES_LIGHT_OF_CAR_HITTING_NPC,     2500},
+                {"Damage",      0, EVENT_BIG_CRASH,                                 2500},
+                {"Door",        0, EVENT_WRONG_SIDE_DUMBASS,                        2500},
+                {"CarWay",      0, EVENT_TRAFFIC_IMPEDED,                           2500},
+                {"Doorbell",    0, EVENT_DING_DONG,                                 2500},
+                {"Askride",     0, EVENT_PHONE_BOOTH_RIDE_REQUEST,                  0},
+                {"Ridereply",   0, EVENT_PHONE_BOOTH_NEW_VEHICLE_SELECTED,          0},
+                {"Answer",      0, EVENT_PHONE_BOOTH_OLD_VEHICLE_RESELECTED,        0},
+                {"HitCar",      0, EVENT_VILLAIN_CAR_HIT_PLAYER,                    2500},
+                {"Greeting",    0, EVENT_AMBIENT_GREETING,                          2500},
+                {"Idlereply",   0, EVENT_AMBIENT_RESPONSE,                          0},
+                {"Askfood",     0, EVENT_AMBIENT_ASKFOOD,                           2500},
+                {"Foodreply",   0, EVENT_AMBIENT_FOODREPLY,                         0},
+                {"CarBuy",      0, EVENT_HAGGLING_WITH_GIL,                         2500},
+                {"Dcar",        0, EVENT_BIG_BOOM_SOUND,                            5000},
+                {"Card",        0, EVENT_CARD_COLLECTED,                            2500},
+                {"Mstart",      0, EVENT_MISSION_BRIEFING_ACCEPTED,                 0}
+        };
 
-static unsigned int eventTableLength = sizeof( eventTable ) / sizeof( EventTableEntry );
+static unsigned int eventTableLength = sizeof(eventTable) / sizeof(EventTableEntry);
 
 CharacterTableEntry characterTable[] =
-{
-    { 0, "Hom", 0, "homer" },
-    { 0, "Mrg", 0, "marge" },
-    { 0, "Brt", 0, "bart" },
-    { 0, "Lis", 0, "lisa" },
-    { 0, "Apu", 0, "apu" },
-    { 0, "Agn", 0, "askinner" },
-    { 0, "Brn", 0, "barney" },
-    { 0, "Bee", 0, "beeman" },
-    { 0, "Crl", 0, "carl" },
-    { 0, "Cbg", 0, "cbg" },
-    { 0, "Clt", 0, "cletus" },
-    { 0, "Dol", 0, "dolph" },
-    { 0, "Nic", 0, "nriviera" },
-    { 0, "Frk", 0, "frink" },
-    { 0, "Fla", 0, "ned" },
-    { 0, "By1", 0, "boy1" },
-    { 0, "By2", 0, "boy2" },
-    { 0, "Fm1", 0, "fem1" },
-    { 0, "Fm2", 0, "fem2" },
-    { 0, "Gil", 0, "gil" },
-    { 0, "Gr1", 0, "girl1" },
-    { 0, "Gr2", 0, "girl2" },
-    { 0, "Kan", 0, "kang" },
-    { 0, "Kod", 0, "kodos" },
-    { 0, "Mn1", 0, "male1" },
-    { 0, "Mn2", 0, "male2" },
-    { 0, "Grp", 0, "grandpa" },
-    { 0, "Mol", 0, "moleman" },
-    { 0, "Jas", 0, "jasper" },
-    { 0, "Jim", 0, "jimbo" },
-    { 0, "Kea", 0, "kearney" },
-    { 0, "Kru", 0, "krusty" },
-    { 0, "Len", 0, "lenny" },
-    { 0, "Loe", 0, "lou" },
-    { 0, "Lou", 0, "louie" },
-    { 0, "Mil", 0, "milhouse" },
-    { 0, "Moe", 0, "moe" },
-    { 0, "Nel", 0, "nelson" },
-    { 0, "Oto", 0, "otto" },
-    { 0, "Pat", 0, "patty" },
-    { 0, "Qim", 0, "quimby" },
-    { 0, "Ral", 0, "ralph" },
-    { 0, "Sea", 0, "captain" },
-    { 0, "Sel", 0, "selma" },
-    { 0, "Skn", 0, "skinner" },
-    { 0, "Smi", 0, "smithers" },
-    { 0, "Snk", 0, "snake" },
-    { 0, "Svt", 0, "teen" },
-    { 0, "Wig", 0, "wiggum" },
-    { 0, "Wil", 0, "willie" },
-    { 0, "Zom", 0, "zombie" },
-    { 0, "Zm1", 0, "zombie1" },
-    { 0, "Zm2", 0, "zombie2" },
-    { 0, "Zm3", 0, "zombie3" },
-    { 0, "Zm4", 0, "zombie4" },
-    { 0, "Hib", 0, "hibbert" },
-    { 0, "Bur", 0, "burns" },
-    { 0, "Rod", 0, "rod" },
-    { 0, "Todd", 0, "todd" },
-    { 0, "Bkm", 0, "brockman" },
-    { 0, "Hbn", 0, "homerbrain" },
-    { 0, "Vm1", 0, "traffic1" },
-    { 0, "Vm2", 0, "traffic2" },
-    { 0, "Vm3", 0, "traffic3" },
-    { 0, "Vm4", 0, "traffic4" }
-};
+        {
+                {0, "Hom",  0, "homer"},
+                {0, "Mrg",  0, "marge"},
+                {0, "Brt",  0, "bart"},
+                {0, "Lis",  0, "lisa"},
+                {0, "Apu",  0, "apu"},
+                {0, "Agn",  0, "askinner"},
+                {0, "Brn",  0, "barney"},
+                {0, "Bee",  0, "beeman"},
+                {0, "Crl",  0, "carl"},
+                {0, "Cbg",  0, "cbg"},
+                {0, "Clt",  0, "cletus"},
+                {0, "Dol",  0, "dolph"},
+                {0, "Nic",  0, "nriviera"},
+                {0, "Frk",  0, "frink"},
+                {0, "Fla",  0, "ned"},
+                {0, "By1",  0, "boy1"},
+                {0, "By2",  0, "boy2"},
+                {0, "Fm1",  0, "fem1"},
+                {0, "Fm2",  0, "fem2"},
+                {0, "Gil",  0, "gil"},
+                {0, "Gr1",  0, "girl1"},
+                {0, "Gr2",  0, "girl2"},
+                {0, "Kan",  0, "kang"},
+                {0, "Kod",  0, "kodos"},
+                {0, "Mn1",  0, "male1"},
+                {0, "Mn2",  0, "male2"},
+                {0, "Grp",  0, "grandpa"},
+                {0, "Mol",  0, "moleman"},
+                {0, "Jas",  0, "jasper"},
+                {0, "Jim",  0, "jimbo"},
+                {0, "Kea",  0, "kearney"},
+                {0, "Kru",  0, "krusty"},
+                {0, "Len",  0, "lenny"},
+                {0, "Loe",  0, "lou"},
+                {0, "Lou",  0, "louie"},
+                {0, "Mil",  0, "milhouse"},
+                {0, "Moe",  0, "moe"},
+                {0, "Nel",  0, "nelson"},
+                {0, "Oto",  0, "otto"},
+                {0, "Pat",  0, "patty"},
+                {0, "Qim",  0, "quimby"},
+                {0, "Ral",  0, "ralph"},
+                {0, "Sea",  0, "captain"},
+                {0, "Sel",  0, "selma"},
+                {0, "Skn",  0, "skinner"},
+                {0, "Smi",  0, "smithers"},
+                {0, "Snk",  0, "snake"},
+                {0, "Svt",  0, "teen"},
+                {0, "Wig",  0, "wiggum"},
+                {0, "Wil",  0, "willie"},
+                {0, "Zom",  0, "zombie"},
+                {0, "Zm1",  0, "zombie1"},
+                {0, "Zm2",  0, "zombie2"},
+                {0, "Zm3",  0, "zombie3"},
+                {0, "Zm4",  0, "zombie4"},
+                {0, "Hib",  0, "hibbert"},
+                {0, "Bur",  0, "burns"},
+                {0, "Rod",  0, "rod"},
+                {0, "Todd", 0, "todd"},
+                {0, "Bkm",  0, "brockman"},
+                {0, "Hbn",  0, "homerbrain"},
+                {0, "Vm1",  0, "traffic1"},
+                {0, "Vm2",  0, "traffic2"},
+                {0, "Vm3",  0, "traffic3"},
+                {0, "Vm4",  0, "traffic4"}
+        };
 
-static unsigned int characterTableLength = sizeof( characterTable ) / sizeof( CharacterTableEntry );
+static unsigned int characterTableLength = sizeof(characterTable) / sizeof(CharacterTableEntry);
 
 //
 // The food guys
@@ -187,18 +188,16 @@ static const int MY_FILENAME_BUFFER_LEN = 150;
 // Return:      N/A.
 //
 //==============================================================================
-DialogLine::DialogLine( IDaSoundResource* resource )
-{
+DialogLine::DialogLine(IDaSoundResource *resource) {
     m_resource = resource;
     m_characterIndex = -1;
     m_role = ROLE_NONE;
     m_conversationPosition = NOT_CONVERSATION_LINE;
     m_ConversationName = 0;
-    
+
     static bool tablesInitialized = false;
 
-    if( !tablesInitialized )
-    {
+    if (!tablesInitialized) {
         initializeTables();
         tablesInitialized = true;
     }
@@ -216,8 +215,7 @@ DialogLine::DialogLine( IDaSoundResource* resource )
 // Return:      N/A.
 //
 //==============================================================================
-DialogLine::~DialogLine()
-{
+DialogLine::~DialogLine() {
 }
 
 //==============================================================================
@@ -232,11 +230,10 @@ DialogLine::~DialogLine()
 // Return:      N/A.
 //
 //==============================================================================
-void DialogLine::PlayLine( unsigned int lineIndex,
-                           SimpsonsSoundPlayer& player,
-                           SimpsonsSoundPlayerCallback* callback )
-{
-    player.PlayResource( m_resource, callback );
+void DialogLine::PlayLine(unsigned int lineIndex,
+                          SimpsonsSoundPlayer &player,
+                          SimpsonsSoundPlayerCallback *callback) {
+    player.PlayResource(m_resource, callback);
 }
 
 //=============================================================================
@@ -250,9 +247,8 @@ void DialogLine::PlayLine( unsigned int lineIndex,
 // Return:      void 
 //
 //=============================================================================
-void DialogLine::QueueLine( unsigned int lineIndex, SimpsonsSoundPlayer& player )
-{
-    player.QueueSound( m_resource );
+void DialogLine::QueueLine(unsigned int lineIndex, SimpsonsSoundPlayer &player) {
+    player.QueueSound(m_resource);
 }
 
 //=============================================================================
@@ -266,10 +262,9 @@ void DialogLine::QueueLine( unsigned int lineIndex, SimpsonsSoundPlayer& player 
 // Return:      void 
 //
 //=============================================================================
-void DialogLine::PlayQueuedLine( SimpsonsSoundPlayer& player,
-                                 SimpsonsSoundPlayerCallback* callback )
-{
-    player.PlayQueuedSound( callback );
+void DialogLine::PlayQueuedLine(SimpsonsSoundPlayer &player,
+                                SimpsonsSoundPlayerCallback *callback) {
+    player.PlayQueuedSound(callback);
 }
 
 //=============================================================================
@@ -284,22 +279,17 @@ void DialogLine::PlayQueuedLine( SimpsonsSoundPlayer& player,
 // Return:      void 
 //
 //=============================================================================
-void DialogLine::StripDirectoryCrud( const char* filename, char* buffer, int bufferLen )
-{
-    const char* charPtr;
+void DialogLine::StripDirectoryCrud(const char *filename, char *buffer, int bufferLen) {
+    const char *charPtr;
     int i, j;
     int strippedLength = 0;
 
-    i = strlen( filename );
+    i = strlen(filename);
     charPtr = &(filename[i]);
-    while( i > 0 )
-    {
-        if( ( *charPtr == '/' ) || ( *charPtr == '\\' ) )
-        {
+    while (i > 0) {
+        if ((*charPtr == '/') || (*charPtr == '\\')) {
             break;
-        }
-        else
-        {
+        } else {
             ++strippedLength;
             --i;
             --charPtr;
@@ -309,18 +299,15 @@ void DialogLine::StripDirectoryCrud( const char* filename, char* buffer, int buf
     //
     // Copy stripped filename to buffer
     //
-    if( i > 0 )
-    {
+    if (i > 0) {
         ++charPtr;
     }
 
-    if( strippedLength > bufferLen )
-    {
+    if (strippedLength > bufferLen) {
         strippedLength = bufferLen;
     }
 
-    for( j = 0; j < strippedLength; j++ )
-    {
+    for (j = 0; j < strippedLength; j++) {
         buffer[j] = *charPtr++;
     }
 }
@@ -330,20 +317,16 @@ void DialogLine::StripDirectoryCrud( const char* filename, char* buffer, int buf
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int index )
+// Parameters:  (unsigned int index)
 //
 // Return:      EventTableEntry
 //
 //=============================================================================
-const EventTableEntry* DialogLine::GetEventTableEntry( unsigned int index )
-{
-    if( index >= eventTableLength )
-    {
-        return( NULL );
-    }
-    else
-    {
-        return( &(eventTable[index]) );
+const EventTableEntry *DialogLine::GetEventTableEntry(unsigned int index) {
+    if (index >= eventTableLength) {
+        return (NULL);
+    } else {
+        return (&(eventTable[index]));
     }
 }
 
@@ -357,9 +340,8 @@ const EventTableEntry* DialogLine::GetEventTableEntry( unsigned int index )
 // Return:      table size
 //
 //=============================================================================
-unsigned int DialogLine::GetEventTableSize()
-{
-    return( eventTableLength );
+unsigned int DialogLine::GetEventTableSize() {
+    return (eventTableLength);
 }
 
 //=============================================================================
@@ -367,20 +349,16 @@ unsigned int DialogLine::GetEventTableSize()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int index )
+// Parameters:  (unsigned int index)
 //
 // Return:      CharacterTableEntry
 //
 //=============================================================================
-const CharacterTableEntry* DialogLine::GetCharacterTableEntry( unsigned int index )
-{
-    if( index >= characterTableLength )
-    {
-        return( NULL );
-    }
-    else
-    {
-        return( &(characterTable[index]) );
+const CharacterTableEntry *DialogLine::GetCharacterTableEntry(unsigned int index) {
+    if (index >= characterTableLength) {
+        return (NULL);
+    } else {
+        return (&(characterTable[index]));
     }
 }
 
@@ -394,9 +372,8 @@ const CharacterTableEntry* DialogLine::GetCharacterTableEntry( unsigned int inde
 // Return:      table size
 //
 //=============================================================================
-unsigned int DialogLine::GetCharacterTableSize()
-{
-    return( characterTableLength );
+unsigned int DialogLine::GetCharacterTableSize() {
+    return (characterTableLength);
 }
 
 //=============================================================================
@@ -410,9 +387,8 @@ unsigned int DialogLine::GetCharacterTableSize()
 // Return:      true if character matches this line, false otherwise
 //
 //=============================================================================
-bool DialogLine::UsesCharacter( tUID characterUID )
-{
-    return( characterUID == GetCharacterUID( ) );
+bool DialogLine::UsesCharacter(tUID characterUID) {
+    return (characterUID == GetCharacterUID());
 }
 
 //=============================================================================
@@ -429,18 +405,17 @@ bool DialogLine::UsesCharacter( tUID characterUID )
 // Return:      void 
 //
 //=============================================================================
-void DialogLine::AddMatchingDialog( SelectableDialog& newDialog, SelectableDialogList& list )
-{
-    HeapMgr()->PushHeap( GMA_AUDIO_PERSISTENT );
+void DialogLine::AddMatchingDialog(SelectableDialog &newDialog, SelectableDialogList &list) {
+    HeapMgr()->PushHeap(GMA_AUDIO_PERSISTENT);
 
-    DialogSelectionGroup* group = new DialogSelectionGroup( *this, newDialog );
+    DialogSelectionGroup *group = new DialogSelectionGroup(*this, newDialog);
 
-    rAssert( group != NULL );
+    rAssert(group != NULL);
 
-    list.remove( this );
-    list.push_back( group );
+    list.remove(this);
+    list.push_back(group);
 
-    HeapMgr()->PopHeap( GMA_AUDIO_PERSISTENT );
+    HeapMgr()->PopHeap(GMA_AUDIO_PERSISTENT);
 }
 
 //=============================================================================
@@ -457,8 +432,7 @@ void DialogLine::AddMatchingDialog( SelectableDialog& newDialog, SelectableDialo
 //
 //=============================================================================
 
-void DialogLine::parseConversationName( )
-{    
+void DialogLine::parseConversationName() {
     bool fieldFound;
     char fieldBuffer[FIELD_BUFFER_LEN];
     char filenameBuffer[MY_FILENAME_BUFFER_LEN];
@@ -467,26 +441,23 @@ void DialogLine::parseConversationName( )
     //
     // Strip the directory crud
     //
-    m_resource->GetFileNameAt( 0, tempBuffer, MY_FILENAME_BUFFER_LEN );
-    StripDirectoryCrud( tempBuffer, filenameBuffer, MY_FILENAME_BUFFER_LEN );
+    m_resource->GetFileNameAt(0, tempBuffer, MY_FILENAME_BUFFER_LEN);
+    StripDirectoryCrud(tempBuffer, filenameBuffer, MY_FILENAME_BUFFER_LEN);
 
-    fieldFound = getNameField( filenameBuffer, 0, fieldBuffer, FIELD_BUFFER_LEN );
-    rAssert( fieldFound );
+    fieldFound = getNameField(filenameBuffer, 0, fieldBuffer, FIELD_BUFFER_LEN);
+    rAssert(fieldFound);
 
-    if( ( fieldBuffer[0] == 'C') && ( fieldBuffer[1] == '\0' ) )
-    {
+    if ((fieldBuffer[0] == 'C') && (fieldBuffer[1] == '\0')) {
         //
         // Conversation line
         //
-        fieldFound = getNameField( filenameBuffer, 1, fieldBuffer, FIELD_BUFFER_LEN );
-        m_ConversationName = radMakeKey32( fieldBuffer );
-    }
-    else
-    {
+        fieldFound = getNameField(filenameBuffer, 1, fieldBuffer, FIELD_BUFFER_LEN);
+        m_ConversationName = radMakeKey32(fieldBuffer);
+    } else {
         //
         // Not conversation line
         //
-        rTuneAssert( false );
+        rTuneAssert(false);
     }
 }
 
@@ -501,30 +472,27 @@ void DialogLine::parseConversationName( )
 // Return:      true for Askfood, false for Idlereply 
 //
 //=============================================================================
-bool DialogLine::IsFoodCharacter( Character* theGuy )
-{
+bool DialogLine::IsFoodCharacter(Character *theGuy) {
     tUID UID1;
     bool retVal = false;
 
-    choreo::Puppet* puppet = theGuy->GetPuppet();
-    if( puppet != NULL )
-    {
+    choreo::Puppet *puppet = theGuy->GetPuppet();
+    if (puppet != NULL) {
         UID1 = puppet->GetPose()->GetSkeleton()->GetUID();
 
         //
         // Hard-coded hack
         //
-        rAssert( strcmp( "Apu", characterTable[APU_INDEX].characterString ) == 0 );
-        rAssert( strcmp( "Svt", characterTable[TEEN_INDEX].characterString ) == 0 );
+        rAssert(strcmp("Apu", characterTable[APU_INDEX].characterString) == 0);
+        rAssert(strcmp("Svt", characterTable[TEEN_INDEX].characterString) == 0);
 
-        if( ( UID1 == static_cast< tUID >( characterTable[APU_INDEX].realCharacterUID ) )
-            || ( UID1 == static_cast< tUID >( characterTable[TEEN_INDEX].realCharacterUID ) ) )
-        {
+        if ((UID1 == static_cast<tUID>(characterTable[APU_INDEX].realCharacterUID))
+            || (UID1 == static_cast<tUID>(characterTable[TEEN_INDEX].realCharacterUID))) {
             retVal = true;
         }
     }
 
-    return( retVal );
+    return (retVal);
 }
 
 //=============================================================================
@@ -538,21 +506,18 @@ bool DialogLine::IsFoodCharacter( Character* theGuy )
 // Return:      lifetime in msecs, 0 for infinite lifetime
 //
 //=============================================================================
-unsigned int DialogLine::GetLifeInMsecsForEvent( EventEnum eventID )
-{
+unsigned int DialogLine::GetLifeInMsecsForEvent(EventEnum eventID) {
     unsigned int i;
     unsigned int lifetime = 2500;  // 2.5 sec. default
 
-    for( i = 0; i < eventTableLength; i++ )
-    {
-        if( eventTable[i].event == eventID )
-        {
+    for (i = 0; i < eventTableLength; i++) {
+        if (eventTable[i].event == eventID) {
             lifetime = eventTable[i].lifeInMsecs;
             break;
         }
     }
 
-    return( lifetime );
+    return (lifetime);
 }
 
 //=============================================================================
@@ -568,32 +533,26 @@ unsigned int DialogLine::GetLifeInMsecsForEvent( EventEnum eventID )
 // Return:      void 
 //
 //=============================================================================
-void DialogLine::FillCharacterName( char* buffer, unsigned int bufferSize, tUID characterUID )
-{
+void DialogLine::FillCharacterName(char *buffer, unsigned int bufferSize, tUID characterUID) {
     unsigned int i;
     unsigned int tableSize;
-    const CharacterTableEntry* charTableLine;
+    const CharacterTableEntry *charTableLine;
 
     tableSize = GetCharacterTableSize();
 
-    for( i = 0; i < tableSize; i++ )
-    {
-        charTableLine = GetCharacterTableEntry( i );
-        if( charTableLine->realCharacterUID == characterUID )
-        {
+    for (i = 0; i < tableSize; i++) {
+        charTableLine = GetCharacterTableEntry(i);
+        if (charTableLine->realCharacterUID == characterUID) {
             break;
         }
     }
 
-    if( i < tableSize )
-    {
-        rAssert( strlen( charTableLine->characterString ) < bufferSize );
-        strcpy( buffer, charTableLine->characterString );
-    }
-    else
-    {
-        rAssert( bufferSize >= 4 );
-        strcpy( buffer, "???" );
+    if (i < tableSize) {
+        rAssert(strlen(charTableLine->characterString) < bufferSize);
+        strcpy(buffer, charTableLine->characterString);
+    } else {
+        rAssert(bufferSize >= 4);
+        strcpy(buffer, "???");
     }
 }
 
@@ -610,32 +569,26 @@ void DialogLine::FillCharacterName( char* buffer, unsigned int bufferSize, tUID 
 // Return:      void 
 //
 //=============================================================================
-void DialogLine::FillEventName( char* buffer, unsigned int bufferSize, EventEnum eventID )
-{
+void DialogLine::FillEventName(char *buffer, unsigned int bufferSize, EventEnum eventID) {
     unsigned int i;
     unsigned int tableSize;
-    const EventTableEntry* eventTableLine;
+    const EventTableEntry *eventTableLine;
 
     tableSize = GetEventTableSize();
 
-    for( i = 0; i < tableSize; i++ )
-    {
-        eventTableLine = GetEventTableEntry( i );
-        if( eventTableLine->event == eventID )
-        {
+    for (i = 0; i < tableSize; i++) {
+        eventTableLine = GetEventTableEntry(i);
+        if (eventTableLine->event == eventID) {
             break;
         }
     }
 
-    if( i < tableSize )
-    {
-        rAssert( strlen( eventTableLine->eventString ) < bufferSize );
-        strcpy( buffer, eventTableLine->eventString );
-    }
-    else
-    {
-        rAssert( bufferSize >= 4 );
-        strcpy( buffer, "???" );
+    if (i < tableSize) {
+        rAssert(strlen(eventTableLine->eventString) < bufferSize);
+        strcpy(buffer, eventTableLine->eventString);
+    } else {
+        rAssert(bufferSize >= 4);
+        strcpy(buffer, "???");
     }
 }
 
@@ -649,15 +602,14 @@ void DialogLine::FillEventName( char* buffer, unsigned int bufferSize, EventEnum
 // Return:      void 
 //
 //=============================================================================
-void DialogLine::PrintResourceName()
-{
+void DialogLine::PrintResourceName() {
 #ifndef RAD_RELEASE
     char buffer[256];
 
-    rAssert( m_resource != NULL );
+    rAssert(m_resource != NULL);
 
-    m_resource->GetFileNameAt( 0, buffer, 256 );
-    rDebugPrintf( "DialogLine - %s\n", buffer );
+    m_resource->GetFileNameAt(0, buffer, 256);
+    rDebugPrintf("DialogLine - %s\n", buffer);
 #endif
 }
 
@@ -678,8 +630,7 @@ void DialogLine::PrintResourceName()
 // Return:      void 
 //
 //=============================================================================
-void DialogLine::parseResourceFilename()
-{
+void DialogLine::parseResourceFilename() {
     bool fieldFound;
     char fieldBuffer[FIELD_BUFFER_LEN];
     char filenameBuffer[MY_FILENAME_BUFFER_LEN];
@@ -688,60 +639,55 @@ void DialogLine::parseResourceFilename()
     //
     // Strip the directory crud
     //
-    m_resource->GetFileNameAt( 0, tempBuffer, MY_FILENAME_BUFFER_LEN );
-    StripDirectoryCrud( tempBuffer, filenameBuffer, MY_FILENAME_BUFFER_LEN );
+    m_resource->GetFileNameAt(0, tempBuffer, MY_FILENAME_BUFFER_LEN);
+    StripDirectoryCrud(tempBuffer, filenameBuffer, MY_FILENAME_BUFFER_LEN);
 
-    fieldFound = getNameField( filenameBuffer, 0, fieldBuffer, FIELD_BUFFER_LEN );
-    rAssert( fieldFound );
+    fieldFound = getNameField(filenameBuffer, 0, fieldBuffer, FIELD_BUFFER_LEN);
+    rAssert(fieldFound);
 
-    if( ( fieldBuffer[0] == 'C') && ( fieldBuffer[1] == '\0' ) )
-    {
+    if ((fieldBuffer[0] == 'C') && (fieldBuffer[1] == '\0')) {
         //
         // Conversation line
         //
-        parseConversationName( );
-        matchOrderField( filenameBuffer, 2 );
-        matchEventField( filenameBuffer, 3 );
-        matchCharacterField( filenameBuffer, 4 );
-        matchLevelField( filenameBuffer, 5 );
-    }
-    else
-    {
+        parseConversationName();
+        matchOrderField(filenameBuffer, 2);
+        matchEventField(filenameBuffer, 3);
+        matchCharacterField(filenameBuffer, 4);
+        matchLevelField(filenameBuffer, 5);
+    } else {
         //
         // One-liner
         //
-        matchRoleField( filenameBuffer, 0 );
-        matchEventField( filenameBuffer, 1 );
-        matchCharacterField( filenameBuffer, 2 );
-        matchLevelField( filenameBuffer, 3 );
+        matchRoleField(filenameBuffer, 0);
+        matchEventField(filenameBuffer, 1);
+        matchCharacterField(filenameBuffer, 2);
+        matchLevelField(filenameBuffer, 3);
     }
 }
 
-void DialogLine::matchRoleField( const char* filename, int field )
-{
+void DialogLine::matchRoleField(const char *filename, int field) {
     char buffer[FIELD_BUFFER_LEN];
     bool fieldFound;
 
-    fieldFound = getNameField( filename, field, buffer, FIELD_BUFFER_LEN );
-    rAssert( fieldFound );
+    fieldFound = getNameField(filename, field, buffer, FIELD_BUFFER_LEN);
+    rAssert(fieldFound);
 
-    switch( buffer[0] )
-    {
-    case 'W':
-        m_role = ROLE_WALKER;
-        break;
-    case 'D':
-        m_role = ROLE_DRIVER;
-        break;
-    case 'P':
-        m_role = ROLE_PEDESTRIAN;
-        break;
-    case 'V':
-        m_role = ROLE_VILLAIN;
-        break;
-    default:
-        rAssertMsg( false, "Unknown role field in dialog file\n" );
-        break;
+    switch (buffer[0]) {
+        case 'W':
+            m_role = ROLE_WALKER;
+            break;
+        case 'D':
+            m_role = ROLE_DRIVER;
+            break;
+        case 'P':
+            m_role = ROLE_PEDESTRIAN;
+            break;
+        case 'V':
+            m_role = ROLE_VILLAIN;
+            break;
+        default:
+            rAssertMsg(false, "Unknown role field in dialog file\n");
+            break;
     }
 }
 
@@ -756,8 +702,7 @@ void DialogLine::matchRoleField( const char* filename, int field )
 // Return:      void 
 //
 //=============================================================================
-void DialogLine::matchEventField( const char* filename, int field )
-{
+void DialogLine::matchEventField(const char *filename, int field) {
     unsigned int i;
     char buffer[FIELD_BUFFER_LEN];
     radKey32 fieldKey;
@@ -767,14 +712,12 @@ void DialogLine::matchEventField( const char* filename, int field )
     // Event name.  Use a lookup table to translate to the event
     // enumeration.
     //
-    fieldFound = getNameField( filename, field, buffer, FIELD_BUFFER_LEN );
-    rAssert( fieldFound );
+    fieldFound = getNameField(filename, field, buffer, FIELD_BUFFER_LEN);
+    rAssert(fieldFound);
 
-    fieldKey = ::radMakeCaseInsensitiveKey32( buffer );
-    for( i = 0; i < eventTableLength; i++ )
-    {
-        if( fieldKey == eventTable[i].eventKey )
-        {
+    fieldKey = ::radMakeCaseInsensitiveKey32(buffer);
+    for (i = 0; i < eventTableLength; i++) {
+        if (fieldKey == eventTable[i].eventKey) {
             m_event = eventTable[i].event;
             break;
         }
@@ -792,8 +735,7 @@ void DialogLine::matchEventField( const char* filename, int field )
 // Return:      void 
 //
 //=============================================================================
-void DialogLine::matchOrderField( const char* filename, int field )
-{
+void DialogLine::matchOrderField(const char *filename, int field) {
     char buffer[FIELD_BUFFER_LEN];
     bool fieldFound;
 
@@ -801,11 +743,11 @@ void DialogLine::matchOrderField( const char* filename, int field )
     // Event name.  Use a lookup table to translate to the event
     // enumeration.
     //
-    fieldFound = getNameField( filename, field, buffer, FIELD_BUFFER_LEN );
-    rAssert( fieldFound );
+    fieldFound = getNameField(filename, field, buffer, FIELD_BUFFER_LEN);
+    rAssert(fieldFound);
 
-    rAssert( buffer[0] >= '0' );
-    rAssert( buffer[0] <= '9' );
+    rAssert(buffer[0] >= '0');
+    rAssert(buffer[0] <= '9');
 
     m_conversationPosition = buffer[0] - '0';
 }
@@ -821,8 +763,7 @@ void DialogLine::matchOrderField( const char* filename, int field )
 // Return:      void 
 //
 //=============================================================================
-void DialogLine::matchCharacterField( const char* filename, int field )
-{
+void DialogLine::matchCharacterField(const char *filename, int field) {
     unsigned int i;
     char buffer[FIELD_BUFFER_LEN];
     radKey32 fieldKey;
@@ -831,21 +772,19 @@ void DialogLine::matchCharacterField( const char* filename, int field )
     //
     // Character.  Use another lookup table.
     //
-    fieldFound = getNameField( filename, field, buffer, FIELD_BUFFER_LEN );
-    rAssert( fieldFound );
+    fieldFound = getNameField(filename, field, buffer, FIELD_BUFFER_LEN);
+    rAssert(fieldFound);
 
-    fieldKey = ::radMakeCaseInsensitiveKey32( buffer );
-    for( i = 0; i < characterTableLength; i++ )
-    {
-        if( fieldKey == characterTable[i].characterKey )
-        {
+    fieldKey = ::radMakeCaseInsensitiveKey32(buffer);
+    for (i = 0; i < characterTableLength; i++) {
+        if (fieldKey == characterTable[i].characterKey) {
             m_characterIndex = i;
             break;
         }
     }
 
-    rAssert( ( i < characterTableLength )
-             || ( filename[0] != 'C' ) );
+    rAssert((i < characterTableLength)
+            || (filename[0] != 'C'));
 }
 
 //=============================================================================
@@ -859,63 +798,53 @@ void DialogLine::matchCharacterField( const char* filename, int field )
 // Return:      void 
 //
 //=============================================================================
-void DialogLine::matchLevelField( const char* filename, int field )
-{
+void DialogLine::matchLevelField(const char *filename, int field) {
     char buffer[FIELD_BUFFER_LEN];
     bool fieldFound;
 
     //
     // Level/Mission.
     //
-    fieldFound = getNameField( filename, field, buffer, FIELD_BUFFER_LEN );
+    fieldFound = getNameField(filename, field, buffer, FIELD_BUFFER_LEN);
 
-    if( fieldFound )
-    {
-        if( ( buffer[0] == 'L' ) 
-            && ( buffer[1] >= '0' )
-            && ( buffer[1] <= '9' ) )
-        {
+    if (fieldFound) {
+        if ((buffer[0] == 'L')
+            && (buffer[1] >= '0')
+            && (buffer[1] <= '9')) {
             //
             // Level number, start to string is "Lx"
             //
             m_levelNum = buffer[1] - '0';
-            rAssert( m_levelNum > 0 );
-            rAssert( m_levelNum < GameplayManager::MAX_LEVELS );
+            rAssert(m_levelNum > 0);
+            rAssert(m_levelNum < GameplayManager::MAX_LEVELS);
 
-            if( strlen( buffer ) >= 4 )
-            {
+            if (strlen(buffer) >= 4) {
                 //
                 // Level and mission, expected string is "LxMy"
                 //
-                rAssert( ( buffer[2] == 'M' ) || ( buffer[2] == 'B' ) || ( buffer[2] == 'R' ) || ( buffer[2] == 'T' ) );
+                rAssert((buffer[2] == 'M') || (buffer[2] == 'B') || (buffer[2] == 'R') ||
+                        (buffer[2] == 'T'));
                 m_missionNum = buffer[3] - '0';
-                rAssert( m_missionNum >= 1 );
-                rAssert( m_missionNum <= 7 );
+                rAssert(m_missionNum >= 1);
+                rAssert(m_missionNum <= 7);
 
                 //
                 // Bonus == 8
                 // Races == 9-11
                 // Tutorial == 12
                 //
-                if( buffer[2] == 'B' )
-                {
-                    rAssert( m_missionNum == 1 );
+                if (buffer[2] == 'B') {
+                    rAssert(m_missionNum == 1);
                     m_missionNum = BONUS_MISSION_NUMBER;
-                }
-                else if( buffer[2] == 'R' )
-                {
-                    rAssert( m_missionNum >= 1 );
-                    rAssert( m_missionNum <= 3 );
+                } else if (buffer[2] == 'R') {
+                    rAssert(m_missionNum >= 1);
+                    rAssert(m_missionNum <= 3);
                     m_missionNum += FIRST_RACE_MISSION_NUMBER - 1;
-                }
-                else if( buffer[2] == 'T' )
-                {
-                    rAssert( m_missionNum == 1 );
+                } else if (buffer[2] == 'T') {
+                    rAssert(m_missionNum == 1);
                     m_missionNum = TUTORIAL_MISSION_NUMBER;
                 }
-            }
-            else
-            {
+            } else {
                 m_missionNum = NO_MISSION;
             }
         }
@@ -936,34 +865,30 @@ void DialogLine::matchLevelField( const char* filename, int field )
 // Return:      true if requested field exists, false otherwise 
 //
 //=============================================================================
-bool DialogLine::getNameField( const char* filename, int field, char* buffer, int bufferLen )
-{
-    const char* currentChar;
+bool DialogLine::getNameField(const char *filename, int field, char *buffer, int bufferLen) {
+    const char *currentChar;
     int i;
     int fieldCount = field;
     bool fieldFound = false;
 
     currentChar = filename;
-    while( ( fieldCount > 0 ) && ( *currentChar != '\0' ) && ( *currentChar != '.' ) )
-    {
-        if( *currentChar == '_' )
-        {
+    while ((fieldCount > 0) && (*currentChar != '\0') && (*currentChar != '.')) {
+        if (*currentChar == '_') {
             --fieldCount;
         }
 
         ++currentChar;
     }
 
-    if( ( *currentChar != '\0' ) && ( *currentChar != '.' ) )
-    {
+    if ((*currentChar != '\0') && (*currentChar != '.')) {
         //
         // Field found, copy to buffer.  Since GC has no string functions (argh),
         // use hand-rolled strncpy
         //
-        for( i = 0; 
-             ( (i < bufferLen-1) && (currentChar[i] != '\0') && (currentChar[i] != '_') && (currentChar[i] != '.') ); 
-             i++ )
-        {
+        for (i = 0;
+             ((i < bufferLen - 1) && (currentChar[i] != '\0') && (currentChar[i] != '_') &&
+              (currentChar[i] != '.'));
+             i++) {
             buffer[i] = currentChar[i];
         }
         buffer[i] = '\0';
@@ -971,7 +896,7 @@ bool DialogLine::getNameField( const char* filename, int field, char* buffer, in
         fieldFound = true;
     }
 
-    return( fieldFound );
+    return (fieldFound);
 }
 
 //=============================================================================
@@ -984,35 +909,30 @@ bool DialogLine::getNameField( const char* filename, int field, char* buffer, in
 // Return:      void 
 //
 //=============================================================================
-void DialogLine::initializeTables()
-{
+void DialogLine::initializeTables() {
     unsigned int i;
 
-    for( i = 0; i < eventTableLength; i++ )
-    {
-        eventTable[i].eventKey = ::radMakeCaseInsensitiveKey32( eventTable[i].eventString );
+    for (i = 0; i < eventTableLength; i++) {
+        eventTable[i].eventKey = ::radMakeCaseInsensitiveKey32(eventTable[i].eventString);
     }
 
-    for( i = 0; i < characterTableLength; i++ )
-    {
-        characterTable[i].characterKey = ::radMakeCaseInsensitiveKey32( characterTable[i].characterString );
-        characterTable[i].realCharacterUID = tEntity::MakeUID( characterTable[i].realCharacterName );
+    for (i = 0; i < characterTableLength; i++) {
+        characterTable[i].characterKey = ::radMakeCaseInsensitiveKey32(
+                characterTable[i].characterString);
+        characterTable[i].realCharacterUID = tEntity::MakeUID(characterTable[i].realCharacterName);
     }
 }
 
-tUID DialogLine::GetCharacterUID( void )
-{
-    if ( -1 == m_characterIndex )
-    {
+tUID DialogLine::GetCharacterUID(void) {
+    if (-1 == m_characterIndex) {
         return 0;
     }
 
-    tUID uid = characterTable[ m_characterIndex ].realCharacterUID;
+    tUID uid = characterTable[m_characterIndex].realCharacterUID;
     return uid;
 }
 
-tUID DialogLine::GetDialogLineCharacterUID( unsigned int lineNum )
-{
-    return GetCharacterUID( );
+tUID DialogLine::GetDialogLineCharacterUID(unsigned int lineNum) {
+    return GetCharacterUID();
 }
         

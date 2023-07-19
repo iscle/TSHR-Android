@@ -27,26 +27,28 @@
 //
 //=============================================================================
 
-class SuperSprintCam : public SuperCam
-{
+class SuperSprintCam : public SuperCam {
 public:
-        SuperSprintCam();
-        virtual ~SuperSprintCam();
+    SuperSprintCam();
 
-        virtual void Update( unsigned int milliseconds );
+    virtual ~SuperSprintCam();
 
-        //Returns the name of the super cam.  
-        //This can be used in the FE or debug info
-        virtual const char* const GetName() const;
+    virtual void Update(unsigned int milliseconds);
 
-        virtual Type GetType();
+    //Returns the name of the super cam.
+    //This can be used in the FE or debug info
+    virtual const char *const GetName() const;
+
+    virtual Type GetType();
 
 protected:
     virtual void OnInit();
+
     virtual void OnShutdown();
 
     //You'll need to overload these if you want debug watcher or other debug controls.
     virtual void OnRegisterDebugControls();
+
     virtual void OnUnregisterDebugControls();
 
     float mNear, mFar, mFOV, mAspect;
@@ -60,8 +62,9 @@ private:
     static unsigned int mSprintCamCount;
 
     //Prevent wasteful constructor creation.
-    SuperSprintCam( const SuperSprintCam& supersprintcam );
-    SuperSprintCam& operator=( const SuperSprintCam& supersprintcam );
+    SuperSprintCam(const SuperSprintCam &supersprintcam);
+
+    SuperSprintCam &operator=(const SuperSprintCam &supersprintcam);
 };
 
 //*****************************************************************************
@@ -80,8 +83,7 @@ private:
 // Return:      const 
 //
 //=============================================================================
-inline const char* const SuperSprintCam::GetName() const 
-{
+inline const char *const SuperSprintCam::GetName() const {
     return "SuperSprintCam";
 }
 
@@ -95,8 +97,7 @@ inline const char* const SuperSprintCam::GetName() const
 // Return:      SuperCam
 //
 //=============================================================================
-inline SuperCam::Type SuperSprintCam::GetType()
-{
+inline SuperCam::Type SuperSprintCam::GetType() {
     return SuperCam::SUPER_SPRINT_CAM;
 }
 

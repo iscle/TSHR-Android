@@ -31,8 +31,8 @@
 //
 // Initialially the list is empty
 //
-positionalSoundSettings* radLinkedClass< positionalSoundSettings >::s_pLinkedClassHead = NULL;
-positionalSoundSettings* radLinkedClass< positionalSoundSettings >::s_pLinkedClassTail = NULL;
+positionalSoundSettings *radLinkedClass<positionalSoundSettings>::s_pLinkedClassHead = NULL;
+positionalSoundSettings *radLinkedClass<positionalSoundSettings>::s_pLinkedClassTail = NULL;
 
 //*****************************************************************************
 //
@@ -51,12 +51,11 @@ positionalSoundSettings* radLinkedClass< positionalSoundSettings >::s_pLinkedCla
 //
 //=============================================================================
 positionalSoundSettings::positionalSoundSettings() :
-    radRefCount( 0 ),
-    m_clipName( NULL ),
-    m_minDist( 10.0f ),
-    m_maxDist( 100.0f ),
-    m_playProbability( 1.0f )
-{
+        radRefCount(0),
+        m_clipName(NULL),
+        m_minDist(10.0f),
+        m_maxDist(100.0f),
+        m_playProbability(1.0f) {
 }
 
 //=============================================================================
@@ -69,8 +68,7 @@ positionalSoundSettings::positionalSoundSettings() :
 // Return:      N/A.
 //
 //=============================================================================
-positionalSoundSettings::~positionalSoundSettings()
-{
+positionalSoundSettings::~positionalSoundSettings() {
     delete m_clipName;
 }
 
@@ -84,12 +82,11 @@ positionalSoundSettings::~positionalSoundSettings()
 // Return:      void 
 //
 //=============================================================================
-void positionalSoundSettings::SetClipName( const char* clipName )
-{
-    rAssert( clipName != NULL );
+void positionalSoundSettings::SetClipName(const char *clipName) {
+    rAssert(clipName != NULL);
 
-    m_clipName = new(GMA_PERSISTENT) char[strlen(clipName)+1];
-    strcpy( m_clipName, clipName );
+    m_clipName = new(GMA_PERSISTENT) char[strlen(clipName) + 1];
+    strcpy(m_clipName, clipName);
 }
 
 //=============================================================================
@@ -103,9 +100,8 @@ void positionalSoundSettings::SetClipName( const char* clipName )
 // Return:      void 
 //
 //=============================================================================
-void positionalSoundSettings::SetMinDistance( float min )
-{
-    rAssert( min >= 0.0f );
+void positionalSoundSettings::SetMinDistance(float min) {
+    rAssert(min >= 0.0f);
 
     m_minDist = min;
 }
@@ -120,9 +116,8 @@ void positionalSoundSettings::SetMinDistance( float min )
 // Return:      void 
 //
 //=============================================================================
-void positionalSoundSettings::SetMaxDistance( float max )
-{
-    rAssert( max >= 0.0f );
+void positionalSoundSettings::SetMaxDistance(float max) {
+    rAssert(max >= 0.0f);
 
     m_maxDist = max;
 }
@@ -138,10 +133,9 @@ void positionalSoundSettings::SetMaxDistance( float max )
 // Return:      void 
 //
 //=============================================================================
-void positionalSoundSettings::SetPlaybackProbability( float prob )
-{
-    rAssert( prob >= 0.0f );
-    rAssert( prob <= 1.0f );
+void positionalSoundSettings::SetPlaybackProbability(float prob) {
+    rAssert(prob >= 0.0f);
+    rAssert(prob <= 1.0f);
 
     m_playProbability = prob;
 }
@@ -169,12 +163,11 @@ void positionalSoundSettings::SetPlaybackProbability( float prob )
 //
 //==============================================================================
 void PositionalSettingsObjCreate
-(
-    IPositionalSoundSettings** ppParametersObj,
-    radMemoryAllocator allocator
-)
-{
-    rAssert( ppParametersObj != NULL );
-    (*ppParametersObj) = new ( allocator ) positionalSoundSettings( );
-    (*ppParametersObj)->AddRef( );
+        (
+                IPositionalSoundSettings **ppParametersObj,
+                radMemoryAllocator allocator
+        ) {
+    rAssert(ppParametersObj != NULL);
+    (*ppParametersObj) = new(allocator) positionalSoundSettings();
+    (*ppParametersObj)->AddRef();
 }

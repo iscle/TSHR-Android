@@ -27,18 +27,26 @@
 // Forward References
 //===========================================================================
 class CGuiManager;
+
 class tMultiController;
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Screen;
+
     class Page;
+
     class Layer;
+
     class Group;
+
     class Drawable;
+
     class Sprite;
+
     class Text;
+
     class Polygon;
+
     class Pure3dObject;
 }
 
@@ -47,8 +55,7 @@ namespace Scrooby
 const int MAX_FOREGROUND_LAYERS = 8;
 const int MAX_BACKGROUND_LAYERS = 2;
 
-enum eScreenEffect
-{
+enum eScreenEffect {
     SCREEN_FX_ALL = ~0,
     SCREEN_FX_NONE = 0,
 
@@ -61,8 +68,7 @@ enum eScreenEffect
     NUM_SCREEN_FX
 };
 
-enum eButtonIcon
-{
+enum eButtonIcon {
     BUTTON_ICON_ACCEPT,
     BUTTON_ICON_BACK,
 
@@ -72,162 +78,176 @@ enum eButtonIcon
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreen : public CGuiWindow
-{
-    public:
+class CGuiScreen : public CGuiWindow {
+public:
 
-        CGuiScreen( Scrooby::Screen* pScroobyScreen,
-                    CGuiEntity* pParent,
-                    eGuiWindowID id,
-                    unsigned int screenFX = SCREEN_FX_FADE );
+    CGuiScreen(Scrooby::Screen *pScroobyScreen,
+               CGuiEntity *pParent,
+               eGuiWindowID id,
+               unsigned int screenFX = SCREEN_FX_FADE);
 
-        virtual ~CGuiScreen();
+    virtual ~CGuiScreen();
 
-        virtual void HandleMessage( eGuiMessage message, 
-			                        unsigned int param1 = 0,
-							        unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-        void SetScroobyScreen( Scrooby::Screen* pScreen ) { m_pScroobyScreen = pScreen; }
-        Scrooby::Screen* GetScroobyScreen() const { return m_pScroobyScreen; }
+    void SetScroobyScreen(Scrooby::Screen *pScreen) { m_pScroobyScreen = pScreen; }
 
-        virtual CGuiMenu* HasMenu() { return NULL; }
+    Scrooby::Screen *GetScroobyScreen() const { return m_pScroobyScreen; }
 
-        void SetFadingEnabled( bool enable );
-        void SetZoomingEnabled( bool enable );
-        void SetSlidingEnabled( eScreenEffect slideType, bool enable );
-        void SetIrisWipeEnabled( bool enable, bool autoOpenIris = false );
+    virtual CGuiMenu *HasMenu() { return NULL; }
 
-        bool IsEffectEnabled( eScreenEffect effect ) const;
+    void SetFadingEnabled(bool enable);
 
-        static void Reset3dFEMultiController();
+    void SetZoomingEnabled(bool enable);
 
-        void SetIngoreControllerInputs( bool ignore ) { m_ignoreControllerInputs = ignore; }
-        bool IsIgnoringControllerInputs() const { return m_ignoreControllerInputs; }
+    void SetSlidingEnabled(eScreenEffect slideType, bool enable);
 
-        void SetButtonVisible( eButtonIcon button, bool isVisible );
-        bool IsButtonVisible( eButtonIcon button ) const;
+    void SetIrisWipeEnabled(bool enable, bool autoOpenIris = false);
 
-        void StartTransitionAnimation( int startFrame = -1,
-                                       int endFrame = -1,
-                                       bool lastTransition = true );
+    bool IsEffectEnabled(eScreenEffect effect) const;
 
-        void ReloadScreen();
-        void RestoreScreenCover();
-        void RestoreButtons();
+    static void Reset3dFEMultiController();
 
-        static bool IsWideScreenDisplay();
-        static void ApplyWideScreenCorrectionScale( Scrooby::Drawable* drawable );
+    void SetIngoreControllerInputs(bool ignore) { m_ignoreControllerInputs = ignore; }
+
+    bool IsIgnoringControllerInputs() const { return m_ignoreControllerInputs; }
+
+    void SetButtonVisible(eButtonIcon button, bool isVisible);
+
+    bool IsButtonVisible(eButtonIcon button) const;
+
+    void StartTransitionAnimation(int startFrame = -1,
+                                  int endFrame = -1,
+                                  bool lastTransition = true);
+
+    void ReloadScreen();
+
+    void RestoreScreenCover();
+
+    void RestoreButtons();
+
+    static bool IsWideScreenDisplay();
+
+    static void ApplyWideScreenCorrectionScale(Scrooby::Drawable *drawable);
 
 #ifdef RAD_WIN32
-        virtual eFEHotspotType CheckCursorAgainstHotspots( float x, float y );
+    virtual eFEHotspotType CheckCursorAgainstHotspots(float x, float y);
 #endif
 
-	protected:
+protected:
 
-        //---------------------------------------------------------------------
-        // Protected Functions
-        //---------------------------------------------------------------------
+    //---------------------------------------------------------------------
+    // Protected Functions
+    //---------------------------------------------------------------------
 
-        void SetFadeTime( float fadeTime ) { m_fadeTime = fadeTime; }
-        void RestoreDefaultFadeTime();
+    void SetFadeTime(float fadeTime) { m_fadeTime = fadeTime; }
 
-        void SetZoomTime( float zoomTime ) { m_zoomTime = zoomTime; }
-        void RestoreDefaultZoomTime();
+    void RestoreDefaultFadeTime();
 
-        void IrisWipeOpen();
+    void SetZoomTime(float zoomTime) { m_zoomTime = zoomTime; }
 
-        void SetAlphaForLayers( float alpha,
-                                Scrooby::Layer** layers,
-                                int numLayers );
+    void RestoreDefaultZoomTime();
 
-        void AutoScaleFrame( Scrooby::Page* pPage );
-        #ifdef DEBUGWATCH
-            virtual const char* GetWatcherName() const;
-        #endif
+    void IrisWipeOpen();
 
-        //---------------------------------------------------------------------
-        // Protected Data
-        //---------------------------------------------------------------------
+    void SetAlphaForLayers(float alpha,
+                           Scrooby::Layer **layers,
+                           int numLayers);
 
-        CGuiManager* m_guiManager;
+    void AutoScaleFrame(Scrooby::Page *pPage);
 
-		Scrooby::Screen* m_pScroobyScreen;
-        Scrooby::Layer* m_screenCover;
-        Scrooby::Pure3dObject* m_p3dObject;
+#ifdef DEBUGWATCH
+    virtual const char* GetWatcherName() const;
+#endif
 
-        static tMultiController* s_p3dMultiController;
+    //---------------------------------------------------------------------
+    // Protected Data
+    //---------------------------------------------------------------------
 
-        enum eIrisState
-        {
-            IRIS_STATE_IDLE,
-            IRIS_STATE_CLOSING,
-            IRIS_STATE_CLOSED,
-            IRIS_STATE_OPENING,
+    CGuiManager *m_guiManager;
 
-            NUM_IRIS_STATES
-        };
+    Scrooby::Screen *m_pScroobyScreen;
+    Scrooby::Layer *m_screenCover;
+    Scrooby::Pure3dObject *m_p3dObject;
 
-        Scrooby::Pure3dObject* m_p3dIris;
-        tMultiController* m_irisController;
-        eIrisState m_currentIrisState;
-        bool m_autoOpenIris : 1;
+    static tMultiController *s_p3dMultiController;
 
-        Scrooby::Layer* m_foregroundLayers[ MAX_FOREGROUND_LAYERS ];
-        int m_numForegroundLayers;
+    enum eIrisState {
+        IRIS_STATE_IDLE,
+        IRIS_STATE_CLOSING,
+        IRIS_STATE_CLOSED,
+        IRIS_STATE_OPENING,
 
-        Scrooby::Layer* m_backgroundLayers[ MAX_BACKGROUND_LAYERS ];
-        int m_numBackgroundLayers;
+        NUM_IRIS_STATES
+    };
 
-        Scrooby::Group* m_buttonIcons[ NUM_BUTTON_ICONS ];
+    Scrooby::Pure3dObject *m_p3dIris;
+    tMultiController *m_irisController;
+    eIrisState m_currentIrisState;
+    bool m_autoOpenIris: 1;
 
-        bool m_ignoreControllerInputs : 1;
-        bool m_inverseFading : 1;
+    Scrooby::Layer *m_foregroundLayers[MAX_FOREGROUND_LAYERS];
+    int m_numForegroundLayers;
 
-	private:
+    Scrooby::Layer *m_backgroundLayers[MAX_BACKGROUND_LAYERS];
+    int m_numBackgroundLayers;
 
-        //---------------------------------------------------------------------
-        // Private Functions
-        //---------------------------------------------------------------------
+    Scrooby::Group *m_buttonIcons[NUM_BUTTON_ICONS];
 
-        // No copying or asignment. Declare but don't define.
-        //
-        CGuiScreen( const CGuiScreen& );
-        CGuiScreen& operator= ( const CGuiScreen& );
+    bool m_ignoreControllerInputs: 1;
+    bool m_inverseFading: 1;
 
-        // Screen Fade In/Out Effects
-        void FadeIn( float elapsedTime );
-        void FadeOut( float elapsedTime );
+private:
 
-        // Screen Zoom In/Out Effects
-        void ZoomIn( float elapsedTime );
-        void ZoomOut( float elapsedTime );
+    //---------------------------------------------------------------------
+    // Private Functions
+    //---------------------------------------------------------------------
 
-        // Screen Slide In/Out Effects
-        void SlideIn( float elapsedTime );
-        void SlideOut( float elapsedTime );
+    // No copying or asignment. Declare but don't define.
+    //
+    CGuiScreen(const CGuiScreen &);
 
-        // Iris Wipe Closed
-        //
-        void OnIrisWipeClosed();
+    CGuiScreen &operator=(const CGuiScreen &);
 
-        //---------------------------------------------------------------------
-        // Private Data
-        //---------------------------------------------------------------------
+    // Screen Fade In/Out Effects
+    void FadeIn(float elapsedTime);
 
-        static float s_numIrisFrames;
+    void FadeOut(float elapsedTime);
 
-        unsigned int m_screenFX; // bit mask for screen effects
+    // Screen Zoom In/Out Effects
+    void ZoomIn(float elapsedTime);
 
-        float m_fadeTime;
-        float m_elapsedFadeTime;
+    void ZoomOut(float elapsedTime);
 
-        float m_zoomTime;
-        float m_elapsedZoomTime;
+    // Screen Slide In/Out Effects
+    void SlideIn(float elapsedTime);
 
-        float m_slideTime;
-        float m_elapsedSlideTime;
+    void SlideOut(float elapsedTime);
 
-        bool m_playTransitionAnimationLast : 1;
+    // Iris Wipe Closed
+    //
+    void OnIrisWipeClosed();
+
+    //---------------------------------------------------------------------
+    // Private Data
+    //---------------------------------------------------------------------
+
+    static float s_numIrisFrames;
+
+    unsigned int m_screenFX; // bit mask for screen effects
+
+    float m_fadeTime;
+    float m_elapsedFadeTime;
+
+    float m_zoomTime;
+    float m_elapsedZoomTime;
+
+    float m_slideTime;
+    float m_elapsedSlideTime;
+
+    bool m_playTransitionAnimationLast: 1;
 
 };
 

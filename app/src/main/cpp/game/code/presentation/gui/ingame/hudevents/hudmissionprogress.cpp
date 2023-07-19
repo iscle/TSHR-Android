@@ -29,53 +29,46 @@
 // Public Member Functions
 //===========================================================================
 
-HudMissionProgress::HudMissionProgress( Scrooby::Page* pPage )
-:   HudEventHandler( pPage->GetGroup( "MissionProgress" ) ),
-    m_stageComplete( NULL )
-{
-    rAssert( pPage != NULL );
+HudMissionProgress::HudMissionProgress(Scrooby::Page *pPage)
+        : HudEventHandler(pPage->GetGroup("MissionProgress")),
+          m_stageComplete(NULL) {
+    rAssert(pPage != NULL);
 
-    Scrooby::Group* missionProgress = pPage->GetGroup( "MissionProgress" );
-    rAssert( missionProgress != NULL );
+    Scrooby::Group *missionProgress = pPage->GetGroup("MissionProgress");
+    rAssert(missionProgress != NULL);
 
-    m_stageComplete = missionProgress->GetText( "StageComplete" );
-    rAssert( m_stageComplete != NULL );
-    m_stageComplete->SetTextMode( Scrooby::TEXT_WRAP );
+    m_stageComplete = missionProgress->GetText("StageComplete");
+    rAssert(m_stageComplete != NULL);
+    m_stageComplete->SetTextMode(Scrooby::TEXT_WRAP);
 }
 
-HudMissionProgress::~HudMissionProgress()
-{
+HudMissionProgress::~HudMissionProgress() {
 }
 
 void
-HudMissionProgress::Start()
-{
+HudMissionProgress::Start() {
     this->OnStart();
 }
 
 void
-HudMissionProgress::Stop()
-{
+HudMissionProgress::Stop() {
     this->OnStop();
 }
 
 void
-HudMissionProgress::Update( float elapsedTime )
-{
-    if( m_currentState == STATE_RUNNING )
-    {
+HudMissionProgress::Update(float elapsedTime) {
+    if (m_currentState == STATE_RUNNING) {
         m_elapsedTime += elapsedTime;
 
         static float DURATION_TIME = 1000.0f;
 
-        bool isDone = GuiSFX::Flash( m_stageComplete,
-                                     m_elapsedTime,
-                                     DURATION_TIME,
-                                     1,
-                                     1.25f,
-                                     1.0f );
-        if( isDone )
-        {
+        bool isDone = GuiSFX::Flash(m_stageComplete,
+                                    m_elapsedTime,
+                                    DURATION_TIME,
+                                    1,
+                                    1.25f,
+                                    1.0f);
+        if (isDone) {
             this->Stop();
         }
     }

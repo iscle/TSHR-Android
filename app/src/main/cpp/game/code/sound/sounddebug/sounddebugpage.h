@@ -34,32 +34,35 @@ class SoundDebugDisplay;
 //
 //=============================================================================
 
-class SoundDebugPage
-{
-    public:
-        SoundDebugPage();
-        SoundDebugPage( unsigned int pageNum, SoundDebugDisplay* master );
-        virtual ~SoundDebugPage();
+class SoundDebugPage {
+public:
+    SoundDebugPage();
 
-        void LazyInitialization( unsigned int pageNum, SoundDebugDisplay* master );
+    SoundDebugPage(unsigned int pageNum, SoundDebugDisplay *master);
 
-        unsigned int GetPage() { return( m_pageNum ); }
+    virtual ~SoundDebugPage();
 
-        void Render( int leftPosn, int topPosn, tColour& colour, bool dumpToWindow );
+    void LazyInitialization(unsigned int pageNum, SoundDebugDisplay *master);
 
-    protected:
+    unsigned int GetPage() { return (m_pageNum); }
 
-        virtual void fillLineBuffer( int lineNum, char* buffer ) = 0;
-        virtual int getNumLines() = 0;
+    void Render(int leftPosn, int topPosn, tColour &colour, bool dumpToWindow);
 
-    private:
-        //Prevent wasteful constructor creation.
-        SoundDebugPage( const SoundDebugPage& original );
-        SoundDebugPage& operator=( const SoundDebugPage& rhs );
+protected:
 
-        unsigned int m_pageNum;
+    virtual void fillLineBuffer(int lineNum, char *buffer) = 0;
 
-        SoundDebugDisplay* m_displayMaster;
+    virtual int getNumLines() = 0;
+
+private:
+    //Prevent wasteful constructor creation.
+    SoundDebugPage(const SoundDebugPage &original);
+
+    SoundDebugPage &operator=(const SoundDebugPage &rhs);
+
+    unsigned int m_pageNum;
+
+    SoundDebugDisplay *m_displayMaster;
 };
 
 

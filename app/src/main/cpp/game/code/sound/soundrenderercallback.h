@@ -26,6 +26,7 @@
 //========================================
 
 struct SimpsonsSoundPlayerCallback;
+
 class SimpsonsSoundPlayer;
 
 //=============================================================================
@@ -35,34 +36,36 @@ class SimpsonsSoundPlayer;
 //=============================================================================
 
 class SoundRenderingPlayerCallback : public Sound::IDaSoundPlayerState,
-                                     public radLinkedClass< SoundRenderingPlayerCallback >,
-                                     public radRefCount
-{
-    public:
-        IMPLEMENT_REFCOUNTED( "SoundRenderingPlayerCallback" );
+                                     public radLinkedClass<SoundRenderingPlayerCallback>,
+                                     public radRefCount {
+public:
+    IMPLEMENT_REFCOUNTED("SoundRenderingPlayerCallback");
 
-        SoundRenderingPlayerCallback( SimpsonsSoundPlayer& playerObj,
-                                      SimpsonsSoundPlayerCallback* callbackObj );
-        virtual ~SoundRenderingPlayerCallback();
+    SoundRenderingPlayerCallback(SimpsonsSoundPlayer &playerObj,
+                                 SimpsonsSoundPlayerCallback *callbackObj);
 
-        void CancelGameCallbackAndRelease();
+    virtual ~SoundRenderingPlayerCallback();
 
-        static void CompletionCheck();
+    void CancelGameCallbackAndRelease();
 
-        // Currently unused
-        void OnSoundReady( void* pData );
+    static void CompletionCheck();
 
-        // Called when sound renderer player has completed playback
-        void OnSoundDone( void* pData );
+    // Currently unused
+    void OnSoundReady(void *pData);
 
-    private:
-        //Prevent wasteful constructor creation.
-        SoundRenderingPlayerCallback();
-        SoundRenderingPlayerCallback( const SoundRenderingPlayerCallback& original );
-        SoundRenderingPlayerCallback& operator=( const SoundRenderingPlayerCallback& rhs );
+    // Called when sound renderer player has completed playback
+    void OnSoundDone(void *pData);
 
-        SimpsonsSoundPlayerCallback* m_callbackObj;
-        SimpsonsSoundPlayer* m_playerObj;
+private:
+    //Prevent wasteful constructor creation.
+    SoundRenderingPlayerCallback();
+
+    SoundRenderingPlayerCallback(const SoundRenderingPlayerCallback &original);
+
+    SoundRenderingPlayerCallback &operator=(const SoundRenderingPlayerCallback &rhs);
+
+    SimpsonsSoundPlayerCallback *m_callbackObj;
+    SimpsonsSoundPlayer *m_playerObj;
 };
 
 

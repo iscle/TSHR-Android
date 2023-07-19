@@ -46,9 +46,8 @@
 // Return:      N/A.
 //
 //=============================================================================
-RelativeAnimatedCam::RelativeAnimatedCam():
-    gCameraAnimationController( NULL )
-{
+RelativeAnimatedCam::RelativeAnimatedCam() :
+        gCameraAnimationController(NULL) {
     mOffsetMatrix.Identity();
 }
 
@@ -63,30 +62,24 @@ RelativeAnimatedCam::RelativeAnimatedCam():
 // Return:      N/A.
 //
 //==============================================================================
-void RelativeAnimatedCam::CheckPendingCameraSwitch()
-{
-    if( CameraSwitchPending() )
-    {
+void RelativeAnimatedCam::CheckPendingCameraSwitch() {
+    if (CameraSwitchPending()) {
         LookupCamera();
         LookupMulticontroller();
-        SuperCamManager* scm = GetSuperCamManager();
-        SuperCamCentral* scc = scm->GetSCC( 0 );
-        SuperCam*        sc  = scc->GetActiveSuperCam();
-        if( sc == NULL )
-        {
+        SuperCamManager *scm = GetSuperCamManager();
+        SuperCamCentral *scc = scm->GetSCC(0);
+        SuperCam *sc = scc->GetActiveSuperCam();
+        if (sc == NULL) {
             AnimatedCam::SupressNextLetterbox();
-            GetSuperCamManager()->GetSCC( 0 )->SelectSuperCam( ANIMATED_CAM );
-        }
-        else
-        {
-            SuperCam::Type type  = sc->GetType();
-            if( type != RELATIVE_ANIMATED_CAM )
-            {
+            GetSuperCamManager()->GetSCC(0)->SelectSuperCam(ANIMATED_CAM);
+        } else {
+            SuperCam::Type type = sc->GetType();
+            if (type != RELATIVE_ANIMATED_CAM) {
                 AnimatedCam::SupressNextLetterbox();
-                GetSuperCamManager()->GetSCC( 0 )->SelectSuperCam( ANIMATED_CAM );
+                GetSuperCamManager()->GetSCC(0)->SelectSuperCam(ANIMATED_CAM);
             }
         }
-        SetCameraSwitchPending( false );
+        SetCameraSwitchPending(false);
     }
 }
 
@@ -100,8 +93,7 @@ void RelativeAnimatedCam::CheckPendingCameraSwitch()
 // Return:      const char* const 
 //
 //=============================================================================
-const char* const RelativeAnimatedCam::GetName() const
-{
+const char *const RelativeAnimatedCam::GetName() const {
     return "RELATIVE_ANIMATED_CAM";
 }
 
@@ -115,8 +107,7 @@ const char* const RelativeAnimatedCam::GetName() const
 // Return:      Type 
 //
 //=============================================================================
-SuperCam::Type RelativeAnimatedCam::GetType()
-{
+SuperCam::Type RelativeAnimatedCam::GetType() {
     return RELATIVE_ANIMATED_CAM;
 }
 
@@ -130,8 +121,7 @@ SuperCam::Type RelativeAnimatedCam::GetType()
 // Return:      Type 
 //
 //=============================================================================
-void RelativeAnimatedCam::LetterBoxStart()
-{
+void RelativeAnimatedCam::LetterBoxStart() {
     //nothing
 }
 
@@ -145,8 +135,7 @@ void RelativeAnimatedCam::LetterBoxStart()
 // Return:      Type 
 //
 //=============================================================================
-void RelativeAnimatedCam::LetterBoxStop()
-{
+void RelativeAnimatedCam::LetterBoxStop() {
     //nothing
 }
 
@@ -160,12 +149,10 @@ void RelativeAnimatedCam::LetterBoxStop()
 // Return:      N/A.
 //
 //=============================================================================
-void RelativeAnimatedCam::SetCameraAnimationController( tCameraAnimationController* controller )
-{
+void RelativeAnimatedCam::SetCameraAnimationController(tCameraAnimationController *controller) {
     gCameraAnimationController = controller;
-    if( gCameraAnimationController )
-    {
-        gCameraAnimationController->SetOffsetMatrix( mOffsetMatrix );
+    if (gCameraAnimationController) {
+        gCameraAnimationController->SetOffsetMatrix(mOffsetMatrix);
     }
 }
 
@@ -179,12 +166,10 @@ void RelativeAnimatedCam::SetCameraAnimationController( tCameraAnimationControll
 // Return:      N/A.
 //
 //=============================================================================
-void RelativeAnimatedCam::SetOffsetMatrix( const rmt::Matrix& m )
-{
+void RelativeAnimatedCam::SetOffsetMatrix(const rmt::Matrix &m) {
     mOffsetMatrix = m;
-    if( gCameraAnimationController != NULL )
-    {
-        gCameraAnimationController->SetOffsetMatrix( m );
+    if (gCameraAnimationController != NULL) {
+        gCameraAnimationController->SetOffsetMatrix(m);
     }
 }
 
@@ -198,7 +183,6 @@ void RelativeAnimatedCam::SetOffsetMatrix( const rmt::Matrix& m )
 // Return:      N/A.
 //
 //=============================================================================
-void RelativeAnimatedCam::Update( unsigned int milliseconds )
-{
-    AnimatedCam::Update( milliseconds );
+void RelativeAnimatedCam::Update(unsigned int milliseconds) {
+    AnimatedCam::Update(milliseconds);
 }

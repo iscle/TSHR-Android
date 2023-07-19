@@ -33,7 +33,7 @@
 //
 //*****************************************************************************
 
-IRadTimerList* TrafficSoundPlayer::s_timerList = NULL;
+IRadTimerList *TrafficSoundPlayer::s_timerList = NULL;
 
 static const unsigned int s_minHonkShortMsecs = 250;
 static const unsigned int s_maxHonkShortMsecs = 500;
@@ -58,12 +58,11 @@ static const unsigned int s_maxHonkDelay = 500;
 // Return:      N/A.
 //
 //=============================================================================
-TrafficSoundPlayer::TrafficSoundPlayer( ) :
-    m_hornTimer( NULL ),
-    m_vehicleParameters( NULL ),
-    m_honkCount( 0 ),
-    m_pitchMultiplier( 1.0f )
-{
+TrafficSoundPlayer::TrafficSoundPlayer() :
+        m_hornTimer(NULL),
+        m_vehicleParameters(NULL),
+        m_honkCount(0),
+        m_pitchMultiplier(1.0f) {
 }
 
 //=============================================================================
@@ -76,11 +75,9 @@ TrafficSoundPlayer::TrafficSoundPlayer( ) :
 // Return:      N/A.
 //
 //=============================================================================
-TrafficSoundPlayer::~TrafficSoundPlayer()
-{
-    if( m_hornTimer != NULL )
-    {
-        m_hornTimer->UnregisterCallback( this );
+TrafficSoundPlayer::~TrafficSoundPlayer() {
+    if (m_hornTimer != NULL) {
+        m_hornTimer->UnregisterCallback(this);
         m_hornTimer->Release();
     }
 }
@@ -95,11 +92,9 @@ TrafficSoundPlayer::~TrafficSoundPlayer()
 // Return:      void 
 //
 //=============================================================================
-void TrafficSoundPlayer::InitializeClass( unsigned int numVehicles )
-{
-    if( s_timerList == NULL )
-    {
-        ::radTimeCreateList( &s_timerList, numVehicles, GMA_AUDIO_PERSISTENT );
+void TrafficSoundPlayer::InitializeClass(unsigned int numVehicles) {
+    if (s_timerList == NULL) {
+        ::radTimeCreateList(&s_timerList, numVehicles, GMA_AUDIO_PERSISTENT);
     }
 }
 
@@ -116,21 +111,20 @@ void TrafficSoundPlayer::InitializeClass( unsigned int numVehicles )
 // Return:      void 
 //
 //=============================================================================
-void TrafficSoundPlayer::Activate( positionalSoundSettings* soundSettings,
-                                   const char* resourceName,
-                                   Vehicle* theCar )
-{
+void TrafficSoundPlayer::Activate(positionalSoundSettings *soundSettings,
+                                  const char *resourceName,
+                                  Vehicle *theCar) {
     unsigned int randomNumber;
 
     //
     // Pick a random pitch multiplier from 0.8 to 1.2.  Arbitrary numbers.
     //
     randomNumber = rand() % 401;
-    m_pitchMultiplier = 0.8f + ( static_cast<float>(randomNumber) / 1000.0f );
+    m_pitchMultiplier = 0.8f + (static_cast<float>(randomNumber) / 1000.0f);
 
-    VehiclePositionalSoundPlayer::Activate( soundSettings, resourceName, theCar );
+    VehiclePositionalSoundPlayer::Activate(soundSettings, resourceName, theCar);
 
-    m_player.SetPitch( 0.5f );
+    m_player.SetPitch(0.5f);
 }
 
 //=============================================================================
@@ -143,13 +137,11 @@ void TrafficSoundPlayer::Activate( positionalSoundSettings* soundSettings,
 // Return:      void 
 //
 //=============================================================================
-void TrafficSoundPlayer::Deactivate()
-{
+void TrafficSoundPlayer::Deactivate() {
     VehiclePositionalSoundPlayer::Deactivate();
 
-    if( m_hornTimer != NULL )
-    {
-        m_hornTimer->UnregisterCallback( this );
+    if (m_hornTimer != NULL) {
+        m_hornTimer->UnregisterCallback(this);
         m_hornTimer->Release();
         m_hornTimer = NULL;
     }
@@ -169,8 +161,7 @@ void TrafficSoundPlayer::Deactivate()
 // Return:      void 
 //
 //=============================================================================
-void TrafficSoundPlayer::ServiceOncePerFrame()
-{
+void TrafficSoundPlayer::ServiceOncePerFrame() {
     float pitch;
 
     VehiclePositionalSoundPlayer::ServiceOncePerFrame();
@@ -179,20 +170,19 @@ void TrafficSoundPlayer::ServiceOncePerFrame()
     // Adjust pitch for vehicle speed if desired.  I'll probably need to
     // expose this for designer tuning later.
     //
-    if( IsActive() && m_tiePitchToVelocity )
-    {
-        pitch = 0.5f + ( 0.5f * ( m_vehicle->mTrafficLocomotion->mActualSpeed / TrafficManager::GetInstance()->GetDesiredTrafficSpeed() ) );
+    if (IsActive() && m_tiePitchToVelocity) {
+        pitch = 0.5f + (0.5f * (m_vehicle->mTrafficLocomotion->mActualSpeed /
+                                TrafficManager::GetInstance()->GetDesiredTrafficSpeed()));
         pitch *= m_pitchMultiplier;
 
         //
         // Arbitrary cap, just in case.  Being paranoid.
         //
-        if( pitch > 1.5f )
-        {
+        if (pitch > 1.5f) {
             pitch = 1.5f;
         }
 
-        m_player.SetPitch( pitch );
+        m_player.SetPitch(pitch);
     }
 
     m_hornPlayer.ServiceOncePerFrame();
@@ -211,10 +201,8 @@ void TrafficSoundPlayer::ServiceOncePerFrame()
 // Return:      void 
 //
 //=============================================================================
-void TrafficSoundPlayer::ServiceTimerList()
-{
-    if( s_timerList != NULL )
-    {
+void TrafficSoundPlayer::ServiceTimerList() {
+    if (s_timerList != NULL) {
         s_timerList->Service();
     }
 }
@@ -230,71 +218,62 @@ void TrafficSoundPlayer::ServiceTimerList()
 // Return:      void 
 //
 //=============================================================================
-void TrafficSoundPlayer::OnTimerDone( unsigned int elapsedTime, void * pUserData )
-{
+void TrafficSoundPlayer::OnTimerDone(unsigned int elapsedTime, void *pUserData) {
     unsigned int timeout;
     rmt::Vector position;
-    positionalSoundSettings* settings;
-    IRadNameSpace* nameSpace;
+    positionalSoundSettings *settings;
+    IRadNameSpace *nameSpace;
 
-    if( m_hornPlayer.IsInUse() )
-    {
+    if (m_hornPlayer.IsInUse()) {
         m_hornPlayer.Stop();
 
-        if( m_honkCount == 0 )
-        {
+        if (m_honkCount == 0) {
             //
             // Last honk done
             //
             m_hornTimer->Release();
             m_hornTimer = NULL;
-        }
-        else
-        {
+        } else {
             //
             // Random amount of silence before next honk
             //
-            timeout = s_minHonkDelay + ( rand() % ( s_maxHonkDelay - s_minHonkDelay ) );
-            m_hornTimer->SetTimeout( timeout );
+            timeout = s_minHonkDelay + (rand() % (s_maxHonkDelay - s_minHonkDelay));
+            m_hornTimer->SetTimeout(timeout);
             m_hornTimer->Start();
         }
-    }
-    else
-    {
+    } else {
         //
         // Silence done, start another honk
         //
-        rAssert( m_honkCount > 0 );
+        rAssert(m_honkCount > 0);
 
         //
         // Find the settings for this positional sound first
         //
         nameSpace = Sound::daSoundRenderingManagerGet()->GetTuningNamespace();
-        rAssert( nameSpace != NULL );
-        settings = reinterpret_cast<positionalSoundSettings*>( nameSpace->GetInstance( "traffic_horn" ) );
-        rAssert( settings != NULL );
+        rAssert(nameSpace != NULL);
+        settings = reinterpret_cast<positionalSoundSettings *>(nameSpace->GetInstance(
+                "traffic_horn"));
+        rAssert(settings != NULL);
 
-        m_vehicle->GetPosition( &position );
-        m_hornPlayer.SetPosition( position.x, position.y, position.z );
-        m_hornPlayer.SetPositionCarrier( *this );
-        m_hornPlayer.SetParameters( settings );
-        m_hornPlayer.PlaySound( "horn" );
+        m_vehicle->GetPosition(&position);
+        m_hornPlayer.SetPosition(position.x, position.y, position.z);
+        m_hornPlayer.SetPositionCarrier(*this);
+        m_hornPlayer.SetParameters(settings);
+        m_hornPlayer.PlaySound("horn");
 
         --m_honkCount;
 
         //
         // Reset the timer
         //
-        if( m_honkCount > 0 )
-        {
-            timeout = s_minHonkShortMsecs + ( rand() % ( s_maxHonkShortMsecs - s_minHonkShortMsecs ) );
-        }
-        else
-        {
-            timeout = s_minHonkLongMsecs + ( rand() % ( s_maxHonkLongMsecs - s_minHonkLongMsecs ) );
+        if (m_honkCount > 0) {
+            timeout = s_minHonkShortMsecs + (rand() % (s_maxHonkShortMsecs - s_minHonkShortMsecs));
+        } else {
+            timeout = s_minHonkLongMsecs + (rand() % (s_maxHonkLongMsecs - s_minHonkLongMsecs));
         }
 
-        m_hornTimer->SetTimeout( timeout );
+        m_hornTimer->SetTimeout(timeout);
         m_hornTimer->Start();
     }
 }
@@ -309,20 +288,18 @@ void TrafficSoundPlayer::OnTimerDone( unsigned int elapsedTime, void * pUserData
 // Return:      void 
 //
 //=============================================================================
-void TrafficSoundPlayer::HonkHorn()
-{
+void TrafficSoundPlayer::HonkHorn() {
     unsigned int hornTime;
     rmt::Vector position;
-    positionalSoundSettings* settings;
-    IRadNameSpace* nameSpace;
-    IRefCount* nameSpaceObj;
+    positionalSoundSettings *settings;
+    IRadNameSpace *nameSpace;
+    IRefCount *nameSpaceObj;
     float diceRoll;
     float probability;
 
-    rAssert( m_vehicle != NULL );
+    rAssert(m_vehicle != NULL);
 
-    if( m_hornTimer != NULL )
-    {
+    if (m_hornTimer != NULL) {
         //
         // Already honking
         //
@@ -333,21 +310,18 @@ void TrafficSoundPlayer::HonkHorn()
     // Find the settings for this positional sound first
     //
     nameSpace = Sound::daSoundRenderingManagerGet()->GetTuningNamespace();
-    rAssert( nameSpace != NULL );
-    nameSpaceObj = nameSpace->GetInstance( "traffic_horn" );
-    if( nameSpaceObj != NULL )
-    {
-        settings = reinterpret_cast<positionalSoundSettings*>( nameSpaceObj );
+    rAssert(nameSpace != NULL);
+    nameSpaceObj = nameSpace->GetInstance("traffic_horn");
+    if (nameSpaceObj != NULL) {
+        settings = reinterpret_cast<positionalSoundSettings *>(nameSpaceObj);
 
         probability = settings->GetPlaybackProbability();
-        if( probability < 1.0f )
-        {
+        if (probability < 1.0f) {
             //
             // Random play
             //
-            diceRoll = (static_cast<float>( rand() % 100 )) / 100.0f;
-            if( diceRoll >= probability )
-            {
+            diceRoll = (static_cast<float>(rand() % 100)) / 100.0f;
+            if (diceRoll >= probability) {
                 return;
             }
         }
@@ -357,30 +331,25 @@ void TrafficSoundPlayer::HonkHorn()
         // the honk, giving the last one a better chance of being longer.
         //
         m_honkCount = rand() % 3;
-        if( m_honkCount > 0 )
-        {
-            hornTime = s_minHonkShortMsecs + ( rand() % ( s_maxHonkShortMsecs - s_minHonkShortMsecs ) );
-        }
-        else
-        {
-            hornTime = s_minHonkLongMsecs + ( rand() % ( s_maxHonkLongMsecs - s_minHonkLongMsecs ) );
+        if (m_honkCount > 0) {
+            hornTime = s_minHonkShortMsecs + (rand() % (s_maxHonkShortMsecs - s_minHonkShortMsecs));
+        } else {
+            hornTime = s_minHonkLongMsecs + (rand() % (s_maxHonkLongMsecs - s_minHonkLongMsecs));
         }
 
-        s_timerList->CreateTimer( &m_hornTimer, hornTime, this, NULL, true, 
-                                  IRadTimer::ResetModeOneShot );
+        s_timerList->CreateTimer(&m_hornTimer, hornTime, this, NULL, true,
+                                 IRadTimer::ResetModeOneShot);
 
         //
         // Start honking
         //
-        m_vehicle->GetPosition( &position );
-        m_hornPlayer.SetPosition( position.x, position.y, position.z );
-        m_hornPlayer.SetPositionCarrier( *this );
-        m_hornPlayer.SetParameters( settings );
-        m_hornPlayer.PlaySound( "horn" );
-    }
-    else
-    {
-        rDebugString( "Couldn't find settings for traffic horn\n" );
+        m_vehicle->GetPosition(&position);
+        m_hornPlayer.SetPosition(position.x, position.y, position.z);
+        m_hornPlayer.SetPositionCarrier(*this);
+        m_hornPlayer.SetParameters(settings);
+        m_hornPlayer.PlaySound("horn");
+    } else {
+        rDebugString("Couldn't find settings for traffic horn\n");
     }
 }
 
@@ -395,36 +364,32 @@ void TrafficSoundPlayer::HonkHorn()
 // Return:      void 
 //
 //=============================================================================
-void TrafficSoundPlayer::AddOverlayClip( carSoundParameters* parameters, const char* posnSettingsName )
-{
-    const char* clipName;
-    positionalSoundSettings* settings;
-    IRadNameSpace* nameSpace;
-    IRefCount* nameSpaceObj;
+void
+TrafficSoundPlayer::AddOverlayClip(carSoundParameters *parameters, const char *posnSettingsName) {
+    const char *clipName;
+    positionalSoundSettings *settings;
+    IRadNameSpace *nameSpace;
+    IRefCount *nameSpaceObj;
     rmt::Vector position;
 
-    rAssert( parameters != NULL );
+    rAssert(parameters != NULL);
 
     m_vehicleParameters = parameters;
     clipName = parameters->GetOverlayClipName();
-    if( clipName != NULL )
-    {
+    if (clipName != NULL) {
         nameSpace = Sound::daSoundRenderingManagerGet()->GetTuningNamespace();
-        rAssert( nameSpace != NULL );
-        nameSpaceObj = nameSpace->GetInstance( posnSettingsName );
-        if( nameSpaceObj != NULL )
-        {
-            settings = reinterpret_cast<positionalSoundSettings*>( nameSpaceObj );
+        rAssert(nameSpace != NULL);
+        nameSpaceObj = nameSpace->GetInstance(posnSettingsName);
+        if (nameSpaceObj != NULL) {
+            settings = reinterpret_cast<positionalSoundSettings *>(nameSpaceObj);
 
-            m_vehicle->GetPosition( &position );
-            m_overlayPlayer.SetPosition( position.x, position.y, position.z );
-            m_overlayPlayer.SetPositionCarrier( *this );
-            m_overlayPlayer.SetParameters( settings );
-            m_overlayPlayer.PlaySound( clipName );
-        }
-        else
-        {
-            rTuneAssertMsg( false, "Huh? Positional settings for overlay clip disappeared" );
+            m_vehicle->GetPosition(&position);
+            m_overlayPlayer.SetPosition(position.x, position.y, position.z);
+            m_overlayPlayer.SetPositionCarrier(*this);
+            m_overlayPlayer.SetParameters(settings);
+            m_overlayPlayer.PlaySound(clipName);
+        } else {
+            rTuneAssertMsg(false, "Huh? Positional settings for overlay clip disappeared");
         }
     }
 }
@@ -434,20 +399,17 @@ void TrafficSoundPlayer::AddOverlayClip( carSoundParameters* parameters, const c
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( carSoundParameters* parameters, const char* posnSettingsName )
+// Parameters:  (carSoundParameters* parameters, const char* posnSettingsName)
 //
 // Return:      void 
 //
 //=============================================================================
-void TrafficSoundPlayer::ToggleOverlayClip( carSoundParameters* parameters, const char* posnSettingsName )
-{
-    if( m_overlayPlayer.IsInUse() )
-    {
+void TrafficSoundPlayer::ToggleOverlayClip(carSoundParameters *parameters,
+                                           const char *posnSettingsName) {
+    if (m_overlayPlayer.IsInUse()) {
         m_overlayPlayer.Stop();
-    }
-    else
-    {
-        AddOverlayClip( parameters, posnSettingsName );
+    } else {
+        AddOverlayClip(parameters, posnSettingsName);
     }
 }
 

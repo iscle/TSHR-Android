@@ -63,14 +63,14 @@
 //******************************************************************************
 
 // Static pointer to instance of singleton.
-SoundManager* SoundManager::spInstance = NULL;
+SoundManager *SoundManager::spInstance = NULL;
 
 //
 // Sound file extensions
 //
-const char* RADSCRIPT_TYPE_INFO_FILE = "typ";
-const char* RADSCRIPT_SCRIPT_FILE = "spt";
-const char* RADMUSIC_SCRIPT_FILE = "rms";
+const char *RADSCRIPT_TYPE_INFO_FILE = "typ";
+const char *RADSCRIPT_SCRIPT_FILE = "spt";
+const char *RADMUSIC_SCRIPT_FILE = "rms";
 
 //
 // Sound mode flags, necessary because it's too late in the project
@@ -103,19 +103,18 @@ static const unsigned int BAD_SERVICE_TIME = 100;
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-SoundManager* SoundManager::CreateInstance( bool muteSound, bool noMusic, 
-                                            bool noEffects, bool noDialogue )
-{
-    MEMTRACK_PUSH_GROUP( "Sound" );
-    
-    rAssert( spInstance == NULL );
+SoundManager *SoundManager::CreateInstance(bool muteSound, bool noMusic,
+                                           bool noEffects, bool noDialogue) {
+    MEMTRACK_PUSH_GROUP("Sound");
 
-    spInstance = new(GMA_PERSISTENT) SoundManager( muteSound, noMusic, noEffects, noDialogue );
-    rAssert( spInstance );
+    rAssert(spInstance == NULL);
+
+    spInstance = new(GMA_PERSISTENT) SoundManager(muteSound, noMusic, noEffects, noDialogue);
+    rAssert(spInstance);
 
     spInstance->initialize();
 
-    MEMTRACK_POP_GROUP( "Sound" );
+    MEMTRACK_POP_GROUP("Sound");
 
     return spInstance;
 }
@@ -133,10 +132,9 @@ SoundManager* SoundManager::CreateInstance( bool muteSound, bool noMusic,
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-SoundManager* SoundManager::GetInstance()
-{
-    rAssert( spInstance != NULL );
-    
+SoundManager *SoundManager::GetInstance() {
+    rAssert(spInstance != NULL);
+
     return spInstance;
 }
 
@@ -152,11 +150,10 @@ SoundManager* SoundManager::GetInstance()
 // Return:      None.
 //
 //==============================================================================
-void SoundManager::DestroyInstance()
-{
-    rAssert( spInstance != NULL );
+void SoundManager::DestroyInstance() {
+    rAssert(spInstance != NULL);
 
-    delete( GMA_PERSISTENT, spInstance );
+    delete (GMA_PERSISTENT, spInstance);
     spInstance = NULL;
 }
 
@@ -172,28 +169,26 @@ void SoundManager::DestroyInstance()
 // Return:      None.
 //
 //==============================================================================
-void SoundManager::Update()
-{
-    unsigned int now = radTimeGetMilliseconds( );
+void SoundManager::Update() {
+    unsigned int now = radTimeGetMilliseconds();
     unsigned int dif = now - gLastServiceTime;
-    
-    if ( dif > BAD_SERVICE_TIME )
-    {
-        #ifndef RAD_DEBUG
-            rReleasePrintf( "\nAUDIO: Detected Service Lag:[%d]ms -- this could cause skipping\n\n", dif );
-        #endif
+
+    if (dif > BAD_SERVICE_TIME) {
+#ifndef RAD_DEBUG
+        rReleasePrintf("\nAUDIO: Detected Service Lag:[%d]ms -- this could cause skipping\n\n",
+                       dif);
+#endif
     }
-    
+
     gLastServiceTime = now;
 
-    if( m_isMuted )
-    {
+    if (m_isMuted) {
         return;
     }
 
     m_musicPlayer->Service();
 
-    rAssert( m_pSoundRenderMgr != NULL );
+    rAssert(m_pSoundRenderMgr != NULL);
     m_pSoundRenderMgr->Service();
 }
 
@@ -209,54 +204,51 @@ void SoundManager::Update()
 // Return:      None.
 //
 //==============================================================================
-void SoundManager::UpdateOncePerFrame( unsigned int elapsedTime, ContextEnum context, bool useContext, bool isPausedForErrors )
-{
+void
+SoundManager::UpdateOncePerFrame(unsigned int elapsedTime, ContextEnum context, bool useContext,
+                                 bool isPausedForErrors) {
 
-    unsigned int now = radTimeGetMilliseconds( );
+    unsigned int now = radTimeGetMilliseconds();
     unsigned int dif = now - gLastServiceOncePerFrameTime;
-    
-    if ( dif > BAD_SERVICE_TIME )
-    {
-        #ifndef RAD_DEBUG
-            rReleasePrintf( "\nAUDIO: Detected ServiceOpf Lag:[%d]ms -- this could cause skipping\n\n", dif );
-        #endif
+
+    if (dif > BAD_SERVICE_TIME) {
+#ifndef RAD_DEBUG
+        rReleasePrintf("\nAUDIO: Detected ServiceOpf Lag:[%d]ms -- this could cause skipping\n\n",
+                       dif);
+#endif
     }
-    
+
     gLastServiceOncePerFrameTime = now;
-    
-    if( m_isMuted )
-    {
+
+    if (m_isMuted) {
         return;
     }
 
-    rAssert( m_pSoundRenderMgr != NULL );
-    m_pSoundRenderMgr->ServiceOncePerFrame( elapsedTime );
-    m_soundFXPlayer->ServiceOncePerFrame( elapsedTime );
+    rAssert(m_pSoundRenderMgr != NULL);
+    m_pSoundRenderMgr->ServiceOncePerFrame(elapsedTime);
+    m_soundFXPlayer->ServiceOncePerFrame(elapsedTime);
     m_movingSoundManager->ServiceOncePerFrame();
 
-    if( !isPausedForErrors )
-    {
+    if (!isPausedForErrors) {
         //
         // If we've paused the players, don't update this thing because it could
         // start up new sounds
         //
-        m_avatarSoundPlayer.UpdateOncePerFrame( elapsedTime );
+        m_avatarSoundPlayer.UpdateOncePerFrame(elapsedTime);
     }
 
     //
     // No point in updating listener position more than once per frame
     //
-    if( useContext )
-    {
-        m_listener.Update( context );
+    if (useContext) {
+        m_listener.Update(context);
     }
 
     //
     // The dialog queue timer list isn't that time-sensitive, once per frame
     // should be fine
     //
-    if( m_dialogCoordinator != NULL )
-    {
+    if (m_dialogCoordinator != NULL) {
         m_dialogCoordinator->ServiceOncePerFrame();
     }
 }
@@ -273,35 +265,39 @@ void SoundManager::UpdateOncePerFrame( unsigned int elapsedTime, ContextEnum con
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::HandleEvent( EventEnum id, void* pEventData )
-{
-    switch( id )
-    {
+void SoundManager::HandleEvent(EventEnum id, void *pEventData) {
+    switch (id) {
         case EVENT_CONVERSATION_SKIP:
             //
             // We only get this in mute mode.  Nothing to stop, signal that we're done
             //
-            GetEventManager()->TriggerEvent( EVENT_CONVERSATION_DONE );
+            GetEventManager()->TriggerEvent(EVENT_CONVERSATION_DONE);
             break;
         case EVENT_CONVERSATION_START:
-            m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_LETTERBOX, NULL, false );
+            m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_LETTERBOX,
+                                                                   NULL, false);
             break;
         case EVENT_CONVERSATION_DONE:
-            m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_LETTERBOX, NULL, true );
+            m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_LETTERBOX,
+                                                                   NULL, true);
             break;
         case EVENT_GETINTOVEHICLE_END:
-            m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_ONFOOT, NULL, true );
+            m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_ONFOOT,
+                                                                   NULL, true);
             break;
         case EVENT_GETOUTOFVEHICLE_END:
-            m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_ONFOOT, NULL, false );
+            m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_ONFOOT,
+                                                                   NULL, false);
             break;
         case EVENT_ENTER_INTERIOR_START:
         case EVENT_EXIT_INTERIOR_START:
-            m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_JUST_MUSIC, NULL, false );
+            m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_JUST_MUSIC,
+                                                                   NULL, false);
             break;
         case EVENT_ENTER_INTERIOR_END:
         case EVENT_EXIT_INTERIOR_END:
-            m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_JUST_MUSIC, NULL, true );
+            m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_JUST_MUSIC,
+                                                                   NULL, true);
             break;
 
         case EVENT_MISSION_RESET:
@@ -310,7 +306,8 @@ void SoundManager::HandleEvent( EventEnum id, void* pEventData )
             // get the enter/exit_interior_end event.  However, we will be getting a mission reset in this
             // case, so bring up the volume just in case.
             //
-            m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_JUST_MUSIC, NULL, true );
+            m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_JUST_MUSIC,
+                                                                   NULL, true);
 
             //
             // Fall through to case below
@@ -318,13 +315,12 @@ void SoundManager::HandleEvent( EventEnum id, void* pEventData )
 
         case EVENT_CHARACTER_POS_RESET:
         case EVENT_VEHICLE_DESTROYED_SYNC_SOUND:
-            if( GetAvatarManager()->GetAvatarForPlayer( 0 )->IsInCar() )
-            {
-                m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_ONFOOT, NULL, true );
-            }
-            else
-            {
-                m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_ONFOOT, NULL, false );
+            if (GetAvatarManager()->GetAvatarForPlayer(0)->IsInCar()) {
+                m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_ONFOOT,
+                                                                       NULL, true);
+            } else {
+                m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_ONFOOT,
+                                                                       NULL, false);
             }
             break;
 
@@ -337,7 +333,7 @@ void SoundManager::HandleEvent( EventEnum id, void* pEventData )
             break;
 
         default:
-            rAssertMsg( false, "Huh?  SoundManager getting events it shouldn't\n" );
+            rAssertMsg(false, "Huh?  SoundManager getting events it shouldn't\n");
             break;
     }
 }
@@ -352,10 +348,8 @@ void SoundManager::HandleEvent( EventEnum id, void* pEventData )
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::OnBootupStart()
-{
-    if( m_isMuted )
-    {
+void SoundManager::OnBootupStart() {
+    if (m_isMuted) {
         return;
     }
 
@@ -383,10 +377,8 @@ void SoundManager::OnBootupStart()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::OnBootupComplete()
-{
-    if( m_isMuted )
-    {
+void SoundManager::OnBootupComplete() {
+    if (m_isMuted) {
         return;
     }
 
@@ -398,18 +390,15 @@ void SoundManager::OnBootupComplete()
     //
     // If the sound levels haven't been auto-loaded, set them now
     //
-    if( !( GetGameDataManager()->IsGameLoaded() ) )
-    {
+    if (!(GetGameDataManager()->IsGameLoaded())) {
         ResetData();
-    }
-    else
-    {
+    } else {
         //
         // Hack!  If we've loaded sound volumes before we had the scripts loaded,
         // then we wouldn't have been able to calculate the ambience volumes properly.
         // Fix those up now.
         //
-        SetAmbienceVolume( GetCalculatedAmbienceVolume() );
+        SetAmbienceVolume(GetCalculatedAmbienceVolume());
     }
 }
 
@@ -423,18 +412,16 @@ void SoundManager::OnBootupComplete()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::QueueLevelSoundLoads()
-{
+void SoundManager::QueueLevelSoundLoads() {
     RenderEnums::LevelEnum level;
 
-    if( m_isMuted )
-    {
+    if (m_isMuted) {
         return;
     }
 
     level = GetGameplayManager()->GetCurrentLevelIndex();
-    m_soundLoader->LevelLoad( level );
-    m_musicPlayer->QueueMusicLevelLoad( level );
+    m_soundLoader->LevelLoad(level);
+    m_musicPlayer->QueueMusicLevelLoad(level);
 }
 
 //=============================================================================
@@ -447,10 +434,8 @@ void SoundManager::QueueLevelSoundLoads()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::ResetDucking()
-{
-    if( m_isMuted )
-    {
+void SoundManager::ResetDucking() {
+    if (m_isMuted) {
         return;
     }
     m_pSoundRenderMgr->GetTuner()->ResetDuck();
@@ -467,10 +452,8 @@ void SoundManager::ResetDucking()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::OnFrontEndStart()
-{
-    if( m_isMuted )
-    {
+void SoundManager::OnFrontEndStart() {
+    if (m_isMuted) {
         return;
     }
 
@@ -494,10 +477,8 @@ void SoundManager::OnFrontEndStart()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::OnFrontEndEnd()
-{
-    if( m_isMuted )
-    {
+void SoundManager::OnFrontEndEnd() {
+    if (m_isMuted) {
         return;
     }
 
@@ -515,12 +496,10 @@ void SoundManager::OnFrontEndEnd()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::OnGameplayStart()
-{
+void SoundManager::OnGameplayStart() {
     bool playerInCar;
 
-    if( m_isMuted )
-    {
+    if (m_isMuted) {
         return;
     }
 
@@ -528,19 +507,18 @@ void SoundManager::OnGameplayStart()
     // Pass on start notice
     //
     playerInCar = m_avatarSoundPlayer.OnBeginGameplay();
-    m_musicPlayer->OnGameplayStart( playerInCar );
+    m_musicPlayer->OnGameplayStart(playerInCar);
     m_soundFXPlayer->OnGameplayStart();
 
     //
     // Assume we're starting gameplay on foot, except for minigame.  Start the ducking
     //
-    if( GetGameplayManager()->IsSuperSprint() )
-    {
-        m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_MINIGAME, NULL, false );
-    }
-    else
-    {
-        m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_ONFOOT, NULL, false );
+    if (GetGameplayManager()->IsSuperSprint()) {
+        m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_MINIGAME, NULL,
+                                                               false);
+    } else {
+        m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_ONFOOT, NULL,
+                                                               false);
     }
 }
 
@@ -557,10 +535,8 @@ void SoundManager::OnGameplayStart()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::OnGameplayEnd( bool goingToFE )
-{
-    if( m_isMuted )
-    {
+void SoundManager::OnGameplayEnd(bool goingToFE) {
+    if (m_isMuted) {
         return;
     }
 
@@ -569,15 +545,14 @@ void SoundManager::OnGameplayEnd( bool goingToFE )
     m_dialogCoordinator->OnGameplayEnd();
     m_soundFXPlayer->OnGameplayEnd();
 
-    m_soundLoader->LevelUnload( goingToFE );
+    m_soundLoader->LevelUnload(goingToFE);
     m_musicPlayer->UnloadRadmusicScript();
 
     //
     // Set up for the front end
     //
-    if( goingToFE )
-    {
-        m_musicPlayer->QueueMusicLevelLoad( RenderEnums::L3 );
+    if (goingToFE) {
+        m_musicPlayer->QueueMusicLevelLoad(RenderEnums::L3);
     }
 }
 
@@ -591,21 +566,20 @@ void SoundManager::OnGameplayEnd( bool goingToFE )
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::OnPauseStart()
-{
-    if( m_isMuted )
-    {
+void SoundManager::OnPauseStart() {
+    if (m_isMuted) {
         return;
     }
 
-    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_PAUSE, NULL, false );
+    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_PAUSE, NULL,
+                                                           false);
 
     m_musicPlayer->OnPauseStart();
     m_dialogCoordinator->OnPauseStart();
     m_soundFXPlayer->OnPauseStart();
     m_NISPlayer->PauseAllNISPlayers();
 
-    GetEventManager()->TriggerEvent( EVENT_FE_PAUSE_MENU_START );
+    GetEventManager()->TriggerEvent(EVENT_FE_PAUSE_MENU_START);
 }
 
 //=============================================================================
@@ -618,21 +592,19 @@ void SoundManager::OnPauseStart()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::OnPauseEnd()
-{
-    if( m_isMuted )
-    {
+void SoundManager::OnPauseEnd() {
+    if (m_isMuted) {
         return;
     }
 
-    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_PAUSE, NULL, true );
+    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_PAUSE, NULL, true);
 
     m_musicPlayer->OnPauseEnd();
     m_dialogCoordinator->OnPauseEnd();
     m_soundFXPlayer->OnPauseEnd();
     m_NISPlayer->ContinueAllNISPlayers();
 
-    GetEventManager()->TriggerEvent( EVENT_FE_PAUSE_MENU_END );
+    GetEventManager()->TriggerEvent(EVENT_FE_PAUSE_MENU_END);
 }
 
 //=============================================================================
@@ -645,17 +617,15 @@ void SoundManager::OnPauseEnd()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::OnStoreScreenStart( bool playMusic )
-{
-    if( m_isMuted )
-    {
+void SoundManager::OnStoreScreenStart(bool playMusic) {
+    if (m_isMuted) {
         return;
     }
 
-    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_STORE, NULL, false );
+    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_STORE, NULL,
+                                                           false);
 
-    if( playMusic )
-    {
+    if (playMusic) {
         m_musicPlayer->OnStoreStart();
     }
 }
@@ -670,14 +640,12 @@ void SoundManager::OnStoreScreenStart( bool playMusic )
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::OnStoreScreenEnd()
-{
-    if( m_isMuted )
-    {
+void SoundManager::OnStoreScreenEnd() {
+    if (m_isMuted) {
         return;
     }
 
-    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_STORE, NULL, true );
+    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_STORE, NULL, true);
 
     m_musicPlayer->OnStoreEnd();
 }
@@ -692,17 +660,15 @@ void SoundManager::OnStoreScreenEnd()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::DuckEverythingButMusicBegin( bool playMuzak )
-{
-    if( m_isMuted )
-    {
+void SoundManager::DuckEverythingButMusicBegin(bool playMuzak) {
+    if (m_isMuted) {
         return;
     }
 
-    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_JUST_MUSIC, NULL, false );
+    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_JUST_MUSIC, NULL,
+                                                           false);
 
-    if( playMuzak )
-    {
+    if (playMuzak) {
         m_musicPlayer->OnStoreStart();
     }
 }
@@ -717,17 +683,15 @@ void SoundManager::DuckEverythingButMusicBegin( bool playMuzak )
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::DuckEverythingButMusicEnd( bool playMuzak )
-{
-    if( m_isMuted )
-    {
+void SoundManager::DuckEverythingButMusicEnd(bool playMuzak) {
+    if (m_isMuted) {
         return;
     }
 
-    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_JUST_MUSIC, NULL, true );
+    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_JUST_MUSIC, NULL,
+                                                           true);
 
-    if( playMuzak )
-    {
+    if (playMuzak) {
         m_musicPlayer->OnStoreEnd();
     }
 }
@@ -742,14 +706,13 @@ void SoundManager::DuckEverythingButMusicEnd( bool playMuzak )
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::OnMissionBriefingStart()
-{
-    if( m_isMuted )
-    {
+void SoundManager::OnMissionBriefingStart() {
+    if (m_isMuted) {
         return;
     }
 
-    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_MISSION, NULL, false );
+    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_MISSION, NULL,
+                                                           false);
     m_NISPlayer->PauseAllNISPlayers();
 }
 
@@ -763,14 +726,13 @@ void SoundManager::OnMissionBriefingStart()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::OnMissionBriefingEnd()
-{
-    if( m_isMuted )
-    {
+void SoundManager::OnMissionBriefingEnd() {
+    if (m_isMuted) {
         return;
     }
 
-    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_MISSION, NULL, true );
+    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_MISSION, NULL,
+                                                           true);
     m_NISPlayer->ContinueAllNISPlayers();
 }
 
@@ -784,14 +746,13 @@ void SoundManager::OnMissionBriefingEnd()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::DuckForInGameCredits()
-{
-    if( m_isMuted )
-    {
+void SoundManager::DuckForInGameCredits() {
+    if (m_isMuted) {
         return;
     }
 
-    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_CREDITS, NULL, false );
+    m_pSoundRenderMgr->GetTuner()->ActivateSituationalDuck(NULL, Sound::DUCK_SIT_CREDITS, NULL,
+                                                           false);
 }
 
 //=============================================================================
@@ -806,46 +767,34 @@ void SoundManager::DuckForInGameCredits()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::LoadSoundFile( const char* filename, SoundFileHandler* callbackObj )
-{
+void SoundManager::LoadSoundFile(const char *filename, SoundFileHandler *callbackObj) {
     char fileExtension[4];
-    int length = strlen( filename );
+    int length = strlen(filename);
 
     //
     // Determine the appropriate sound subsystem by the file extension
     //
-    rAssert( length > 4 );
-    if( filename[length - 4] == '.' )
-    {
-        strcpy( fileExtension, &(filename[strlen(filename) - 3]) );
+    rAssert(length > 4);
+    if (filename[length - 4] == '.') {
+        strcpy(fileExtension, &(filename[strlen(filename) - 3]));
 
-        if( strcmp( fileExtension, RADSCRIPT_TYPE_INFO_FILE ) == 0 )
-        {
-            m_pSoundRenderMgr->LoadTypeInfoFile( filename, callbackObj );
-        }
-        else if( strcmp( fileExtension, RADSCRIPT_SCRIPT_FILE ) == 0 )
-        {
-            m_pSoundRenderMgr->LoadScriptFile( filename, callbackObj );
-        }
-        else if( strcmp( fileExtension, RADMUSIC_SCRIPT_FILE ) == 0 )
-        {
-            m_musicPlayer->LoadRadmusicScript( filename, callbackObj );
-        }
-        else
-        {
+        if (strcmp(fileExtension, RADSCRIPT_TYPE_INFO_FILE) == 0) {
+            m_pSoundRenderMgr->LoadTypeInfoFile(filename, callbackObj);
+        } else if (strcmp(fileExtension, RADSCRIPT_SCRIPT_FILE) == 0) {
+            m_pSoundRenderMgr->LoadScriptFile(filename, callbackObj);
+        } else if (strcmp(fileExtension, RADMUSIC_SCRIPT_FILE) == 0) {
+            m_musicPlayer->LoadRadmusicScript(filename, callbackObj);
+        } else {
             //
             // Oops, don't recognize that type
             //
-            rAssert( false );
+            rAssert(false);
         }
-    }
-    else
-    {
+    } else {
         //
         // No file extension, must be a sound cluster name
         //
-        if( m_soundLoader->LoadClusterByName( filename, callbackObj ) )
-        {
+        if (m_soundLoader->LoadClusterByName(filename, callbackObj)) {
             //
             // LoadClusterByName indicated that the cluster was already loaded,
             // so call the callback
@@ -865,14 +814,12 @@ void SoundManager::LoadSoundFile( const char* filename, SoundFileHandler* callba
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::LoadCarSound( Vehicle* theCar, bool unloadOtherCars )
-{
-    if( m_isMuted )
-    {
+void SoundManager::LoadCarSound(Vehicle *theCar, bool unloadOtherCars) {
+    if (m_isMuted) {
         return;
     }
 
-    m_soundLoader->LoadCarSound( theCar, unloadOtherCars );
+    m_soundLoader->LoadCarSound(theCar, unloadOtherCars);
 }
 
 //=============================================================================
@@ -885,16 +832,14 @@ void SoundManager::LoadCarSound( Vehicle* theCar, bool unloadOtherCars )
 // Return:      Volume setting from 0.0f to 1.0f 
 //
 //=============================================================================
-float SoundManager::GetMasterVolume()
-{
-    if( m_isMuted )
-    {
-        return( 0.0f );
+float SoundManager::GetMasterVolume() {
+    if (m_isMuted) {
+        return (0.0f);
     }
 
-    rAssert( m_pSoundRenderMgr != NULL );
+    rAssert(m_pSoundRenderMgr != NULL);
 
-    return( m_pSoundRenderMgr->GetTuner()->GetMasterVolume() );
+    return (m_pSoundRenderMgr->GetTuner()->GetMasterVolume());
 }
 
 //=============================================================================
@@ -907,24 +852,22 @@ float SoundManager::GetMasterVolume()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::SetMasterVolume( float volume )
-{
-    if( m_isMuted )
-    {
+void SoundManager::SetMasterVolume(float volume) {
+    if (m_isMuted) {
         return;
     }
 
-    rAssert( m_pSoundRenderMgr != NULL );
+    rAssert(m_pSoundRenderMgr != NULL);
 
-    m_pSoundRenderMgr->GetTuner()->SetMasterVolume( volume );
+    m_pSoundRenderMgr->GetTuner()->SetMasterVolume(volume);
 
     //
     // Stinky special cases.  This must be fixed.
     //
-    /*if ( m_musicPlayer )
+    /*if (m_musicPlayer)
     {
-        m_musicPlayer->SetVolume( volume * m_pSoundRenderMgr->GetTuner()->GetMusicVolume() );
-        m_musicPlayer->SetAmbienceVolume( volume * m_pSoundRenderMgr->GetTuner()->GetAmbienceVolume() );
+        m_musicPlayer->SetVolume(volume * m_pSoundRenderMgr->GetTuner()->GetMusicVolume());
+        m_musicPlayer->SetAmbienceVolume(volume * m_pSoundRenderMgr->GetTuner()->GetAmbienceVolume());
     }*/
 }
 
@@ -938,16 +881,14 @@ void SoundManager::SetMasterVolume( float volume )
 // Return:      Volume setting from 0.0f to 1.0f 
 //
 //=============================================================================
-float SoundManager::GetSfxVolume()
-{
-    if( m_isMuted )
-    {
-        return( 0.0f );
+float SoundManager::GetSfxVolume() {
+    if (m_isMuted) {
+        return (0.0f);
     }
 
-    rAssert( m_pSoundRenderMgr != NULL );
+    rAssert(m_pSoundRenderMgr != NULL);
 
-    return( m_pSoundRenderMgr->GetTuner()->GetSfxVolume() );
+    return (m_pSoundRenderMgr->GetTuner()->GetSfxVolume());
 }
 
 //=============================================================================
@@ -960,16 +901,14 @@ float SoundManager::GetSfxVolume()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::SetSfxVolume( float volume )
-{
-    if( m_isMuted )
-    {
+void SoundManager::SetSfxVolume(float volume) {
+    if (m_isMuted) {
         return;
     }
 
-    rAssert( m_pSoundRenderMgr != NULL );
+    rAssert(m_pSoundRenderMgr != NULL);
 
-    m_pSoundRenderMgr->GetTuner()->SetSfxVolume( volume );
+    m_pSoundRenderMgr->GetTuner()->SetSfxVolume(volume);
 }
 
 //=============================================================================
@@ -982,16 +921,14 @@ void SoundManager::SetSfxVolume( float volume )
 // Return:      Volume setting from 0.0f to 1.0f 
 //
 //=============================================================================
-float SoundManager::GetCarVolume()
-{
-    if( m_isMuted )
-    {
-        return( 0.0f );
+float SoundManager::GetCarVolume() {
+    if (m_isMuted) {
+        return (0.0f);
     }
 
-    rAssert( m_pSoundRenderMgr != NULL );
+    rAssert(m_pSoundRenderMgr != NULL);
 
-    return( m_pSoundRenderMgr->GetTuner()->GetCarVolume() );
+    return (m_pSoundRenderMgr->GetTuner()->GetCarVolume());
 }
 
 //=============================================================================
@@ -1004,16 +941,14 @@ float SoundManager::GetCarVolume()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::SetCarVolume( float volume )
-{
-    if( m_isMuted )
-    {
+void SoundManager::SetCarVolume(float volume) {
+    if (m_isMuted) {
         return;
     }
 
-    rAssert( m_pSoundRenderMgr != NULL );
+    rAssert(m_pSoundRenderMgr != NULL);
 
-    m_pSoundRenderMgr->GetTuner()->SetCarVolume( volume );
+    m_pSoundRenderMgr->GetTuner()->SetCarVolume(volume);
 }
 
 //=============================================================================
@@ -1026,18 +961,16 @@ void SoundManager::SetCarVolume( float volume )
 // Return:      Volume setting from 0.0f to 1.0f 
 //
 //=============================================================================
-float SoundManager::GetMusicVolume()
-{
-    if( m_isMuted )
-    {
-        return( 0.0f );
+float SoundManager::GetMusicVolume() {
+    if (m_isMuted) {
+        return (0.0f);
     }
 
-    rAssert( m_pSoundRenderMgr != NULL );
+    rAssert(m_pSoundRenderMgr != NULL);
 
-    //rAssert( m_musicPlayer->GetVolume() == m_pSoundRenderMgr->GetTuner()->GetMusicVolume() );
+    //rAssert(m_musicPlayer->GetVolume() == m_pSoundRenderMgr->GetTuner()->GetMusicVolume());
 
-    return( m_pSoundRenderMgr->GetTuner()->GetMusicVolume() );
+    return (m_pSoundRenderMgr->GetTuner()->GetMusicVolume());
 }
 
 //=============================================================================
@@ -1050,24 +983,22 @@ float SoundManager::GetMusicVolume()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::SetMusicVolume( float volume )
-{
-    if( m_isMuted )
-    {
+void SoundManager::SetMusicVolume(float volume) {
+    if (m_isMuted) {
         return;
     }
 
-    rAssert( m_pSoundRenderMgr != NULL );
+    rAssert(m_pSoundRenderMgr != NULL);
 
-    m_pSoundRenderMgr->GetTuner()->SetMusicVolume( volume );
-    
+    m_pSoundRenderMgr->GetTuner()->SetMusicVolume(volume);
+
     //
     // Sadly, we have to deal with the music player outside of the tuner.  The
     // daSound layer doesn't do our interactive music, so volume is controlled
     // separately.
     //
-    //rAssert( m_musicPlayer != NULL );
-    //m_musicPlayer->SetVolume( volume * m_pSoundRenderMgr->GetTuner()->GetMasterVolume() );
+    //rAssert(m_musicPlayer != NULL);
+    //m_musicPlayer->SetVolume(volume * m_pSoundRenderMgr->GetTuner()->GetMasterVolume());
 }
 
 //=============================================================================
@@ -1081,15 +1012,13 @@ void SoundManager::SetMusicVolume( float volume )
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::SetMusicVolumeWithoutTuner( float volume )
-{
-    if( m_isMuted )
-    {
+void SoundManager::SetMusicVolumeWithoutTuner(float volume) {
+    if (m_isMuted) {
         return;
     }
 
-    rAssert( m_musicPlayer != NULL );
-    m_musicPlayer->SetVolume( volume * m_pSoundRenderMgr->GetTuner()->GetMasterVolume() );
+    rAssert(m_musicPlayer != NULL);
+    m_musicPlayer->SetVolume(volume * m_pSoundRenderMgr->GetTuner()->GetMasterVolume());
 }
 
 //=============================================================================
@@ -1102,22 +1031,21 @@ void SoundManager::SetMusicVolumeWithoutTuner( float volume )
 // Return:      Volume setting from 0.0f to 1.0f 
 //
 //=============================================================================
-float SoundManager::GetAmbienceVolume()
-{
-    if( m_isMuted )
-    {
-        return( 0.0f );
+float SoundManager::GetAmbienceVolume() {
+    if (m_isMuted) {
+        return (0.0f);
     }
 
-    rAssert( m_pSoundRenderMgr != NULL );
+    rAssert(m_pSoundRenderMgr != NULL);
 
 #ifdef RAD_WIN32
-    m_musicPlayer->SetAmbienceVolume( m_pSoundRenderMgr->GetTuner()->GetAmbienceVolume() );
+    m_musicPlayer->SetAmbienceVolume(m_pSoundRenderMgr->GetTuner()->GetAmbienceVolume());
 #endif
 
-    rAssert( m_musicPlayer->GetAmbienceVolume() == m_pSoundRenderMgr->GetTuner()->GetAmbienceVolume() );
+    rAssert(m_musicPlayer->GetAmbienceVolume() ==
+            m_pSoundRenderMgr->GetTuner()->GetAmbienceVolume());
 
-    return( m_pSoundRenderMgr->GetTuner()->GetAmbienceVolume() );
+    return (m_pSoundRenderMgr->GetTuner()->GetAmbienceVolume());
 }
 
 //=============================================================================
@@ -1130,24 +1058,22 @@ float SoundManager::GetAmbienceVolume()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::SetAmbienceVolume( float volume )
-{
-    if( m_isMuted )
-    {
+void SoundManager::SetAmbienceVolume(float volume) {
+    if (m_isMuted) {
         return;
     }
 
-    rAssert( m_pSoundRenderMgr != NULL );
+    rAssert(m_pSoundRenderMgr != NULL);
 
-    m_pSoundRenderMgr->GetTuner()->SetAmbienceVolume( volume );
-    
+    m_pSoundRenderMgr->GetTuner()->SetAmbienceVolume(volume);
+
     //
     // Sadly, we have to deal with the ambience player outside of the tuner.  The
     // daSound layer doesn't do our interactive music, so volume is controlled
     // separately.
     //
-    rAssert( m_musicPlayer != NULL );
-    m_musicPlayer->SetAmbienceVolume( volume * m_pSoundRenderMgr->GetTuner()->GetMasterVolume() );
+    rAssert(m_musicPlayer != NULL);
+    m_musicPlayer->SetAmbienceVolume(volume * m_pSoundRenderMgr->GetTuner()->GetMasterVolume());
 }
 
 //=============================================================================
@@ -1161,15 +1087,13 @@ void SoundManager::SetAmbienceVolume( float volume )
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::SetAmbienceVolumeWithoutTuner( float volume )
-{
-    if( m_isMuted )
-    {
+void SoundManager::SetAmbienceVolumeWithoutTuner(float volume) {
+    if (m_isMuted) {
         return;
     }
 
-    rAssert( m_musicPlayer != NULL );
-    m_musicPlayer->SetAmbienceVolume( volume * m_pSoundRenderMgr->GetTuner()->GetMasterVolume() );
+    rAssert(m_musicPlayer != NULL);
+    m_musicPlayer->SetAmbienceVolume(volume * m_pSoundRenderMgr->GetTuner()->GetMasterVolume());
 }
 
 //=============================================================================
@@ -1183,39 +1107,33 @@ void SoundManager::SetAmbienceVolumeWithoutTuner( float volume )
 // Return:      float 
 //
 //=============================================================================
-float SoundManager::GetCalculatedAmbienceVolume()
-{
-    IRadNameSpace* nameSpace;
-    IRefCount* nameSpaceObj;
-    globalSettings* settings;
+float SoundManager::GetCalculatedAmbienceVolume() {
+    IRadNameSpace *nameSpace;
+    IRefCount *nameSpaceObj;
+    globalSettings *settings;
     float ratio;
     float newVolume;
 
     nameSpace = Sound::daSoundRenderingManagerGet()->GetTuningNamespace();
-    if(!nameSpace)
-    {
-        return( -1.0f );
+    if (!nameSpace) {
+        return (-1.0f);
     }
-    nameSpaceObj = nameSpace->GetInstance( "tuner" );
-    if(!nameSpaceObj)
-    {
-        return( -1.0f );
+    nameSpaceObj = nameSpace->GetInstance("tuner");
+    if (!nameSpaceObj) {
+        return (-1.0f);
     }
 
-    settings = static_cast<globalSettings*>( nameSpaceObj );
+    settings = static_cast<globalSettings *>(nameSpaceObj);
     ratio = GetSfxVolume() / settings->GetSfxVolume();
 
     newVolume = ratio * settings->GetAmbienceVolume();
-    if( newVolume < 0.0f )
-    {
+    if (newVolume < 0.0f) {
         newVolume = 0.0f;
-    }
-    else if( newVolume > 1.0f )
-    {
+    } else if (newVolume > 1.0f) {
         newVolume = 1.0f;
     }
 
-    return( newVolume );
+    return (newVolume);
 }
 
 //=============================================================================
@@ -1228,16 +1146,14 @@ float SoundManager::GetCalculatedAmbienceVolume()
 // Return:      Volume setting from 0.0f to 1.0f 
 //
 //=============================================================================
-float SoundManager::GetDialogueVolume()
-{
-    if( m_isMuted )
-    {
-        return( 0.0f );
+float SoundManager::GetDialogueVolume() {
+    if (m_isMuted) {
+        return (0.0f);
     }
 
-    rAssert( m_pSoundRenderMgr != NULL );
+    rAssert(m_pSoundRenderMgr != NULL);
 
-    return( m_pSoundRenderMgr->GetTuner()->GetDialogueVolume() );
+    return (m_pSoundRenderMgr->GetTuner()->GetDialogueVolume());
 }
 
 //=============================================================================
@@ -1250,8 +1166,7 @@ float SoundManager::GetDialogueVolume()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::DebugRender()
-{
+void SoundManager::DebugRender() {
     m_debugDisplay->Render();
 }
 
@@ -1265,16 +1180,14 @@ void SoundManager::DebugRender()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::SetDialogueVolume( float volume )
-{
-    if( m_isMuted )
-    {
+void SoundManager::SetDialogueVolume(float volume) {
+    if (m_isMuted) {
         return;
     }
 
-    rAssert( m_pSoundRenderMgr != NULL );
+    rAssert(m_pSoundRenderMgr != NULL);
 
-    m_pSoundRenderMgr->GetTuner()->SetDialogueVolume( volume );
+    m_pSoundRenderMgr->GetTuner()->SetDialogueVolume(volume);
 }
 
 //=============================================================================
@@ -1287,14 +1200,12 @@ void SoundManager::SetDialogueVolume( float volume )
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::PlayCarOptionMenuStinger()
-{
-    if( m_isMuted )
-    {
+void SoundManager::PlayCarOptionMenuStinger() {
+    if (m_isMuted) {
         return;
     }
 
-    m_soundFXPlayer->PlayCarOptionStinger( GetCarVolume() );
+    m_soundFXPlayer->PlayCarOptionStinger(GetCarVolume());
 }
 
 //=============================================================================
@@ -1307,14 +1218,12 @@ void SoundManager::PlayCarOptionMenuStinger()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::PlayDialogueOptionMenuStinger()
-{
-    if( m_isMuted )
-    {
+void SoundManager::PlayDialogueOptionMenuStinger() {
+    if (m_isMuted) {
         return;
     }
 
-    m_soundFXPlayer->PlayDialogOptionStinger( GetDialogueVolume() );
+    m_soundFXPlayer->PlayDialogOptionStinger(GetDialogueVolume());
 }
 
 //=============================================================================
@@ -1327,19 +1236,17 @@ void SoundManager::PlayDialogueOptionMenuStinger()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::PlayMusicOptionMenuStinger()
-{
+void SoundManager::PlayMusicOptionMenuStinger() {
     //
     // Music is special.  We're already playing music in the front end,
     // so we don't need to play a stinger there.  We need it in game,
     // though.
     //
-    if( m_isMuted || ( GetGameFlow()->GetCurrentContext() == CONTEXT_FRONTEND ) )
-    {
+    if (m_isMuted || (GetGameFlow()->GetCurrentContext() == CONTEXT_FRONTEND)) {
         return;
     }
 
-    m_soundFXPlayer->PlayMusicOptionStinger( GetMusicVolume() );
+    m_soundFXPlayer->PlayMusicOptionStinger(GetMusicVolume());
 }
 
 //=============================================================================
@@ -1352,44 +1259,37 @@ void SoundManager::PlayMusicOptionMenuStinger()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::PlaySfxOptionMenuStinger()
-{
-    if( m_isMuted )
-    {
+void SoundManager::PlaySfxOptionMenuStinger() {
+    if (m_isMuted) {
         return;
     }
 
-    m_soundFXPlayer->PlaySfxOptionStinger( GetSfxVolume() );
+    m_soundFXPlayer->PlaySfxOptionStinger(GetSfxVolume());
 }
 
-void SoundManager::LoadNISSound( radKey32 NISSoundID, NISSoundLoadedCallback* callback )
-{
-    if( m_isMuted )
-    {
+void SoundManager::LoadNISSound(radKey32 NISSoundID, NISSoundLoadedCallback *callback) {
+    if (m_isMuted) {
         return;
     }
 
-    m_NISPlayer->LoadNISSound( NISSoundID, callback );
+    m_NISPlayer->LoadNISSound(NISSoundID, callback);
 }
 
-void SoundManager::PlayNISSound( radKey32 NISSoundID, rmt::Box3D* boundingBox, NISSoundPlaybackCompleteCallback* callback )
-{ 
-    if( m_isMuted )
-    {
+void SoundManager::PlayNISSound(radKey32 NISSoundID, rmt::Box3D *boundingBox,
+                                NISSoundPlaybackCompleteCallback *callback) {
+    if (m_isMuted) {
         return;
     }
 
-    m_NISPlayer->PlayNISSound( NISSoundID, boundingBox, callback );
+    m_NISPlayer->PlayNISSound(NISSoundID, boundingBox, callback);
 }
 
-void SoundManager::StopAndDumpNISSound( radKey32 NISSoundID )
-{ 
-    if( m_isMuted )
-    {
+void SoundManager::StopAndDumpNISSound(radKey32 NISSoundID) {
+    if (m_isMuted) {
         return;
     }
 
-    m_NISPlayer->StopAndDumpNISSound( NISSoundID ); 
+    m_NISPlayer->StopAndDumpNISSound(NISSoundID);
 }
 
 //=============================================================================
@@ -1402,12 +1302,9 @@ void SoundManager::StopAndDumpNISSound( radKey32 NISSoundID )
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::StopForMovie()
-{
-    if ( !m_stoppedForMovie )
-    {
-        if( m_isMuted )
-        {
+void SoundManager::StopForMovie() {
+    if (!m_stoppedForMovie) {
+        if (m_isMuted) {
             return;
         }
 
@@ -1431,12 +1328,9 @@ void SoundManager::StopForMovie()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::ResumeAfterMovie()
-{
-    if ( m_stoppedForMovie )
-    {
-        if( m_isMuted )
-        {
+void SoundManager::ResumeAfterMovie() {
+    if (m_stoppedForMovie) {
+        if (m_isMuted) {
             return;
         }
 
@@ -1450,17 +1344,13 @@ void SoundManager::ResumeAfterMovie()
 // SoundManager::IsStoppedForMovie
 //=============================================================================
 
-bool SoundManager::IsStoppedForMovie()
-{
-    if( m_isMuted )
-    {
+bool SoundManager::IsStoppedForMovie() {
+    if (m_isMuted) {
         return true;
-    }
-    else
-    {
-        return ( m_stoppedForMovie 
-                 && m_musicPlayer->IsStoppedForMovie() 
-                 && m_pSoundRenderMgr->GetPlayerManager()->AreAllPlayersStopped() );
+    } else {
+        return (m_stoppedForMovie
+                && m_musicPlayer->IsStoppedForMovie()
+                && m_pSoundRenderMgr->GetPlayerManager()->AreAllPlayersStopped());
     }
 }
 
@@ -1474,8 +1364,7 @@ bool SoundManager::IsStoppedForMovie()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::MuteNISPlayers()
-{
+void SoundManager::MuteNISPlayers() {
     m_pSoundRenderMgr->GetTuner()->MuteNIS();
 }
 
@@ -1489,8 +1378,7 @@ void SoundManager::MuteNISPlayers()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::UnmuteNISPlayers()
-{
+void SoundManager::UnmuteNISPlayers() {
     m_pSoundRenderMgr->GetTuner()->UnmuteNIS();
 }
 
@@ -1504,8 +1392,7 @@ void SoundManager::UnmuteNISPlayers()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::RestartSupersprintMusic()
-{
+void SoundManager::RestartSupersprintMusic() {
     m_musicPlayer->RestartSupersprintMusic();
 }
 
@@ -1519,11 +1406,10 @@ void SoundManager::RestartSupersprintMusic()
 // Return:      float from 0.0f to 4.0f
 //
 //=============================================================================
-float SoundManager::GetBeatValue()
-{
-    rAssert( m_musicPlayer != NULL );
+float SoundManager::GetBeatValue() {
+    rAssert(m_musicPlayer != NULL);
 
-    return( m_musicPlayer->GetBeatValue() );
+    return (m_musicPlayer->GetBeatValue());
 }
 
 //=============================================================================
@@ -1537,9 +1423,8 @@ float SoundManager::GetBeatValue()
 // Return:      true for Askfood, false for Idlereply 
 //
 //=============================================================================
-bool SoundManager::IsFoodCharacter( Character* theGuy )
-{
-    return( DialogLine::IsFoodCharacter( theGuy ) );
+bool SoundManager::IsFoodCharacter(Character *theGuy) {
+    return (DialogLine::IsFoodCharacter(theGuy));
 }
 
 //=============================================================================
@@ -1553,10 +1438,9 @@ bool SoundManager::IsFoodCharacter( Character* theGuy )
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::SetDialogueLanguage( Scrooby::XLLanguage language )
-{
+void SoundManager::SetDialogueLanguage(Scrooby::XLLanguage language) {
     // TODO: Commented out to get PAL working for alpha.  It's basically a no-op anyway until we get localized dialogue. --jdy
-    m_pSoundRenderMgr->SetLanguage( language );
+    m_pSoundRenderMgr->SetLanguage(language);
 }
 
 //=============================================================================
@@ -1569,8 +1453,7 @@ void SoundManager::SetDialogueLanguage( Scrooby::XLLanguage language )
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::LoadData( const GameDataByte* dataBuffer, unsigned int numBytes )
-{
+void SoundManager::LoadData(const GameDataByte *dataBuffer, unsigned int numBytes) {
     SoundSettings soundSettings;
     SoundMode loadedSoundMode;
     float calculatedAmbienceVolume;
@@ -1579,11 +1462,11 @@ void SoundManager::LoadData( const GameDataByte* dataBuffer, unsigned int numByt
     return;
 #endif
 
-    memcpy( &soundSettings, dataBuffer, sizeof( soundSettings ) );
+    memcpy(&soundSettings, dataBuffer, sizeof(soundSettings));
 
-    this->SetMusicVolume( soundSettings.musicVolume );
-    this->SetSfxVolume( soundSettings.sfxVolume );
-    this->SetCarVolume( soundSettings.carVolume );
+    this->SetMusicVolume(soundSettings.musicVolume);
+    this->SetSfxVolume(soundSettings.sfxVolume);
+    this->SetCarVolume(soundSettings.carVolume);
 
     calculatedAmbienceVolume = GetCalculatedAmbienceVolume();
     //
@@ -1591,9 +1474,8 @@ void SoundManager::LoadData( const GameDataByte* dataBuffer, unsigned int numByt
     // the scripts yet.  This will get taken care of in OnBootupComplete(),
     // then.
     //
-    if( calculatedAmbienceVolume >= 0.0f )
-    {
-        SetAmbienceVolume( GetCalculatedAmbienceVolume() );
+    if (calculatedAmbienceVolume >= 0.0f) {
+        SetAmbienceVolume(GetCalculatedAmbienceVolume());
     }
 
     //
@@ -1605,20 +1487,14 @@ void SoundManager::LoadData( const GameDataByte* dataBuffer, unsigned int numByt
     // booleans.  So, I'm going to use the dialogue volume to signal stereo/mono by
     // adding 100 to the volume to signal mono.  I feel dirty.
     //
-    if( soundSettings.dialogVolume >= 100.0f )
-    {
-        this->SetDialogueVolume( soundSettings.dialogVolume - 100.0f );
+    if (soundSettings.dialogVolume >= 100.0f) {
+        this->SetDialogueVolume(soundSettings.dialogVolume - 100.0f);
         loadedSoundMode = SOUND_MONO;
-    }
-    else
-    {
-        this->SetDialogueVolume( soundSettings.dialogVolume );
-        if( soundSettings.isSurround )
-        {
+    } else {
+        this->SetDialogueVolume(soundSettings.dialogVolume);
+        if (soundSettings.isSurround) {
             loadedSoundMode = SOUND_SURROUND;
-        }
-        else
-        {
+        } else {
             loadedSoundMode = SOUND_STEREO;
         }
     }
@@ -1628,7 +1504,7 @@ void SoundManager::LoadData( const GameDataByte* dataBuffer, unsigned int numByt
     // GameCube's IPL needs to override the loaded settings, sadly
     //
     u32 GCSoundMode = OSGetSoundMode();
-    if( GCSoundMode == OS_SOUND_MODE_MONO )
+    if(GCSoundMode == OS_SOUND_MODE_MONO)
     {
         //
         // IPL says mono, we go mono
@@ -1637,7 +1513,7 @@ void SoundManager::LoadData( const GameDataByte* dataBuffer, unsigned int numByt
     }
     else
     {
-        if( loadedSoundMode == SOUND_MONO )
+        if(loadedSoundMode == SOUND_MONO)
         {
             //
             // IPL says stereo, we go stereo.  Since the saved game had said
@@ -1649,7 +1525,7 @@ void SoundManager::LoadData( const GameDataByte* dataBuffer, unsigned int numByt
 
 #endif
 
-    this->SetSoundMode( loadedSoundMode );
+    this->SetSoundMode(loadedSoundMode);
 }
 
 //=============================================================================
@@ -1662,8 +1538,7 @@ void SoundManager::LoadData( const GameDataByte* dataBuffer, unsigned int numByt
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::SaveData( GameDataByte* dataBuffer, unsigned int numBytes )
-{
+void SoundManager::SaveData(GameDataByte *dataBuffer, unsigned int numBytes) {
     SoundMode mode;
     SoundSettings soundSettings;
 
@@ -1673,24 +1548,19 @@ void SoundManager::SaveData( GameDataByte* dataBuffer, unsigned int numBytes )
     soundSettings.dialogVolume = this->GetDialogueVolume();
 
     mode = this->GetSoundMode();
-    if( mode == SOUND_MONO )
-    {
+    if (mode == SOUND_MONO) {
         //
         // Horrible stinky hack explained in LoadData()
         //
         soundSettings.dialogVolume += 100.0f;
         soundSettings.isSurround = false;
-    }
-    else if( mode == SOUND_STEREO )
-    {
+    } else if (mode == SOUND_STEREO) {
         soundSettings.isSurround = false;
-    }
-    else
-    {
+    } else {
         soundSettings.isSurround = true;
     }
 
-    memcpy( dataBuffer, &soundSettings, sizeof( soundSettings ) );
+    memcpy(dataBuffer, &soundSettings, sizeof(soundSettings));
 }
 
 //=============================================================================
@@ -1703,32 +1573,30 @@ void SoundManager::SaveData( GameDataByte* dataBuffer, unsigned int numBytes )
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::ResetData()
-{
-    if( GetGameDataManager()->IsGameLoaded() )
-    {
+void SoundManager::ResetData() {
+    if (GetGameDataManager()->IsGameLoaded()) {
         // since sound settings can be changed in the FE, we should
         // never reset to defaults if a game is already loaded
         //
         return;
     }
 
-    IRadNameSpace* nameSpace;
-    IRefCount* nameSpaceObj;
-    globalSettings* settings;
+    IRadNameSpace *nameSpace;
+    IRefCount *nameSpaceObj;
+    globalSettings *settings;
 
     nameSpace = Sound::daSoundRenderingManagerGet()->GetTuningNamespace();
-    rAssert( nameSpace != NULL );
-    nameSpaceObj = nameSpace->GetInstance( "tuner" );
-    rAssert( nameSpaceObj != NULL );
+    rAssert(nameSpace != NULL);
+    nameSpaceObj = nameSpace->GetInstance("tuner");
+    rAssert(nameSpaceObj != NULL);
 
-    settings = static_cast<globalSettings*>( nameSpaceObj );
+    settings = static_cast<globalSettings *>(nameSpaceObj);
 
-    SetSfxVolume( settings->GetSfxVolume() );
-    SetMusicVolume( settings->GetMusicVolume() );
-    SetAmbienceVolume( settings->GetAmbienceVolume() );
-    SetDialogueVolume( settings->GetDialogueVolume() );
-    SetCarVolume( settings->GetCarVolume() );
+    SetSfxVolume(settings->GetSfxVolume());
+    SetMusicVolume(settings->GetMusicVolume());
+    SetAmbienceVolume(settings->GetAmbienceVolume());
+    SetDialogueVolume(settings->GetDialogueVolume());
+    SetCarVolume(settings->GetCarVolume());
 
     //
     // Sound mode.  For GameCube, get it from the IPL (Initial Program
@@ -1739,16 +1607,16 @@ void SoundManager::ResetData()
     //
 #ifdef RAD_GAMECUBE
     u32 GCSoundMode = OSGetSoundMode();
-    if( GCSoundMode == OS_SOUND_MODE_MONO )
+    if(GCSoundMode == OS_SOUND_MODE_MONO)
     {
-        SetSoundMode( SOUND_MONO );
+        SetSoundMode(SOUND_MONO);
     }
     else
     {
-        SetSoundMode( SOUND_SURROUND );
+        SetSoundMode(SOUND_SURROUND);
     }
 #else
-    SetSoundMode( SOUND_SURROUND );
+    SetSoundMode(SOUND_SURROUND);
 #endif
 }
 
@@ -1803,17 +1671,17 @@ void SoundManager::LoadDefaults()
     globalSettings* settings;
 
     nameSpace = Sound::daSoundRenderingManagerGet()->GetTuningNamespace();
-    rAssert( nameSpace != NULL );
-    nameSpaceObj = nameSpace->GetInstance( "tuner" );
-    rAssert( nameSpaceObj != NULL );
+    rAssert(nameSpace != NULL);
+    nameSpaceObj = nameSpace->GetInstance("tuner");
+    rAssert(nameSpaceObj != NULL);
 
-    settings = static_cast<globalSettings*>( nameSpaceObj );
+    settings = static_cast<globalSettings*>(nameSpaceObj);
 
-    SetSfxVolume( settings->GetSfxVolume() );
-    SetMusicVolume( settings->GetMusicVolume() );
-    SetAmbienceVolume( settings->GetAmbienceVolume() );
-    SetDialogueVolume( settings->GetDialogueVolume() );
-    SetCarVolume( settings->GetCarVolume() );
+    SetSfxVolume(settings->GetSfxVolume());
+    SetMusicVolume(settings->GetMusicVolume());
+    SetAmbienceVolume(settings->GetAmbienceVolume());
+    SetDialogueVolume(settings->GetDialogueVolume());
+    SetCarVolume(settings->GetCarVolume());
 }
 
 //=============================================================================
@@ -1827,51 +1695,51 @@ void SoundManager::LoadDefaults()
 //
 //=============================================================================
 
-void SoundManager::LoadConfig( ConfigString& config )
+void SoundManager::LoadConfig(ConfigString& config)
 {
     char property[ ConfigString::MaxLength ];
     char value[ ConfigString::MaxLength ];
 
-    while ( config.ReadProperty( property, value ) )
+    while (config.ReadProperty(property, value))
     {
-        if( _stricmp( property, "sfx" ) == 0 )
+        if(_stricmp(property, "sfx") == 0)
         {
-            float val = (float) atof( value );
-            if( val >= 0 && val <= 1 )
+            float val = (float) atof(value);
+            if(val>= 0 && val <= 1)
             {
-                SetSfxVolume( val );
+                SetSfxVolume(val);
             }
         }
-        else if( _stricmp( property, "music" ) == 0 )
+        else if(_stricmp(property, "music") == 0)
         {
-            float val = (float) atof( value );
-            if( val >= 0 && val <= 1 )
+            float val = (float) atof(value);
+            if(val>= 0 && val <= 1)
             {
-                SetMusicVolume( val );
+                SetMusicVolume(val);
             }
         }
-        else if( _stricmp( property, "ambience" ) == 0 )
+        else if(_stricmp(property, "ambience") == 0)
         {
-            float val = (float) atof( value );
-            if( val >= 0 && val <= 1 )
+            float val = (float) atof(value);
+            if(val>= 0 && val <= 1)
             {
-                SetAmbienceVolume( val );
+                SetAmbienceVolume(val);
             }
         }
-        else if( _stricmp( property, "dialogue" ) == 0 )
+        else if(_stricmp(property, "dialogue") == 0)
         {
-            float val = (float) atof( value );
-            if( val >= 0 && val <= 1 )
+            float val = (float) atof(value);
+            if(val>= 0 && val <= 1)
             {
-                SetDialogueVolume( val );
+                SetDialogueVolume(val);
             }
         }
-        else if( _stricmp( property, "car" ) == 0 )
+        else if(_stricmp(property, "car") == 0)
         {
-            float val = (float) atof( value );
-            if( val >= 0 && val <= 1 )
+            float val = (float) atof(value);
+            if(val>= 0 && val <= 1)
             {
-                SetCarVolume( val );
+                SetCarVolume(val);
             }
         }
     }
@@ -1888,48 +1756,41 @@ void SoundManager::LoadConfig( ConfigString& config )
 //
 //=============================================================================
 
-void SoundManager::SaveConfig( ConfigString& config )
+void SoundManager::SaveConfig(ConfigString& config)
 {
     char value[ 32 ];
 
-    sprintf( value, "%f", GetSfxVolume() );
-    config.WriteProperty( "sfx", value );
-    sprintf( value, "%f", GetMusicVolume() );
-    config.WriteProperty( "music", value );
-    sprintf( value, "%f", GetAmbienceVolume() );
-    config.WriteProperty( "ambience", value );
-    sprintf( value, "%f", GetDialogueVolume() );
-    config.WriteProperty( "dialogue", value );
-    sprintf( value, "%f", GetCarVolume() );
-    config.WriteProperty( "car", value );
+    sprintf(value, "%f", GetSfxVolume());
+    config.WriteProperty("sfx", value);
+    sprintf(value, "%f", GetMusicVolume());
+    config.WriteProperty("music", value);
+    sprintf(value, "%f", GetAmbienceVolume());
+    config.WriteProperty("ambience", value);
+    sprintf(value, "%f", GetDialogueVolume());
+    config.WriteProperty("dialogue", value);
+    sprintf(value, "%f", GetCarVolume());
+    config.WriteProperty("car", value);
 }
 #endif // RAD_WIN32
 
-void SoundManager::SetSoundMode( SoundMode mode )
-{
+void SoundManager::SetSoundMode(SoundMode mode) {
     radSoundOutputMode radSoundMode;
 
     m_soundMode = mode;
 
-    if( m_soundMode == SOUND_MONO )
-    {
+    if (m_soundMode == SOUND_MONO) {
         radSoundMode = radSoundOutputMode_Mono;
-    }
-    else if( m_soundMode == SOUND_STEREO )
-    {
+    } else if (m_soundMode == SOUND_STEREO) {
         radSoundMode = radSoundOutputMode_Stereo;
-    }
-    else
-    {
+    } else {
         radSoundMode = radSoundOutputMode_Surround;
     }
 
-    ::radSoundHalSystemGet()->SetOutputMode( radSoundMode );
+    ::radSoundHalSystemGet()->SetOutputMode(radSoundMode);
 }
 
-SoundMode SoundManager::GetSoundMode()
-{
-    return( m_soundMode );
+SoundMode SoundManager::GetSoundMode() {
+    return (m_soundMode);
 }
 
 //******************************************************************************
@@ -1949,37 +1810,35 @@ SoundMode SoundManager::GetSoundMode()
 // Return:      N/A
 //
 //==============================================================================
-SoundManager::SoundManager( bool noSound, bool noMusic, 
-                            bool noEffects, bool noDialogue ) :
-    m_soundLoader( NULL ),
-    m_musicPlayer( NULL ),
-    m_soundFXPlayer( NULL ),
-    m_NISPlayer( NULL ),
-    m_movingSoundManager( NULL ),
-    m_isMuted( noSound ),
-    m_noMusic( noMusic ),
-    m_noEffects( noEffects ),
-    m_noDialogue( noDialogue ),
-    m_stoppedForMovie( false ),
-    m_selectSoundClip( NULL ),
-    m_scrollSoundClip( NULL ),
-    m_selectSoundClipPlayer( NULL ),
-    m_scrollSoundClipPlayer( NULL ),
-    m_soundMode( SOUND_STEREO )
-{
+SoundManager::SoundManager(bool noSound, bool noMusic,
+                           bool noEffects, bool noDialogue) :
+        m_soundLoader(NULL),
+        m_musicPlayer(NULL),
+        m_soundFXPlayer(NULL),
+        m_NISPlayer(NULL),
+        m_movingSoundManager(NULL),
+        m_isMuted(noSound),
+        m_noMusic(noMusic),
+        m_noEffects(noEffects),
+        m_noDialogue(noDialogue),
+        m_stoppedForMovie(false),
+        m_selectSoundClip(NULL),
+        m_scrollSoundClip(NULL),
+        m_selectSoundClipPlayer(NULL),
+        m_scrollSoundClipPlayer(NULL),
+        m_soundMode(SOUND_STEREO) {
     m_dialogCoordinator = NULL;
-    
-    Sound::daSoundRenderingManagerCreate( GMA_AUDIO_PERSISTENT );
 
-    if( !m_isMuted )
-    {
+    Sound::daSoundRenderingManagerCreate(GMA_AUDIO_PERSISTENT);
+
+    if (!m_isMuted) {
         m_pSoundRenderMgr = Sound::daSoundRenderingManagerGet();
-        rAssert( m_pSoundRenderMgr != NULL );
+        rAssert(m_pSoundRenderMgr != NULL);
 
         m_pSoundRenderMgr->Initialize();
     }
 
-    GetGameDataManager()->RegisterGameData( this, sizeof( SoundSettings ), "Sound Manager" );
+    GetGameDataManager()->RegisterGameData(this, sizeof(SoundSettings), "Sound Manager");
 
     prepareStartupSounds();
 }
@@ -1995,25 +1854,23 @@ SoundManager::SoundManager( bool noSound, bool noMusic,
 // Return:      N/A
 //
 //==============================================================================
-SoundManager::~SoundManager()
-{
-    GetEventManager()->RemoveAll( this );
+SoundManager::~SoundManager() {
+    GetEventManager()->RemoveAll(this);
 
-    if( m_isMuted )
-    {
+    if (m_isMuted) {
         return;
     }
 
-    delete( GMA_PERSISTENT, m_soundFXPlayer);
-    delete( GMA_PERSISTENT, m_movingSoundManager);
-    delete( GMA_PERSISTENT, m_NISPlayer);
-    delete( GMA_PERSISTENT, m_dialogCoordinator);
-    delete( GMA_PERSISTENT, m_musicPlayer);
-    delete( GMA_PERSISTENT, m_soundLoader);
+    delete (GMA_PERSISTENT, m_soundFXPlayer);
+    delete (GMA_PERSISTENT, m_movingSoundManager);
+    delete (GMA_PERSISTENT, m_NISPlayer);
+    delete (GMA_PERSISTENT, m_dialogCoordinator);
+    delete (GMA_PERSISTENT, m_musicPlayer);
+    delete (GMA_PERSISTENT, m_soundLoader);
 
     Sound::daSoundRenderingManagerTerminate();
 
-    delete( GMA_PERSISTENT, m_debugDisplay);
+    delete (GMA_PERSISTENT, m_debugDisplay);
 }
 
 //=============================================================================
@@ -2027,73 +1884,70 @@ SoundManager::~SoundManager()
 // Return:      void 
 //
 //=============================================================================
-void SoundManager::initialize()
-{
-    if( m_isMuted )
-    {
+void SoundManager::initialize() {
+    if (m_isMuted) {
         //
         // We need to intercept dialog skip events, since the dialog coordinator
         // isn't going to do it if we're muted
         //
-        GetEventManager()->AddListener( this, EVENT_CONVERSATION_SKIP );
+        GetEventManager()->AddListener(this, EVENT_CONVERSATION_SKIP);
         return;
-    }
-    else
-    {
+    } else {
         //
         // Set up a few tuner-related events
         //
-        GetEventManager()->AddListener( this, EVENT_CONVERSATION_START );
-        GetEventManager()->AddListener( this, EVENT_CONVERSATION_DONE );
-        GetEventManager()->AddListener( this, EVENT_GETINTOVEHICLE_END );
-        GetEventManager()->AddListener( this, EVENT_GETOUTOFVEHICLE_END );
-        GetEventManager()->AddListener( this, EVENT_ENTER_INTERIOR_START );
-        GetEventManager()->AddListener( this, EVENT_ENTER_INTERIOR_END );
-        GetEventManager()->AddListener( this, EVENT_EXIT_INTERIOR_START );
-        GetEventManager()->AddListener( this, EVENT_EXIT_INTERIOR_END );
-        GetEventManager()->AddListener( this, EVENT_MISSION_RESET );
-        GetEventManager()->AddListener( this, EVENT_CHARACTER_POS_RESET );
-        GetEventManager()->AddListener( this, EVENT_VEHICLE_DESTROYED_SYNC_SOUND );
+        GetEventManager()->AddListener(this, EVENT_CONVERSATION_START);
+        GetEventManager()->AddListener(this, EVENT_CONVERSATION_DONE);
+        GetEventManager()->AddListener(this, EVENT_GETINTOVEHICLE_END);
+        GetEventManager()->AddListener(this, EVENT_GETOUTOFVEHICLE_END);
+        GetEventManager()->AddListener(this, EVENT_ENTER_INTERIOR_START);
+        GetEventManager()->AddListener(this, EVENT_ENTER_INTERIOR_END);
+        GetEventManager()->AddListener(this, EVENT_EXIT_INTERIOR_START);
+        GetEventManager()->AddListener(this, EVENT_EXIT_INTERIOR_END);
+        GetEventManager()->AddListener(this, EVENT_MISSION_RESET);
+        GetEventManager()->AddListener(this, EVENT_CHARACTER_POS_RESET);
+        GetEventManager()->AddListener(this, EVENT_VEHICLE_DESTROYED_SYNC_SOUND);
     }
-        
-    m_debugDisplay = new( GMA_PERSISTENT ) SoundDebugDisplay( m_pSoundRenderMgr );
-    m_soundLoader = new( GMA_PERSISTENT ) SoundLoader();
-    m_musicPlayer = new( GMA_PERSISTENT ) MusicPlayer( *(m_pSoundRenderMgr->GetTuner()) );
-    m_dialogCoordinator = new( GMA_PERSISTENT ) DialogCoordinator( m_pSoundRenderMgr->GetSoundNamespace() );
-    m_NISPlayer = new( GMA_PERSISTENT ) NISSoundPlayer();
-    m_movingSoundManager = new( GMA_PERSISTENT ) MovingSoundManager();
-    m_soundFXPlayer = new( GMA_PERSISTENT ) SoundEffectPlayer();
+
+    m_debugDisplay = new(GMA_PERSISTENT) SoundDebugDisplay(m_pSoundRenderMgr);
+    m_soundLoader = new(GMA_PERSISTENT) SoundLoader();
+    m_musicPlayer = new(GMA_PERSISTENT) MusicPlayer(*(m_pSoundRenderMgr->GetTuner()));
+    m_dialogCoordinator = new(GMA_PERSISTENT) DialogCoordinator(
+            m_pSoundRenderMgr->GetSoundNamespace());
+    m_NISPlayer = new(GMA_PERSISTENT) NISSoundPlayer();
+    m_movingSoundManager = new(GMA_PERSISTENT) MovingSoundManager();
+    m_soundFXPlayer = new(GMA_PERSISTENT) SoundEffectPlayer();
     m_avatarSoundPlayer.Initialize();
-    m_listener.Initialize( *m_pSoundRenderMgr );
+    m_listener.Initialize(*m_pSoundRenderMgr);
 
     //
     // Apply the non-global mute options
     //
-    if( m_noMusic )
-    {
-        m_pSoundRenderMgr->GetTuner()->SetMusicVolume( 0.0f );
+    if (m_noMusic) {
+        m_pSoundRenderMgr->GetTuner()->SetMusicVolume(0.0f);
     }
-    if( m_noEffects )
-    {
-        m_pSoundRenderMgr->GetTuner()->SetSfxVolume( 0.0f );
+    if (m_noEffects) {
+        m_pSoundRenderMgr->GetTuner()->SetSfxVolume(0.0f);
     }
-    if( m_noDialogue )
-    {
-        m_pSoundRenderMgr->GetTuner()->SetDialogueVolume( 0.0f );
+    if (m_noDialogue) {
+        m_pSoundRenderMgr->GetTuner()->SetDialogueVolume(0.0f);
     }
-    
+
     //
     // Register a factory for creating the global settings object
     //
-    ::radFactoryRegister( "globalSettings", (radFactoryOutParamProc*) ::GlobalSettingsObjCreate );
-    ::radFactoryRegister( "reverbSettings", (radFactoryOutParamProc*) ::ReverbSettingsObjCreate );
-    ::radFactoryRegister( "positionalSoundSettings", (radFactoryOutParamProc*) ::PositionalSettingsObjCreate );
+    ::radFactoryRegister("globalSettings", (radFactoryOutParamProc * )
+    ::GlobalSettingsObjCreate);
+    ::radFactoryRegister("reverbSettings", (radFactoryOutParamProc * )
+    ::ReverbSettingsObjCreate);
+    ::radFactoryRegister("positionalSoundSettings", (radFactoryOutParamProc * )
+    ::PositionalSettingsObjCreate);
 
 #ifdef RAD_WIN32
     //
     // Register with the game config manager
     //
-    GetGameConfigManager()->RegisterConfig( this );
+    GetGameConfigManager()->RegisterConfig(this);
 #endif
 }
 
@@ -2103,61 +1957,59 @@ void SoundManager::initialize()
 //
 //******************************************************************************
 
-void SoundManager::prepareStartupSounds()
-{
+void SoundManager::prepareStartupSounds() {
     //
     // Go direct to RadSound to load two sounds that we can 
     // play for bootcheck screens
     //
-    IRadSoundRsdFileDataSource* selectFileDataSource =
-        radSoundRsdFileDataSourceCreate( GMA_DEFAULT );
+    IRadSoundRsdFileDataSource *selectFileDataSource =
+            radSoundRsdFileDataSourceCreate(GMA_DEFAULT);
     selectFileDataSource->AddRef();
-    selectFileDataSource->InitializeFromFileName( "sound/accept.rsd",
-                                                  false,
-                                                  0,
-                                                  IRadSoundHalAudioFormat::Frames,
-                                                  Sound::SoundNucleusGetClipFileAudioFormat() );
-    m_selectSoundClip = radSoundClipCreate( GMA_DEFAULT );
+    selectFileDataSource->InitializeFromFileName("sound/accept.rsd",
+                                                 false,
+                                                 0,
+                                                 IRadSoundHalAudioFormat::Frames,
+                                                 Sound::SoundNucleusGetClipFileAudioFormat());
+    m_selectSoundClip = radSoundClipCreate(GMA_DEFAULT);
     m_selectSoundClip->AddRef();
     m_selectSoundClip->Initialize(
-        selectFileDataSource,
-        ::radSoundHalSystemGet()->GetRootMemoryRegion(),
-        false,
-        "sound/accept.rsd" );
-    selectFileDataSource->Release( );
+            selectFileDataSource,
+            ::radSoundHalSystemGet()->GetRootMemoryRegion(),
+            false,
+            "sound/accept.rsd");
+    selectFileDataSource->Release();
 
-    m_selectSoundClipPlayer = radSoundClipPlayerCreate( GMA_DEFAULT );
+    m_selectSoundClipPlayer = radSoundClipPlayerCreate(GMA_DEFAULT);
     m_selectSoundClipPlayer->AddRef();
 
-    IRadSoundRsdFileDataSource* scrollFileDataSource =
-        radSoundRsdFileDataSourceCreate( GMA_DEFAULT );
+    IRadSoundRsdFileDataSource *scrollFileDataSource =
+            radSoundRsdFileDataSourceCreate(GMA_DEFAULT);
     scrollFileDataSource->AddRef();
-    scrollFileDataSource->InitializeFromFileName( "sound/scroll.rsd",
-                                                  false,
-                                                  0,
-                                                  IRadSoundHalAudioFormat::Frames,
-                                                  Sound::SoundNucleusGetClipFileAudioFormat() );
-    m_scrollSoundClip = radSoundClipCreate( GMA_DEFAULT );
+    scrollFileDataSource->InitializeFromFileName("sound/scroll.rsd",
+                                                 false,
+                                                 0,
+                                                 IRadSoundHalAudioFormat::Frames,
+                                                 Sound::SoundNucleusGetClipFileAudioFormat());
+    m_scrollSoundClip = radSoundClipCreate(GMA_DEFAULT);
     m_scrollSoundClip->AddRef();
     m_scrollSoundClip->Initialize(
-        scrollFileDataSource,
-        ::radSoundHalSystemGet()->GetRootMemoryRegion(),
-        false,
-        "sound/scroll.rsd" );
-    scrollFileDataSource->Release( );
+            scrollFileDataSource,
+            ::radSoundHalSystemGet()->GetRootMemoryRegion(),
+            false,
+            "sound/scroll.rsd");
+    scrollFileDataSource->Release();
 
-    m_scrollSoundClipPlayer = radSoundClipPlayerCreate( GMA_DEFAULT );
+    m_scrollSoundClipPlayer = radSoundClipPlayerCreate(GMA_DEFAULT);
     m_scrollSoundClipPlayer->AddRef();
 
     //
     // Starting listening for the select/scroll events
     //
-    GetEventManager()->AddListener( this, EVENT_FE_MENU_SELECT );
-    GetEventManager()->AddListener( this, EVENT_FE_MENU_UPORDOWN );
+    GetEventManager()->AddListener(this, EVENT_FE_MENU_SELECT);
+    GetEventManager()->AddListener(this, EVENT_FE_MENU_UPORDOWN);
 }
 
-void SoundManager::dumpStartupSounds()
-{
+void SoundManager::dumpStartupSounds() {
     m_selectSoundClip->Release();
     m_selectSoundClip = NULL;
 
@@ -2170,24 +2022,20 @@ void SoundManager::dumpStartupSounds()
     m_scrollSoundClipPlayer->Release();
     m_scrollSoundClipPlayer = NULL;
 
-    GetEventManager()->RemoveListener( this, EVENT_FE_MENU_SELECT );
-    GetEventManager()->RemoveListener( this, EVENT_FE_MENU_UPORDOWN );
+    GetEventManager()->RemoveListener(this, EVENT_FE_MENU_SELECT);
+    GetEventManager()->RemoveListener(this, EVENT_FE_MENU_UPORDOWN);
 }
 
-void SoundManager::playStartupAcceptSound()
-{
-    if( m_selectSoundClip->GetState() == IRadSoundClip::Initialized )
-    {
-        m_selectSoundClipPlayer->SetClip( m_selectSoundClip );
+void SoundManager::playStartupAcceptSound() {
+    if (m_selectSoundClip->GetState() == IRadSoundClip::Initialized) {
+        m_selectSoundClipPlayer->SetClip(m_selectSoundClip);
         m_selectSoundClipPlayer->Play();
     }
 }
 
-void SoundManager::playStartupScrollSound()
-{
-    if( m_scrollSoundClip->GetState() == IRadSoundClip::Initialized )
-    {
-        m_scrollSoundClipPlayer->SetClip( m_scrollSoundClip );
+void SoundManager::playStartupScrollSound() {
+    if (m_scrollSoundClip->GetState() == IRadSoundClip::Initialized) {
+        m_scrollSoundClipPlayer->SetClip(m_scrollSoundClip);
         m_scrollSoundClipPlayer->Play();
     }
 }

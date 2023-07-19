@@ -27,6 +27,7 @@
 //========================================
 
 class SoundFileHandler;
+
 struct IRadNameSpace;
 
 //=============================================================================
@@ -36,65 +37,72 @@ struct IRadNameSpace;
 //=============================================================================
 
 class SoundCluster : public Sound::IDaSoundDynaLoadCompletionCallback,
-                     public radRefCount
-{
-    public:
-        IMPLEMENT_REFCOUNTED( "SoundCluster" );
+                     public radRefCount {
+public:
+    IMPLEMENT_REFCOUNTED("SoundCluster");
 
-        SoundCluster( int clusterIndex,
-                      IRadNameSpace* soundNamespace );
-        virtual ~SoundCluster();
+    SoundCluster(int clusterIndex,
+                 IRadNameSpace *soundNamespace);
 
-        bool AddResource( const char* resourceName )
-            { return( AddResource( ::radMakeKey32( resourceName ) ) ); }
-        bool AddResource( Sound::daResourceKey resourceKey );
+    virtual ~SoundCluster();
 
-        bool IsLoaded() const { return m_isLoaded; }
+    bool AddResource(const char *resourceName) {
+        return (AddResource(::radMakeKey32(resourceName)));
+    }
 
-        void LoadSounds( SoundFileHandler* callbackObj = NULL );
-        void UnloadSounds();
-        
-        bool ContainsResource( const char* resourceName ) 
-            { return ContainsResource( ::radMakeKey32( resourceName ) ); }
-        bool ContainsResource( Sound::daResourceKey resourceKey );
+    bool AddResource(Sound::daResourceKey resourceKey);
 
-        IRadNameSpace* GetMyNamespace() { return( m_namespace ); }
+    bool IsLoaded() const { return m_isLoaded; }
 
-        //
-        // Interface for sound renderer load completion callback
-        //
-        void OnDynaLoadOperationsComplete( void* pUserData );
+    void LoadSounds(SoundFileHandler *callbackObj = NULL);
 
-    private:
-        //Prevent wasteful constructor creation.
-        SoundCluster();
-        SoundCluster( const SoundCluster& original );
-        SoundCluster& operator=( const SoundCluster& rhs );
+    void UnloadSounds();
 
-        static const int MAX_RESOURCES = 80;
+    bool ContainsResource(const char *resourceName) {
+        return ContainsResource(::radMakeKey32(resourceName));
+    }
 
-        //
-        // True if the sounds for this cluster are allocated in sound memory
-        //
-        bool m_isLoaded;
+    bool ContainsResource(Sound::daResourceKey resourceKey);
 
-        //
-        // List of sound clips
-        //
-        Sound::daResourceKey m_soundList[MAX_RESOURCES];
+    IRadNameSpace *GetMyNamespace() { return (m_namespace); }
 
-        //
-        // Namespace containing these resources
-        //
-        IRadNameSpace* m_namespace;
+    //
+    // Interface for sound renderer load completion callback
+    //
+    void OnDynaLoadOperationsComplete(void *pUserData);
 
-        //
-        // Callback object on load completion
-        //
-        SoundFileHandler* m_loadCompleteCallbackObj;
+private:
+    //Prevent wasteful constructor creation.
+    SoundCluster();
+
+    SoundCluster(const SoundCluster &original);
+
+    SoundCluster &operator=(const SoundCluster &rhs);
+
+    static const int MAX_RESOURCES = 80;
+
+    //
+    // True if the sounds for this cluster are allocated in sound memory
+    //
+    bool m_isLoaded;
+
+    //
+    // List of sound clips
+    //
+    Sound::daResourceKey m_soundList[MAX_RESOURCES];
+
+    //
+    // Namespace containing these resources
+    //
+    IRadNameSpace *m_namespace;
+
+    //
+    // Callback object on load completion
+    //
+    SoundFileHandler *m_loadCompleteCallbackObj;
 
 #ifdef RAD_DEBUG
-        int m_clusterIndex;
+    int m_clusterIndex;
 #endif
 };
 

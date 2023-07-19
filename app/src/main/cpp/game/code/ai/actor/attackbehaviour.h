@@ -38,58 +38,68 @@
 //===========================================================================
 
 
-class AttackBehaviour : public Behaviour, public EventListener
-{
-    public:
-        // maximum firing range in meters, forward firing arc in degrees
-        AttackBehaviour( float maxFiringRange, float firingArc );
-        virtual ~AttackBehaviour();
-        virtual void Apply( Actor*, unsigned int timeInMS );
-        
-        void SetMaxFiringRange( float meters );
-        void SetFiringArc( float degrees );
-        void SetActorMoveSpeed( float kph );
-        void SetMovementIntervals( float seconds );
-        bool IsMovementDisabled()const;
+class AttackBehaviour : public Behaviour, public EventListener {
+public:
+    // maximum firing range in meters, forward firing arc in degrees
+    AttackBehaviour(float maxFiringRange, float firingArc);
 
-        // Enable this behaviour
-        virtual void Activate();
-        // Disable this behaviour
-        virtual void Deactivate();
+    virtual ~AttackBehaviour();
 
-        virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void Apply(Actor *, unsigned int timeInMS);
 
-    protected:
+    void SetMaxFiringRange(float meters);
 
-        bool WithinFiringRange( const rmt::Vector& actorPos, const rmt::Vector& target )const;
-        bool WithinFiringArc( const rmt::Vector& actorPos, const rmt::Vector& actorFacing, const rmt::Vector& target )const;
-        bool IsTooClose( const rmt::Vector& actorPos, const rmt::Vector& target )const;
+    void SetFiringArc(float degrees);
 
-        void MoveIntoAttackRange( Actor* actor, const rmt::Vector& target );
-        void MoveAway( Actor* actor, const rmt::Vector& target );
+    void SetActorMoveSpeed(float kph);
 
-        float m_MaxFiringRange;     // in meters
-        float m_MaxFiringRangeSqr;  
-        float m_FiringArc;          // half-arc radius, units = cos(angle)
-        float m_Speed;              // meters per milliseconds
+    void SetMovementIntervals(float seconds);
 
-        float m_MovementIntervals;
-        unsigned int m_TimeOfLastMove;
+    bool IsMovementDisabled() const;
 
-        int m_ActiveGagCount;
-        bool m_InConversation;
+    // Enable this behaviour
+    virtual void Activate();
 
-        static rmt::Randomizer s_Randomizer;
-        static bool s_RandomizerSeeded;
+    // Disable this behaviour
+    virtual void Deactivate();
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow AttackBehaviour from being copied and assigned.
-        AttackBehaviour( const AttackBehaviour& );
-        AttackBehaviour& operator=( const AttackBehaviour& );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
+
+protected:
+
+    bool WithinFiringRange(const rmt::Vector &actorPos, const rmt::Vector &target) const;
+
+    bool WithinFiringArc(const rmt::Vector &actorPos, const rmt::Vector &actorFacing,
+                         const rmt::Vector &target) const;
+
+    bool IsTooClose(const rmt::Vector &actorPos, const rmt::Vector &target) const;
+
+    void MoveIntoAttackRange(Actor *actor, const rmt::Vector &target);
+
+    void MoveAway(Actor *actor, const rmt::Vector &target);
+
+    float m_MaxFiringRange;     // in meters
+    float m_MaxFiringRangeSqr;
+    float m_FiringArc;          // half-arc radius, units = cos(angle)
+    float m_Speed;              // meters per milliseconds
+
+    float m_MovementIntervals;
+    unsigned int m_TimeOfLastMove;
+
+    int m_ActiveGagCount;
+    bool m_InConversation;
+
+    static rmt::Randomizer s_Randomizer;
+    static bool s_RandomizerSeeded;
+
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow AttackBehaviour from being copied and assigned.
+    AttackBehaviour(const AttackBehaviour &);
+
+    AttackBehaviour &operator=(const AttackBehaviour &);
 };
-
 
 
 #endif

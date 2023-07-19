@@ -27,9 +27,9 @@
 //===========================================================================
 
 class CGuiMenu;
+
 class tSprite;
-namespace Scrooby
-{
+namespace Scrooby {
     class Group;
 }
 
@@ -38,34 +38,42 @@ const int MAX_NUM_BULLETS = 2;
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenMissionLoad : 
-    public CGuiScreenMissionBase,
-    public EventListener
-{
+class CGuiScreenMissionLoad :
+        public CGuiScreenMissionBase,
+        public EventListener {
 public:
-    CGuiScreenMissionLoad( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenMissionLoad(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenMissionLoad();
 
     // Implements EventListener
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
-    virtual void HandleEvent( EventEnum id, void* pEventData );
-    static  void InitializePermanentVariables();
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
+
+    virtual void HandleEvent(EventEnum id, void *pEventData);
+
+    static void InitializePermanentVariables();
+
     virtual void InitIntro();
-	virtual void InitOutro();
+
+    virtual void InitOutro();
 
 protected:
     virtual void AddListeners();
+
     void ExtractNormalPositions();
+
     void InitPositionsNormal();
+
     void InitPositionsWager();
+
     virtual void RemoveListeners();
 
 private:
-    bool m_LoadIsDone        : 1;  //the mission load is done
+    bool m_LoadIsDone: 1;  //the mission load is done
 
-    Scrooby::Text* m_loadingText;
+    Scrooby::Text *m_loadingText;
     unsigned int m_elapsedIdleTime;
 
 };

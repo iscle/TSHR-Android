@@ -29,24 +29,26 @@ struct IRadSoundHalEffectI3DL2ReverbXBox;
 //
 //=============================================================================
 
-class XboxReverbController : public ReverbController
-{
-    public:
-        XboxReverbController();
-        virtual ~XboxReverbController();
+class XboxReverbController : public ReverbController {
+public:
+    XboxReverbController();
 
-        void SetReverbOn( reverbSettings* settings );
-        void SetReverbOff();
+    virtual ~XboxReverbController();
 
-    private:
-        //Prevent wasteful constructor creation.
-        XboxReverbController( const XboxReverbController& original );
-        XboxReverbController& operator=( const XboxReverbController& rhs );
+    void SetReverbOn(reverbSettings *settings);
 
-        //
-        // Radsound's Xbox reverb interface
-        //
-        IRadSoundHalEffectI3DL2ReverbXBox* m_reverbInterface;
+    void SetReverbOff();
+
+private:
+    //Prevent wasteful constructor creation.
+    XboxReverbController(const XboxReverbController &original);
+
+    XboxReverbController &operator=(const XboxReverbController &rhs);
+
+    //
+    // Radsound's Xbox reverb interface
+    //
+    IRadSoundHalEffectI3DL2ReverbXBox *m_reverbInterface;
 };
 
 

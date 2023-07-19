@@ -27,17 +27,15 @@
 //
 //=============================================================================
 
-class SuperCamController : public Mappable
-{
+class SuperCamController : public Mappable {
 public:
-    enum Button
-    {
+    enum Button {
         stickX,
         stickY,
         zToggle,
         lookToggle,
         zoom,
-        in, 
+        in,
         out,
         lookBack,
         altLookBack,
@@ -62,17 +60,18 @@ public:
     };
 
     SuperCamController();
+
     virtual ~SuperCamController();
 
-    virtual void OnButton( int controllerId, int id, const IButton* pButton );
+    virtual void OnButton(int controllerId, int id, const IButton *pButton);
 
     // This method is called when a button changes state from "Pressed" to "Released".
     //
-	virtual void OnButtonUp( int controllerId, int buttonId, const IButton* pButton );
+    virtual void OnButtonUp(int controllerId, int buttonId, const IButton *pButton);
 
     // This method is called when a button changes state from "Released" to "Pressed".
     //
-	virtual void OnButtonDown( int controllerId, int buttonId, const IButton* pButton );
+    virtual void OnButtonDown(int controllerId, int buttonId, const IButton *pButton);
 
     // This is how we create our controller device mappings to logical game mappings.
     // The mappings set up in this method are platform specific.
@@ -81,22 +80,23 @@ public:
     // The output of the specified input will be contained in the Button[] array.
     // This id will also be sent as a the second parameter in the OnButton... messages.
     //
-    virtual void LoadControllerMappings( unsigned int controllerId );
+    virtual void LoadControllerMappings(unsigned int controllerId);
 
     bool IsWheel() { return mIsWheel; };
 
     // A specific camera button value accessor.
     // On PC it's specialized to process axes.
     // On consoles it's optimized out and replaced with GetValue().
-    float GetAxisValue( unsigned int buttonId ) const;
+    float GetAxisValue(unsigned int buttonId) const;
 
 private:
 
     bool mIsWheel;
 
     //Prevent wasteful constructor creation.
-    SuperCamController( const SuperCamController& supercamcontroller );
-    SuperCamController& operator=( const SuperCamController& supercamcontroller );
+    SuperCamController(const SuperCamController &supercamcontroller);
+
+    SuperCamController &operator=(const SuperCamController &supercamcontroller);
 };
 //*****************************************************************************
 //
@@ -109,13 +109,12 @@ private:
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int controllerId, int id, const IButton* pButton )
+// Parameters:  (int controllerId, int id, const IButton* pButton)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCamController::OnButton( int controllerId, int id, const IButton* pButton )
-{
+inline void SuperCamController::OnButton(int controllerId, int id, const IButton *pButton) {
 }
 
 //=============================================================================
@@ -123,13 +122,12 @@ inline void SuperCamController::OnButton( int controllerId, int id, const IButto
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int controllerId, int buttonId, const IButton* pButton )
+// Parameters:  (int controllerId, int buttonId, const IButton* pButton)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCamController::OnButtonUp( int controllerId, int buttonId, const IButton* pButton )
-{
+inline void SuperCamController::OnButtonUp(int controllerId, int buttonId, const IButton *pButton) {
 }
 
 //=============================================================================
@@ -145,32 +143,31 @@ inline void SuperCamController::OnButtonUp( int controllerId, int buttonId, cons
 // Return:      n/a
 //
 //=============================================================================
-inline float SuperCamController::GetAxisValue( unsigned int buttonId ) const
-{
+inline float SuperCamController::GetAxisValue(unsigned int buttonId) const {
 #ifdef RAD_WIN32
-    switch( buttonId )
+    switch(buttonId)
     {
     case stickX:
         {
-            float up = GetValue( stickXup );
-            float down = GetValue( stickXdown );
+            float up = GetValue(stickXup);
+            float down = GetValue(stickXdown);
 
-            return ( up > down ) ? up : -down;
+            return (up> down) ? up : -down;
         }
     case stickY:
         {
-            float up = GetValue( stickYup );
-            float down = GetValue( stickYdown );
+            float up = GetValue(stickYup);
+            float down = GetValue(stickYdown);
 
-            return ( up > down ) ? up : -down;
+            return (up> down) ? up : -down;
         }
     default:
         {
-            return GetValue( buttonId );
+            return GetValue(buttonId);
         }
     }
 #else
-    return GetValue( buttonId );
+    return GetValue(buttonId);
 #endif
 }
 

@@ -27,9 +27,9 @@
 // Forward References
 //===========================================================================
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Drawable;
+
     class BoundedDrawable;
 }
 
@@ -37,129 +37,126 @@ namespace Scrooby
 // Interface Definitions
 //===========================================================================
 
-namespace GuiSFX
-{
+namespace GuiSFX {
 
-bool Flash
-(
-    Scrooby::BoundedDrawable* drawable,
-    float elapsedTime,
-    float durationTime,
-    int zoomRate = 0, // the higher the number, the faster the zoom
-    float maxScale = 1.5f,
-    float thresholdScale = 1.0f
-);
+    bool Flash
+            (
+                    Scrooby::BoundedDrawable *drawable,
+                    float elapsedTime,
+                    float durationTime,
+                    int zoomRate = 0, // the higher the number, the faster the zoom
+                    float maxScale = 1.5f,
+                    float thresholdScale = 1.0f
+            );
 
-bool Blink
-(
-    Scrooby::Drawable* drawable,
-    float elapsedTime,
-    float blinkingPeriod = 1000.0f,
-    bool usingAlpha = false
-);
+    bool Blink
+            (
+                    Scrooby::Drawable *drawable,
+                    float elapsedTime,
+                    float blinkingPeriod = 1000.0f,
+                    bool usingAlpha = false
+            );
 
-float Pulse
-(
-    float elapsedTime,
-    float period,
-    float center = 0.0f,
-    float amplitude = 1.0f,
-    float thetaOffset = 0.0f
-);
+    float Pulse
+            (
+                    float elapsedTime,
+                    float period,
+                    float center = 0.0f,
+                    float amplitude = 1.0f,
+                    float thetaOffset = 0.0f
+            );
 
-void ModulateColour
-(
-    tColour* currentColour,
-    float elapsedTime,
-    float period,
-    tColour startColour,
-    tColour endColour,
-    float thetaOffset = 0.0f
-);
+    void ModulateColour
+            (
+                    tColour *currentColour,
+                    float elapsedTime,
+                    float period,
+                    tColour startColour,
+                    tColour endColour,
+                    float thetaOffset = 0.0f
+            );
 
-float Pendulum
-(
-    Scrooby::BoundedDrawable* drawable,
-    float deltaTime,
-    float length,
-    float currentAngle,
-    float initialAngle,
-    float gravity = 9.81f
-);
+    float Pendulum
+            (
+                    Scrooby::BoundedDrawable *drawable,
+                    float deltaTime,
+                    float length,
+                    float currentAngle,
+                    float initialAngle,
+                    float gravity = 9.81f
+            );
 
-bool Spiral
-(
-    Scrooby::BoundedDrawable* drawable,
-    float elapsedTime,
-    float durationTime,
-    float rotationPeriod,
-    float startScale = 0.0f,
-    float endScale = 1.0f,
-    bool withFading = true
-);
+    bool Spiral
+            (
+                    Scrooby::BoundedDrawable *drawable,
+                    float elapsedTime,
+                    float durationTime,
+                    float rotationPeriod,
+                    float startScale = 0.0f,
+                    float endScale = 1.0f,
+                    bool withFading = true
+            );
 
-enum eSlideBorderX
-{
-    SLIDE_BORDER_LEFT = -1,
-    SLIDE_BORDER_RIGHT = 1
-};
+    enum eSlideBorderX {
+        SLIDE_BORDER_LEFT = -1,
+        SLIDE_BORDER_RIGHT = 1
+    };
 
-bool SlideX
-(
-    Scrooby::Drawable* drawable,
-    float elapsedTime,
-    float durationTime,
-    bool slideInwards,
-    int fromBorder,
-    int screenWidth = 640
-);
+    bool SlideX
+            (
+                    Scrooby::Drawable *drawable,
+                    float elapsedTime,
+                    float durationTime,
+                    bool slideInwards,
+                    int fromBorder,
+                    int screenWidth = 640
+            );
 
-enum eSlideBorderY
-{
-    SLIDE_BORDER_BOTTOM = -1,
-    SLIDE_BORDER_TOP = 1
-};
+    enum eSlideBorderY {
+        SLIDE_BORDER_BOTTOM = -1,
+        SLIDE_BORDER_TOP = 1
+    };
 
-bool SlideY
-(
-    Scrooby::Drawable* drawable,
-    float elapsedTime,
-    float durationTime,
-    bool slideInwards,
-    int fromBorder,
-    int screenHeight = 480
-);
+    bool SlideY
+            (
+                    Scrooby::Drawable *drawable,
+                    float elapsedTime,
+                    float durationTime,
+                    bool slideInwards,
+                    int fromBorder,
+                    int screenHeight = 480
+            );
 
-bool Flip
-(
-    Scrooby::BoundedDrawable* drawable,
-    float elapsedTime,
-    float durationTime,
-    float startAngle = 0.0f,
-    float endAngle = rmt::PI_2,
-    rmt::Vector axis = rmt::Vector( 1, 0, 0 )
-);
+    bool Flip
+            (
+                    Scrooby::BoundedDrawable *drawable,
+                    float elapsedTime,
+                    float durationTime,
+                    float startAngle = 0.0f,
+                    float endAngle = rmt::PI_2,
+                    rmt::Vector axis = rmt::Vector(1, 0, 0)
+            );
 
-void Projectile
-(
-    Scrooby::Drawable* drawable,
-    float elapsedTime,
-    float durationTime,
-    rmt::Vector initVelocity,
-    bool reverse = false,
-    float gravity = 0.005f
-);
+    void Projectile
+            (
+                    Scrooby::Drawable *drawable,
+                    float elapsedTime,
+                    float durationTime,
+                    rmt::Vector initVelocity,
+                    bool reverse = false,
+                    float gravity = 0.005f
+            );
 
-void Projectile
-(
-    Scrooby::Drawable* drawable,
-    float elapsedTime,
-    float durationTime,
-    rmt::Vector start,
-    rmt::Vector end,
-    bool reverse = false,
-    float gravity = 0.005f
-);
+    void Projectile
+            (
+                    Scrooby::Drawable *drawable,
+                    float elapsedTime,
+                    float durationTime,
+                    rmt::Vector start,
+                    rmt::Vector end,
+                    bool reverse = false,
+                    float gravity = 0.005f
+            );
 
 } // GuiSFX namespace
 

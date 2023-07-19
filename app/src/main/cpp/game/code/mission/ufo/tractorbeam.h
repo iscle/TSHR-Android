@@ -27,6 +27,7 @@
 //===========================================================================
 
 class StatePropDSG;
+
 class IEntityDSG;
 
 //===========================================================================
@@ -54,46 +55,55 @@ class IEntityDSG;
 //      steady state.
 //
 //===========================================================================
-class TractorBeam : public Weapon
-{
-    public:
-        TractorBeam();
-        virtual ~TractorBeam();
+class TractorBeam : public Weapon {
+public:
+    TractorBeam();
 
-        virtual bool LoadSetup( const char* statePropDSGName );
-        virtual void Update( float timeInMS );
-        virtual void Display();
-        virtual bool IsValidTarget( DynaPhysDSG* pDSG )const;
-        virtual bool CanFire( DynaPhysDSG* pTarget )const;
-        virtual void Fire( DynaPhysDSG* pTarget );
-        virtual void SetPosition( const rmt::Vector& position );
+    virtual ~TractorBeam();
 
-    protected:
+    virtual bool LoadSetup(const char *statePropDSGName);
 
-        tName           mStatePropName;
+    virtual void Update(float timeInMS);
 
-        StatePropDSG*   mpDrawable;
+    virtual void Display();
 
-        SwapArray< DynaPhysDSG* > mCaughtObjects;
-        
-        rmt::Matrix mTransform;
-        DynaPhysDSG* mNextTarget;
+    virtual bool IsValidTarget(DynaPhysDSG *pDSG) const;
 
-    protected:
-    
-        // Removes the object from the world, accompanied by a particle effect
-        // on state change
-        void SwallowObject( DynaPhysDSG* );
-        bool IsWithinBeam( const rmt::Vector& targetVector )const;
+    virtual bool CanFire(DynaPhysDSG *pTarget) const;
 
-        rmt::Quaternion Slerp( const rmt::Matrix m1, const rmt::Matrix m2, float deltaTime, float angularVelocity );
+    virtual void Fire(DynaPhysDSG *pTarget);
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow TractorBeam from being copied and assigned.
-        TractorBeam( const TractorBeam& );
-        TractorBeam& operator=( const TractorBeam& );
+    virtual void SetPosition(const rmt::Vector &position);
+
+protected:
+
+    tName mStatePropName;
+
+    StatePropDSG *mpDrawable;
+
+    SwapArray<DynaPhysDSG *> mCaughtObjects;
+
+    rmt::Matrix mTransform;
+    DynaPhysDSG *mNextTarget;
+
+protected:
+
+    // Removes the object from the world, accompanied by a particle effect
+    // on state change
+    void SwallowObject(DynaPhysDSG *);
+
+    bool IsWithinBeam(const rmt::Vector &targetVector) const;
+
+    rmt::Quaternion
+    Slerp(const rmt::Matrix m1, const rmt::Matrix m2, float deltaTime, float angularVelocity);
+
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow TractorBeam from being copied and assigned.
+    TractorBeam(const TractorBeam &);
+
+    TractorBeam &operator=(const TractorBeam &);
 
 };
 

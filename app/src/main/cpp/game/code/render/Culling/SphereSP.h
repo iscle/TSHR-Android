@@ -31,30 +31,34 @@
 // Synopsis:   The SphereSP; Synopsis by Inspection.
 //
 //========================================================================
-class SphereSP : public BoxPts
-{
+class SphereSP : public BoxPts {
 public:
-   SphereSP();
-   ~SphereSP();
+    SphereSP();
 
-   // This SpatialProxy is...
-   // <0.0   -   Less than comparison object in posn
-   // =0.0   -   Intersection with comparison object 
-   // >0.0   -   Greater than comparison object in posn 
-   float CompareTo( AAPlane3f&       irPlane );
-   // ISpatialProxyAA
-   // <0.0   -   Inside Spatial Proxy
-   // =0.0   -   On Spatial Proxy Surface
-   // >0.0   -   Outside Spatial Proxy
-   virtual float CompareTo( const Vector3f& irPoint );
-   virtual float CompareToXZ( const Vector3f& irPoint );
-   virtual float  TestNotOutside( ISpatialProxyAA& irSpatialProxy );
+    ~SphereSP();
 
-   virtual void SetTo( Bounds3f& irBounds );
-   void SetTo( rmt::Vector irCenter, float iRadius );
+    // This SpatialProxy is...
+    // <0.0   -   Less than comparison object in posn
+    // =0.0   -   Intersection with comparison object
+    //>0.0   -   Greater than comparison object in posn
+    float CompareTo(AAPlane3f &irPlane);
 
-   rmt::Vector mCenter;
-   float       mRadius;
+    // ISpatialProxyAA
+    // <0.0   -   Inside Spatial Proxy
+    // =0.0   -   On Spatial Proxy Surface
+    //>0.0   -   Outside Spatial Proxy
+    virtual float CompareTo(const Vector3f &irPoint);
+
+    virtual float CompareToXZ(const Vector3f &irPoint);
+
+    virtual float TestNotOutside(ISpatialProxyAA &irSpatialProxy);
+
+    virtual void SetTo(Bounds3f &irBounds);
+
+    void SetTo(rmt::Vector irCenter, float iRadius);
+
+    rmt::Vector mCenter;
+    float mRadius;
 private:
 };
 
@@ -78,35 +82,35 @@ public:
    // ISpatialProxyAA
    // <0.0   -   Inside Spatial Proxy
    // =0.0   -   On Spatial Proxy Surface
-   // >0.0   -   Outside Spatial Proxy
-	virtual float CompareTo( AAPlane3f&       irPlane );
-   virtual float CompareTo( const Vector3f& irPoint );
+   //>0.0   -   Outside Spatial Proxy
+	virtual float CompareTo(AAPlane3f&       irPlane);
+   virtual float CompareTo(const Vector3f& irPoint);
 
-   virtual float  TestNotOutside( ISpatialProxyAA& irSpatialProxy );
+   virtual float  TestNotOutside(ISpatialProxyAA& irSpatialProxy);
 
    virtual int       nPts();
-   virtual Vector3f  mPt( int iIndex );
+   virtual Vector3f  mPt(int iIndex);
 
-   virtual bool DoesIntersect(     AAPlane3f& irClipPlane );
-   virtual bool DoesntIntersect(   AAPlane3f& irClipPlane );
+   virtual bool DoesIntersect(AAPlane3f& irClipPlane);
+   virtual bool DoesntIntersect(AAPlane3f& irClipPlane);
 
    //Get a point representing some point within the SpatialProxy
    virtual Vector3f GetPoint();
 
-   void CutOffGT( AAPlane3f& irPlane3f );
-   void CutOffLT( AAPlane3f& irPlane3f );
+   void CutOffGT(AAPlane3f& irPlane3f);
+   void CutOffLT(AAPlane3f& irPlane3f);
 
-   void SetTo( Bounds3f& irBounds );
+   void SetTo(Bounds3f& irBounds);
 
-   Vector3f operator[]( int i );
+   Vector3f operator[](int i);
 
 
-   float TestNotOutsideMinX( ISpatialProxyAA& irSpatialProxy );
-   float TestNotOutsideMinY( ISpatialProxyAA& irSpatialProxy );
-   float TestNotOutsideMinZ( ISpatialProxyAA& irSpatialProxy );
-   float TestNotOutsideMaxX( ISpatialProxyAA& irSpatialProxy );
-   float TestNotOutsideMaxY( ISpatialProxyAA& irSpatialProxy );
-   float TestNotOutsideMaxZ( ISpatialProxyAA& irSpatialProxy );
+   float TestNotOutsideMinX(ISpatialProxyAA& irSpatialProxy);
+   float TestNotOutsideMinY(ISpatialProxyAA& irSpatialProxy);
+   float TestNotOutsideMinZ(ISpatialProxyAA& irSpatialProxy);
+   float TestNotOutsideMaxX(ISpatialProxyAA& irSpatialProxy);
+   float TestNotOutsideMaxY(ISpatialProxyAA& irSpatialProxy);
+   float TestNotOutsideMaxZ(ISpatialProxyAA& irSpatialProxy);
 
    enum
    {

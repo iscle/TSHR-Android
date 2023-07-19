@@ -33,7 +33,7 @@
 //
 // Static pointer to instance of this singleton.
 //
-DSGFactory* DSGFactory::mspInstance = NULL;
+DSGFactory *DSGFactory::mspInstance = NULL;
 
 //************************************************************************
 //
@@ -56,15 +56,14 @@ DSGFactory* DSGFactory::mspInstance = NULL;
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-DSGFactory* DSGFactory::CreateInstance()
-{
-MEMTRACK_PUSH_GROUP( "DSGFactory" );
+DSGFactory *DSGFactory::CreateInstance() {
+    MEMTRACK_PUSH_GROUP("DSGFactory");
 
-   rAssert( mspInstance == NULL );
-   mspInstance = new(GMA_PERSISTENT) DSGFactory();
-MEMTRACK_POP_GROUP("DSGFactory");
+    rAssert(mspInstance == NULL);
+    mspInstance = new(GMA_PERSISTENT) DSGFactory();
+    MEMTRACK_POP_GROUP("DSGFactory");
 
-   return mspInstance;
+    return mspInstance;
 }
 
 //==============================================================================
@@ -80,11 +79,10 @@ MEMTRACK_POP_GROUP("DSGFactory");
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-DSGFactory* DSGFactory::GetInstance()
-{
-   rAssert( mspInstance != NULL );
-   
-   return mspInstance;
+DSGFactory *DSGFactory::GetInstance() {
+    rAssert(mspInstance != NULL);
+
+    return mspInstance;
 }
 
 
@@ -99,15 +97,15 @@ DSGFactory* DSGFactory::GetInstance()
 // Return:      None.
 //
 //==============================================================================
-void DSGFactory::DestroyInstance()
-{
+void DSGFactory::DestroyInstance() {
     //
     // Make sure this doesn't get called twice.
     //
-    rAssert( mspInstance != NULL );
+    rAssert(mspInstance != NULL);
     delete mspInstance;
     mspInstance = NULL;
 }
+
 ///////////////////////////////////////////////////////////////////////
 //Meat Interface
 ///////////////////////////////////////////////////////////////////////
@@ -124,10 +122,10 @@ void DSGFactory::DestroyInstance()
 // Constraints: None.
 //
 //========================================================================
-IEntityDSG* DSGFactory::CreateEntityDSG( tDrawable* ipDrawable )
-{
-   return (IEntityDSG*)(ipDrawable);
+IEntityDSG *DSGFactory::CreateEntityDSG(tDrawable *ipDrawable) {
+    return (IEntityDSG * )(ipDrawable);
 }
+
 //========================================================================
 // DSGFactory::CreateIntersectDSG
 //========================================================================
@@ -141,12 +139,11 @@ IEntityDSG* DSGFactory::CreateEntityDSG( tDrawable* ipDrawable )
 // Constraints: None.
 //
 //========================================================================
-IntersectDSG*  DSGFactory::CreateIntersectDSG(  tGeometry* ipGeometry )
-{
-MEMTRACK_PUSH_GROUP( "DSGFactory" );
-   IntersectDSG* pIDSG =  new(GMA_LEVEL_ZONE) IntersectDSG( ipGeometry );
-MEMTRACK_POP_GROUP("DSGFactory");
-   return pIDSG;
+IntersectDSG *DSGFactory::CreateIntersectDSG(tGeometry *ipGeometry) {
+    MEMTRACK_PUSH_GROUP("DSGFactory");
+    IntersectDSG *pIDSG = new(GMA_LEVEL_ZONE) IntersectDSG(ipGeometry);
+    MEMTRACK_POP_GROUP("DSGFactory");
+    return pIDSG;
 }
 
 //************************************************************************
@@ -173,9 +170,9 @@ MEMTRACK_POP_GROUP("DSGFactory");
 // Constraints: None.
 //
 //========================================================================
-DSGFactory::DSGFactory()
-{
+DSGFactory::DSGFactory() {
 }
+
 //========================================================================
 // DSGFactory::
 //========================================================================
@@ -189,6 +186,5 @@ DSGFactory::DSGFactory()
 // Constraints: None.
 //
 //========================================================================
-DSGFactory::~DSGFactory()
-{
+DSGFactory::~DSGFactory() {
 }

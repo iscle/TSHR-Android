@@ -42,31 +42,30 @@
 // Return:      N/A.
 //
 //===========================================================================
-ScrollingText::ScrollingText( Scrooby::Text* pText )
-:   m_pText( pText ),
-    m_originalString( NULL ),
-    m_x0( 0 ),
-    m_y0( 0 ),
-    m_x1( 0 ),
-    m_y1( 0 ),
-    m_currentPos( 0.0f ),
-    m_state( STATE_IDLE ),
-    m_numPixelsPerSecond( 90 ),
-    m_isCyclic( false )
-{
-    rAssert( m_pText != NULL );
+ScrollingText::ScrollingText(Scrooby::Text *pText)
+        : m_pText(pText),
+          m_originalString(NULL),
+          m_x0(0),
+          m_y0(0),
+          m_x1(0),
+          m_y1(0),
+          m_currentPos(0.0f),
+          m_state(STATE_IDLE),
+          m_numPixelsPerSecond(90),
+          m_isCyclic(false) {
+    rAssert(m_pText != NULL);
 
     // set text mode to clip on right boundary
     //
-    m_pText->SetTextMode( Scrooby::TEXT_CLIP );
+    m_pText->SetTextMode(Scrooby::TEXT_CLIP);
 
     // get scroll box boundary
     //
-    m_pText->GetBoundingBox( m_x0, m_y0, m_x1, m_y1 );
+    m_pText->GetBoundingBox(m_x0, m_y0, m_x1, m_y1);
 
     // hide text until scrolling is started
     //
-    m_pText->SetVisible( false );
+    m_pText->SetVisible(false);
 
     // save reference to original string buffer
     //
@@ -75,11 +74,11 @@ ScrollingText::ScrollingText( Scrooby::Text* pText )
 /*
     // save copy of original string
     //
-    P3D_UNICODE* originalString = static_cast<P3D_UNICODE*>( m_pText->GetStringBuffer() );
-    rAssert( originalString != NULL );
-    p3d::UnicodeStrCpy( originalString,
+    P3D_UNICODE* originalString = static_cast<P3D_UNICODE*>(m_pText->GetStringBuffer());
+    rAssert(originalString != NULL);
+    p3d::UnicodeStrCpy(originalString,
                         m_originalString,
-                        p3d::UnicodeStrLen( originalString ) + 1 );
+                        p3d::UnicodeStrLen(originalString) + 1);
 */
 }
 
@@ -95,33 +94,30 @@ ScrollingText::ScrollingText( Scrooby::Text* pText )
 // Return:      N/A.
 //
 //===========================================================================
-ScrollingText::~ScrollingText()
-{
+ScrollingText::~ScrollingText() {
 }
 
 void
-ScrollingText::RestoreText()
-{
+ScrollingText::RestoreText() {
     // restore position and size
     //
-    m_pText->SetPosition( m_x0, m_y0 );
-    m_pText->SetBoundingBoxSize( m_x1 - m_x0, m_y1 - m_y0 );
+    m_pText->SetPosition(m_x0, m_y0);
+    m_pText->SetBoundingBoxSize(m_x1 - m_x0, m_y1 - m_y0);
 
     // restore original string buffer
     //
-    m_pText->SetStringBuffer( m_originalString );
+    m_pText->SetStringBuffer(m_originalString);
 
     // restore visibility
     //
-    m_pText->SetVisible( true );
+    m_pText->SetVisible(true);
 }
 
 void
-ScrollingText::SetTextIndex( int index )
-{
-    rAssert( m_state == STATE_IDLE );
+ScrollingText::SetTextIndex(int index) {
+    rAssert(m_state == STATE_IDLE);
 
-    m_pText->SetIndex( index );
+    m_pText->SetIndex(index);
 
     // update reference to original string buffer
     //
@@ -129,54 +125,50 @@ ScrollingText::SetTextIndex( int index )
 }
 
 void
-ScrollingText::Start()
-{
+ScrollingText::Start() {
     m_state = STATE_SCROLLING;
 
-    m_currentPos = (float)m_x1;
-    this->ClipText( (int)m_currentPos, m_y0 );
+    m_currentPos = (float) m_x1;
+    this->ClipText((int) m_currentPos, m_y0);
 
     // show text
     //
-    m_pText->SetVisible( true );
+    m_pText->SetVisible(true);
 }
 
 void
-ScrollingText::Stop()
-{
+ScrollingText::Stop() {
     m_state = STATE_IDLE;
 
-    m_pText->SetPosition( m_x0, m_y0 );
+    m_pText->SetPosition(m_x0, m_y0);
 
     // restore original string buffer
     //
-    m_pText->SetStringBuffer( m_originalString );
+    m_pText->SetStringBuffer(m_originalString);
 
     // hide text
     //
-    m_pText->SetVisible( false );
+    m_pText->SetVisible(false);
 
 /*
-    P3D_UNICODE* originalString = static_cast<P3D_UNICODE*>( m_pText->GetStringBuffer() );
-    rAssert( originalString != NULL );
-    p3d::UnicodeStrCpy( m_originalString,
+    P3D_UNICODE* originalString = static_cast<P3D_UNICODE*>(m_pText->GetStringBuffer());
+    rAssert(originalString != NULL);
+    p3d::UnicodeStrCpy(m_originalString,
                         originalString,
-                        p3d::UnicodeStrLen( m_originalString ) + 1 );
+                        p3d::UnicodeStrLen(m_originalString) + 1);
 */
 }
 
 void
-ScrollingText::Update( unsigned int elapsedTime )
-{
-    if( m_state == STATE_SCROLLING )
-    {
+ScrollingText::Update(unsigned int elapsedTime) {
+    if (m_state == STATE_SCROLLING) {
         // advance text towards the left
         //
         m_currentPos -= (m_numPixelsPerSecond * elapsedTime) / 1000.0f;
 
         // apply text clipping for current position
         //
-        this->ClipText( (int)m_currentPos, m_y0 );
+        this->ClipText((int) m_currentPos, m_y0);
     }
 }
 
@@ -185,51 +177,47 @@ ScrollingText::Update( unsigned int elapsedTime )
 //===========================================================================
 
 void
-ScrollingText::ClipText( int x, int y )
-{
-    if( x >= m_x1 )         // *** origin beyond right boundary
+ScrollingText::ClipText(int x, int y) {
+    if (x >= m_x1)         // *** origin beyond right boundary
     {
-        m_pText->SetPosition( x, y );
-        m_pText->SetBoundingBoxSize( 0, m_y1 - y );
-    }
-    else if( x >= m_x0 )    // *** origin within both boundaries
+        m_pText->SetPosition(x, y);
+        m_pText->SetBoundingBoxSize(0, m_y1 - y);
+    } else if (x >= m_x0)    // *** origin within both boundaries
     {
-        m_pText->SetPosition( x, y );
-        m_pText->SetBoundingBoxSize( m_x1 - x, m_y1 - y );
+        m_pText->SetPosition(x, y);
+        m_pText->SetBoundingBoxSize(m_x1 - x, m_y1 - y);
 
 #ifdef RAD_WIN32
         // TC: for PC sku, the source fonts are actually twice as big (for higher resolution display),
         //     so we need to stretch the bounding box accordingly for proper text clipping
         //
-        m_pText->StretchBoundingBox( 2.0f, 1.0f );
+        m_pText->StretchBoundingBox(2.0f, 1.0f);
 #endif
-    }
-    else                    // *** origin beyond left boundary
+    } else                    // *** origin beyond left boundary
     {
-        m_pText->SetBoundingBoxSize( m_x1 - m_x0, m_y1 - y );
+        m_pText->SetBoundingBoxSize(m_x1 - m_x0, m_y1 - y);
 
 #ifdef RAD_WIN32
         // TC: for PC sku, the source fonts are actually twice as big (for higher resolution display),
         //     so we need to stretch the bounding box accordingly for proper text clipping
         //
-        m_pText->StretchBoundingBox( 2.0f, 1.0f );
+        m_pText->StretchBoundingBox(2.0f, 1.0f);
 #endif
 
-        tFont* textFont = m_pText->GetFont();
-        if( textFont != NULL )
-        {
+        tFont *textFont = m_pText->GetFont();
+        if (textFont != NULL) {
             bool doneClipping = false;
 
-            for( UnicodeChar* currentString = m_pText->GetStringBuffer();
-                !doneClipping;
-                currentString++ )
-            {
-                UnicodeChar tempChar = currentString[ 0 ];
-                currentString[ 0 ] = '\0';
+            for (UnicodeChar *currentString = m_pText->GetStringBuffer();
+                 !doneClipping;
+                 currentString++) {
+                UnicodeChar tempChar = currentString[0];
+                currentString[0] = '\0';
 
-                float clippedTextWidth = textFont->GetTextWidth( static_cast<P3D_UNICODE*>( m_originalString ) ) *
-                                        Scrooby::App::GetInstance()->GetScreenWidth() /
-                                        Scrooby::App::GetInstance()->GetScreenHeight();
+                float clippedTextWidth =
+                        textFont->GetTextWidth(static_cast<P3D_UNICODE *>(m_originalString)) *
+                        Scrooby::App::GetInstance()->GetScreenWidth() /
+                        Scrooby::App::GetInstance()->GetScreenHeight();
 
 #ifdef RAD_WIN32
                 // TC: for PC sku, the source fonts are actually twice as big (for higher resolution display),
@@ -238,24 +226,21 @@ ScrollingText::ClipText( int x, int y )
                 clippedTextWidth /= 2.0f;
 #endif
 
-                currentString[ 0 ] = tempChar;
+                currentString[0] = tempChar;
 
-                int amountClipped = static_cast<int>( clippedTextWidth ) - (m_x0 - x);
-                if( amountClipped >= 0 )
-                {
-                    m_pText->SetPosition( m_x0 + amountClipped, y );
-                    m_pText->SetStringBuffer( currentString );
+                int amountClipped = static_cast<int>(clippedTextWidth) - (m_x0 - x);
+                if (amountClipped >= 0) {
+                    m_pText->SetPosition(m_x0 + amountClipped, y);
+                    m_pText->SetStringBuffer(currentString);
                     doneClipping = true;
                 }
 
-                if( currentString[ 0 ] == '\0' )
-                {
+                if (currentString[0] == '\0') {
                     // done scrolling
                     //
                     this->Stop();
 
-                    if( m_isCyclic )
-                    {
+                    if (m_isCyclic) {
                         // start over again
                         //
                         this->Start();
@@ -268,10 +253,8 @@ ScrollingText::ClipText( int x, int y )
                     break;
                 }
             }
-        }
-        else
-        {
-            rWarningMsg( false, "No font for clipping text!" );
+        } else {
+            rWarningMsg(false, "No font for clipping text!");
 
             this->Stop();
         }

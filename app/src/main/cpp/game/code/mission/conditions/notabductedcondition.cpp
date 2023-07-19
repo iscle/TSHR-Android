@@ -29,50 +29,41 @@
 // Member Functions
 //===========================================================================
 
-NotAbductedCondition::NotAbductedCondition()
-{
+NotAbductedCondition::NotAbductedCondition() {
 
 }
 
-NotAbductedCondition::~NotAbductedCondition()
-{
+NotAbductedCondition::~NotAbductedCondition() {
 
 }
 
-void NotAbductedCondition::HandleEvent( EventEnum id, void* pEventData )
-{
-    switch ( id )
-    {
-    case EVENT_ABDUCTED:
-        {
+void NotAbductedCondition::HandleEvent(EventEnum id, void *pEventData) {
+    switch (id) {
+        case EVENT_ABDUCTED: {
             // Check to see if the character that was abducted was the user
-            Character* character = reinterpret_cast< Character* >( pEventData );
-            if ( character )
-            {
-                Avatar* avatar = GetAvatarManager()->FindAvatarForCharacter( character );
-                if ( avatar )
-                {
+            Character *character = reinterpret_cast<Character *>(pEventData);
+            if (character) {
+                Avatar *avatar = GetAvatarManager()->FindAvatarForCharacter(character);
+                if (avatar) {
                     // It was the player that was sucked up
                     // this condition has failed
-                    SetIsViolated( true );
+                    SetIsViolated(true);
                 }
             }
         }
-        break;
+            break;
 
-    default:
-        break;
+        default:
+            break;
     }
 
-    MissionCondition::HandleEvent( id, pEventData );
+    MissionCondition::HandleEvent(id, pEventData);
 }
 
-void NotAbductedCondition::OnInitialize()
-{
-    GetEventManager()->AddListener( this, EVENT_ABDUCTED );
+void NotAbductedCondition::OnInitialize() {
+    GetEventManager()->AddListener(this, EVENT_ABDUCTED);
 }
 
-void NotAbductedCondition::OnFinalize()
-{
-    GetEventManager()->RemoveAll( this );
+void NotAbductedCondition::OnFinalize() {
+    GetEventManager()->RemoveAll(this);
 }

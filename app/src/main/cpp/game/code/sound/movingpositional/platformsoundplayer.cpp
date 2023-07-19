@@ -49,9 +49,8 @@
 //
 //=============================================================================
 PlatformSoundPlayer::PlatformSoundPlayer() :
-    m_joint( NULL ),
-    m_identity( NULL )
-{
+        m_joint(NULL),
+        m_identity(NULL) {
 }
 
 //=============================================================================
@@ -64,10 +63,8 @@ PlatformSoundPlayer::PlatformSoundPlayer() :
 // Return:      N/A.
 //
 //=============================================================================
-PlatformSoundPlayer::~PlatformSoundPlayer()
-{
-    if( m_identity != NULL )
-    {
+PlatformSoundPlayer::~PlatformSoundPlayer() {
+    if (m_identity != NULL) {
         //m_identity->Release();
     }
 }
@@ -82,48 +79,44 @@ PlatformSoundPlayer::~PlatformSoundPlayer()
 // Return:      void 
 //
 //=============================================================================
-void PlatformSoundPlayer::Activate( AnimSoundData* soundData )
-{
+void PlatformSoundPlayer::Activate(AnimSoundData *soundData) {
     rmt::Vector posn;
-    IRadNameSpace* nameSpace;
-    IRefCount* nameSpaceObj;
-    positionalSoundSettings* parameters;
+    IRadNameSpace *nameSpace;
+    IRefCount *nameSpaceObj;
+    positionalSoundSettings *parameters;
 
     //
     // Get the positionalSoundSettings object for the platform sound
     //
     nameSpace = Sound::daSoundRenderingManagerGet()->GetTuningNamespace();
-    rAssert( nameSpace != NULL );
-    nameSpaceObj = nameSpace->GetInstance( ::radMakeKey32( soundData->positionalSettingName ) );
-    if( nameSpaceObj != NULL )
-    {
-        parameters = reinterpret_cast<positionalSoundSettings*>( nameSpaceObj );
+    rAssert(nameSpace != NULL);
+    nameSpaceObj = nameSpace->GetInstance(::radMakeKey32(soundData->positionalSettingName));
+    if (nameSpaceObj != NULL) {
+        parameters = reinterpret_cast<positionalSoundSettings *>(nameSpaceObj);
 
         m_joint = soundData->animJoint;
-        rAssert( m_joint != NULL );
+        rAssert(m_joint != NULL);
 
         m_identity = soundData->soundObject;
-        rAssert( m_identity != NULL );
+        rAssert(m_identity != NULL);
         //m_identity->AddRef();
 
-        m_player.SetPositionCarrier( *this );
-        m_player.SetParameters( parameters );
+        m_player.SetPositionCarrier(*this);
+        m_player.SetParameters(parameters);
 
         //
         // Get world position of the platform through this joint
         //
-        posn = m_joint->worldMatrix.Row( 3 );
-        m_player.SetPosition( posn.x, posn.y, posn.z );
+        posn = m_joint->worldMatrix.Row(3);
+        m_player.SetPosition(posn.x, posn.y, posn.z);
 
         //
         // Don't buffer, to save IOP
         //
 
-        m_player.PlaySound( soundData->soundName, NULL );
-    }
-    else
-    {
-        rDebugString( "Couldn't play platform sound, no matching settings found" );
+        m_player.PlaySound(soundData->soundName, NULL);
+    } else {
+        rDebugString("Couldn't play platform sound, no matching settings found");
     }
 }
 
@@ -137,12 +130,10 @@ void PlatformSoundPlayer::Activate( AnimSoundData* soundData )
 // Return:      void 
 //
 //=============================================================================
-void PlatformSoundPlayer::Deactivate()
-{
+void PlatformSoundPlayer::Deactivate() {
     m_player.Stop();
 
-    if( m_identity != NULL )
-    {
+    if (m_identity != NULL) {
         //m_identity->Release();
         m_identity = NULL;
     }
@@ -160,8 +151,7 @@ void PlatformSoundPlayer::Deactivate()
 // Return:      void 
 //
 //=============================================================================
-void PlatformSoundPlayer::ServiceOncePerFrame()
-{
+void PlatformSoundPlayer::ServiceOncePerFrame() {
     m_player.ServiceOncePerFrame();
 }
 
@@ -175,13 +165,12 @@ void PlatformSoundPlayer::ServiceOncePerFrame()
 // Return:      void 
 //
 //=============================================================================
-void PlatformSoundPlayer::GetPosition( radSoundVector& position )
-{
+void PlatformSoundPlayer::GetPosition(radSoundVector &position) {
     rmt::Vector posn;
 
-    rAssert( m_joint != NULL );
-    posn = m_joint->worldMatrix.Row( 3 );
-    position.SetElements( posn.x, posn.y, posn.z );
+    rAssert(m_joint != NULL);
+    posn = m_joint->worldMatrix.Row(3);
+    position.SetElements(posn.x, posn.y, posn.z);
 }
 
 //=============================================================================
@@ -189,17 +178,16 @@ void PlatformSoundPlayer::GetPosition( radSoundVector& position )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( radSoundVector& velocity )
+// Parameters:  (radSoundVector& velocity)
 //
 // Return:      void 
 //
 //=============================================================================
-void PlatformSoundPlayer::GetVelocity( radSoundVector& velocity )
-{
+void PlatformSoundPlayer::GetVelocity(radSoundVector &velocity) {
     //
     // Doppler would be a big waste on those platforms anyway
     //
-    velocity.SetElements( 0.0f, 0.0f, 0.0f );
+    velocity.SetElements(0.0f, 0.0f, 0.0f);
 }
 
 //*****************************************************************************

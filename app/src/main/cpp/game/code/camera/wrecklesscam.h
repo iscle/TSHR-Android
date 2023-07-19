@@ -29,40 +29,41 @@ class ISuperCamTarget;
 //
 //=============================================================================
 
-class WrecklessCam : public SuperCam
-{
+class WrecklessCam : public SuperCam {
 public:
-    enum
-    {
+    enum {
         MAX_TARGETS = 3
     };
 
     WrecklessCam();
+
     virtual ~WrecklessCam();
 
     //Update: Called when you want the super cam to update its state.
-    virtual void Update( unsigned int milliseconds );
+    virtual void Update(unsigned int milliseconds);
 
     //Returns the name of the super cam.  
     //This can be used in the FE or debug info
-    virtual const char* const GetName() const;
+    virtual const char *const GetName() const;
 
     virtual Type GetType();
 
     //These are for favourable support of this command
-    virtual void SetTarget( ISuperCamTarget* target ); 
-    virtual void AddTarget( ISuperCamTarget* target );
+    virtual void SetTarget(ISuperCamTarget *target);
+
+    virtual void AddTarget(ISuperCamTarget *target);
 
     virtual unsigned int GetNumTargets() const;
 
-    EventListener* GetEventListener();
+    EventListener *GetEventListener();
 
 protected:
     virtual void OnInit();
+
     virtual void OnShutdown();
 
 private:
-    ISuperCamTarget* mTargets[ MAX_TARGETS ];
+    ISuperCamTarget *mTargets[MAX_TARGETS];
     unsigned int mNumTargets;
     unsigned int mActiveTarget;
 
@@ -80,11 +81,13 @@ private:
     //These functions are to allow real-time control of the settings of 
     //the supercam.
     virtual void OnRegisterDebugControls();
+
     virtual void OnUnregisterDebugControls();
 
     //Prevent wasteful constructor creation.
-    WrecklessCam( const WrecklessCam& wrecklesscam );
-    WrecklessCam& operator=( const WrecklessCam& wrecklesscam );
+    WrecklessCam(const WrecklessCam &wrecklesscam);
+
+    WrecklessCam &operator=(const WrecklessCam &wrecklesscam);
 };
 
 //*****************************************************************************
@@ -103,8 +106,7 @@ private:
 // Return:      const char* const 
 //
 //=============================================================================
-inline const char* const WrecklessCam::GetName() const
-{
+inline const char *const WrecklessCam::GetName() const {
     return "WRECKLESS_CAM";
 }
 
@@ -118,8 +120,7 @@ inline const char* const WrecklessCam::GetName() const
 // Return:      Type 
 //
 //=============================================================================
-inline SuperCam::Type WrecklessCam::GetType()
-{
+inline SuperCam::Type WrecklessCam::GetType() {
     return WRECKLESS_CAM;
 }
 
@@ -133,8 +134,7 @@ inline SuperCam::Type WrecklessCam::GetType()
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int WrecklessCam::GetNumTargets() const
-{
+inline unsigned int WrecklessCam::GetNumTargets() const {
     return mNumTargets;
 }
 
@@ -154,8 +154,7 @@ inline unsigned int WrecklessCam::GetNumTargets() const
 // Return:      EventListener
 //
 //=============================================================================
-inline EventListener* WrecklessCam::GetEventListener()
-{
+inline EventListener *WrecklessCam::GetEventListener() {
     return &mEventListener;
 }
 

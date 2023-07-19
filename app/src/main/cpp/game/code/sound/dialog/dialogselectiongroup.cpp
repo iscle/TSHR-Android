@@ -62,19 +62,18 @@ static const short DIALOG_NOT_YET_USED = -1;
 // Return:      N/A.
 //
 //==============================================================================
-DialogSelectionGroup::DialogSelectionGroup( SelectableDialog& dialog1, 
-                                            SelectableDialog& dialog2 ) :
-    m_currentlyPlayingDialog( DIALOG_NOT_IN_USE ),
-    m_lastSelection( DIALOG_NOT_YET_USED )
-{
-    HeapMgr()->PushHeap( GMA_AUDIO_PERSISTENT );
+DialogSelectionGroup::DialogSelectionGroup(SelectableDialog &dialog1,
+                                           SelectableDialog &dialog2) :
+        m_currentlyPlayingDialog(DIALOG_NOT_IN_USE),
+        m_lastSelection(DIALOG_NOT_YET_USED) {
+    HeapMgr()->PushHeap(GMA_AUDIO_PERSISTENT);
 
-    m_dialogVector.reserve( TYPICAL_VECTOR_SIZE );
+    m_dialogVector.reserve(TYPICAL_VECTOR_SIZE);
 
-    m_dialogVector.push_back( &dialog1 );
-    m_dialogVector.push_back( &dialog2 );
+    m_dialogVector.push_back(&dialog1);
+    m_dialogVector.push_back(&dialog2);
 
-    HeapMgr()->PopHeap( GMA_AUDIO_PERSISTENT );
+    HeapMgr()->PopHeap(GMA_AUDIO_PERSISTENT);
 }
 
 //==============================================================================
@@ -87,8 +86,7 @@ DialogSelectionGroup::DialogSelectionGroup( SelectableDialog& dialog1,
 // Return:      N/A.
 //
 //==============================================================================
-DialogSelectionGroup::~DialogSelectionGroup()
-{
+DialogSelectionGroup::~DialogSelectionGroup() {
 }
 
 //==============================================================================
@@ -103,20 +101,16 @@ DialogSelectionGroup::~DialogSelectionGroup()
 // Return:      N/A.
 //
 //==============================================================================
-void DialogSelectionGroup::PlayLine( unsigned int lineIndex,
-                                     SimpsonsSoundPlayer& player,
-                                     SimpsonsSoundPlayerCallback* callback )
-{
-    if( lineIndex == 0 )
-    {
+void DialogSelectionGroup::PlayLine(unsigned int lineIndex,
+                                    SimpsonsSoundPlayer &player,
+                                    SimpsonsSoundPlayerCallback *callback) {
+    if (lineIndex == 0) {
         makeRandomSelection();
-    }
-    else
-    {
-        rAssert( m_currentlyPlayingDialog != DIALOG_NOT_IN_USE );
+    } else {
+        rAssert(m_currentlyPlayingDialog != DIALOG_NOT_IN_USE);
     }
 
-    m_dialogVector[m_currentlyPlayingDialog]->PlayLine( lineIndex, player, callback );
+    m_dialogVector[m_currentlyPlayingDialog]->PlayLine(lineIndex, player, callback);
 }
 
 //=============================================================================
@@ -131,18 +125,14 @@ void DialogSelectionGroup::PlayLine( unsigned int lineIndex,
 // Return:      void 
 //
 //=============================================================================
-void DialogSelectionGroup::QueueLine( unsigned int lineIndex, SimpsonsSoundPlayer& player )
-{
-    if( lineIndex == 0 )
-    {
+void DialogSelectionGroup::QueueLine(unsigned int lineIndex, SimpsonsSoundPlayer &player) {
+    if (lineIndex == 0) {
         makeRandomSelection();
-    }
-    else
-    {
-        rAssert( m_currentlyPlayingDialog != DIALOG_NOT_IN_USE );
+    } else {
+        rAssert(m_currentlyPlayingDialog != DIALOG_NOT_IN_USE);
     }
 
-    m_dialogVector[m_currentlyPlayingDialog]->QueueLine( lineIndex, player );
+    m_dialogVector[m_currentlyPlayingDialog]->QueueLine(lineIndex, player);
 }
 
 //=============================================================================
@@ -156,10 +146,9 @@ void DialogSelectionGroup::QueueLine( unsigned int lineIndex, SimpsonsSoundPlaye
 // Return:      void 
 //
 //=============================================================================
-void DialogSelectionGroup::PlayQueuedLine( SimpsonsSoundPlayer& player,
-                                           SimpsonsSoundPlayerCallback* callback )
-{
-    m_dialogVector[m_currentlyPlayingDialog]->PlayQueuedLine( player, callback );
+void DialogSelectionGroup::PlayQueuedLine(SimpsonsSoundPlayer &player,
+                                          SimpsonsSoundPlayerCallback *callback) {
+    m_dialogVector[m_currentlyPlayingDialog]->PlayQueuedLine(player, callback);
 }
 
 //=============================================================================
@@ -173,18 +162,14 @@ void DialogSelectionGroup::PlayQueuedLine( SimpsonsSoundPlayer& player,
 // Return:      void 
 //
 //=============================================================================
-unsigned int DialogSelectionGroup::GetNumDialogLines() const
-{
-    if( m_currentlyPlayingDialog == DIALOG_NOT_IN_USE )
-    {
+unsigned int DialogSelectionGroup::GetNumDialogLines() const {
+    if (m_currentlyPlayingDialog == DIALOG_NOT_IN_USE) {
         //
         // Assume shortest case
         //
-        return( 1 );
-    }
-    else
-    {
-        return( m_dialogVector[m_currentlyPlayingDialog]->GetNumDialogLines() );
+        return (1);
+    } else {
+        return (m_dialogVector[m_currentlyPlayingDialog]->GetNumDialogLines());
     }
 }
 
@@ -198,15 +183,11 @@ unsigned int DialogSelectionGroup::GetNumDialogLines() const
 // Return:      true if character used, false otherwise
 //
 //=============================================================================
-bool DialogSelectionGroup::UsesCharacter( tUID characterUID )
-{
-    if( m_dialogVector.empty() )
-    {
-        return( false );
-    }
-    else
-    {
-        return( m_dialogVector[0]->UsesCharacter( characterUID ) );
+bool DialogSelectionGroup::UsesCharacter(tUID characterUID) {
+    if (m_dialogVector.empty()) {
+        return (false);
+    } else {
+        return (m_dialogVector[0]->UsesCharacter(characterUID));
     }
 }
 
@@ -220,15 +201,11 @@ bool DialogSelectionGroup::UsesCharacter( tUID characterUID )
 // Return:      true if villain, false otherwise 
 //
 //=============================================================================
-bool DialogSelectionGroup::IsVillainLine()
-{
-    if( m_dialogVector.empty() )
-    {
-        return( false );
-    }
-    else
-    {
-        return( m_dialogVector[0]->IsVillainLine() );
+bool DialogSelectionGroup::IsVillainLine() {
+    if (m_dialogVector.empty()) {
+        return (false);
+    } else {
+        return (m_dialogVector[0]->IsVillainLine());
     }
 }
 
@@ -243,15 +220,11 @@ bool DialogSelectionGroup::IsVillainLine()
 //              haven't selected a character
 //
 //=============================================================================
-tUID DialogSelectionGroup::GetDialogLineCharacterUID( unsigned int lineNum )
-{
-    if( m_currentlyPlayingDialog == DIALOG_NOT_IN_USE )
-    {
-        return( m_dialogVector[0]->GetDialogLineCharacterUID( lineNum ) );
-    }
-    else
-    {
-        return( m_dialogVector[m_currentlyPlayingDialog]->GetDialogLineCharacterUID( lineNum ) );
+tUID DialogSelectionGroup::GetDialogLineCharacterUID(unsigned int lineNum) {
+    if (m_currentlyPlayingDialog == DIALOG_NOT_IN_USE) {
+        return (m_dialogVector[0]->GetDialogLineCharacterUID(lineNum));
+    } else {
+        return (m_dialogVector[m_currentlyPlayingDialog]->GetDialogLineCharacterUID(lineNum));
     }
 }
 
@@ -265,12 +238,11 @@ tUID DialogSelectionGroup::GetDialogLineCharacterUID( unsigned int lineNum )
 // Return:      void 
 //
 //=============================================================================
-void DialogSelectionGroup::AddMatchingDialog( SelectableDialog& newDialog, 
-                                              SelectableDialogList& list )
-{
-    HeapMgr()->PushHeap( GMA_AUDIO_PERSISTENT );
-    m_dialogVector.push_back( &newDialog );
-    HeapMgr()->PopHeap( GMA_AUDIO_PERSISTENT );
+void DialogSelectionGroup::AddMatchingDialog(SelectableDialog &newDialog,
+                                             SelectableDialogList &list) {
+    HeapMgr()->PushHeap(GMA_AUDIO_PERSISTENT);
+    m_dialogVector.push_back(&newDialog);
+    HeapMgr()->PopHeap(GMA_AUDIO_PERSISTENT);
 }
 
 //=============================================================================
@@ -284,11 +256,10 @@ void DialogSelectionGroup::AddMatchingDialog( SelectableDialog& newDialog,
 // Return:      EventEnum representing event
 //
 //=============================================================================
-EventEnum DialogSelectionGroup::GetEvent() const
-{
-    rAssert( m_dialogVector.size() > 0 );
+EventEnum DialogSelectionGroup::GetEvent() const {
+    rAssert(m_dialogVector.size() > 0);
 
-    return( m_dialogVector[0]->GetEvent() );
+    return (m_dialogVector[0]->GetEvent());
 }
 
 //=============================================================================
@@ -302,11 +273,10 @@ EventEnum DialogSelectionGroup::GetEvent() const
 // Return:      index of level if one exists, NO_LEVEL otherwise 
 //
 //=============================================================================
-unsigned int DialogSelectionGroup::GetLevel() const
-{
-    rAssert( m_dialogVector.size() > 0 );
+unsigned int DialogSelectionGroup::GetLevel() const {
+    rAssert(m_dialogVector.size() > 0);
 
-    return( m_dialogVector[0]->GetLevel() );
+    return (m_dialogVector[0]->GetLevel());
 }
 
 //=============================================================================
@@ -320,11 +290,10 @@ unsigned int DialogSelectionGroup::GetLevel() const
 // Return:      index of mission if one exists, NO_MISSION otherwise 
 //
 //=============================================================================
-unsigned int DialogSelectionGroup::GetMission() const
-{
-    rAssert( m_dialogVector.size() > 0 );
+unsigned int DialogSelectionGroup::GetMission() const {
+    rAssert(m_dialogVector.size() > 0);
 
-    return( m_dialogVector[0]->GetMission() );
+    return (m_dialogVector[0]->GetMission());
 }
 
 //=============================================================================
@@ -337,9 +306,8 @@ unsigned int DialogSelectionGroup::GetMission() const
 // Return:      Zero, indicating we aren't a conversation 
 //
 //=============================================================================
-radKey32 DialogSelectionGroup::GetConversationName()
-{
-    return( 0 );
+radKey32 DialogSelectionGroup::GetConversationName() {
+    return (0);
 }
 
 //******************************************************************************
@@ -358,19 +326,17 @@ radKey32 DialogSelectionGroup::GetConversationName()
 // Return:      void 
 //
 //=============================================================================
-void DialogSelectionGroup::makeRandomSelection()
-{
-    if( m_lastSelection == DIALOG_NOT_YET_USED )
-    {
+void DialogSelectionGroup::makeRandomSelection() {
+    if (m_lastSelection == DIALOG_NOT_YET_USED) {
         //
         // No real need to bother with true pseudo-randomization, just
         // use the clock
         //
-        m_lastSelection = static_cast<short>( radTimeGetMilliseconds() % m_dialogVector.size() );
+        m_lastSelection = static_cast<short>(radTimeGetMilliseconds() % m_dialogVector.size());
     }
 
     m_currentlyPlayingDialog = m_lastSelection;
-    m_lastSelection = ( m_lastSelection + 1 ) % m_dialogVector.size();
+    m_lastSelection = (m_lastSelection + 1) % m_dialogVector.size();
 }
 
 #undef DONTCHECKVECTORRESIZING

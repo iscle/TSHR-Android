@@ -51,11 +51,11 @@ unsigned int FenceLoader::mFenceCount = 0;
 //
 //========================================================================
 FenceLoader::FenceLoader() :
-tSimpleChunkHandler(SRR2::ChunkID::FENCE_DSG)
-{
-   mpListenerCB  = NULL;
-   mUserData     = -1;
+        tSimpleChunkHandler(SRR2::ChunkID::FENCE_DSG) {
+    mpListenerCB = NULL;
+    mUserData = -1;
 }
+
 ///////////////////////////////////////////////////////////////////////
 // tSimpleChunkHandler
 ///////////////////////////////////////////////////////////////////////
@@ -72,32 +72,29 @@ tSimpleChunkHandler(SRR2::ChunkID::FENCE_DSG)
 // Constraints: None.
 //
 //========================================================================
-tEntity* FenceLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
-    #ifdef RAD_GAMECUBE
-        HeapMgr()->PushHeap( GMA_GC_VMM );
-    #else
-        HeapMgr()->PushHeap( GMA_LEVEL_ZONE );
-    #endif
+tEntity *FenceLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
+#ifdef RAD_GAMECUBE
+    HeapMgr()->PushHeap(GMA_GC_VMM);
+#else
+    HeapMgr()->PushHeap(GMA_LEVEL_ZONE);
+#endif
 
     IEntityDSG::msDeletionsSafe = true;
-    FenceEntityDSG* pFenceDSG = new FenceEntityDSG;
+    FenceEntityDSG *pFenceDSG = new FenceEntityDSG;
 
-    while(f->ChunksRemaining())
-    {      
+    while (f->ChunksRemaining()) {
         f->BeginChunk();
-        switch(f->GetCurrentID())
-        {
-            case SRR2::ChunkID::WALL:
-            {
-                f->GetData(&(pFenceDSG->mStartPoint),   3, tFile::DWORD);
-                f->GetData(&(pFenceDSG->mEndPoint),     3, tFile::DWORD);
-                f->GetData(&(pFenceDSG->mNormal),       3, tFile::DWORD);
+        switch (f->GetCurrentID()) {
+            case SRR2::ChunkID::WALL: {
+                f->GetData(&(pFenceDSG->mStartPoint), 3, tFile::DWORD);
+                f->GetData(&(pFenceDSG->mEndPoint), 3, tFile::DWORD);
+                f->GetData(&(pFenceDSG->mNormal), 3, tFile::DWORD);
 
-            
-                BoxPts WorldBBox = GetRenderManager()->pWorldScene()->mStaticTreeWalker.rIthNode(0).mBBox;
-                pFenceDSG->mStartPoint.y  = WorldBBox.mBounds.mMin.y;
-                pFenceDSG->mEndPoint.y    = WorldBBox.mBounds.mMax.y;
+
+                BoxPts WorldBBox = GetRenderManager()->pWorldScene()->mStaticTreeWalker.rIthNode(
+                        0).mBBox;
+                pFenceDSG->mStartPoint.y = WorldBBox.mBounds.mMin.y;
+                pFenceDSG->mEndPoint.y = WorldBBox.mBounds.mMax.y;
                 // debuggin'
                 //if(pFenceDSG->mStartPoint
 
@@ -110,24 +107,25 @@ tEntity* FenceLoader::LoadObject(tChunkFile* f, tEntityStore* store)
         f->EndChunk();
     } // while
 
-    mpListenerCB->OnChunkLoaded( pFenceDSG, mUserData, _id );
-    
+    mpListenerCB->OnChunkLoaded(pFenceDSG, mUserData, _id);
+
     char name[64];
-    sprintf(name, "FenceDSG%d", mFenceCount );
+    sprintf(name, "FenceDSG%d", mFenceCount);
     ++mFenceCount;
     pFenceDSG->SetName(name);
-    
-    IEntityDSG::msDeletionsSafe=false;
 
-    #ifdef RAD_GAMECUBE
-        HeapMgr()->PopHeap( GMA_GC_VMM );
-    #else
-        HeapMgr()->PopHeap( GMA_LEVEL_ZONE );
-    #endif
+    IEntityDSG::msDeletionsSafe = false;
+
+#ifdef RAD_GAMECUBE
+    HeapMgr()->PopHeap(GMA_GC_VMM);
+#else
+    HeapMgr()->PopHeap(GMA_LEVEL_ZONE);
+#endif
 
 
     return pFenceDSG;
 }
+
 ///////////////////////////////////////////////////////////////////////
 // IWrappedLoader
 ///////////////////////////////////////////////////////////////////////
@@ -147,21 +145,19 @@ tEntity* FenceLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 //
 //========================================================================
 void FenceLoader::SetRegdListener
-(
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
-   //
-   // Follow protocol; notify old Listener, that it has been 
-   // "disconnected".
-   //
-   if( mpListenerCB != NULL )
-   {
-      mpListenerCB->OnChunkLoaded( NULL, iUserData, 0 );
-   }
-   mpListenerCB  = pListenerCB;
-   mUserData     = iUserData;
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
+    //
+    // Follow protocol; notify old Listener, that it has been
+    // "disconnected".
+    //
+    if (mpListenerCB != NULL) {
+        mpListenerCB->OnChunkLoaded(NULL, iUserData, 0);
+    }
+    mpListenerCB = pListenerCB;
+    mUserData = iUserData;
 }
 
 //========================================================================
@@ -178,19 +174,18 @@ void FenceLoader::SetRegdListener
 //
 //========================================================================
 void FenceLoader::ModRegdListener
-( 
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
 #if 0
-   char DebugBuf[255];
-   sprintf( DebugBuf, "GeometryWrappedLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB );
-   rDebugString( DebugBuf );
+    char DebugBuf[255];
+    sprintf(DebugBuf, "GeometryWrappedLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB);
+    rDebugString(DebugBuf);
 #endif
-   rAssert( pListenerCB == mpListenerCB );
+    rAssert(pListenerCB == mpListenerCB);
 
-   mUserData = iUserData;
+    mUserData = iUserData;
 }
 //************************************************************************
 //

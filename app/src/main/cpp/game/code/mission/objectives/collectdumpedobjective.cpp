@@ -65,27 +65,29 @@ static const unsigned int CD_DEFAULT_TIMEOUT = 5000;
 static const unsigned int DEFAULT_DUMP_LIFETIME = 15000;
 #endif
 
-#if defined( DEBUGWATCH ) || defined( RAD_WIN32 )
+#if defined(DEBUGWATCH) || defined(RAD_WIN32)
 extern float DEFAULT_DIST;
 #else
 extern const float DEFAULT_DIST;
 #endif
 
-class CollectionCondition : public MissionCondition
-{
+class CollectionCondition : public MissionCondition {
 public:
-    CollectionCondition() { SetType( COND_GET_COLLECTIBLES ); }
+    CollectionCondition() { SetType(COND_GET_COLLECTIBLES); }
+
     virtual ~CollectionCondition() {};
 
-    void Update( unsigned int elapsedTime ) {};
-    void SetViolated(bool flag) {SetIsViolated(true);}
+    void Update(unsigned int elapsedTime) {};
+
+    void SetViolated(bool flag) { SetIsViolated(true); }
 
     bool IsClose() { return false; }
 
 private:
     //Prevent wasteful constructor creation.
-    CollectionCondition ( const CollectionCondition & c);
-    CollectionCondition& operator=( const CollectionCondition & c);
+    CollectionCondition(const CollectionCondition &c);
+
+    CollectionCondition &operator=(const CollectionCondition &c);
 };
 
 //*****************************************************************************
@@ -105,20 +107,19 @@ private:
 //
 //=============================================================================
 CollectDumpedObjective::CollectDumpedObjective() :
-    mDumpVehicle( NULL ),
-    mDumpVehicleAI( NULL ),
-    mNumUncollected( 0 ),
-    mBumperCars( true ),
-    mNumSpawned( 0 ),
-    mDumpTimeout( -1 ),
-    mWhatToDump( 0 ),
-    mAmIDumping( false ),
-    mAssaultCar( NULL ),
-    mMeDumpTimout( 0 ),
-    mDumpLifetime ( 0 ),
-    mTerminalDump ( false ),
-    mAnimatedIcon ( NULL )
-{
+        mDumpVehicle(NULL),
+        mDumpVehicleAI(NULL),
+        mNumUncollected(0),
+        mBumperCars(true),
+        mNumSpawned(0),
+        mDumpTimeout(-1),
+        mWhatToDump(0),
+        mAmIDumping(false),
+        mAssaultCar(NULL),
+        mMeDumpTimout(0),
+        mDumpLifetime(0),
+        mTerminalDump(false),
+        mAnimatedIcon(NULL) {
     mCondition = NULL;
 }
 
@@ -132,8 +133,7 @@ CollectDumpedObjective::CollectDumpedObjective() :
 // Return:      N/A.
 //
 //=============================================================================
-CollectDumpedObjective::~CollectDumpedObjective()
-{  
+CollectDumpedObjective::~CollectDumpedObjective() {
     mCondition = NULL; //stage will delete it 
 }
 
@@ -142,15 +142,15 @@ CollectDumpedObjective::~CollectDumpedObjective()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int collectibleNum, unsigned int waypointNum )
+// Parameters:  (int collectibleNum, unsigned int waypointNum)
 //
 // Return:      void 
 //
 //=============================================================================
-void CollectDumpedObjective::BindCollectibleToWaypoint( int collectibleNum, unsigned int waypointNum )
-{
-    rAssert( static_cast<int>(waypointNum) < WaypointAI::MAX_WAYPOINTS );
-    mDumpData[ waypointNum ].collectibleNum = collectibleNum;
+void
+CollectDumpedObjective::BindCollectibleToWaypoint(int collectibleNum, unsigned int waypointNum) {
+    rAssert(static_cast<int>(waypointNum) < WaypointAI::MAX_WAYPOINTS);
+    mDumpData[waypointNum].collectibleNum = collectibleNum;
 
     //Aww...  I was waiting for the candy.
     mBumperCars = false;
@@ -161,14 +161,13 @@ void CollectDumpedObjective::BindCollectibleToWaypoint( int collectibleNum, unsi
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( Vehicle* vehicle )
+// Parameters:  (Vehicle* vehicle)
 //
 // Return:      void 
 //
 //=============================================================================
-void CollectDumpedObjective::SetDumpVehicle( Vehicle* vehicle )
-{
-    rAssert( vehicle );
+void CollectDumpedObjective::SetDumpVehicle(Vehicle *vehicle) {
+    rAssert(vehicle);
     mDumpVehicle = vehicle;
 }
 
@@ -177,51 +176,45 @@ void CollectDumpedObjective::SetDumpVehicle( Vehicle* vehicle )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void CollectDumpedObjective::HandleEvent( EventEnum id, void* pEventData )
-{
-    switch ( id )
-    {
-    case EVENT_WAYAI_HIT_WAYPOINT:
-        {
+void CollectDumpedObjective::HandleEvent(EventEnum id, void *pEventData) {
+    switch (id) {
+        case EVENT_WAYAI_HIT_WAYPOINT: {
             //Test to see if this is a waypoint we care about
             int lastWaypoint = mDumpVehicleAI->GetCurrentWayPoint();
-            rAssert( lastWaypoint >= 0 );
-            int collectibleNum = mDumpData[ lastWaypoint ].collectibleNum;
-            if ( !mDumpData[ lastWaypoint ].collected && lastWaypoint >= 0 && 
-                 collectibleNum != -1 && mDumpTimeout == -1 )
-            { 
+            rAssert(lastWaypoint >= 0);
+            int collectibleNum = mDumpData[lastWaypoint].collectibleNum;
+            if (!mDumpData[lastWaypoint].collected && lastWaypoint >= 0 &&
+                collectibleNum != -1 && mDumpTimeout == -1) {
                 //This is a dumping waypoint
                 mWhatToDump = static_cast<unsigned int>(collectibleNum);
-                mDumpTimeout = rmt::FtoL( rmt::LtoF(rand()) / rmt::LtoF(RAND_MAX) * rmt::LtoF(MAX_TIMEOUT) );
+                mDumpTimeout = rmt::FtoL(
+                        rmt::LtoF(rand()) / rmt::LtoF(RAND_MAX) * rmt::LtoF(MAX_TIMEOUT));
                 mAmIDumping = false;
                 mDumpLifetime = 0;
 
-                mDumpData[ lastWaypoint ].active = true;
+                mDumpData[lastWaypoint].active = true;
             }
             break;
         }
-    case EVENT_VEHICLE_DESTROYED:
-        {
-            if ( !mBumperCars || mNumCollectibles > 1 )
-            {
+        case EVENT_VEHICLE_DESTROYED: {
+            if (!mBumperCars || mNumCollectibles > 1) {
                 break;
             }
 
-            Vehicle* data = static_cast<Vehicle*>(pEventData);
-            if ( data == mDumpVehicle )
-            {
+            Vehicle *data = static_cast<Vehicle *>(pEventData);
+            if (data == mDumpVehicle) {
                 //This is the end!
                 //Throw mamma from the train.
                 unsigned int collectibleNum = FindFreeSlot();
 
                 //Since there are no bindings, we'll fill the mDumpData table. 
-                mDumpData[ collectibleNum ].collectibleNum = collectibleNum;
-                mDumpData[ collectibleNum ].active = true;
+                mDumpData[collectibleNum].collectibleNum = collectibleNum;
+                mDumpData[collectibleNum].active = true;
 
                 //Set the drop timout to something small to give the user a ittle reaction time
                 mDumpTimeout = 1000;
@@ -235,24 +228,23 @@ void CollectDumpedObjective::HandleEvent( EventEnum id, void* pEventData )
 
             break;
         }
-    case EVENT_VEHICLE_VEHICLE_COLLISION:
-        {
-            if ( (!mBumperCars && !IsUserDumpAllowed()) || mNumSpawned >= GetNumCollectibles() || mNumCollectibles == 1 )
-            {
+        case EVENT_VEHICLE_VEHICLE_COLLISION: {
+            if ((!mBumperCars && !IsUserDumpAllowed()) || mNumSpawned >= GetNumCollectibles() ||
+                mNumCollectibles == 1) {
                 break;
             }
 
-            CarOnCarCollisionEventData* data = static_cast<CarOnCarCollisionEventData*>(pEventData);
-            if ( data->vehicle == mDumpVehicle && mBumperCars )
-            {
-                if ( data->force >= DEFAULT_FORCE && mDumpTimeout == -1 && mNumCollectibles > 1 )  //If numCollectibles is == 1 then it's on Death only
+            CarOnCarCollisionEventData *data = static_cast<CarOnCarCollisionEventData *>(pEventData);
+            if (data->vehicle == mDumpVehicle && mBumperCars) {
+                if (data->force >= DEFAULT_FORCE && mDumpTimeout == -1 &&
+                    mNumCollectibles > 1)  //If numCollectibles is == 1 then it's on Death only
                 {
                     //Throw mamma from the train.
                     unsigned int collectibleNum = FindFreeSlot();
 
                     //Since there are no bindings, we'll fill the mDumpData table. 
-                    mDumpData[ collectibleNum ].collectibleNum = collectibleNum;
-                    mDumpData[ collectibleNum ].active = true;
+                    mDumpData[collectibleNum].collectibleNum = collectibleNum;
+                    mDumpData[collectibleNum].active = true;
 
                     //Set the drop timout to something small to give the user a ittle reaction time
                     mDumpTimeout = 1000;
@@ -267,17 +259,15 @@ void CollectDumpedObjective::HandleEvent( EventEnum id, void* pEventData )
                     float damage = data->vehicle->mDesignerParams.mHitPoints * rmt::LtoF(mNumSpawned) / rmt::LtoF(GetNumCollectibles());
                     float currDamage = data->vehicle->mDesignerParams.mHitPoints - data->vehicle->mHitPoints;
                     damage -= currDamage;
-                    if ( damage < 0.0f )
+                    if (damage <0.0f)
                     {
                         damage = 0.0f;
                     }
 
-                    data->vehicle->SwitchOnDamageTypeAndApply( damage, *(data->collision) );
+                    data->vehicle->SwitchOnDamageTypeAndApply(damage, *(data->collision));
                     */
                 }
-            }
-            else
-            {
+            } else {
                 //This is a car hit me type thing.
                 //Let's dump some of our cargo.
                 /*
@@ -291,24 +281,24 @@ void CollectDumpedObjective::HandleEvent( EventEnum id, void* pEventData )
                 
                 
                 
-                if ( GetNumCollected() > 0 && mMeDumpTimout == 0 )
+                if (GetNumCollected()> 0 && mMeDumpTimout == 0)
                 {
-                    int id = GetVehicleCentral()->GetVehicleId( data->vehicle );
-                    VehicleController* controller = GetVehicleCentral()->GetVehicleController( id );
+                    int id = GetVehicleCentral()->GetVehicleId(data->vehicle);
+                    VehicleController* controller = GetVehicleCentral()->GetVehicleController(id);
 
-                    if ( controller )
+                    if (controller)
                     {
                         //This sounds slow
-                        ChaseAI* pai = dynamic_cast<ChaseAI*>( controller );
-                        if ( pai )
+                        ChaseAI* pai = dynamic_cast<ChaseAI*>(controller);
+                        if (pai)
                         {
                             int collectedID = GetAnyCollectedID();
-                            rAssert( collectedID > -1 );
+                            rAssert(collectedID> -1);
 
                             //This is a guy who hit me.
                             //Set the drop timout to 0
                             mDumpTimeout = 0;
-                            mWhatToDump = static_cast<unsigned int>( collectedID );
+                            mWhatToDump = static_cast<unsigned int>(collectedID);
                             mAmIDumping = true;
                             mAssaultCar = data->vehicle;
                             mDumpLifetime = 0;
@@ -319,15 +309,15 @@ void CollectDumpedObjective::HandleEvent( EventEnum id, void* pEventData )
                     }
                 }
                 */
-                
+
             }
             break;
         }
-    default:
-        break;
+        default:
+            break;
     }
 
-    CollectibleObjective::HandleEvent( id, pEventData );
+    CollectibleObjective::HandleEvent(id, pEventData);
 }
 
 //*****************************************************************************
@@ -346,8 +336,7 @@ void CollectDumpedObjective::HandleEvent( EventEnum id, void* pEventData )
 // Return:      void 
 //
 //=============================================================================
-void CollectDumpedObjective::OnInitCollectibles()
-{
+void CollectDumpedObjective::OnInitCollectibles() {
 
 }
 
@@ -361,112 +350,99 @@ void CollectDumpedObjective::OnInitCollectibles()
 // Return:      void 
 //
 //=============================================================================
-void CollectDumpedObjective::OnInitCollectibleObjective()
-{
+void CollectDumpedObjective::OnInitCollectibleObjective() {
     int i;
-    for( i = 0; i < static_cast<int>( mNumCollectibles ); i++ )
-    {
-        Activate( i, false, false );
+    for (i = 0; i < static_cast<int>(mNumCollectibles); i++) {
+        Activate(i, false, false);
     }
 
     mAnimatedIcon = new AnimatedIcon();
 
-    if ( mBumperCars )
-    {
+    if (mBumperCars) {
         //Listen for the collision event.
-        GetEventManager()->AddListener( this, EVENT_VEHICLE_VEHICLE_COLLISION );
-        
-        if ( mNumCollectibles == 1 )
-        {
-            GetGuiSystem()->HandleMessage( GUI_MSG_SHOW_HUD_OVERLAY, HUD_DAMAGE_METER );
+        GetEventManager()->AddListener(this, EVENT_VEHICLE_VEHICLE_COLLISION);
+
+        if (mNumCollectibles == 1) {
+            GetGuiSystem()->HandleMessage(GUI_MSG_SHOW_HUD_OVERLAY, HUD_DAMAGE_METER);
 
             // update damage meter
-            if ( GetCurrentHud() )
-            {
-                GetCurrentHud()->SetDamageMeter( 0.0f ); // between 0.0 and 1.0
+            if (GetCurrentHud()) {
+                GetCurrentHud()->SetDamageMeter(0.0f); // between 0.0 and 1.0
             }
 
-            GetEventManager()->AddListener( this, EVENT_VEHICLE_DESTROYED );
+            GetEventManager()->AddListener(this, EVENT_VEHICLE_DESTROYED);
         }
 
         rmt::Vector carPos;
-        mDumpVehicle->GetPosition( &carPos );
-        mAnimatedIcon->Init( ARROW_DESTROY, carPos );
-        mAnimatedIcon->ScaleByCameraDistance( MIN_ARROW_SCALE, MAX_ARROW_SCALE, MIN_ARROW_SCALE_DIST, MAX_ARROW_SCALE_DIST );
+        mDumpVehicle->GetPosition(&carPos);
+        mAnimatedIcon->Init(ARROW_DESTROY, carPos);
+        mAnimatedIcon->ScaleByCameraDistance(MIN_ARROW_SCALE, MAX_ARROW_SCALE, MIN_ARROW_SCALE_DIST,
+                                             MAX_ARROW_SCALE_DIST);
 
-    }
-    else
-    {
+    } else {
         //Look for the bound waypoints
-        GetEventManager()->AddListener( this, EVENT_WAYAI_HIT_WAYPOINT );
+        GetEventManager()->AddListener(this, EVENT_WAYAI_HIT_WAYPOINT);
 
-        if ( IsUserDumpAllowed() )
-        {
+        if (IsUserDumpAllowed()) {
             //Listen for the collision event.
-            GetEventManager()->AddListener( this, EVENT_VEHICLE_VEHICLE_COLLISION );
+            GetEventManager()->AddListener(this, EVENT_VEHICLE_VEHICLE_COLLISION);
         }
 
         rmt::Vector carPos;
-        mDumpVehicle->GetPosition( &carPos );
-        mAnimatedIcon->Init( ARROW_EVADE, carPos );
-        mAnimatedIcon->ScaleByCameraDistance( MIN_ARROW_SCALE, MAX_ARROW_SCALE, MIN_ARROW_SCALE_DIST, MAX_ARROW_SCALE_DIST );
+        mDumpVehicle->GetPosition(&carPos);
+        mAnimatedIcon->Init(ARROW_EVADE, carPos);
+        mAnimatedIcon->ScaleByCameraDistance(MIN_ARROW_SCALE, MAX_ARROW_SCALE, MIN_ARROW_SCALE_DIST,
+                                             MAX_ARROW_SCALE_DIST);
 
     }
 
-    if( mNumCollectibles > 1 ) // only show collectibles HUD overlay if more than 1 things to collect
+    if (mNumCollectibles > 1) // only show collectibles HUD overlay if more than 1 things to collect
     {
-        GetGuiSystem()->HandleMessage( GUI_MSG_SHOW_HUD_OVERLAY, HUD_COLLECTIBLES );
+        GetGuiSystem()->HandleMessage(GUI_MSG_SHOW_HUD_OVERLAY, HUD_COLLECTIBLES);
     }
 
-    if ( mBumperCars )
-    //void disable damage on this guy
-    //The vehicle is damaged only by collecting the 
+    if (mBumperCars)
+        //void disable damage on this guy
+        //The vehicle is damaged only by collecting the
     {
-        if ( mNumCollectibles == 1 )
-        {
+        if (mNumCollectibles == 1) {
             //void disable damage on this guy
             //The vehicle is damaged only by collecting the items he has to offer.
             //When you've smashed all the candy out of him, he damages out.
-            mDumpVehicle->SetVehicleCanSustainDamage( true );
-            mDumpVehicle->VehicleIsADestroyObjective( true ); 
-            GetGameplayManager()->GetCurrentVehicle()->SetVehicleCanSustainDamage( false );
-        }
-        else
-        {
+            mDumpVehicle->SetVehicleCanSustainDamage(true);
+            mDumpVehicle->VehicleIsADestroyObjective(true);
+            GetGameplayManager()->GetCurrentVehicle()->SetVehicleCanSustainDamage(false);
+        } else {
             //void disable damage on this guy
             //The vehicle is damaged only by collecting the items he has to offer.
             //When you've smashed all the candy out of him, he damages out.
-            mDumpVehicle->SetVehicleCanSustainDamage( false );
+            mDumpVehicle->SetVehicleCanSustainDamage(false);
             GetGameplayManager()->GetCurrentVehicle()->SetVehicleCanSustainDamage(false);
         }
-        GetHitnRunManager()->RegisterVehicleImmunity( mDumpVehicle );
-    }
-    else
-    {
-        mDumpVehicle->SetVehicleCanSustainDamage( false );
+        GetHitnRunManager()->RegisterVehicleImmunity(mDumpVehicle);
+    } else {
+        mDumpVehicle->SetVehicleCanSustainDamage(false);
     }
 
     //Set this vehicle as the focus of the HUD.
-    rAssert( mDumpVehicle );
-    VehicleAI* ai = GetVehicleCentral()->GetVehicleAI( mDumpVehicle );
-    rAssert( ai );
+    rAssert(mDumpVehicle);
+    VehicleAI *ai = GetVehicleCentral()->GetVehicleAI(mDumpVehicle);
+    rAssert(ai);
 
-    mDumpVehicleAI = dynamic_cast<WaypointAI*>(ai);
-    rAssert( mDumpVehicleAI );
+    mDumpVehicleAI = dynamic_cast<WaypointAI *>(ai);
+    rAssert(mDumpVehicleAI);
     mDumpVehicleAI->AddRef();
 
-    CGuiScreenHud* currentHud = GetCurrentHud();
-    if( currentHud )
-    {
+    CGuiScreenHud *currentHud = GetCurrentHud();
+    if (currentHud) {
         //Update the collection count
-        currentHud->SetCollectibles( 0, GetNumCollectibles() );
+        currentHud->SetCollectibles(0, GetNumCollectibles());
 
         //Now set the focus back on the car.
-        currentHud->GetHudMap( 0 )->SetFocalPointIcon( mDumpVehicleAI->GetHUDIndex() );
+        currentHud->GetHudMap(0)->SetFocalPointIcon(mDumpVehicleAI->GetHUDIndex());
     }
 
-    for ( i = 0; i < WaypointAI::MAX_WAYPOINTS; ++i )
-    {
+    for (i = 0; i < WaypointAI::MAX_WAYPOINTS; ++i) {
         mDumpData[i].active = false;
         mDumpData[i].collected = false;
     }
@@ -474,39 +450,35 @@ void CollectDumpedObjective::OnInitCollectibleObjective()
     mMeDumpTimout = 0;
 
 #ifdef DEBUGWATCH
-    if ( mBumperCars )
+    if (mBumperCars)
     {
         char name[64];
-        sprintf( name, "Mission\\Objectives\\BumperCar" );
-        radDbgWatchAddFloat( &DEFAULT_FORCE, "Min Force", name, NULL, NULL, 0.0f, 1.0f );
-        radDbgWatchAddFloat( &DEFAULT_DIST, "Min Dist", name, NULL, NULL, 0.0f, 10.0f );
-        radDbgWatchAddInt( &MAX_TIMEOUT, "Max Timeout", name, NULL, NULL, 0, 10000 );
-        radDbgWatchAddUnsignedInt( &CD_DEFAULT_TIMEOUT, "Dump timeout", name, NULL, 0, 100000 );
-        radDbgWatchAddUnsignedInt( &DEFAULT_DUMP_LIFETIME, "Dump lifetime", name, NULL, 0, 100000 );
+        sprintf(name, "Mission\\Objectives\\BumperCar");
+        radDbgWatchAddFloat(&DEFAULT_FORCE, "Min Force", name, NULL, NULL, 0.0f, 1.0f);
+        radDbgWatchAddFloat(&DEFAULT_DIST, "Min Dist", name, NULL, NULL, 0.0f, 10.0f);
+        radDbgWatchAddInt(&MAX_TIMEOUT, "Max Timeout", name, NULL, NULL, 0, 10000);
+        radDbgWatchAddUnsignedInt(&CD_DEFAULT_TIMEOUT, "Dump timeout", name, NULL, 0, 100000);
+        radDbgWatchAddUnsignedInt(&DEFAULT_DUMP_LIFETIME, "Dump lifetime", name, NULL, 0, 100000);
     }
 #endif
 
-    MissionStage* stage = GetGameplayManager()->GetCurrentMission()->GetCurrentStage();
-    
+    MissionStage *stage = GetGameplayManager()->GetCurrentMission()->GetCurrentStage();
+
     // not sure why this is needed, Init seems to be called twice in some cases
     bool alreadyHave = false;
-    if ( mCondition == NULL)
-    {
+    if (mCondition == NULL) {
         mCondition = new CollectionCondition;
     }
 
-    for(int i = 0; i < static_cast<int>( stage->GetNumConditions() ); i++)
-    {
+    for (int i = 0; i < static_cast<int>(stage->GetNumConditions()); i++) {
 
-        if(stage->GetCondition(i) == mCondition)
-        {            
+        if (stage->GetCondition(i) == mCondition) {
             alreadyHave = true;
             break;
         }
     }
 
-    if(!alreadyHave)
-    {
+    if (!alreadyHave) {
         stage->SetCondition(stage->GetNumConditions(), mCondition);
         stage->SetNumConditions(stage->GetNumConditions() + 1);
     }
@@ -522,38 +494,33 @@ void CollectDumpedObjective::OnInitCollectibleObjective()
 // Return:      void 
 //
 //=============================================================================
-void CollectDumpedObjective::OnFinalizeCollectibleObjective()
-{
-    GetEventManager()->RemoveAll( this );
+void CollectDumpedObjective::OnFinalizeCollectibleObjective() {
+    GetEventManager()->RemoveAll(this);
 
-    GetEventManager()->TriggerEvent(EVENT_DUMP_STATUS, (void*)0);
+    GetEventManager()->TriggerEvent(EVENT_DUMP_STATUS, (void *) 0);
 
-    GetGuiSystem()->HandleMessage( GUI_MSG_HIDE_HUD_OVERLAY, HUD_COLLECTIBLES );
+    GetGuiSystem()->HandleMessage(GUI_MSG_HIDE_HUD_OVERLAY, HUD_COLLECTIBLES);
 
-    if ( mNumCollectibles == 1 )
-    {
-        GetGuiSystem()->HandleMessage( GUI_MSG_HIDE_HUD_OVERLAY, HUD_DAMAGE_METER );
+    if (mNumCollectibles == 1) {
+        GetGuiSystem()->HandleMessage(GUI_MSG_HIDE_HUD_OVERLAY, HUD_DAMAGE_METER);
     }
 
-    mNumUncollected = 0 ;
+    mNumUncollected = 0;
     mNumSpawned = 0;
 
-    if ( mBumperCars )
-    {
-        radDbgWatchDelete( (void*)(&DEFAULT_FORCE) );
-        radDbgWatchDelete( (void*)(&DEFAULT_DIST) );
-        radDbgWatchDelete( (void*)(&MAX_TIMEOUT) );
-        radDbgWatchDelete( (void*)(&CD_DEFAULT_TIMEOUT) );
-        
+    if (mBumperCars) {
+        radDbgWatchDelete((void *) (&DEFAULT_FORCE));
+        radDbgWatchDelete((void *) (&DEFAULT_DIST));
+        radDbgWatchDelete((void *) (&MAX_TIMEOUT));
+        radDbgWatchDelete((void *) (&CD_DEFAULT_TIMEOUT));
+
         GetGameplayManager()->GetCurrentVehicle()->SetVehicleCanSustainDamage(true);
-        GetHitnRunManager()->RegisterVehicleImmunity( NULL );
-    }
-    else
-    {
+        GetHitnRunManager()->RegisterVehicleImmunity(NULL);
+    } else {
         mDumpVehicle->SetVehicleCanSustainDamage(true);
     }
 
-    rAssert( mDumpVehicleAI );
+    rAssert(mDumpVehicleAI);
     mDumpVehicleAI->Release();
 
     delete mAnimatedIcon;
@@ -565,49 +532,40 @@ void CollectDumpedObjective::OnFinalizeCollectibleObjective()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int collectibleNum, bool &shouldReset )
+// Parameters:  (unsigned int collectibleNum, bool &shouldReset)
 //
 // Return:      bool 
 //
 //=============================================================================
-bool CollectDumpedObjective::OnCollection( unsigned int collectibleNum, bool &shouldReset )
-{
-    CGuiScreenHud* currentHud = GetCurrentHud();
-    if( currentHud )
-    {
+bool CollectDumpedObjective::OnCollection(unsigned int collectibleNum, bool &shouldReset) {
+    CGuiScreenHud *currentHud = GetCurrentHud();
+    if (currentHud) {
         //Update the collection count
-        currentHud->SetCollectibles( GetNumCollected() + 1, GetNumCollectibles() );  //I add 1 because the number is incremented after...  Sorry
+        currentHud->SetCollectibles(GetNumCollected() + 1,
+                                    GetNumCollectibles());  //I add 1 because the number is incremented after...  Sorry
     }
 
     mNumUncollected--;
-    GetEventManager()->TriggerEvent(EVENT_DUMP_STATUS, (void*)mNumUncollected);
+    GetEventManager()->TriggerEvent(EVENT_DUMP_STATUS, (void *) mNumUncollected);
 
     //Mark the collectible as collected.
     int i;
-    for ( i = 0; i < WaypointAI::MAX_WAYPOINTS; ++i )
-    {
-        if ( mDumpData[i].collectibleNum == static_cast<int>(collectibleNum) )
-        {
+    for (i = 0; i < WaypointAI::MAX_WAYPOINTS; ++i) {
+        if (mDumpData[i].collectibleNum == static_cast<int>(collectibleNum)) {
             mDumpData[i].collected = true;
             break;
         }
     }
 
-    if ( currentHud )
-    {
-        if ( mNumUncollected == 0 )
-        {
+    if (currentHud) {
+        if (mNumUncollected == 0) {
             //Now set the focus back on the car.
-            currentHud->GetHudMap( 0 )->SetFocalPointIcon( mDumpVehicleAI->GetHUDIndex() );
-        }
-        else
-        {
+            currentHud->GetHudMap(0)->SetFocalPointIcon(mDumpVehicleAI->GetHUDIndex());
+        } else {
             //Select the next uncollected object.
-            for ( i = 0; i < WaypointAI::MAX_WAYPOINTS; ++i )
-            {
-                if ( mDumpData[i].active && !mDumpData[i].collected )
-                {
-                    SetFocus( mDumpData[i].collectibleNum );
+            for (i = 0; i < WaypointAI::MAX_WAYPOINTS; ++i) {
+                if (mDumpData[i].active && !mDumpData[i].collected) {
+                    SetFocus(mDumpData[i].collectibleNum);
                 }
             }
         }
@@ -622,93 +580,76 @@ bool CollectDumpedObjective::OnCollection( unsigned int collectibleNum, bool &sh
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTimeMilliseconds )
+// Parameters:  (unsigned int elapsedTimeMilliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void CollectDumpedObjective::OnUpdateCollectibleObjective( unsigned int elapsedTimeMilliseconds )
-{
+void CollectDumpedObjective::OnUpdateCollectibleObjective(unsigned int elapsedTimeMilliseconds) {
     //Update the arrow
     rmt::Vector carPos;
-    Vehicle* vehicle = mDumpVehicle;
-    vehicle->GetPosition( &carPos );
+    Vehicle *vehicle = mDumpVehicle;
+    vehicle->GetPosition(&carPos);
 
     rmt::Box3D bbox;
-    vehicle->GetBoundingBox( &bbox );
+    vehicle->GetBoundingBox(&bbox);
     carPos.y = bbox.high.y;
 
-    mAnimatedIcon->Move( carPos );
-    mAnimatedIcon->Update( elapsedTimeMilliseconds );
+    mAnimatedIcon->Move(carPos);
+    mAnimatedIcon->Update(elapsedTimeMilliseconds);
 
-    if ( mNumCollectibles == 1 )
-    {
+    if (mNumCollectibles == 1) {
         //Update the HUD.
         // update damage meter
-        if ( GetCurrentHud() )
-        {
-            GetCurrentHud()->SetDamageMeter( 1.0f - mDumpVehicle->GetVehicleLifePercentage(mDumpVehicle->mHitPoints) ); // between 0.0 and 1.0
-        }  
+        if (GetCurrentHud()) {
+            GetCurrentHud()->SetDamageMeter(1.0f - mDumpVehicle->GetVehicleLifePercentage(
+                    mDumpVehicle->mHitPoints)); // between 0.0 and 1.0
+        }
     }
 
-    for(int i = 0; i < MAX_COLLECTIBLES; i++)
-    {
-        if((mDumpData[ i ].lifetime > 0) && mDumpData[ i ].active && !mDumpData[ i ].collected)
-        {
-            if((mDumpData[ i ].lifetime - (int)elapsedTimeMilliseconds) < 0)
-            {
-                mDumpData[ i ].lifetime = 0;
+    for (int i = 0; i < MAX_COLLECTIBLES; i++) {
+        if ((mDumpData[i].lifetime > 0) && mDumpData[i].active && !mDumpData[i].collected) {
+            if ((mDumpData[i].lifetime - (int) elapsedTimeMilliseconds) < 0) {
+                mDumpData[i].lifetime = 0;
                 Activate(i, false, false);
-                mDumpData[ i ].active = false;
-                mDumpData[ i ].collected= false;
+                mDumpData[i].active = false;
+                mDumpData[i].collected = false;
                 --mNumUncollected;
                 --mNumSpawned;
-                GetEventManager()->TriggerEvent(EVENT_DUMP_STATUS, (void*)mNumUncollected);
-            }
-            else
-            {
-                mDumpData[ i ].lifetime -= elapsedTimeMilliseconds;
+                GetEventManager()->TriggerEvent(EVENT_DUMP_STATUS, (void *) mNumUncollected);
+            } else {
+                mDumpData[i].lifetime -= elapsedTimeMilliseconds;
             }
 
-            if(mDumpData[ i ].lifetime < 5000)
-            {
-                if( mCollectibles[ i ].mAnimatedIcon != NULL )
-		        {
-                    mCollectibles[ i ].mAnimatedIcon->ShouldRender( ((mDumpData[ i ].lifetime >> 8) & 1) != 0 );
-		        }
+            if (mDumpData[i].lifetime < 5000) {
+                if (mCollectibles[i].mAnimatedIcon != NULL) {
+                    mCollectibles[i].mAnimatedIcon->ShouldRender(
+                            ((mDumpData[i].lifetime >> 8) & 1) != 0);
+                }
             }
         }
     }
 
-    if ( IsUserDumpAllowed() )
-    {
-        if ( mMeDumpTimout != 0 )
-        {
-            if ( mMeDumpTimout < elapsedTimeMilliseconds )
-            {
+    if (IsUserDumpAllowed()) {
+        if (mMeDumpTimout != 0) {
+            if (mMeDumpTimout < elapsedTimeMilliseconds) {
                 mMeDumpTimout = 0;
-            }
-            else
-            {
+            } else {
                 mMeDumpTimout -= elapsedTimeMilliseconds;
             }
         }
     }
 
-    if(!mBumperCars) // don't fail on dropped objectives, they'll timeout anyway
+    if (!mBumperCars) // don't fail on dropped objectives, they'll timeout anyway
     {
-        for(int i = 0; i < MAX_COLLECTIBLES; i++)
-        {
-            if(mCollectibles[ i ].pLocator && mCollectibles[ i ].pLocator->GetFlag(Locator::ACTIVE))
-            {
+        for (int i = 0; i < MAX_COLLECTIBLES; i++) {
+            if (mCollectibles[i].pLocator && mCollectibles[i].pLocator->GetFlag(Locator::ACTIVE)) {
                 rmt::Vector pos, charPos;
-                mCollectibles[ i ].pLocator->GetPosition(&pos);
+                mCollectibles[i].pLocator->GetPosition(&pos);
                 GetAvatarManager()->GetAvatarForPlayer(0)->GetPosition(charPos);
                 pos.Sub(charPos);
-                if(pos.Magnitude() > 200)
-                {
-                    if(mCondition)
-                    {
+                if (pos.Magnitude() > 200) {
+                    if (mCondition) {
                         mCondition->SetViolated(true);
                     }
                     break;
@@ -717,42 +658,35 @@ void CollectDumpedObjective::OnUpdateCollectibleObjective( unsigned int elapsedT
         }
     }
 
-    if ( mDumpTimeout == -1 || mDumpVehicle->IsAirborn() )
-    {
+    if (mDumpTimeout == -1 || mDumpVehicle->IsAirborn()) {
         //NO dumping!
         return;
     }
 
-    if ( mDumpTimeout - static_cast<int>(elapsedTimeMilliseconds) <= 0 )
-    {
-        if ( mAmIDumping )
-        {
-            DumpCollectible( mWhatToDump, GetGameplayManager()->GetCurrentVehicle(), mAssaultCar );
-            Uncollect( mWhatToDump );
+    if (mDumpTimeout - static_cast<int>(elapsedTimeMilliseconds) <= 0) {
+        if (mAmIDumping) {
+            DumpCollectible(mWhatToDump, GetGameplayManager()->GetCurrentVehicle(), mAssaultCar);
+            Uncollect(mWhatToDump);
 
             ++mNumUncollected;
-            GetEventManager()->TriggerEvent(EVENT_DUMP_STATUS, (void*)mNumUncollected);
+            GetEventManager()->TriggerEvent(EVENT_DUMP_STATUS, (void *) mNumUncollected);
 
-            CGuiScreenHud* currentHud = GetCurrentHud();
-            if( currentHud )
-            {
+            CGuiScreenHud *currentHud = GetCurrentHud();
+            if (currentHud) {
                 //Update the collection count
-                currentHud->SetCollectibles( GetNumCollected(), GetNumCollectibles() );
+                currentHud->SetCollectibles(GetNumCollected(), GetNumCollectibles());
             }
 
-        }
-        else
-        {
-            DumpCollectible( mWhatToDump, mDumpVehicle, GetGameplayManager()->GetCurrentVehicle(), true, mTerminalDump );
-            mDumpData[ mWhatToDump ].lifetime = mDumpLifetime;
+        } else {
+            DumpCollectible(mWhatToDump, mDumpVehicle, GetGameplayManager()->GetCurrentVehicle(),
+                            true, mTerminalDump);
+            mDumpData[mWhatToDump].lifetime = mDumpLifetime;
 
             ++mNumUncollected;
-            GetEventManager()->TriggerEvent(EVENT_DUMP_STATUS, (void*)mNumUncollected);
+            GetEventManager()->TriggerEvent(EVENT_DUMP_STATUS, (void *) mNumUncollected);
         }
         mDumpTimeout = -1;
-    }
-    else
-    {
+    } else {
         mDumpTimeout -= static_cast<int>(elapsedTimeMilliseconds);
     }
 }
@@ -760,12 +694,9 @@ void CollectDumpedObjective::OnUpdateCollectibleObjective( unsigned int elapsedT
 //=============================================================================
 // CollectDumpedObjective::FindFreeSlot
 //=============================================================================
-int CollectDumpedObjective::FindFreeSlot(void)
-{
-    for(int i = 0; i < MAX_COLLECTIBLES; i++)
-    {
-        if(!mDumpData[ i ].active && !mDumpData[ i ].collected)
-        {
+int CollectDumpedObjective::FindFreeSlot(void) {
+    for (int i = 0; i < MAX_COLLECTIBLES; i++) {
+        if (!mDumpData[i].active && !mDumpData[i].collected) {
             return i;
         }
     }

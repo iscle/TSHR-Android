@@ -28,6 +28,7 @@
 // Forward References
 //========================================
 class SimpsonsSoundPlayer;
+
 struct SimpsonsSoundPlayerCallback;
 
 //=============================================================================
@@ -36,54 +37,64 @@ struct SimpsonsSoundPlayerCallback;
 //
 //=============================================================================
 
-class DialogSelectionGroup : public SelectableDialog
-{
-    public:
-        DialogSelectionGroup( SelectableDialog& dialog1, SelectableDialog& dialog2 );
-        virtual ~DialogSelectionGroup();
-        
-        void PlayLine( unsigned int lineIndex,
-                       SimpsonsSoundPlayer& player,
-                       SimpsonsSoundPlayerCallback* callback );
-        void QueueLine( unsigned int lineIndex,
-                        SimpsonsSoundPlayer& player );
-        void PlayQueuedLine( SimpsonsSoundPlayer& player,
-                             SimpsonsSoundPlayerCallback* callback );
+class DialogSelectionGroup : public SelectableDialog {
+public:
+    DialogSelectionGroup(SelectableDialog &dialog1, SelectableDialog &dialog2);
 
-        unsigned int GetNumDialogLines() const;
-        
-        bool UsesCharacter( tUID characterUID );
-        tUID GetDialogLineCharacterUID( unsigned int lineNum );
-        radKey32 GetConversationName();
-        bool IsVillainLine();
+    virtual ~DialogSelectionGroup();
 
-        void AddMatchingDialog( SelectableDialog& newDialog, SelectableDialogList& list );
+    void PlayLine(unsigned int lineIndex,
+                  SimpsonsSoundPlayer &player,
+                  SimpsonsSoundPlayerCallback *callback);
 
-        //
-        // Overriding SelectableDialog methods
-        //
-        unsigned int GetMission() const;
-        unsigned int GetLevel() const;
-        EventEnum GetEvent() const;
+    void QueueLine(unsigned int lineIndex,
+                   SimpsonsSoundPlayer &player);
 
-    private:
-        //Prevent wasteful constructor creation.
-        DialogSelectionGroup();
-        DialogSelectionGroup( const DialogSelectionGroup& original );
-        DialogSelectionGroup& operator=( const DialogSelectionGroup& rhs );
+    void PlayQueuedLine(SimpsonsSoundPlayer &player,
+                        SimpsonsSoundPlayerCallback *callback);
 
-        void makeRandomSelection();
+    unsigned int GetNumDialogLines() const;
 
-        //
-        // List of SelectableDialog objects to choose from.  Use std::vector
-        // for space conservation
-        //
-        typedef std::vector< SelectableDialog*, s2alloc<SelectableDialog*> > DialogVector;
+    bool UsesCharacter(tUID characterUID);
 
-        DialogVector m_dialogVector;
+    tUID GetDialogLineCharacterUID(unsigned int lineNum);
 
-        short m_currentlyPlayingDialog;
-        short m_lastSelection;
+    radKey32 GetConversationName();
+
+    bool IsVillainLine();
+
+    void AddMatchingDialog(SelectableDialog &newDialog, SelectableDialogList &list);
+
+    //
+    // Overriding SelectableDialog methods
+    //
+    unsigned int GetMission() const;
+
+    unsigned int GetLevel() const;
+
+    EventEnum GetEvent() const;
+
+private:
+    //Prevent wasteful constructor creation.
+    DialogSelectionGroup();
+
+    DialogSelectionGroup(const DialogSelectionGroup &original);
+
+    DialogSelectionGroup &operator=(const DialogSelectionGroup &rhs);
+
+    void makeRandomSelection();
+
+    //
+    // List of SelectableDialog objects to choose from.  Use std::vector
+    // for space conservation
+    //
+    typedef std::vector<SelectableDialog *, s2alloc < SelectableDialog * >>
+    DialogVector;
+
+    DialogVector m_dialogVector;
+
+    short m_currentlyPlayingDialog;
+    short m_lastSelection;
 };
 
 

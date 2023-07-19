@@ -29,36 +29,37 @@ class SoundAsyncFileLoader;
 //
 //=============================================================================
 
-class SoundFileHandler : public FileHandler
-{
-    public:
-        SoundFileHandler();
-        virtual ~SoundFileHandler();
+class SoundFileHandler : public FileHandler {
+public:
+    SoundFileHandler();
 
-        //
-        // Load file asynchronously.
-        //
-        void LoadFile( const char* filename, 
-                       FileHandler::LoadFileCallback* pCallback,
-                       void* pUserData,
-                       GameMemoryAllocator heap );
+    virtual ~SoundFileHandler();
 
-        //
-        // Load file synchronously.
-        //
-        void LoadFileSync( const char* filename );
+    //
+    // Load file asynchronously.
+    //
+    void LoadFile(const char *filename,
+                  FileHandler::LoadFileCallback *pCallback,
+                  void *pUserData,
+                  GameMemoryAllocator heap);
 
-        //
-        // Called by sound system on load completion
-        //
-        void LoadCompleted();
+    //
+    // Load file synchronously.
+    //
+    void LoadFileSync(const char *filename);
 
-    private:
-        //Prevent wasteful constructor creation.
-        SoundFileHandler( const SoundFileHandler& original );
-        SoundFileHandler& operator=( const SoundFileHandler& rhs );
+    //
+    // Called by sound system on load completion
+    //
+    void LoadCompleted();
 
-        SoundAsyncFileLoader* m_subtypeFileLoader;
+private:
+    //Prevent wasteful constructor creation.
+    SoundFileHandler(const SoundFileHandler &original);
+
+    SoundFileHandler &operator=(const SoundFileHandler &rhs);
+
+    SoundAsyncFileLoader *m_subtypeFileLoader;
 };
 
 

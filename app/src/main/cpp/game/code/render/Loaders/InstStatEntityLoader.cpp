@@ -52,11 +52,11 @@
 //
 //========================================================================
 InstStatEntityLoader::InstStatEntityLoader() :
-tSimpleChunkHandler(SRR2::ChunkID::INSTA_ENTITY_DSG)
-{
-   mpListenerCB  = NULL;
-   mUserData     = -1;
+        tSimpleChunkHandler(SRR2::ChunkID::INSTA_ENTITY_DSG) {
+    mpListenerCB = NULL;
+    mUserData = -1;
 }
+
 ///////////////////////////////////////////////////////////////////////
 // tSimpleChunkHandler
 ///////////////////////////////////////////////////////////////////////
@@ -73,81 +73,75 @@ tSimpleChunkHandler(SRR2::ChunkID::INSTA_ENTITY_DSG)
 // Constraints: None.
 //
 //========================================================================
-tEntity* InstStatEntityLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
-    IEntityDSG::msDeletionsSafe=true;
+tEntity *InstStatEntityLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
+    IEntityDSG::msDeletionsSafe = true;
     char name[255];
     f->GetPString(name);
 
     int version = f->GetLong();
     int HasAlpha = f->GetLong();
 
-    InstStatEntityDSG*      pCurStatEntity  = NULL; 
-    tGeometry*              pGeo            = NULL;
-    rmt::Matrix*            pMatrix         = NULL;
+    InstStatEntityDSG *pCurStatEntity = NULL;
+    tGeometry *pGeo = NULL;
+    rmt::Matrix *pMatrix = NULL;
 
     bool foundInstances = false;
 
-    while(f->ChunksRemaining())
-    {      
+    while (f->ChunksRemaining()) {
         f->BeginChunk();
-        switch(f->GetCurrentID())
-        {
-        case SRR2::ChunkID::INSTANCES:
-            {
-                //Instances >> Scenegraph
+        switch (f->GetCurrentID()) {
+            case SRR2::ChunkID::INSTANCES: {
+                //Instances>> Scenegraph
                 f->BeginChunk();
-                //Scenegraph >> ScenegraphRoot
+                //Scenegraph>> ScenegraphRoot
                 f->BeginChunk();
-                //ScenegraphRoot >> ScenegraphBranch
+                //ScenegraphRoot>> ScenegraphBranch
                 f->BeginChunk();
-                //ScenegraphBranch >> ScenegraphTransform
+                //ScenegraphBranch>> ScenegraphTransform
                 f->BeginChunk();
 
-                //ScenegraphTransform >> real ScenegraphTransform
+                //ScenegraphTransform>> real ScenegraphTransform
                 //f->BeginChunk();
 
-                for(;f->ChunksRemaining();)
-                {
+                for (; f->ChunksRemaining();) {
                     foundInstances = true;
 
                     f->BeginChunk();
-                    
+
                     f->GetPString(name);
                     int numChild = f->GetLong();
 
                     pMatrix = new rmt::Matrix;
-                    f->GetData(pMatrix,16,tFile::DWORD);
+                    f->GetData(pMatrix, 16, tFile::DWORD);
 
                     pCurStatEntity = new InstStatEntityDSG;
                     pCurStatEntity->SetName(name);
 
-                    if(HasAlpha)
-                    {
+                    if (HasAlpha) {
                         pCurStatEntity->mTranslucent = true;
                     }
 
                     f->EndChunk();
 
-                    pCurStatEntity->LoadSetUp(pMatrix,pGeo);
+                    pCurStatEntity->LoadSetUp(pMatrix, pGeo);
 
-                    mpListenerCB->OnChunkLoaded( pCurStatEntity, mUserData, _id );
+                    mpListenerCB->OnChunkLoaded(pCurStatEntity, mUserData, _id);
                 }
-                //ScenegraphBranch >> ScenegraphTransform
+                //ScenegraphBranch>> ScenegraphTransform
                 f->EndChunk();
-                //ScenegraphRoot >> ScenegraphBranch
+                //ScenegraphRoot>> ScenegraphBranch
                 f->EndChunk();
-                //Scenegraph >> ScenegraphRoot
+                //Scenegraph>> ScenegraphRoot
                 f->EndChunk();
-                //Instances >> Scenegraph
+                //Instances>> Scenegraph
                 f->EndChunk();
             }
-            break;
+                break;
 
-        case Pure3D::Mesh::MESH:
-            {
-                GeometryWrappedLoader* pGeoLoader = (GeometryWrappedLoader*)AllWrappers::GetInstance()->mpLoader(AllWrappers::msGeometry) ;
-                tRefCounted::Assign(pGeo,(tGeometry*)pGeoLoader->LoadObject(f, store));
+            case Pure3D::Mesh::MESH: {
+                GeometryWrappedLoader *pGeoLoader = (GeometryWrappedLoader *) AllWrappers::GetInstance()->mpLoader(
+                        AllWrappers::msGeometry);
+                tRefCounted::Assign(pGeo, (tGeometry *) pGeoLoader->LoadObject(f, store));
                 break;
             }
 
@@ -159,14 +153,14 @@ tEntity* InstStatEntityLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 
     tRefCounted::Release(pGeo);
 
-    if(!foundInstances)
-    {
+    if (!foundInstances) {
         rDebugPrintf("WARNING : no instances for inststatentity (%s)\n", name);
     }
 
-    IEntityDSG::msDeletionsSafe=false;
+    IEntityDSG::msDeletionsSafe = false;
     return NULL;
 }
+
 ///////////////////////////////////////////////////////////////////////
 // IWrappedLoader
 ///////////////////////////////////////////////////////////////////////
@@ -186,21 +180,19 @@ tEntity* InstStatEntityLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 //
 //========================================================================
 void InstStatEntityLoader::SetRegdListener
-(
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
-   //
-   // Follow protocol; notify old Listener, that it has been 
-   // "disconnected".
-   //
-   if( mpListenerCB != NULL )
-   {
-      mpListenerCB->OnChunkLoaded( NULL, iUserData, 0 );
-   }
-   mpListenerCB  = pListenerCB;
-   mUserData     = iUserData;
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
+    //
+    // Follow protocol; notify old Listener, that it has been
+    // "disconnected".
+    //
+    if (mpListenerCB != NULL) {
+        mpListenerCB->OnChunkLoaded(NULL, iUserData, 0);
+    }
+    mpListenerCB = pListenerCB;
+    mUserData = iUserData;
 }
 
 //========================================================================
@@ -217,19 +209,18 @@ void InstStatEntityLoader::SetRegdListener
 //
 //========================================================================
 void InstStatEntityLoader::ModRegdListener
-( 
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
 #if 0
-   char DebugBuf[255];
-   sprintf( DebugBuf, "GeometryWrappedLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB );
-   rDebugString( DebugBuf );
+    char DebugBuf[255];
+    sprintf(DebugBuf, "GeometryWrappedLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB);
+    rDebugString(DebugBuf);
 #endif
-   rAssert( pListenerCB == mpListenerCB );
+    rAssert(pListenerCB == mpListenerCB);
 
-   mUserData = iUserData;
+    mUserData = iUserData;
 }
 //************************************************************************
 //

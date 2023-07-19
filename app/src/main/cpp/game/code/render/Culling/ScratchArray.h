@@ -7,96 +7,83 @@
 // Designed for quick alloc/dealloc
 //
 
-template <class T> class SubArray
-{
+template<class T>
+class SubArray {
 public:
-   SubArray()
-   {
-      Invalidate();
-   }
+    SubArray() {
+        Invalidate();
+    }
 
-   SubArray( T* ipData, int iSize )
-   {
-      mpData = ipData;
-      mSize  = iSize;
-   }
+    SubArray(T *ipData, int iSize) {
+        mpData = ipData;
+        mSize = iSize;
+    }
 
-   ~SubArray()
-   {
-      if( IsValid() )
-      {
-         rAssert(false);
-         Invalidate();
-      }
-   }
+    ~SubArray() {
+        if (IsValid()) {
+            rAssert(false);
+            Invalidate();
+        }
+    }
 
-   T& operator[]( int iIndex )
-   {
-      rAssert( IsValid() );
-      rAssert( (iIndex < mSize) && (iIndex > -1) );
-      return mpData[iIndex];
-   }
+    T &operator[](int iIndex) {
+        rAssert(IsValid());
+        rAssert((iIndex < mSize) && (iIndex > -1));
+        return mpData[iIndex];
+    }
 
-   void SetAll( T& irDefaultValue )
-   {
-      rAssert( IsValid() );
-      for(int i=0; i<mSize; i++ )
-      {
-         mpData[i] = irDefaultValue;
-      }
-   }
+    void SetAll(T &irDefaultValue) {
+        rAssert(IsValid());
+        for (int i = 0; i < mSize; i++) {
+            mpData[i] = irDefaultValue;
+        }
+    }
 
-   void SplitOffEnd( SubArray<T>& orSplitArray, int iSplitSize )
-   {
-      rAssert( IsValid() );
-      rAssert( iSplitSize <= mSize );
+    void SplitOffEnd(SubArray<T> &orSplitArray, int iSplitSize) {
+        rAssert(IsValid());
+        rAssert(iSplitSize <= mSize);
 
-      orSplitArray.mSize   = iSplitSize;
-      orSplitArray.mpData  = mpData + (mSize-iSplitSize);
+        orSplitArray.mSize = iSplitSize;
+        orSplitArray.mpData = mpData + (mSize - iSplitSize);
 
-      if( mSize == iSplitSize )
-         Invalidate();
-   }
+        if (mSize == iSplitSize)
+            Invalidate();
+    }
 
-   void AbsorbR( SubArray<T>& orAdjArray )
-   {
-      rAssert(IsValid());
-      rAssert(CanAbsorbR( orAdjArray ));
+    void AbsorbR(SubArray<T> &orAdjArray) {
+        rAssert(IsValid());
+        rAssert(CanAbsorbR(orAdjArray));
 
-      mSize += orAdjArray.mSize;
-      orAdjArray.Invalidate();
-   }
+        mSize += orAdjArray.mSize;
+        orAdjArray.Invalidate();
+    }
 
-   void Init( int iSize, T* ipData )
-   {
-      rAssert(!IsValid());
+    void Init(int iSize, T *ipData) {
+        rAssert(!IsValid());
 
-      mSize    = iSize;
-      mpData   = ipData;
-   }
-   
+        mSize = iSize;
+        mpData = ipData;
+    }
 
-   bool CanAbsorbR( SubArray<T>& irAdjArray )
-   {
-      if( mpData+mSize == orSplitArray.mpData )
-         return true;
-      else
-         return false;
-   }
-   
-   bool IsValid()
-   {
-      return (mpData!=NULL)&&(mSize!=SRR_ERR_INDEX);
-   }
 
-   void Invalidate()
-   {
-      mSize   = SRR_ERR_INDEX;
-      mpData  = NULL;
-   }
+    bool CanAbsorbR(SubArray<T> &irAdjArray) {
+        if (mpData + mSize == orSplitArray.mpData)
+            return true;
+        else
+            return false;
+    }
 
-   T* mpData;
-   int mSize;
+    bool IsValid() {
+        return (mpData != NULL) && (mSize != SRR_ERR_INDEX);
+    }
+
+    void Invalidate() {
+        mSize = SRR_ERR_INDEX;
+        mpData = NULL;
+    }
+
+    T *mpData;
+    int mSize;
 protected:
 
 };
@@ -110,17 +97,17 @@ public:
 
    //////////////////////////////////////////////////////////////////////////////
    //////////////////////////////////////////////////////////////////////////////
-   void Init( int iSize )
+   void Init(int iSize)
    {
-      Allocate( iSize );
+      Allocate(iSize);
       CleanFreeSlots();
    }
 
    //////////////////////////////////////////////////////////////////////////////
    //////////////////////////////////////////////////////////////////////////////
-   void SetAll( T& irDefaultValue )
+   void SetAll(T& irDefaultValue)
    {
-      for(int i=0; i<mSize; i++ )
+      for(int i=0; i<mSize; i++)
       {
          mpData[i] = irDefaultValue;
       }
@@ -128,12 +115,12 @@ public:
 
    //////////////////////////////////////////////////////////////////////////////
    //////////////////////////////////////////////////////////////////////////////
-   void Acquire( SubArray<T>& orSubArray, int iSize )
+   void Acquire(SubArray<T>& orSubArray, int iSize)
    {
       int FSIndex = IsThereSpace(iSize); //get free frag slot index
-      if( FSIndex != SRR_ERR_INDEX )
+      if(FSIndex != SRR_ERR_INDEX)
       {
-         Alloc( orSubArray, iSize, FSIndex );
+         Alloc(orSubArray, iSize, FSIndex);
       }
       else
       {
@@ -143,7 +130,7 @@ public:
 
    //////////////////////////////////////////////////////////////////////////////
    //////////////////////////////////////////////////////////////////////////////
-   void Release( SubArray<T>& opSubArray )
+   void Release(SubArray<T>& opSubArray)
    {
       all of this work is to set up a set of scratchpad allocators to do bin counts
          to better divide the data based on good spreads
@@ -154,40 +141,40 @@ public:
 protected:
    //////////////////////////////////////////////////////////////////////////////
    //////////////////////////////////////////////////////////////////////////////
-   void Alloc( SubArray<T>& orSubArray, int iSize, int iHoleIndex )
+   void Alloc(SubArray<T>& orSubArray, int iSize, int iHoleIndex)
    {
       mAllocCount++;
 
-      mFreeHoles[iHoleIndex].SplitOffEnd( orSubArray, iSize );
+      mFreeHoles[iHoleIndex].SplitOffEnd(orSubArray, iSize);
    }
 
    //////////////////////////////////////////////////////////////////////////////
    //////////////////////////////////////////////////////////////////////////////
-   void Free( SubArray<T>& orSubArray )
+   void Free(SubArray<T>& orSubArray)
    {
       int AdjLIndex;
-      FindAdjLHole( AdjLIndex, orSubArray );
+      FindAdjLHole(AdjLIndex, orSubArray);
 
-      if( AdjLIndex != SRR_ERR_INDEX )
+      if(AdjLIndex != SRR_ERR_INDEX)
       {
          mFreeHoles[AdjLIndex].AbsorbR(orSubArray);
       }
       else
       {
-         AddFreeHole( orSubArray, InvalidFreeHole() );
+         AddFreeHole(orSubArray, InvalidFreeHole());
       }
       
    }
 
    //////////////////////////////////////////////////////////////////////////////
    //////////////////////////////////////////////////////////////////////////////
-   void FindAdjLHole( int& i, SubArray<T>& orSubArray )
+   void FindAdjLHole(int& i, SubArray<T>& orSubArray)
    {
-      rAssert((orSubArray.mpData >= mpData) &&  (orSubArray.mpData < (mpData+mSize)));
+      rAssert((orSubArray.mpData>= mpData) &&  (orSubArray.mpData <(mpData+mSize)));
 
-      for( i=0; i<msMaxFreeHoles; i++ )
+      for(i=0; i<msMaxFreeHoles; i++)
       {
-         if( (mFreeHoles[i].IsValid()) && (mFreeHoles[i].CanAbsorbR(orSubArray)) )
+         if((mFreeHoles[i].IsValid()) && (mFreeHoles[i].CanAbsorbR(orSubArray)))
             return;
       }
       i = SRR_ERR_INDEX;
@@ -195,9 +182,9 @@ protected:
 
    //////////////////////////////////////////////////////////////////////////////
    //////////////////////////////////////////////////////////////////////////////
-   void AddFreeHole( SubArray<T>& orSubArray, int& i )
+   void AddFreeHole(SubArray<T>& orSubArray, int& i)
    {
-      rAssert( i!=SRR_ERR_INDEX );
+      rAssert(i!=SRR_ERR_INDEX);
 
    }
 
@@ -205,7 +192,7 @@ protected:
    //////////////////////////////////////////////////////////////////////////////
    void CleanFreeHoles()
    {
-      for( int i=0; i<msMaxFreeHoles; i++ )
+      for(int i=0; i<msMaxFreeHoles; i++)
       {
          mFreeFrags[i].Invalidate();
       }
@@ -215,9 +202,9 @@ protected:
    //////////////////////////////////////////////////////////////////////////////
    int InvalidFreeHole()
    {
-      for( int i=0; i<msMaxFreeHoles; i++ )
+      for(int i=0; i<msMaxFreeHoles; i++)
       {
-         if( mFreeHoles[i].IsInvalid() )
+         if(mFreeHoles[i].IsInvalid())
             return i;
       }
       return SRR_ERR_INDEX;
@@ -225,21 +212,21 @@ protected:
 
    //////////////////////////////////////////////////////////////////////////////
    //////////////////////////////////////////////////////////////////////////////
-   int IsThereSpace( int iSize )
+   int IsThereSpace(int iSize)
    {
       int svfi = SRR_ERR_INDEX;//SmallestValidFragIndex;
       int numFreeHoles = 0;
-      for( int i=0; i<msMaxFreeHoles; i++ )
+      for(int i=0; i<msMaxFreeHoles; i++)
       {
-         if( mFreeHoles[i].IsValid() )
+         if(mFreeHoles[i].IsValid())
          {
             numFreeHoles++;
-            if ( (mFreeHoles[i].mSize >= iSize) && (mFreeHoles[i].mSize <= mFreeHoles[svfi].mSize) )
+            if ((mFreeHoles[i].mSize>= iSize) && (mFreeHoles[i].mSize <= mFreeHoles[svfi].mSize))
                svfi = i;
          }
       }
 
-      if( mAllocCount < msMaxFreeHoles-1 )
+      if(mAllocCount <msMaxFreeHoles-1)
       {
          return svfi;
       }

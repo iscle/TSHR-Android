@@ -50,9 +50,8 @@
 // Return:      
 //
 //==============================================================================
-void Context::DestroyInstance()
-{
-    delete( GMA_PERSISTENT, this );
+void Context::DestroyInstance() {
+    delete (GMA_PERSISTENT, this);
 }
 
 //==============================================================================
@@ -66,9 +65,8 @@ void Context::DestroyInstance()
 // Return:      
 //
 //==============================================================================
-void Context::Start( ContextEnum previousContext )
-{
-    this->OnStart( previousContext );
+void Context::Start(ContextEnum previousContext) {
+    this->OnStart(previousContext);
 }
 
 
@@ -83,9 +81,8 @@ void Context::Start( ContextEnum previousContext )
 // Return:      
 //
 //==============================================================================
-void Context::Stop( ContextEnum nextContext )
-{
-    this->OnStop( nextContext );
+void Context::Stop(ContextEnum nextContext) {
+    this->OnStop(nextContext);
 }
 
 
@@ -100,10 +97,9 @@ void Context::Stop( ContextEnum nextContext )
 // Return:      
 //
 //==============================================================================
-void Context::Update( unsigned int elapsedTime )
-{
-    InputManager::GetInstance()->Update( elapsedTime );
-    this->OnUpdate( elapsedTime );
+void Context::Update(unsigned int elapsedTime) {
+    InputManager::GetInstance()->Update(elapsedTime);
+    this->OnUpdate(elapsedTime);
 }
 
 
@@ -118,9 +114,8 @@ void Context::Update( unsigned int elapsedTime )
 // Return:      
 //
 //==============================================================================
-void Context::HandleEvent( EventEnum id, void* pEventData )
-{
-    this->OnHandleEvent( id, pEventData );
+void Context::HandleEvent(EventEnum id, void *pEventData) {
+    this->OnHandleEvent(id, pEventData);
 }
 
 //=============================================================================
@@ -133,8 +128,7 @@ void Context::HandleEvent( EventEnum id, void* pEventData )
 // Return:      void 
 //
 //=============================================================================
-void Context::Suspend()
-{
+void Context::Suspend() {
     m_state = S_SUSPENDED;
 
     OnSuspend();
@@ -150,8 +144,7 @@ void Context::Suspend()
 // Return:      void 
 //
 //=============================================================================
-void Context::Resume()
-{
+void Context::Resume() {
     m_state = S_ACTIVE;
 
     OnResume();
@@ -175,8 +168,7 @@ void Context::Resume()
 // Return:      
 //
 //==============================================================================// 
-Context::Context()
-{
+Context::Context() {
 }
 
 
@@ -191,7 +183,6 @@ Context::Context()
 // Return:      
 //
 //==============================================================================// 
-Context::~Context()
-{
+Context::~Context() {
 }
 

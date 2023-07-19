@@ -22,8 +22,11 @@
 // Forward References
 //========================================
 class Locator;
+
 class Vehicle;
+
 class WaypointAI;
+
 class AnimatedIcon;
 
 //=============================================================================
@@ -32,68 +35,80 @@ class AnimatedIcon;
 //
 //=============================================================================
 
-class RaceObjective : public CollectibleObjective
-{
+class RaceObjective : public CollectibleObjective {
 public:
     RaceObjective();
+
     virtual ~RaceObjective();
 
-    void SetNumLaps( int numLaps );
+    void SetNumLaps(int numLaps);
+
     void SetGambleRace(bool boolean);
+
     bool QueryIsGambleRace();
+
     void SetParTime(int seconds);
+
     int GetParTime();
 
 protected:
     virtual void OnInitialize();
+
     virtual void OnInitCollectibles();
+
     virtual void OnInitCollectibleObjective();
+
     virtual void OnFinalizeCollectibleObjective();
-    virtual bool OnCollection( unsigned int collectibleNum, bool &shouldReset );
-    virtual void OnUpdateCollectibleObjective( unsigned int elapsedTimeMilliseconds );
-    
+
+    virtual bool OnCollection(unsigned int collectibleNum, bool &shouldReset);
+
+    virtual void OnUpdateCollectibleObjective(unsigned int elapsedTimeMilliseconds);
+
 private:
-    enum { MAX_RACECARS = 4 };
+    enum {
+        MAX_RACECARS = 4
+    };
 
     unsigned int mNextCollectible;
     unsigned int mNumAIVehicles;
 
-    struct RaceVehicle
-    {
-        RaceVehicle() : raceCar( NULL ), raceCarAI( NULL ), mAnimatedIcon( NULL ) {};
-        Vehicle* raceCar;
-        WaypointAI* raceCarAI;
-        AnimatedIcon* mAnimatedIcon;
+    struct RaceVehicle {
+        RaceVehicle() : raceCar(NULL), raceCarAI(NULL), mAnimatedIcon(NULL) {};
+        Vehicle *raceCar;
+        WaypointAI *raceCarAI;
+        AnimatedIcon *mAnimatedIcon;
     };
-    RaceVehicle mAIRaceCars[ MAX_RACECARS ];
+
+    RaceVehicle mAIRaceCars[MAX_RACECARS];
 
     unsigned int mMyPosition;
-    
+
     int mNumLaps;
     int mNumLapsCompleted;
-   
+
 
     //Chuck: for Gambling Races
     bool mIsGambleRace;
     int mParTime;               //used for GamlbeRaces as the time to beat
-    
-    
+
+
     bool mIsTimeTrial;
 
     RoadManager::PathElement mPlayerElem;
-    RoadSegment* mPlayerSeg;
+    RoadSegment *mPlayerSeg;
     float mPlayerSegT;
     float mPlayerRoadT;
 
-    AnimatedIcon* mFinishLine;
-    AnimatedIcon* mFinishLineEffect;
+    AnimatedIcon *mFinishLine;
+    AnimatedIcon *mFinishLineEffect;
     bool mFinishActive;
 
     void CalculatePosition();
 
     //Prevent wasteful constructor creation.
-    RaceObjective( const RaceObjective& raceobjective );
-    RaceObjective& operator=( const RaceObjective& raceobjective );
+    RaceObjective(const RaceObjective &raceobjective);
+
+    RaceObjective &operator=(const RaceObjective &raceobjective);
 };
 
 //=============================================================================
@@ -101,13 +116,12 @@ private:
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int numLaps )
+// Parameters:  (int numLaps)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RaceObjective::SetNumLaps( int numLaps )
-{
+inline void RaceObjective::SetNumLaps(int numLaps) {
     mNumLaps = numLaps;
 }
 

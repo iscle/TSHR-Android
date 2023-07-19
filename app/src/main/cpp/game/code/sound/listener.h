@@ -24,6 +24,7 @@
 //========================================
 
 struct IRadSoundHalListener;
+
 class tVectorCamera;
 
 //=============================================================================
@@ -32,23 +33,25 @@ class tVectorCamera;
 //
 //=============================================================================
 
-class Listener
-{
-    public:
-        Listener();
-        virtual ~Listener();
+class Listener {
+public:
+    Listener();
 
-        void Initialize( Sound::daSoundRenderingManager& renderMgr );
-        void Update( ContextEnum context );
+    virtual ~Listener();
 
-    private:
-        //Prevent wasteful constructor creation.
-        Listener( const Listener& original );
-        Listener& operator=( const Listener& rhs );
+    void Initialize(Sound::daSoundRenderingManager &renderMgr);
 
-        IRadSoundHalListener* m_theListener;
+    void Update(ContextEnum context);
 
-        tVectorCamera* m_feCamera;
+private:
+    //Prevent wasteful constructor creation.
+    Listener(const Listener &original);
+
+    Listener &operator=(const Listener &rhs);
+
+    IRadSoundHalListener *m_theListener;
+
+    tVectorCamera *m_feCamera;
 };
 
 

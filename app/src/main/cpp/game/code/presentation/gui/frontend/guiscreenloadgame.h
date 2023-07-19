@@ -33,55 +33,62 @@ class CGuiMenu;
 //===========================================================================
 class CGuiScreenLoadGame : public CGuiScreen,
                            public CGuiScreenLoadSave,
-                           public GameDataLoadCallback
-						   
-{
+                           public GameDataLoadCallback {
 public:
-    CGuiScreenLoadGame( Scrooby::Screen* pScreen, CGuiEntity* pParent,
-                        eGuiWindowID windowID = GUI_SCREEN_ID_LOAD_GAME );
+    CGuiScreenLoadGame(Scrooby::Screen *pScreen, CGuiEntity *pParent,
+                       eGuiWindowID windowID = GUI_SCREEN_ID_LOAD_GAME);
+
     virtual ~CGuiScreenLoadGame();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
     // Implements GameDataLoadCallback
     //
-    virtual void OnLoadGameComplete( radFileError errorCode );
-    virtual CGuiMenu* HasMenu() { return m_pMenu; }
-	
+    virtual void OnLoadGameComplete(radFileError errorCode);
+
+    virtual CGuiMenu *HasMenu() { return m_pMenu; }
+
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
 
-    void GotoMemoryCardScreen( bool isFromPrompt = false );
-    virtual void HandleErrorResponse( CGuiMenuPrompt::ePromptResponse response );
+    void InitRunning();
+
+    void InitOutro();
+
+    void GotoMemoryCardScreen(bool isFromPrompt = false);
+
+    virtual void HandleErrorResponse(CGuiMenuPrompt::ePromptResponse response);
+
     virtual void LoadGame();
 
 private:
-    CGuiMenu* m_pMenu;
-    Scrooby::Text* m_pFullText;
+    CGuiMenu *m_pMenu;
+    Scrooby::Text *m_pFullText;
     bool m_StatusPromptShown;
 };
 
-class CGuiScreenAutoLoad : public CGuiScreenLoadGame
-{
+class CGuiScreenAutoLoad : public CGuiScreenLoadGame {
 public:
-    CGuiScreenAutoLoad( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenAutoLoad(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenAutoLoad();
 
-    virtual void OnLoadGameComplete( radFileError errorCode );
+    virtual void OnLoadGameComplete(radFileError errorCode);
 
-    static void SetGameSlot( int slot ) { s_autoLoadGameSlot = slot; }
+    static void SetGameSlot(int slot) { s_autoLoadGameSlot = slot; }
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
 
-    virtual void HandleErrorResponse( CGuiMenuPrompt::ePromptResponse response );
+    void InitRunning();
+
+    void InitOutro();
+
+    virtual void HandleErrorResponse(CGuiMenuPrompt::ePromptResponse response);
+
     virtual void LoadGame();
 
 private:

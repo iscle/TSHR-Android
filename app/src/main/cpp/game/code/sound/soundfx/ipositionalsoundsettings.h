@@ -27,27 +27,26 @@
 //
 //=============================================================================
 
-class IPositionalSoundSettings : public IRefCount
-{
+class IPositionalSoundSettings : public IRefCount {
     //
     // Name of sound resource to play
     //
-    virtual void SetClipName( const char* clipName ) = 0;
+    virtual void SetClipName(const char *clipName) = 0;
 
     //
     // Distance at which volume is maxed
     //
-    virtual void SetMinDistance( float min ) = 0;
+    virtual void SetMinDistance(float min) = 0;
 
     //
     // Distance at which volume reaches zero
     //
-    virtual void SetMaxDistance( float max ) = 0;
+    virtual void SetMaxDistance(float max) = 0;
 
     //
     // Probability of sound playing
     //
-    virtual void SetPlaybackProbability( float prob ) = 0;
+    virtual void SetPlaybackProbability(float prob) = 0;
 };
 
 //*****************************************************************************

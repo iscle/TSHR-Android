@@ -20,7 +20,9 @@
 #ifdef WORLD_BUILDER
 #include "../render/DSG/IEntityDSG.h"
 #else
+
 #include <render/DSG/IEntityDSG.h>
+
 #endif //WORLD_BUILDER
 
 #include <raddebugwatch.hpp>
@@ -30,6 +32,7 @@
 //========================================
 
 class TriggerLocator;
+
 class pddiShader;
 
 //=============================================================================
@@ -41,65 +44,78 @@ class pddiShader;
 class TriggerVolume : public IEntityDSG//public tEntity
 {
 public:
-    enum Type
-    {
+    enum Type {
         SPHERE,
         RECTANGLE
     };
 
     TriggerVolume();
+
     virtual ~TriggerVolume();
 
     //Intersect tests
-    virtual bool Contains( const rmt::Vector& point, 
-                           float epsilon = 0.0f ) const = 0;
-    virtual bool IntersectsBox( const rmt::Vector& p1, 
-                                const rmt::Vector& p2, 
-                                const rmt::Vector& p3, 
-                                const rmt::Vector& p4 ) const = 0;
+    virtual bool Contains(const rmt::Vector &point,
+                          float epsilon = 0.0f) const = 0;
 
-    virtual bool IntersectsBox( const rmt::Box3D& box ) = 0;
+    virtual bool IntersectsBox(const rmt::Vector &p1,
+                               const rmt::Vector &p2,
+                               const rmt::Vector &p3,
+                               const rmt::Vector &p4) const = 0;
 
-    virtual bool IntersectsSphere( const rmt::Vector& position, 
-                                   float radius ) const = 0;
+    virtual bool IntersectsBox(const rmt::Box3D &box) = 0;
 
-    virtual bool IntersectLine( const rmt::Vector& p1, 
-                                const rmt::Vector& p2 ) const = 0;
+    virtual bool IntersectsSphere(const rmt::Vector &position,
+                                  float radius) const = 0;
 
-    virtual bool GetBoundingBox( rmt::Vector& p1, rmt::Vector& p2 ) const = 0;
+    virtual bool IntersectLine(const rmt::Vector &p1,
+                               const rmt::Vector &p2) const = 0;
+
+    virtual bool GetBoundingBox(rmt::Vector &p1, rmt::Vector &p2) const = 0;
+
     virtual Type GetType() const = 0;
 
-    TriggerLocator* GetLocator();
-    void            SetLocator( TriggerLocator* locator );
-    
-    void    SetFrameUsed( unsigned int frame, int user );
-    unsigned int GetFrameUsed() const;
-    int     GetUser() const;
+    TriggerLocator *GetLocator();
 
-    virtual void Trigger( unsigned int playerID, bool bActive );
+    void SetLocator(TriggerLocator *locator);
+
+    void SetFrameUsed(unsigned int frame, int user);
+
+    unsigned int GetFrameUsed() const;
+
+    int GetUser() const;
+
+    virtual void Trigger(unsigned int playerID, bool bActive);
+
     bool IsActive();
 
-    const rmt::Vector&  GetPosition() const;
-    void                SetPosition( const rmt::Vector& pos );
+    const rmt::Vector &GetPosition() const;
 
-    bool IsPlayerTracking( int playerID );
-    void SetTrackingPlayer( int playerID, bool on );
+    void SetPosition(const rmt::Vector &pos);
 
-    bool TriggerAllowed( int playerID );
+    bool IsPlayerTracking(int playerID);
+
+    void SetTrackingPlayer(int playerID, bool on);
+
+    bool TriggerAllowed(int playerID);
 
     //////////////////////////////////////////////////////////////////////////
     // IEntityDSG Interface
     //////////////////////////////////////////////////////////////////////////
-    void DisplayBoundingBox(tColour colour = tColour(0,255,0));
-    void DisplayBoundingSphere(tColour colour = tColour(0,255,0));
+    void DisplayBoundingBox(tColour colour = tColour(0, 255, 0));
 
-    virtual void GetBoundingBox(rmt::Box3D* box);
-    virtual void GetBoundingSphere(rmt::Sphere* sphere);
+    void DisplayBoundingSphere(tColour colour = tColour(0, 255, 0));
+
+    virtual void GetBoundingBox(rmt::Box3D *box);
+
+    virtual void GetBoundingSphere(rmt::Sphere *sphere);
+
     void Display();
 
-    rmt::Vector*       pPosition();
-    const rmt::Vector& rPosition();
-    void GetPosition( rmt::Vector* ipPosn );
+    rmt::Vector *pPosition();
+
+    const rmt::Vector &rPosition();
+
+    void GetPosition(rmt::Vector *ipPosn);
 
     // Debug drawing stuff
     void Render();
@@ -111,27 +127,30 @@ protected:
     int numVerts;
     int numFaces;
 
-    rmt::Vector* verts;
-    unsigned short* faces;
+    rmt::Vector *verts;
+    unsigned short *faces;
 #endif
 
     virtual void InitPoints() = 0;
+
     virtual void CalcPoints() = 0;
 
     void ClearPoints();
+
 private:
-    TriggerLocator* mLocator;
-    rmt::Vector     mPosition;
+    TriggerLocator *mLocator;
+    rmt::Vector mPosition;
 
     unsigned char mTrackingPlayers; //This is a bit flag.
 
     //I think these will go away.
-    unsigned int    mFrameUsed;
-    int             mUser;
+    unsigned int mFrameUsed;
+    int mUser;
 
     //Prevent wasteful constructor creation.
-    TriggerVolume( const TriggerVolume& triggervolume );
-    TriggerVolume& operator=( const TriggerVolume& triggervolume );
+    TriggerVolume(const TriggerVolume &triggervolume);
+
+    TriggerVolume &operator=(const TriggerVolume &triggervolume);
 };
 
 //******************************************************************************
@@ -150,8 +169,7 @@ private:
 // Return:      TriggerLocator
 //
 //=============================================================================
-inline TriggerLocator* TriggerVolume::GetLocator()
-{
+inline TriggerLocator *TriggerVolume::GetLocator() {
     return mLocator;
 }
 
@@ -160,15 +178,14 @@ inline TriggerLocator* TriggerVolume::GetLocator()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int frame, int user )
+// Parameters:  (unsigned int frame, int user)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void TriggerVolume::SetFrameUsed( unsigned int frame, int user )
-{
+inline void TriggerVolume::SetFrameUsed(unsigned int frame, int user) {
     mFrameUsed = frame;
-    mUser  = user;
+    mUser = user;
 }
 
 //=============================================================================
@@ -181,8 +198,7 @@ inline void TriggerVolume::SetFrameUsed( unsigned int frame, int user )
 // Return:      unsigned int 
 //
 //=============================================================================
-inline unsigned int TriggerVolume::GetFrameUsed() const
-{
+inline unsigned int TriggerVolume::GetFrameUsed() const {
     return mFrameUsed;
 }
 
@@ -196,8 +212,7 @@ inline unsigned int TriggerVolume::GetFrameUsed() const
 // Return:      int 
 //
 //=============================================================================
-inline int TriggerVolume::GetUser() const
-{
+inline int TriggerVolume::GetUser() const {
     return mUser;
 }
 
@@ -211,9 +226,8 @@ inline int TriggerVolume::GetUser() const
 // Return:      inline 
 //
 //=============================================================================
-inline const rmt::Vector& TriggerVolume::GetPosition() const
-{
-    return( mPosition );
+inline const rmt::Vector &TriggerVolume::GetPosition() const {
+    return (mPosition);
 }
 
 //=============================================================================
@@ -221,15 +235,15 @@ inline const rmt::Vector& TriggerVolume::GetPosition() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const rmt::Vector& pos )
+// Parameters:  (const rmt::Vector& pos)
 //
 // Return:      inline 
 //
 //=============================================================================
-inline void TriggerVolume::SetPosition( const rmt::Vector& pos )
-{
+inline void TriggerVolume::SetPosition(const rmt::Vector &pos) {
     mPosition = pos;
 }
+
 //========================================================================
 // triggervolume::
 //========================================================================
@@ -243,10 +257,10 @@ inline void TriggerVolume::SetPosition( const rmt::Vector& pos )
 // Constraints: None.
 //
 //========================================================================
-inline void TriggerVolume::DisplayBoundingBox(tColour colour)
-{
+inline void TriggerVolume::DisplayBoundingBox(tColour colour) {
     rAssert(false);
 }
+
 //========================================================================
 // triggervolume::
 //========================================================================
@@ -260,10 +274,10 @@ inline void TriggerVolume::DisplayBoundingBox(tColour colour)
 // Constraints: None.
 //
 //========================================================================
-inline void TriggerVolume::DisplayBoundingSphere(tColour colour)
-{
+inline void TriggerVolume::DisplayBoundingSphere(tColour colour) {
     rAssert(false);
 }
+
 //========================================================================
 // triggervolume::
 //========================================================================
@@ -277,10 +291,10 @@ inline void TriggerVolume::DisplayBoundingSphere(tColour colour)
 // Constraints: None.
 //
 //========================================================================
-inline rmt::Vector* TriggerVolume::pPosition()
-{
+inline rmt::Vector *TriggerVolume::pPosition() {
     return &mPosition;
 }
+
 //========================================================================
 // triggervolume::
 //========================================================================
@@ -294,10 +308,10 @@ inline rmt::Vector* TriggerVolume::pPosition()
 // Constraints: None.
 //
 //========================================================================
-inline const rmt::Vector& TriggerVolume::rPosition()
-{
+inline const rmt::Vector &TriggerVolume::rPosition() {
     return mPosition;
 }
+
 //========================================================================
 // triggervolume::
 //========================================================================
@@ -311,8 +325,7 @@ inline const rmt::Vector& TriggerVolume::rPosition()
 // Constraints: None.
 //
 //========================================================================
-inline void TriggerVolume::GetPosition( rmt::Vector* ipPosn )
-{
+inline void TriggerVolume::GetPosition(rmt::Vector *ipPosn) {
     *ipPosn = mPosition;
 }
 
@@ -321,15 +334,14 @@ inline void TriggerVolume::GetPosition( rmt::Vector* ipPosn )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int playerID )
+// Parameters:  (int playerID)
 //
 // Return:      bool 
 //
 //=============================================================================
-inline bool TriggerVolume::IsPlayerTracking( int playerID )
-{
-    rAssert( playerID < 32 );
-    return ( mTrackingPlayers & ( 1 << playerID ) ) != 0;
+inline bool TriggerVolume::IsPlayerTracking(int playerID) {
+    rAssert(playerID < 32);
+    return (mTrackingPlayers & (1 << playerID)) != 0;
 }
 
 //=============================================================================
@@ -337,22 +349,18 @@ inline bool TriggerVolume::IsPlayerTracking( int playerID )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int playerID, bool on )
+// Parameters:  (int playerID, bool on)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void TriggerVolume::SetTrackingPlayer( int playerID, bool on )
-{
-    rAssert( playerID < 32 );
+inline void TriggerVolume::SetTrackingPlayer(int playerID, bool on) {
+    rAssert(playerID < 32);
 
-    if ( on )
-    {
-        mTrackingPlayers |= ( 1 << playerID );
-    }
-    else
-    {
-        mTrackingPlayers &= ~( 1 << playerID );
+    if (on) {
+        mTrackingPlayers |= (1 << playerID);
+    } else {
+        mTrackingPlayers &= ~(1 << playerID);
     }
 }
 

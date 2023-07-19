@@ -32,43 +32,46 @@
 //=============================================================================
 
 class CementFileHandler : public FileHandler,
-                          public IRadCementLibraryCompletionCallback
-{
-    public:
-        CementFileHandler( LoadingManager::CementLibraryStruct* library );
-        virtual ~CementFileHandler();
+                          public IRadCementLibraryCompletionCallback {
+public:
+    CementFileHandler(LoadingManager::CementLibraryStruct *library);
 
-        //
-        // Load file asynchronously.
-        //
-        void LoadFile( const char* filename, 
-                       FileHandler::LoadFileCallback* pCallback,
-                       void* pUserData,
-                       GameMemoryAllocator heap );
+    virtual ~CementFileHandler();
 
-        //
-        // Load file synchronously (unused)
-        //
-        void LoadFileSync( const char* filename );
+    //
+    // Load file asynchronously.
+    //
+    void LoadFile(const char *filename,
+                  FileHandler::LoadFileCallback *pCallback,
+                  void *pUserData,
+                  GameMemoryAllocator heap);
 
-        //
-        // Cement file registration callback
-        //
-        void OnCementLibraryRegistered( void* pUserData );
+    //
+    // Load file synchronously (unused)
+    //
+    void LoadFileSync(const char *filename);
 
-        //
-        // Playin' fast and loose with reference counting
-        //
-        virtual void AddRef() {FileHandler::AddRef();}
-        virtual void Release() {FileHandler::Release();}
+    //
+    // Cement file registration callback
+    //
+    void OnCementLibraryRegistered(void *pUserData);
 
-    private:
-        // Prevent wasteful constructor creation.
-        CementFileHandler();
-        CementFileHandler( const CementFileHandler& original );
-        CementFileHandler& operator=( const CementFileHandler& rhs );
+    //
+    // Playin' fast and loose with reference counting
+    //
+    virtual void AddRef() { FileHandler::AddRef(); }
 
-        LoadingManager::CementLibraryStruct* m_libraryStruct;
+    virtual void Release() { FileHandler::Release(); }
+
+private:
+    // Prevent wasteful constructor creation.
+    CementFileHandler();
+
+    CementFileHandler(const CementFileHandler &original);
+
+    CementFileHandler &operator=(const CementFileHandler &rhs);
+
+    LoadingManager::CementLibraryStruct *m_libraryStruct;
 };
 
 

@@ -43,8 +43,7 @@
 // Return:      N/A.
 //
 //==============================================================================
-Potentials::Potentials()
-{
+Potentials::Potentials() {
 }
 
 //==============================================================================
@@ -57,8 +56,7 @@ Potentials::Potentials()
 // Return:      N/A.
 //
 //==============================================================================
-Potentials::~Potentials()
-{
+Potentials::~Potentials() {
 }
 
 //=============================================================================
@@ -71,12 +69,10 @@ Potentials::~Potentials()
 // Return:      void 
 //
 //=============================================================================
-void Potentials::Clear( const float value )
-{
-    for( int i = 0; i < MAX_POTENTIALS; i++ )
-    {
-        //mValues[ i ] = -rmt::Fabs(static_cast<float>( i - MAX_POTENTIALS / 2 ) / static_cast<float>( MAX_POTENTIALS ));
-        mValues[ i ] = value;
+void Potentials::Clear(const float value) {
+    for (int i = 0; i < MAX_POTENTIALS; i++) {
+        //mValues[ i ] = -rmt::Fabs(static_cast<float>(i - MAX_POTENTIALS / 2) / static_cast<float>(MAX_POTENTIALS));
+        mValues[i] = value;
     }
 }
 

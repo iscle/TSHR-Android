@@ -41,8 +41,7 @@ static const float POSITIONAL_PAUSE_BUFFER_DIST = 25.0f;
 // Return:      N/A
 //
 //=============================================================================
-PositionCarrier::PositionCarrier()
-{
+PositionCarrier::PositionCarrier() {
 }
 
 //=============================================================================
@@ -55,8 +54,7 @@ PositionCarrier::PositionCarrier()
 // Return:      N/A
 //
 //=============================================================================
-PositionCarrier::~PositionCarrier()
-{
+PositionCarrier::~PositionCarrier() {
 }
 
 //*****************************************************************************
@@ -75,14 +73,13 @@ PositionCarrier::~PositionCarrier()
 // Return:      N/A.
 //
 //=============================================================================
-PositionalSoundPlayer::PositionalSoundPlayer( ) :
-    m_positionCarrier( NULL ),
-    m_positionalSettings( NULL ),
-    m_minDist( 3.0f ),
-    m_maxDist( 100.f ),
-    m_position( 0.0f, 0.0f, 0.0f ),
-    m_outOfRange( false )
-{
+PositionalSoundPlayer::PositionalSoundPlayer() :
+        m_positionCarrier(NULL),
+        m_positionalSettings(NULL),
+        m_minDist(3.0f),
+        m_maxDist(100.f),
+        m_position(0.0f, 0.0f, 0.0f),
+        m_outOfRange(false) {
     m_Type = Type_Positional;
 }
 
@@ -96,34 +93,30 @@ PositionalSoundPlayer::PositionalSoundPlayer( ) :
 // Return:      N/A.
 //
 //=============================================================================
-PositionalSoundPlayer::~PositionalSoundPlayer()
-{
+PositionalSoundPlayer::~PositionalSoundPlayer() {
     delete m_positionCarrier;
 
-    if( m_positionalSettings != NULL )
-    {
+    if (m_positionalSettings != NULL) {
         m_positionalSettings->Release();
         m_positionalSettings = NULL;
     }
 }
 
-bool PositionalSoundPlayer::PlayResource( IDaSoundResource* resource,
-                                          SimpsonsSoundPlayerCallback* callback /* = NULL  */)
-{
+bool PositionalSoundPlayer::PlayResource(IDaSoundResource *resource,
+                                         SimpsonsSoundPlayerCallback *callback /* = NULL  */) {
     bool canPlay;
 
-    canPlay = QueueSound( resource, callback );
-    if( canPlay )
-    {
+    canPlay = QueueSound(resource, callback);
+    if (canPlay) {
         //
         // m_position should have been set in an earlier call to SetPosition.
         // If not, then it should be a moving sound and should therefore
         // get set later by the service function.
         //
-        PlayQueuedSound( m_position, callback );
+        PlayQueuedSound(m_position, callback);
     }
 
-    return( canPlay );
+    return (canPlay);
 }
 
 //=============================================================================
@@ -138,28 +131,25 @@ bool PositionalSoundPlayer::PlayResource( IDaSoundResource* resource,
 // Return:      void 
 //
 //=============================================================================
-void PositionalSoundPlayer::PlayQueuedSound( radSoundVector& position, 
-                                             SimpsonsSoundPlayerCallback* callback )
-{
+void PositionalSoundPlayer::PlayQueuedSound(radSoundVector &position,
+                                            SimpsonsSoundPlayerCallback *callback) {
     //
     // Before playing the sound, create a positional group and set the position.
     // The group is reference counted, so the player will release it when
     // the sound resource is released.
     //
-    
-    if ( m_playa )
-    {
-        radSoundVector velocity( 0.0f, 0.0f, 0.0f );
-        
-        m_playa->SetPositionAndVelocity( & position, & velocity );
-        m_playa->SetMinMaxDistance( m_minDist, m_maxDist );
+
+    if (m_playa) {
+        radSoundVector velocity(0.0f, 0.0f, 0.0f);
+
+        m_playa->SetPositionAndVelocity(&position, &velocity);
+        m_playa->SetMinMaxDistance(m_minDist, m_maxDist);
     }
 
-    SimpsonsSoundPlayer::PlayQueuedSound( callback );
+    SimpsonsSoundPlayer::PlayQueuedSound(callback);
 }
 
-void PositionalSoundPlayer::ServiceOncePerFrame()
-{
+void PositionalSoundPlayer::ServiceOncePerFrame() {
     radSoundVector position;
     radSoundVector velocity;
 
@@ -172,47 +162,39 @@ void PositionalSoundPlayer::ServiceOncePerFrame()
     //
     // Update the positional group with new vehicle position
     //
-    if( ( m_positionCarrier != NULL ) )
-    {
-        m_positionCarrier->GetPosition( position );
-        m_positionCarrier->GetVelocity( velocity );
+    if ((m_positionCarrier != NULL)) {
+        m_positionCarrier->GetPosition(position);
+        m_positionCarrier->GetVelocity(velocity);
 
-        if ( m_playa )
-        {
-            m_playa->SetPositionAndVelocity( & position, & velocity );
+        if (m_playa) {
+            m_playa->SetPositionAndVelocity(&position, &velocity);
         }
     }
 
     //
     // Do unpause/pause on players when they get in and out of range
     //
-    if( ( m_playa != NULL ) && ( m_positionalSettings != NULL ) )
-    {
-        ::radSoundHalListenerGet()->GetPosition( &listenerPosition );
-        m_playa->GetPositionalGroup()->GetPosition( &soundPosition );
+    if ((m_playa != NULL) && (m_positionalSettings != NULL)) {
+        ::radSoundHalListenerGet()->GetPosition(&listenerPosition);
+        m_playa->GetPositionalGroup()->GetPosition(&soundPosition);
         distanceVector = listenerPosition - soundPosition;
         distance = distanceVector.GetLength();
 
         positionalMax = m_positionalSettings->GetMaxDistance();
 
-        if( m_outOfRange && ( distance <= ( positionalMax + POSITIONAL_PAUSE_BUFFER_DIST ) ) )
-        {
-            if( IsPaused() )
-            {
+        if (m_outOfRange && (distance <= (positionalMax + POSITIONAL_PAUSE_BUFFER_DIST))) {
+            if (IsPaused()) {
                 Continue();
             }
             m_outOfRange = false;
-        }
-        else if( ( !m_outOfRange ) && ( distance > ( positionalMax + POSITIONAL_PAUSE_BUFFER_DIST ) ) )
-        {
+        } else if ((!m_outOfRange) && (distance > (positionalMax + POSITIONAL_PAUSE_BUFFER_DIST))) {
             Pause();
             m_outOfRange = true;
         }
     }
 }
 
-void PositionalSoundPlayer::SetPositionCarrier( PositionCarrier& movingSound )
-{
+void PositionalSoundPlayer::SetPositionCarrier(PositionCarrier &movingSound) {
     m_positionCarrier = &movingSound;
 }
 
@@ -227,17 +209,15 @@ void PositionalSoundPlayer::SetPositionCarrier( PositionCarrier& movingSound )
 // Return:      void 
 //
 //=============================================================================
-void PositionalSoundPlayer::SetParameters( positionalSoundSettings* settings )
-{
+void PositionalSoundPlayer::SetParameters(positionalSoundSettings *settings) {
     m_minDist = settings->GetMinDistance();
     m_maxDist = settings->GetMaxDistance();
 
     m_positionalSettings = settings;
     m_positionalSettings->AddRef();
 
-    if( m_playa != NULL )
-    {
-        m_playa->SetMinMaxDistance( m_minDist, m_maxDist );
+    if (m_playa != NULL) {
+        m_playa->SetMinMaxDistance(m_minDist, m_maxDist);
     }
 }
 
@@ -251,9 +231,8 @@ void PositionalSoundPlayer::SetParameters( positionalSoundSettings* settings )
 // Return:      void 
 //
 //=============================================================================
-void PositionalSoundPlayer::SetPosition( float x, float y, float z )
-{
-    m_position.SetElements( x, y, z );
+void PositionalSoundPlayer::SetPosition(float x, float y, float z) {
+    m_position.SetElements(x, y, z);
 }
 
 //*****************************************************************************
@@ -262,14 +241,12 @@ void PositionalSoundPlayer::SetPosition( float x, float y, float z )
 //
 //*****************************************************************************
 
-void PositionalSoundPlayer::dumpSoundPlayer()
-{
+void PositionalSoundPlayer::dumpSoundPlayer() {
     //
     // Get rid of the positional group
     //
 
-    if( m_positionalSettings != NULL )
-    {
+    if (m_positionalSettings != NULL) {
         m_positionalSettings->Release();
         m_positionalSettings = NULL;
     }

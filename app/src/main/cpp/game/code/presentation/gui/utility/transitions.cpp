@@ -35,15 +35,14 @@
 // Public Member Functions
 //===========================================================================
 
-namespace GuiSFX
-{
+namespace GuiSFX {
 
 #ifdef DEBUGWATCH
-    void ActivateCallback( void* userData )
+    void ActivateCallback(void* userData)
     {
-        Transition* transition = reinterpret_cast< Transition* >( userData );
-        Chainable*  chainable = dynamic_cast< Chainable* >( transition );
-        if( chainable != NULL )
+        Transition* transition = reinterpret_cast<Transition*>(userData);
+        Chainable*  chainable = dynamic_cast<Chainable*>(transition);
+        if(chainable != NULL)
         {
             chainable->ResetChain();
             chainable->Activate();
@@ -55,9 +54,9 @@ namespace GuiSFX
         }
     }
 
-    void DeativateCallback( void* userData )
+    void DeativateCallback(void* userData)
     {
-        Transition* transition = reinterpret_cast< Transition* >( userData );
+        Transition* transition = reinterpret_cast<Transition*>(userData);
         transition->Deactivate();
     }
 
@@ -73,9 +72,8 @@ namespace GuiSFX
 // Return:      N/A.
 //
 //==============================================================================
-Chainable::Chainable()
-{
-}
+    Chainable::Chainable() {
+    }
 
 //==============================================================================
 // Chainable::Chainable
@@ -87,11 +85,10 @@ Chainable::Chainable()
 // Return:      N/A.
 //
 //==============================================================================
-Chainable::Chainable( const tName& name ):
-    Transition( name )
-{
-    //CLASSTRACKER_CREATE( Chainable );
-}
+    Chainable::Chainable(const tName &name) :
+            Transition(name) {
+        //CLASSTRACKER_CREATE(Chainable);
+    }
 
 
 //==============================================================================
@@ -104,11 +101,10 @@ Chainable::Chainable( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-Chainable1::Chainable1():
-    m_NextTransition( NULL )
-{
-    //nothing
-}
+    Chainable1::Chainable1() :
+            m_NextTransition(NULL) {
+        //nothing
+    }
 
 //==============================================================================
 // Chainable1::Chainable1
@@ -120,11 +116,10 @@ Chainable1::Chainable1():
 // Return:      N/A.
 //
 //==============================================================================
-Chainable1::Chainable1( const tName& name )
-    : Chainable( name )
-{
-    //nothing
-}
+    Chainable1::Chainable1(const tName &name)
+            : Chainable(name) {
+        //nothing
+    }
 
 //==============================================================================
 // Chainable1::ContinueChain
@@ -136,14 +131,12 @@ Chainable1::Chainable1( const tName& name )
 // Return:      N/A.
 //
 //==============================================================================
-void Chainable1::ContinueChain()
-{
-    Deactivate();
-    if( m_NextTransition != NULL )
-    {
-        m_NextTransition->Activate();
+    void Chainable1::ContinueChain() {
+        Deactivate();
+        if (m_NextTransition != NULL) {
+            m_NextTransition->Activate();
+        }
     }
-}
 
 //==============================================================================
 // Chainable1::DeactivateChain
@@ -155,14 +148,12 @@ void Chainable1::ContinueChain()
 // Return:      N/A.
 //
 //==============================================================================
-void Chainable1::DeactivateChain()
-{
-    Deactivate();
-    if( m_NextTransition != NULL )
-    {
-        m_NextTransition->DeactivateChain();
+    void Chainable1::DeactivateChain() {
+        Deactivate();
+        if (m_NextTransition != NULL) {
+            m_NextTransition->DeactivateChain();
+        }
     }
-}
 
 //==============================================================================
 // Chainable1::IsChainDone
@@ -174,22 +165,19 @@ void Chainable1::DeactivateChain()
 // Return:      N/A.
 //
 //==============================================================================
-bool Chainable1::IsChainDone() const
-{
-    if( !IsDone() )
-    {
-        return false;
-    }
+    bool Chainable1::IsChainDone() const {
+        if (!IsDone()) {
+            return false;
+        }
 
-    //
-    // Yay recursion!
-    //
-    if( m_NextTransition != NULL )
-    {
-        return m_NextTransition->IsChainDone();
+        //
+        // Yay recursion!
+        //
+        if (m_NextTransition != NULL) {
+            return m_NextTransition->IsChainDone();
+        }
+        return true;
     }
-    return true;
-}
 
 //==============================================================================
 // Chainable1::operator=
@@ -201,16 +189,14 @@ bool Chainable1::IsChainDone() const
 // Return:      reference to self
 //
 //==============================================================================
-Chainable1& Chainable1::operator=( const Chainable1& right )
-{
-    if( this == &right )
-    {
+    Chainable1 &Chainable1::operator=(const Chainable1 &right) {
+        if (this == &right) {
+            return *this;
+        }
+        Transition::operator=(right);
+        m_NextTransition = right.m_NextTransition;
         return *this;
     }
-    Transition::operator=( right );
-    m_NextTransition = right.m_NextTransition;
-    return *this;
-}
 
 //==============================================================================
 // Chainable1::ResetChain
@@ -222,15 +208,27 @@ Chainable1& Chainable1::operator=( const Chainable1& right )
 // Return:      N/A.
 //
 //==============================================================================
-void Chainable1::ResetChain()
-{
-    Reset();
-    if( m_NextTransition != NULL )
-    {
-        return m_NextTransition->ResetChain();
+    void Chainable1::ResetChain() {
+        Reset();
+        if (m_NextTransition != NULL) {
+            return m_NextTransition->ResetChain();
+        }
+
     }
 
-}
+//==============================================================================
+// Chainable1::SetNextTransition
+//==============================================================================
+// Description: sets the next transition in the chain
+//
+// Parameters:	transition - the next transition to use
+//
+// Return:      N/A.
+//
+//==============================================================================
+    void Chainable1::SetNextTransition(Chainable *transition) {
+        m_NextTransition = transition;
+    }
 
 //==============================================================================
 // Chainable1::SetNextTransition
@@ -242,25 +240,9 @@ void Chainable1::ResetChain()
 // Return:      N/A.
 //
 //==============================================================================
-void Chainable1::SetNextTransition( Chainable* transition )
-{
-    m_NextTransition = transition;
-}
-
-//==============================================================================
-// Chainable1::SetNextTransition
-//==============================================================================
-// Description: sets the next transition in the chain
-//
-// Parameters:	transition - the next transition to use
-//
-// Return:      N/A.
-//
-//==============================================================================
-void Chainable1::SetNextTransition( Chainable& transition )
-{
-    m_NextTransition = &transition;
-}
+    void Chainable1::SetNextTransition(Chainable &transition) {
+        m_NextTransition = &transition;
+    }
 
 //==============================================================================
 // Chainable2::Chainable2()
@@ -272,11 +254,10 @@ void Chainable1::SetNextTransition( Chainable& transition )
 // Return:      N/A.
 //
 //==============================================================================
-Chainable2::Chainable2()
-{
-    m_NextTransition[ 0 ] = NULL;
-    m_NextTransition[ 1 ] = NULL;
-}
+    Chainable2::Chainable2() {
+        m_NextTransition[0] = NULL;
+        m_NextTransition[1] = NULL;
+    }
 
 //==============================================================================
 // Chainable2::Chainable2()
@@ -288,12 +269,11 @@ Chainable2::Chainable2()
 // Return:      N/A.
 //
 //==============================================================================
-Chainable2::Chainable2( const tName& name ):
-    Chainable( name )
-{
-    m_NextTransition[ 0 ] = NULL;
-    m_NextTransition[ 1 ] = NULL;
-}
+    Chainable2::Chainable2(const tName &name) :
+            Chainable(name) {
+        m_NextTransition[0] = NULL;
+        m_NextTransition[1] = NULL;
+    }
 
 //==============================================================================
 // Chainable2::ContinueChain()
@@ -305,18 +285,15 @@ Chainable2::Chainable2( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-void Chainable2::ContinueChain()
-{
-    Deactivate();
-    int i;
-    for( i = 0; i < 2; ++i )
-    {
-        if( m_NextTransition[ i ] != NULL )
-        {
-            m_NextTransition[ i ]->Activate();
+    void Chainable2::ContinueChain() {
+        Deactivate();
+        int i;
+        for (i = 0; i < 2; ++i) {
+            if (m_NextTransition[i] != NULL) {
+                m_NextTransition[i]->Activate();
+            }
         }
     }
-}
 
 //==============================================================================
 // Chainable2::DeactivateChain()
@@ -328,18 +305,15 @@ void Chainable2::ContinueChain()
 // Return:      N/A.
 //
 //==============================================================================
-void Chainable2::DeactivateChain()
-{
-    Deactivate();
-    int i;
-    for( i = 0; i < 2; ++i )
-    {
-        if( m_NextTransition[ i ] != NULL )
-        {
-            m_NextTransition[ i ]->DeactivateChain();
+    void Chainable2::DeactivateChain() {
+        Deactivate();
+        int i;
+        for (i = 0; i < 2; ++i) {
+            if (m_NextTransition[i] != NULL) {
+                m_NextTransition[i]->DeactivateChain();
+            }
         }
     }
-}
 
 //==============================================================================
 // Chainable2::IsChainDone
@@ -351,30 +325,25 @@ void Chainable2::DeactivateChain()
 // Return:      N/A.
 //
 //==============================================================================
-bool Chainable2::IsChainDone() const
-{
-    if( !IsDone() )
-    {
-        return false;
-    }
+    bool Chainable2::IsChainDone() const {
+        if (!IsDone()) {
+            return false;
+        }
 
-    //
-    // Yay recursion!
-    //
-    int i;
-    for( i = 0; i < 2; ++i )
-    {
-        if( m_NextTransition[ i ] != NULL )
-        {
-            bool nextDone = m_NextTransition[ i ]->IsChainDone();
-            if( !nextDone )
-            {
-                return false;
+        //
+        // Yay recursion!
+        //
+        int i;
+        for (i = 0; i < 2; ++i) {
+            if (m_NextTransition[i] != NULL) {
+                bool nextDone = m_NextTransition[i]->IsChainDone();
+                if (!nextDone) {
+                    return false;
+                }
             }
         }
+        return true;
     }
-    return true;
-}
 
 //==============================================================================
 // Chainable2::ResetChain
@@ -386,19 +355,16 @@ bool Chainable2::IsChainDone() const
 // Return:      N/A.
 //
 //==============================================================================
-void Chainable2::ResetChain()
-{
-    Reset();
-    if( m_NextTransition[ 0 ] != NULL )
-    {
-        m_NextTransition[ 0 ]->ResetChain();
-    }
+    void Chainable2::ResetChain() {
+        Reset();
+        if (m_NextTransition[0] != NULL) {
+            m_NextTransition[0]->ResetChain();
+        }
 
-    if( m_NextTransition[ 1 ] != NULL )
-    {
-        m_NextTransition[ 1 ]->ResetChain();
+        if (m_NextTransition[1] != NULL) {
+            m_NextTransition[1]->ResetChain();
+        }
     }
-}
 
 //==============================================================================
 // Chainable2::SetNextTransition
@@ -411,11 +377,10 @@ void Chainable2::ResetChain()
 // Return:      N/A.
 //
 //==============================================================================
-void Chainable2::SetNextTransition( const unsigned int index, Chainable* transition )
-{
-    rAssert( index < 2 );
-    m_NextTransition[ index ] = transition;
-}
+    void Chainable2::SetNextTransition(const unsigned int index, Chainable *transition) {
+        rAssert(index < 2);
+        m_NextTransition[index] = transition;
+    }
 
 //==============================================================================
 // Chainable2::SetNextTransition
@@ -428,10 +393,9 @@ void Chainable2::SetNextTransition( const unsigned int index, Chainable* transit
 // Return:      N/A.
 //
 //==============================================================================
-void Chainable2::SetNextTransition( const unsigned int index, Chainable& transition )
-{
-    SetNextTransition( index, &transition );
-}
+    void Chainable2::SetNextTransition(const unsigned int index, Chainable &transition) {
+        SetNextTransition(index, &transition);
+    }
 
 //==============================================================================
 // Chainable3::Chainable3()
@@ -443,12 +407,11 @@ void Chainable2::SetNextTransition( const unsigned int index, Chainable& transit
 // Return:      N/A.
 //
 //==============================================================================
-Chainable3::Chainable3()
-{
-    m_NextTransition[ 0 ] = NULL;
-    m_NextTransition[ 1 ] = NULL;
-    m_NextTransition[ 2 ] = NULL;
-}
+    Chainable3::Chainable3() {
+        m_NextTransition[0] = NULL;
+        m_NextTransition[1] = NULL;
+        m_NextTransition[2] = NULL;
+    }
 
 //==============================================================================
 // Chainable3::Chainable3()
@@ -460,13 +423,12 @@ Chainable3::Chainable3()
 // Return:      N/A.
 //
 //==============================================================================
-Chainable3::Chainable3( const tName& name ):
-    Chainable( name )
-{
-    m_NextTransition[ 0 ] = NULL;
-    m_NextTransition[ 1 ] = NULL;
-    m_NextTransition[ 2 ] = NULL;
-}
+    Chainable3::Chainable3(const tName &name) :
+            Chainable(name) {
+        m_NextTransition[0] = NULL;
+        m_NextTransition[1] = NULL;
+        m_NextTransition[2] = NULL;
+    }
 
 //==============================================================================
 // Chainable3::ContinueChain()
@@ -478,18 +440,15 @@ Chainable3::Chainable3( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-void Chainable3::ContinueChain()
-{
-    Deactivate();
-    int i;
-    for( i = 0; i < 3; ++i )
-    {
-        if( m_NextTransition[ i ] != NULL )
-        {
-            m_NextTransition[ i ]->Activate();
+    void Chainable3::ContinueChain() {
+        Deactivate();
+        int i;
+        for (i = 0; i < 3; ++i) {
+            if (m_NextTransition[i] != NULL) {
+                m_NextTransition[i]->Activate();
+            }
         }
     }
-}
 
 //==============================================================================
 // Chainable3::DeactivateChain()
@@ -501,18 +460,15 @@ void Chainable3::ContinueChain()
 // Return:      N/A.
 //
 //==============================================================================
-void Chainable3::DeactivateChain()
-{
-    Deactivate();
-    int i;
-    for( i = 0; i < 3; ++i )
-    {
-        if( m_NextTransition[ i ] != NULL )
-        {
-            m_NextTransition[ i ]->DeactivateChain();
+    void Chainable3::DeactivateChain() {
+        Deactivate();
+        int i;
+        for (i = 0; i < 3; ++i) {
+            if (m_NextTransition[i] != NULL) {
+                m_NextTransition[i]->DeactivateChain();
+            }
         }
     }
-}
 
 
 //==============================================================================
@@ -525,30 +481,25 @@ void Chainable3::DeactivateChain()
 // Return:      N/A.
 //
 //==============================================================================
-bool Chainable3::IsChainDone() const
-{
-    if( !IsDone() )
-    {
-        return false;
-    }
+    bool Chainable3::IsChainDone() const {
+        if (!IsDone()) {
+            return false;
+        }
 
-    //
-    // Yay recursion!
-    //
-    int i;
-    for( i = 0; i < 3; ++i )
-    {
-        if( m_NextTransition[ i ] != NULL )
-        {
-            bool nextDone = m_NextTransition[ i ]->IsChainDone();
-            if( !nextDone )
-            {
-                return false;
+        //
+        // Yay recursion!
+        //
+        int i;
+        for (i = 0; i < 3; ++i) {
+            if (m_NextTransition[i] != NULL) {
+                bool nextDone = m_NextTransition[i]->IsChainDone();
+                if (!nextDone) {
+                    return false;
+                }
             }
         }
+        return true;
     }
-    return true;
-}
 
 //==============================================================================
 // Chainable3::ResetChain
@@ -560,24 +511,20 @@ bool Chainable3::IsChainDone() const
 // Return:      N/A.
 //
 //==============================================================================
-void Chainable3::ResetChain()
-{
-    Reset();
-    if( m_NextTransition[ 0 ] != NULL )
-    {
-        m_NextTransition[ 0 ]->ResetChain();
-    }
+    void Chainable3::ResetChain() {
+        Reset();
+        if (m_NextTransition[0] != NULL) {
+            m_NextTransition[0]->ResetChain();
+        }
 
-    if( m_NextTransition[ 1 ] != NULL )
-    {
-        m_NextTransition[ 1 ]->ResetChain();
-    }
+        if (m_NextTransition[1] != NULL) {
+            m_NextTransition[1]->ResetChain();
+        }
 
-    if( m_NextTransition[ 2 ] != NULL )
-    {
-        m_NextTransition[ 2 ]->ResetChain();
+        if (m_NextTransition[2] != NULL) {
+            m_NextTransition[2]->ResetChain();
+        }
     }
-}
 
 //==============================================================================
 // Chainable3::SetNextTransition
@@ -590,11 +537,10 @@ void Chainable3::ResetChain()
 // Return:      N/A.
 //
 //==============================================================================
-void Chainable3::SetNextTransition( const unsigned int index, Chainable* transition )
-{
-    rAssert( index < 3 );
-    m_NextTransition[ index ] = transition;
-}
+    void Chainable3::SetNextTransition(const unsigned int index, Chainable *transition) {
+        rAssert(index < 3);
+        m_NextTransition[index] = transition;
+    }
 
 //==============================================================================
 // Chainable3::SetNextTransition
@@ -607,10 +553,9 @@ void Chainable3::SetNextTransition( const unsigned int index, Chainable* transit
 // Return:      N/A.
 //
 //==============================================================================
-void Chainable3::SetNextTransition( const unsigned int index, Chainable& transition )
-{
-    SetNextTransition( index, &transition );
-}
+    void Chainable3::SetNextTransition(const unsigned int index, Chainable &transition) {
+        SetNextTransition(index, &transition);
+    }
 
 //==============================================================================
 // ColorChange::ColorChange
@@ -622,9 +567,8 @@ void Chainable3::SetNextTransition( const unsigned int index, Chainable& transit
 // Return:      N/A.
 //
 //==============================================================================
-ColorChange::ColorChange()
-{
-}
+    ColorChange::ColorChange() {
+    }
 
 //==============================================================================
 // ColorChange::ColorChange
@@ -636,10 +580,9 @@ ColorChange::ColorChange()
 // Return:      N/A.
 //
 //==============================================================================
-ColorChange::ColorChange( const tName& name ):
-    Chainable1( name )
-{
-}
+    ColorChange::ColorChange(const tName &name) :
+            Chainable1(name) {
+    }
 
 //==============================================================================
 // ColorChange::SetStartColour
@@ -651,10 +594,9 @@ ColorChange::ColorChange( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-void ColorChange::SetStartColour( const tColour c )
-{
-    m_StartColor = c;
-}
+    void ColorChange::SetStartColour(const tColour c) {
+        m_StartColor = c;
+    }
 
 //==============================================================================
 // ColorChange::SetEndColour
@@ -666,10 +608,9 @@ void ColorChange::SetStartColour( const tColour c )
 // Return:      N/A.
 //
 //==============================================================================
-void ColorChange::SetEndColour( const tColour c )
-{
-    m_EndColor = c;
-}
+    void ColorChange::SetEndColour(const tColour c) {
+        m_EndColor = c;
+    }
 
 //==============================================================================
 // ColorChange::Update
@@ -681,27 +622,23 @@ void ColorChange::SetEndColour( const tColour c )
 // Return:      N/A.
 //
 //==============================================================================
-void ColorChange::Update( const float deltaT )
-{
-    if( this->IsActive() )
-    {
-        Transition::Update( deltaT );
-        float spillover = rmt::Max( m_ElapsedTime - m_TimeInterval, 0.0f );
-        m_ElapsedTime = rmt::Min( m_ElapsedTime, m_TimeInterval );
+    void ColorChange::Update(const float deltaT) {
+        if (this->IsActive()) {
+            Transition::Update(deltaT);
+            float spillover = rmt::Max(m_ElapsedTime - m_TimeInterval, 0.0f);
+            m_ElapsedTime = rmt::Min(m_ElapsedTime, m_TimeInterval);
 
-        float percent = m_ElapsedTime / m_TimeInterval;
-        tColour color = m_StartColor * ( 1.0f - percent ) + m_EndColor * percent;
-        if( m_Drawable != NULL )
-        {
-            m_Drawable->SetColour( color );
-        }
+            float percent = m_ElapsedTime / m_TimeInterval;
+            tColour color = m_StartColor * (1.0f - percent) + m_EndColor * percent;
+            if (m_Drawable != NULL) {
+                m_Drawable->SetColour(color);
+            }
 
-        if( spillover > 0 )
-        {
-            ContinueChain();
+            if (spillover > 0) {
+                ContinueChain();
+            }
         }
     }
-}
 
 //==============================================================================
 // ColorChange::Watch
@@ -714,13 +651,13 @@ void ColorChange::Update( const float deltaT )
 //
 //==============================================================================
 #ifdef DEBUGWATCH
-void ColorChange::Watch( const char* nameSpace )
-{
-    char output[ 1024 ];
-    sprintf( output, "%s\\%s", nameSpace, m_Name.GetText() );
-    Parent1::Watch( output );
-    Parent2::Watch( output );
-}
+    void ColorChange::Watch(const char* nameSpace)
+    {
+        char output[ 1024 ];
+        sprintf(output, "%s\\%s", nameSpace, m_Name.GetText());
+        Parent1::Watch(output);
+        Parent2::Watch(output);
+    }
 #endif
 
 //==============================================================================
@@ -733,9 +670,8 @@ void ColorChange::Watch( const char* nameSpace )
 // Return:      N/A.
 //
 //==============================================================================
-Dummy::Dummy()
-{
-}
+    Dummy::Dummy() {
+    }
 
 //==============================================================================
 // Dummy::Dummy
@@ -747,10 +683,9 @@ Dummy::Dummy()
 // Return:      N/A.
 //
 //==============================================================================
-Dummy::Dummy( const tName& name ):
-    Parent( name )
-{
-}
+    Dummy::Dummy(const tName &name) :
+            Parent(name) {
+    }
 
 //==============================================================================
 // Dummy::Activate
@@ -762,11 +697,10 @@ Dummy::Dummy( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-void Dummy::Activate()
-{
-    Parent::Activate();
-    ContinueChain();
-}
+    void Dummy::Activate() {
+        Parent::Activate();
+        ContinueChain();
+    }
 
 //=============================================================================
 // GotoScreen::GotoScreen()
@@ -778,14 +712,13 @@ void Dummy::Activate()
 // Return:      N/A.
 //
 //=============================================================================
-GotoScreen::GotoScreen():
-    mScreen( CGuiWindow::GUI_WINDOW_ID_UNDEFINED ),
-    mParam1( 0 ),
-    mParam2( 0 ),
-    mWindowOptions( 0 )
-{
-    //nothing
-}
+    GotoScreen::GotoScreen() :
+            mScreen(CGuiWindow::GUI_WINDOW_ID_UNDEFINED),
+            mParam1(0),
+            mParam2(0),
+            mWindowOptions(0) {
+        //nothing
+    }
 
 //=============================================================================
 // GotoScreen::GotoScreen()
@@ -797,15 +730,14 @@ GotoScreen::GotoScreen():
 // Return:      N/A.
 //
 //=============================================================================
-GotoScreen::GotoScreen( const tName& name ):
-    Parent( name ),
-    mScreen( CGuiWindow::GUI_WINDOW_ID_UNDEFINED ),
-    mParam1( 0 ),
-    mParam2( 0 ),
-    mWindowOptions( 0 )
-{
-    //nothing
-}
+    GotoScreen::GotoScreen(const tName &name) :
+            Parent(name),
+            mScreen(CGuiWindow::GUI_WINDOW_ID_UNDEFINED),
+            mParam1(0),
+            mParam2(0),
+            mWindowOptions(0) {
+        //nothing
+    }
 
 //=============================================================================
 // SendEvent::Activate()
@@ -817,13 +749,12 @@ GotoScreen::GotoScreen( const tName& name ):
 // Return:      N/A.
 //
 //=============================================================================
-void GotoScreen::Activate()
-{
-    Transition::Activate();
-    rAssert( mScreen != CGuiWindow::GUI_WINDOW_ID_UNDEFINED );
-    GetGuiSystem()->GotoScreen( mScreen, mParam1, mParam2, mWindowOptions );
-    ContinueChain();
-}
+    void GotoScreen::Activate() {
+        Transition::Activate();
+        rAssert(mScreen != CGuiWindow::GUI_WINDOW_ID_UNDEFINED);
+        GetGuiSystem()->GotoScreen(mScreen, mParam1, mParam2, mWindowOptions);
+        ContinueChain();
+    }
 
 //=============================================================================
 // SendEvent::SetEventData
@@ -835,10 +766,9 @@ void GotoScreen::Activate()
 // Return:      N/A.
 //
 //=============================================================================
-void GotoScreen::SetEventData( void* eventData )
-{
-    mEventData = eventData;
-}
+    void GotoScreen::SetEventData(void *eventData) {
+        mEventData = eventData;
+    }
 
 //=============================================================================
 // GotoScreen::SetParam1
@@ -850,10 +780,9 @@ void GotoScreen::SetEventData( void* eventData )
 // Return:      N/A.
 //
 //=============================================================================
-void GotoScreen::SetParam1( const unsigned int param1 )
-{
-    mParam1 = param1;
-}
+    void GotoScreen::SetParam1(const unsigned int param1) {
+        mParam1 = param1;
+    }
 
 //=============================================================================
 // GotoScreen::SetParam2
@@ -865,10 +794,9 @@ void GotoScreen::SetParam1( const unsigned int param1 )
 // Return:      N/A.
 //
 //=============================================================================
-void GotoScreen::SetParam2( const unsigned int param2 )
-{
-    mParam2 = param2;
-}
+    void GotoScreen::SetParam2(const unsigned int param2) {
+        mParam2 = param2;
+    }
 
 //=============================================================================
 // SendEvent::SetEvent
@@ -880,10 +808,9 @@ void GotoScreen::SetParam2( const unsigned int param2 )
 // Return:      N/A.
 //
 //=============================================================================
-void GotoScreen::SetScreen( CGuiWindow::eGuiWindowID screen )
-{
-    mScreen = screen;
-}
+    void GotoScreen::SetScreen(CGuiWindow::eGuiWindowID screen) {
+        mScreen = screen;
+    }
 
 //=============================================================================
 // GotoScreen::SetWindowOptions
@@ -895,10 +822,9 @@ void GotoScreen::SetScreen( CGuiWindow::eGuiWindowID screen )
 // Return:      N/A.
 //
 //=============================================================================
-void GotoScreen::SetWindowOptions( const unsigned int windowOptions )
-{
-    mWindowOptions = windowOptions;
-}
+    void GotoScreen::SetWindowOptions(const unsigned int windowOptions) {
+        mWindowOptions = windowOptions;
+    }
 
 //==============================================================================
 // HasMulticontroller::ResetMultiControllerFrames
@@ -911,10 +837,9 @@ void GotoScreen::SetWindowOptions( const unsigned int windowOptions )
 // Return:      N/A.
 //
 //==============================================================================
-void HasMulticontroller::ResetMultiControllerFrames()
-{
-    m_MultiController->SetFrameRange( 0.0f, m_NumFrames );
-}
+    void HasMulticontroller::ResetMultiControllerFrames() {
+        m_MultiController->SetFrameRange(0.0f, m_NumFrames);
+    }
 
 //==============================================================================
 // HasMulticontroller::SetMultiController
@@ -926,11 +851,10 @@ void HasMulticontroller::ResetMultiControllerFrames()
 // Return:      N/A.
 //
 //==============================================================================
-void HasMulticontroller::SetMultiController( tMultiController* multicontroller )
-{
-    m_MultiController = multicontroller;
-    m_NumFrames = m_MultiController->GetNumFrames();
-}
+    void HasMulticontroller::SetMultiController(tMultiController *multicontroller) {
+        m_MultiController = multicontroller;
+        m_NumFrames = m_MultiController->GetNumFrames();
+    }
 
 //==============================================================================
 // HasTimeInterval::HasTimeInterval
@@ -942,11 +866,10 @@ void HasMulticontroller::SetMultiController( tMultiController* multicontroller )
 // Return:      N/A.
 //
 //==============================================================================
-HasTimeInterval::HasTimeInterval():
-    m_TimeInterval( 1000.0f )
-{
-    //nothing
-}
+    HasTimeInterval::HasTimeInterval() :
+            m_TimeInterval(1000.0f) {
+        //nothing
+    }
 
 //==============================================================================
 // HasTimeInterval::SetTimeInterval
@@ -958,10 +881,9 @@ HasTimeInterval::HasTimeInterval():
 // Return:      N/A.
 //
 //==============================================================================
-void HasTimeInterval::SetTimeInterval( const float interval )
-{
-    m_TimeInterval = interval;
-}
+    void HasTimeInterval::SetTimeInterval(const float interval) {
+        m_TimeInterval = interval;
+    }
 
 //==============================================================================
 // HasTimeInterval::Watch
@@ -974,11 +896,11 @@ void HasTimeInterval::SetTimeInterval( const float interval )
 //
 //==============================================================================
 #ifdef DEBUGWATCH
-void HasTimeInterval::Watch( const char* nameSpace )
-{
-    radDbgWatchDelete( &m_TimeInterval   );
-    radDbgWatchAddFloat( &m_TimeInterval, "timeInterval", nameSpace, NULL, NULL, 0.0f, 1000.0f );
-}
+    void HasTimeInterval::Watch(const char* nameSpace)
+    {
+        radDbgWatchDelete(&m_TimeInterval);
+        radDbgWatchAddFloat(&m_TimeInterval, "timeInterval", nameSpace, NULL, NULL, 0.0f, 1000.0f);
+    }
 #endif
 
 //==============================================================================
@@ -991,10 +913,9 @@ void HasTimeInterval::Watch( const char* nameSpace )
 // Return:      N/A.
 //
 //==============================================================================
-Hide::Hide()
-{
-    //nothing
-}
+    Hide::Hide() {
+        //nothing
+    }
 
 //==============================================================================
 // Hide::Hide
@@ -1006,10 +927,9 @@ Hide::Hide()
 // Return:      N/A.
 //
 //==============================================================================
-Hide::Hide( const tName& name ):
-    Chainable1( name )
-{
-}
+    Hide::Hide(const tName &name) :
+            Chainable1(name) {
+    }
 
 //==============================================================================
 // Hide::Activate
@@ -1021,16 +941,14 @@ Hide::Hide( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-void Hide::Activate()
-{
-    Transition::Activate();
-    rAssert( m_Drawable != NULL );
-    if( m_Drawable != NULL )
-    {
-        m_Drawable->SetVisible( false );
+    void Hide::Activate() {
+        Transition::Activate();
+        rAssert(m_Drawable != NULL);
+        if (m_Drawable != NULL) {
+            m_Drawable->SetVisible(false);
+        }
+        ContinueChain();
     }
-    ContinueChain();
-}
 
 //==============================================================================
 // ImageCycler::SetDrawable
@@ -1042,12 +960,11 @@ void Hide::Activate()
 // Return:      N/A.
 //
 //==============================================================================
-void ImageCycler::SetDrawable( Scrooby::Drawable* drawable )
-{
-    Transition::SetDrawable( drawable );
-    m_Sprite = dynamic_cast< Scrooby::Sprite* >( m_Drawable );
-    rAssert( m_Sprite != NULL );
-}
+    void ImageCycler::SetDrawable(Scrooby::Drawable *drawable) {
+        Transition::SetDrawable(drawable);
+        m_Sprite = dynamic_cast<Scrooby::Sprite *>(m_Drawable);
+        rAssert(m_Sprite != NULL);
+    }
 
 //==============================================================================
 // ImageCycler::SetDrawable
@@ -1059,12 +976,11 @@ void ImageCycler::SetDrawable( Scrooby::Drawable* drawable )
 // Return:      N/A.
 //
 //==============================================================================
-void ImageCycler::SetDrawable( Scrooby::Drawable& drawable )
-{
-    Transition::SetDrawable( drawable );
-    m_Sprite = dynamic_cast< Scrooby::Sprite* >( m_Drawable );
-    rAssert( m_Sprite != NULL );
-}
+    void ImageCycler::SetDrawable(Scrooby::Drawable &drawable) {
+        Transition::SetDrawable(drawable);
+        m_Sprite = dynamic_cast<Scrooby::Sprite *>(m_Drawable);
+        rAssert(m_Sprite != NULL);
+    }
 
 //==============================================================================
 // InputStateChange::InputStateChange
@@ -1076,12 +992,11 @@ void ImageCycler::SetDrawable( Scrooby::Drawable& drawable )
 // Return:      N/A.
 //
 //==============================================================================
-InputStateChange::InputStateChange():
-    Parent(),
-    mState( Input::ACTIVE_NONE )
-{
-    //nothing
-}
+    InputStateChange::InputStateChange() :
+            Parent(),
+            mState(Input::ACTIVE_NONE) {
+        //nothing
+    }
 
 //==============================================================================
 // InputStateChange::InputStateChange
@@ -1093,12 +1008,11 @@ InputStateChange::InputStateChange():
 // Return:      N/A.
 //
 //==============================================================================
-InputStateChange::InputStateChange( const tName& name ):
-    Parent( name ),
-    mState( Input::ACTIVE_NONE )
-{
-    //nothing
-}
+    InputStateChange::InputStateChange(const tName &name) :
+            Parent(name),
+            mState(Input::ACTIVE_NONE) {
+        //nothing
+    }
 
 //==============================================================================
 // InputStateChange::Activate
@@ -1110,12 +1024,11 @@ InputStateChange::InputStateChange( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-void InputStateChange::Activate()
-{
-    Parent::Activate();
-    InputManager::GetInstance()->SetGameState( mState );
-    ContinueChain();
-}
+    void InputStateChange::Activate() {
+        Parent::Activate();
+        InputManager::GetInstance()->SetGameState(mState);
+        ContinueChain();
+    }
 
 //==============================================================================
 // InputStateChange::SetState
@@ -1127,10 +1040,9 @@ void InputStateChange::Activate()
 // Return:      N/A.
 //
 //==============================================================================
-void InputStateChange::SetState( const Input::ActiveState state )
-{
-    mState = state;
-}
+    void InputStateChange::SetState(const Input::ActiveState state) {
+        mState = state;
+    }
 
 //==============================================================================
 // IrisWipeClose::IrisWipeClose
@@ -1142,10 +1054,9 @@ void InputStateChange::SetState( const Input::ActiveState state )
 // Return:      N/A.
 //
 //==============================================================================
-IrisWipeClose::IrisWipeClose()
-{
-    //none
-}
+    IrisWipeClose::IrisWipeClose() {
+        //none
+    }
 
 //==============================================================================
 // IrisWipeClose::IrisWipeClose
@@ -1157,11 +1068,10 @@ IrisWipeClose::IrisWipeClose()
 // Return:      N/A.
 //
 //==============================================================================
-IrisWipeClose::IrisWipeClose( const tName& name ):
-    Chainable1( name )
-{
-    //none
-}
+    IrisWipeClose::IrisWipeClose(const tName &name) :
+            Chainable1(name) {
+        //none
+    }
 
 //==============================================================================
 // IrisWipeClose::Activate
@@ -1173,18 +1083,16 @@ IrisWipeClose::IrisWipeClose( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-void IrisWipeClose::Activate()
-{
-    m_MultiController->Reset();
-    m_MultiController->SetFrameRange( 0, m_NumFrames * 0.5f );
-    m_MultiController->SetFrame( 0 );
-    Chainable1::Activate();
-}
+    void IrisWipeClose::Activate() {
+        m_MultiController->Reset();
+        m_MultiController->SetFrameRange(0, m_NumFrames * 0.5f);
+        m_MultiController->SetFrame(0);
+        Chainable1::Activate();
+    }
 
-void IrisWipeClose::Deactivate()
-{
-    Chainable1::Deactivate();
-}
+    void IrisWipeClose::Deactivate() {
+        Chainable1::Deactivate();
+    }
 
 //==============================================================================
 // IrisWipeOpen::Update
@@ -1196,22 +1104,18 @@ void IrisWipeClose::Deactivate()
 // Return:      N/A.
 //
 //==============================================================================
-void IrisWipeClose::Update( const float deltaT )
-{
-    if( IsActive() )
-    {
-        Chainable1::Update( deltaT );
-        if( m_MultiController != NULL )
-        {
-            if( m_MultiController->LastFrameReached() )
-            {
-                m_MultiController->SetFrameRange( 0.0f, m_NumFrames );
-                ResetMultiControllerFrames();
-                ContinueChain();
+    void IrisWipeClose::Update(const float deltaT) {
+        if (IsActive()) {
+            Chainable1::Update(deltaT);
+            if (m_MultiController != NULL) {
+                if (m_MultiController->LastFrameReached()) {
+                    m_MultiController->SetFrameRange(0.0f, m_NumFrames);
+                    ResetMultiControllerFrames();
+                    ContinueChain();
+                }
             }
         }
     }
-}
 
 //==============================================================================
 // IrisWipeOpen::IrisWipeOpen
@@ -1223,10 +1127,9 @@ void IrisWipeClose::Update( const float deltaT )
 // Return:      N/A.
 //
 //==============================================================================
-IrisWipeOpen::IrisWipeOpen()
-{
-    //none
-}
+    IrisWipeOpen::IrisWipeOpen() {
+        //none
+    }
 
 //==============================================================================
 // IrisWipeOpen::IrisWipeOpen
@@ -1238,11 +1141,10 @@ IrisWipeOpen::IrisWipeOpen()
 // Return:      N/A.
 //
 //==============================================================================
-IrisWipeOpen::IrisWipeOpen( const tName& name ):
-    Chainable1( name )
-{
-    //none
-}
+    IrisWipeOpen::IrisWipeOpen(const tName &name) :
+            Chainable1(name) {
+        //none
+    }
 
 //==============================================================================
 // IrisWipeOpen::Activate
@@ -1254,17 +1156,16 @@ IrisWipeOpen::IrisWipeOpen( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-void IrisWipeOpen::Activate()
-{
-    tMultiController* multiController = p3d::find< tMultiController >( "IrisController" );
-    rAssert( m_MultiController != NULL );
-    SetMultiController( multiController );
+    void IrisWipeOpen::Activate() {
+        tMultiController *multiController = p3d::find<tMultiController>("IrisController");
+        rAssert(m_MultiController != NULL);
+        SetMultiController(multiController);
 
-    m_MultiController->Reset();
-    m_MultiController->SetFrameRange( m_NumFrames * 0.5f, m_NumFrames );
-    m_MultiController->SetFrame( m_NumFrames * 0.5f );
-    Chainable1::Activate();
-}
+        m_MultiController->Reset();
+        m_MultiController->SetFrameRange(m_NumFrames * 0.5f, m_NumFrames);
+        m_MultiController->SetFrame(m_NumFrames * 0.5f);
+        Chainable1::Activate();
+    }
 
 //==============================================================================
 // IrisWipeOpen::Update
@@ -1276,18 +1177,15 @@ void IrisWipeOpen::Activate()
 // Return:      N/A.
 //
 //==============================================================================
-void IrisWipeOpen::Update( const float deltaT )
-{
-    if( IsActive() )
-    {
-        if( m_MultiController->LastFrameReached() )
-        {
-            m_MultiController->SetFrameRange( 0.0f, m_NumFrames );
-            ResetMultiControllerFrames();
-            ContinueChain();
+    void IrisWipeOpen::Update(const float deltaT) {
+        if (IsActive()) {
+            if (m_MultiController->LastFrameReached()) {
+                m_MultiController->SetFrameRange(0.0f, m_NumFrames);
+                ResetMultiControllerFrames();
+                ContinueChain();
+            }
         }
     }
-}
 
 //==============================================================================
 // ImageCycler::SetPeriod
@@ -1299,10 +1197,9 @@ void IrisWipeOpen::Update( const float deltaT )
 // Return:      N/A.
 //
 //==============================================================================
-void ImageCycler::SetPeriod( const float period )
-{
-    m_Period = period;
-}
+    void ImageCycler::SetPeriod(const float period) {
+        m_Period = period;
+    }
 
 //==============================================================================
 // ImageCycler::Update
@@ -1314,20 +1211,17 @@ void ImageCycler::SetPeriod( const float period )
 // Return:      N/A.
 //
 //==============================================================================
-void ImageCycler::Update( const float deltaT )
-{
-    if( IsActive() )
-    {
-        Transition::Update( deltaT );
-        if( m_Sprite != NULL )
-        {
-            int nubmerOfStates = m_Sprite->GetNumOfImages();
-            int periodsElapsed = static_cast< int >( m_ElapsedTime / m_Period );
-            int imageNumber = periodsElapsed % nubmerOfStates;
-            m_Sprite->SetIndex( imageNumber );
+    void ImageCycler::Update(const float deltaT) {
+        if (IsActive()) {
+            Transition::Update(deltaT);
+            if (m_Sprite != NULL) {
+                int nubmerOfStates = m_Sprite->GetNumOfImages();
+                int periodsElapsed = static_cast<int>(m_ElapsedTime / m_Period);
+                int imageNumber = periodsElapsed % nubmerOfStates;
+                m_Sprite->SetIndex(imageNumber);
+            }
         }
     }
-}
 
 //==============================================================================
 // Junction2::Activate()
@@ -1339,10 +1233,9 @@ void ImageCycler::Update( const float deltaT )
 // Return:      N/A.
 //
 //==============================================================================
-void Junction2::Activate()
-{
-    ContinueChain();
-}
+    void Junction2::Activate() {
+        ContinueChain();
+    }
 
 //==============================================================================
 // Junction3::Activate()
@@ -1354,10 +1247,9 @@ void Junction2::Activate()
 // Return:      N/A.
 //
 //==============================================================================
-void Junction3::Activate()
-{
-    ContinueChain();
-}
+    void Junction3::Activate() {
+        ContinueChain();
+    }
 
 //==============================================================================
 // Pause::Pause
@@ -1369,10 +1261,9 @@ void Junction3::Activate()
 // Return:      N/A.
 //
 //==============================================================================
-Pause::Pause()
-{
-    //nothing
-}
+    Pause::Pause() {
+        //nothing
+    }
 
 //==============================================================================
 // Pause::Pause
@@ -1384,10 +1275,9 @@ Pause::Pause()
 // Return:      N/A.
 //
 //==============================================================================
-Pause::Pause( const tName& name ):
-    Chainable1( name )
-{
-}
+    Pause::Pause(const tName &name) :
+            Chainable1(name) {
+    }
 
 //==============================================================================
 // Pause::Update
@@ -1399,19 +1289,16 @@ Pause::Pause( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-void Pause::Update( const float deltaT )
-{
-    if( IsActive() )
-    {
-        Transition::Update( deltaT );
-        float spillover = rmt::Max( m_ElapsedTime - m_TimeInterval, 0.0f );
-        m_ElapsedTime = rmt::Min( m_ElapsedTime, m_TimeInterval );
-        if( spillover > 0 )
-        {
-            ContinueChain();
+    void Pause::Update(const float deltaT) {
+        if (IsActive()) {
+            Transition::Update(deltaT);
+            float spillover = rmt::Max(m_ElapsedTime - m_TimeInterval, 0.0f);
+            m_ElapsedTime = rmt::Min(m_ElapsedTime, m_TimeInterval);
+            if (spillover > 0) {
+                ContinueChain();
+            }
         }
     }
-}
 
 //=============================================================================
 // Pause::Watch
@@ -1424,13 +1311,13 @@ void Pause::Update( const float deltaT )
 //
 //=============================================================================
 #ifdef DEBUGWATCH
-void Pause::Watch( const char* nameSpace )
-{
-    char output[ 1024 ];
-    sprintf( output, "%s\\%s", nameSpace, m_Name.GetText() );
-    Parent1::Watch( output );
-    Parent2::Watch( output );
-}
+    void Pause::Watch(const char* nameSpace)
+    {
+        char output[ 1024 ];
+        sprintf(output, "%s\\%s", nameSpace, m_Name.GetText());
+        Parent1::Watch(output);
+        Parent2::Watch(output);
+    }
 #endif
 
 //==============================================================================
@@ -1443,12 +1330,11 @@ void Pause::Watch( const char* nameSpace )
 // Return:      N/A.
 //
 //==============================================================================
-PauseInFrames::PauseInFrames():
-    m_FramesToPause( 1 ),
-    m_FramesElapsed( 0 )
-{
-    //nothing
-}
+    PauseInFrames::PauseInFrames() :
+            m_FramesToPause(1),
+            m_FramesElapsed(0) {
+        //nothing
+    }
 
 //==============================================================================
 // Pause::Pause
@@ -1460,13 +1346,12 @@ PauseInFrames::PauseInFrames():
 // Return:      N/A.
 //
 //==============================================================================
-PauseInFrames::PauseInFrames( const tName& name ):
-    Parent( name ),
-    m_FramesToPause( 1 ),
-    m_FramesElapsed( 0 )
-{
-    //nothing
-}
+    PauseInFrames::PauseInFrames(const tName &name) :
+            Parent(name),
+            m_FramesToPause(1),
+            m_FramesElapsed(0) {
+        //nothing
+    }
 
 //==============================================================================
 // PauseInFrames::Reset
@@ -1478,11 +1363,10 @@ PauseInFrames::PauseInFrames( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-void PauseInFrames::Reset()
-{
-    Parent::Reset();
-    m_FramesElapsed = 0;
-}
+    void PauseInFrames::Reset() {
+        Parent::Reset();
+        m_FramesElapsed = 0;
+    }
 
 //==============================================================================
 // PauseInFrames::SetNumberOfFrames
@@ -1494,10 +1378,9 @@ void PauseInFrames::Reset()
 // Return:      N/A.
 //
 //==============================================================================
-void PauseInFrames::SetNumberOfFrames( const unsigned int i )
-{
-    m_FramesToPause = i;
-}
+    void PauseInFrames::SetNumberOfFrames(const unsigned int i) {
+        m_FramesToPause = i;
+    }
 
 //==============================================================================
 // PauseInFrames::Update
@@ -1509,23 +1392,19 @@ void PauseInFrames::SetNumberOfFrames( const unsigned int i )
 // Return:      N/A.
 //
 //==============================================================================
-void PauseInFrames::Update( const float deltaT )
-{
-    if( IsActive() )
-    {
-        Parent::Update( deltaT );
+    void PauseInFrames::Update(const float deltaT) {
+        if (IsActive()) {
+            Parent::Update(deltaT);
 
-        if( deltaT > 0.0f )
-        {
-            ++m_FramesElapsed;
-        }
+            if (deltaT > 0.0f) {
+                ++m_FramesElapsed;
+            }
 
-        if( m_FramesElapsed == m_FramesToPause )
-        {
-            ContinueChain();
+            if (m_FramesElapsed == m_FramesToPause) {
+                ContinueChain();
+            }
         }
     }
-}
 
 //==============================================================================
 // PauseGame::Activate
@@ -1537,11 +1416,10 @@ void PauseInFrames::Update( const float deltaT )
 // Return:      N/A.
 //
 //==============================================================================
-void PauseGame::Activate()
-{
-    GameplayContext::GetInstance()->PauseAllButPresentation( true );
-    ContinueChain();
-}
+    void PauseGame::Activate() {
+        GameplayContext::GetInstance()->PauseAllButPresentation(true);
+        ContinueChain();
+    }
 
 //==============================================================================
 // PulseScale::PulseScale
@@ -1553,13 +1431,12 @@ void PauseGame::Activate()
 // Return:      N/A.
 //
 //==============================================================================
-PulseScale::PulseScale():
-    Transition(),
-    m_BoundedDrawable( NULL ),
-    m_Amplitude( 0.25f ),
-    m_Frequency( 5.0f )
-{
-}
+    PulseScale::PulseScale() :
+            Transition(),
+            m_BoundedDrawable(NULL),
+            m_Amplitude(0.25f),
+            m_Frequency(5.0f) {
+    }
 
 //==============================================================================
 // PulseScale::PulseScale
@@ -1571,13 +1448,12 @@ PulseScale::PulseScale():
 // Return:      N/A.
 //
 //==============================================================================
-PulseScale::PulseScale( const tName& name ):
-    Transition( name ),
-    m_BoundedDrawable( NULL ),
-    m_Amplitude( 0.25f ),
-    m_Frequency( 5.0f )
-{
-}
+    PulseScale::PulseScale(const tName &name) :
+            Transition(name),
+            m_BoundedDrawable(NULL),
+            m_Amplitude(0.25f),
+            m_Frequency(5.0f) {
+    }
 
 //==============================================================================
 // PulseScale::MovesDrawable
@@ -1589,10 +1465,9 @@ PulseScale::PulseScale( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-bool PulseScale::MovesDrawable() const
-{
-    return true;
-}
+    bool PulseScale::MovesDrawable() const {
+        return true;
+    }
 
 //==============================================================================
 // PulseScale::SetAmplitude
@@ -1604,10 +1479,9 @@ bool PulseScale::MovesDrawable() const
 // Return:      N/A.
 //
 //==============================================================================
-void PulseScale::SetAmplitude( const float amplitude )
-{
-    m_Amplitude = amplitude;
-}
+    void PulseScale::SetAmplitude(const float amplitude) {
+        m_Amplitude = amplitude;
+    }
 
 //==============================================================================
 // PulseScale::SetDrawable
@@ -1619,12 +1493,11 @@ void PulseScale::SetAmplitude( const float amplitude )
 // Return:      N/A.
 //
 //==============================================================================
-void PulseScale::SetDrawable( Scrooby::Drawable& drawable )
-{
-    Transition::SetDrawable( drawable );
-    m_BoundedDrawable = dynamic_cast< Scrooby::BoundedDrawable* >( m_Drawable );
-    rAssert( m_BoundedDrawable != NULL );
-}
+    void PulseScale::SetDrawable(Scrooby::Drawable &drawable) {
+        Transition::SetDrawable(drawable);
+        m_BoundedDrawable = dynamic_cast<Scrooby::BoundedDrawable *>(m_Drawable);
+        rAssert(m_BoundedDrawable != NULL);
+    }
 
 //==============================================================================
 // PulseScale::SetDrawable
@@ -1636,12 +1509,11 @@ void PulseScale::SetDrawable( Scrooby::Drawable& drawable )
 // Return:      N/A.
 //
 //==============================================================================
-void PulseScale::SetDrawable( Scrooby::Drawable* drawable )
-{
-    Transition::SetDrawable( drawable );
-    m_BoundedDrawable = dynamic_cast< Scrooby::HasBoundingBox* >( m_Drawable );
-    rAssert( m_BoundedDrawable != NULL );
-}
+    void PulseScale::SetDrawable(Scrooby::Drawable *drawable) {
+        Transition::SetDrawable(drawable);
+        m_BoundedDrawable = dynamic_cast<Scrooby::HasBoundingBox *>(m_Drawable);
+        rAssert(m_BoundedDrawable != NULL);
+    }
 
 //==============================================================================
 // Pulse::SetFrequency
@@ -1653,10 +1525,9 @@ void PulseScale::SetDrawable( Scrooby::Drawable* drawable )
 // Return:      N/A.
 //
 //==============================================================================
-void PulseScale::SetFrequency( const float frequency )
-{
-    m_Frequency = frequency;
-}
+    void PulseScale::SetFrequency(const float frequency) {
+        m_Frequency = frequency;
+    }
 
 //=============================================================================
 // Pulse::Update
@@ -1668,18 +1539,16 @@ void PulseScale::SetFrequency( const float frequency )
 // Return:      N/A.
 //
 //=============================================================================
-void PulseScale::Update( const float deltaT )
-{
-    if( IsActive() )
-    {
-        Transition::Update( deltaT );
-        float period = 1000.0f / m_Frequency;
-        m_ElapsedTime = fmodf( m_ElapsedTime, period );
-        float sin = rmt::Sin( m_ElapsedTime * m_Frequency / 1000.0f * rmt::PI * 2 );
-        float scale = sin * m_Amplitude + 1.0f;
-        m_BoundedDrawable->ScaleAboutCenter( scale );
+    void PulseScale::Update(const float deltaT) {
+        if (IsActive()) {
+            Transition::Update(deltaT);
+            float period = 1000.0f / m_Frequency;
+            m_ElapsedTime = fmodf(m_ElapsedTime, period);
+            float sin = rmt::Sin(m_ElapsedTime * m_Frequency / 1000.0f * rmt::PI * 2);
+            float scale = sin * m_Amplitude + 1.0f;
+            m_BoundedDrawable->ScaleAboutCenter(scale);
+        }
     }
-}
 
 //=============================================================================
 // PulseScale::Watch
@@ -1692,16 +1561,16 @@ void PulseScale::Update( const float deltaT )
 //
 //=============================================================================
 #ifdef DEBUGWATCH
-void PulseScale::Watch( const char* nameSpace )
-{
-    Parent::Watch( nameSpace );
-    char output[ 1024 ];
-    sprintf( output, "%s\\%s", nameSpace, m_Name.GetText() );
-    radDbgWatchDelete( &m_Amplitude );
-    radDbgWatchDelete( &m_Frequency );
-    radDbgWatchAddFloat( &m_Amplitude, "Amplitude", output, NULL, NULL, 0.0f, 1.0f );
-    radDbgWatchAddFloat( &m_Frequency, "Frequency", output, NULL, NULL, 0.0f, rmt::PI * 4 );
-}
+    void PulseScale::Watch(const char* nameSpace)
+    {
+        Parent::Watch(nameSpace);
+        char output[ 1024 ];
+        sprintf(output, "%s\\%s", nameSpace, m_Name.GetText());
+        radDbgWatchDelete(&m_Amplitude);
+        radDbgWatchDelete(&m_Frequency);
+        radDbgWatchAddFloat(&m_Amplitude, "Amplitude", output, NULL, NULL, 0.0f, 1.0f);
+        radDbgWatchAddFloat(&m_Frequency, "Frequency", output, NULL, NULL, 0.0f, rmt::PI * 4);
+    }
 #endif
 
 
@@ -1715,12 +1584,11 @@ void PulseScale::Watch( const char* nameSpace )
 // Return:      N/A.
 //
 //==============================================================================
-RecieveEvent::RecieveEvent():
-    Chainable1(),
-    mEvent( NUM_EVENTS )
-{
-    //nothing
-}
+    RecieveEvent::RecieveEvent() :
+            Chainable1(),
+            mEvent(NUM_EVENTS) {
+        //nothing
+    }
 
 //=============================================================================
 // RecieveEvent::RecieveEvent
@@ -1732,12 +1600,11 @@ RecieveEvent::RecieveEvent():
 // Return:      N/A.
 //
 //=============================================================================
-RecieveEvent::RecieveEvent( const tName& name ):
-    Chainable1( name ),
-    mEvent( NUM_EVENTS )
-{
-    //nothing
-}
+    RecieveEvent::RecieveEvent(const tName &name) :
+            Chainable1(name),
+            mEvent(NUM_EVENTS) {
+        //nothing
+    }
 
 //=============================================================================
 // RecieveEvent::Activate
@@ -1749,11 +1616,11 @@ RecieveEvent::RecieveEvent( const tName& name ):
 // Return:      N/A.
 //
 //=============================================================================
-void RecieveEvent::Activate()
-{
-    rAssertMsg( mEvent != NUM_EVENTS, "you need to set the event to something meaningful before this can be activated" );
-    GetEventManager()->AddListener( this, mEvent );
-}
+    void RecieveEvent::Activate() {
+        rAssertMsg(mEvent != NUM_EVENTS,
+                   "you need to set the event to something meaningful before this can be activated");
+        GetEventManager()->AddListener(this, mEvent);
+    }
 
 //=============================================================================
 // RecieveEvent::HandleEvent
@@ -1765,11 +1632,10 @@ void RecieveEvent::Activate()
 // Return:      N/A.
 //
 //=============================================================================
-void RecieveEvent::HandleEvent( EventEnum id, void* pEventData )
-{
-    GetEventManager()->RemoveListener( this, mEvent );
-    ContinueChain();
-}
+    void RecieveEvent::HandleEvent(EventEnum id, void *pEventData) {
+        GetEventManager()->RemoveListener(this, mEvent);
+        ContinueChain();
+    }
 
 //=============================================================================
 // RecieveEvent::SetEvent
@@ -1781,11 +1647,10 @@ void RecieveEvent::HandleEvent( EventEnum id, void* pEventData )
 // Return:      N/A.
 //
 //=============================================================================
-void RecieveEvent::SetEvent( const EventEnum event )
-{
-    mEvent = event;
-    //IAN: better ensure that this listener isn't active at the moment
-}
+    void RecieveEvent::SetEvent(const EventEnum event) {
+        mEvent = event;
+        //IAN: better ensure that this listener isn't active at the moment
+    }
 
 //==============================================================================
 // ResumeGame::Activate
@@ -1797,11 +1662,10 @@ void RecieveEvent::SetEvent( const EventEnum event )
 // Return:      N/A.
 //
 //==============================================================================
-ResumeGame::ResumeGame():
-    Chainable1()
-{
-    //nothing
-}
+    ResumeGame::ResumeGame() :
+            Chainable1() {
+        //nothing
+    }
 
 //==============================================================================
 // ResumeGame::Activate
@@ -1813,11 +1677,10 @@ ResumeGame::ResumeGame():
 // Return:      N/A.
 //
 //==============================================================================
-ResumeGame::ResumeGame( const tName& name ):
-    Chainable1( name )
-{
-    //nothing
-}
+    ResumeGame::ResumeGame(const tName &name) :
+            Chainable1(name) {
+        //nothing
+    }
 
 //==============================================================================
 // ResumeGame::Activate
@@ -1829,11 +1692,10 @@ ResumeGame::ResumeGame( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-void ResumeGame::Activate()
-{
-    GameplayContext::GetInstance()->PauseAllButPresentation( false );
-    ContinueChain();
-}
+    void ResumeGame::Activate() {
+        GameplayContext::GetInstance()->PauseAllButPresentation(false);
+        ContinueChain();
+    }
 
 //=============================================================================
 // SendEvent::SendEvent()
@@ -1845,11 +1707,10 @@ void ResumeGame::Activate()
 // Return:      N/A.
 //
 //=============================================================================
-SendEvent::SendEvent():
-    mEvent( NUM_EVENTS )
-{
-    //nothing
-}
+    SendEvent::SendEvent() :
+            mEvent(NUM_EVENTS) {
+        //nothing
+    }
 
 //=============================================================================
 // SendEvent::SendEvent()
@@ -1861,12 +1722,11 @@ SendEvent::SendEvent():
 // Return:      N/A.
 //
 //=============================================================================
-SendEvent::SendEvent( const tName& name ):
-    Chainable1( name ),
-    mEvent( NUM_EVENTS )
-{
-    //nothing
-}
+    SendEvent::SendEvent(const tName &name) :
+            Chainable1(name),
+            mEvent(NUM_EVENTS) {
+        //nothing
+    }
 
 //=============================================================================
 // SendEvent::Activate()
@@ -1878,13 +1738,12 @@ SendEvent::SendEvent( const tName& name ):
 // Return:      N/A.
 //
 //=============================================================================
-void SendEvent::Activate()
-{
-    Transition::Activate();
-    rAssert( mEvent != NUM_EVENTS );
-    GetEventManager()->TriggerEvent( mEvent, mEventData );
-    ContinueChain();
-}
+    void SendEvent::Activate() {
+        Transition::Activate();
+        rAssert(mEvent != NUM_EVENTS);
+        GetEventManager()->TriggerEvent(mEvent, mEventData);
+        ContinueChain();
+    }
 
 //=============================================================================
 // SendEvent::SetEvent
@@ -1896,10 +1755,9 @@ void SendEvent::Activate()
 // Return:      N/A.
 //
 //=============================================================================
-void SendEvent::SetEvent( EventEnum event )
-{
-    mEvent = event;
-}
+    void SendEvent::SetEvent(EventEnum event) {
+        mEvent = event;
+    }
 
 //=============================================================================
 // SendEvent::SetEventData
@@ -1911,10 +1769,9 @@ void SendEvent::SetEvent( EventEnum event )
 // Return:      N/A.
 //
 //=============================================================================
-void SendEvent::SetEventData( void* eventData )
-{
-    mEventData = eventData;
-}
+    void SendEvent::SetEventData(void *eventData) {
+        mEventData = eventData;
+    }
 
 //=============================================================================
 // SwitchContext::SwitchContext()
@@ -1926,11 +1783,10 @@ void SendEvent::SetEventData( void* eventData )
 // Return:      N/A.
 //
 //=============================================================================
-SwitchContext::SwitchContext():
-    mContext( NUM_CONTEXTS )
-{
-    //nothing
-}
+    SwitchContext::SwitchContext() :
+            mContext(NUM_CONTEXTS) {
+        //nothing
+    }
 
 //=============================================================================
 // SwitchContext::SwitchContext()
@@ -1942,12 +1798,11 @@ SwitchContext::SwitchContext():
 // Return:      N/A.
 //
 //=============================================================================
-SwitchContext::SwitchContext( const tName& name ):
-    Parent( name ),
-    mContext( NUM_CONTEXTS )
-{
-    //nothing
-}
+    SwitchContext::SwitchContext(const tName &name) :
+            Parent(name),
+            mContext(NUM_CONTEXTS) {
+        //nothing
+    }
 
 //=============================================================================
 // SwitchContext::Activate()
@@ -1959,13 +1814,12 @@ SwitchContext::SwitchContext( const tName& name ):
 // Return:      N/A.
 //
 //=============================================================================
-void SwitchContext::Activate()
-{
-    Transition::Activate();
-    rAssert( mContext != NUM_CONTEXTS );
-    GetGameFlow()->SetContext( mContext );
-    ContinueChain();
-}
+    void SwitchContext::Activate() {
+        Transition::Activate();
+        rAssert(mContext != NUM_CONTEXTS);
+        GetGameFlow()->SetContext(mContext);
+        ContinueChain();
+    }
 
 //=============================================================================
 // SwitchContext::SetContext
@@ -1977,10 +1831,9 @@ void SwitchContext::Activate()
 // Return:      N/A.
 //
 //=============================================================================
-void SwitchContext::SetContext( ContextEnum context )
-{
-    mContext = context;
-}
+    void SwitchContext::SetContext(ContextEnum context) {
+        mContext = context;
+    }
 
 //==============================================================================
 // Show::Show
@@ -1992,9 +1845,9 @@ void SwitchContext::SetContext( ContextEnum context )
 // Return:      N/A.
 //
 //==============================================================================
-Show::Show()
-{
-}
+    Show::Show() {
+    }
+
 //==============================================================================
 // Show::Show
 //==============================================================================
@@ -2005,11 +1858,10 @@ Show::Show()
 // Return:      N/A.
 //
 //==============================================================================
-Show::Show( const tName& name ):
-    Chainable1( name )
-{
-    //nothing
-}
+    Show::Show(const tName &name) :
+            Chainable1(name) {
+        //nothing
+    }
 
 //==============================================================================
 // Show::Activate
@@ -2021,16 +1873,14 @@ Show::Show( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-void Show::Activate()
-{
-    Transition::Activate();
-    rAssert( m_Drawable != NULL );
-    if( m_Drawable != NULL )
-    {
-        m_Drawable->SetVisible( true );
+    void Show::Activate() {
+        Transition::Activate();
+        rAssert(m_Drawable != NULL);
+        if (m_Drawable != NULL) {
+            m_Drawable->SetVisible(true);
+        }
+        ContinueChain();
     }
-    ContinueChain();
-}
 
 
 //==============================================================================
@@ -2043,12 +1893,11 @@ void Show::Activate()
 // Return:      N/A.
 //
 //==============================================================================
-Spin::Spin():
-    Transition( "Spin" ),
-    m_Period( 1.0f )
-{
-    //nothing
-}
+    Spin::Spin() :
+            Transition("Spin"),
+            m_Period(1.0f) {
+        //nothing
+    }
 
 //==============================================================================
 // Spin::MovesDrawable
@@ -2060,10 +1909,9 @@ Spin::Spin():
 // Return:      N/A.
 //
 //==============================================================================
-bool Spin::MovesDrawable() const
-{
-    return true;
-}
+    bool Spin::MovesDrawable() const {
+        return true;
+    }
 
 //==============================================================================
 // Spin::SetPeriod
@@ -2075,12 +1923,11 @@ bool Spin::MovesDrawable() const
 // Return:      N/A.
 //
 //==============================================================================
-void Spin::SetDrawable( Scrooby::Drawable* drawable )
-{
-    Transition::SetDrawable( drawable );
-    m_BoundedDrawable = dynamic_cast< Scrooby::BoundedDrawable* >( drawable );
-    rAssert( m_BoundedDrawable != NULL );
-}
+    void Spin::SetDrawable(Scrooby::Drawable *drawable) {
+        Transition::SetDrawable(drawable);
+        m_BoundedDrawable = dynamic_cast<Scrooby::BoundedDrawable *>(drawable);
+        rAssert(m_BoundedDrawable != NULL);
+    }
 
 //==============================================================================
 // Spin::SetPeriod
@@ -2092,10 +1939,9 @@ void Spin::SetDrawable( Scrooby::Drawable* drawable )
 // Return:      N/A.
 //
 //==============================================================================
-void Spin::SetPeriod( const float period )
-{
-    m_Period = period;
-}
+    void Spin::SetPeriod(const float period) {
+        m_Period = period;
+    }
 
 //==============================================================================
 // Spin::Update
@@ -2107,19 +1953,16 @@ void Spin::SetPeriod( const float period )
 // Return:      N/A.
 //
 //==============================================================================
-void Spin::Update( const float deltaT )
-{
-    if( IsActive() )
-    {
-        Transition::Update( deltaT );
-        m_ElapsedTime = fmodf( m_ElapsedTime, m_Period * 1000.0f );
-        float angle = m_ElapsedTime / ( m_Period * 1000 ) * 360.0f;
-        if( m_BoundedDrawable != NULL )
-        {
-            m_BoundedDrawable->RotateAboutCenter( angle );
+    void Spin::Update(const float deltaT) {
+        if (IsActive()) {
+            Transition::Update(deltaT);
+            m_ElapsedTime = fmodf(m_ElapsedTime, m_Period * 1000.0f);
+            float angle = m_ElapsedTime / (m_Period * 1000) * 360.0f;
+            if (m_BoundedDrawable != NULL) {
+                m_BoundedDrawable->RotateAboutCenter(angle);
+            }
         }
     }
-}
 
 //==============================================================================
 // Transition::Transition
@@ -2131,21 +1974,20 @@ void Spin::Update( const float deltaT )
 // Return:      N/A.
 //
 //==============================================================================
-Transition::Transition():
+    Transition::Transition() :
 #ifdef RAD_DEBUG
-    m_Name( "NONE" ),
+            m_Name("NONE"),
 #endif
-    m_Active( false ),
-    m_Done( false ),
-    m_Drawable( NULL ),
-    m_ElapsedTime( 0.0f )
-{
+            m_Active(false),
+            m_Done(false),
+            m_Drawable(NULL),
+            m_ElapsedTime(0.0f) {
 #ifdef RAD_DEBUG
-    static int count = 0;
-    m_Id = count;
-    ++count;
+        static int count = 0;
+        m_Id = count;
+        ++count;
 #endif
-}
+    }
 
 //==============================================================================
 // Transition::Transition
@@ -2157,16 +1999,15 @@ Transition::Transition():
 // Return:      N/A.
 //
 //==============================================================================
-Transition::Transition( const tName& name ):
-    m_Active( false ),
-    m_Done( false ),
-    m_Drawable( NULL ),
-    m_ElapsedTime( 0.0f )    
-{
+    Transition::Transition(const tName &name) :
+            m_Active(false),
+            m_Done(false),
+            m_Drawable(NULL),
+            m_ElapsedTime(0.0f) {
 #ifdef RAD_DEBUG
-    m_Name = name;
+        m_Name = name;
 #endif
-}
+    }
 
 //==============================================================================
 // Transition::Activate
@@ -2178,21 +2019,20 @@ Transition::Transition( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-void Transition::Activate()
-{
-    #ifdef RAD_DEBUG
-        //rAssert( m_Name != "NONE" );
-        if( m_Name.GetUID() != static_cast< tUID >( 0 ) )
+    void Transition::Activate() {
+#ifdef RAD_DEBUG
+        //rAssert(m_Name != "NONE");
+        if(m_Name.GetUID() != static_cast<tUID>(0))
         {
             const char* name = m_Name.GetText();
-            rDebugPrintf( "Transition Starting - %s\n", name );
+            rDebugPrintf("Transition Starting - %s\n", name);
         }
-    #endif
+#endif
 
-    m_Active = true;
-    m_Done = false;
-    Update( 0.0f );
-}
+        m_Active = true;
+        m_Done = false;
+        Update(0.0f);
+    }
 
 //==============================================================================
 // Transition::Deactivate
@@ -2204,11 +2044,10 @@ void Transition::Activate()
 // Return:      N/A.
 //
 //==============================================================================
-void Transition::Deactivate()
-{
-    m_Active = false;
-    m_Done = true;
-}
+    void Transition::Deactivate() {
+        m_Active = false;
+        m_Done = true;
+    }
 
 //==============================================================================
 // Transition::GetDrawable
@@ -2220,10 +2059,9 @@ void Transition::Deactivate()
 // Return:      N/A.
 //
 //==============================================================================
-Scrooby::Drawable* Transition::GetDrawable()
-{
-    return m_Drawable;
-}
+    Scrooby::Drawable *Transition::GetDrawable() {
+        return m_Drawable;
+    }
 
 //==============================================================================
 // Transition::IsActive
@@ -2235,10 +2073,9 @@ Scrooby::Drawable* Transition::GetDrawable()
 // Return:      N/A.
 //
 //==============================================================================
-bool Transition::IsActive() const
-{
-    return m_Active;
-}
+    bool Transition::IsActive() const {
+        return m_Active;
+    }
 
 //==============================================================================
 // Transition::IsDone
@@ -2250,10 +2087,9 @@ bool Transition::IsActive() const
 // Return:      N/A.
 //
 //==============================================================================
-bool Transition::IsDone() const
-{
-    return m_Done;
-}
+    bool Transition::IsDone() const {
+        return m_Done;
+    }
 
 //==============================================================================
 // Transition::MovesDrawable
@@ -2265,10 +2101,9 @@ bool Transition::IsDone() const
 // Return:      N/A.
 //
 //==============================================================================
-bool Transition::MovesDrawable() const
-{
-    return false;
-}
+    bool Transition::MovesDrawable() const {
+        return false;
+    }
 
 //==============================================================================
 // Transition::operator=
@@ -2280,17 +2115,15 @@ bool Transition::MovesDrawable() const
 // Return:      N/A.
 //
 //==============================================================================
-Transition& Transition::operator=( const Transition& right )
-{
-    if( this == &right)
-    {
+    Transition &Transition::operator=(const Transition &right) {
+        if (this == &right) {
+            return *this;
+        }
+        m_Active = right.m_Active;
+        m_Drawable = right.m_Drawable;
+        m_ElapsedTime = right.m_ElapsedTime;
         return *this;
     }
-    m_Active        = right.m_Active;
-    m_Drawable      = right.m_Drawable;
-    m_ElapsedTime   = right.m_ElapsedTime;
-    return *this;
-}
 
 //==============================================================================
 // Transition::Reset
@@ -2302,11 +2135,10 @@ Transition& Transition::operator=( const Transition& right )
 // Return:      N/A.
 //
 //==============================================================================
-void Transition::Reset()
-{
-    m_ElapsedTime = 0;
-    m_Done = false;
-}
+    void Transition::Reset() {
+        m_ElapsedTime = 0;
+        m_Done = false;
+    }
 
 //==============================================================================
 // Transition::SetDrawable
@@ -2318,10 +2150,9 @@ void Transition::Reset()
 // Return:      N/A.
 //
 //==============================================================================
-void Transition::SetDrawable( Scrooby::Drawable* drawable )
-{
-    m_Drawable = drawable;
-}
+    void Transition::SetDrawable(Scrooby::Drawable *drawable) {
+        m_Drawable = drawable;
+    }
 
 //==============================================================================
 // Transition::SetDrawable
@@ -2333,10 +2164,9 @@ void Transition::SetDrawable( Scrooby::Drawable* drawable )
 // Return:      N/A.
 //
 //==============================================================================
-void Transition::SetDrawable( Scrooby::Drawable& drawable )
-{
-    m_Drawable = &drawable;
-}
+    void Transition::SetDrawable(Scrooby::Drawable &drawable) {
+        m_Drawable = &drawable;
+    }
 
 //=============================================================================
 // Transition::Update
@@ -2348,17 +2178,15 @@ void Transition::SetDrawable( Scrooby::Drawable& drawable )
 // Return:      N/A.
 //
 //=============================================================================
-void Transition::Update( const float elapsedTime )
-{
-    if( !IsActive() )
-    {
-        return;
+    void Transition::Update(const float elapsedTime) {
+        if (!IsActive()) {
+            return;
+        }
+
+        //rDebugPrintf("%s\n", m_Name.GetText());
+
+        m_ElapsedTime += elapsedTime;
     }
-
-    //rDebugPrintf(   "%s\n", m_Name.GetText() );
-
-    m_ElapsedTime += elapsedTime;
-}
 
 //=============================================================================
 // Transition::Watch
@@ -2372,15 +2200,15 @@ void Transition::Update( const float elapsedTime )
 //
 //=============================================================================
 #ifdef DEBUGWATCH
-void Transition::Watch( const char* nameSpace )
-{
-    char output[ 1024 ];
-    sprintf( output, "%s\\%s", nameSpace, m_Name.GetText() );
-    radDbgWatchDelete( &m_DummyVariableForActivate );
-    radDbgWatchDelete( &m_DummyVariableForDeactivate );
-    radDbgWatchAddBoolean( &m_DummyVariableForActivate,   "Activate",  output, ActivateCallback,  this );
-    radDbgWatchAddBoolean( &m_DummyVariableForDeactivate, "Deativate", output, DeativateCallback, this );
-}
+    void Transition::Watch(const char* nameSpace)
+    {
+        char output[ 1024 ];
+        sprintf(output, "%s\\%s", nameSpace, m_Name.GetText());
+        radDbgWatchDelete(&m_DummyVariableForActivate);
+        radDbgWatchDelete(&m_DummyVariableForDeactivate);
+        radDbgWatchAddBoolean(&m_DummyVariableForActivate,   "Activate",  output, ActivateCallback,  this);
+        radDbgWatchAddBoolean(&m_DummyVariableForDeactivate, "Deativate", output, DeativateCallback, this);
+    }
 #endif
 
 
@@ -2394,14 +2222,13 @@ void Transition::Watch( const char* nameSpace )
 // Return:      N/A.
 //
 //==============================================================================
-Translator::Translator():
-    startX( 0 ),
-    startY( 0 ),
-    endX( 0 ),
-    endY( 0 )
-{
-    //nothing
-}
+    Translator::Translator() :
+            startX(0),
+            startY(0),
+            endX(0),
+            endY(0) {
+        //nothing
+    }
 
 //==============================================================================
 // Translator::Translator
@@ -2413,14 +2240,13 @@ Translator::Translator():
 // Return:      N/A.
 //
 //==============================================================================
-Translator::Translator( const tName& name ):
-    Chainable1( name ),
-    startX( 0 ),
-    startY( 0 ),
-    endX( 0 ),
-    endY( 0 )
-{
-}
+    Translator::Translator(const tName &name) :
+            Chainable1(name),
+            startX(0),
+            startY(0),
+            endX(0),
+            endY(0) {
+    }
 
 //==============================================================================
 // Translator::~Translator
@@ -2432,10 +2258,9 @@ Translator::Translator( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-Translator::~Translator()
-{
-    //nothing
-}
+    Translator::~Translator() {
+        //nothing
+    }
 
 //=============================================================================
 // Translator::MateCoordsEnd
@@ -2448,10 +2273,9 @@ Translator::~Translator()
 // Return:      N/A.
 //
 //=============================================================================
-void Translator::MateCoordsEnd( const Scrooby::HasBoundingBox* drawable )
-{
-    SetCoordsEnd( 0, 0 );
-}
+    void Translator::MateCoordsEnd(const Scrooby::HasBoundingBox *drawable) {
+        SetCoordsEnd(0, 0);
+    }
 
 //=============================================================================
 // Translator::MateCoordsStart
@@ -2464,10 +2288,9 @@ void Translator::MateCoordsEnd( const Scrooby::HasBoundingBox* drawable )
 // Return:      N/A.
 //
 //=============================================================================
-void Translator::MateCoordsStart( const Scrooby::HasBoundingBox* drawable )
-{
-    SetCoordsStart( 0, 0 );
-}
+    void Translator::MateCoordsStart(const Scrooby::HasBoundingBox *drawable) {
+        SetCoordsStart(0, 0);
+    }
 
 //==============================================================================
 // Translator::MovesDrawable
@@ -2479,10 +2302,9 @@ void Translator::MateCoordsStart( const Scrooby::HasBoundingBox* drawable )
 // Return:      N/A.
 //
 //==============================================================================
-bool Translator::MovesDrawable() const
-{
-    return true;
-}
+    bool Translator::MovesDrawable() const {
+        return true;
+    }
 
 //==============================================================================
 // Translator::operator=
@@ -2494,22 +2316,20 @@ bool Translator::MovesDrawable() const
 // Return:      reference to self
 //
 //==============================================================================
-Translator& Translator::operator=( const Translator& right )
-{
-    if( this == &right )
-    {
+    Translator &Translator::operator=(const Translator &right) {
+        if (this == &right) {
+            return *this;
+        }
+
+        Chainable1::operator=(right);
+
+        startX = right.startX;
+        startY = right.startY;
+        endX = right.endX;
+        endY = right.endY;
+        m_TimeInterval = right.m_TimeInterval;
         return *this;
     }
-    
-    Chainable1::operator=( right );
-
-    startX         = right.startX;
-    startY         = right.startY;
-    endX           = right.endX;
-    endY           = right.endY;
-    m_TimeInterval = right.m_TimeInterval;
-    return *this;
-}
 
 //==============================================================================
 // Translator::SetEndCoords
@@ -2521,11 +2341,10 @@ Translator& Translator::operator=( const Translator& right )
 // Return:      N/A.
 //
 //==============================================================================
-void Translator::SetCoordsEnd( const int x, const int y )
-{
-    endX = x;
-    endY = y;
-}
+    void Translator::SetCoordsEnd(const int x, const int y) {
+        endX = x;
+        endY = y;
+    }
 
 //==============================================================================
 // Translator::SetStartCoords
@@ -2537,11 +2356,10 @@ void Translator::SetCoordsEnd( const int x, const int y )
 // Return:      N/A.
 //
 //==============================================================================
-void Translator::SetCoordsStart( const int x, const int y )
-{
-    startX = x;
-    startY = y;
-}
+    void Translator::SetCoordsStart(const int x, const int y) {
+        startX = x;
+        startY = y;
+    }
 
 //==============================================================================
 // Translator::SetEndOffscreenBottom
@@ -2553,19 +2371,18 @@ void Translator::SetCoordsStart( const int x, const int y )
 // Return:      N/A.
 //
 //==============================================================================
-void Translator::SetEndOffscreenBottom( const Scrooby::Drawable* drawable )
-{
-    int xMin;
-    int xMax;
-    int yMin;
-    int yMax;
-    drawable->GetBoundingBox( xMin, yMin, xMax, yMax );
-    #ifdef RAD_PS2
-        SetCoordsEnd( 0, -20 -yMax );    
-    #else
-        SetCoordsEnd( 0, -yMax );    
-    #endif
-}
+    void Translator::SetEndOffscreenBottom(const Scrooby::Drawable *drawable) {
+        int xMin;
+        int xMax;
+        int yMin;
+        int yMax;
+        drawable->GetBoundingBox(xMin, yMin, xMax, yMax);
+#ifdef RAD_PS2
+        SetCoordsEnd(0, -20 -yMax);
+#else
+        SetCoordsEnd(0, -yMax);
+#endif
+    }
 
 //==============================================================================
 // Translator::SetEndOffscreenLeft
@@ -2577,24 +2394,21 @@ void Translator::SetEndOffscreenBottom( const Scrooby::Drawable* drawable )
 // Return:      N/A.
 //
 //==============================================================================
-void Translator::SetEndOffscreenLeft( const Scrooby::Drawable* drawable )
-{
-    int xMin;
-    int xMax;
-    int yMin;
-    int yMax;
-    drawable->GetBoundingBox( xMin, yMin, xMax, yMax );
-    int width = xMax - xMin;
+    void Translator::SetEndOffscreenLeft(const Scrooby::Drawable *drawable) {
+        int xMin;
+        int xMax;
+        int yMin;
+        int yMax;
+        drawable->GetBoundingBox(xMin, yMin, xMax, yMax);
+        int width = xMax - xMin;
 
-    if( p3d::display->IsWidescreen() )
-    {
-        SetCoordsEnd( -xMin - width - WIDESCREEN_EXTRA_PIXELS, 0 );
+        if (p3d::display->IsWidescreen()) {
+            SetCoordsEnd(-xMin - width - WIDESCREEN_EXTRA_PIXELS, 0);
+        } else {
+            SetCoordsEnd(-xMin - width, 0);
+        }
     }
-    else
-    {
-        SetCoordsEnd( -xMin - width, 0 );
-    }
-}
+
 //==============================================================================
 // Translator::SetEndOffscreenRight
 //==============================================================================
@@ -2605,23 +2419,19 @@ void Translator::SetEndOffscreenLeft( const Scrooby::Drawable* drawable )
 // Return:      N/A.
 //
 //==============================================================================
-void Translator::SetEndOffscreenRight( const Scrooby::Drawable* drawable )
-{
-    int xMin;
-    int xMax;
-    int yMin;
-    int yMax;
-    drawable->GetBoundingBox( xMin, yMin, xMax, yMax );
-    int width = xMax - xMin;
-    if( p3d::display->IsWidescreen() )
-    {
-        SetCoordsEnd( 640 - xMin + WIDESCREEN_EXTRA_PIXELS, 0 );    
+    void Translator::SetEndOffscreenRight(const Scrooby::Drawable *drawable) {
+        int xMin;
+        int xMax;
+        int yMin;
+        int yMax;
+        drawable->GetBoundingBox(xMin, yMin, xMax, yMax);
+        int width = xMax - xMin;
+        if (p3d::display->IsWidescreen()) {
+            SetCoordsEnd(640 - xMin + WIDESCREEN_EXTRA_PIXELS, 0);
+        } else {
+            SetCoordsEnd(640 - xMin, 0);
+        }
     }
-    else
-    {
-        SetCoordsEnd( 640 - xMin, 0 );    
-    }
-}
 
 //==============================================================================
 // Translator::SetEndOffscreenTop
@@ -2633,19 +2443,18 @@ void Translator::SetEndOffscreenRight( const Scrooby::Drawable* drawable )
 // Return:      N/A.
 //
 //==============================================================================
-void Translator::SetEndOffscreenTop( const Scrooby::Drawable* drawable )
-{
-    int xMin;
-    int xMax;
-    int yMin;
-    int yMax;
-    drawable->GetBoundingBox( xMin, yMin, xMax, yMax );
-    #ifdef RAD_PS2
-        SetCoordsEnd( 0, 480 + 20 - yMin );    
-    #else
-        SetCoordsEnd( 0, 480 - yMin );    
-    #endif
-}
+    void Translator::SetEndOffscreenTop(const Scrooby::Drawable *drawable) {
+        int xMin;
+        int xMax;
+        int yMin;
+        int yMax;
+        drawable->GetBoundingBox(xMin, yMin, xMax, yMax);
+#ifdef RAD_PS2
+        SetCoordsEnd(0, 480 + 20 - yMin);
+#else
+        SetCoordsEnd(0, 480 - yMin);
+#endif
+    }
 
 //==============================================================================
 // Translator::SetStartOffscreenBottom
@@ -2657,21 +2466,20 @@ void Translator::SetEndOffscreenTop( const Scrooby::Drawable* drawable )
 // Return:      N/A.
 //
 //==============================================================================
-void Translator::SetStartOffscreenBottom ( const Scrooby::Drawable* drawable )
-{
-    int xMin;
-    int xMax;
-    int yMin;
-    int yMax;
-    drawable->GetBoundingBox( xMin, yMin, xMax, yMax );
-    
-    #ifdef RAD_PS2
-        SetCoordsStart( 0, -20 -yMax );    
-    #else
-        SetCoordsStart( 0, -yMax );    
-    #endif
+    void Translator::SetStartOffscreenBottom(const Scrooby::Drawable *drawable) {
+        int xMin;
+        int xMax;
+        int yMin;
+        int yMax;
+        drawable->GetBoundingBox(xMin, yMin, xMax, yMax);
 
-}
+#ifdef RAD_PS2
+        SetCoordsStart(0, -20 -yMax);
+#else
+        SetCoordsStart(0, -yMax);
+#endif
+
+    }
 
 //==============================================================================
 // Translator::SetTimeInterval
@@ -2683,24 +2491,21 @@ void Translator::SetStartOffscreenBottom ( const Scrooby::Drawable* drawable )
 // Return:      N/A.
 //
 //==============================================================================
-void Translator::SetStartOffscreenLeft( const Scrooby::Drawable* drawable )
-{
-    int xMin;
-    int xMax;
-    int yMin;
-    int yMax;
-    drawable->GetBoundingBox( xMin, yMin, xMax, yMax );
-    int width = xMax - xMin;
+    void Translator::SetStartOffscreenLeft(const Scrooby::Drawable *drawable) {
+        int xMin;
+        int xMax;
+        int yMin;
+        int yMax;
+        drawable->GetBoundingBox(xMin, yMin, xMax, yMax);
+        int width = xMax - xMin;
 
-    if( p3d::display->IsWidescreen() )
-    {
-        SetCoordsStart( -xMin - width - WIDESCREEN_EXTRA_PIXELS, 0 );    
+        if (p3d::display->IsWidescreen()) {
+            SetCoordsStart(-xMin - width - WIDESCREEN_EXTRA_PIXELS, 0);
+        } else {
+            SetCoordsStart(-xMin - width, 0);
+        }
     }
-    else
-    {
-        SetCoordsStart( -xMin - width, 0 );    
-    }
-}
+
 //==============================================================================
 // Translator::SetStartOffscreenRight
 //==============================================================================
@@ -2711,23 +2516,19 @@ void Translator::SetStartOffscreenLeft( const Scrooby::Drawable* drawable )
 // Return:      N/A.
 //
 //==============================================================================
-void Translator::SetStartOffscreenRight  ( const Scrooby::Drawable* drawable )
-{
-    int xMin;
-    int xMax;
-    int yMin;
-    int yMax;
-    drawable->GetBoundingBox( xMin, yMin, xMax, yMax );
-    int width = xMax - xMin;
-    if( p3d::display->IsWidescreen() )
-    {
-        SetCoordsStart( 640 - xMin + WIDESCREEN_EXTRA_PIXELS, 0 );    
+    void Translator::SetStartOffscreenRight(const Scrooby::Drawable *drawable) {
+        int xMin;
+        int xMax;
+        int yMin;
+        int yMax;
+        drawable->GetBoundingBox(xMin, yMin, xMax, yMax);
+        int width = xMax - xMin;
+        if (p3d::display->IsWidescreen()) {
+            SetCoordsStart(640 - xMin + WIDESCREEN_EXTRA_PIXELS, 0);
+        } else {
+            SetCoordsStart(640 - xMin, 0);
+        }
     }
-    else
-    {
-        SetCoordsStart( 640 - xMin, 0 );    
-    }
-}
 
 //==============================================================================
 // Translator::SetStartOffscreenTop
@@ -2739,21 +2540,20 @@ void Translator::SetStartOffscreenRight  ( const Scrooby::Drawable* drawable )
 // Return:      N/A.
 //
 //==============================================================================
-void Translator::SetStartOffscreenTop( const Scrooby::Drawable* drawable )
-{
-    int xMin;
-    int xMax;
-    int yMin;
-    int yMax;
-    drawable->GetBoundingBox( xMin, yMin, xMax, yMax );
-    SetCoordsStart( 0, 480 - yMin );    
-    #ifdef RAD_PS2
-        SetCoordsStart( 0, 480 + 20 - yMin );    
-    #else
-        SetCoordsStart( 0, 480 - yMin );    
-    #endif
+    void Translator::SetStartOffscreenTop(const Scrooby::Drawable *drawable) {
+        int xMin;
+        int xMax;
+        int yMin;
+        int yMax;
+        drawable->GetBoundingBox(xMin, yMin, xMax, yMax);
+        SetCoordsStart(0, 480 - yMin);
+#ifdef RAD_PS2
+        SetCoordsStart(0, 480 + 20 - yMin);
+#else
+        SetCoordsStart(0, 480 - yMin);
+#endif
 
-}
+    }
 
 //==============================================================================
 // Translator::Apply
@@ -2765,28 +2565,24 @@ void Translator::SetStartOffscreenTop( const Scrooby::Drawable* drawable )
 // Return:      N/A.
 //
 //==============================================================================
-void Translator::Update( const float deltaT )
-{
-    if( IsActive() )
-    {
-        Transition::Update( deltaT );
-        float spillover = rmt::Max( m_ElapsedTime - m_TimeInterval, 0.0f );
-        m_ElapsedTime = rmt::Min( m_ElapsedTime, m_TimeInterval );
+    void Translator::Update(const float deltaT) {
+        if (IsActive()) {
+            Transition::Update(deltaT);
+            float spillover = rmt::Max(m_ElapsedTime - m_TimeInterval, 0.0f);
+            m_ElapsedTime = rmt::Min(m_ElapsedTime, m_TimeInterval);
 
-        float percentDone = rmt::Min( m_ElapsedTime / m_TimeInterval, 1.0f );
-        int x = static_cast< int >( ( endX - startX ) * percentDone + startX );
-        int y = static_cast< int >( ( endY - startY ) * percentDone + startY );
-        if( m_Drawable != NULL )
-        {
-            m_Drawable->Translate( x, y );
-        }
+            float percentDone = rmt::Min(m_ElapsedTime / m_TimeInterval, 1.0f);
+            int x = static_cast<int>((endX - startX) * percentDone + startX);
+            int y = static_cast<int>((endY - startY) * percentDone + startY);
+            if (m_Drawable != NULL) {
+                m_Drawable->Translate(x, y);
+            }
 
-        if( spillover > 0 )
-        {
-            ContinueChain();
+            if (spillover > 0) {
+                ContinueChain();
+            }
         }
     }
-}
 
 //==============================================================================
 // Translator::Watch
@@ -2799,21 +2595,21 @@ void Translator::Update( const float deltaT )
 //
 //==============================================================================
 #ifdef DEBUGWATCH
-void Translator::Watch( const char* nameSpace )
-{
-    char output[ 1024 ];
-    sprintf( output, "%s\\%s", nameSpace, m_Name.GetText() );
-    Parent1::Watch( nameSpace );
-    Parent2::Watch( output    ); //HasTimeInterval doesn't know the name.
-    radDbgWatchDelete( &startX );
-    radDbgWatchDelete( &startY );
-    radDbgWatchDelete( &endX   );
-    radDbgWatchDelete( &endY   );
-    radDbgWatchAddShort( &startX, "startX", output, NULL, NULL, -640, 640 * 2 );
-    radDbgWatchAddShort( &startY, "startY", output, NULL, NULL, -640, 640 * 2 );
-    radDbgWatchAddShort( &endX,   "endX",   output, NULL, NULL, -640, 640 * 2 );
-    radDbgWatchAddShort( &endY,   "endY",   output, NULL, NULL, -640, 640 * 2 );
-}
+    void Translator::Watch(const char* nameSpace)
+    {
+        char output[ 1024 ];
+        sprintf(output, "%s\\%s", nameSpace, m_Name.GetText());
+        Parent1::Watch(nameSpace);
+        Parent2::Watch(output); //HasTimeInterval doesn't know the name.
+        radDbgWatchDelete(&startX);
+        radDbgWatchDelete(&startY);
+        radDbgWatchDelete(&endX);
+        radDbgWatchDelete(&endY);
+        radDbgWatchAddShort(&startX, "startX", output, NULL, NULL, -640, 640 * 2);
+        radDbgWatchAddShort(&startY, "startY", output, NULL, NULL, -640, 640 * 2);
+        radDbgWatchAddShort(&endX,   "endX",   output, NULL, NULL, -640, 640 * 2);
+        radDbgWatchAddShort(&endY,   "endY",   output, NULL, NULL, -640, 640 * 2);
+    }
 #endif
 
 //==============================================================================
@@ -2826,10 +2622,9 @@ void Translator::Watch( const char* nameSpace )
 // Return:      N/A.
 //
 //==============================================================================
-UnderdampedTranslator::UnderdampedTranslator():
-    Translator()
-{
-}
+    UnderdampedTranslator::UnderdampedTranslator() :
+            Translator() {
+    }
 
 //==============================================================================
 // UnderdampedTranslator::UnderdampedTranslator
@@ -2841,10 +2636,9 @@ UnderdampedTranslator::UnderdampedTranslator():
 // Return:      N/A.
 //
 //==============================================================================
-UnderdampedTranslator::UnderdampedTranslator( const tName& name ):
-    Translator( name )
-{
-}
+    UnderdampedTranslator::UnderdampedTranslator(const tName &name) :
+            Translator(name) {
+    }
 
 //==============================================================================
 // UnderdampedTranslator::MovesDrawable
@@ -2856,10 +2650,9 @@ UnderdampedTranslator::UnderdampedTranslator( const tName& name ):
 // Return:      N/A.
 //
 //==============================================================================
-bool UnderdampedTranslator::MovesDrawable() const
-{
-    return true;
-}
+    bool UnderdampedTranslator::MovesDrawable() const {
+        return true;
+    }
 
 //==============================================================================
 // UnderdampedTranslator::SetFrequency
@@ -2871,10 +2664,9 @@ bool UnderdampedTranslator::MovesDrawable() const
 // Return:      N/A.
 //
 //==============================================================================
-void UnderdampedTranslator::SetFrequency( const float frequency )
-{
-    m_Frequency = frequency;
-}
+    void UnderdampedTranslator::SetFrequency(const float frequency) {
+        m_Frequency = frequency;
+    }
 
 //==============================================================================
 // UnderdampedTranslator::Update
@@ -2886,26 +2678,23 @@ void UnderdampedTranslator::SetFrequency( const float frequency )
 // Return:      N/A.
 //
 //==============================================================================
-void UnderdampedTranslator::Update( const float deltaT )
-{
-    if( IsActive() )
-    {
-        Transition::Update( deltaT );
-        float spillover = rmt::Max( m_ElapsedTime - m_TimeInterval, 0.0f );
-        m_ElapsedTime = rmt::Min( m_ElapsedTime, m_TimeInterval );
-        float decayRate = logf( 0.01f ) / m_TimeInterval;
-        float exponentialPart = expf( decayRate * m_ElapsedTime );
-        float cosinePart = cosf( 2.0f * rmt::PI * m_Frequency * m_ElapsedTime / 1000.0f );
-        float percentage = 1.0f -  exponentialPart * cosinePart;
-        int x = static_cast< int >( ( endX - startX ) * percentage + startX );
-        int y = static_cast< int >( ( endY - startY ) * percentage + startY );
-        m_Drawable->Translate( x, y );
+    void UnderdampedTranslator::Update(const float deltaT) {
+        if (IsActive()) {
+            Transition::Update(deltaT);
+            float spillover = rmt::Max(m_ElapsedTime - m_TimeInterval, 0.0f);
+            m_ElapsedTime = rmt::Min(m_ElapsedTime, m_TimeInterval);
+            float decayRate = logf(0.01f) / m_TimeInterval;
+            float exponentialPart = expf(decayRate * m_ElapsedTime);
+            float cosinePart = cosf(2.0f * rmt::PI * m_Frequency * m_ElapsedTime / 1000.0f);
+            float percentage = 1.0f - exponentialPart * cosinePart;
+            int x = static_cast<int>((endX - startX) * percentage + startX);
+            int y = static_cast<int>((endY - startY) * percentage + startY);
+            m_Drawable->Translate(x, y);
 
-        if( spillover > 0 )
-        {
-            ContinueChain();
+            if (spillover > 0) {
+                ContinueChain();
+            }
         }
     }
-}
 
 }

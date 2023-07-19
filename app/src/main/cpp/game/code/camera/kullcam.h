@@ -29,24 +29,25 @@ class InputManager;
 //
 //=============================================================================
 
-class KullCam : public SuperCam
-{
+class KullCam : public SuperCam {
 public:
     KullCam();
+
     virtual ~KullCam();
 
     //Update: Called when you want the super cam to update its state.
-    void Update( unsigned int milliseconds );
+    void Update(unsigned int milliseconds);
 
     //Returns the name of the super cam.  
     //This can be used in the FE or debug info
-    const char* const GetName() const;
+    const char *const GetName() const;
 
     Type GetType();
 
     //These are for favourable support of this command
-    void SetTarget( ISuperCamTarget* target ); 
-    void AddTarget( ISuperCamTarget* target );
+    void SetTarget(ISuperCamTarget *target);
+
+    void AddTarget(ISuperCamTarget *target);
 
     unsigned int GetNumTargets() const;
 
@@ -55,22 +56,24 @@ protected:
     float mElevation;
     float mMagnitude;
 
-    bool mIgnoreDebugController : 1;
+    bool mIgnoreDebugController: 1;
 
 private:
 
-    ISuperCamTarget* mTarget;
+    ISuperCamTarget *mTarget;
 
-    InputManager* mIm;
+    InputManager *mIm;
 
     //These functions are to allow real-time control of the settings of 
     //the supercam.
     virtual void OnRegisterDebugControls();
+
     virtual void OnUnregisterDebugControls();
 
     //Prevent wasteful constructor creation.
-    KullCam( const KullCam& kullcam );
-    KullCam& operator=( const KullCam& kullcam );
+    KullCam(const KullCam &kullcam);
+
+    KullCam &operator=(const KullCam &kullcam);
 };
 
 
@@ -89,8 +92,7 @@ private:
 // Return:      const char* const 
 //
 //=============================================================================
-inline const char* const KullCam::GetName() const
-{
+inline const char *const KullCam::GetName() const {
     return "KULL_CAM";
 }
 
@@ -104,8 +106,7 @@ inline const char* const KullCam::GetName() const
 // Return:      Type 
 //
 //=============================================================================
-inline SuperCam::Type KullCam::GetType()
-{
+inline SuperCam::Type KullCam::GetType() {
     return KULL_CAM;
 }
 
@@ -114,13 +115,12 @@ inline SuperCam::Type KullCam::GetType()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void KullCam::SetTarget( ISuperCamTarget* target )
-{
+inline void KullCam::SetTarget(ISuperCamTarget *target) {
     mTarget = target;
 }
 
@@ -129,14 +129,13 @@ inline void KullCam::SetTarget( ISuperCamTarget* target )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void KullCam::AddTarget( ISuperCamTarget* target )
-{
-    rAssertMsg( false, "Only call SetTarget on the KullCam" );
+inline void KullCam::AddTarget(ISuperCamTarget *target) {
+    rAssertMsg(false, "Only call SetTarget on the KullCam");
 }
 
 //=============================================================================
@@ -149,10 +148,8 @@ inline void KullCam::AddTarget( ISuperCamTarget* target )
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int KullCam::GetNumTargets() const
-{
-    if ( mTarget )
-    {
+inline unsigned int KullCam::GetNumTargets() const {
+    if (mTarget) {
         return 1;
     }
 

@@ -22,16 +22,20 @@
 //========================================
 // Forward References
 //========================================
-namespace Sound
-{
+namespace Sound {
     class daSoundResourceManager;
+
     class daSoundClipStreamPlayer;
+
     class daSoundPlayerManager;
 }
 
 struct IDaSoundResource;
+
 class SoundLoader;
+
 class SoundRenderingPlayerCallback;
+
 struct IRadSoundHalPositionalGroup;
 
 //=============================================================================
@@ -40,9 +44,9 @@ struct IRadSoundHalPositionalGroup;
 //
 //=============================================================================
 
-struct SimpsonsSoundPlayerCallback
-{
+struct SimpsonsSoundPlayerCallback {
     virtual void OnSoundReady() = 0;
+
     virtual void OnPlaybackComplete() = 0;
 };
 
@@ -52,82 +56,90 @@ struct SimpsonsSoundPlayerCallback
 //
 //=============================================================================
 
-class SimpsonsSoundPlayer
-{
-    public:
-        SimpsonsSoundPlayer();
-        virtual ~SimpsonsSoundPlayer();
+class SimpsonsSoundPlayer {
+public:
+    SimpsonsSoundPlayer();
 
-        bool PlaySound( const char* resourceName, SimpsonsSoundPlayerCallback* callback = NULL );
-                                                 
-        bool PlaySound( Sound::daResourceKey resourceKey, SimpsonsSoundPlayerCallback* callback = NULL );                   
-                        
-        virtual bool PlayResource( IDaSoundResource* resource,
-                                   SimpsonsSoundPlayerCallback* callback = NULL );
-        
-        bool QueueSound( const char* resourceName,
-                         SimpsonsSoundPlayerCallback* callback = NULL )
-            { return( QueueSound( ::radMakeKey32( resourceName ), callback ) ); }
-            
-        bool QueueSound( radKey32 resourceKey,
-                         SimpsonsSoundPlayerCallback* callback = NULL );
-                         
-        bool QueueSound( IDaSoundResource* resource,
-                         SimpsonsSoundPlayerCallback* callback = NULL );
-                         
-        virtual void PlayQueuedSound( SimpsonsSoundPlayerCallback* callback = NULL );
+    virtual ~SimpsonsSoundPlayer();
 
-        void Stop();
-        void Pause();
-        void Continue();
-        bool IsPaused();
+    bool PlaySound(const char *resourceName, SimpsonsSoundPlayerCallback *callback = NULL);
 
-        void OnPlaybackComplete();
-        
-        bool IsInUse() { return( m_playa != NULL ); }
-        
-        void SetPitch( float pitch );
-        void SetTrim( float trim );
+    bool PlaySound(Sound::daResourceKey resourceKey, SimpsonsSoundPlayerCallback *callback = NULL);
 
-    protected:        
+    virtual bool PlayResource(IDaSoundResource *resource,
+                              SimpsonsSoundPlayerCallback *callback = NULL);
 
-        //
-        // Sound renderer's player object
-        //
-        Sound::daSoundClipStreamPlayer* m_playa;
+    bool QueueSound(const char *resourceName,
+                    SimpsonsSoundPlayerCallback *callback = NULL) {
+        return (QueueSound(::radMakeKey32(resourceName), callback));
+    }
 
-        //
-        // Call when we're done with the sound renderer player object
-        //
-        virtual void dumpSoundPlayer();
+    bool QueueSound(radKey32 resourceKey,
+                    SimpsonsSoundPlayerCallback *callback = NULL);
 
-    protected:
-        
-        enum Type { Type_Positional, Type_NonPositional } m_Type;
-           
-    private:
-        //Prevent wasteful constructor creation.
-        SimpsonsSoundPlayer( const SimpsonsSoundPlayer& original );
-        SimpsonsSoundPlayer& operator=( const SimpsonsSoundPlayer& rhs );
+    bool QueueSound(IDaSoundResource *resource,
+                    SimpsonsSoundPlayerCallback *callback = NULL);
 
-        //
-        // Sound renderer resource manager
-        //
-        static Sound::daSoundResourceManager* s_resourceManager;
-        static Sound::daSoundPlayerManager* s_playerManager;
-        static SoundLoader* s_soundLoader;
+    virtual void PlayQueuedSound(SimpsonsSoundPlayerCallback *callback = NULL);
 
-        //
-        // Statistics on players in use
-        //
-        static unsigned int s_playersCreated;
-        static unsigned int s_clipPlayersInUse;
-        static unsigned int s_streamPlayersInUse;
+    void Stop();
 
-        //
-        // Callback object for playback completion
-        //
-        SoundRenderingPlayerCallback* m_callback;
+    void Pause();
+
+    void Continue();
+
+    bool IsPaused();
+
+    void OnPlaybackComplete();
+
+    bool IsInUse() { return (m_playa != NULL); }
+
+    void SetPitch(float pitch);
+
+    void SetTrim(float trim);
+
+protected:
+
+    //
+    // Sound renderer's player object
+    //
+    Sound::daSoundClipStreamPlayer *m_playa;
+
+    //
+    // Call when we're done with the sound renderer player object
+    //
+    virtual void dumpSoundPlayer();
+
+protected:
+
+    enum Type {
+        Type_Positional, Type_NonPositional
+    } m_Type;
+
+private:
+    //Prevent wasteful constructor creation.
+    SimpsonsSoundPlayer(const SimpsonsSoundPlayer &original);
+
+    SimpsonsSoundPlayer &operator=(const SimpsonsSoundPlayer &rhs);
+
+    //
+    // Sound renderer resource manager
+    //
+    static Sound::daSoundResourceManager *s_resourceManager;
+    static Sound::daSoundPlayerManager *s_playerManager;
+    static SoundLoader *s_soundLoader;
+
+    //
+    // Statistics on players in use
+    //
+    static unsigned int s_playersCreated;
+    static unsigned int s_clipPlayersInUse;
+    static unsigned int s_streamPlayersInUse;
+
+    //
+    // Callback object for playback completion
+    //
+    SoundRenderingPlayerCallback *m_callback;
 
 };
 

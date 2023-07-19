@@ -28,41 +28,45 @@
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenViewCredits : public CGuiScreen
-{
+class CGuiScreenViewCredits : public CGuiScreen {
 public:
-    CGuiScreenViewCredits( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenViewCredits(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenViewCredits();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
     void ResetScrolling();
-    bool m_playKKDialog : 1;
 
-    Scrooby::Group* m_creditsGroup;
+    bool m_playKKDialog: 1;
+
+    Scrooby::Group *m_creditsGroup;
 
 private:
-    float FormatTextWithLineBreaks( Scrooby::Text* pText );
+    float FormatTextWithLineBreaks(Scrooby::Text *pText);
 
-    bool ScrollCredits( float pixels );
+    bool ScrollCredits(float pixels);
+
     virtual void OnScrollingDone();
 
-    void OnNewLineDisplayed( int lineNumber );
+    void OnNewLineDisplayed(int lineNumber);
 
     static const int MAX_NUM_CREDITS_PARTITIONS = 32;
 
     static float s_totalTranslateY;
     static float s_numPixelsPerLine;
-    static float s_creditsOffsets[ MAX_NUM_CREDITS_PARTITIONS ];
+    static float s_creditsOffsets[MAX_NUM_CREDITS_PARTITIONS];
 
-    Scrooby::Text* m_credits[ MAX_NUM_CREDITS_PARTITIONS ];
+    Scrooby::Text *m_credits[MAX_NUM_CREDITS_PARTITIONS];
     float m_currentTranslateY;
     int m_lastLineDisplayed;
 

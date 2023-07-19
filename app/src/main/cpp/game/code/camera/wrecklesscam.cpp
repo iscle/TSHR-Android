@@ -55,20 +55,18 @@
 //
 //==============================================================================
 WrecklessCam::WrecklessCam() :
-    mNumTargets( 0 ),
-    mActiveTarget( 0 ),
-    mFOVDelta( 0 ),
-    mMaxFOV( 1.5707f ),
-    mMinFOV( 0.5f ),
-    mMaxDistance( 35.0f ),
-    mMinDistance( 10.0f ),
-    mLag( 0.08f )
-{
+        mNumTargets(0),
+        mActiveTarget(0),
+        mFOVDelta(0),
+        mMaxFOV(1.5707f),
+        mMinFOV(0.5f),
+        mMaxDistance(35.0f),
+        mMinDistance(10.0f),
+        mLag(0.08f) {
     unsigned int i;
-    for ( i = 0; i < MAX_TARGETS; ++i )
-    {
-        mTargets[ i ] = NULL;
-    }    
+    for (i = 0; i < MAX_TARGETS; ++i) {
+        mTargets[i] = NULL;
+    }
 }
 
 //==============================================================================
@@ -81,8 +79,7 @@ WrecklessCam::WrecklessCam() :
 // Return:      N/A.
 //
 //==============================================================================
-WrecklessCam::~WrecklessCam()
-{
+WrecklessCam::~WrecklessCam() {
 }
 
 //=============================================================================
@@ -90,50 +87,46 @@ WrecklessCam::~WrecklessCam()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void WrecklessCam::Update( unsigned int milliseconds )
-{
+void WrecklessCam::Update(unsigned int milliseconds) {
     float timeMod = 1.0f;
-    
-    timeMod = (float)milliseconds / 16.0f;
+
+    timeMod = (float) milliseconds / 16.0f;
 
     rmt::Vector position;
-    mEventListener.GetLastPosition( &position );
+    mEventListener.GetLastPosition(&position);
 
-    if ( position != rmt::Vector(0.0f, 0.0f, 0.0f) )
-    {
+    if (position != rmt::Vector(0.0f, 0.0f, 0.0f)) {
         //Use this position for placing the camera.
-    }
-    else
-    {
+    } else {
         //Get the target position.
-        mTargets[ mActiveTarget ]->GetPosition( &position );
+        mTargets[mActiveTarget]->GetPosition(&position);
 
         //HACK
         position.y += 10.0f;
     }
 
     rmt::Vector targetPos;
-    mTargets[ mActiveTarget ]->GetPosition( &targetPos );
+    mTargets[mActiveTarget]->GetPosition(&targetPos);
 
-    if ( GetFlag( (Flag)CUT ) )
-    {
+    if (GetFlag((Flag) CUT)) {
         mFOV = mMaxFOV;
-        SetFlag( (Flag)CUT, false );
+        SetFlag((Flag) CUT, false);
     }
 
     rmt::Vector camToTarg;
-    camToTarg.Sub( position, targetPos );
+    camToTarg.Sub(position, targetPos);
     float dist = camToTarg.Magnitude();
-    DoWrecklessZoom( dist, mMinDistance, mMaxDistance, mMinFOV, mMaxFOV, mFOV, mFOVDelta, mLag, timeMod );
-    
-    SetFOV( mFOV );
+    DoWrecklessZoom(dist, mMinDistance, mMaxDistance, mMinFOV, mMaxFOV, mFOV, mFOVDelta, mLag,
+                    timeMod);
 
-    SetCameraValues( milliseconds, position, targetPos );
+    SetFOV(mFOV);
+
+    SetCameraValues(milliseconds, position, targetPos);
 }
 
 //=============================================================================
@@ -141,32 +134,28 @@ void WrecklessCam::Update( unsigned int milliseconds )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-void WrecklessCam::SetTarget( ISuperCamTarget* target )
-{
-    rAssert( target );
+void WrecklessCam::SetTarget(ISuperCamTarget *target) {
+    rAssert(target);
 
     //First test to make sure we don't already have this target.
-    if( mNumTargets != 0 )
-    {
+    if (mNumTargets != 0) {
         unsigned int i;
-        for ( i = 0; i < mNumTargets; ++i )
-        {
-            if ( mTargets[ i ] == target )
-            {
+        for (i = 0; i < mNumTargets; ++i) {
+            if (mTargets[i] == target) {
                 //Already got one!
                 mActiveTarget = i;
                 return;
             }
-        }                
+        }
     }
 
     //This is going to be the first target
-    mTargets[ mNumTargets ] = target;
+    mTargets[mNumTargets] = target;
     mActiveTarget = mNumTargets;
     mNumTargets = 1;
 }
@@ -176,20 +165,18 @@ void WrecklessCam::SetTarget( ISuperCamTarget* target )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-void WrecklessCam::AddTarget( ISuperCamTarget* target )
-{
-    rAssert( mNumTargets < MAX_TARGETS );
-    rAssert( target );
+void WrecklessCam::AddTarget(ISuperCamTarget *target) {
+    rAssert(mNumTargets < MAX_TARGETS);
+    rAssert(target);
 
-    if ( mNumTargets < MAX_TARGETS )
-    {
+    if (mNumTargets < MAX_TARGETS) {
         //Add the target
-        mTargets[ mNumTargets ] = target;
+        mTargets[mNumTargets] = target;
 
         ++mNumTargets;
     }
@@ -211,38 +198,33 @@ void WrecklessCam::AddTarget( ISuperCamTarget* target )
 // Return:      void 
 //
 //=============================================================================
-void WrecklessCam::OnInit()
-{
-    mEventListener.SetPlayerID( GetPlayerID() );
+void WrecklessCam::OnInit() {
+    mEventListener.SetPlayerID(GetPlayerID());
 
-    EventManager* evtMngr = GetEventManager();
-    evtMngr->AddListener( GetEventListener(), (EventEnum)(EVENT_LOCATOR + LocatorEvent::CAMERA_CUT) );
+    EventManager *evtMngr = GetEventManager();
+    evtMngr->AddListener(GetEventListener(), (EventEnum)(EVENT_LOCATOR + LocatorEvent::CAMERA_CUT));
 
-    if ( !GetGameplayManager()->mIsDemo )
-    {
+    if (!GetGameplayManager()->mIsDemo) {
         //Find all the CUT_CAM events and make them active.
         p3d::inventory->PushSection();
 
-        if ( GetGameplayManager()->IsSuperSprint() || GetGameplayManager()->GetCurrentLevelIndex() > RenderEnums::L3 ) //Fucking hack.  It's this or change the art pipes.
+        if (GetGameplayManager()->IsSuperSprint() || GetGameplayManager()->GetCurrentLevelIndex() >
+                                                     RenderEnums::L3) //Fucking hack.  It's this or change the art pipes.
         {
-            p3d::inventory->SelectSection( "Level" );
+            p3d::inventory->SelectSection("Level");
+        } else {
+            p3d::inventory->SelectSection("Default");
         }
-        else
-        {
-            p3d::inventory->SelectSection( "Default" );
-        }
 
-        HeapMgr()->PushHeap( GMA_TEMP );
-        tInventory::Iterator<EventLocator> it;
-        HeapMgr()->PopHeap( GMA_TEMP );
+        HeapMgr()->PushHeap(GMA_TEMP);
+        tInventory::Iterator <EventLocator> it;
+        HeapMgr()->PopHeap(GMA_TEMP);
 
-        EventLocator* evtLoc = it.First();
+        EventLocator *evtLoc = it.First();
 
-        while( evtLoc )
-        {
-            if ( evtLoc->GetEventType() == LocatorEvent::CAMERA_CUT )
-            {
-                evtLoc->SetFlag( Locator::ACTIVE, true );
+        while (evtLoc) {
+            if (evtLoc->GetEventType() == LocatorEvent::CAMERA_CUT) {
+                evtLoc->SetFlag(Locator::ACTIVE, true);
             }
 
             evtLoc = it.Next();
@@ -262,27 +244,23 @@ void WrecklessCam::OnInit()
 // Return:      void 
 //
 //=============================================================================
-void WrecklessCam::OnShutdown()
-{
-    GetEventManager()->RemoveAll( GetEventListener() );
+void WrecklessCam::OnShutdown() {
+    GetEventManager()->RemoveAll(GetEventListener());
 
-    if ( !GetGameplayManager()->mIsDemo )
-    {
+    if (!GetGameplayManager()->mIsDemo) {
         //Find all the CUT_CAM events and make them inactive.
         p3d::inventory->PushSection();
-        p3d::inventory->SelectSection( "Default" );
+        p3d::inventory->SelectSection("Default");
 
-        HeapMgr()->PushHeap( GMA_TEMP );
-        tInventory::Iterator<EventLocator> it;
-        HeapMgr()->PopHeap( GMA_TEMP );
+        HeapMgr()->PushHeap(GMA_TEMP);
+        tInventory::Iterator <EventLocator> it;
+        HeapMgr()->PopHeap(GMA_TEMP);
 
-        EventLocator* evtLoc = it.First();
+        EventLocator *evtLoc = it.First();
 
-        while( evtLoc )
-        {
-            if ( evtLoc->GetEventType() == LocatorEvent::CAMERA_CUT )
-            {
-                evtLoc->SetFlag( Locator::ACTIVE, false );
+        while (evtLoc) {
+            if (evtLoc->GetEventType() == LocatorEvent::CAMERA_CUT) {
+                evtLoc->SetFlag(Locator::ACTIVE, false);
             }
 
             evtLoc = it.Next();
@@ -308,17 +286,16 @@ void WrecklessCam::OnShutdown()
 // Return:      void 
 //
 //=============================================================================
-void WrecklessCam::OnRegisterDebugControls()
-{
+void WrecklessCam::OnRegisterDebugControls() {
 #ifdef DEBUGWATCH
     char nameSpace[256];
-    sprintf( nameSpace, "SuperCam\\Player%d\\Wreckless", GetPlayerID() );
+    sprintf(nameSpace, "SuperCam\\Player%d\\Wreckless", GetPlayerID());
 
-    radDbgWatchAddFloat( &mMinFOV, "Min FOV", nameSpace, NULL, NULL, 0.0f, rmt::PI );
-    radDbgWatchAddFloat( &mMaxFOV, "Max FOV", nameSpace, NULL, NULL, 0.0f, rmt::PI );
-    radDbgWatchAddFloat( &mMinDistance, "Min Dist", nameSpace, NULL, NULL, 0.0f, 100.0f );
-    radDbgWatchAddFloat( &mMaxDistance, "Max Dist", nameSpace, NULL, NULL, 0.0f, 100.0f );
-    radDbgWatchAddFloat( &mLag, "Lag", nameSpace, NULL, NULL, 0.0f, 1.0f );
+    radDbgWatchAddFloat(&mMinFOV, "Min FOV", nameSpace, NULL, NULL, 0.0f, rmt::PI);
+    radDbgWatchAddFloat(&mMaxFOV, "Max FOV", nameSpace, NULL, NULL, 0.0f, rmt::PI);
+    radDbgWatchAddFloat(&mMinDistance, "Min Dist", nameSpace, NULL, NULL, 0.0f, 100.0f);
+    radDbgWatchAddFloat(&mMaxDistance, "Max Dist", nameSpace, NULL, NULL, 0.0f, 100.0f);
+    radDbgWatchAddFloat(&mLag, "Lag", nameSpace, NULL, NULL, 0.0f, 1.0f);
 #endif
 }
 
@@ -332,13 +309,12 @@ void WrecklessCam::OnRegisterDebugControls()
 // Return:      void 
 //
 //=============================================================================
-void WrecklessCam::OnUnregisterDebugControls()
-{
+void WrecklessCam::OnUnregisterDebugControls() {
 #ifdef DEBUGWATCH
-    radDbgWatchDelete( &mMinFOV );
-    radDbgWatchDelete( &mMaxFOV );
-    radDbgWatchDelete( &mMinDistance );
-    radDbgWatchDelete( &mMaxDistance );
-    radDbgWatchDelete( &mLag );
+    radDbgWatchDelete(&mMinFOV);
+    radDbgWatchDelete(&mMaxFOV);
+    radDbgWatchDelete(&mMinDistance);
+    radDbgWatchDelete(&mMaxDistance);
+    radDbgWatchDelete(&mLag);
 #endif
 }

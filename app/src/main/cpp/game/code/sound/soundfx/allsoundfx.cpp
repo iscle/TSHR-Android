@@ -10,5 +10,7 @@
 #ifdef RAD_PS2
 #include <sound/soundfx/ps2reverbcontroller.cpp>
 #else
+
 #include <sound/soundfx/gcreverbcontroller.cpp>
+
 #endif

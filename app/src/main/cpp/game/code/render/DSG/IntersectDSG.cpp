@@ -27,11 +27,11 @@
 // Global Data, Local Data, Local Classes
 //
 //************************************************************************
-int*           IntersectDSG::mspIndexData   = NULL;
-unsigned char* IntersectDSG::mspTerrainData = NULL;
-rmt::Vector*   IntersectDSG::mspVertexData  = NULL;
-rmt::Vector*   IntersectDSG::mspNormalData  = NULL;
-bool           IntersectDSG::msbInScratchPad= false;
+int *IntersectDSG::mspIndexData = NULL;
+unsigned char *IntersectDSG::mspTerrainData = NULL;
+rmt::Vector *IntersectDSG::mspVertexData = NULL;
+rmt::Vector *IntersectDSG::mspNormalData = NULL;
+bool           IntersectDSG::msbInScratchPad = false;
 
 //************************************************************************
 //
@@ -51,25 +51,8 @@ bool           IntersectDSG::msbInScratchPad= false;
 // Constraints: None.
 //
 //========================================================================
-IntersectDSG::IntersectDSG( tGeometry* ipGeometry )
-{
-   GenIDSG(ipGeometry);
-}
-//========================================================================
-// IntersectDSG::
-//========================================================================
-//
-// Description: 
-//
-// Parameters:  None.
-//
-// Return:      None.
-//
-// Constraints: None.
-//
-//========================================================================
-IntersectDSG::IntersectDSG()
-{
+IntersectDSG::IntersectDSG(tGeometry *ipGeometry) {
+    GenIDSG(ipGeometry);
 }
 
 //========================================================================
@@ -85,9 +68,25 @@ IntersectDSG::IntersectDSG()
 // Constraints: None.
 //
 //========================================================================
-IntersectDSG::~IntersectDSG()
-{
+IntersectDSG::IntersectDSG() {
 }
+
+//========================================================================
+// IntersectDSG::
+//========================================================================
+//
+// Description: 
+//
+// Parameters:  None.
+//
+// Return:      None.
+//
+// Constraints: None.
+//
+//========================================================================
+IntersectDSG::~IntersectDSG() {
+}
+
 //========================================================================
 // intersectdsg::
 //========================================================================
@@ -102,19 +101,19 @@ IntersectDSG::~IntersectDSG()
 //
 //========================================================================
 //#ifndef RAD_RELEASE
-inline void IntersectDSG::DrawTri(rmt::Vector* ipTriPts, tColour iColour)
-{
-   pddiPrimStream* stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 4);
-   stream->Colour(iColour);
-   stream->Coord(ipTriPts[0].x, ipTriPts[0].y, ipTriPts[0].z);
-   stream->Colour(iColour);
-   stream->Coord(ipTriPts[1].x, ipTriPts[1].y, ipTriPts[1].z);
-   stream->Colour(iColour);
-   stream->Coord(ipTriPts[2].x, ipTriPts[2].y, ipTriPts[2].z);    
-   stream->Colour(iColour);
-   stream->Coord(ipTriPts[0].x, ipTriPts[0].y, ipTriPts[0].z);
-   p3d::pddi->EndPrims(stream);
+inline void IntersectDSG::DrawTri(rmt::Vector *ipTriPts, tColour iColour) {
+    pddiPrimStream *stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 4);
+    stream->Colour(iColour);
+    stream->Coord(ipTriPts[0].x, ipTriPts[0].y, ipTriPts[0].z);
+    stream->Colour(iColour);
+    stream->Coord(ipTriPts[1].x, ipTriPts[1].y, ipTriPts[1].z);
+    stream->Colour(iColour);
+    stream->Coord(ipTriPts[2].x, ipTriPts[2].y, ipTriPts[2].z);
+    stream->Colour(iColour);
+    stream->Coord(ipTriPts[0].x, ipTriPts[0].y, ipTriPts[0].z);
+    p3d::pddi->EndPrims(stream);
 }
+
 //#endif
 //========================================================================
 // IntersectDSG::
@@ -129,19 +128,18 @@ inline void IntersectDSG::DrawTri(rmt::Vector* ipTriPts, tColour iColour)
 // Constraints: None.
 //
 //========================================================================
-void IntersectDSG::Display()
-{
-   //Currently unsupported function. Contact Devin.
- // rAssert(false);
+void IntersectDSG::Display() {
+    //Currently unsupported function. Contact Devin.
+    // rAssert(false);
 //#ifndef RAD_RELEASE
     rmt::Vector triPts[3], triNorm;
-    for(int i = nTris()-1; i>-1; i--)
-    {
-        mTri(i,triPts,triNorm);
-        DrawTri(triPts,tColour(255,255,255));
+    for (int i = nTris() - 1; i > -1; i--) {
+        mTri(i, triPts, triNorm);
+        DrawTri(triPts, tColour(255, 255, 255));
     }
 //#endif
 }
+
 //========================================================================
 // IntersectDSG::
 //========================================================================
@@ -155,10 +153,10 @@ void IntersectDSG::Display()
 // Constraints: None.
 //
 //========================================================================
-const rmt::Vector& IntersectDSG::rPosition()
-{
-   return mPosn;
+const rmt::Vector &IntersectDSG::rPosition() {
+    return mPosn;
 }
+
 //========================================================================
 // IntersectDSG::
 //========================================================================
@@ -172,10 +170,10 @@ const rmt::Vector& IntersectDSG::rPosition()
 // Constraints: None.
 //
 //========================================================================
-rmt::Vector* IntersectDSG::pPosition()
-{
-   return &mPosn;
+rmt::Vector *IntersectDSG::pPosition() {
+    return &mPosn;
 }
+
 //========================================================================
 // IntersectDSG::
 //========================================================================
@@ -189,10 +187,10 @@ rmt::Vector* IntersectDSG::pPosition()
 // Constraints: None.
 //
 //========================================================================
-void IntersectDSG::GetPosition( rmt::Vector* ipPosn )
-{
-   *ipPosn = mPosn;
+void IntersectDSG::GetPosition(rmt::Vector *ipPosn) {
+    *ipPosn = mPosn;
 }
+
 //========================================================================
 // intersectdsg::
 //========================================================================
@@ -206,67 +204,67 @@ void IntersectDSG::GetPosition( rmt::Vector* ipPosn )
 // Constraints: None.
 //
 //========================================================================
-void IntersectDSG::IntoTheVoid_WithGoFastaStripes()
-{
-    mspVertexData     = mTriPts.mpData;
-    mspNormalData     = mTriNorms.mpData;
-    mspIndexData      = mTriIndices.mpData;
-    mspTerrainData    = mTerrainType.mpData;
-    msbInScratchPad   = false;
+void IntersectDSG::IntoTheVoid_WithGoFastaStripes() {
+    mspVertexData = mTriPts.mpData;
+    mspNormalData = mTriNorms.mpData;
+    mspIndexData = mTriIndices.mpData;
+    mspTerrainData = mTerrainType.mpData;
+    msbInScratchPad = false;
 #ifdef RAD_PS2
-   static pddiExtPS2Control* ps2Control = (pddiExtPS2Control*)p3d::pddi->GetExtension(PDDI_EXT_PS2_CONTROL);
+    static pddiExtPS2Control* ps2Control = (pddiExtPS2Control*)p3d::pddi->GetExtension(PDDI_EXT_PS2_CONTROL);
 
-   //////////////////////////////////////////////////////////////////////////
-   // If we can fit on the scratchpad used by the mFIFO
-   //////////////////////////////////////////////////////////////////////////
-   if( ( sizeof(*mTriPts.mpData)*mTriPts.mUseSize 
-       + sizeof(*mTriNorms.mpData)*mTriNorms.mUseSize 
-       + sizeof(*mTriIndices.mpData)*mTriIndices.mUseSize 
-       + sizeof(*mTerrainType.mpData)*mTerrainType.mUseSize ) < 8192 ) 
-   {
-      msbInScratchPad = true;
-      ps2Control->SyncScratchPad();
+    //////////////////////////////////////////////////////////////////////////
+    // If we can fit on the scratchpad used by the mFIFO
+    //////////////////////////////////////////////////////////////////////////
+    if((sizeof(*mTriPts.mpData)*mTriPts.mUseSize
+        + sizeof(*mTriNorms.mpData)*mTriNorms.mUseSize
+        + sizeof(*mTriIndices.mpData)*mTriIndices.mUseSize
+        + sizeof(*mTerrainType.mpData)*mTerrainType.mUseSize) <8192)
+    {
+       msbInScratchPad = true;
+       ps2Control->SyncScratchPad();
 
 
-      char* pScratchPad = (char*)0x70000000;
+       char* pScratchPad = (char*)0x70000000;
 
-      if(mTriPts.mUseSize>0)
-      {
-         memcpy(pScratchPad, mTriPts.mpData, mTriPts.mUseSize*sizeof(*mTriPts.mpData) );
-         mTriPts.mpData = (rmt::Vector*)pScratchPad;
-         pScratchPad+=mTriPts.mUseSize*sizeof(*mTriPts.mpData);
-         for(int i=mTriPts.mUseSize-1; i>-1; i--)
-         {
-             ((int&)(mTriPts[i].y)) = IntersectDSG::UNINIT_PT;
-         }
-      }
+       if(mTriPts.mUseSize>0)
+       {
+          memcpy(pScratchPad, mTriPts.mpData, mTriPts.mUseSize*sizeof(*mTriPts.mpData));
+          mTriPts.mpData = (rmt::Vector*)pScratchPad;
+          pScratchPad+=mTriPts.mUseSize*sizeof(*mTriPts.mpData);
+          for(int i=mTriPts.mUseSize-1; i>-1; i--)
+          {
+              ((int&)(mTriPts[i].y)) = IntersectDSG::UNINIT_PT;
+          }
+       }
 
-      if(mTriNorms.mUseSize>0)
-      {
-         memcpy(pScratchPad, mTriNorms.mpData, mTriNorms.mUseSize*sizeof(*mTriNorms.mpData) );
-         mTriNorms.mpData = (rmt::Vector*)pScratchPad;
-         pScratchPad+=mTriNorms.mUseSize*sizeof(*mTriNorms.mpData);
-      }
+       if(mTriNorms.mUseSize>0)
+       {
+          memcpy(pScratchPad, mTriNorms.mpData, mTriNorms.mUseSize*sizeof(*mTriNorms.mpData));
+          mTriNorms.mpData = (rmt::Vector*)pScratchPad;
+          pScratchPad+=mTriNorms.mUseSize*sizeof(*mTriNorms.mpData);
+       }
 
-      if(mTriIndices.mUseSize>0)
-      {
-         memcpy(pScratchPad, mTriIndices.mpData, mTriIndices.mUseSize*sizeof(*mTriIndices.mpData) );
-         mTriIndices.mpData = (int*)pScratchPad;
-         pScratchPad+=mTriIndices.mUseSize*sizeof(*mTriIndices.mpData);
-      }
+       if(mTriIndices.mUseSize>0)
+       {
+          memcpy(pScratchPad, mTriIndices.mpData, mTriIndices.mUseSize*sizeof(*mTriIndices.mpData));
+          mTriIndices.mpData = (int*)pScratchPad;
+          pScratchPad+=mTriIndices.mUseSize*sizeof(*mTriIndices.mpData);
+       }
 
-      if(mTerrainType.mUseSize>0)
-      {
-         memcpy(pScratchPad, mTerrainType.mpData, mTerrainType.mUseSize*sizeof(*mTerrainType.mpData) );
-         mTerrainType.mpData = (unsigned char*)pScratchPad;
-         pScratchPad+=mTerrainType.mUseSize*sizeof(*mTerrainType.mpData);
-      }
+       if(mTerrainType.mUseSize>0)
+       {
+          memcpy(pScratchPad, mTerrainType.mpData, mTerrainType.mUseSize*sizeof(*mTerrainType.mpData));
+          mTerrainType.mpData = (unsigned char*)pScratchPad;
+          pScratchPad+=mTerrainType.mUseSize*sizeof(*mTerrainType.mpData);
+       }
 
-      //if(((int)pScratchPad)-0x70000000 > 8192)
-      //    rReleasePrintf("***ack! Overwriting ScratchPad memory for something non mFIFO\n" );
-   }
+       //if(((int)pScratchPad)-0x70000000> 8192)
+       //    rReleasePrintf("***ack! Overwriting ScratchPad memory for something non mFIFO\n");
+    }
 #endif
 }
+
 //========================================================================
 // intersectdsg::
 //========================================================================
@@ -280,14 +278,14 @@ void IntersectDSG::IntoTheVoid_WithGoFastaStripes()
 // Constraints: None.
 //
 //========================================================================
-void IntersectDSG::OutOfTheVoid_WithGoFastaStripes()
-{
-    mTriPts.mpData        = mspVertexData;
-    mTriNorms.mpData      = mspNormalData;
-    mTriIndices.mpData    = mspIndexData;
-    mTerrainType.mpData   = mspTerrainData;
+void IntersectDSG::OutOfTheVoid_WithGoFastaStripes() {
+    mTriPts.mpData = mspVertexData;
+    mTriNorms.mpData = mspNormalData;
+    mTriIndices.mpData = mspIndexData;
+    mTerrainType.mpData = mspTerrainData;
     msbInScratchPad = false;
 }
+
 //========================================================================
 // IntersectDSG::
 //========================================================================
@@ -302,12 +300,11 @@ void IntersectDSG::OutOfTheVoid_WithGoFastaStripes()
 //
 //========================================================================
 int IntersectDSG::mFlatTriFast
-( 
-   int& orTriNum,
-   rmt::Vector* iopTriPts, 
-   rmt::Vector& orTriNorm
-)
-{
+        (
+                int &orTriNum,
+                rmt::Vector *iopTriPts,
+                rmt::Vector &orTriNorm
+        ) {
     const float PT_EPSILON = 0.01f;
     rmt::Vector posnRef = iopTriPts[0];
     int Mask = IntersectDSG::UNINIT_PT;
@@ -317,123 +314,120 @@ int IntersectDSG::mFlatTriFast
 
     int i, j;
 
-    if(msbInScratchPad)
-    {
-        for(i=orTriNum; Mask!=IntersectDSG::FOUND_PT && i>-1; i--)
-        {
+    if (msbInScratchPad) {
+        for (i = orTriNum; Mask != IntersectDSG::FOUND_PT && i > -1; i--) {
             Mask = IntersectDSG::UNINIT_PT;
             //////////////////////////////////////////////////////////////////////////
             // Intentional Copy n Paste is done to ensure inlining
             //////////////////////////////////////////////////////////////////////////
-            j = mTriIndices[i*3];
-            
-            int* pPtFlags = &((int&)(mTriPts[j].y));//rPtFlags = Mask;
-            if( *pPtFlags == IntersectDSG::UNINIT_PT )//!(rPtFlags & IntersectDSG::INIT_PT) )
+            j = mTriIndices[i * 3];
+
+            int *pPtFlags = &((int &) (mTriPts[j].y));//rPtFlags = Mask;
+            if (*pPtFlags == IntersectDSG::UNINIT_PT)//!(rPtFlags & IntersectDSG::INIT_PT))
             {
                 //Initialise Point; intentional overlap. See Mask.
-                if( mTriPts[j].x <= (posnRef.x + PT_EPSILON) )     (*pPtFlags) |= IntersectDSG::X_LT_PT;
-                if( mTriPts[j].x >= (posnRef.x - PT_EPSILON) )     (*pPtFlags) |= IntersectDSG::X_GT_PT;
-                if( mTriPts[j].z <= (posnRef.z + PT_EPSILON) )     (*pPtFlags) |= IntersectDSG::Z_LT_PT;
-                if( mTriPts[j].z >= (posnRef.z - PT_EPSILON) )     (*pPtFlags) |= IntersectDSG::Z_GT_PT;            
-                (*pPtFlags) |= IntersectDSG::INIT_PT;
-            }
-            Mask |= (*pPtFlags);
-            
-            j = mTriIndices[i*3+1];
-            pPtFlags = &((int&)(mTriPts[j].y));//rPtFlags = Mask;
-            if( (*pPtFlags) == IntersectDSG::UNINIT_PT )//!(rPtFlags & IntersectDSG::INIT_PT) )
-            {
-                //Initialise Point; intentional overlap. See Mask.
-                if( mTriPts[j].x <= (posnRef.x + PT_EPSILON) )     (*pPtFlags) |= IntersectDSG::X_LT_PT;
-                if( mTriPts[j].x >= (posnRef.x - PT_EPSILON) )     (*pPtFlags) |= IntersectDSG::X_GT_PT;
-                if( mTriPts[j].z <= (posnRef.z + PT_EPSILON) )     (*pPtFlags) |= IntersectDSG::Z_LT_PT;
-                if( mTriPts[j].z >= (posnRef.z - PT_EPSILON) )     (*pPtFlags) |= IntersectDSG::Z_GT_PT;            
-                (*pPtFlags) |= IntersectDSG::INIT_PT;
-            }
-            Mask |= (*pPtFlags);
-            
-            j = mTriIndices[i*3+2];
-            pPtFlags = &((int&)(mTriPts[j].y));//rPtFlags = Mask;
-            if( (*pPtFlags) == IntersectDSG::UNINIT_PT )//!(rPtFlags & IntersectDSG::INIT_PT) )
-            {
-                //Initialise Point; intentional overlap. See Mask.
-                if( mTriPts[j].x <= (posnRef.x + PT_EPSILON) )     (*pPtFlags) |= IntersectDSG::X_LT_PT;
-                if( mTriPts[j].x >= (posnRef.x - PT_EPSILON) )     (*pPtFlags) |= IntersectDSG::X_GT_PT;
-                if( mTriPts[j].z <= (posnRef.z + PT_EPSILON) )     (*pPtFlags) |= IntersectDSG::Z_LT_PT;
-                if( mTriPts[j].z >= (posnRef.z - PT_EPSILON) )     (*pPtFlags) |= IntersectDSG::Z_GT_PT;            
+                if (mTriPts[j].x <= (posnRef.x + PT_EPSILON)) (*pPtFlags) |= IntersectDSG::X_LT_PT;
+                if (mTriPts[j].x >= (posnRef.x - PT_EPSILON)) (*pPtFlags) |= IntersectDSG::X_GT_PT;
+                if (mTriPts[j].z <= (posnRef.z + PT_EPSILON)) (*pPtFlags) |= IntersectDSG::Z_LT_PT;
+                if (mTriPts[j].z >= (posnRef.z - PT_EPSILON)) (*pPtFlags) |= IntersectDSG::Z_GT_PT;
                 (*pPtFlags) |= IntersectDSG::INIT_PT;
             }
             Mask |= (*pPtFlags);
 
-            if(Mask==IntersectDSG::FOUND_PT)
+            j = mTriIndices[i * 3 + 1];
+            pPtFlags = &((int &) (mTriPts[j].y));//rPtFlags = Mask;
+            if ((*pPtFlags) == IntersectDSG::UNINIT_PT)//!(rPtFlags & IntersectDSG::INIT_PT))
             {
-                j=mTriIndices[i*3];   *iopTriPts      = mTriPts[j];  iopTriPts->y     = mspVertexData[j].y; 
-                j=mTriIndices[i*3+1]; *(iopTriPts+1)  = mTriPts[j];  (iopTriPts+1)->y = mspVertexData[j].y; 
-                j=mTriIndices[i*3+2]; *(iopTriPts+2)  = mTriPts[j];  (iopTriPts+2)->y = mspVertexData[j].y;
-                orTriNum=i;
+                //Initialise Point; intentional overlap. See Mask.
+                if (mTriPts[j].x <= (posnRef.x + PT_EPSILON)) (*pPtFlags) |= IntersectDSG::X_LT_PT;
+                if (mTriPts[j].x >= (posnRef.x - PT_EPSILON)) (*pPtFlags) |= IntersectDSG::X_GT_PT;
+                if (mTriPts[j].z <= (posnRef.z + PT_EPSILON)) (*pPtFlags) |= IntersectDSG::Z_LT_PT;
+                if (mTriPts[j].z >= (posnRef.z - PT_EPSILON)) (*pPtFlags) |= IntersectDSG::Z_GT_PT;
+                (*pPtFlags) |= IntersectDSG::INIT_PT;
+            }
+            Mask |= (*pPtFlags);
+
+            j = mTriIndices[i * 3 + 2];
+            pPtFlags = &((int &) (mTriPts[j].y));//rPtFlags = Mask;
+            if ((*pPtFlags) == IntersectDSG::UNINIT_PT)//!(rPtFlags & IntersectDSG::INIT_PT))
+            {
+                //Initialise Point; intentional overlap. See Mask.
+                if (mTriPts[j].x <= (posnRef.x + PT_EPSILON)) (*pPtFlags) |= IntersectDSG::X_LT_PT;
+                if (mTriPts[j].x >= (posnRef.x - PT_EPSILON)) (*pPtFlags) |= IntersectDSG::X_GT_PT;
+                if (mTriPts[j].z <= (posnRef.z + PT_EPSILON)) (*pPtFlags) |= IntersectDSG::Z_LT_PT;
+                if (mTriPts[j].z >= (posnRef.z - PT_EPSILON)) (*pPtFlags) |= IntersectDSG::Z_GT_PT;
+                (*pPtFlags) |= IntersectDSG::INIT_PT;
+            }
+            Mask |= (*pPtFlags);
+
+            if (Mask == IntersectDSG::FOUND_PT) {
+                j = mTriIndices[i * 3];
+                *iopTriPts = mTriPts[j];
+                iopTriPts->y = mspVertexData[j].y;
+                j = mTriIndices[i * 3 + 1];
+                *(iopTriPts + 1) = mTriPts[j];
+                (iopTriPts + 1)->y = mspVertexData[j].y;
+                j = mTriIndices[i * 3 + 2];
+                *(iopTriPts + 2) = mTriPts[j];
+                (iopTriPts + 2)->y = mspVertexData[j].y;
+                orTriNum = i;
 
                 orTriNorm = mTriNorms[orTriNum];
 
-                if( mTerrainType.IsSetUp() )
-                {
+                if (mTerrainType.IsSetUp()) {
                     return mTerrainType[orTriNum];
-                }
-                else
-                {
+                } else {
                     return 0;
                 }
             }
         }
-    }
-    else //NotInScratchPad
+    } else //NotInScratchPad
     {
-        for(i=orTriNum; Mask!=IntersectDSG::FOUND_PT && i>-1; i--)
-        {
+        for (i = orTriNum; Mask != IntersectDSG::FOUND_PT && i > -1; i--) {
             Mask |= IntersectDSG::INIT_PT;
-        //////////////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////
             // Intentional Copy n Paste is done to ensure inlining
             //////////////////////////////////////////////////////////////////////////
-            j = mTriIndices[i*3];
+            j = mTriIndices[i * 3];
             {
-                if( mTriPts[j].x <= (posnRef.x + PT_EPSILON) )     Mask |= IntersectDSG::X_LT_PT;
-                if( mTriPts[j].x >= (posnRef.x - PT_EPSILON) )     Mask |= IntersectDSG::X_GT_PT;
-                if( mTriPts[j].z <= (posnRef.z + PT_EPSILON) )     Mask |= IntersectDSG::Z_LT_PT;
-                if( mTriPts[j].z >= (posnRef.z - PT_EPSILON) )     Mask |= IntersectDSG::Z_GT_PT;            
-            }
-            
-            j = mTriIndices[i*3+1];
-            {
-                //Initialise Point; intentional overlap. See Mask.
-                if( mTriPts[j].x <= (posnRef.x + PT_EPSILON) )     Mask |= IntersectDSG::X_LT_PT;
-                if( mTriPts[j].x >= (posnRef.x - PT_EPSILON) )     Mask |= IntersectDSG::X_GT_PT;
-                if( mTriPts[j].z <= (posnRef.z + PT_EPSILON) )     Mask |= IntersectDSG::Z_LT_PT;
-                if( mTriPts[j].z >= (posnRef.z - PT_EPSILON) )     Mask |= IntersectDSG::Z_GT_PT;            
-            }
- 
-            j = mTriIndices[i*3+2];
-            {
-                //Initialise Point; intentional overlap. See Mask.
-                if( mTriPts[j].x <= (posnRef.x + PT_EPSILON) )     Mask |= IntersectDSG::X_LT_PT;
-                if( mTriPts[j].x >= (posnRef.x - PT_EPSILON) )     Mask |= IntersectDSG::X_GT_PT;
-                if( mTriPts[j].z <= (posnRef.z + PT_EPSILON) )     Mask |= IntersectDSG::Z_LT_PT;
-                if( mTriPts[j].z >= (posnRef.z - PT_EPSILON) )     Mask |= IntersectDSG::Z_GT_PT;            
+                if (mTriPts[j].x <= (posnRef.x + PT_EPSILON)) Mask |= IntersectDSG::X_LT_PT;
+                if (mTriPts[j].x >= (posnRef.x - PT_EPSILON)) Mask |= IntersectDSG::X_GT_PT;
+                if (mTriPts[j].z <= (posnRef.z + PT_EPSILON)) Mask |= IntersectDSG::Z_LT_PT;
+                if (mTriPts[j].z >= (posnRef.z - PT_EPSILON)) Mask |= IntersectDSG::Z_GT_PT;
             }
 
-            if(Mask==IntersectDSG::FOUND_PT)
+            j = mTriIndices[i * 3 + 1];
             {
-                j=mTriIndices[i*3];   *iopTriPts      = mTriPts[j];  
-                j=mTriIndices[i*3+1]; *(iopTriPts+1)  = mTriPts[j];  
-                j=mTriIndices[i*3+2]; *(iopTriPts+2)  = mTriPts[j]; 
-                orTriNum=i;
+                //Initialise Point; intentional overlap. See Mask.
+                if (mTriPts[j].x <= (posnRef.x + PT_EPSILON)) Mask |= IntersectDSG::X_LT_PT;
+                if (mTriPts[j].x >= (posnRef.x - PT_EPSILON)) Mask |= IntersectDSG::X_GT_PT;
+                if (mTriPts[j].z <= (posnRef.z + PT_EPSILON)) Mask |= IntersectDSG::Z_LT_PT;
+                if (mTriPts[j].z >= (posnRef.z - PT_EPSILON)) Mask |= IntersectDSG::Z_GT_PT;
+            }
+
+            j = mTriIndices[i * 3 + 2];
+            {
+                //Initialise Point; intentional overlap. See Mask.
+                if (mTriPts[j].x <= (posnRef.x + PT_EPSILON)) Mask |= IntersectDSG::X_LT_PT;
+                if (mTriPts[j].x >= (posnRef.x - PT_EPSILON)) Mask |= IntersectDSG::X_GT_PT;
+                if (mTriPts[j].z <= (posnRef.z + PT_EPSILON)) Mask |= IntersectDSG::Z_LT_PT;
+                if (mTriPts[j].z >= (posnRef.z - PT_EPSILON)) Mask |= IntersectDSG::Z_GT_PT;
+            }
+
+            if (Mask == IntersectDSG::FOUND_PT) {
+                j = mTriIndices[i * 3];
+                *iopTriPts = mTriPts[j];
+                j = mTriIndices[i * 3 + 1];
+                *(iopTriPts + 1) = mTriPts[j];
+                j = mTriIndices[i * 3 + 2];
+                *(iopTriPts + 2) = mTriPts[j];
+                orTriNum = i;
 
                 orTriNorm = mTriNorms[orTriNum];
 
-                if( mTerrainType.IsSetUp() )
-                {
+                if (mTerrainType.IsSetUp()) {
                     return mTerrainType[orTriNum];
-                }
-                else
-                {
+                } else {
                     return 0;
                 }
             }
@@ -442,6 +436,7 @@ int IntersectDSG::mFlatTriFast
     return -1;
     //rTuneAssert(orTriNum==i+1);
 }
+
 //========================================================================
 // IntersectDSG::
 //========================================================================
@@ -456,63 +451,53 @@ int IntersectDSG::mFlatTriFast
 //
 //========================================================================
 int IntersectDSG::mTri
-( 
-   int inTri, 
-   rmt::Vector* opTriPts, 
-   rmt::Vector& orTriNorm//, 
-   //rmt::Vector& orTriCtr,
-   //int* opTerrainType
-)
-{
-    //rReleaseAssert(     ((((int)mspVertexData)&0x70000000)==0)
+        (
+                int inTri,
+                rmt::Vector *opTriPts,
+                rmt::Vector &orTriNorm//,
+                //rmt::Vector& orTriCtr,
+                //int* opTerrainType
+        ) {
+    //rReleaseAssert(((((int)mspVertexData)&0x70000000)==0)
     //                &&  ((((int)mspNormalData)&0x70000000)==0)
     //                &&  ((((int)mspIndexData)&0x70000000)==0)
     //                &&  ((((int)mspTerrainData)&0x70000000)==0)); 
 
-    if( mTriIndices.mUseSize > 0 )
-    {
+    if (mTriIndices.mUseSize > 0) {
         rAssert(mTriIndices.IsSetUp());
 
-        *opTriPts      = mTriPts[mTriIndices[inTri*3]];
-        *(opTriPts+1)  = mTriPts[mTriIndices[inTri*3+1]];
-        *(opTriPts+2)  = mTriPts[mTriIndices[inTri*3+2]];
+        *opTriPts = mTriPts[mTriIndices[inTri * 3]];
+        *(opTriPts + 1) = mTriPts[mTriIndices[inTri * 3 + 1]];
+        *(opTriPts + 2) = mTriPts[mTriIndices[inTri * 3 + 2]];
 
         orTriNorm = mTriNorms[inTri];
         //orTriCtr  = mTriCentroids[inTri];
-        //if( opTerrainType )
+        //if(opTerrainType)
         {
-            if( mTerrainType.IsSetUp() )
-            {
+            if (mTerrainType.IsSetUp()) {
                 //*opTerrainType = mTerrainType[ inTri ];
-                return mTerrainType[ inTri ];
-            }
-            else
-            {
+                return mTerrainType[inTri];
+            } else {
                 //*opTerrainType = 0;
                 return 0;
             }
         }
         //return 0.0f;// mTriRadius[inTri];
-    }
-    else
-    {
+    } else {
         rAssert(mTriPts.IsSetUp());
 
-        *opTriPts      = mTriPts[inTri*3];
-        *(opTriPts+1)  = mTriPts[inTri*3+1];
-        *(opTriPts+2)  = mTriPts[inTri*3+2];
+        *opTriPts = mTriPts[inTri * 3];
+        *(opTriPts + 1) = mTriPts[inTri * 3 + 1];
+        *(opTriPts + 2) = mTriPts[inTri * 3 + 2];
 
         orTriNorm = mTriNorms[inTri];
         //orTriCtr  = mTriCentroids[inTri];
-        //if( opTerrainType )
+        //if(opTerrainType)
         {
-            if( mTerrainType.IsSetUp() )
-            {
+            if (mTerrainType.IsSetUp()) {
                 //*opTerrainType = mTerrainType[ inTri ];
-                return mTerrainType[ inTri ];
-            }
-            else
-            {
+                return mTerrainType[inTri];
+            } else {
                 //*opTerrainType = 0;
                 return 0;
             }
@@ -521,6 +506,7 @@ int IntersectDSG::mTri
     }
 
 }
+
 //========================================================================
 // IntersectDSG::
 //========================================================================
@@ -534,21 +520,18 @@ int IntersectDSG::mTri
 // Constraints: None.
 //
 //========================================================================
-int IntersectDSG::nTris()
-{
-    if( mTriIndices.mUseSize > 0 )
-    {
+int IntersectDSG::nTris() {
+    if (mTriIndices.mUseSize > 0) {
         rAssert(mTriIndices.IsSetUp());
 
-        return mTriIndices.mUseSize/3;   
-    }
-    else
-    {
+        return mTriIndices.mUseSize / 3;
+    } else {
         rAssert(mTriPts.IsSetUp());
 
         return mTriPts.mUseSize / 3;
     }
 }
+
 //========================================================================
 // IntersectDSG::
 //========================================================================
@@ -562,10 +545,10 @@ int IntersectDSG::nTris()
 // Constraints: None.
 //
 //========================================================================
-void IntersectDSG::GetBoundingBox(rmt::Box3D* box)
-{
-   *box = mBox3D;
+void IntersectDSG::GetBoundingBox(rmt::Box3D *box) {
+    *box = mBox3D;
 }
+
 //========================================================================
 // IntersectDSG::
 //========================================================================
@@ -579,10 +562,10 @@ void IntersectDSG::GetBoundingBox(rmt::Box3D* box)
 // Constraints: None.
 //
 //========================================================================
-void IntersectDSG::GetBoundingSphere(rmt::Sphere* sphere)
-{
-   *sphere = mSphere;
+void IntersectDSG::GetBoundingSphere(rmt::Sphere *sphere) {
+    *sphere = mSphere;
 }
+
 //========================================================================
 // IntersectDSG::
 //========================================================================
@@ -597,18 +580,18 @@ void IntersectDSG::GetBoundingSphere(rmt::Sphere* sphere)
 //
 //========================================================================
 void IntersectDSG::SetBoundingBox
-(  
-   float x1, float y1, float z1,
-   float x2, float y2, float z2
-)
-{
-   mBox3D.low.Set(x1,y1,z1);
-   mBox3D.high.Set(x2,y2,z2);
+        (
+                float x1, float y1, float z1,
+                float x2, float y2, float z2
+        ) {
+    mBox3D.low.Set(x1, y1, z1);
+    mBox3D.high.Set(x2, y2, z2);
 
-   mPosn.Sub(mBox3D.high, mBox3D.low);
-   mPosn *= 0.5f;
-   mPosn.Add(mBox3D.low);
+    mPosn.Sub(mBox3D.high, mBox3D.low);
+    mPosn *= 0.5f;
+    mPosn.Add(mBox3D.low);
 }
+
 //========================================================================
 // IntersectDSG::
 //========================================================================
@@ -622,13 +605,13 @@ void IntersectDSG::SetBoundingBox
 // Constraints: None.
 //
 //========================================================================
-void IntersectDSG::SetBoundingSphere(float x, float y, float z, float radius)
-{
-   mSphere.centre.Set(x,y,z);
-   mSphere.radius = radius;      
+void IntersectDSG::SetBoundingSphere(float x, float y, float z, float radius) {
+    mSphere.centre.Set(x, y, z);
+    mSphere.radius = radius;
 
-   mPosn.Set(x,y,z);
+    mPosn.Set(x, y, z);
 }
+
 //========================================================================
 // IntersectDSG::
 //========================================================================
@@ -642,9 +625,8 @@ void IntersectDSG::SetBoundingSphere(float x, float y, float z, float radius)
 // Constraints: None.
 //
 //========================================================================
-int IntersectDSG::GetNumPrimGroup()
-{
-   return mnPrimGroups;
+int IntersectDSG::GetNumPrimGroup() {
+    return mnPrimGroups;
 }
 
 //************************************************************************
@@ -665,53 +647,49 @@ int IntersectDSG::GetNumPrimGroup()
 // Constraints: None.
 //
 //========================================================================
-void IntersectDSG::GenIDSG( tGeometry* ipGeometry )
-{
-   int i;
+void IntersectDSG::GenIDSG(tGeometry *ipGeometry) {
+    int i;
 
-   ipGeometry->GetBoundingBox( &mBox3D );
-   ipGeometry->GetBoundingSphere( &mSphere );
+    ipGeometry->GetBoundingBox(&mBox3D);
+    ipGeometry->GetBoundingSphere(&mSphere);
 
-   SetUID(ipGeometry->GetUID());
-   CopyName(ipGeometry);
-   mnPrimGroups = ipGeometry->GetNumPrimGroup();
+    SetUID(ipGeometry->GetUID());
+    CopyName(ipGeometry);
+    mnPrimGroups = ipGeometry->GetNumPrimGroup();
 
-   for( i=0; i<mnPrimGroups; i++ )
-   {
-      switch( ipGeometry->GetPrimGroup(i)->GetPrimType() ) 
-      {
-      case PDDI_PRIM_TRIANGLES:
-         PreParseTris((tPrimGroupStreamed*)ipGeometry->GetPrimGroup(i));
-      	break;
-      case PDDI_PRIM_TRISTRIP:
-         PreParseTriStrips((tPrimGroupStreamed*)ipGeometry->GetPrimGroup(i));
-      	break;
-      default:
-         rAssert(false);
-         break;
-      }
-   }
+    for (i = 0; i < mnPrimGroups; i++) {
+        switch (ipGeometry->GetPrimGroup(i)->GetPrimType()) {
+            case PDDI_PRIM_TRIANGLES:
+                PreParseTris((tPrimGroupStreamed *) ipGeometry->GetPrimGroup(i));
+                break;
+            case PDDI_PRIM_TRISTRIP:
+                PreParseTriStrips((tPrimGroupStreamed *) ipGeometry->GetPrimGroup(i));
+                break;
+            default:
+                rAssert(false);
+                break;
+        }
+    }
 
-   DoAllAllocs();
+    DoAllAllocs();
 
-//   for( int i=ipGeometry->GetNumPrimGroup()-1; i>-1; i-- )
-   for( i=0; i<mnPrimGroups; i++ )
-   {
-      switch( ipGeometry->GetPrimGroup(i)->GetPrimType() ) 
-      {
-      case PDDI_PRIM_TRIANGLES:
-         ParseTris((tPrimGroupStreamed*)ipGeometry->GetPrimGroup(i));
-      	break;
-      case PDDI_PRIM_TRISTRIP:
-         ParseTriStrips((tPrimGroupStreamed*)ipGeometry->GetPrimGroup(i));
-      	break;
-      default:
-         rAssert(false);
-         break;
-      }
-   }
-   CalcAllFields();
+//   for(int i=ipGeometry->GetNumPrimGroup()-1; i>-1; i--)
+    for (i = 0; i < mnPrimGroups; i++) {
+        switch (ipGeometry->GetPrimGroup(i)->GetPrimType()) {
+            case PDDI_PRIM_TRIANGLES:
+                ParseTris((tPrimGroupStreamed *) ipGeometry->GetPrimGroup(i));
+                break;
+            case PDDI_PRIM_TRISTRIP:
+                ParseTriStrips((tPrimGroupStreamed *) ipGeometry->GetPrimGroup(i));
+                break;
+            default:
+                rAssert(false);
+                break;
+        }
+    }
+    CalcAllFields();
 }
+
 //========================================================================
 // IntersectDSG::
 //========================================================================
@@ -725,15 +703,14 @@ void IntersectDSG::GenIDSG( tGeometry* ipGeometry )
 // Constraints: None.
 //
 //========================================================================
-void IntersectDSG::PreParseTris( tPrimGroupStreamed* ipPrimGroup )
-{
+void IntersectDSG::PreParseTris(tPrimGroupStreamed *ipPrimGroup) {
 #if 0
     int n = ipPrimGroup->GetVertexCount();
     mTriPts.Reserve(n); 
     int m = ipPrimGroup->GetNumIndices();
 
     // don't reserve indices if this is de-indexed geometry
-    if (m > 0)
+    if (m> 0)
     {
         mTriIndices.Reserve(m);
         m=m/3;
@@ -750,6 +727,7 @@ void IntersectDSG::PreParseTris( tPrimGroupStreamed* ipPrimGroup )
     }
 #endif
 }
+
 //========================================================================
 // IntersectDSG::
 //========================================================================
@@ -763,11 +741,11 @@ void IntersectDSG::PreParseTris( tPrimGroupStreamed* ipPrimGroup )
 // Constraints: None.
 //
 //========================================================================
-void IntersectDSG::PreParseTriStrips( tPrimGroupStreamed* ipPrimGroup )
-{
-   //Currently unsupported feature; contact Devin
-   rAssert(false);
+void IntersectDSG::PreParseTriStrips(tPrimGroupStreamed *ipPrimGroup) {
+    //Currently unsupported feature; contact Devin
+    rAssert(false);
 }
+
 //========================================================================
 // IntersectDSG::
 //========================================================================
@@ -781,8 +759,7 @@ void IntersectDSG::PreParseTriStrips( tPrimGroupStreamed* ipPrimGroup )
 // Constraints: None.
 //
 //========================================================================
-void IntersectDSG::DoAllAllocs()
-{
+void IntersectDSG::DoAllAllocs() {
 #if 0
     mTriIndices.Allocate();
    mTriPts.Allocate(); 
@@ -805,8 +782,7 @@ void IntersectDSG::DoAllAllocs()
 // Constraints: None.
 //
 //========================================================================
-void IntersectDSG::ParseTris( tPrimGroupStreamed* ipPrimGroup )
-{
+void IntersectDSG::ParseTris(tPrimGroupStreamed *ipPrimGroup) {
 #if 0
     int nVerts = ipPrimGroup->GetVertexCount();
     int nStart = mTriPts.mUseSize;
@@ -817,13 +793,13 @@ void IntersectDSG::ParseTris( tPrimGroupStreamed* ipPrimGroup )
 
 
     //memcpy(mTriPts.mpData+nStart, pVerts, sizeof(rmt::Vector)*nVerts);
-    for( int i=0; i<nVerts; i++ )
+    for(int i=0; i<nVerts; i++)
     {
         mTriPts.Add(*(pVerts+i));
     }
     //////////////////////////////////////////////////////////////////////////
     int nIndices = ipPrimGroup->GetNumIndices();
-    if( nIndices > 0 )
+    if(nIndices> 0)
     {
         rAssert(nStart+nVerts<=mTriIndices.mSize);
 
@@ -835,16 +811,17 @@ void IntersectDSG::ParseTris( tPrimGroupStreamed* ipPrimGroup )
         rAssert(nStart+nIndices<=mTriIndices.mSize);
 
         //      memcpy(mTriIndices.mpData+nStart, pIndices, sizeof(unsigned short)*nVerts);
-        //      for( int i=nVerts-1; i>-1; i-- )
-        for( int i=0; i<nIndices; i++ )
+        //      for(int i=nVerts-1; i>-1; i--)
+        for(int i=0; i<nIndices; i++)
         {
             unsigned long FuckU_MS = (*(pIndices+i))+(nStart);
-            mTriIndices.Add( FuckU_MS );
+            mTriIndices.Add(FuckU_MS);
         }
 
     }
 #endif
 }
+
 //========================================================================
 // IntersectDSG::
 //========================================================================
@@ -858,11 +835,11 @@ void IntersectDSG::ParseTris( tPrimGroupStreamed* ipPrimGroup )
 // Constraints: None.
 //
 //========================================================================
-void IntersectDSG::ParseTriStrips( tPrimGroupStreamed* ipPrimGroup )
-{
-   //Currently unsupported feature; contact Devin
-   rAssert(false);
+void IntersectDSG::ParseTriStrips(tPrimGroupStreamed *ipPrimGroup) {
+    //Currently unsupported feature; contact Devin
+    rAssert(false);
 }
+
 //========================================================================
 // IntersectDSG::
 //========================================================================
@@ -876,120 +853,119 @@ void IntersectDSG::ParseTriStrips( tPrimGroupStreamed* ipPrimGroup )
 // Constraints: None.
 //
 //======================================================================== 
-void IntersectDSG::CalcAllFields()
-{
+void IntersectDSG::CalcAllFields() {
 #if 0
-   rmt::Vector tmpA, tmpB;
-   rmt::Vector *pPt0, *pPt1, *pPt2;
+    rmt::Vector tmpA, tmpB;
+    rmt::Vector *pPt0, *pPt1, *pPt2;
 
-   if(mTriIndices.mUseSize > 0) //Indexed Geometry
-   {
-      mTriNorms.AddUse(    mTriIndices.mUseSize/3);
-      mTriCentroids.AddUse(mTriIndices.mUseSize/3);
-      mTriRadius.AddUse(   mTriIndices.mUseSize/3);
+    if(mTriIndices.mUseSize> 0) //Indexed Geometry
+    {
+       mTriNorms.AddUse(mTriIndices.mUseSize/3);
+       mTriCentroids.AddUse(mTriIndices.mUseSize/3);
+       mTriRadius.AddUse(mTriIndices.mUseSize/3);
 
-//      for( int i=mTriIndices.mUseSize-1; i>-1; i-=3 )
-      for( int i=0; i<mTriIndices.mUseSize; i+=3 )
-      {
-         pPt0 = &mTriPts[mTriIndices[i]];
-         pPt1 = &mTriPts[mTriIndices[i+1]];
-         pPt2 = &mTriPts[mTriIndices[i+2]];
+ //      for(int i=mTriIndices.mUseSize-1; i>-1; i-=3)
+       for(int i=0; i<mTriIndices.mUseSize; i+=3)
+       {
+          pPt0 = &mTriPts[mTriIndices[i]];
+          pPt1 = &mTriPts[mTriIndices[i+1]];
+          pPt2 = &mTriPts[mTriIndices[i+2]];
 
-         tmpA.Sub( *pPt1, *pPt0 );
-         tmpB.Sub( *pPt2, *pPt0 );
+          tmpA.Sub(*pPt1, *pPt0);
+          tmpB.Sub(*pPt2, *pPt0);
 
-         mTriNorms[i/3].CrossProduct( tmpA, tmpB );
-         mTriNorms[i/3].Normalize();
-/*
-         if( mTriNorms[i/3].y < 0.1f )
-         {
-            rDebugPrintf("Warning: -y in Terrain Intersect Normal\n");
-            mTriNorms[i/3].Scale(-1.0f);
-//            mTriNorms[i/3].Set(0.0f,1.0f,0.0f);
-         }
-  */       
-         tmpA.Add( *pPt0, *pPt1);
-         tmpA.Add( *pPt2 );
-         tmpA.Scale( 0.33333333f );
+          mTriNorms[i/3].CrossProduct(tmpA, tmpB);
+          mTriNorms[i/3].Normalize();
+ /*
+          if(mTriNorms[i/3].y <0.1f)
+          {
+             rDebugPrintf("Warning: -y in Terrain Intersect Normal\n");
+             mTriNorms[i/3].Scale(-1.0f);
+ //            mTriNorms[i/3].Set(0.0f,1.0f,0.0f);
+          }
+   */
+          tmpA.Add(*pPt0, *pPt1);
+          tmpA.Add(*pPt2);
+          tmpA.Scale(0.33333333f);
 
-         mTriCentroids[i/3] = tmpA;
+          mTriCentroids[i/3] = tmpA;
 
-         tmpA.Sub( *pPt2, tmpA ); 
-         tmpB.Sub( *pPt1, mTriCentroids[i/3] ); 
+          tmpA.Sub(*pPt2, tmpA);
+          tmpB.Sub(*pPt1, mTriCentroids[i/3]);
 
-         if( tmpB.MagnitudeSqr() > tmpA.MagnitudeSqr() )
-            tmpA = tmpB;
+          if(tmpB.MagnitudeSqr()> tmpA.MagnitudeSqr())
+             tmpA = tmpB;
 
-         tmpB.Sub( *pPt0, mTriCentroids[i/3] );
+          tmpB.Sub(*pPt0, mTriCentroids[i/3]);
 
-         if( tmpB.MagnitudeSqr() > tmpA.MagnitudeSqr() )
-            tmpA = tmpB;
+          if(tmpB.MagnitudeSqr()> tmpA.MagnitudeSqr())
+             tmpA = tmpB;
 
-         mTriRadius[i/3] = tmpA.Magnitude();
-      }
-   }
-   else //De-indexed Geometry
-   {
-      mTriNorms.AddUse(    mTriPts.mUseSize/3);
-      mTriCentroids.AddUse(mTriPts.mUseSize/3);
-      mTriRadius.AddUse(   mTriPts.mUseSize/3);
+          mTriRadius[i/3] = tmpA.Magnitude();
+       }
+    }
+    else //De-indexed Geometry
+    {
+       mTriNorms.AddUse(mTriPts.mUseSize/3);
+       mTriCentroids.AddUse(mTriPts.mUseSize/3);
+       mTriRadius.AddUse(mTriPts.mUseSize/3);
 
-      for( int i=0; i < mTriPts.mUseSize; i += 3 )
-      {
-         pPt0 = &mTriPts[i];
-         pPt1 = &mTriPts[i+1];
-         pPt2 = &mTriPts[i+2];
+       for(int i=0; i <mTriPts.mUseSize; i += 3)
+       {
+          pPt0 = &mTriPts[i];
+          pPt1 = &mTriPts[i+1];
+          pPt2 = &mTriPts[i+2];
 
-         tmpA.Sub( *pPt1, *pPt0 );
-         tmpB.Sub( *pPt2, *pPt0 );
+          tmpA.Sub(*pPt1, *pPt0);
+          tmpB.Sub(*pPt2, *pPt0);
 
-         mTriNorms[i/3].CrossProduct( tmpA, tmpB );
-         mTriNorms[i/3].Normalize();
+          mTriNorms[i/3].CrossProduct(tmpA, tmpB);
+          mTriNorms[i/3].Normalize();
 
-         tmpA.Add( *pPt0, *pPt1);
-         tmpA.Add( *pPt2 );
-         tmpA.Scale( 0.33333333f );
+          tmpA.Add(*pPt0, *pPt1);
+          tmpA.Add(*pPt2);
+          tmpA.Scale(0.33333333f);
 
-         mTriCentroids[i/3] = tmpA;
+          mTriCentroids[i/3] = tmpA;
 
-         tmpA.Sub( *pPt2, tmpA ); 
-         tmpB.Sub( *pPt1, mTriCentroids[i/3] ); 
+          tmpA.Sub(*pPt2, tmpA);
+          tmpB.Sub(*pPt1, mTriCentroids[i/3]);
 
-         if( tmpB.MagnitudeSqr() > tmpA.MagnitudeSqr() )
-            tmpA = tmpB;
+          if(tmpB.MagnitudeSqr()> tmpA.MagnitudeSqr())
+             tmpA = tmpB;
 
-         tmpB.Sub( *pPt0, mTriCentroids[i/3] );
+          tmpB.Sub(*pPt0, mTriCentroids[i/3]);
 
-         if( tmpB.MagnitudeSqr() > tmpA.MagnitudeSqr() )
-            tmpA = tmpB;
+          if(tmpB.MagnitudeSqr()> tmpA.MagnitudeSqr())
+             tmpA = tmpB;
 
-         mTriRadius[i/3] = tmpA.Magnitude();
-         
-/*         tmpA.Sub( mTriPts[i+1], mTriPts[i] );
-         tmpB.Sub( mTriPts[i+2], mTriPts[i] );
+          mTriRadius[i/3] = tmpA.Magnitude();
 
-         mTriNorms[i/3].CrossProduct( tmpA, tmpB );
+ /*         tmpA.Sub(mTriPts[i+1], mTriPts[i]);
+          tmpB.Sub(mTriPts[i+2], mTriPts[i]);
 
-         tmpA.Add( mTriPts[i], mTriPts[i+1] );
-         tmpA.Add( mTriPts[i+2] );
-         tmpA.Scale( 0.33333333f );
+          mTriNorms[i/3].CrossProduct(tmpA, tmpB);
 
-         mTriCentroids[i/3] = tmpA;
+          tmpA.Add(mTriPts[i], mTriPts[i+1]);
+          tmpA.Add(mTriPts[i+2]);
+          tmpA.Scale(0.33333333f);
 
-         tmpA.Sub( mTriPts[i+2], tmpA );
-         tmpB.Sub( mTriPts[i+1], mTriCentroids[i/3] );
+          mTriCentroids[i/3] = tmpA;
 
-         if( tmpB.MagnitudeSqr() < tmpA.MagnitudeSqr() )
-            tmpA = tmpB;
+          tmpA.Sub(mTriPts[i+2], tmpA);
+          tmpB.Sub(mTriPts[i+1], mTriCentroids[i/3]);
 
-         tmpB.Sub( mTriPts[i], mTriCentroids[i/3] );
+          if(tmpB.MagnitudeSqr() <tmpA.MagnitudeSqr())
+             tmpA = tmpB;
 
-         if( tmpB.MagnitudeSqr() < tmpA.MagnitudeSqr() )
-            tmpA = tmpB;
+          tmpB.Sub(mTriPts[i], mTriCentroids[i/3]);
 
-         mTriRadius[i/3] = tmpA.MagnitudeSqr();*/
-      }
-   }
+          if(tmpB.MagnitudeSqr() <tmpA.MagnitudeSqr())
+             tmpA = tmpB;
+
+          mTriRadius[i/3] = tmpA.MagnitudeSqr();*/
+       }
+    }
 #endif
 }
 

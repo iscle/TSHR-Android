@@ -52,11 +52,11 @@
 //
 //========================================================================
 StaticEntityLoader::StaticEntityLoader() :
-tSimpleChunkHandler(SRR2::ChunkID::ENTITY_DSG)
-{
-   mpListenerCB  = NULL;
-   mUserData     = -1;
+        tSimpleChunkHandler(SRR2::ChunkID::ENTITY_DSG) {
+    mpListenerCB = NULL;
+    mUserData = -1;
 }
+
 ///////////////////////////////////////////////////////////////////////
 // tSimpleChunkHandler
 ///////////////////////////////////////////////////////////////////////
@@ -73,9 +73,8 @@ tSimpleChunkHandler(SRR2::ChunkID::ENTITY_DSG)
 // Constraints: None.
 //
 //========================================================================
-tEntity* StaticEntityLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
-    IEntityDSG::msDeletionsSafe=true;
+tEntity *StaticEntityLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
+    IEntityDSG::msDeletionsSafe = true;
     char name[255];
     f->GetPString(name);
 
@@ -85,22 +84,19 @@ tEntity* StaticEntityLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     StaticEntityDSG *pStaticEntityDSG = new StaticEntityDSG;
     pStaticEntityDSG->SetName(name);
 
-    if(HasAlpha)
-    {
+    if (HasAlpha) {
         pStaticEntityDSG->mTranslucent = true;
     }
-    
-    while(f->ChunksRemaining())
-    {      
+
+    while (f->ChunksRemaining()) {
         f->BeginChunk();
-        switch(f->GetCurrentID())
-        {
-            case Pure3D::Mesh::MESH:
-            {
-                GeometryWrappedLoader* pGeoLoader = (GeometryWrappedLoader*)AllWrappers::GetInstance()->mpLoader(AllWrappers::msGeometry) ;
-                rAssert(pGeoLoader!=NULL);
-				tGeometry* pGeo = (tGeometry*)pGeoLoader->LoadObject(f, store);
-                rAssert(pGeo!=NULL);
+        switch (f->GetCurrentID()) {
+            case Pure3D::Mesh::MESH: {
+                GeometryWrappedLoader *pGeoLoader = (GeometryWrappedLoader *) AllWrappers::GetInstance()->mpLoader(
+                        AllWrappers::msGeometry);
+                rAssert(pGeoLoader != NULL);
+                tGeometry *pGeo = (tGeometry *) pGeoLoader->LoadObject(f, store);
+                rAssert(pGeo != NULL);
                 pStaticEntityDSG->SetGeometry(pGeo);
             }
 
@@ -110,10 +106,11 @@ tEntity* StaticEntityLoader::LoadObject(tChunkFile* f, tEntityStore* store)
         f->EndChunk();
     } // while
 
-    mpListenerCB->OnChunkLoaded( pStaticEntityDSG, mUserData, _id );
-    IEntityDSG::msDeletionsSafe=false;
+    mpListenerCB->OnChunkLoaded(pStaticEntityDSG, mUserData, _id);
+    IEntityDSG::msDeletionsSafe = false;
     return pStaticEntityDSG;
 }
+
 ///////////////////////////////////////////////////////////////////////
 // IWrappedLoader
 ///////////////////////////////////////////////////////////////////////
@@ -133,21 +130,19 @@ tEntity* StaticEntityLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 //
 //========================================================================
 void StaticEntityLoader::SetRegdListener
-(
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
-   //
-   // Follow protocol; notify old Listener, that it has been 
-   // "disconnected".
-   //
-   if( mpListenerCB != NULL )
-   {
-      mpListenerCB->OnChunkLoaded( NULL, iUserData, 0 );
-   }
-   mpListenerCB  = pListenerCB;
-   mUserData     = iUserData;
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
+    //
+    // Follow protocol; notify old Listener, that it has been
+    // "disconnected".
+    //
+    if (mpListenerCB != NULL) {
+        mpListenerCB->OnChunkLoaded(NULL, iUserData, 0);
+    }
+    mpListenerCB = pListenerCB;
+    mUserData = iUserData;
 }
 
 //========================================================================
@@ -164,19 +159,18 @@ void StaticEntityLoader::SetRegdListener
 //
 //========================================================================
 void StaticEntityLoader::ModRegdListener
-( 
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
 #if 0
-   char DebugBuf[255];
-   sprintf( DebugBuf, "GeometryWrappedLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB );
-   rDebugString( DebugBuf );
+    char DebugBuf[255];
+    sprintf(DebugBuf, "GeometryWrappedLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB);
+    rDebugString(DebugBuf);
 #endif
-   rAssert( pListenerCB == mpListenerCB );
+    rAssert(pListenerCB == mpListenerCB);
 
-   mUserData = iUserData;
+    mUserData = iUserData;
 }
 //************************************************************************
 //

@@ -32,6 +32,7 @@
 #include <debug/profiler.h>
 
 #include <events/eventdata.h>
+
 #else
 //The tools need a different include style.
 #include <p3d/refcounted.hpp>
@@ -47,8 +48,11 @@
 //========================================
 
 class tPointCamera;
+
 class tCamera;
+
 class SuperCamCentral;
+
 class ISuperCamTarget;
 
 class ICameraShaker;
@@ -59,7 +63,7 @@ class SuperCamController;
 // Constants
 //========================================
 
-#define CLAMP_TO_ONE(x) if ((x) > 1.0f) { (x)=1.0f; } else if ((x)< 0.0f) { (x)=0.0f; }
+#define CLAMP_TO_ONE(x) if ((x)> 1.0f) { (x)=1.0f; } else if ((x)<0.0f) { (x)=0.0f; }
 
 //=============================================================================
 //
@@ -67,15 +71,13 @@ class SuperCamController;
 //
 //=============================================================================
 
-class SuperCam : public tRefCounted
-{
+class SuperCam : public tRefCounted {
 public:
 
     //These are the types of SuperCamera that are available.  When a new one is
     //created it is registered in this enum.  If this gets to be larger than 
     //32 types, we'll have to change some things.
-    typedef enum Type
-    {
+    typedef enum Type {
         DEFAULT_CAM,
         FOLLOW_CAM,
         NEAR_FOLLOW_CAM,
@@ -109,35 +111,40 @@ public:
         NUM_TYPES,
         INVALID = NUM_TYPES
     };
-    
+
     SuperCam();
+
     virtual ~SuperCam();
 
     //Init...  This gets called when the camera is registered
     void Init();
 
     //Update: Called when you want the super cam to update its state.
-    virtual void Update( unsigned int milliseconds ) = 0;
-    virtual void UpdateForPhysics( unsigned int milliseconds ) {};
+    virtual void Update(unsigned int milliseconds) = 0;
+
+    virtual void UpdateForPhysics(unsigned int milliseconds) {};
 
     //Returns the name of the super cam.  
     //This can be used in the FE or debug info
-    virtual const char* const GetName() const = 0;
+    virtual const char *const GetName() const = 0;
 
     virtual Type GetType() = 0;
 
     //This loads the off-line created settings for the camera.  
     //It is passed in as a byte stream of some data of known size.
-    virtual void LoadSettings( unsigned char* settings ) {}; 
+    virtual void LoadSettings(unsigned char *settings) {};
 
     //These are for favourable support of this command
-    virtual void SetTarget( ISuperCamTarget* target ) {}; 
-    virtual void AddTarget( ISuperCamTarget* target ) {};
+    virtual void SetTarget(ISuperCamTarget *target) {};
+
+    virtual void AddTarget(ISuperCamTarget *target) {};
 
     virtual unsigned int GetNumTargets() const { return 0; };
 
     //Override this if you want physics updates.
-    virtual void SetCollisionOffset( const rmt::Vector* offset, unsigned int numCollisions, const rmt::Vector& groundOffset ) {};
+    virtual void SetCollisionOffset(const rmt::Vector *offset, unsigned int numCollisions,
+                                    const rmt::Vector &groundOffset) {};
+
     virtual float GetCollisionRadius() const { return 2.0f; };
 
     virtual float GetIntersectionRadius() const { return 1.0f; };
@@ -145,68 +152,84 @@ public:
     //These functions are to allow real-time control of the settings of 
     //the supercam.
     void RegisterDebugControls();
+
     void UnregisterDebugControls();
 
     //Questions other objects can ask of the SuperCam;
     //Note: Due to the camera shaking, this is how all children of
     //SuperCam must access the mCamera values.
-    void                GetPosition( rmt::Vector* position ) const;
-    void                GetTarget( rmt::Vector* target ) const;
-    void                GetHeading( rmt::Vector* heading ) const;
-    void                GetHeadingNormalized( rmt::Vector* heading );
-    void                GetVelocity( rmt::Vector* velocity ) const;
-    void                GetCameraUp( rmt::Vector* up ) const;
-    tPointCamera* const GetCamera() const;
+    void GetPosition(rmt::Vector *position) const;
+
+    void GetTarget(rmt::Vector *target) const;
+
+    void GetHeading(rmt::Vector *heading) const;
+
+    void GetHeadingNormalized(rmt::Vector *heading);
+
+    void GetVelocity(rmt::Vector *velocity) const;
+
+    void GetCameraUp(rmt::Vector *up) const;
+
+    tPointCamera *const GetCamera() const;
 
     //These will override any chnages to the camera if they are set directly 
     //on the tCamera.  They are applied to the tCamera when the SuperCam is 
     //updated.
-    void            SetFOV( float FOVinRadians );
-    float           GetFOV() const; //Returns value in degrees
-    void            SetAspect( float aspect );
-    float           GetAspect() const;
-    void            SetNearPlane( float nearPlane );
-    float           GetNearPlane() const;
-    void            SetFarPlane( float farPlane );
-    float           GetFarPlane() const;
+    void SetFOV(float FOVinRadians);
+
+    float GetFOV() const; //Returns value in degrees
+    void SetAspect(float aspect);
+
+    float GetAspect() const;
+
+    void SetNearPlane(float nearPlane);
+
+    float GetNearPlane() const;
+
+    void SetFarPlane(float farPlane);
+
+    float GetFarPlane() const;
 
     virtual void EnableShake();
+
     virtual void DisableShake();
 
-    virtual void LookBack( bool lookBack );
+    virtual void LookBack(bool lookBack);
 
     virtual void DoFirstTime();
+
     virtual void DoCameraCut();
-    virtual void DoCameraTransition( bool quick, unsigned int timems = 7000 );
+
+    virtual void DoCameraTransition(bool quick, unsigned int timems = 7000);
 
     bool IsRegistered() const;
 
-    void SetTransitionPositionRate( float rate );
-    void SetTransitionTargetRate( float rate );
+    void SetTransitionPositionRate(float rate);
+
+    void SetTransitionTargetRate(float rate);
 
     //This is for debug rendering.
     void Display() const;
 
-    static void SetSecondaryControllerID( unsigned int controllerID );
+    static void SetSecondaryControllerID(unsigned int controllerID);
 
-    void SetTwist( float twist );
+    void SetTwist(float twist);
 
     //For Wreckless Effect
-    void EnableWrecklessZoom( bool enable );
+    void EnableWrecklessZoom(bool enable);
 
     inline void AllowShake(void);
 
-    #ifdef DEBUGWATCH
-        virtual const char* GetWatcherName() const;
-        void PrintClassName() const;
-    #endif
+#ifdef DEBUGWATCH
+    virtual const char* GetWatcherName() const;
+    void PrintClassName() const;
+#endif
 
 protected:
-    
+
     //Go ahead and make flags specific to the subclass, just make sure there's 
     //no overlap.
-    enum Flag
-    {
+    enum Flag {
         FIRST_TIME,         //First time into this supercam (cleared after use)
         CUT,                //Do a camera cut to the default settings of this cam (cleared after use)
         START_TRANSITION,   //
@@ -225,29 +248,34 @@ protected:
         WRECKLESS_ZOOM,     //This is the wreckless-style zoom effect
         SUPERCAM_END
     };
-    
+
     //Override this if you want to get initted.
     virtual void OnInit() {};
+
     virtual void OnShutdown() {};
 
     //You'll need to overload these if you want debug watcher or other debug controls.
     virtual void OnRegisterDebugControls();
+
     virtual void OnUnregisterDebugControls();
 
     //Call this when you want to update the camera.  Sets VUP and test for 
     //bad camera settings.
-    void SetCameraValues( unsigned int milliseconds,
-                          rmt::Vector pos, 
-                          rmt::Vector targ, 
-                          const rmt::Vector* vup = 0 );
+    void SetCameraValues(unsigned int milliseconds,
+                         rmt::Vector pos,
+                         rmt::Vector targ,
+                         const rmt::Vector *vup = 0);
 
-    void SetFOVOverride( float newFOV );
-    void OverrideFOV( bool enable, float time = 0.0f, float rate = 0.0f );
+    void SetFOVOverride(float newFOV);
+
+    void OverrideFOV(bool enable, float time = 0.0f, float rate = 0.0f);
+
     void DisableOverride();
 
-    void SetRegistered( bool isRegistered );
+    void SetRegistered(bool isRegistered);
 
     virtual bool CanSwitch();
+
     virtual float GetTargetSpeedModifier() { return 1.0f; };
 
     friend class SuperCamCentral;
@@ -257,66 +285,73 @@ protected:
     friend class RailCamLocatorNode;
     friend class StaticCameraLocatorNode;
 #endif
-    
-    void SetCamera( tPointCamera* cam );  
-    inline void SetFlag( Flag flag, bool value );
-    bool GetFlag( Flag flag ) const;
-    void SetPlayerID( int id );
+
+    void SetCamera(tPointCamera *cam);
+
+    inline void SetFlag(Flag flag, bool value);
+
+    bool GetFlag(Flag flag) const;
+
+    void SetPlayerID(int id);
 
     //Motion Cubic
-    void MotionCubic( float* Position, 
-                      float* Rate, 
-                      float DesiredPosition, 
-                      float Interval ) const;
+    void MotionCubic(float *Position,
+                     float *Rate,
+                     float DesiredPosition,
+                     float Interval) const;
 
-    void SphericalMotion( const rmt::Vector& target, 
-                          rmt::Vector& currentPos, 
-                          const rmt::Vector& desiredPos, 
-                          rmt::Vector& desiredPosDelta, 
-                          const float rate ) const;
+    void SphericalMotion(const rmt::Vector &target,
+                         rmt::Vector &currentPos,
+                         const rmt::Vector &desiredPos,
+                         rmt::Vector &desiredPosDelta,
+                         const float rate) const;
 
-    float EaseMotion( float t, float a, float b );
+    float EaseMotion(float t, float a, float b);
 
     //Camera shaking stuff
-    inline void SetShaker( ICameraShaker* shaker );
-    void SetCameraShakerData( const ShakeEventData* data );
+    inline void SetShaker(ICameraShaker *shaker);
+
+    void SetCameraShakerData(const ShakeEventData *data);
 
     int GetPlayerID() const;
 
-    int ClampAngle( float* angle ) const;
-    void AdjustAngles( float* desiredAngle, 
-                       float* currentAngle, 
-                       float* currentAngleDelta ) const;
+    int ClampAngle(float *angle) const;
 
-    rmt::Vector UpdateVUP( rmt::Vector position, rmt::Vector target );
+    void AdjustAngles(float *desiredAngle,
+                      float *currentAngle,
+                      float *currentAngleDelta) const;
+
+    rmt::Vector UpdateVUP(rmt::Vector position, rmt::Vector target);
 
     void Shutdown();
-    void CorrectDist( const rmt::Vector& pos, rmt::Vector& targ );
+
+    void CorrectDist(const rmt::Vector &pos, rmt::Vector &targ);
 
     //For display in the children.
     virtual void OnDisplay() const {};
 
-    void InitMyController( int controllerID = -1 );
+    void InitMyController(int controllerID = -1);
+
     void ShutDownMyController();
 
-    tPointCamera* GetCameraNonConst();
+    tPointCamera *GetCameraNonConst();
 
-    void FilterFov( float zoom, 
-                    float min, 
-                    float max, 
-                    float& curFOV, 
-                    float& delta, 
-                    float lag, 
-                    float timeMod, 
-                    float offset = 0.0f );
+    void FilterFov(float zoom,
+                   float min,
+                   float max,
+                   float &curFOV,
+                   float &delta,
+                   float lag,
+                   float timeMod,
+                   float offset = 0.0f);
 
     void ResetTwistDelta() { mTwistDelta = 0.0f; };
 
-    void DoWrecklessZoom( float distance, float minDist, float maxDist, 
-                          float minFOV, float maxFOV, float& fov, 
-                          float& fovDelta, float lag, float time );
+    void DoWrecklessZoom(float distance, float minDist, float maxDist,
+                         float minFOV, float maxFOV, float &fov,
+                         float &fovDelta, float lag, float time);
 
-    void EndTransition( bool abort = false ); //Use caution.
+    void EndTransition(bool abort = false); //Use caution.
 
 
     //Tell me when we're first running.
@@ -325,12 +360,12 @@ protected:
     //These are shared, default shakers.
     SineCosShaker mSineCosShaker;
 
-    SuperCamController* mController;
+    SuperCamController *mController;
     int mControllerHandle;
 
     static unsigned int s_secondaryControllerID;
 
-    tPointCamera* mCamera;
+    tPointCamera *mCamera;
 private:
     float mSCFOV;     //This is in RADIANS
     float mSCAspect;
@@ -356,7 +391,7 @@ private:
     float mTransitionTargetRate;
     float mFOVTransitionRate;
 
-    ICameraShaker* mShaker;
+    ICameraShaker *mShaker;
 
     int mPlayerID;
 
@@ -370,17 +405,26 @@ private:
     float mTwistLag;
 
     void TestCameraMatrix();
+
     void SetupShake();
+
     void EndShake();
-    void SetupTransition( bool swap = false );
-    void ShakeCamera( rmt::Vector* pos, rmt::Vector* targ, unsigned int milliseconds );
-    void TransitionCamera( float timeLeftPct, rmt::Vector* pos, rmt::Vector* targ, float* fov, unsigned int milliseconds, bool quick = false );
-    void TransitionFOV( float timeLeftPct, float* fov, unsigned int milliseconds );
-    void EaseIn( float timeLeftPct, rmt::Vector* pos, rmt::Vector* targ, unsigned int milliseconds );
+
+    void SetupTransition(bool swap = false);
+
+    void ShakeCamera(rmt::Vector *pos, rmt::Vector *targ, unsigned int milliseconds);
+
+    void TransitionCamera(float timeLeftPct, rmt::Vector *pos, rmt::Vector *targ, float *fov,
+                          unsigned int milliseconds, bool quick = false);
+
+    void TransitionFOV(float timeLeftPct, float *fov, unsigned int milliseconds);
+
+    void EaseIn(float timeLeftPct, rmt::Vector *pos, rmt::Vector *targ, unsigned int milliseconds);
 
     //Prevent wasteful constructor creation.
-    SuperCam( const SuperCam& supercam ); 
-    SuperCam& operator=( const SuperCam& supercam );
+    SuperCam(const SuperCam &supercam);
+
+    SuperCam &operator=(const SuperCam &supercam);
 
 };
 
@@ -400,9 +444,8 @@ private:
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::Init()
-{
-    const int NO_CLEAR_FLAGS = ( 1 << IS_REGISTERED );
+inline void SuperCam::Init() {
+    const int NO_CLEAR_FLAGS = (1 << IS_REGISTERED);
     mFlags &= NO_CLEAR_FLAGS;
 
     OnInit();
@@ -413,13 +456,12 @@ inline void SuperCam::Init()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float twist )
+// Parameters:  (float twist)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::SetTwist( float twist )
-{
+inline void SuperCam::SetTwist(float twist) {
     mSCTwist = twist;
 }
 
@@ -438,8 +480,7 @@ inline void SuperCam::SetTwist( float twist )
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::OnRegisterDebugControls()
-{
+inline void SuperCam::OnRegisterDebugControls() {
 }
 
 //=============================================================================
@@ -452,43 +493,39 @@ inline void SuperCam::OnRegisterDebugControls()
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::OnUnregisterDebugControls()
-{
+inline void SuperCam::OnUnregisterDebugControls() {
 }
+
 //=============================================================================
 // SuperCam::SetFlag
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( Flag flag, bool value )
+// Parameters:  (Flag flag, bool value)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::SetFlag( Flag flag, bool value )
-{
-    if ( value )
-    {   
-        mFlags |= ( 1 << flag );
+inline void SuperCam::SetFlag(Flag flag, bool value) {
+    if (value) {
+        mFlags |= (1 << flag);
+    } else {
+        mFlags &= ~(1 << flag);
     }
-    else
-    {
-        mFlags &= ~( 1 << flag );
-    }    
 }
+
 //=============================================================================
 // SuperCam::SetRegistered
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool isRegistered )
+// Parameters:  (bool isRegistered)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::SetRegistered( bool isRegistered )
-{
-    SetFlag( (Flag)IS_REGISTERED, isRegistered );
+inline void SuperCam::SetRegistered(bool isRegistered) {
+    SetFlag((Flag) IS_REGISTERED, isRegistered);
 }
 
 //=============================================================================
@@ -501,23 +538,22 @@ inline void SuperCam::SetRegistered( bool isRegistered )
 // Return:      bool 
 //
 //=============================================================================
-inline bool SuperCam::CanSwitch()
-{
+inline bool SuperCam::CanSwitch() {
     return true;
 }
+
 //=============================================================================
 // SuperCam::GetFlag
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( Flag flag )
+// Parameters:  (Flag flag)
 //
 // Return:      bool 
 //
 //=============================================================================
-inline bool SuperCam::GetFlag( Flag flag ) const
-{
-    return ( (mFlags & ( 1 << flag )) > 0 );
+inline bool SuperCam::GetFlag(Flag flag) const {
+    return ((mFlags & (1 << flag)) > 0);
 }
 
 //=============================================================================
@@ -525,7 +561,7 @@ inline bool SuperCam::GetFlag( Flag flag ) const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float* Position, 
+// Parameters:  (float* Position,
 //                float* Rate, 
 //                float DesiredPosition, 
 //                float Interval)
@@ -533,35 +569,34 @@ inline bool SuperCam::GetFlag( Flag flag ) const
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::MotionCubic( float* Position, 
-                                   float* Rate, 
-                                   float DesiredPosition, 
-                                   float Interval ) const
-{
+inline void SuperCam::MotionCubic(float *Position,
+                                  float *Rate,
+                                  float DesiredPosition,
+                                  float Interval) const {
     //Note: If you are using this function and the camera shake, make
     //sure to reset the rate to the position after each camera shake.
     //Otherwise you'll get funny interpolation.
 #ifdef PROFILER_ENABLED
-        char sCname[256];
-        sprintf( sCname, "SC: %d MotionCubic", mPlayerID );
-        BEGIN_PROFILE( sCname )
+    char sCname[256];
+    sprintf(sCname, "SC: %d MotionCubic", mPlayerID);
+    BEGIN_PROFILE(sCname)
 #endif
 
-    float  a, b, c, d, Interval_Cube, Interval_Square;
+    float a, b, c, d, Interval_Cube, Interval_Square;
 
     Interval_Square = Interval * Interval;
-    Interval_Cube   = Interval_Square * Interval;
+    Interval_Cube = Interval_Square * Interval;
 
-    a = *Rate + ((*Position - DesiredPosition) * 2.0f );
+    a = *Rate + ((*Position - DesiredPosition) * 2.0f);
     b = ((DesiredPosition - *Position) * 3.0f) - (*Rate * 2.0f);
     c = *Rate;
     d = *Position;
 
     *Position = (a * Interval_Cube) + (b * Interval_Square) + (c * Interval) + d;
-    *Rate = (a * Interval_Square * 3.0f) + (b * Interval * 2.0f) + c;    
+    *Rate = (a * Interval_Square * 3.0f) + (b * Interval * 2.0f) + c;
 
 #ifdef PROFILER_ENABLED
-        END_PROFILE( sCname )
+    END_PROFILE(sCname)
 #endif
 
 }
@@ -571,13 +606,12 @@ inline void SuperCam::MotionCubic( float* Position,
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ICameraShaker* shaker )
+// Parameters:  (ICameraShaker* shaker)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::SetShaker( ICameraShaker* shaker )
-{
+inline void SuperCam::SetShaker(ICameraShaker *shaker) {
     mShaker = shaker;
 }
 
@@ -588,27 +622,27 @@ inline void SuperCam::AllowShake(void) { SetShaker(&mSineCosShaker); }
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float zoom, float min, float max, float& curFOV, float& delta, float lag, float timeMod, float offset )
+// Parameters:  (float zoom, float min, float max, float& curFOV, float& delta, float lag, float timeMod, float offset)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::FilterFov( float zoom, float min, float max, float& curFOV, float& delta, float lag, float timeMod, float offset )
-{
+inline void
+SuperCam::FilterFov(float zoom, float min, float max, float &curFOV, float &delta, float lag,
+                    float timeMod, float offset) {
     float diffFOV = max - min;
 
     //The closer we get to the max speed, the wider the FOV.
     float desiredFOV = max - (diffFOV * zoom);
     desiredFOV -= offset;
-    if ( desiredFOV < min )
-    {
+    if (desiredFOV < min) {
         desiredFOV = min;
     }
 
     float fovLag = lag * timeMod;
     CLAMP_TO_ONE(fovLag);
 
-    MotionCubic( &curFOV, &delta, desiredFOV, fovLag );
+    MotionCubic(&curFOV, &delta, desiredFOV, fovLag);
 }
 
 //=============================================================================
@@ -616,26 +650,25 @@ inline void SuperCam::FilterFov( float zoom, float min, float max, float& curFOV
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float distance, float minDist, float maxDist, float minFOV, 
+// Parameters:  (float distance, float minDist, float maxDist, float minFOV,
 //                float maxFOV, float& fov, float& fovDelta, float lag, 
-//                float time )
+//                float time)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::DoWrecklessZoom( float distance, float minDist, float maxDist, 
-                                       float minFOV, float maxFOV, float& fov, 
-                                       float& fovDelta, float lag, float time )
-{
+inline void SuperCam::DoWrecklessZoom(float distance, float minDist, float maxDist,
+                                      float minFOV, float maxFOV, float &fov,
+                                      float &fovDelta, float lag, float time) {
     float percent = (distance - minDist) / (maxDist - minDist);
-    CLAMP_TO_ONE( percent );
+    CLAMP_TO_ONE(percent);
 
     float desiredFOV = maxFOV - ((maxFOV - minFOV) * percent);
 
     float fovlag = lag * time;
     CLAMP_TO_ONE(fovlag);
 
-    MotionCubic( &fov, &fovDelta, desiredFOV, fovlag );
+    MotionCubic(&fov, &fovDelta, desiredFOV, fovlag);
 }
 
 //*****************************************************************************
@@ -649,13 +682,12 @@ inline void SuperCam::DoWrecklessZoom( float distance, float minDist, float maxD
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* velocity )
+// Parameters:  (rmt::Vector* velocity)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::GetVelocity( rmt::Vector* velocity ) const
-{
+inline void SuperCam::GetVelocity(rmt::Vector *velocity) const {
     *velocity = mVelocity;
 }
 
@@ -669,8 +701,7 @@ inline void SuperCam::GetVelocity( rmt::Vector* velocity ) const
 // Return:      tPointCamera*
 //
 //=============================================================================
-inline tPointCamera* const SuperCam::GetCamera() const
-{
+inline tPointCamera *const SuperCam::GetCamera() const {
     return mCamera;
 }
 
@@ -679,13 +710,12 @@ inline tPointCamera* const SuperCam::GetCamera() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float aspect )
+// Parameters:  (float aspect)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::SetAspect( float aspect )
-{
+inline void SuperCam::SetAspect(float aspect) {
     mSCAspect = aspect;
 }
 
@@ -699,8 +729,7 @@ inline void SuperCam::SetAspect( float aspect )
 // Return:      float 
 //
 //=============================================================================
-inline float SuperCam::GetAspect() const
-{
+inline float SuperCam::GetAspect() const {
     return mSCAspect;
 }
 
@@ -709,13 +738,12 @@ inline float SuperCam::GetAspect() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float nearPlane )
+// Parameters:  (float nearPlane)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::SetNearPlane( float nearPlane )
-{
+inline void SuperCam::SetNearPlane(float nearPlane) {
     mSCNearPlane = nearPlane;
 }
 
@@ -729,8 +757,7 @@ inline void SuperCam::SetNearPlane( float nearPlane )
 // Return:      float 
 //
 //=============================================================================
-inline float SuperCam::GetNearPlane() const
-{
+inline float SuperCam::GetNearPlane() const {
     return mSCNearPlane;
 }
 
@@ -739,13 +766,12 @@ inline float SuperCam::GetNearPlane() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float farPlane )
+// Parameters:  (float farPlane)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::SetFarPlane( float farPlane )
-{
+inline void SuperCam::SetFarPlane(float farPlane) {
     mSCFarPlane = farPlane;
 }
 
@@ -759,8 +785,7 @@ inline void SuperCam::SetFarPlane( float farPlane )
 // Return:      float 
 //
 //=============================================================================
-inline float SuperCam::GetFarPlane() const
-{
+inline float SuperCam::GetFarPlane() const {
     return mSCFarPlane;
 }
 
@@ -774,14 +799,12 @@ inline float SuperCam::GetFarPlane() const
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::EnableShake()
-{
-    if ( !GetFlag( (Flag)SHAKE ) && 
-         !GetFlag( (Flag)TRANSITION ) &&
-         !GetFlag( (Flag)START_TRANSITION ) &&
-         !GetFlag( (Flag)END_TRANSITION ) )
-    {
-        SetFlag( (Flag)START_SHAKE, true );
+inline void SuperCam::EnableShake() {
+    if (!GetFlag((Flag) SHAKE) &&
+        !GetFlag((Flag) TRANSITION) &&
+        !GetFlag((Flag) START_TRANSITION) &&
+        !GetFlag((Flag) END_TRANSITION)) {
+        SetFlag((Flag) START_SHAKE, true);
     }
 }
 
@@ -790,16 +813,14 @@ inline void SuperCam::EnableShake()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool enable )
+// Parameters:  (bool enable)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::DisableShake()
-{
-    if ( GetFlag( (Flag)SHAKE ) )
-    {
-        SetFlag( (Flag)END_SHAKE, true );
+inline void SuperCam::DisableShake() {
+    if (GetFlag((Flag) SHAKE)) {
+        SetFlag((Flag) END_SHAKE, true);
     }
 }
 
@@ -813,9 +834,8 @@ inline void SuperCam::DisableShake()
 // Return:      bool 
 //
 //=============================================================================
-inline bool SuperCam::IsRegistered() const
-{
-    return GetFlag( (Flag)IS_REGISTERED );
+inline bool SuperCam::IsRegistered() const {
+    return GetFlag((Flag) IS_REGISTERED);
 }
 
 //=============================================================================
@@ -823,13 +843,12 @@ inline bool SuperCam::IsRegistered() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float rate )
+// Parameters:  (float rate)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::SetTransitionPositionRate( float rate )
-{
+inline void SuperCam::SetTransitionPositionRate(float rate) {
     mTransitionPositionRate = rate;
 }
 
@@ -838,13 +857,12 @@ inline void SuperCam::SetTransitionPositionRate( float rate )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float rate )
+// Parameters:  (float rate)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::SetTransitionTargetRate( float rate )
-{
+inline void SuperCam::SetTransitionTargetRate(float rate) {
     mTransitionTargetRate = rate;
 }
 
@@ -853,14 +871,13 @@ inline void SuperCam::SetTransitionTargetRate( float rate )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int id )
+// Parameters:  (int id)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::SetPlayerID( int id )
-{
-    //rAssertMsg( mPlayerID < 0, "This should only be set once!" );
+inline void SuperCam::SetPlayerID(int id) {
+    //rAssertMsg(mPlayerID <0, "This should only be set once!");
     mPlayerID = id;
 }
 
@@ -874,9 +891,8 @@ inline void SuperCam::SetPlayerID( int id )
 // Return:      inline 
 //
 //=============================================================================
-inline int SuperCam::GetPlayerID() const
-{
-    rAssertMsg( mPlayerID >= 0, "This should be set once!" );
+inline int SuperCam::GetPlayerID() const {
+    rAssertMsg(mPlayerID >= 0, "This should be set once!");
     return mPlayerID;
 }
 
@@ -885,14 +901,13 @@ inline int SuperCam::GetPlayerID() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool lookBack )
+// Parameters:  (bool lookBack)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::LookBack( bool lookBack )
-{
-    SetFlag( (Flag)LOOK_BACK, lookBack );
+inline void SuperCam::LookBack(bool lookBack) {
+    SetFlag((Flag) LOOK_BACK, lookBack);
 }
 
 //=============================================================================
@@ -905,9 +920,8 @@ inline void SuperCam::LookBack( bool lookBack )
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::DoFirstTime()
-{
-    SetFlag( (Flag)FIRST_TIME, true );
+inline void SuperCam::DoFirstTime() {
+    SetFlag((Flag) FIRST_TIME, true);
 }
 
 //=============================================================================
@@ -920,9 +934,8 @@ inline void SuperCam::DoFirstTime()
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::DoCameraCut()
-{
-    SetFlag( (Flag)CUT, true );
+inline void SuperCam::DoCameraCut() {
+    SetFlag((Flag) CUT, true);
 }
 
 //=============================================================================
@@ -935,8 +948,7 @@ inline void SuperCam::DoCameraCut()
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::SetSecondaryControllerID( unsigned int controllerID )
-{
+inline void SuperCam::SetSecondaryControllerID(unsigned int controllerID) {
     s_secondaryControllerID = controllerID;
 }
 
@@ -945,14 +957,13 @@ inline void SuperCam::SetSecondaryControllerID( unsigned int controllerID )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool enable )
+// Parameters:  (bool enable)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperCam::EnableWrecklessZoom( bool enable )
-{
-    SetFlag( WRECKLESS_ZOOM, enable );    
+inline void SuperCam::EnableWrecklessZoom(bool enable) {
+    SetFlag(WRECKLESS_ZOOM, enable);
 }
 
 #endif //SUPERCAM_H

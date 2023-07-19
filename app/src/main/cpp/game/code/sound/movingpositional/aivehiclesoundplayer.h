@@ -30,18 +30,19 @@ class Vehicle;
 //
 //=============================================================================
 
-class AIVehicleSoundPlayer : public VehiclePositionalSoundPlayer
-{
-    public:
-        AIVehicleSoundPlayer();
-        virtual ~AIVehicleSoundPlayer();
+class AIVehicleSoundPlayer : public VehiclePositionalSoundPlayer {
+public:
+    AIVehicleSoundPlayer();
 
-        void ServiceOncePerFrame();
+    virtual ~AIVehicleSoundPlayer();
 
-    private:
-        //Prevent wasteful constructor creation.
-        AIVehicleSoundPlayer( const AIVehicleSoundPlayer& aivehiclesoundplayer );
-        AIVehicleSoundPlayer& operator=( const AIVehicleSoundPlayer& aivehiclesoundplayer );
+    void ServiceOncePerFrame();
+
+private:
+    //Prevent wasteful constructor creation.
+    AIVehicleSoundPlayer(const AIVehicleSoundPlayer &aivehiclesoundplayer);
+
+    AIVehicleSoundPlayer &operator=(const AIVehicleSoundPlayer &aivehiclesoundplayer);
 };
 
 //*****************************************************************************

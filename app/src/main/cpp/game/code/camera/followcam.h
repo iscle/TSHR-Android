@@ -23,9 +23,9 @@
 //              and desired angles.
 //
 //              The values of the "lag" are between 0 and 1, where 0 results 
-//              in no interpolation and 1 is a "snap" to the desired angle ( a
+//              in no interpolation and 1 is a "snap" to the desired angle (a
 //              value of one is also no interpolation, it is more like an 
-//              assignment of position )
+//              assignment of position)
 //      
 //              An internal value of rotation delta or "rate" holds the
 //              intermediate value of the interpolation so that further
@@ -65,16 +65,13 @@ class ISuperCamTarget;
 //
 //=============================================================================
 
-class FollowCam : public SuperCam
-{
+class FollowCam : public SuperCam {
 public:
-    enum
-    {
+    enum {
         MAX_TARGETS = 3
     };
 
-    enum Follow_Flag
-    {
+    enum Follow_Flag {
         FOLLOW = SUPERCAM_END,  //This is to carry on from the supercam flags
         UNSTABLE,               //When the car is unstable this is true
         STABILIZING,
@@ -85,28 +82,29 @@ public:
         COLLIDING,
         LOS_CORRECTED           //This is when we've corrected due to line of sight.
     };
-    
-    enum FollowType
-    {
+
+    enum FollowType {
         FOLLOW_NEAR,
         FOLLOW_FAR
     };
 
-    FollowCam( FollowType type = FOLLOW_NEAR );
+    FollowCam(FollowType type = FOLLOW_NEAR);
+
     virtual ~FollowCam();
 
-   //Update: Called when you want the super cam to update its state.
-    virtual void Update( unsigned int milliseconds );
-    virtual void UpdateForPhysics( unsigned int milliseconds );
+    //Update: Called when you want the super cam to update its state.
+    virtual void Update(unsigned int milliseconds);
+
+    virtual void UpdateForPhysics(unsigned int milliseconds);
 
 
     //Returns the name of the super cam.  
     //This can be used in the FE or debug info
-    virtual const char* const GetName() const;
+    virtual const char *const GetName() const;
 
     //This loads the off-line created settings for the camera.  
     //It is passed in as a byte stream of some data of known size.
-    virtual void LoadSettings( unsigned char* settings ); 
+    virtual void LoadSettings(unsigned char *settings);
 
     // copies the FollowCam's members into the FollowCamData structure
     void CopyToData();
@@ -114,18 +112,22 @@ public:
     virtual Type GetType();
 
     //These are for favourable support of this command
-    virtual void SetTarget( ISuperCamTarget* target ); 
-    virtual void AddTarget( ISuperCamTarget* target );
-    
+    virtual void SetTarget(ISuperCamTarget *target);
+
+    virtual void AddTarget(ISuperCamTarget *target);
+
     unsigned int GetNumTargets() const;
 
     void SetDirty();
 
     void EnableShake();
+
     void DisableShake();
 
     //Support for colliding with the world.
-    void SetCollisionOffset( const rmt::Vector* offset, unsigned int numCollisions, const rmt::Vector& groundOffset );
+    void SetCollisionOffset(const rmt::Vector *offset, unsigned int numCollisions,
+                            const rmt::Vector &groundOffset);
+
     float GetCollisionRadius() const { return GetNearPlane() * 2.0f; };
 
     virtual float GetIntersectionRadius() const { return mData.GetMagnitude(); };
@@ -138,7 +140,7 @@ protected:
 
 private:
 
-    ISuperCamTarget* mTargets[ MAX_TARGETS ];
+    ISuperCamTarget *mTargets[MAX_TARGETS];
     unsigned int mNumTargets;
     unsigned int mActiveTarget;
 
@@ -159,14 +161,14 @@ private:
     rmt::Vector mOldTargetPos;
 
     FollowCamData mData;
-    
+
     //Unstable time counter
     int mUnstableDelayTimeLeft;
 
     //Quick turn time counter
     int mQuickTurnTimeLeft;
 
-    const rmt::Vector* mCollisionOffset;
+    const rmt::Vector *mCollisionOffset;
     unsigned int mNumCollisions;
     rmt::Vector mGroundOffset;
 
@@ -177,32 +179,37 @@ private:
     //These functions are to allow real-time control of the settings of 
     //the supercam.
     virtual void OnRegisterDebugControls();
+
     virtual void OnUnregisterDebugControls();
 
     void DoCameraCut();
+
     void InitUnstable();
-    void UpdateUnstable( unsigned int milliseconds );
+
+    void UpdateUnstable(unsigned int milliseconds);
 
     void InitQuickTurn();
-    void UpdateQuickTurn( unsigned int milliseconds );
 
-    void GetTargetPosition( rmt::Vector* position, bool withOffset = true );
+    void UpdateQuickTurn(unsigned int milliseconds);
 
-    void CalculateRod( rmt::Vector* rod, 
-                       unsigned int milliseconds, 
-                       float timeMod );
+    void GetTargetPosition(rmt::Vector *position, bool withOffset = true);
 
-    void CalculateTarget( rmt::Vector* desiredTarget, 
-                          unsigned int milliseconds, 
-                          float timeMod );
+    void CalculateRod(rmt::Vector *rod,
+                      unsigned int milliseconds,
+                      float timeMod);
 
-    bool GetDesiredRod( rmt::Vector* rod );
+    void CalculateTarget(rmt::Vector *desiredTarget,
+                         unsigned int milliseconds,
+                         float timeMod);
+
+    bool GetDesiredRod(rmt::Vector *rod);
 
     bool IsPushingStick();
 
     //Prevent wasteful constructor creation.
-    FollowCam( const FollowCam& followcam );
-    FollowCam& operator=( const FollowCam& followcam );
+    FollowCam(const FollowCam &followcam);
+
+    FollowCam &operator=(const FollowCam &followcam);
 };
 
 //*****************************************************************************
@@ -222,14 +229,10 @@ private:
 //
 //=============================================================================
 
-inline const char* const FollowCam::GetName() const
-{
-    if ( mFollowType == FollowCam::FOLLOW_NEAR )
-    {
+inline const char *const FollowCam::GetName() const {
+    if (mFollowType == FollowCam::FOLLOW_NEAR) {
         return "NEAR_FOLLOW_CAM";
-    }
-    else
-    {
+    } else {
         return "FAR_FOLLOW_CAM";
     }
 }
@@ -244,8 +247,7 @@ inline const char* const FollowCam::GetName() const
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int FollowCam::GetNumTargets() const
-{
+inline unsigned int FollowCam::GetNumTargets() const {
     return mNumTargets;
 }
 
@@ -259,8 +261,7 @@ inline unsigned int FollowCam::GetNumTargets() const
 // Return:      Type 
 //
 //=============================================================================
-inline SuperCam::Type FollowCam::GetType()
-{
+inline SuperCam::Type FollowCam::GetType() {
     return static_cast<SuperCam::Type>(NEAR_FOLLOW_CAM + mFollowType);
 }
 
@@ -274,8 +275,7 @@ inline SuperCam::Type FollowCam::GetType()
 // Return:      void 
 //
 //=============================================================================
-inline void FollowCam::SetDirty()
-{
+inline void FollowCam::SetDirty() {
     mData.SetDirty();
 }
 
@@ -284,13 +284,13 @@ inline void FollowCam::SetDirty()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const rmt::Vector& offset, unsigned int numCollisions, const rmt::Vector& groundOffset )
+// Parameters:  (const rmt::Vector& offset, unsigned int numCollisions, const rmt::Vector& groundOffset)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void FollowCam::SetCollisionOffset( const rmt::Vector* offset, unsigned int numCollisions, const rmt::Vector& groundOffset )
-{
+inline void FollowCam::SetCollisionOffset(const rmt::Vector *offset, unsigned int numCollisions,
+                                          const rmt::Vector &groundOffset) {
     mCollisionOffset = offset;
     mNumCollisions = numCollisions;
     mGroundOffset = groundOffset;
@@ -312,8 +312,7 @@ inline void FollowCam::SetCollisionOffset( const rmt::Vector* offset, unsigned i
 // Return:      void 
 //
 //=============================================================================
-inline void FollowCam::OnInit()
-{
+inline void FollowCam::OnInit() {
     InitMyController();
     mUnstableDelayTimeLeft = 0;
 }

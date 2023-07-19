@@ -16,8 +16,8 @@
 #ifndef GUISCREENSOUND_H
 #define GUISCREENSOUND_H
 
-#if defined( RAD_GAMECUBE ) || defined( RAD_PS2 )
-    #define INCLUDE_SOUND_MODE
+#if defined(RAD_GAMECUBE) || defined(RAD_PS2)
+#define INCLUDE_SOUND_MODE
 #endif
 
 //===========================================================================
@@ -30,37 +30,38 @@
 //===========================================================================
 class CGuiMenu;
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Screen;
 };
 
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenSound : public CGuiScreen
-{
+class CGuiScreenSound : public CGuiScreen {
 public:
-    CGuiScreenSound( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenSound(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenSound();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
-    virtual CGuiMenu* HasMenu() { return m_pMenu; }
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
+
+    virtual CGuiMenu *HasMenu() { return m_pMenu; }
 
 #ifdef RAD_WIN32
-    //virtual eFEHotspotType CheckCursorAgainstHotspots( float x, float y );
+    //virtual eFEHotspotType CheckCursorAgainstHotspots(float x, float y);
 #endif
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
-    enum eMenuItem
-    {
+    enum eMenuItem {
         MENU_ITEM_MUSIC,
         MENU_ITEM_EFFECTS,
         MENU_ITEM_ENGINE,
@@ -84,10 +85,10 @@ private:
     };
 #endif
 
-    CGuiMenu* m_pMenu;
+    CGuiMenu *m_pMenu;
 
-    Scrooby::Sprite* m_soundOffIcons[ NUM_MENU_ITEMS ];
-    bool m_hasSliderValueChanged[ NUM_MENU_ITEMS ];
+    Scrooby::Sprite *m_soundOffIcons[NUM_MENU_ITEMS];
+    bool m_hasSliderValueChanged[NUM_MENU_ITEMS];
 
 };
 

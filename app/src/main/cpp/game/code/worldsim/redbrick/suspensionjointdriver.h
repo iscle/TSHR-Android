@@ -51,17 +51,18 @@ private:
 */
 
 
-class SuspensionJointDriver : public poser::PoseDriver
-{
+class SuspensionJointDriver : public poser::PoseDriver {
 public:
-    SuspensionJointDriver(Wheel* wheel, int jointIndex);
+    SuspensionJointDriver(Wheel *wheel, int jointIndex);
+
     ~SuspensionJointDriver();
 
     virtual void Advance(float dt) {}
-    virtual void Update(poser::Pose* pose);
+
+    virtual void Update(poser::Pose *pose);
 
 private:
-    Wheel* mWheel;
+    Wheel *mWheel;
     int mJointIndex;
 
 };

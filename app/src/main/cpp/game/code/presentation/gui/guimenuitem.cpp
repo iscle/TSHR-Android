@@ -27,16 +27,14 @@
 //===========================================================================
 
 GuiMenuItem::GuiMenuItem()
-:   m_attributes( ALL_ATTRIBUTES_OFF ),
-    m_defaultColour( 0, 0, 0 ),
-    m_itemValueArrowL( NULL ),
-    m_itemValueArrowR( NULL ),
-    m_itemValueCount( 0 )
-{
+        : m_attributes(ALL_ATTRIBUTES_OFF),
+          m_defaultColour(0, 0, 0),
+          m_itemValueArrowL(NULL),
+          m_itemValueArrowR(NULL),
+          m_itemValueCount(0) {
 }
 
-GuiMenuItem::~GuiMenuItem()
-{
+GuiMenuItem::~GuiMenuItem() {
 }
 
 //===========================================================================
@@ -44,10 +42,9 @@ GuiMenuItem::~GuiMenuItem()
 //===========================================================================
 
 GuiMenuItemText::GuiMenuItemText()
-:   GuiMenuItem(),
-    m_item( NULL ),
-    m_itemValue( NULL )
-{
+        : GuiMenuItem(),
+          m_item(NULL),
+          m_itemValue(NULL) {
 }
 
 //===========================================================================
@@ -61,10 +58,9 @@ GuiMenuItemText::GuiMenuItemText()
 //
 //===========================================================================
 void
-GuiMenuItemText::SetItem( Scrooby::BoundedDrawable* item )
-{
-    m_item = dynamic_cast<Scrooby::Text*>( item );
-    rAssert( m_item != NULL );
+GuiMenuItemText::SetItem(Scrooby::BoundedDrawable *item) {
+    m_item = dynamic_cast<Scrooby::Text *>(item);
+    rAssert(m_item != NULL);
 }
 
 //===========================================================================
@@ -78,10 +74,9 @@ GuiMenuItemText::SetItem( Scrooby::BoundedDrawable* item )
 //
 //===========================================================================
 void
-GuiMenuItemText::SetItemValue( Scrooby::BoundedDrawable* itemValue )
-{
-    m_itemValue = dynamic_cast<Scrooby::Text*>( itemValue );
-    rAssert( m_itemValue != NULL );
+GuiMenuItemText::SetItemValue(Scrooby::BoundedDrawable *itemValue) {
+    m_itemValue = dynamic_cast<Scrooby::Text *>(itemValue);
+    rAssert(m_itemValue != NULL);
 
     m_itemValueCount = m_itemValue->GetNumOfStrings();
 }
@@ -97,10 +92,9 @@ GuiMenuItemText::SetItemValue( Scrooby::BoundedDrawable* itemValue )
 //
 //===========================================================================
 void
-GuiMenuItemText::SetItemValueIndex( int index )
-{
-    rAssert( m_itemValue != NULL );
-    m_itemValue->SetIndex( index );
+GuiMenuItemText::SetItemValueIndex(int index) {
+    rAssert(m_itemValue != NULL);
+    m_itemValue->SetIndex(index);
 }
 
 //===========================================================================
@@ -114,9 +108,8 @@ GuiMenuItemText::SetItemValueIndex( int index )
 //
 //===========================================================================
 int
-GuiMenuItemText::GetItemValueIndex() const
-{
-    rAssert( m_itemValue != NULL );
+GuiMenuItemText::GetItemValueIndex() const {
+    rAssert(m_itemValue != NULL);
     return m_itemValue->GetIndex();
 }
 
@@ -131,14 +124,12 @@ GuiMenuItemText::GetItemValueIndex() const
 //
 //===========================================================================
 void
-GuiMenuItemText::SetDisplayOutline( bool enable )
-{
-    rAssert( m_item != NULL );
-    m_item->SetDisplayOutline( enable );
+GuiMenuItemText::SetDisplayOutline(bool enable) {
+    rAssert(m_item != NULL);
+    m_item->SetDisplayOutline(enable);
 
-    if( m_itemValue != NULL )
-    {
-        m_itemValue->SetDisplayOutline( enable );
+    if (m_itemValue != NULL) {
+        m_itemValue->SetDisplayOutline(enable);
     }
 }
 
@@ -153,14 +144,12 @@ GuiMenuItemText::SetDisplayOutline( bool enable )
 //
 //===========================================================================
 void
-GuiMenuItemText::SetOutlineColour( tColour colour )
-{
-    rAssert( m_item != NULL );
-    m_item->SetOutlineColour( colour );
+GuiMenuItemText::SetOutlineColour(tColour colour) {
+    rAssert(m_item != NULL);
+    m_item->SetOutlineColour(colour);
 
-    if( m_itemValue != NULL )
-    {
-        m_itemValue->SetOutlineColour( colour );
+    if (m_itemValue != NULL) {
+        m_itemValue->SetOutlineColour(colour);
     }
 }
 
@@ -175,9 +164,8 @@ GuiMenuItemText::SetOutlineColour( tColour colour )
 //
 //===========================================================================
 tColour
-GuiMenuItemText::GetOutlineColour() const
-{
-    rAssert( m_item != NULL );
+GuiMenuItemText::GetOutlineColour() const {
+    rAssert(m_item != NULL);
     return m_item->GetOutlineColour();
 }
 
@@ -187,10 +175,9 @@ GuiMenuItemText::GetOutlineColour() const
 //===========================================================================
 
 GuiMenuItemSprite::GuiMenuItemSprite()
-:   GuiMenuItem(),
-    m_item( NULL ),
-    m_itemValue( NULL )
-{
+        : GuiMenuItem(),
+          m_item(NULL),
+          m_itemValue(NULL) {
 }
 
 //===========================================================================
@@ -204,10 +191,9 @@ GuiMenuItemSprite::GuiMenuItemSprite()
 //
 //===========================================================================
 void
-GuiMenuItemSprite::SetItem( Scrooby::BoundedDrawable* item )
-{
-    m_item = dynamic_cast<Scrooby::Sprite*>( item );
-    rAssert( m_item != NULL );
+GuiMenuItemSprite::SetItem(Scrooby::BoundedDrawable *item) {
+    m_item = dynamic_cast<Scrooby::Sprite *>(item);
+    rAssert(m_item != NULL);
 }
 
 //===========================================================================
@@ -221,10 +207,9 @@ GuiMenuItemSprite::SetItem( Scrooby::BoundedDrawable* item )
 //
 //===========================================================================
 void
-GuiMenuItemSprite::SetItemValue( Scrooby::BoundedDrawable* itemValue )
-{
-    m_itemValue = dynamic_cast<Scrooby::Sprite*>( itemValue );
-    rAssert( m_itemValue != NULL );
+GuiMenuItemSprite::SetItemValue(Scrooby::BoundedDrawable *itemValue) {
+    m_itemValue = dynamic_cast<Scrooby::Sprite *>(itemValue);
+    rAssert(m_itemValue != NULL);
 
     m_itemValueCount = m_itemValue->GetNumOfImages();
 }
@@ -240,10 +225,9 @@ GuiMenuItemSprite::SetItemValue( Scrooby::BoundedDrawable* itemValue )
 //
 //===========================================================================
 void
-GuiMenuItemSprite::SetItemValueIndex( int index )
-{
-    rAssert( m_itemValue != NULL );
-    m_itemValue->SetIndex( index );
+GuiMenuItemSprite::SetItemValueIndex(int index) {
+    rAssert(m_itemValue != NULL);
+    m_itemValue->SetIndex(index);
 }
 
 //===========================================================================
@@ -257,9 +241,8 @@ GuiMenuItemSprite::SetItemValueIndex( int index )
 //
 //===========================================================================
 int
-GuiMenuItemSprite::GetItemValueIndex() const
-{
-    rAssert( m_itemValue != NULL );
+GuiMenuItemSprite::GetItemValueIndex() const {
+    rAssert(m_itemValue != NULL);
     return m_itemValue->GetIndex();
 }
 
@@ -275,9 +258,8 @@ GuiMenuItemSprite::GetItemValueIndex() const
 //
 //===========================================================================
 void
-GuiMenuItemSprite::SetDisplayOutline( bool enable )
-{
-    rAssertMsg( false, "No outlining on sprites!" );
+GuiMenuItemSprite::SetDisplayOutline(bool enable) {
+    rAssertMsg(false, "No outlining on sprites!");
 }
 
 //===========================================================================
@@ -292,9 +274,8 @@ GuiMenuItemSprite::SetDisplayOutline( bool enable )
 //
 //===========================================================================
 void
-GuiMenuItemSprite::SetOutlineColour( tColour colour )
-{
-    rAssertMsg( false, "No outlining on sprites!" );
+GuiMenuItemSprite::SetOutlineColour(tColour colour) {
+    rAssertMsg(false, "No outlining on sprites!");
 }
 
 //===========================================================================
@@ -309,10 +290,9 @@ GuiMenuItemSprite::SetOutlineColour( tColour colour )
 //
 //===========================================================================
 tColour
-GuiMenuItemSprite::GetOutlineColour() const
-{
-    rAssertMsg( false, "No outlining on sprites!" );
+GuiMenuItemSprite::GetOutlineColour() const {
+    rAssertMsg(false, "No outlining on sprites!");
 
-    return tColour( 0, 0, 0 );
+    return tColour(0, 0, 0);
 }
 

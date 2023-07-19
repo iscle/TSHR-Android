@@ -14,15 +14,14 @@
 
 #include <main/globaltypes.h>
 
-//#if defined( WORLD_BUILDER ) || defined( TOOLS )
+//#if defined(WORLD_BUILDER) || defined(TOOLS)
 //typedef long simpsonsUInt64;
 //#endif
 
 //
 // Remember, we can only have 64 of these things
 // 
-enum CmdLineOptionEnum
-{
+enum CmdLineOptionEnum {
     CLO_NO_MUSIC,       // Disable music
     CLO_NO_EFFECTS,     // Disable sound effects
     CLO_NO_DIALOG,      // Disable dialog
@@ -67,7 +66,7 @@ enum CmdLineOptionEnum
     CLO_PRINT_FRAMERATE,// print the framerate after a few seconds of running
 
     CLO_SHOW_DYNA_ZONES,// renders all the dyna-load zones as white boxes
-    
+
     CLO_MANUAL_RESET_DAMAGE,    // will reset the cars damage state when the user does a manual reset
 
     CLO_NO_PEDS,
@@ -78,7 +77,7 @@ enum CmdLineOptionEnum
     CLO_LARGEHEAPS,
 
     CLO_MEMCARD_CHEAT,  // unlock everything in the game temporarily before saving data to memory card
-    
+
     CLO_PS2_TOOL,
     CLO_FILE_NOT_FOUND,     //Testing for file not found
     CLO_NO_LOADING_SPEW,    // Don't Spew <<START>>, <<END>> messages
@@ -92,40 +91,41 @@ enum CmdLineOptionEnum
 // Synopsis: Any user specified command line options are stored here.
 //
 //-----------------------------------------------------------------------------
-class CommandLineOptions
-{
-    public:
+class CommandLineOptions {
+public:
 
-        //
-        // Initialize default command-line options.
-        //
-        static void InitDefaults();
+    //
+    // Initialize default command-line options.
+    //
+    static void InitDefaults();
 
-        //
-        // Interpret the command line string token.
-        //
-        static void HandleOption( const char* const optionIn );
+    //
+    // Interpret the command line string token.
+    //
+    static void HandleOption(const char *const optionIn);
 
-        //
-        // Retrive the specified option.
-        //
-        static bool Get( CmdLineOptionEnum eOption );
+    //
+    // Retrive the specified option.
+    //
+    static bool Get(CmdLineOptionEnum eOption);
 
-        inline static short GetDefaultLevel() { return s_defaultLevel; }
-        inline static short GetDefaultMission() { return s_defaultMission; }
+    inline static short GetDefaultLevel() { return s_defaultLevel; }
 
-    private:
+    inline static short GetDefaultMission() { return s_defaultMission; }
 
-        // Declared but not defined to prevent copying and assignment.
-        CommandLineOptions( const CommandLineOptions& );
-        CommandLineOptions& operator=( const CommandLineOptions& );
+private:
 
-        static simpsonsUInt64 sOptions;
+    // Declared but not defined to prevent copying and assignment.
+    CommandLineOptions(const CommandLineOptions &);
 
-        // default level and mission to load for 'skipfe' option
-        //
-        static short s_defaultLevel;
-        static short s_defaultMission;
+    CommandLineOptions &operator=(const CommandLineOptions &);
+
+    static simpsonsUInt64 sOptions;
+
+    // default level and mission to load for 'skipfe' option
+    //
+    static short s_defaultLevel;
+    static short s_defaultMission;
 
 };
 

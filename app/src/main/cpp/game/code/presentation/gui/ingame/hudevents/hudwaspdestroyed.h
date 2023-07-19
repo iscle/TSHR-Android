@@ -22,9 +22,9 @@
 // Forward References
 //===========================================================================
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Page;
+
     class Text;
 }
 
@@ -32,21 +32,22 @@ namespace Scrooby
 // Interface Definitions
 //===========================================================================
 
-class HudWaspDestroyed : public HudEventHandler
-{
+class HudWaspDestroyed : public HudEventHandler {
 public:
-    HudWaspDestroyed( Scrooby::Page* pPage );
+    HudWaspDestroyed(Scrooby::Page *pPage);
+
     virtual ~HudWaspDestroyed();
 
     virtual void Start();
-    virtual void Stop();
-    virtual void Update( float elapsedTime );
 
-    void SetGagInsteadOfWasp( bool isGagInsteadOfWasp );
+    virtual void Stop();
+
+    virtual void Update(float elapsedTime);
+
+    void SetGagInsteadOfWasp(bool isGagInsteadOfWasp);
 
 private:
-    enum eSubState
-    {
+    enum eSubState {
         STATE_WASP_TRANSITION_IN,
         STATE_WASP_DISPLAY_HOLD,
         STATE_WASP_TRANSITION_OUT,
@@ -56,16 +57,15 @@ private:
 
     unsigned int m_currentSubState;
 
-    Scrooby::Text* m_itemsComplete;
+    Scrooby::Text *m_itemsComplete;
 
     // re-use this event handler for gags
     //
-    bool m_isGagInsteadOfWasp : 1;
+    bool m_isGagInsteadOfWasp: 1;
 
 };
 
-inline void HudWaspDestroyed::SetGagInsteadOfWasp( bool isGagInsteadOfWasp )
-{
+inline void HudWaspDestroyed::SetGagInsteadOfWasp(bool isGagInsteadOfWasp) {
     m_isGagInsteadOfWasp = isGagInsteadOfWasp;
 }
 

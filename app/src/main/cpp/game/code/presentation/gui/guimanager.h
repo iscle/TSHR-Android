@@ -36,8 +36,7 @@ struct IGuiLoadingCallback;
 
 const int MAX_WINDOW_HISTORY = 8;
 
-enum eWindowCommand
-{
+enum eWindowCommand {
     CLEAR_WINDOW_HISTORY = 1,
     KEEP_WINDOW_HISTORY = 2,
     FORCE_WINDOW_CHANGE_IMMEDIATE = 4,
@@ -46,8 +45,7 @@ enum eWindowCommand
     NUM_WINDOW_COMMANDS
 };
 
-enum eGenericPromptType
-{
+enum eGenericPromptType {
     PROMPT_TYPE_YES_NO,
     PROMPT_TYPE_CONTINUE,
     PROMPT_TYPE_OK,
@@ -58,15 +56,14 @@ enum eGenericPromptType
     NUM_GENERIC_PROMPT_TYPES
 };
 
-enum eErrorPromptResponse
-{
+enum eErrorPromptResponse {
     ERROR_RESPONSE_NONE = 0,
 
     ERROR_RESPONSE_CONTINUE = 1,
     ERROR_RESPONSE_RETRY = 2,
     ERROR_RESPONSE_YES = 4,
-	ERROR_RESPONSE_NO = 8,
-	ERROR_RESPONSE_FORMAT = 16,
+    ERROR_RESPONSE_NO = 8,
+    ERROR_RESPONSE_FORMAT = 16,
     ERROR_RESPONSE_MANAGE = 32,
     ERROR_RESPONSE_CONTINUE_WITHOUT_SAVE = 64,
     ERROR_RESPONSE_DELETE = 128,
@@ -78,129 +75,132 @@ enum eErrorPromptResponse
 //===========================================================================
 class CGuiManager : public CGuiEntity,
                     public Scrooby::GotoScreenCallback,
-                    public EventListener
-{
-    public:
+                    public EventListener {
+public:
 
-        CGuiManager( Scrooby::Project* pProject,
-                     CGuiEntity* pParent );
+    CGuiManager(Scrooby::Project *pProject,
+                CGuiEntity *pParent);
 
-        virtual ~CGuiManager();
+    virtual ~CGuiManager();
 
-        virtual void Populate() = 0;
-        virtual void Start( CGuiWindow::eGuiWindowID initialWindow = CGuiWindow::GUI_WINDOW_ID_UNDEFINED ) = 0;
+    virtual void Populate() = 0;
 
-		virtual void HandleMessage( eGuiMessage message, 
-			                        unsigned int param1 = 0,
-									unsigned int param2 = 0 );
+    virtual void
+    Start(CGuiWindow::eGuiWindowID initialWindow = CGuiWindow::GUI_WINDOW_ID_UNDEFINED) = 0;
 
-        Scrooby::Project* GetScroobyProject() const { return m_pScroobyProject; }
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-		virtual void OnGotoScreenComplete();
+    Scrooby::Project *GetScroobyProject() const { return m_pScroobyProject; }
 
-        CGuiWindow* FindWindowByID( CGuiWindow::eGuiWindowID id );
+    virtual void OnGotoScreenComplete();
 
-        CGuiWindow* GetCurrentWindow();
+    CGuiWindow *FindWindowByID(CGuiWindow::eGuiWindowID id);
 
-        void DisplayMessage( int messageIndex,
-                             CGuiEntity* pCallback = NULL );
+    CGuiWindow *GetCurrentWindow();
 
-        void DisplayPrompt( int messageIndex,
-                            CGuiEntity* pCallback,
-                            eGenericPromptType promptType = PROMPT_TYPE_YES_NO,
-                            bool enableDefaultToNo = true );
+    void DisplayMessage(int messageIndex,
+                        CGuiEntity *pCallback = NULL);
 
-        void DisplayErrorPrompt( int messageIndex,
-                                 CGuiEntity* pCallback,
-                                 int promptResponses = ERROR_RESPONSE_NONE );
+    void DisplayPrompt(int messageIndex,
+                       CGuiEntity *pCallback,
+                       eGenericPromptType promptType = PROMPT_TYPE_YES_NO,
+                       bool enableDefaultToNo = true);
 
-        CGuiWindow::eGuiWindowID GetPreviousScreen( int fromCurrentScreen = 0 ) const;
-        CGuiWindow::eGuiWindowID GetCurrentScreen() const;
+    void DisplayErrorPrompt(int messageIndex,
+                            CGuiEntity *pCallback,
+                            int promptResponses = ERROR_RESPONSE_NONE);
 
-        // Implements EventListener
-        virtual void HandleEvent( EventEnum id, void* pEventData ) {};
+    CGuiWindow::eGuiWindowID GetPreviousScreen(int fromCurrentScreen = 0) const;
 
-        enum eMemoryCardCheckingState
-        {
-            MEM_CARD_CHECK_NOT_DONE,
-            MEM_CARD_CHECK_IN_PROGRESS,
-            MEM_CARD_CHECK_COMPLETED,
+    CGuiWindow::eGuiWindowID GetCurrentScreen() const;
 
-            NUM_MEM_CARD_CHECK_STATES
-        };
+    // Implements EventListener
+    virtual void HandleEvent(EventEnum id, void *pEventData) {};
 
-        static eMemoryCardCheckingState s_memcardCheckState;
+    enum eMemoryCardCheckingState {
+        MEM_CARD_CHECK_NOT_DONE,
+        MEM_CARD_CHECK_IN_PROGRESS,
+        MEM_CARD_CHECK_COMPLETED,
 
-    protected:
+        NUM_MEM_CARD_CHECK_STATES
+    };
 
-        //---------------------------------------------------------------------
-        // Protected Functions
-        //---------------------------------------------------------------------
+    static eMemoryCardCheckingState s_memcardCheckState;
 
-        void AddWindow( CGuiWindow::eGuiWindowID windowID, CGuiWindow* pWindow );
-        void RemoveWindow( CGuiWindow::eGuiWindowID windowID );
-        void RemoveAllWindows();
+protected:
 
-        void PushScreenHistory( CGuiWindow::eGuiWindowID windowID );
-        CGuiWindow::eGuiWindowID PopScreenHistory();
-        void ClearScreenHistory();
+    //---------------------------------------------------------------------
+    // Protected Functions
+    //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // Protected Data
-        //---------------------------------------------------------------------
+    void AddWindow(CGuiWindow::eGuiWindowID windowID, CGuiWindow *pWindow);
 
-        CGuiWindow* m_windows[ CGuiWindow::NUM_GUI_WINDOW_IDS ];
-        int m_numWindows;
-        
-        Scrooby::Project* m_pScroobyProject;
+    void RemoveWindow(CGuiWindow::eGuiWindowID windowID);
 
-        CGuiWindow::eGuiWindowID m_currentScreen;
-		CGuiWindow::eGuiWindowID m_nextScreen;
+    void RemoveAllWindows();
 
-		enum eGuiFrontEndState
-		{
-			GUI_FE_UNINITIALIZED,
-			GUI_FE_SCREEN_RUNNING,
-			GUI_FE_CHANGING_SCREENS,
-            GUI_FE_DYNAMIC_LOADING,
-			GUI_FE_SHUTTING_DOWN,
-			GUI_FE_TERMINATED
-		};
+    void PushScreenHistory(CGuiWindow::eGuiWindowID windowID);
 
-		eGuiFrontEndState m_state;
+    CGuiWindow::eGuiWindowID PopScreenHistory();
 
-    private:
+    void ClearScreenHistory();
 
-        //---------------------------------------------------------------------
-        // Private Functions
-        //---------------------------------------------------------------------
+    //---------------------------------------------------------------------
+    // Protected Data
+    //---------------------------------------------------------------------
 
-        // No copying or assignment. Declare but don't define.
-        //
-        CGuiManager( const CGuiManager& );
-        CGuiManager& operator= ( const CGuiManager& );
+    CGuiWindow *m_windows[CGuiWindow::NUM_GUI_WINDOW_IDS];
+    int m_numWindows;
 
-        bool IsValidWindowID( CGuiWindow::eGuiWindowID windowID ) const;
+    Scrooby::Project *m_pScroobyProject;
 
-        //---------------------------------------------------------------------
-        // Private Data
-        //---------------------------------------------------------------------
-        CGuiWindow::eGuiWindowID m_windowHistory[ MAX_WINDOW_HISTORY ];
-        int m_windowHistoryCount;
+    CGuiWindow::eGuiWindowID m_currentScreen;
+    CGuiWindow::eGuiWindowID m_nextScreen;
 
-        unsigned int m_gotoScreenUserParam1;
-        unsigned int m_gotoScreenUserParam2;
+    enum eGuiFrontEndState {
+        GUI_FE_UNINITIALIZED,
+        GUI_FE_SCREEN_RUNNING,
+        GUI_FE_CHANGING_SCREENS,
+        GUI_FE_DYNAMIC_LOADING,
+        GUI_FE_SHUTTING_DOWN,
+        GUI_FE_TERMINATED
+    };
+
+    eGuiFrontEndState m_state;
+
+private:
+
+    //---------------------------------------------------------------------
+    // Private Functions
+    //---------------------------------------------------------------------
+
+    // No copying or assignment. Declare but don't define.
+    //
+    CGuiManager(const CGuiManager &);
+
+    CGuiManager &operator=(const CGuiManager &);
+
+    bool IsValidWindowID(CGuiWindow::eGuiWindowID windowID) const;
+
+    //---------------------------------------------------------------------
+    // Private Data
+    //---------------------------------------------------------------------
+    CGuiWindow::eGuiWindowID m_windowHistory[MAX_WINDOW_HISTORY];
+    int m_windowHistoryCount;
+
+    unsigned int m_gotoScreenUserParam1;
+    unsigned int m_gotoScreenUserParam2;
 };
 
 inline void
-CGuiManager::ClearScreenHistory()
-{
+CGuiManager::ClearScreenHistory() {
     m_windowHistoryCount = 0;
 }
 
 inline bool
-CGuiManager::IsValidWindowID( CGuiWindow::eGuiWindowID windowID ) const
-{
+CGuiManager::IsValidWindowID(CGuiWindow::eGuiWindowID windowID) const {
     return (windowID >= 0 && windowID < CGuiWindow::NUM_GUI_WINDOW_IDS);
 }
 

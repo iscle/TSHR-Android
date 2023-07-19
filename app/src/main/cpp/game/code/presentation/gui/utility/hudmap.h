@@ -27,37 +27,40 @@
 //===========================================================================
 
 #ifndef NULL
-    #define NULL 0
+#define NULL 0
 #endif
 
 const unsigned int MAX_NUM_REGISTERED_ICONS = 64;
 const unsigned int MAX_NUM_ICONS_PER_TYPE = 32;
 
 struct HudMapCam;
+
 class ISuperCamTarget;
+
 class tPointCamera;
+
 class RoadSegment;
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Page;
+
     class Group;
+
     class Pure3dObject;
+
     class Sprite;
 }
 
 // pure virtual interface for dynamic hud map icons
 //
-struct IHudMapIconLocator
-{
-    virtual void GetPosition( rmt::Vector* currentLoc ) = 0;
-    virtual void GetHeading( rmt::Vector* heading ) = 0;
+struct IHudMapIconLocator {
+    virtual void GetPosition(rmt::Vector *currentLoc) = 0;
+
+    virtual void GetHeading(rmt::Vector *heading) = 0;
 };
 
-struct HudMapIcon
-{
-    enum eIconType
-    {
+struct HudMapIcon {
+    enum eIconType {
         UNKNOWN_ICON_TYPE = -1,
 
         ICON_PLAYER,
@@ -84,25 +87,23 @@ struct HudMapIcon
         NUM_ICON_TYPES
     };
 
-    Scrooby::Sprite* m_iconImage;
+    Scrooby::Sprite *m_iconImage;
     eIconType m_type;
     rmt::Vector m_location;
-    IHudMapIconLocator* m_dynamicLocator;
+    IHudMapIconLocator *m_dynamicLocator;
     unsigned int m_visibilityMask;
 
     HudMapIcon()
-    :   m_iconImage( NULL ),
-        m_type( UNKNOWN_ICON_TYPE ),
-        m_location( 0, 0, 0 ),
-        m_dynamicLocator( NULL ),
-        m_visibilityMask( 0 )
-    {
+            : m_iconImage(NULL),
+              m_type(UNKNOWN_ICON_TYPE),
+              m_location(0, 0, 0),
+              m_dynamicLocator(NULL),
+              m_visibilityMask(0) {
     }
 
-    bool IsAICarIcon() const
-    {
-        return( static_cast<int>( m_type ) > ICON_AI_TYPES_BEGIN &&
-                static_cast<int>( m_type ) < ICON_AI_TYPES_END );
+    bool IsAICarIcon() const {
+        return (static_cast<int>(m_type) > ICON_AI_TYPES_BEGIN &&
+                static_cast<int>(m_type) < ICON_AI_TYPES_END);
     }
 
     void ApplyAICarIconColour();
@@ -112,59 +113,66 @@ struct HudMapIcon
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CHudMap
-{
+class CHudMap {
 public:
-    CHudMap( Scrooby::Page* pPage, int playerID, const char* p3dFile = NULL );
+    CHudMap(Scrooby::Page *pPage, int playerID, const char *p3dFile = NULL);
+
     virtual ~CHudMap();
 
     // Camera Target must be set before doing anything else!
     //
-    void SetCameraTarget( ISuperCamTarget* target );
+    void SetCameraTarget(ISuperCamTarget *target);
 
     // enable/disable fixed camera height (if enabling, the fixed camera
     // height will be calculated from the visible radius)
     //
-    void EnableFixedCameraHeight( bool enable,
-                                  float visibleRadius = 50.0f );
+    void EnableFixedCameraHeight(bool enable,
+                                 float visibleRadius = 50.0f);
 
     // Update
     //
-    void Update( unsigned int elapsedTime );
+    void Update(unsigned int elapsedTime);
 
     // for AI Car icons only
     //
-    void UpdateAICarDistance( float currentDistance, float maxDistance );
+    void UpdateAICarDistance(float currentDistance, float maxDistance);
 
     // Map Icons
     //
-    void AddIconToInventory( HudMapIcon::eIconType type, Scrooby::Sprite* image );
-    Scrooby::Sprite* RemoveIconFromInventory( HudMapIcon::eIconType type );
+    void AddIconToInventory(HudMapIcon::eIconType type, Scrooby::Sprite *image);
 
-    int RegisterIcon( HudMapIcon::eIconType type, rmt::Vector location,
-                      IHudMapIconLocator* hudMapIconLocator = NULL,
-                      bool newFocalPoint = false );
+    Scrooby::Sprite *RemoveIconFromInventory(HudMapIcon::eIconType type);
 
-    void UnregisterIcon( int iconID );
+    int RegisterIcon(HudMapIcon::eIconType type, rmt::Vector location,
+                     IHudMapIconLocator *hudMapIconLocator = NULL,
+                     bool newFocalPoint = false);
 
-    int ChangeIconType( int iconID, HudMapIcon::eIconType type );
-    void SetFocalPointIcon( int iconID );
-    HudMapIcon* FindIcon( HudMapIcon::eIconType type ) const;
+    void UnregisterIcon(int iconID);
+
+    int ChangeIconType(int iconID, HudMapIcon::eIconType type);
+
+    void SetFocalPointIcon(int iconID);
+
+    HudMapIcon *FindIcon(HudMapIcon::eIconType type) const;
 
     // Reset position and size to original settings
     //
-    void Translate( int x, int y );
+    void Translate(int x, int y);
+
     void Reset();
 
-    void SetVisible( bool isVisible );
+    void SetVisible(bool isVisible);
 
     // Accessors
     //
-    Scrooby::Pure3dObject* GetMap() const { return m_p3dMap; }
-    Scrooby::Pure3dObject* GetHole() const { return m_p3dHole; }
-    HudMapCam* GetHudMapCam() const { return m_hudMapCam; }
+    Scrooby::Pure3dObject *GetMap() const { return m_p3dMap; }
+
+    Scrooby::Pure3dObject *GetHole() const { return m_p3dHole; }
+
+    HudMapCam *GetHudMapCam() const { return m_hudMapCam; }
 
     void RestoreAllRegisteredIcons();
+
     static void ClearAllRegisteredIcons();
 
 private:
@@ -175,18 +183,21 @@ private:
 
     // No copying or asignment. Declare but don't define.
     //
-    CHudMap( const CHudMap& );
-    CHudMap& operator= ( const CHudMap& );
+    CHudMap(const CHudMap &);
 
-    static float CalculateDistanceBetweenPoints( rmt::Vector& a, rmt::Vector& b );
+    CHudMap &operator=(const CHudMap &);
 
-    void UpdateIconHeading( Scrooby::Sprite* iconImage, rmt::Vector* iconHeading );
+    static float CalculateDistanceBetweenPoints(rmt::Vector &a, rmt::Vector &b);
 
-    float CalculateCameraHeight( rmt::Vector& player, rmt::Vector& mission ) const;
-    float CalculateCameraHeight( float visibleRadius ) const;
-    float CalculatRadarConeAngle( rmt::Vector& iconLoc ) const;
+    void UpdateIconHeading(Scrooby::Sprite *iconImage, rmt::Vector *iconHeading);
 
-    void DetermineOnRoadLocation( rmt::Vector& source, rmt::Vector& target, float visibleRadius );
+    float CalculateCameraHeight(rmt::Vector &player, rmt::Vector &mission) const;
+
+    float CalculateCameraHeight(float visibleRadius) const;
+
+    float CalculatRadarConeAngle(rmt::Vector &iconLoc) const;
+
+    void DetermineOnRoadLocation(rmt::Vector &source, rmt::Vector &target, float visibleRadius);
 
     //---------------------------------------------------------------------
     // Private Data
@@ -194,23 +205,23 @@ private:
 
     int m_playerID;
 
-    Scrooby::Pure3dObject* m_p3dMap;
-    Scrooby::Pure3dObject* m_p3dHole;
+    Scrooby::Pure3dObject *m_p3dMap;
+    Scrooby::Pure3dObject *m_p3dHole;
     int m_originalPosX;
     int m_originalPosY;
     int m_originalWidth;
     int m_originalHeight;
 
-    bool m_isVisible : 1;
-    Scrooby::Group* m_radar;
-    Scrooby::Group* m_radarCone;
-    Scrooby::Group* m_iconsGroup;
+    bool m_isVisible: 1;
+    Scrooby::Group *m_radar;
+    Scrooby::Group *m_radarCone;
+    Scrooby::Group *m_iconsGroup;
 
-    HudMapCam* m_hudMapCam;
+    HudMapCam *m_hudMapCam;
     float m_currentCameraHeight;
     float m_fixedCameraHeight;
 
-    Scrooby::Sprite* m_icons[ HudMapIcon::NUM_ICON_TYPES ][ MAX_NUM_ICONS_PER_TYPE ];
+    Scrooby::Sprite *m_icons[HudMapIcon::NUM_ICON_TYPES][MAX_NUM_ICONS_PER_TYPE];
 
     // for AI Car icons only
     //
@@ -219,20 +230,19 @@ private:
 
     unsigned int m_elapsedTime;
 
-    RoadSegment* m_lastRoadSeg;
+    RoadSegment *m_lastRoadSeg;
     rmt::Vector m_lastOnRoadLocation;
     int m_frameCount;
 
     // gameplay-persistent data
     //
-    static HudMapIcon s_registeredIcons[ MAX_NUM_REGISTERED_ICONS ];
+    static HudMapIcon s_registeredIcons[MAX_NUM_REGISTERED_ICONS];
     static int s_numRegisteredIcons;
     static int s_fpIconID;
 
 };
 
-inline void CHudMap::UpdateAICarDistance( float currentDistance, float maxDistance )
-{
+inline void CHudMap::UpdateAICarDistance(float currentDistance, float maxDistance) {
     m_currentAICarDistance = currentDistance;
     m_maxAICarDistance = maxDistance;
 }

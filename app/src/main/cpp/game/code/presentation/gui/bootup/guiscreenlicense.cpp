@@ -50,46 +50,45 @@ const float LICENSE_SCREEN_FADE_TIME = 500.0f;
 //
 //===========================================================================
 CGuiScreenLicense::CGuiScreenLicense
-(
-	Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-)
-:   CGuiScreen( pScreen, pParent, GUI_SCREEN_ID_LICENSE )
-{
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        : CGuiScreen(pScreen, pParent, GUI_SCREEN_ID_LICENSE) {
     // retrieve Scrooby drawing elements
     //
-    rAssert( m_pScroobyScreen != NULL );
-    Scrooby::Page* pPage = m_pScroobyScreen->GetPage( "License" );
-    rAssert( pPage != NULL );
+    rAssert(m_pScroobyScreen != NULL);
+    Scrooby::Page *pPage = m_pScroobyScreen->GetPage("License");
+    rAssert(pPage != NULL);
 
     // set platform-specific license screen image
     //
 #ifdef RAD_GAMECUBE
-    tSprite* pSprite = p3d::find<tSprite>( "licenseG.png" );
+    tSprite* pSprite = p3d::find<tSprite>("licenseG.png");
 #endif
 #ifdef RAD_PS2
-    tSprite* pSprite = p3d::find<tSprite>( "licenseP.png" );
+    tSprite* pSprite = p3d::find<tSprite>("licenseP.png");
 #endif
 #ifdef RAD_XBOX
-    tSprite* pSprite = p3d::find<tSprite>( "licenseX.png" );
+    tSprite* pSprite = p3d::find<tSprite>("licenseX.png");
 #endif
 #ifdef RAD_WIN32
-    tSprite* pSprite = p3d::find<tSprite>( "licensePC.png" );
+    tSprite* pSprite = p3d::find<tSprite>("licensePC.png");
 #endif
-    rAssert( pSprite != NULL );
+    rAssert(pSprite != NULL);
 
-    Scrooby::Sprite* licenseImage = pPage->GetSprite( "License" );
-    rAssert( licenseImage != NULL );
-    licenseImage->SetRawSprite( pSprite );
+    Scrooby::Sprite *licenseImage = pPage->GetSprite("License");
+    rAssert(licenseImage != NULL);
+    licenseImage->SetRawSprite(pSprite);
 
     // set fade time for license screen (in milliseconds)
     //
-    this->SetFadeTime( LICENSE_SCREEN_FADE_TIME );
+    this->SetFadeTime(LICENSE_SCREEN_FADE_TIME);
 
 #ifdef RAD_GAMECUBE
     // skip screen fade in (on Gamecube only)
     //
-    this->SetFadeTime( 0.0f );
+    this->SetFadeTime(0.0f);
 #endif
 }
 
@@ -106,8 +105,7 @@ CGuiScreenLicense::CGuiScreenLicense
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenLicense::~CGuiScreenLicense()
-{
+CGuiScreenLicense::~CGuiScreenLicense() {
 }
 
 
@@ -124,15 +122,14 @@ CGuiScreenLicense::~CGuiScreenLicense()
 //
 //===========================================================================
 void CGuiScreenLicense::HandleMessage
-(
-	eGuiMessage message, 
-	unsigned int param1,
-	unsigned int param2 
-)
-{
-	// Propogate the message up the hierarchy.
-	//
-	CGuiScreen::HandleMessage( message, param1, param2 );
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    // Propogate the message up the hierarchy.
+    //
+    CGuiScreen::HandleMessage(message, param1, param2);
 }
 
 
@@ -148,8 +145,7 @@ void CGuiScreenLicense::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenLicense::InitIntro()
-{
+void CGuiScreenLicense::InitIntro() {
     // start loading sound files
     //
     GetBootupContext()->StartLoadingSound();
@@ -168,11 +164,10 @@ void CGuiScreenLicense::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenLicense::InitRunning()
-{
+void CGuiScreenLicense::InitRunning() {
 #ifdef RAD_GAMECUBE
     // allow screen fade out (on Gamecube only)
-    this->SetFadeTime( LICENSE_SCREEN_FADE_TIME );
+    this->SetFadeTime(LICENSE_SCREEN_FADE_TIME);
 #endif
 
     GetBootupContext()->ResetLicenseScreenDisplayTime();
@@ -191,8 +186,7 @@ void CGuiScreenLicense::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenLicense::InitOutro()
-{
+void CGuiScreenLicense::InitOutro() {
 }
 
 

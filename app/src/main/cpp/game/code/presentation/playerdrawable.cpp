@@ -46,8 +46,7 @@
 //
 //==============================================================================
 PlayerDrawable::PlayerDrawable() :
-    mpPlayer( NULL )
-{
+        mpPlayer(NULL) {
 }
 
 //==============================================================================
@@ -60,9 +59,8 @@ PlayerDrawable::PlayerDrawable() :
 // Return:      N/A.
 //
 //==============================================================================
-PlayerDrawable::~PlayerDrawable()
-{
-    
+PlayerDrawable::~PlayerDrawable() {
+
 }
 
 //=============================================================================
@@ -75,10 +73,8 @@ PlayerDrawable::~PlayerDrawable()
 // Return:      void 
 //
 //=============================================================================
-void PlayerDrawable::Display()
-{
-    if(mpPlayer != NULL)
-    {
+void PlayerDrawable::Display() {
+    if (mpPlayer != NULL) {
         mpPlayer->Render();
     }
 }

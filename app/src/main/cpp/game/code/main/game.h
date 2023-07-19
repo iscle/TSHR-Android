@@ -16,18 +16,20 @@
 // Forward References
 //========================================
 class Platform;
+
 struct IRadTimerList;
+
 class GameFlow;
+
 class RenderFlow;
 
 #include <radtime.hpp>
 
-class DemoProfiler
-{
+class DemoProfiler {
 public:
     DemoProfiler(unsigned maxFrames);
 
-    void AddChannel(unsigned c, const char* name);
+    void AddChannel(unsigned c, const char *name);
 
     void NextFrame();
 
@@ -35,29 +37,37 @@ public:
     void Stop(unsigned c);   // stop timing channel c
     void Set(unsigned c, unsigned val);  // set sample value for channel c
     unsigned GetSample(unsigned c);
+
     unsigned GetCurrentFrame();
+
     void Accumulate(unsigned c, unsigned val);  // add value to sample for channel c
     void Dump();  // print out all samples
 
     void StartRecording();
+
     bool IsRecording();
-    enum AlertStatus { PROFILER_ALERT_GREEN, PROFILER_ALERT_YELLOW, PROFILER_ALERT_RED };
+
+    enum AlertStatus {
+        PROFILER_ALERT_GREEN, PROFILER_ALERT_YELLOW, PROFILER_ALERT_RED
+    };
+
     AlertStatus GetAlertStatus();
 
-private:    
-    enum { MAX_CHANNEL = 64 };
+private:
+    enum {
+        MAX_CHANNEL = 64
+    };
 
-    struct Channel
-    {
+    struct Channel {
         char name[255];
-        unsigned* samples;
+        unsigned *samples;
         radTime64 t0;
     };
 
     bool recording;
     unsigned maxFrames;
 
-    Channel* channel[MAX_CHANNEL];
+    Channel *channel[MAX_CHANNEL];
     unsigned nChannel;
     unsigned currentFrame;
 
@@ -75,65 +85,74 @@ extern DemoProfiler g_DemoProfiler;
 // Synopsis:    The game loop
 //
 //=============================================================================
-class Game
-{
-    public:
+class Game {
+public:
 
-        // Static Methods (for creating and getting an instance of the game)
-        static Game* CreateInstance( Platform* platform );
-        static void  DestroyInstance();
-        static Game* GetInstance();
-        
-        Platform* GetPlatform();
+    // Static Methods (for creating and getting an instance of the game)
+    static Game *CreateInstance(Platform *platform);
+
+    static void DestroyInstance();
+
+    static Game *GetInstance();
+
+    Platform *GetPlatform();
 
 
-        // Game Flow Public Methods
-        void Initialize();
-        void Terminate();
+    // Game Flow Public Methods
+    void Initialize();
 
-        void Run();
-        void Stop();
-        
-        IRadTimerList* GetTimerList() { return mpTimerList; }
+    void Terminate();
 
-        unsigned int GetFrameCount() const { return mFrameCount; };
+    void Run();
 
-        unsigned int GetDemoCount() const { return mDemoCount; };
-        void IncrementDemoCount() { ++mDemoCount; };
-        void SetTime( unsigned int timeMS ) { mTimeMS = timeMS; };
-        unsigned int GetTime() { return mTimeMS; };
+    void Stop();
 
-        static unsigned GetRandomSeed ();
+    IRadTimerList *GetTimerList() { return mpTimerList; }
 
-    private:
+    unsigned int GetFrameCount() const { return mFrameCount; };
 
-        // Constructors, Destructors, and Operators
-        Game( Platform* platform );
-        virtual ~Game();
+    unsigned int GetDemoCount() const { return mDemoCount; };
 
-        // Unused Constructors, Destructors, and Operators
-        Game();
-        Game( const Game& aGame );
-        Game& operator=( const Game& aGame );
+    void IncrementDemoCount() { ++mDemoCount; };
 
-        // Static Singleton Attribute
-        static Game*    spInstance;
+    void SetTime(unsigned int timeMS) { mTimeMS = timeMS; };
 
-        // Private Attributes
-        Platform*       mpPlatform;
-        IRadTimerList*  mpTimerList;
-        GameFlow*       mpGameFlow;
-        RenderFlow*     mpRenderFlow;
-        
-        unsigned int mFrameCount;
+    unsigned int GetTime() { return mTimeMS; };
 
-        bool        mExitNow;
+    static unsigned GetRandomSeed();
 
-        unsigned int mDemoCount;
-        unsigned int mTimeMS;
+private:
+
+    // Constructors, Destructors, and Operators
+    Game(Platform *platform);
+
+    virtual ~Game();
+
+    // Unused Constructors, Destructors, and Operators
+    Game();
+
+    Game(const Game &aGame);
+
+    Game &operator=(const Game &aGame);
+
+    // Static Singleton Attribute
+    static Game *spInstance;
+
+    // Private Attributes
+    Platform *mpPlatform;
+    IRadTimerList *mpTimerList;
+    GameFlow *mpGameFlow;
+    RenderFlow *mpRenderFlow;
+
+    unsigned int mFrameCount;
+
+    bool mExitNow;
+
+    unsigned int mDemoCount;
+    unsigned int mTimeMS;
 };
 
-inline Game* GetGame() { return( Game::GetInstance() ); }
+inline Game *GetGame() { return (Game::GetInstance()); }
 
 #endif // GAME_H
 

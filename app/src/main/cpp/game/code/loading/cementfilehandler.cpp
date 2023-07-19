@@ -44,9 +44,8 @@
 // Return:      N/A.
 //
 //==============================================================================
-CementFileHandler::CementFileHandler( LoadingManager::CementLibraryStruct* libraryStruct ) :
-    m_libraryStruct( libraryStruct )
-{
+CementFileHandler::CementFileHandler(LoadingManager::CementLibraryStruct *libraryStruct) :
+        m_libraryStruct(libraryStruct) {
 }
 
 //==============================================================================
@@ -59,8 +58,7 @@ CementFileHandler::CementFileHandler( LoadingManager::CementLibraryStruct* libra
 // Return:      N/A.
 //
 //==============================================================================
-CementFileHandler::~CementFileHandler()
-{
+CementFileHandler::~CementFileHandler() {
 }
 
 //=============================================================================
@@ -76,32 +74,28 @@ CementFileHandler::~CementFileHandler()
 // Return:      void 
 //
 //=============================================================================
-void CementFileHandler::LoadFile( const char* filename, 
-                                  FileHandler::LoadFileCallback* pCallback, 
-                                  void* pUserData,
-                                  GameMemoryAllocator heap )
-{
+void CementFileHandler::LoadFile(const char *filename,
+                                 FileHandler::LoadFileCallback *pCallback,
+                                 void *pUserData,
+                                 GameMemoryAllocator heap) {
     radCementLibraryPriority priority;
 
     mpCallback = pCallback;
     mpUserData = pUserData;
 
-    if( CommandLineOptions::Get( CLO_CD_FILES_ONLY ) )
-    {
+    if (CommandLineOptions::Get(CLO_CD_FILES_ONLY)) {
         priority = radCementLibraryBeforeDrive;
-    }
-    else
-    {
+    } else {
         priority = radCementLibraryAfterDrive;
     }
 
-    ::radFileRegisterCementLibrary( &(m_libraryStruct->library),
-                                    filename,
-                                    priority,
-                                    0,
-                                    GMA_PERSISTENT );
+    ::radFileRegisterCementLibrary(&(m_libraryStruct->library),
+                                   filename,
+                                   priority,
+                                   0,
+                                   GMA_PERSISTENT);
 
-    m_libraryStruct->library->SetCompletionCallback( this, NULL );
+    m_libraryStruct->library->SetCompletionCallback(this, NULL);
 }
 
 //=============================================================================
@@ -114,13 +108,12 @@ void CementFileHandler::LoadFile( const char* filename,
 // Return:      void 
 //
 //=============================================================================
-void CementFileHandler::LoadFileSync( const char* filename )
-{
+void CementFileHandler::LoadFileSync(const char *filename) {
     //
     // RadFile doesn't offer synchronous cement file registration, so we shouldn't
     // see this function called
     //
-    rAssert( false );
+    rAssert(false);
 }
 
 //=============================================================================
@@ -133,11 +126,10 @@ void CementFileHandler::LoadFileSync( const char* filename )
 // Return:      void 
 //
 //=============================================================================
-void CementFileHandler::OnCementLibraryRegistered( void* pUserData )
-{
+void CementFileHandler::OnCementLibraryRegistered(void *pUserData) {
     m_libraryStruct->isLoading = false;
 
-    mpCallback->OnLoadFileComplete( mpUserData );
+    mpCallback->OnLoadFileComplete(mpUserData);
 }
 
 //******************************************************************************

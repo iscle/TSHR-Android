@@ -53,45 +53,44 @@
 //
 //===========================================================================
 CGuiScreenScrapBook::CGuiScreenScrapBook
-(
-	Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-)
-:   CGuiScreen( pScreen, pParent, GUI_SCREEN_ID_SCRAP_BOOK ),
-    m_pMenu( NULL ),
-    m_krustySticker( NULL )
-{
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        : CGuiScreen(pScreen, pParent, GUI_SCREEN_ID_SCRAP_BOOK),
+          m_pMenu(NULL),
+          m_krustySticker(NULL) {
     // Retrieve the Scrooby drawing elements.
     //
-    Scrooby::Page* pPage = m_pScroobyScreen->GetPage( "ScrapBook" );
-	rAssert( pPage != NULL );
+    Scrooby::Page *pPage = m_pScroobyScreen->GetPage("ScrapBook");
+    rAssert(pPage != NULL);
 
     // get krusty sticker overlay
     //
-    m_krustySticker = pPage->GetGroup( "KrustySticker" );
-    rAssert( m_krustySticker != NULL );
-    m_krustySticker->SetVisible( false ); // hide by default
+    m_krustySticker = pPage->GetGroup("KrustySticker");
+    rAssert(m_krustySticker != NULL);
+    m_krustySticker->SetVisible(false); // hide by default
 
 #ifdef PAL
-    m_krustySticker->ScaleAboutPoint( 0.9f, 0, 0 );
+    m_krustySticker->ScaleAboutPoint(0.9f, 0, 0);
 #endif
 
     // create menu
     //
-    m_pMenu = new CGuiMenu( this, NUM_MENU_ITEMS );
-    rAssert( m_pMenu != NULL );
+    m_pMenu = new CGuiMenu(this, NUM_MENU_ITEMS);
+    rAssert(m_pMenu != NULL);
 
     // add menu items
     //
-    Scrooby::Group* pGroup = pPage->GetGroup( "Menu" );
-    rAssert( pGroup != NULL );
-    m_pMenu->AddMenuItem( pGroup->GetText( "OpenBook" ) );
-    Scrooby::Text* gameStats = pGroup->GetText( "GameStats" );
-    m_pMenu->AddMenuItem( gameStats );
+    Scrooby::Group *pGroup = pPage->GetGroup("Menu");
+    rAssert(pGroup != NULL);
+    m_pMenu->AddMenuItem(pGroup->GetText("OpenBook"));
+    Scrooby::Text *gameStats = pGroup->GetText("GameStats");
+    m_pMenu->AddMenuItem(gameStats);
 
 #ifdef PAL
-    rAssert( gameStats != NULL );
-    gameStats->SetTextMode( Scrooby::TEXT_WRAP );
+    rAssert(gameStats != NULL);
+    gameStats->SetTextMode(Scrooby::TEXT_WRAP);
 #endif
 }
 
@@ -108,10 +107,8 @@ CGuiScreenScrapBook::CGuiScreenScrapBook
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenScrapBook::~CGuiScreenScrapBook()
-{
-    if( m_pMenu != NULL )
-    {
+CGuiScreenScrapBook::~CGuiScreenScrapBook() {
+    if (m_pMenu != NULL) {
         delete m_pMenu;
         m_pMenu = NULL;
     }
@@ -131,45 +128,38 @@ CGuiScreenScrapBook::~CGuiScreenScrapBook()
 //
 //===========================================================================
 void CGuiScreenScrapBook::HandleMessage
-(
-	eGuiMessage message,
-	unsigned int param1,
-	unsigned int param2
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        switch( message )
-        {
-            case GUI_MSG_MENU_SELECTION_MADE:
-            {
-                this->OnMenuSelectionMade( static_cast<eMenuItem>( param1 ) );
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        switch (message) {
+            case GUI_MSG_MENU_SELECTION_MADE: {
+                this->OnMenuSelectionMade(static_cast<eMenuItem>(param1));
 
                 break;
             }
-            case GUI_MSG_CONTROLLER_BACK:
-            {
-                this->StartTransitionAnimation( 350, 380 );
+            case GUI_MSG_CONTROLLER_BACK: {
+                this->StartTransitionAnimation(350, 380);
 
                 break;
             }
-            default:
-            {
+            default: {
                 break;
             }
         }
 
         // relay message to menu
         //
-        if( m_pMenu != NULL )
-        {
-            m_pMenu->HandleMessage( message, param1, param2 );
+        if (m_pMenu != NULL) {
+            m_pMenu->HandleMessage(message, param1, param2);
         }
     }
 
-	// Propogate the message up the hierarchy.
-	//
-	CGuiScreen::HandleMessage( message, param1, param2 );
+    // Propogate the message up the hierarchy.
+    //
+    CGuiScreen::HandleMessage(message, param1, param2);
 }
 
 
@@ -185,16 +175,15 @@ void CGuiScreenScrapBook::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenScrapBook::InitIntro()
-{
+void CGuiScreenScrapBook::InitIntro() {
     // update percent game complete
     //
     float percentComplete = GetCharacterSheetManager()->QueryPercentGameCompleted();
 
     // show krusty sticker only if game percent complete is 100%
     //
-    rAssert( m_krustySticker != NULL );
-    m_krustySticker->SetVisible( percentComplete > 99.999f );
+    rAssert(m_krustySticker != NULL);
+    m_krustySticker->SetVisible(percentComplete > 99.999f);
 }
 
 
@@ -210,8 +199,7 @@ void CGuiScreenScrapBook::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenScrapBook::InitRunning()
-{
+void CGuiScreenScrapBook::InitRunning() {
 }
 
 
@@ -227,8 +215,7 @@ void CGuiScreenScrapBook::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenScrapBook::InitOutro()
-{
+void CGuiScreenScrapBook::InitOutro() {
 }
 
 
@@ -237,30 +224,25 @@ void CGuiScreenScrapBook::InitOutro()
 //---------------------------------------------------------------------
 
 void
-CGuiScreenScrapBook::OnMenuSelectionMade( eMenuItem selection )
-{
-    switch( selection )
-    {
-        case MENU_OPEN_BOOK:
-        {
-            m_pParent->HandleMessage( GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_SCRAP_BOOK_CONTENTS );
+CGuiScreenScrapBook::OnMenuSelectionMade(eMenuItem selection) {
+    switch (selection) {
+        case MENU_OPEN_BOOK: {
+            m_pParent->HandleMessage(GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_SCRAP_BOOK_CONTENTS);
 
             break;
         }
-        case MENU_GAME_STATS:
-        {
-            m_pParent->HandleMessage( GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_SCRAP_BOOK_STATS );
+        case MENU_GAME_STATS: {
+            m_pParent->HandleMessage(GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_SCRAP_BOOK_STATS);
 
             break;
         }
-        default:
-        {
-            rAssertMsg( false, "Invalid menu selection!" );
+        default: {
+            rAssertMsg(false, "Invalid menu selection!");
 
             break;
         }
     }
 
-    this->StartTransitionAnimation( 810, 830 );
+    this->StartTransitionAnimation(810, 830);
 }
 

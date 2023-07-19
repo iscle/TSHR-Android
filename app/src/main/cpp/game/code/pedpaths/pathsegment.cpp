@@ -12,10 +12,9 @@
 #include <pedpaths/pathsegment.h>
 #include <render/Culling/Bounds.h>
 
-void PathSegment::Initialize( Path* parent, int index, rmt::Vector start, rmt::Vector end )
-{
-    rAssert( parent != NULL );
-    rAssert( 0 <= index && index < parent->GetNumPathSegments() );
+void PathSegment::Initialize(Path *parent, int index, rmt::Vector start, rmt::Vector end) {
+    rAssert(parent != NULL);
+    rAssert(0 <= index && index < parent->GetNumPathSegments());
 
     mParentPath = parent;
     mIndexToParentPath = index;
@@ -25,69 +24,64 @@ void PathSegment::Initialize( Path* parent, int index, rmt::Vector start, rmt::V
 }
 
 
-
 PathSegment::PathSegment() :
-    mParentPath( NULL ),
-    mIndexToParentPath( -1 )
-{
+        mParentPath(NULL),
+        mIndexToParentPath(-1) {
 }
 
-PathSegment::~PathSegment()
-{
+PathSegment::~PathSegment() {
     mParentPath = NULL;
 }
 
 
-PathSegment::PathSegment( Path* parent, int index, rmt::Vector start, rmt::Vector end )
-{
-    rAssert( parent != NULL );
-    rAssert( 0 < index && index <= parent->GetNumPathSegments() );
+PathSegment::PathSegment(Path *parent, int index, rmt::Vector start, rmt::Vector end) {
+    rAssert(parent != NULL);
+    rAssert(0 < index && index <= parent->GetNumPathSegments());
 
-    Initialize( parent, index, start, end );
+    Initialize(parent, index, start, end);
 }
 
 
 //////////////////////////////////////////////////////////////////////////
 // Implementing IEntityDSG
 //////////////////////////////////////////////////////////////////////////
-void PathSegment::DisplayBoundingBox(tColour colour)
-{
-    rAssert( false );
+void PathSegment::DisplayBoundingBox(tColour colour) {
+    rAssert(false);
 }
-void PathSegment::DisplayBoundingSphere(tColour colour)
-{
-    rAssert( false );
+
+void PathSegment::DisplayBoundingSphere(tColour colour) {
+    rAssert(false);
 }
-void PathSegment::GetBoundingBox(rmt::Box3D* box)
-{
+
+void PathSegment::GetBoundingBox(rmt::Box3D *box) {
     Bounds3f tempBounds;
     tempBounds.mMin.SetTo(mStartPos);
     tempBounds.mMax.SetTo(mStartPos);
     tempBounds.Accumulate(mEndPos);
 
-    box->Set( tempBounds.mMin, tempBounds.mMax );
+    box->Set(tempBounds.mMin, tempBounds.mMax);
 }
-void PathSegment::GetBoundingSphere(rmt::Sphere* sphere)
-{
+
+void PathSegment::GetBoundingSphere(rmt::Sphere *sphere) {
     sphere->centre = (mStartPos + mEndPos) * 0.5f;
     sphere->radius = mRadius;
 }
-void PathSegment::Display()
-{
-    rAssert( false );
+
+void PathSegment::Display() {
+    rAssert(false);
 }
-rmt::Vector* PathSegment::pPosition()
-{
-    rAssert( false );
+
+rmt::Vector *PathSegment::pPosition() {
+    rAssert(false);
     return NULL;
 }
-const rmt::Vector& PathSegment::rPosition()
-{
-    rAssert( false );
+
+const rmt::Vector &PathSegment::rPosition() {
+    rAssert(false);
     return mStartPos; // return some garbage
 }
-void PathSegment::GetPosition( rmt::Vector* ipPosn )
-{
-    rAssert( false );
+
+void PathSegment::GetPosition(rmt::Vector *ipPosn) {
+    rAssert(false);
 }
 ///////////////////////////////////////////////////////////////

@@ -26,9 +26,9 @@
 // Forward References
 //===========================================================================
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Text;
+
     class Group;
 }
 
@@ -37,83 +37,84 @@ const unsigned int DEFAULT_TELETYPING_RATE = 8; // in characters/sec
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CTeleTypeText
-{
-    public:
+class CTeleTypeText {
+public:
 
-        CTeleTypeText( Scrooby::Text* pText,
-                       Scrooby::Group* pTextBox = NULL,
-                       unsigned int numCharsPerSecond = DEFAULT_TELETYPING_RATE,
-                       unsigned int numSecondsToDisplay = 0 );
-        virtual ~CTeleTypeText();
+    CTeleTypeText(Scrooby::Text *pText,
+                  Scrooby::Group *pTextBox = NULL,
+                  unsigned int numCharsPerSecond = DEFAULT_TELETYPING_RATE,
+                  unsigned int numSecondsToDisplay = 0);
 
-        // update teletype text
-        void Update( unsigned int elapsedTime );
+    virtual ~CTeleTypeText();
 
-        // display message and start teletyping
-        void DisplayMessage();
-        void DisplayMessage( int index );
+    // update teletype text
+    void Update(unsigned int elapsedTime);
 
-        // hide message and stop teletyping if still in progress
-        void HideMessage();
+    // display message and start teletyping
+    void DisplayMessage();
 
-        // pause/resume teletyping
-        void Pause();
-        void Resume();
-        
-        // accessor to scrooby text object
-        Scrooby::Text* GetText() const
-        {
-            return m_pText;
-        }
+    void DisplayMessage(int index);
 
-	protected:
-        
-        //---------------------------------------------------------------------
-        // Protected Functions
-        //---------------------------------------------------------------------
+    // hide message and stop teletyping if still in progress
+    void HideMessage();
 
-        //---------------------------------------------------------------------
-        // Protected Data
-        //---------------------------------------------------------------------
+    // pause/resume teletyping
+    void Pause();
 
-	private:
+    void Resume();
 
-        //---------------------------------------------------------------------
-        // Private Functions
-        //---------------------------------------------------------------------
+    // accessor to scrooby text object
+    Scrooby::Text *GetText() const {
+        return m_pText;
+    }
 
-        // No copying or asignment. Declare but don't define.
-        //
-        CTeleTypeText( const CTeleTypeText& );
-        CTeleTypeText& operator= ( const CTeleTypeText& );
+protected:
 
-        void TypeNextCharacter();
+    //---------------------------------------------------------------------
+    // Protected Functions
+    //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // Private Data
-        //---------------------------------------------------------------------
+    //---------------------------------------------------------------------
+    // Protected Data
+    //---------------------------------------------------------------------
 
-        enum eTeletypeState
-        {
-            STATE_TELETYPING,
-            STATE_DISPLAYING,
-            STATE_PAUSED,
+private:
 
-            STATE_INACTIVE
-        };
+    //---------------------------------------------------------------------
+    // Private Functions
+    //---------------------------------------------------------------------
 
-        eTeletypeState m_state;
+    // No copying or asignment. Declare but don't define.
+    //
+    CTeleTypeText(const CTeleTypeText &);
 
-        unsigned int m_elapsedTime;
-        unsigned int m_teletypePeriod;
-        unsigned int m_displayDuration;
+    CTeleTypeText &operator=(const CTeleTypeText &);
 
-        Scrooby::Text* m_pText;
-        Scrooby::Group* m_pTextBox;
-        P3D_UNICODE* m_charBuffer;
-        P3D_UNICODE m_nextChar;
-        int m_currentCharIndex;
+    void TypeNextCharacter();
+
+    //---------------------------------------------------------------------
+    // Private Data
+    //---------------------------------------------------------------------
+
+    enum eTeletypeState {
+        STATE_TELETYPING,
+        STATE_DISPLAYING,
+        STATE_PAUSED,
+
+        STATE_INACTIVE
+    };
+
+    eTeletypeState m_state;
+
+    unsigned int m_elapsedTime;
+    unsigned int m_teletypePeriod;
+    unsigned int m_displayDuration;
+
+    Scrooby::Text *m_pText;
+    Scrooby::Group *m_pTextBox;
+    P3D_UNICODE *m_charBuffer;
+    P3D_UNICODE m_nextChar;
+    int m_currentCharIndex;
 
 };
 

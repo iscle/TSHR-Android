@@ -59,11 +59,11 @@
 //
 //==============================================================================
 FollowObjective::FollowObjective() :
-    mFollowVehicle( NULL ),
-    mAnimatedIcon( NULL )
-    //mDestinationLocator( NULL )
+        mFollowVehicle(NULL),
+        mAnimatedIcon(NULL)
+//mDestinationLocator(NULL)
 {
-    
+
 }
 
 //==============================================================================
@@ -76,9 +76,8 @@ FollowObjective::FollowObjective() :
 // Return:      N/A.
 //
 //==============================================================================
-FollowObjective::~FollowObjective()
-{
-    
+FollowObjective::~FollowObjective() {
+
 }
 
 //=============================================================================
@@ -91,40 +90,39 @@ FollowObjective::~FollowObjective()
 // Return:      void 
 //
 //=============================================================================
-void FollowObjective::OnInitialize()
-{
-MEMTRACK_PUSH_GROUP( "Mission - FollowObjective" );
-//    rAssert( mDestinationLocator != NULL );
-//    mDestinationLocator->SetFlag( Locator::ACTIVE, true );
+void FollowObjective::OnInitialize() {
+    MEMTRACK_PUSH_GROUP("Mission - FollowObjective");
+//    rAssert(mDestinationLocator != NULL);
+//    mDestinationLocator->SetFlag(Locator::ACTIVE, true);
 
-    GetEventManager()->AddListener( this, EVENT_WAYAI_HIT_LAST_WAYPOINT );
+    GetEventManager()->AddListener(this, EVENT_WAYAI_HIT_LAST_WAYPOINT);
 
     //========================= SET UP THE ICON
 
-    rAssert( mAnimatedIcon == NULL );
+    rAssert(mAnimatedIcon == NULL);
 
     GameMemoryAllocator gma = GetGameplayManager()->GetCurrentMissionHeap();
     mAnimatedIcon = new(gma) AnimatedIcon();
- 
+
     //TODO put in the actual name...
     const rmt::Vector pos = mFollowVehicle->GetPosition();
-    mAnimatedIcon->Init( ARROW_EVADE, pos );
-    mAnimatedIcon->ScaleByCameraDistance( MIN_ARROW_SCALE, MAX_ARROW_SCALE, MIN_ARROW_SCALE_DIST, MAX_ARROW_SCALE_DIST );
+    mAnimatedIcon->Init(ARROW_EVADE, pos);
+    mAnimatedIcon->ScaleByCameraDistance(MIN_ARROW_SCALE, MAX_ARROW_SCALE, MIN_ARROW_SCALE_DIST,
+                                         MAX_ARROW_SCALE_DIST);
 
     //Set this vehicle as the focus of the HUD.
-    rAssert( mFollowVehicle );
-    VehicleAI* vehicleAI = GetVehicleCentral()->GetVehicleAI( mFollowVehicle );
-    rAssert( vehicleAI );
+    rAssert(mFollowVehicle);
+    VehicleAI *vehicleAI = GetVehicleCentral()->GetVehicleAI(mFollowVehicle);
+    rAssert(vehicleAI);
 
     int hudID = vehicleAI->GetHUDIndex();
-    if ( GetCurrentHud() ) 
-    {
-        GetCurrentHud()->GetHudMap( 0 )->SetFocalPointIcon( hudID );
+    if (GetCurrentHud()) {
+        GetCurrentHud()->GetHudMap(0)->SetFocalPointIcon(hudID);
     }
 
     mFollowVehicle->SetVehicleCanSustainDamage(false);
 
-MEMTRACK_POP_GROUP("Mission - FollowObjective");
+    MEMTRACK_POP_GROUP("Mission - FollowObjective");
 }
 
 //=============================================================================
@@ -137,18 +135,16 @@ MEMTRACK_POP_GROUP("Mission - FollowObjective");
 // Return:      void 
 //
 //=============================================================================
-void FollowObjective::OnFinalize()
-{
-//    rAssert( mDestinationLocator != NULL );
-//    mDestinationLocator->SetFlag( Locator::ACTIVE, false );
+void FollowObjective::OnFinalize() {
+//    rAssert(mDestinationLocator != NULL);
+//    mDestinationLocator->SetFlag(Locator::ACTIVE, false);
     mFollowVehicle->SetVehicleCanSustainDamage(true);
 
-    GetEventManager()->RemoveListener( this, EVENT_WAYAI_HIT_LAST_WAYPOINT );
+    GetEventManager()->RemoveListener(this, EVENT_WAYAI_HIT_LAST_WAYPOINT);
 
-    rAssert( mAnimatedIcon );
+    rAssert(mAnimatedIcon);
 
-    if ( mAnimatedIcon )
-    {
+    if (mAnimatedIcon) {
         delete mAnimatedIcon;
         mAnimatedIcon = NULL;
     }
@@ -159,23 +155,22 @@ void FollowObjective::OnFinalize()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void FollowObjective::OnUpdate( unsigned int elapsedTime )
-{
+void FollowObjective::OnUpdate(unsigned int elapsedTime) {
     //Update the position of the bv...
     rmt::Vector carPos;
-    mFollowVehicle->GetPosition( &carPos );
+    mFollowVehicle->GetPosition(&carPos);
 
     rmt::Box3D bbox;
-    mFollowVehicle->GetBoundingBox( &bbox );
+    mFollowVehicle->GetBoundingBox(&bbox);
     carPos.y = bbox.high.y;
 
-    mAnimatedIcon->Move( carPos );
-    mAnimatedIcon->Update( elapsedTime );
+    mAnimatedIcon->Move(carPos);
+    mAnimatedIcon->Update(elapsedTime);
 }
 
 
@@ -184,37 +179,32 @@ void FollowObjective::OnUpdate( unsigned int elapsedTime )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void FollowObjective::HandleEvent( EventEnum id, void* pEventData )
-{
-    switch( id )
-    {
+void FollowObjective::HandleEvent(EventEnum id, void *pEventData) {
+    switch (id) {
 /*
     case EVENT_LOCATOR + LocatorEvent::CHECK_POINT:
         {
-            Locator* locator = static_cast<Locator*>( pEventData );
+            Locator* locator = static_cast<Locator*>(pEventData);
 
-            if( locator == mDestinationLocator )
+            if(locator == mDestinationLocator)
             {
-                SetFinished( true );
+                SetFinished(true);
             }
 
             break;
         }
 */
-    case EVENT_WAYAI_HIT_LAST_WAYPOINT:
-        {
-            if( pEventData == (void*)mFollowVehicle )
-            {
-                SetFinished( true );
+        case EVENT_WAYAI_HIT_LAST_WAYPOINT: {
+            if (pEventData == (void *) mFollowVehicle) {
+                SetFinished(true);
             }
         }
-    default:
-        {
+        default: {
             break;
         }
     }

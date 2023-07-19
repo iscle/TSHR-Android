@@ -35,44 +35,47 @@
 // Synopsis:    The render "loop"
 //
 //=============================================================================
-class RenderFlow : public IRadTimerCallback
-{
+class RenderFlow : public IRadTimerCallback {
 public:
 
-   // Static Methods (for creating and getting an instance of the game)
-   static RenderFlow* CreateInstance();
-   static RenderFlow* GetInstance();
-   static void  DestroyInstance();
+    // Static Methods (for creating and getting an instance of the game)
+    static RenderFlow *CreateInstance();
 
-   // Establish all persistent couplings; must be called before 
-   // Instance can be operable
-   void DoAllRegistration();
+    static RenderFlow *GetInstance();
 
-   // Implement IRadTimerCallback interface.
-   // This member is called whenever the timer expires.
-   void OnTimerDone( unsigned int iElapsedTime, void* pUserData );
+    static void DestroyInstance();
+
+    // Establish all persistent couplings; must be called before
+    // Instance can be operable
+    void DoAllRegistration();
+
+    // Implement IRadTimerCallback interface.
+    // This member is called whenever the timer expires.
+    void OnTimerDone(unsigned int iElapsedTime, void *pUserData);
 
 #ifdef RAD_WIN32
-   float GetGamma() const;
-   void SetGamma( float gamma );
+    float GetGamma() const;
+    void SetGamma(float gamma);
 #endif
 
 private:
 
-   // Declared but not defined to prevent copying and assignment.
-   RenderFlow( const RenderFlow& );
-   RenderFlow& operator=( const RenderFlow& );
+    // Declared but not defined to prevent copying and assignment.
+    RenderFlow(const RenderFlow &);
 
-   // Constructor - these are private to prevent anybody else from 
-   // creating me.
-   RenderFlow();
-   virtual ~RenderFlow();
+    RenderFlow &operator=(const RenderFlow &);
 
-   // This member is called when the gameflow is being initialized.
-   void Initialize();
+    // Constructor - these are private to prevent anybody else from
+    // creating me.
+    RenderFlow();
 
-   // The one and only RenderFlow instance.
-   static RenderFlow* spInstance;
+    virtual ~RenderFlow();
+
+    // This member is called when the gameflow is being initialized.
+    void Initialize();
+
+    // The one and only RenderFlow instance.
+    static RenderFlow *spInstance;
 
 #ifdef DEBUGWATCH
     unsigned int mDebugRenderTime;
@@ -83,24 +86,24 @@ private:
     pddiExtGammaControl* mpGammaControl;
     float mGamma;
 #endif
-   static bool sDrawStatsOverlay;
+    static bool sDrawStatsOverlay;
 
-   // Timer for gameflow updates.
-   IRadTimer* mpITimer;
+    // Timer for gameflow updates.
+    IRadTimer *mpITimer;
 
-   // Maintain a pointer to the RenderManager; [4/17/2002]
-   // Maintain a ptr to all load wrappers
-   RenderManager*     mpRenderManager;
-   AllWrappers*       mpLoadWrappers;  
-   DSGFactory*        mpDSGFactory;
-   IntersectManager*  mpIntersectManager;
+    // Maintain a pointer to the RenderManager; [4/17/2002]
+    // Maintain a ptr to all load wrappers
+    RenderManager *mpRenderManager;
+    AllWrappers *mpLoadWrappers;
+    DSGFactory *mpDSGFactory;
+    IntersectManager *mpIntersectManager;
 };
 
 
 //
 // A little syntactic sugar for getting at this singleton.
 //
-inline RenderFlow* GetRenderFlow() { return( RenderFlow::GetInstance() ); }
+inline RenderFlow *GetRenderFlow() { return (RenderFlow::GetInstance()); }
 
 
 #endif

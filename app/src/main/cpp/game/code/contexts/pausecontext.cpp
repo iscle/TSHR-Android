@@ -82,7 +82,7 @@
 //******************************************************************************
 
 // Static pointer to instance of singleton.
-PauseContext* PauseContext::spInstance = NULL;
+PauseContext *PauseContext::spInstance = NULL;
 
 //******************************************************************************
 //
@@ -104,14 +104,12 @@ PauseContext* PauseContext::spInstance = NULL;
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-PauseContext* PauseContext::GetInstance()
-{
-    if( spInstance == NULL )
-    {
+PauseContext *PauseContext::GetInstance() {
+    if (spInstance == NULL) {
         spInstance = new(GMA_PERSISTENT) PauseContext;
-        rAssert( spInstance );
+        rAssert(spInstance);
     }
-    
+
     return spInstance;
 }
 
@@ -126,10 +124,9 @@ PauseContext* PauseContext::GetInstance()
 //
 //==============================================================================
 PauseContext::PauseContext()
-:   mOldState( Input::ACTIVE_NONE ),
-    m_quitGamePending( false ),
-    m_waitingForContextSwitch( false )
-{
+        : mOldState(Input::ACTIVE_NONE),
+          m_quitGamePending(false),
+          m_waitingForContextSwitch(false) {
 }
 
 //==============================================================================
@@ -142,8 +139,7 @@ PauseContext::PauseContext()
 // Return:      N/A.
 //
 //==============================================================================
-PauseContext::~PauseContext()
-{
+PauseContext::~PauseContext() {
 }
 
 //******************************************************************************
@@ -157,40 +153,37 @@ PauseContext::~PauseContext()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ContextEnum previousContext )
+// Parameters:  (ContextEnum previousContext)
 //
 // Return:      void 
 //
 //=============================================================================
-void PauseContext::OnStart( ContextEnum previousContext )
-{
-    SetMemoryIdentification( "PauseContext" );
-    MEMTRACK_PUSH_FLAG( "Pause" );
+void PauseContext::OnStart(ContextEnum previousContext) {
+    SetMemoryIdentification("PauseContext");
+    MEMTRACK_PUSH_FLAG("Pause");
 
     mOldState = GetInputManager()->GetGameState();
-    if( mOldState == Input::ACTIVE_ANIM_CAM )
-    {
+    if (mOldState == Input::ACTIVE_ANIM_CAM) {
         // deactivate anim cam state first, since the input manager
         // won't let us set the game state to anything else prior
         // to that
         //
-        GetInputManager()->SetGameState( Input::DEACTIVE_ANIM_CAM );
-        SuperCam* sc = GetSuperCamManager()->GetSCC( 0 )->GetActiveSuperCam();
-        AnimatedCam* ac = dynamic_cast<AnimatedCam*>(sc);
-        if(ac)
-        {
+        GetInputManager()->SetGameState(Input::DEACTIVE_ANIM_CAM);
+        SuperCam *sc = GetSuperCamManager()->GetSCC(0)->GetActiveSuperCam();
+        AnimatedCam *ac = dynamic_cast<AnimatedCam *>(sc);
+        if (ac) {
             ac->Abort();
         }
     }
-    GetInputManager()->SetGameState( Input::ACTIVE_FRONTEND );
+    GetInputManager()->SetGameState(Input::ACTIVE_FRONTEND);
 
-	GetCoinManager()->ClearHUDCoins();
+    GetCoinManager()->ClearHUDCoins();
 
     m_quitGamePending = false;
 }
 
 
-extern void OutputHandler (const char * pString );
+extern void OutputHandler(const char *pString);
 
 
 //=============================================================================
@@ -198,30 +191,28 @@ extern void OutputHandler (const char * pString );
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ContextEnum nextContext )
+// Parameters:  (ContextEnum nextContext)
 //
 // Return:      void 
 //
 //=============================================================================
-void PauseContext::OnStop( ContextEnum nextContext )
-{
+void PauseContext::OnStop(ContextEnum nextContext) {
     // do gameplay terminations only if next context is frontend context or exit.
-    if( nextContext == CONTEXT_FRONTEND ||
+    if (nextContext == CONTEXT_FRONTEND ||
         nextContext == CONTEXT_LOADING_GAMEPLAY ||
-        nextContext == CONTEXT_EXIT )
-    {
+        nextContext == CONTEXT_EXIT) {
         rReleasePrintf("PauseContext::OnStop Begins\n");
 
-        GetInputManager()->EnableReset( false );
+        GetInputManager()->EnableReset(false);
 
-        RenderLayer* l = GetRenderManager()->mpLayer( RenderEnums::GUI );
-        rAssert( l );
+        RenderLayer *l = GetRenderManager()->mpLayer(RenderEnums::GUI);
+        rAssert(l);
         l->Thaw();
-//        GetGameFlow()->SetQuickStartLoading( false );
+//        GetGameFlow()->SetQuickStartLoading(false);
         // STL reallocs, etc may result in actually allocating some memory during this process.
         // As such, reroute everything to temp.
         //
-        HeapMgr()->PushHeap (GMA_TEMP);
+        HeapMgr()->PushHeap(GMA_TEMP);
 
         //
         // This is called to prevent DMA of destroyed textures,
@@ -240,7 +231,7 @@ void PauseContext::OnStop( ContextEnum nextContext )
 
         GetCoinManager()->Destroy();
         GetSparkleManager()->Destroy();
-		GetHitnRunManager()->Destroy();
+        GetHitnRunManager()->Destroy();
 
         StatePropDSG::RemoveAllSharedtPoses();
 
@@ -250,22 +241,21 @@ void PauseContext::OnStop( ContextEnum nextContext )
         //rReleaseString ("GetInteriorManager()->OnGameplayEnd()\n");
 
         const bool shutdown = true;
-        GetSuperCamManager()->Init( shutdown );
+        GetSuperCamManager()->Init(shutdown);
 
-        //rReleaseString ("GetSuperCamManager()->Init( shutdown )\n");
+        //rReleaseString ("GetSuperCamManager()->Init(shutdown)\n");
 
         TriggerVolumeTracker::GetInstance()->Cleanup();
-        
+
         //rReleaseString ("TriggerVolumeTracker::GetInstance()->Cleanup()\n");
 
         // Clean up lights!
         //
-        RenderLayer* rl = GetRenderManager()->mpLayer( RenderEnums::LevelSlot );
-        rAssert( rl );
-        for( unsigned int i = 0; i < rl->GetNumViews(); i++ )
-        {
-            rl->pView(i)->RemoveAllLights ();
-        }  
+        RenderLayer *rl = GetRenderManager()->mpLayer(RenderEnums::LevelSlot);
+        rAssert(rl);
+        for (unsigned int i = 0; i < rl->GetNumViews(); i++) {
+            rl->pView(i)->RemoveAllLights();
+        }
 
         //rReleaseString ("Remove all lights from all views\n");
 
@@ -295,21 +285,21 @@ void PauseContext::OnStop( ContextEnum nextContext )
 
         GetVehicleCentral()->Unload();
 
-        GetActionButtonManager( )->Destroy( );
-        //rReleaseString ("GetActionButtonManager( )->Destroy( )\n");
+        GetActionButtonManager()->Destroy();
+        //rReleaseString ("GetActionButtonManager()->Destroy()\n");
 
 
-		GetBreakablesManager()->FreeAllBreakables();
+        GetBreakablesManager()->FreeAllBreakables();
         //rReleaseString ("GetBreakablesManager()->FreeAllBreakables()\n");
 
-		GetParticleManager()->ClearSystems();
+        GetParticleManager()->ClearSystems();
         //rReleaseString ("GetParticleManager()->ClearSystems()\n");
-        
-        
+
+
         GetWorldPhysicsManager()->OnQuitLevel();    // just some cleanup checks...
-        
-        
-        
+
+
+
         SkidMarkGenerator::ReleaseShaders();
         //rReleaseString ("SkidMarkGenerator::ReleaseShaders()\n");
         GetSkidmarkManager()->Destroy();
@@ -317,7 +307,7 @@ void PauseContext::OnStop( ContextEnum nextContext )
 
         GetRenderManager()->ClearLevelLayerLights();
         rReleasePrintf("PauseContext::OnStop DumpAllLoadedData\n");
-		GetRenderManager()->DumpAllLoadedData();
+        GetRenderManager()->DumpAllLoadedData();
         //rReleaseString ("GetRenderManager()->DumpAllLoadedData()\n");
 
 
@@ -328,14 +318,14 @@ void PauseContext::OnStop( ContextEnum nextContext )
         //rReleaseString ("VehicleAIRender::Destroy()\n");
 
 #endif
-        GetSoundManager()->OnGameplayEnd( nextContext == CONTEXT_FRONTEND );
+        GetSoundManager()->OnGameplayEnd(nextContext == CONTEXT_FRONTEND);
         //rReleaseString ("GetSoundManager()->OnGameplayEnd ()\n");
 
 
         PathManager::GetInstance()->Destroy();
         //rReleaseString ("PathManager::GetInstance()->Destroy()\n");
 
-        
+
 
         // TODO - Darryl?
         // 
@@ -348,21 +338,18 @@ void PauseContext::OnStop( ContextEnum nextContext )
 
 
 
-        if( nextContext == CONTEXT_LOADING_GAMEPLAY )
-        {
+        if (nextContext == CONTEXT_LOADING_GAMEPLAY) {
             // if reloading in-game, set new level and mission to load
             //
             int level = GetGuiSystem()->GetInGameManager()->GetNextLevelToLoad();
-            GetGameplayManager()->SetLevelIndex( static_cast<RenderEnums::LevelEnum>( level ) );
+            GetGameplayManager()->SetLevelIndex(static_cast<RenderEnums::LevelEnum>(level));
 
             int mission = GetGuiSystem()->GetInGameManager()->GetNextMissionToLoad();
-            GetGameplayManager()->SetMissionIndex( static_cast<RenderEnums::MissionEnum>( mission ) );
+            GetGameplayManager()->SetMissionIndex(static_cast<RenderEnums::MissionEnum>(mission));
             //rReleaseString ("Set level and mission indices\n");
 
-        }
-        else
-        {
-            SetGameplayManager( NULL );
+        } else {
+            SetGameplayManager(NULL);
         }
 
         // Cleanup the Avatar Manager
@@ -373,102 +360,93 @@ void PauseContext::OnStop( ContextEnum nextContext )
 
         // Flush out the special section used by physics to cache SkeletonInfos.
         //
-        p3d::inventory->RemoveSectionElements (SKELCACHE);
-        p3d::inventory->DeleteSection (SKELCACHE);
-        rReleaseString ("Delete SKELCACHE inventory section\n");
+        p3d::inventory->RemoveSectionElements(SKELCACHE);
+        p3d::inventory->DeleteSection(SKELCACHE);
+        rReleaseString("Delete SKELCACHE inventory section\n");
 
 
         // release GUI in-game
-        GetGuiSystem()->HandleMessage( GUI_MSG_RELEASE_INGAME );
-        rReleaseString ("GetGuiSystem()->HandleMessage( GUI_MSG_RELEASE_INGAME )\n");
+        GetGuiSystem()->HandleMessage(GUI_MSG_RELEASE_INGAME);
+        rReleaseString("GetGuiSystem()->HandleMessage(GUI_MSG_RELEASE_INGAME)\n");
 
         CHudMap::ClearAllRegisteredIcons();
 
         // unregister GUI user input handler for active players
         //
         int activeControllerIDs = 0;
-        for( int i = 0; i < MAX_PLAYERS; i++ )
-        {
-            int controllerID = GetInputManager()->GetControllerIDforPlayer( i );
-            if( controllerID != -1 )
-            {
+        for (int i = 0; i < MAX_PLAYERS; i++) {
+            int controllerID = GetInputManager()->GetControllerIDforPlayer(i);
+            if (controllerID != -1) {
                 activeControllerIDs |= (1 << controllerID);
             }
         }
-        rReleaseString ("Change active controllers\n");
+        rReleaseString("Change active controllers\n");
 
 
-        GetGuiSystem()->UnregisterUserInputHandlers( activeControllerIDs );
-        rReleaseString ("Change active controllers\n");
+        GetGuiSystem()->UnregisterUserInputHandlers(activeControllerIDs);
+        rReleaseString("Change active controllers\n");
 
 
         // enable screen clearing
-        GetRenderManager()->mpLayer(RenderEnums::GUI)->pView( 0 )->SetClearMask( PDDI_BUFFER_ALL );
-        rReleaseString ("Enable screen clearing\n");
+        GetRenderManager()->mpLayer(RenderEnums::GUI)->pView(0)->SetClearMask(PDDI_BUFFER_ALL);
+        rReleaseString("Enable screen clearing\n");
 
 #ifndef RAD_RELEASE
         // Dump out the contents of the inventory sections
         //
-        p3d::inventory->Dump (true);
-        rReleaseString ("Dump inventory\n");
+        p3d::inventory->Dump(true);
+        rReleaseString("Dump inventory\n");
 
 #endif
         AnimatedIcon::ShutdownAnimatedIcons();
-        
+
         GetAnimEntityDSGManager()->RemoveAll();
 
-        GetTutorialManager()->EnableTutorialMode( false );
-        
-        HeapMgr()->PopHeap (GMA_TEMP);
+        GetTutorialManager()->EnableTutorialMode(false);
+
+        HeapMgr()->PopHeap(GMA_TEMP);
     }
 
-    if ( nextContext == CONTEXT_GAMEPLAY )
-    {
-        if( mOldState == Input::ACTIVE_ANIM_CAM )
-        {
-            GetInputManager()->SetGameState( Input::ACTIVE_GAMEPLAY );
-        }
-        else
-        {
-            GetInputManager()->SetGameState( mOldState );
+    if (nextContext == CONTEXT_GAMEPLAY) {
+        if (mOldState == Input::ACTIVE_ANIM_CAM) {
+            GetInputManager()->SetGameState(Input::ACTIVE_GAMEPLAY);
+        } else {
+            GetInputManager()->SetGameState(mOldState);
         }
 
-        int controllerID = GetInputManager()->GetControllerIDforPlayer( 0 );
+        int controllerID = GetInputManager()->GetControllerIDforPlayer(0);
         bool vibrationOn = GetInputManager()->IsRumbleEnabled();
 
-        if ( GetGameplayManager()->GetGameType() == GameplayManager::GT_NORMAL &&
-            GetAvatarManager()->GetAvatarForPlayer( 0 )->GetVehicle() )
-        {
+        if (GetGameplayManager()->GetGameType() == GameplayManager::GT_NORMAL &&
+            GetAvatarManager()->GetAvatarForPlayer(0)->GetVehicle()) {
 #ifdef RAD_PS2
             bool hasWheel = false;
 
-            if ( controllerID != Input::USB0 &&
-                 controllerID != Input::USB1 )
+            if (controllerID != Input::USB0 &&
+                 controllerID != Input::USB1)
             {
-                if ( GetInputManager()->GetController( Input::USB0 )->IsConnected() )
+                if (GetInputManager()->GetController(Input::USB0)->IsConnected())
                 {
-                    GetInputManager()->SetRumbleForDevice( Input::USB0, vibrationOn );
+                    GetInputManager()->SetRumbleForDevice(Input::USB0, vibrationOn);
                     hasWheel = true;
                 }
-                else if ( GetInputManager()->GetController( Input::USB1 )->IsConnected() )
+                else if (GetInputManager()->GetController(Input::USB1)->IsConnected())
                 {
-                    GetInputManager()->SetRumbleForDevice( Input::USB1, vibrationOn );
+                    GetInputManager()->SetRumbleForDevice(Input::USB1, vibrationOn);
                     hasWheel = true;
                 }
             }
             //I hate this.
-            if ( !hasWheel )
+            if (!hasWheel)
 #endif
-            GetInputManager()->SetRumbleForDevice( controllerID, vibrationOn );
+            GetInputManager()->SetRumbleForDevice(controllerID, vibrationOn);
         }
 
+    } else {
+        GetInputManager()->SetGameState(Input::ACTIVE_ALL);
     }
-    else
-    {
-        GetInputManager()->SetGameState( Input::ACTIVE_ALL );
-    }
-    SetMemoryIdentification( "PauseContext Finished" );
-    MEMTRACK_POP_FLAG( "" );
+    SetMemoryIdentification("PauseContext Finished");
+    MEMTRACK_POP_FLAG("");
 }
 
 //=============================================================================
@@ -476,56 +454,48 @@ void PauseContext::OnStop( ContextEnum nextContext )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void PauseContext::OnUpdate( unsigned int elapsedTime )
-{
+void PauseContext::OnUpdate(unsigned int elapsedTime) {
     // update game data manager
-    GetGameDataManager()->Update( elapsedTime );
+    GetGameDataManager()->Update(elapsedTime);
 
     // update GUI system
-    GetGuiSystem()->Update( elapsedTime );
+    GetGuiSystem()->Update(elapsedTime);
 
     // update coin manager
-    GetCoinManager()->Update( elapsedTime );
-    GetSparkleManager()->Update( elapsedTime );
+    GetCoinManager()->Update(elapsedTime);
+    GetSparkleManager()->Update(elapsedTime);
 
-	//update hitnrun????
-	//GetHitnRunManager()->Update(elapsedTime);
+    //update hitnrun????
+    //GetHitnRunManager()->Update(elapsedTime);
 
 #ifdef RAD_DEMO
-    GetGameplayManager()->UpdateIdleTime( elapsedTime );
+    GetGameplayManager()->UpdateIdleTime(elapsedTime);
 #endif
 
     // Check to see if we're loading so we don't screw up when we quit the level.
     //
-    if( GetGameplayManager()->GetLevelComplete() && !GetLoadingManager()->IsLoading() ) 
-    {
-        if( !m_quitGamePending )
-        {
+    if (GetGameplayManager()->GetLevelComplete() && !GetLoadingManager()->IsLoading()) {
+        if (!m_quitGamePending) {
             m_quitGamePending = true;
 
 #ifdef RAD_DEMO
-            GetGuiSystem()->HandleMessage( GUI_MSG_QUIT_INGAME );
+            GetGuiSystem()->HandleMessage(GUI_MSG_QUIT_INGAME);
 #else
-            if( GetGameplayManager()->GetGameComplete() )
-            {
-                GetGuiSystem()->GotoScreen( CGuiWindow::GUI_SCREEN_ID_VIEW_CREDITS,
-                                            0, 0, CLEAR_WINDOW_HISTORY );
-            }
-            else
-            {
-                GetGuiSystem()->GotoScreen( CGuiWindow::GUI_SCREEN_ID_LEVEL_END,
-                                            0, 0, CLEAR_WINDOW_HISTORY );
+            if (GetGameplayManager()->GetGameComplete()) {
+                GetGuiSystem()->GotoScreen(CGuiWindow::GUI_SCREEN_ID_VIEW_CREDITS,
+                                           0, 0, CLEAR_WINDOW_HISTORY);
+            } else {
+                GetGuiSystem()->GotoScreen(CGuiWindow::GUI_SCREEN_ID_LEVEL_END,
+                                           0, 0, CLEAR_WINDOW_HISTORY);
             }
 #endif // RAD_DEMO
         }
-    }
-    else
-    {
+    } else {
         // update mission loading
         //
         GetGameplayManager()->PerformLoading();
@@ -542,8 +512,7 @@ void PauseContext::OnUpdate( unsigned int elapsedTime )
 // Return:      void 
 //
 //=============================================================================
-void PauseContext::OnSuspend()
-{
+void PauseContext::OnSuspend() {
 }
 
 //=============================================================================
@@ -556,8 +525,7 @@ void PauseContext::OnSuspend()
 // Return:      void 
 //
 //=============================================================================
-void PauseContext::OnResume()
-{
+void PauseContext::OnResume() {
 }
 
 //=============================================================================
@@ -565,11 +533,10 @@ void PauseContext::OnResume()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void PauseContext::OnHandleEvent( EventEnum id, void* pEventData )
-{
+void PauseContext::OnHandleEvent(EventEnum id, void *pEventData) {
 }

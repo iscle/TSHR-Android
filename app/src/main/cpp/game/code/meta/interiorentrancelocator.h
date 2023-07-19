@@ -24,8 +24,7 @@
 //========================================
 // Forward References
 //========================================
-namespace ActionButton
-{
+namespace ActionButton {
     class EnterInterior;
 };
 //=============================================================================
@@ -34,34 +33,37 @@ namespace ActionButton
 //
 //=============================================================================
 
-class InteriorEntranceLocator : public EventLocator
-{
+class InteriorEntranceLocator : public EventLocator {
 public:
     InteriorEntranceLocator();
+
     virtual ~InteriorEntranceLocator();
 
     virtual LocatorType::Type GetDataType() const;
 
-    void SetInteriorFileName( const char* fileName );
-    const char* GetInteriorFileName() const;
+    void SetInteriorFileName(const char *fileName);
 
-    void SetInteriorFileNameSize( unsigned int size ); //This is to prevent fragmentation.
+    const char *GetInteriorFileName() const;
+
+    void SetInteriorFileNameSize(unsigned int size); //This is to prevent fragmentation.
     unsigned int GetInteriorFileNameSize() const;
 
-    void SetTransform( const rmt::Matrix& transform );
-    const rmt::Matrix& GetTransform() const;
+    void SetTransform(const rmt::Matrix &transform);
+
+    const rmt::Matrix &GetTransform() const;
 
 private:
-    virtual void OnTrigger( unsigned int playerID );
-    
-    char* mInteriorFileName;
+    virtual void OnTrigger(unsigned int playerID);
+
+    char *mInteriorFileName;
     unsigned int mInteriorFileNameSize;
     rmt::Matrix mTransform;
-    ActionButton::EnterInterior* mpEnterInteriorAction;
+    ActionButton::EnterInterior *mpEnterInteriorAction;
 
     //Prevent wasteful constructor creation.
-    InteriorEntranceLocator( const InteriorEntranceLocator& interiorentrancelocator );
-    InteriorEntranceLocator& operator=( const InteriorEntranceLocator& interiorentrancelocator );
+    InteriorEntranceLocator(const InteriorEntranceLocator &interiorentrancelocator);
+
+    InteriorEntranceLocator &operator=(const InteriorEntranceLocator &interiorentrancelocator);
 };
 
 //*****************************************************************************
@@ -80,9 +82,8 @@ private:
 // Return:      inline 
 //
 //=============================================================================
-inline LocatorType::Type InteriorEntranceLocator::GetDataType() const
-{
-    return( LocatorType::INTERIOR_ENTRANCE );
+inline LocatorType::Type InteriorEntranceLocator::GetDataType() const {
+    return (LocatorType::INTERIOR_ENTRANCE);
 }
 
 //=============================================================================
@@ -95,8 +96,7 @@ inline LocatorType::Type InteriorEntranceLocator::GetDataType() const
 // Return:      const 
 //
 //=============================================================================
-inline const char* InteriorEntranceLocator::GetInteriorFileName() const
-{
+inline const char *InteriorEntranceLocator::GetInteriorFileName() const {
     return mInteriorFileName;
 }
 
@@ -110,8 +110,7 @@ inline const char* InteriorEntranceLocator::GetInteriorFileName() const
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int InteriorEntranceLocator::GetInteriorFileNameSize() const
-{
+inline unsigned int InteriorEntranceLocator::GetInteriorFileNameSize() const {
     return mInteriorFileNameSize;
 }
 
@@ -120,13 +119,12 @@ inline unsigned int InteriorEntranceLocator::GetInteriorFileNameSize() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const rmt::Matrix& transform )
+// Parameters:  (const rmt::Matrix& transform)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void InteriorEntranceLocator::SetTransform( const rmt::Matrix& transform )
-{
+inline void InteriorEntranceLocator::SetTransform(const rmt::Matrix &transform) {
     mTransform = transform;
 }
 
@@ -140,8 +138,8 @@ inline void InteriorEntranceLocator::SetTransform( const rmt::Matrix& transform 
 // Return:      rmt
 //
 //=============================================================================
-inline const rmt::Matrix& InteriorEntranceLocator::GetTransform() const
-{
+inline const rmt::Matrix &InteriorEntranceLocator::GetTransform() const {
     return mTransform;
 }
+
 #endif //INTERIORENTRANCELOCATOR_H

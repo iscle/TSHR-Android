@@ -30,11 +30,10 @@ class FileHandler;
 //
 //==============================================================================
 
-class FileHandlerFactory
-{
-    public:
+class FileHandlerFactory {
+public:
 
-        static FileHandler* CreateFileHandler( FileHandlerEnum handlerType, const char* sectionName = 0 );
+    static FileHandler *CreateFileHandler(FileHandlerEnum handlerType, const char *sectionName = 0);
 };
 
 

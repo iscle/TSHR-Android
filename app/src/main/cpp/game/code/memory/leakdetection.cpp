@@ -17,7 +17,7 @@
 //-----------------------------------------------------------------------------
 #ifdef WORLD_BUILDER
 #include "main/toolhack.h"
-#pragma warning( disable:4786 )
+#pragma warning(disable:4786)
 #endif
 
 #include "main/commandlineoptions.h"
@@ -33,16 +33,17 @@
 // Local Declarations
 //-----------------------------------------------------------------------------
 
-struct MemoryInfo
-{
-    void*        m_Address;
+struct MemoryInfo {
+    void *m_Address;
     unsigned int m_Size;
-}; 
+};
 
-typedef std::map< const void*, unsigned int, std::less<const void*>, s2alloc< std::pair<const void* const, unsigned int> > > VOIDINTMAP;
+typedef std::map<const void *, unsigned int, std::less<const void *>,
+        s2alloc < std::pair<const void *const, unsigned int>>>
+VOIDINTMAP;
 static VOIDINTMAP g_MemoryMap;
-static bool            g_MemoryAllocationEnabled = false;
-static unsigned int    g_TrapIndex =  0xFFFFFFFF;
+static bool g_MemoryAllocationEnabled = false;
+static unsigned int g_TrapIndex = 0xFFFFFFFF;
 
 
 //-----------------------------------------------------------------------------
@@ -58,16 +59,15 @@ static unsigned int    g_TrapIndex =  0xFFFFFFFF;
 // Constraints: NONE
 //
 //-----------------------------------------------------------------------------
-bool DoWeTrackLeaksInThisHeap( radMemoryAllocator heap )
-{
-    if( heap == GMA_TEMP )              return false;
-    if( heap == GMA_PERSISTENT )        return false;
-    if( heap == GMA_MUSIC )             return false;
-    if( heap == GMA_AUDIO_PERSISTENT )  return false;
+bool DoWeTrackLeaksInThisHeap(radMemoryAllocator heap) {
+    if (heap == GMA_TEMP) return false;
+    if (heap == GMA_PERSISTENT) return false;
+    if (heap == GMA_MUSIC) return false;
+    if (heap == GMA_AUDIO_PERSISTENT) return false;
 #ifdef RAD_XBOX
-    if( heap == GMA_XBOX_SOUND_MEMORY ) return false;
+    if(heap == GMA_XBOX_SOUND_MEMORY) return false;
 #endif
-    if( heap == GMA_DEBUG )             return false;
+    if (heap == GMA_DEBUG) return false;
     return true;
 }
 
@@ -84,11 +84,9 @@ bool DoWeTrackLeaksInThisHeap( radMemoryAllocator heap )
 //
 //-----------------------------------------------------------------------------
 
-void LeakDetectionStart( void )
-{
-    bool detectLeaks = CommandLineOptions::Get( CLO_DETECT_LEAKS );    
-    if( detectLeaks )
-    {
+void LeakDetectionStart(void) {
+    bool detectLeaks = CommandLineOptions::Get(CLO_DETECT_LEAKS);
+    if (detectLeaks) {
         g_MemoryAllocationEnabled = false;
         g_MemoryMap.clear();
         g_MemoryAllocationEnabled = true;
@@ -109,56 +107,49 @@ void LeakDetectionStart( void )
 //
 //-----------------------------------------------------------------------------
 
-void LeakDetectionStop( void )
-{
+void LeakDetectionStop(void) {
 
-    if( !g_MemoryAllocationEnabled )
-    {
+    if (!g_MemoryAllocationEnabled) {
         return;
     }
-    
+
     int totalNumberOfLeaks = g_MemoryMap.size();
 
-    bool printLeakResults = CommandLineOptions::Get( CLO_DETECT_LEAKS );
-    if( printLeakResults )
-    {
+    bool printLeakResults = CommandLineOptions::Get(CLO_DETECT_LEAKS);
+    if (printLeakResults) {
         //
         // Print out leaks
         //
-        rReleasePrintf( "*****************************************************\n");
-        rReleasePrintf( "************** LEAK DETECTION RESULTS ***************\n");
-        rReleasePrintf( "** Total Leaked Memory Blocks = %d\n", totalNumberOfLeaks );
+        rReleasePrintf("*****************************************************\n");
+        rReleasePrintf("************** LEAK DETECTION RESULTS ***************\n");
+        rReleasePrintf("** Total Leaked Memory Blocks = %d\n", totalNumberOfLeaks);
         VOIDINTMAP::iterator it;
-        for(  it = g_MemoryMap.begin(); it != g_MemoryMap.end(); ++it )
-        {
-            const void* address = ( *it ).first;
-            unsigned int size = ( *it ).second;
+        for (it = g_MemoryMap.begin(); it != g_MemoryMap.end(); ++it) {
+            const void *address = (*it).first;
+            unsigned int size = (*it).second;
 
-            if( address != NULL )
-            {
-                rReleasePrintf( "** Leak at address 0x%x, size 0x%x, Index = %d\n", address, size );
+            if (address != NULL) {
+                rReleasePrintf("** Leak at address 0x%x, size 0x%x, Index = %d\n", address, size);
             }
         }
 
         //
         // Display number of leaks to the screen
         //
-        if( totalNumberOfLeaks > 0 )
-        {
-            char buf[ 256 ];
-            sprintf( buf, "MEMORY LEAKED: [%d] blocks\n", totalNumberOfLeaks );
+        if (totalNumberOfLeaks > 0) {
+            char buf[256];
+            sprintf(buf, "MEMORY LEAKED: [%d] blocks\n", totalNumberOfLeaks);
 
-            p3d::pddi->DrawString( buf, 256, (12 * 15), pddiColour( 255, 128, 0 ) );
+            p3d::pddi->DrawString(buf, 256, (12 * 15), pddiColour(255, 128, 0));
 
-            unsigned int nowTime = ::radTimeGetSeconds( );
+            unsigned int nowTime = ::radTimeGetSeconds();
 
-            while( nowTime + 5 > ::radTimeGetSeconds( ) )
-            {
+            while (nowTime + 5 > ::radTimeGetSeconds()) {
                 p3d::display->SwapBuffers();
             }
             radMemoryMonitorSuspend();
         }
-        rReleasePrintf( "*****************************************************\n");
+        rReleasePrintf("*****************************************************\n");
     }
 
 
@@ -179,28 +170,26 @@ void LeakDetectionStop( void )
 //
 //-----------------------------------------------------------------------------
 
-void LeakDetectionAddRecord( const void* pMemory, const unsigned int size, const radMemoryAllocator heap )
-{
-    if( !g_MemoryAllocationEnabled )
-    {
+void LeakDetectionAddRecord(const void *pMemory, const unsigned int size,
+                            const radMemoryAllocator heap) {
+    if (!g_MemoryAllocationEnabled) {
         return;
     }
 
-    bool doWeTrackLeaksInThisHeap = DoWeTrackLeaksInThisHeap( heap );
-    if( !doWeTrackLeaksInThisHeap )
-    {
+    bool doWeTrackLeaksInThisHeap = DoWeTrackLeaksInThisHeap(heap);
+    if (!doWeTrackLeaksInThisHeap) {
         return;
     }
     //
     // Is this address already there? It shouldn't be
     //
-    HeapMgr()->PushHeap( GMA_DEBUG );
-    VOIDINTMAP::iterator found = g_MemoryMap.find( pMemory );
-    rAssert( found == g_MemoryMap.end() );
+    HeapMgr()->PushHeap(GMA_DEBUG);
+    VOIDINTMAP::iterator found = g_MemoryMap.find(pMemory);
+    rAssert(found == g_MemoryMap.end());
     g_MemoryAllocationEnabled = false;
-    g_MemoryMap[ pMemory ] = size;
+    g_MemoryMap[pMemory] = size;
     g_MemoryAllocationEnabled = true;
-    HeapMgr()->PopHeap( GMA_DEBUG );
+    HeapMgr()->PopHeap(GMA_DEBUG);
 }
 
 //-----------------------------------------------------------------------------
@@ -216,23 +205,18 @@ void LeakDetectionAddRecord( const void* pMemory, const unsigned int size, const
 //
 //-----------------------------------------------------------------------------
 
-void LeakDetectionRemoveRecord( void* pMemory )
-{   
-    if( g_MemoryAllocationEnabled && ( pMemory != NULL ) )
-    {
-        VOIDINTMAP::iterator found = g_MemoryMap.find( pMemory );
-        if( found == g_MemoryMap.end() )
-        {
+void LeakDetectionRemoveRecord(void *pMemory) {
+    if (g_MemoryAllocationEnabled && (pMemory != NULL)) {
+        VOIDINTMAP::iterator found = g_MemoryMap.find(pMemory);
+        if (found == g_MemoryMap.end()) {
             //
             // IAN - put this in later - it means that we're freeing stuff that came from permanent memory
             //
-            //rReleasePrintf( "LeakDetection: Untracked memory block at %x freed\n", pMemory);
-        }
-        else
-        {
-            g_MemoryMap.erase( found );
+            //rReleasePrintf("LeakDetection: Untracked memory block at %x freed\n", pMemory);
+        } else {
+            g_MemoryMap.erase(found);
         }
     }
-}                               
+}
 
 #endif // FINAL

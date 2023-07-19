@@ -18,7 +18,9 @@
 #include <p3d/drawable.hpp>
 
 #ifndef WORLD_BUILDER
+
 #include <render/Culling/NodeFLL.h>
+
 #else
 #include "../Culling/NodeFLL.h"
 #endif
@@ -27,7 +29,9 @@
 #include <debug/profiler.h>
 
 class tShadowSkin;
+
 class tShadowMesh;
+
 class SpatialNode;
 //=================================================
 // Project Includes
@@ -44,42 +48,54 @@ class SpatialNode;
 //////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////
-class IEntityDSG : 
-    public tDrawable,
-    public tDrawable::ShaderCallback
+class IEntityDSG :
+        public tDrawable,
+        public tDrawable::ShaderCallback
     //,public ISortPriority
 {
 public:
-   IEntityDSG();
+    IEntityDSG();
 
-   virtual rmt::Vector*       pPosition() = 0;
-   virtual const rmt::Vector& rPosition() = 0;
+    virtual rmt::Vector *pPosition() = 0;
 
-   virtual void SetShadow( tShadowSkin* pShadowSkin ){ rAssert ("SetShadow not implemented"); }
-   virtual void SetShadow( tShadowMesh* pShadowMesh ){ rAssert ("SetShadow not implemented"); }
-   virtual int CastsShadow(){return 0;}
-   virtual void DisplayShadow() { rAssert( "DisplayShadow not implemented" ); }
-   virtual void DisplaySimpleShadow( void ) { rAssert( false && "DisplaySimpleShadow not implemented" ); }
+    virtual const rmt::Vector &rPosition() = 0;
 
-   virtual void RenderUpdate();
+    virtual void SetShadow(tShadowSkin *pShadowSkin) { rAssert("SetShadow not implemented"); }
 
-   virtual void SetShader(tShader* pShader, int i){}
-   const tName& GetShaderName(){ return mShaderName; }
-   const tUID   GetShaderUID(){ return mShaderName.GetUID(); }
+    virtual void SetShadow(tShadowMesh *pShadowMesh) { rAssert("SetShadow not implemented"); }
 
-   tShader* Process(tShader* pShaders); 
+    virtual int CastsShadow() { return 0; }
 
-    virtual void GetPosition( rmt::Vector* ipPosn ){}
-    virtual void  SetRank(rmt::Vector& irRefPosn, rmt::Vector& mViewVector);
+    virtual void DisplayShadow() { rAssert("DisplayShadow not implemented"); }
+
+    virtual void DisplaySimpleShadow(void) {
+        rAssert(false && "DisplaySimpleShadow not implemented");
+    }
+
+    virtual void RenderUpdate();
+
+    virtual void SetShader(tShader *pShader, int i) {}
+
+    const tName &GetShaderName() { return mShaderName; }
+
+    const tUID GetShaderUID() { return mShaderName.GetUID(); }
+
+    tShader *Process(tShader *pShaders);
+
+    virtual void GetPosition(rmt::Vector *ipPosn) {}
+
+    virtual void SetRank(rmt::Vector &irRefPosn, rmt::Vector &mViewVector);
+
     float Rank();
+
     float mRank;
 
 
-   bool  mTranslucent;
-   tName mShaderName;
-   static bool msDeletionsSafe;
+    bool mTranslucent;
+    tName mShaderName;
+    static bool msDeletionsSafe;
 
-    SpatialNode* mpSpatialNode;
+    SpatialNode *mpSpatialNode;
 
 #ifdef BREAK_DOWN_PROFILE
     static char msMarker;
@@ -105,23 +121,23 @@ public:
 #endif
 
 protected:
-   virtual ~IEntityDSG();
+    virtual ~IEntityDSG();
 };
 
 #ifdef DONT_DRAW_EXPENSIVE
-    #define IS_DRAW_LONG this->IsDrawLong()
+#define IS_DRAW_LONG this->IsDrawLong()
 #else
-    #define IS_DRAW_LONG false
+#define IS_DRAW_LONG false
 #endif
 
 #ifdef  BREAK_DOWN_PROFILE
-    #define DSG_BEGIN_PROFILE(string) {this->BeginProfile(string);}
-    #define DSG_END_PROFILE(string)   {this->EndProfile(string);}
-    #define DSG_SET_PROFILE(marker) {IEntityDSG::msMarker=marker;}
+#define DSG_BEGIN_PROFILE(string) {this->BeginProfile(string);}
+#define DSG_END_PROFILE(string)   {this->EndProfile(string);}
+#define DSG_SET_PROFILE(marker) {IEntityDSG::msMarker=marker;}
 #else
-    #define DSG_BEGIN_PROFILE(string)
-    #define DSG_END_PROFILE(string)
-    #define DSG_SET_PROFILE(marker)
+#define DSG_BEGIN_PROFILE(string)
+#define DSG_END_PROFILE(string)
+#define DSG_SET_PROFILE(marker)
 #endif
 /*
    bool operator<(IEntityDSG* x, IEntityDSG* y)

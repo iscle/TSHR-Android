@@ -42,10 +42,10 @@
 // Constraints: None.
 //
 //========================================================================
-StaticEntityDSG::StaticEntityDSG()
-{
-   mpDrawstuff = NULL;
+StaticEntityDSG::StaticEntityDSG() {
+    mpDrawstuff = NULL;
 }
+
 //========================================================================
 // StaticEntityDSG::
 //========================================================================
@@ -59,15 +59,14 @@ StaticEntityDSG::StaticEntityDSG()
 // Constraints: None.
 //
 //========================================================================
-StaticEntityDSG::~StaticEntityDSG()
-{
-BEGIN_PROFILE( "StaticEntityDSG Destroy" );
-   if(mpDrawstuff != NULL)
-   {
-      mpDrawstuff->Release();
-   }
-END_PROFILE( "StaticEntityDSG Destroy" );
+StaticEntityDSG::~StaticEntityDSG() {
+    BEGIN_PROFILE("StaticEntityDSG Destroy");
+    if (mpDrawstuff != NULL) {
+        mpDrawstuff->Release();
+    }
+    END_PROFILE("StaticEntityDSG Destroy");
 }
+
 //========================================================================
 // StaticEntityDSG::SetRank
 //========================================================================
@@ -82,14 +81,10 @@ END_PROFILE( "StaticEntityDSG Destroy" );
 // Constraints: None.
 //
 //========================================================================
-void StaticEntityDSG::SetRank(rmt::Vector& irRefPosn, rmt::Vector& mViewVector)
-{
-    if ( ( mIsGeo & IS_SHADOW ) == false )
-    {
-        IEntityDSG::SetRank( irRefPosn, mViewVector );
-    }
-    else
-    {
+void StaticEntityDSG::SetRank(rmt::Vector &irRefPosn, rmt::Vector &mViewVector) {
+    if ((mIsGeo & IS_SHADOW) == false) {
+        IEntityDSG::SetRank(irRefPosn, mViewVector);
+    } else {
         mRank = FLT_MAX;
     }
 }
@@ -107,31 +102,28 @@ void StaticEntityDSG::SetRank(rmt::Vector& irRefPosn, rmt::Vector& mViewVector)
 // Constraints: None.
 //
 //========================================================================
-void StaticEntityDSG::SetGeometry(tGeometry* ipGeo)
-{
-   if(mpDrawstuff != NULL)
-   {
-      mpDrawstuff->Release();
-   }
-   
-   mpDrawstuff = ipGeo;
+void StaticEntityDSG::SetGeometry(tGeometry *ipGeo) {
+    if (mpDrawstuff != NULL) {
+        mpDrawstuff->Release();
+    }
 
-   if(mpDrawstuff != NULL)
-   {
-      mpDrawstuff->AddRef();
-   }
-   mIsGeo = GEO;
+    mpDrawstuff = ipGeo;
 
-   if(ipGeo->CastsShadow())
-   {
-       mIsGeo = mIsGeo | IS_SHADOW;
-   }
-   
+    if (mpDrawstuff != NULL) {
+        mpDrawstuff->AddRef();
+    }
+    mIsGeo = GEO;
+
+    if (ipGeo->CastsShadow()) {
+        mIsGeo = mIsGeo | IS_SHADOW;
+    }
+
 //   mShaderUID = ipGeo->GetShader(0)->GetUID();
-   ipGeo->ProcessShaders(*this);
+    ipGeo->ProcessShaders(*this);
 
-   SetInternalState();
+    SetInternalState();
 }
+
 //========================================================================
 // StaticEntityDSG::
 //========================================================================
@@ -145,10 +137,10 @@ void StaticEntityDSG::SetGeometry(tGeometry* ipGeo)
 // Constraints: None.
 //
 //========================================================================
-tGeometry* StaticEntityDSG::mpGeo()
-{
-   return (tGeometry*)mpDrawstuff;
+tGeometry *StaticEntityDSG::mpGeo() {
+    return (tGeometry *) mpDrawstuff;
 }
+
 //========================================================================
 // StaticEntityDSG::
 //========================================================================
@@ -162,24 +154,22 @@ tGeometry* StaticEntityDSG::mpGeo()
 // Constraints: None.
 //
 //========================================================================
-void StaticEntityDSG::SetDrawable(tDrawable* ipDraw)
-{
-   if(mpDrawstuff != NULL)
-   {
-      mpDrawstuff->Release();
-   }
-   
-   mpDrawstuff = ipDraw;
+void StaticEntityDSG::SetDrawable(tDrawable *ipDraw) {
+    if (mpDrawstuff != NULL) {
+        mpDrawstuff->Release();
+    }
 
-   if(mpDrawstuff != NULL)
-   {
-      mpDrawstuff->AddRef();
-   }
+    mpDrawstuff = ipDraw;
 
-   mIsGeo = NOT_GEO;
+    if (mpDrawstuff != NULL) {
+        mpDrawstuff->AddRef();
+    }
 
-   SetInternalState();
+    mIsGeo = NOT_GEO;
+
+    SetInternalState();
 }
+
 //========================================================================
 // StaticEntityDSG::
 //========================================================================
@@ -193,8 +183,7 @@ void StaticEntityDSG::SetDrawable(tDrawable* ipDraw)
 // Constraints: None.
 //
 //========================================================================
-tDrawable* StaticEntityDSG::mpDraw()
-{
+tDrawable *StaticEntityDSG::mpDraw() {
     return mpDrawstuff;
 
 }
@@ -215,28 +204,25 @@ tDrawable* StaticEntityDSG::mpDraw()
 // Constraints: None.
 //
 //========================================================================
-void StaticEntityDSG::Display()
-{
+void StaticEntityDSG::Display() {
 #ifdef PROFILER_ENABLED
     char profileName[] = "  StaticEntityDSG Display";
 #endif
-    if(IS_DRAW_LONG) return;
+    if (IS_DRAW_LONG) return;
     DSG_BEGIN_PROFILE(profileName)
 
-    if(mIsGeo & IS_SHADOW)
-    {
+    if (mIsGeo & IS_SHADOW) {
         p3d::pddi->SetZWrite(false);
         mpDrawstuff->Display();
         p3d::pddi->SetZWrite(true);
-    }
-    else
-    {
+    } else {
         mpDrawstuff->Display();
     }
     DSG_END_PROFILE(profileName)
 }
 
 #ifndef RAD_RELEASE
+
 //========================================================================
 // StaticEntityDSG::
 //========================================================================
@@ -250,12 +236,12 @@ void StaticEntityDSG::Display()
 // Constraints: None.
 //
 //========================================================================
-void StaticEntityDSG::DisplayBoundingBox(tColour colour)
-{
+void StaticEntityDSG::DisplayBoundingBox(tColour colour) {
 #ifndef RAD_RELEASE
-   mpDrawstuff->DisplayBoundingBox(colour);
+    mpDrawstuff->DisplayBoundingBox(colour);
 #endif
 }
+
 //========================================================================
 // StaticEntityDSG::
 //========================================================================
@@ -269,10 +255,10 @@ void StaticEntityDSG::DisplayBoundingBox(tColour colour)
 // Constraints: None.
 //
 //========================================================================
-void StaticEntityDSG::DisplayBoundingSphere(tColour colour)
-{
-   mpDrawstuff->DisplayBoundingSphere(colour);
+void StaticEntityDSG::DisplayBoundingSphere(tColour colour) {
+    mpDrawstuff->DisplayBoundingSphere(colour);
 }
+
 #endif
 
 //========================================================================
@@ -288,10 +274,10 @@ void StaticEntityDSG::DisplayBoundingSphere(tColour colour)
 // Constraints: None.
 //
 //========================================================================
-void StaticEntityDSG::GetBoundingBox(rmt::Box3D* box)
-{
-   mpDrawstuff->GetBoundingBox(box);
+void StaticEntityDSG::GetBoundingBox(rmt::Box3D *box) {
+    mpDrawstuff->GetBoundingBox(box);
 }
+
 //========================================================================
 // StaticEntityDSG::
 //========================================================================
@@ -305,10 +291,10 @@ void StaticEntityDSG::GetBoundingBox(rmt::Box3D* box)
 // Constraints: None.
 //
 //========================================================================
-void StaticEntityDSG::GetBoundingSphere(rmt::Sphere* sphere)
-{
-   mpDrawstuff->GetBoundingSphere(sphere);
+void StaticEntityDSG::GetBoundingSphere(rmt::Sphere *sphere) {
+    mpDrawstuff->GetBoundingSphere(sphere);
 }
+
 ///////////////////////////////////////////////////////////////////////
 // IEntityDSG
 ///////////////////////////////////////////////////////////////////////
@@ -325,10 +311,10 @@ void StaticEntityDSG::GetBoundingSphere(rmt::Sphere* sphere)
 // Constraints: None.
 //
 //========================================================================
-rmt::Vector* StaticEntityDSG::pPosition()
-{
-   return &mPosn;
+rmt::Vector *StaticEntityDSG::pPosition() {
+    return &mPosn;
 }
+
 //========================================================================
 // StaticEntityDSG::
 //========================================================================
@@ -342,10 +328,10 @@ rmt::Vector* StaticEntityDSG::pPosition()
 // Constraints: None.
 //
 //========================================================================
-const rmt::Vector& StaticEntityDSG::rPosition()
-{
-   return mPosn;
+const rmt::Vector &StaticEntityDSG::rPosition() {
+    return mPosn;
 }
+
 //========================================================================
 // StaticEntityDSG::
 //========================================================================
@@ -359,10 +345,10 @@ const rmt::Vector& StaticEntityDSG::rPosition()
 // Constraints: None.
 //
 //========================================================================
-void StaticEntityDSG::GetPosition( rmt::Vector* ipPosn )
-{
-   *ipPosn = mPosn;
+void StaticEntityDSG::GetPosition(rmt::Vector *ipPosn) {
+    *ipPosn = mPosn;
 }
+
 //========================================================================
 // StaticEntityDSG::
 //========================================================================
@@ -376,10 +362,10 @@ void StaticEntityDSG::GetPosition( rmt::Vector* ipPosn )
 // Constraints: None.
 //
 //========================================================================
-void StaticEntityDSG::RenderUpdate()
-{
-   //Do Nothing
+void StaticEntityDSG::RenderUpdate() {
+    //Do Nothing
 }
+
 //************************************************************************
 //
 // Protected Member Functions : StaticEntityDSG 
@@ -398,12 +384,11 @@ void StaticEntityDSG::RenderUpdate()
 // Constraints: None.
 //
 //========================================================================
-void StaticEntityDSG::SetInternalState()
-{
-   rmt::Sphere sphere;
+void StaticEntityDSG::SetInternalState() {
+    rmt::Sphere sphere;
 
-   mpDrawstuff->GetBoundingSphere(&sphere);
-   mPosn = sphere.centre;
+    mpDrawstuff->GetBoundingSphere(&sphere);
+    mPosn = sphere.centre;
 }
 //************************************************************************
 //

@@ -52,14 +52,14 @@
 //
 //========================================================================
 StaticPhysLoader::StaticPhysLoader() :
-tSimpleChunkHandler(SRR2::ChunkID::STATIC_PHYS_DSG)
-{
+        tSimpleChunkHandler(SRR2::ChunkID::STATIC_PHYS_DSG) {
     mpCollObjLoader = new(GMA_PERSISTENT) sim::CollisionObjectLoader();
     mpCollObjLoader->AddRef();
 
-    mpListenerCB  = NULL;
-    mUserData     = -1;
+    mpListenerCB = NULL;
+    mUserData = -1;
 }
+
 //========================================================================
 // StaticPhysLoader::
 //========================================================================
@@ -73,8 +73,7 @@ tSimpleChunkHandler(SRR2::ChunkID::STATIC_PHYS_DSG)
 // Constraints: None.
 //
 //========================================================================
-StaticPhysLoader::~StaticPhysLoader()
-{
+StaticPhysLoader::~StaticPhysLoader() {
     mpCollObjLoader->Release();
 }
 
@@ -94,76 +93,65 @@ StaticPhysLoader::~StaticPhysLoader()
 // Constraints: None.
 //
 //========================================================================
-tEntity* StaticPhysLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
-    IEntityDSG::msDeletionsSafe=true;
+tEntity *StaticPhysLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
+    IEntityDSG::msDeletionsSafe = true;
     char name[255];
     f->GetPString(name);
-	// Lets see if theis object has a shadow associated with it
-	const char* pShadowName = BlobbyShadowNames::FindShadowName( name );
-	tDrawable* pShadow;
-	if ( pShadowName != NULL )
-	{
-		pShadow = p3d::find< tDrawable > ( pShadowName );
-	}
-	else
-	{
-		pShadow = NULL;
-	}
+    // Lets see if theis object has a shadow associated with it
+    const char *pShadowName = BlobbyShadowNames::FindShadowName(name);
+    tDrawable *pShadow;
+    if (pShadowName != NULL) {
+        pShadow = p3d::find<tDrawable>(pShadowName);
+    } else {
+        pShadow = NULL;
+    }
 
     int version = f->GetLong();
 
-    StaticPhysDSG* pStaticPhysDSG = new StaticPhysDSG;
+    StaticPhysDSG *pStaticPhysDSG = new StaticPhysDSG;
     pStaticPhysDSG->SetName(name);
-    CollisionAttributes* pCollAttr   = NULL;
+    CollisionAttributes *pCollAttr = NULL;
 
-    while(f->ChunksRemaining())
-    {      
+    while (f->ChunksRemaining()) {
         f->BeginChunk();
-        switch(f->GetCurrentID())
-        {
-            case Simulation::Collision::OBJECT:
-            {
-                sim::CollisionObject* pCollObj = (sim::CollisionObject*)mpCollObjLoader->LoadObject(f, store);
+        switch (f->GetCurrentID()) {
+            case Simulation::Collision::OBJECT: {
+                sim::CollisionObject *pCollObj = (sim::CollisionObject *) mpCollObjLoader->LoadObject(
+                        f, store);
                 // TBJ [7/9/2002]
                 // Added this to store collision objects in the inventory.
                 // A normal loader stores the top level chunk, in this case the StaticPhysDSG.
                 // Since we want the Collision Object in the inventory, we have to store it here.
                 //
-                if ( pCollObj )
-                {
-                    if( store && store->TestCollision( pCollObj->GetUID(), pCollObj ) )
-                    {
+                if (pCollObj) {
+                    if (store && store->TestCollision(pCollObj->GetUID(), pCollObj)) {
                         HandleCollision(pCollObj);
-                    }
-                    else
-                    {
+                    } else {
                         store->Store(pCollObj);
-                    }                
+                    }
                 }
                 pStaticPhysDSG->SetSimState(sim::SimState::CreateStaticSimState(pCollObj));
-                
-                pStaticPhysDSG->SetShadow( pShadow );
+
+                pStaticPhysDSG->SetShadow(pShadow);
 
                 pStaticPhysDSG->GetSimState()->GetCollisionObject()->GetCollisionVolume()->GenerateHierarchy();
 
                 break;
             }
-			case SRR2::ChunkID::OBJECT_ATTRIBUTES:
-            {
-                    
+            case SRR2::ChunkID::OBJECT_ATTRIBUTES: {
+
                 int classType = f->GetLong();
                 int physPropID = f->GetLong();
-				char tempsound [64];
-				f->GetString(tempsound);
-            
-				pCollAttr = GetATCManager()->CreateCollisionAttributes(classType, physPropID, 0.0f);
-				pCollAttr->SetSound(tempsound);
-				pStaticPhysDSG->SetCollisionAttributes( pCollAttr );
-			}
-            break;
+                char tempsound[64];
+                f->GetString(tempsound);
 
-				break;
+                pCollAttr = GetATCManager()->CreateCollisionAttributes(classType, physPropID, 0.0f);
+                pCollAttr->SetSound(tempsound);
+                pStaticPhysDSG->SetCollisionAttributes(pCollAttr);
+            }
+                break;
+
+                break;
             default:
                 break;
         } // switch
@@ -171,14 +159,15 @@ tEntity* StaticPhysLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     } // while
 
 
-    mpListenerCB->OnChunkLoaded( pStaticPhysDSG, mUserData, _id );
+    mpListenerCB->OnChunkLoaded(pStaticPhysDSG, mUserData, _id);
     //
     // Spin Pure3D async loading.
     //
     //p3d::loadManager->SwitchTask();
-    IEntityDSG::msDeletionsSafe=false;
+    IEntityDSG::msDeletionsSafe = false;
     return pStaticPhysDSG;
 }
+
 ///////////////////////////////////////////////////////////////////////
 // IWrappedLoader
 ///////////////////////////////////////////////////////////////////////
@@ -198,21 +187,19 @@ tEntity* StaticPhysLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 //
 //========================================================================
 void StaticPhysLoader::SetRegdListener
-(
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
-   //
-   // Follow protocol; notify old Listener, that it has been 
-   // "disconnected".
-   //
-   if( mpListenerCB != NULL )
-   {
-      mpListenerCB->OnChunkLoaded( NULL, iUserData, 0 );
-   }
-   mpListenerCB  = pListenerCB;
-   mUserData     = iUserData;
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
+    //
+    // Follow protocol; notify old Listener, that it has been
+    // "disconnected".
+    //
+    if (mpListenerCB != NULL) {
+        mpListenerCB->OnChunkLoaded(NULL, iUserData, 0);
+    }
+    mpListenerCB = pListenerCB;
+    mUserData = iUserData;
 }
 
 //========================================================================
@@ -229,19 +216,18 @@ void StaticPhysLoader::SetRegdListener
 //
 //========================================================================
 void StaticPhysLoader::ModRegdListener
-( 
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
 #if 0
-   char DebugBuf[255];
-   sprintf( DebugBuf, "GeometryWrappedLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB );
-   rDebugString( DebugBuf );
+    char DebugBuf[255];
+    sprintf(DebugBuf, "GeometryWrappedLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB);
+    rDebugString(DebugBuf);
 #endif
-   rAssert( pListenerCB == mpListenerCB );
+    rAssert(pListenerCB == mpListenerCB);
 
-   mUserData = iUserData;
+    mUserData = iUserData;
 }
 //************************************************************************
 //

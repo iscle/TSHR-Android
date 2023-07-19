@@ -41,34 +41,30 @@
 // Return:      N/A.
 //
 //===========================================================================
-CTeleTypeText::CTeleTypeText( Scrooby::Text* pText,
-                              Scrooby::Group* pTextBox,
-                              unsigned int numCharsPerSecond,
-                              unsigned int numSecondsToDisplay )
-:   m_state( STATE_INACTIVE ),
-    m_elapsedTime( 0 ),
-    m_teletypePeriod( 1000 / numCharsPerSecond ),
-    m_displayDuration( numSecondsToDisplay * 1000 ),
-    m_pText( pText ),
-    m_pTextBox( pTextBox ),
-    m_charBuffer( NULL ),
-    m_nextChar( 0 ),
-    m_currentCharIndex( 0 )
-{
-    rAssert( m_pText != NULL );
+CTeleTypeText::CTeleTypeText(Scrooby::Text *pText,
+                             Scrooby::Group *pTextBox,
+                             unsigned int numCharsPerSecond,
+                             unsigned int numSecondsToDisplay)
+        : m_state(STATE_INACTIVE),
+          m_elapsedTime(0),
+          m_teletypePeriod(1000 / numCharsPerSecond),
+          m_displayDuration(numSecondsToDisplay * 1000),
+          m_pText(pText),
+          m_pTextBox(pTextBox),
+          m_charBuffer(NULL),
+          m_nextChar(0),
+          m_currentCharIndex(0) {
+    rAssert(m_pText != NULL);
 
     // hide by default
-    if( m_pTextBox != NULL )
-    {
-        m_pTextBox->SetVisible( false );
-    }
-    else
-    {
-        m_pText->SetVisible( false );
+    if (m_pTextBox != NULL) {
+        m_pTextBox->SetVisible(false);
+    } else {
+        m_pText->SetVisible(false);
     }
 
     // wrap text by default
-    m_pText->SetTextMode( Scrooby::TEXT_WRAP );
+    m_pText->SetTextMode(Scrooby::TEXT_WRAP);
 }
 
 //===========================================================================
@@ -83,8 +79,7 @@ CTeleTypeText::CTeleTypeText( Scrooby::Text* pText,
 // Return:      N/A.
 //
 //===========================================================================
-CTeleTypeText::~CTeleTypeText()
-{
+CTeleTypeText::~CTeleTypeText() {
 }
 
 //===========================================================================
@@ -99,14 +94,10 @@ CTeleTypeText::~CTeleTypeText()
 // Return:      
 //
 //===========================================================================
-void CTeleTypeText::Update( unsigned int elapsedTime )
-{
-    switch( m_state )
-    {
-        case STATE_TELETYPING:
-        {
-            if( m_elapsedTime >= m_teletypePeriod )
-            {
+void CTeleTypeText::Update(unsigned int elapsedTime) {
+    switch (m_state) {
+        case STATE_TELETYPING: {
+            if (m_elapsedTime >= m_teletypePeriod) {
                 this->TypeNextCharacter();
 
                 m_elapsedTime = m_elapsedTime % m_teletypePeriod;
@@ -117,14 +108,11 @@ void CTeleTypeText::Update( unsigned int elapsedTime )
 
             break;
         }
-        case STATE_DISPLAYING:
-        {
+        case STATE_DISPLAYING: {
             // 0 means display forever, until client hides it
             //
-            if( m_displayDuration > 0 )
-            {
-                if( m_elapsedTime >= m_displayDuration )
-                {
+            if (m_displayDuration > 0) {
+                if (m_elapsedTime >= m_displayDuration) {
                     this->HideMessage();
                 }
 
@@ -134,8 +122,7 @@ void CTeleTypeText::Update( unsigned int elapsedTime )
 
             break;
         }
-        default:
-        {
+        default: {
             break;
         }
     }
@@ -153,38 +140,33 @@ void CTeleTypeText::Update( unsigned int elapsedTime )
 // Return:      
 //
 //===========================================================================
-void CTeleTypeText::DisplayMessage()
-{
-//    rAssertMsg( m_state == STATE_INACTIVE, "ERROR: Teletype message in progress!\n" );
-    if( m_state != STATE_INACTIVE )
-    {
+void CTeleTypeText::DisplayMessage() {
+//    rAssertMsg(m_state == STATE_INACTIVE, "ERROR: Teletype message in progress!\n");
+    if (m_state != STATE_INACTIVE) {
         // ignore request if there's already a message in progress
         return;
     }
 
-    rAssert( m_pText );
+    rAssert(m_pText);
 
     // show scrooby text
-    if( m_pTextBox != NULL )
-    {
-        m_pTextBox->SetVisible( true );
-    }
-    else
-    {
-        m_pText->SetVisible( true );
+    if (m_pTextBox != NULL) {
+        m_pTextBox->SetVisible(true);
+    } else {
+        m_pText->SetVisible(true);
     }
 
     // get string buffer from text
     m_charBuffer = m_pText->GetStringBuffer();
 
-    rAssert( m_charBuffer );
+    rAssert(m_charBuffer);
 
     // reset current character index
     m_currentCharIndex = 0;
 
     // save next character and terminate buffer
-    m_nextChar = m_charBuffer[ m_currentCharIndex + 1 ];
-    m_charBuffer[ m_currentCharIndex + 1 ] = '\0';
+    m_nextChar = m_charBuffer[m_currentCharIndex + 1];
+    m_charBuffer[m_currentCharIndex + 1] = '\0';
 
     m_state = STATE_TELETYPING;
 }
@@ -201,19 +183,15 @@ void CTeleTypeText::DisplayMessage()
 // Return:      
 //
 //===========================================================================
-void CTeleTypeText::DisplayMessage( int index )
-{
-    rAssert( m_pText );
+void CTeleTypeText::DisplayMessage(int index) {
+    rAssert(m_pText);
 
-    if( index >= 0 && index < m_pText->GetNumOfStrings() )
-    {
-        m_pText->SetIndex( index );
+    if (index >= 0 && index < m_pText->GetNumOfStrings()) {
+        m_pText->SetIndex(index);
 
         this->DisplayMessage();
-    }
-    else
-    {
-        rAssertMsg( 0, "WARNING: Invalid index for teletype message!\n" );
+    } else {
+        rAssertMsg(0, "WARNING: Invalid index for teletype message!\n");
     }
 }
 
@@ -229,23 +207,18 @@ void CTeleTypeText::DisplayMessage( int index )
 // Return:      
 //
 //===========================================================================
-void CTeleTypeText::HideMessage()
-{
+void CTeleTypeText::HideMessage() {
     // if stopped during middle of teletyping
-    if( m_state == STATE_TELETYPING )
-    {
+    if (m_state == STATE_TELETYPING) {
         // restore character in buffer
-        m_charBuffer[ m_currentCharIndex + 1 ] = m_nextChar;
+        m_charBuffer[m_currentCharIndex + 1] = m_nextChar;
     }
 
     // hide scrooby text
-    if( m_pTextBox != NULL )
-    {
-        m_pTextBox->SetVisible( false );
-    }
-    else
-    {
-        m_pText->SetVisible( false );
+    if (m_pTextBox != NULL) {
+        m_pTextBox->SetVisible(false);
+    } else {
+        m_pText->SetVisible(false);
     }
 
     // reset elapsed time
@@ -254,29 +227,25 @@ void CTeleTypeText::HideMessage()
     m_state = STATE_INACTIVE;
 }
 
-void CTeleTypeText::Pause()
-{
-    if( m_state == STATE_TELETYPING )
-    {
+void CTeleTypeText::Pause() {
+    if (m_state == STATE_TELETYPING) {
         // restore character in buffer
-        m_charBuffer[ m_currentCharIndex + 1 ] = m_nextChar;
+        m_charBuffer[m_currentCharIndex + 1] = m_nextChar;
 
         // hide scrooby text
-        m_pText->SetVisible( false );
+        m_pText->SetVisible(false);
 
         m_state = STATE_PAUSED;
     }
 }
 
-void CTeleTypeText::Resume()
-{
-    if( m_state == STATE_PAUSED )
-    {
+void CTeleTypeText::Resume() {
+    if (m_state == STATE_PAUSED) {
         // restore character in buffer
-        m_charBuffer[ m_currentCharIndex + 1 ] = '\0';
+        m_charBuffer[m_currentCharIndex + 1] = '\0';
 
         // show scrooby text
-        m_pText->SetVisible( true );
+        m_pText->SetVisible(true);
 
         m_state = STATE_TELETYPING;
     }
@@ -294,21 +263,19 @@ void CTeleTypeText::Resume()
 // Return:      
 //
 //===========================================================================
-void CTeleTypeText::TypeNextCharacter()
-{
+void CTeleTypeText::TypeNextCharacter() {
     // increment current character index
     m_currentCharIndex++;
 
     // restore character in buffer
-    m_charBuffer[ m_currentCharIndex ] = m_nextChar;
+    m_charBuffer[m_currentCharIndex] = m_nextChar;
 
     // save next character and terminate buffer
-    m_nextChar = m_charBuffer[ m_currentCharIndex + 1 ];
-    m_charBuffer[ m_currentCharIndex + 1 ] = '\0';
+    m_nextChar = m_charBuffer[m_currentCharIndex + 1];
+    m_charBuffer[m_currentCharIndex + 1] = '\0';
 
     // if end of buffer reached
-    if( m_nextChar == '\0' )
-    {
+    if (m_nextChar == '\0') {
         m_state = STATE_DISPLAYING;
     }
 }

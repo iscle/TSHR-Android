@@ -40,7 +40,7 @@
 // Constraints: 
 //
 //===========================================================================
-int smStricmp( const char *string1, const char *string2 );
+int smStricmp(const char *string1, const char *string2);
 
 //===========================================================================
 //
@@ -50,7 +50,7 @@ int smStricmp( const char *string1, const char *string2 );
 // Constraints: 
 //
 //===========================================================================
-int smStrincmp( const char *string1, const char *string2, int tCount);
+int smStrincmp(const char *string1, const char *string2, int tCount);
 
 
 #endif                                  // End conditional inclusion

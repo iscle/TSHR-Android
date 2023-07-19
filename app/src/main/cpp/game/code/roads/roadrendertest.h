@@ -32,17 +32,19 @@
 //
 //=============================================================================
 
-class RoadRenderTest : public tDrawable
-{
+class RoadRenderTest : public tDrawable {
 public:
     RoadRenderTest();
+
     virtual ~RoadRenderTest();
 
     void Display();
-    void DisplaySpawnSegments();
-    void DisplayTerrainType( void );
 
-    ReserveArray<RoadSegment*> mSegments;
+    void DisplaySpawnSegments();
+
+    void DisplayTerrainType(void);
+
+    ReserveArray<RoadSegment *> mSegments;
 
 private:
 
@@ -51,8 +53,9 @@ private:
     bool mDisplayTerrainTypes;
 
     //Prevent wasteful constructor creation.
-    RoadRenderTest( const RoadRenderTest& roadrendertest );
-    RoadRenderTest& operator=( const RoadRenderTest& roadrendertest );
+    RoadRenderTest(const RoadRenderTest &roadrendertest);
+
+    RoadRenderTest &operator=(const RoadRenderTest &roadrendertest);
 };
 
 #endif

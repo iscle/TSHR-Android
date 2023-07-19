@@ -47,10 +47,9 @@
 //
 //========================================================================
 IntersectLoader::IntersectLoader() :
-tSimpleChunkHandler(SRR2::ChunkID::INTERSECT_DSG)
-{
-   mpListenerCB  = NULL;
-   mUserData     = -1;
+        tSimpleChunkHandler(SRR2::ChunkID::INTERSECT_DSG) {
+    mpListenerCB = NULL;
+    mUserData = -1;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -87,8 +86,7 @@ tSimpleChunkHandler(SRR2::ChunkID::INTERSECT_DSG)
 //   Chunk tlBSphereChunk;
 //
 //========================================================================
-tEntity* IntersectLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
+tEntity *IntersectLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
 /*    static int profileNumPts        = 0;
     static int profileNumNorms      = 0;
     static int profileNumTerrain    = 0;
@@ -96,32 +94,31 @@ tEntity* IntersectLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     static int profileTotalSize     = 0;
 */
 
-    IEntityDSG::msDeletionsSafe=true;
+    IEntityDSG::msDeletionsSafe = true;
     int i;
-    IntersectDSG* pIDSG = new IntersectDSG;
+    IntersectDSG *pIDSG = new IntersectDSG;
 
-    pIDSG->mTriIndices.Allocate(f->GetLong());  
-    pIDSG->mTriIndices.AddUse(pIDSG->mTriIndices.mSize);  
+    pIDSG->mTriIndices.Allocate(f->GetLong());
+    pIDSG->mTriIndices.AddUse(pIDSG->mTriIndices.mSize);
 
-    for(i=0; i<pIDSG->mTriIndices.mSize; i++)
-    {
-        pIDSG->mTriIndices[i] = (int)(f->GetLong());
+    for (i = 0; i < pIDSG->mTriIndices.mSize; i++) {
+        pIDSG->mTriIndices[i] = (int) (f->GetLong());
     }
 
-    pIDSG->mTriPts.Allocate(f->GetLong());  
+    pIDSG->mTriPts.Allocate(f->GetLong());
     pIDSG->mTriPts.AddUse(pIDSG->mTriPts.mSize);
-    
+
     //for(i=0; i<pIDSG->mTriPts.mSize; i++)
     {
-        f->GetData(&pIDSG->mTriPts[0], 3*pIDSG->mTriPts.mSize, tFile::DWORD);
+        f->GetData(&pIDSG->mTriPts[0], 3 * pIDSG->mTriPts.mSize, tFile::DWORD);
     }
 
-    pIDSG->mTriNorms.Allocate(f->GetLong());  
+    pIDSG->mTriNorms.Allocate(f->GetLong());
     pIDSG->mTriNorms.AddUse(pIDSG->mTriNorms.mSize);
-    
+
     //for(i=0; i<pIDSG->mTriNorms.mSize; i++)
     {
-        f->GetData(&pIDSG->mTriNorms[0], 3*pIDSG->mTriNorms.mSize, tFile::DWORD);
+        f->GetData(&pIDSG->mTriNorms[0], 3 * pIDSG->mTriNorms.mSize, tFile::DWORD);
     }
 /*
     pIDSG->mTriCentroids.Allocate(f->GetLong());  
@@ -139,16 +136,13 @@ tEntity* IntersectLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     {
         f->GetData(&pIDSG->mTriRadius[0], pIDSG->mTriRadius.mSize, tFile::DWORD);
     }
-*/	
-    for(i=0 ; 
-        f->ChunksRemaining(); 
-        i++)
-    {
+*/
+    for (i = 0;
+         f->ChunksRemaining();
+         i++) {
         f->BeginChunk();
-        switch(f->GetCurrentID())
-        {
-            case Pure3D::Mesh::BOX:
-            {
+        switch (f->GetCurrentID()) {
+            case Pure3D::Mesh::BOX: {
                 float minx = f->GetFloat();
                 float miny = f->GetFloat();
                 float minz = f->GetFloat();
@@ -156,32 +150,30 @@ tEntity* IntersectLoader::LoadObject(tChunkFile* f, tEntityStore* store)
                 float maxy = f->GetFloat();
                 float maxz = f->GetFloat();
 
-                pIDSG->SetBoundingBox( minx, miny, minz, maxx, maxy, maxz);
+                pIDSG->SetBoundingBox(minx, miny, minz, maxx, maxy, maxz);
                 break;
             }
 
-            case Pure3D::Mesh::SPHERE:
-            {
+            case Pure3D::Mesh::SPHERE: {
                 float cx = f->GetFloat();
                 float cy = f->GetFloat();
                 float cz = f->GetFloat();
-                float r  = f->GetFloat();
+                float r = f->GetFloat();
 
-                pIDSG->SetBoundingSphere(cx,cy,cz,r);
+                pIDSG->SetBoundingSphere(cx, cy, cz, r);
                 break;
             }
 
-            case SRR2::ChunkID::TERRAIN_TYPE:
-            {
+            case SRR2::ChunkID::TERRAIN_TYPE: {
                 long version = f->GetLong();
-                rAssert( version == 0 );
+                rAssert(version == 0);
                 long size = f->GetLong();
-                pIDSG->mTerrainType.Allocate( size );
-                pIDSG->mTerrainType.AddUse( size );
-                //for( i = 0; i < size; ++i )
+                pIDSG->mTerrainType.Allocate(size);
+                pIDSG->mTerrainType.AddUse(size);
+                //for(i = 0; i <size; ++i)
                 //{
-                    f->GetData(&pIDSG->mTerrainType[0], pIDSG->mTerrainType.mSize, tFile::BYTE);
-                    //f->GetData( &pIDSG->mTerrainType[ i ], 1, tFile::BYTE );
+                f->GetData(&pIDSG->mTerrainType[0], pIDSG->mTerrainType.mSize, tFile::BYTE);
+                //f->GetData(&pIDSG->mTerrainType[ i ], 1, tFile::BYTE);
                 //}
                 break;
             }
@@ -191,24 +183,25 @@ tEntity* IntersectLoader::LoadObject(tChunkFile* f, tEntityStore* store)
                 break;
         } // switch
         f->EndChunk();
-    } 
+    }
 /*
-    if(pIDSG->mTriPts.mSize > profileNumPts)            profileNumPts       = pIDSG->mTriPts.mSize;
-    if(pIDSG->mTriNorms.mSize > profileNumNorms)        profileNumNorms     = pIDSG->mTriNorms.mSize;
-    if(pIDSG->mTerrainType.mSize > profileNumTerrain)   profileNumTerrain   = pIDSG->mTerrainType.mSize;
-    if(pIDSG->mTriIndices.mSize > profileNumIndicies)   profileNumIndicies  = pIDSG->mTriIndices.mSize;
+    if(pIDSG->mTriPts.mSize> profileNumPts)            profileNumPts       = pIDSG->mTriPts.mSize;
+    if(pIDSG->mTriNorms.mSize> profileNumNorms)        profileNumNorms     = pIDSG->mTriNorms.mSize;
+    if(pIDSG->mTerrainType.mSize> profileNumTerrain)   profileNumTerrain   = pIDSG->mTerrainType.mSize;
+    if(pIDSG->mTriIndices.mSize> profileNumIndicies)   profileNumIndicies  = pIDSG->mTriIndices.mSize;
 
-    if( 3*4*(pIDSG->mTriPts.mSize + pIDSG->mTriNorms.mSize) + pIDSG->mTriIndices.mSize*4 + pIDSG->mTerrainType.mSize > profileTotalSize )
+    if(3*4*(pIDSG->mTriPts.mSize + pIDSG->mTriNorms.mSize) + pIDSG->mTriIndices.mSize*4 + pIDSG->mTerrainType.mSize> profileTotalSize)
     {
         profileTotalSize  = 3*4*(pIDSG->mTriPts.mSize + pIDSG->mTriNorms.mSize) + pIDSG->mTriIndices.mSize*4 + pIDSG->mTerrainType.mSize;
-        if(profileTotalSize > 8192)
+        if(profileTotalSize> 8192)
             profileTotalSize = 8192;
     }
 */
-    mpListenerCB->OnChunkLoaded( pIDSG, mUserData, _id );
-    IEntityDSG::msDeletionsSafe=false;
+    mpListenerCB->OnChunkLoaded(pIDSG, mUserData, _id);
+    IEntityDSG::msDeletionsSafe = false;
     return NULL;//pIDSG;
 }
+
 ///////////////////////////////////////////////////////////////////////
 // IWrappedLoader
 ///////////////////////////////////////////////////////////////////////
@@ -228,21 +221,19 @@ tEntity* IntersectLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 //
 //========================================================================
 void IntersectLoader::SetRegdListener
-(
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
-   //
-   // Follow protocol; notify old Listener, that it has been 
-   // "disconnected".
-   //
-   if( mpListenerCB != NULL )
-   {
-      mpListenerCB->OnChunkLoaded( NULL, iUserData, 0 );
-   }
-   mpListenerCB  = pListenerCB;
-   mUserData     = iUserData;
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
+    //
+    // Follow protocol; notify old Listener, that it has been
+    // "disconnected".
+    //
+    if (mpListenerCB != NULL) {
+        mpListenerCB->OnChunkLoaded(NULL, iUserData, 0);
+    }
+    mpListenerCB = pListenerCB;
+    mUserData = iUserData;
 }
 
 //========================================================================
@@ -259,19 +250,18 @@ void IntersectLoader::SetRegdListener
 //
 //========================================================================
 void IntersectLoader::ModRegdListener
-( 
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
 #if 0
-   char DebugBuf[255];
-   sprintf( DebugBuf, "IntersectLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB );
-   rDebugString( DebugBuf );
+    char DebugBuf[255];
+    sprintf(DebugBuf, "IntersectLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB);
+    rDebugString(DebugBuf);
 #endif
-   rAssert( pListenerCB == mpListenerCB );
+    rAssert(pListenerCB == mpListenerCB);
 
-   mUserData = iUserData;
+    mUserData = iUserData;
 }
 //************************************************************************
 //

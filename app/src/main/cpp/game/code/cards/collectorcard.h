@@ -29,15 +29,14 @@
 // Interface Definitions
 //===========================================================================
 
-class CollectorCard : public Card
-{
+class CollectorCard : public Card {
 public:
-	CollectorCard( unsigned int ID,
-                   unsigned int level,
-                   unsigned int levelID,
-                   tUID cardName,
-                   const eQuoteID* quotes,
-                   int numQuotes );
+    CollectorCard(unsigned int ID,
+                  unsigned int level,
+                  unsigned int levelID,
+                  tUID cardName,
+                  const eQuoteID *quotes,
+                  int numQuotes);
 
     virtual ~CollectorCard();
 
@@ -51,8 +50,9 @@ private:
 
     // No copying or assignment. Declare but don't define.
     //
-    CollectorCard( const CollectorCard& );
-    CollectorCard& operator= ( const CollectorCard& );
+    CollectorCard(const CollectorCard &);
+
+    CollectorCard &operator=(const CollectorCard &);
 
     //---------------------------------------------------------------------
     // Private Data

@@ -32,254 +32,290 @@
 //
 //=============================================================================
 
-class carSoundParameters: public ICarSoundParameters,
-                          public radLinkedClass< carSoundParameters >,
-                          public radRefCount
-{
-    public:
-        IMPLEMENT_REFCOUNTED( "carSoundParameters" );
+class carSoundParameters : public ICarSoundParameters,
+                           public radLinkedClass<carSoundParameters>,
+                           public radRefCount {
+public:
+    IMPLEMENT_REFCOUNTED("carSoundParameters");
 
-        static const int REVERSE_GEAR = -1;
-        
-        carSoundParameters();
-        virtual ~carSoundParameters();
+    static const int REVERSE_GEAR = -1;
 
-        void SetWatcherName( const char* name );
+    carSoundParameters();
 
-        void SetClipRPM( float rpm ) { m_clipRPM = rpm; }
-        float GetClipRPM() { return( m_clipRPM ); }
+    virtual ~carSoundParameters();
 
-        void SetEngineClipName( const char* clipName );
-        const char* GetEngineClipName() { return( m_engineClipName ); }
+    void SetWatcherName(const char *name);
 
-        void SetEngineIdleClipName( const char* clipName );
-        const char* GetEngineIdleClipName() { return( m_idleClipName ); }
+    void SetClipRPM(float rpm) { m_clipRPM = rpm; }
 
-        void SetDamagedEngineClipName( const char* clipName );
-        const char* GetDamagedEngineClipName() { return( m_damagedClipName ); }
+    float GetClipRPM() { return (m_clipRPM); }
 
-        void SetHornClipName( const char* clipName );
-        const char* GetHornClipName() { return( m_hornClipName ); }
+    void SetEngineClipName(const char *clipName);
 
-        void SetCarDoorOpenClipName( const char* clipName );
-        const char* GetCarDoorOpenClipName() { return( m_carOpenClipName ); }
+    const char *GetEngineClipName() { return (m_engineClipName); }
 
-        void SetCarDoorCloseClipName( const char* clipName );
-        const char* GetCarDoorCloseClipName() { return( m_carCloseClipName ); }
+    void SetEngineIdleClipName(const char *clipName);
 
-        void SetOverlayClipName( const char* clipName );
-        const char* GetOverlayClipName() { return( m_overlayClipName ); }
+    const char *GetEngineIdleClipName() { return (m_idleClipName); }
 
-        void SetRoadSkidClipName( const char* clipName );
-        const char* GetRoadSkidClipName() { return( m_roadSkidClipName ); }
+    void SetDamagedEngineClipName(const char *clipName);
 
-        void SetDirtSkidClipName( const char* clipName );
-        const char* GetDirtSkidClipName() { return( m_dirtSkidClipName ); }
+    const char *GetDamagedEngineClipName() { return (m_damagedClipName); }
 
-        void SetBackupClipName( const char* clipName );
-        const char* GetBackupClipName() { return( m_backupClipName ); }
+    void SetHornClipName(const char *clipName);
 
-        void SetShiftPoint( unsigned int gear, float percent );
-        float GetShiftPoint( int gear );
+    const char *GetHornClipName() { return (m_hornClipName); }
 
-        void SetDownshiftDamperSize( float percent );
-        float GetDownshiftDamperSize() { return( m_downshiftDamper ); }
+    void SetCarDoorOpenClipName(const char *clipName);
 
-        void SetGearPitchRange( unsigned int gear, float min, float max );
+    const char *GetCarDoorOpenClipName() { return (m_carOpenClipName); }
 
-        void SetNumberOfGears( unsigned int gear );
+    void SetCarDoorCloseClipName(const char *clipName);
 
-        float GetMsecsPerOctaveCap() { return( m_msecsPerOctave ); }
+    const char *GetCarDoorCloseClipName() { return (m_carCloseClipName); }
 
-        //
-        // Attack/delay/decay
-        //
-        void SetAttackTimeMsecs( float msecs );
-        float GetAttackTimeMsecs() { return( m_attackTime ); }
+    void SetOverlayClipName(const char *clipName);
 
-        void SetDelayTimeMsecs( unsigned int msecs );
-        unsigned int GetDelayTimeMsecs() { return( m_delayTime ); }
+    const char *GetOverlayClipName() { return (m_overlayClipName); }
 
-        void SetDecayTimeMsecs( float msecs );
-        float GetDecayTimeMsecs() { return( m_decayTime ); }
+    void SetRoadSkidClipName(const char *clipName);
 
-        void SetDecayFinishTrim( float trim );
-        float GetDecayFinishTrim() { return( m_decayFinishTrim ); }
+    const char *GetRoadSkidClipName() { return (m_roadSkidClipName); }
 
-        //
-        // Reverse
-        //
-        void SetReversePitchCapKmh( float speed );
-        float GetReversePitchCapKmh() { return( m_maxReverseKmh ); }
+    void SetDirtSkidClipName(const char *clipName);
 
-        void SetReversePitchRange( float min, float max );
-        void GetReversePitchRange( float& min, float& max ) 
-            { min = m_minReversePitch; max = m_maxReversePitch; }
+    const char *GetDirtSkidClipName() { return (m_dirtSkidClipName); }
 
-        //
-        // Gear shifts
-        //
-        void SetGearShiftPitchDrop( unsigned int gear, float drop );
-        float GetGearShiftPitchDrop( unsigned int gear );
+    void SetBackupClipName(const char *clipName);
 
-        //
-        // Damage
-        //
-        void SetDamageStartPcnt( float damagePercent );
-        float GetDamageStartPcnt() { return( m_damageStartPcnt ); }
+    const char *GetBackupClipName() { return (m_backupClipName); }
 
-        void SetDamageMaxVolPcnt( float percent );
-        float GetDamageVolumeRange() { return( m_damageVolumeRange ); }
+    void SetShiftPoint(unsigned int gear, float percent);
 
-        void SetDamageStartTrim( float trim );
-        float GetDamageStartTrim() { return( m_damageStartTrim ); }
-        void SetDamageMaxTrim( float trim );
-        float GetDamageMaxTrim() { return( m_damageMaxTrim ); }
+    float GetShiftPoint(int gear);
 
-        //
-        // Idle
-        //
-        void SetIdleEnginePitch( float pitch );
-        float GetIdleEnginePitch() { return( m_idleEnginePitch ); }
+    void SetDownshiftDamperSize(float percent);
 
-        //
-        // In-air sound characteristics
-        //
-        void SetInAirThrottlePitch( float pitch );
-        float GetInAirThrottlePitch();
+    float GetDownshiftDamperSize() { return (m_downshiftDamper); }
 
-        void SetInAirIdlePitch( float pitch );
-        float GetInAirIdlePitch();
+    void SetGearPitchRange(unsigned int gear, float min, float max);
 
-        void SetInAirThrottleResponseTimeMsecs( unsigned int msecs );
-        unsigned int GetInAirThrottleResponseTimeMsecs() { return( m_inAirResponseMsecs ); }
+    void SetNumberOfGears(unsigned int gear);
 
-        //
-        // Burnout sound characteristics
-        //
-        void SetBurnoutMinPitch( float pitch );
-        float GetBurnoutMinPitch() { return( m_burnoutMinPitch ); }
+    float GetMsecsPerOctaveCap() { return (m_msecsPerOctave); }
 
-        void SetBurnoutMaxPitch( float pitch );
-        float GetBurnoutMaxPitch() { return( m_burnoutMaxPitch ); }
+    //
+    // Attack/delay/decay
+    //
+    void SetAttackTimeMsecs(float msecs);
 
-        //
-        // Powerslide sound characteristics
-        //
-        void SetPowerslideMinPitch( float pitch );
-        float GetPowerslideMinPitch();
+    float GetAttackTimeMsecs() { return (m_attackTime); }
 
-        void SetPowerslideMaxPitch( float pitch );
-        float GetPowerslideMaxPitch();
+    void SetDelayTimeMsecs(unsigned int msecs);
 
-        //
-        // Given a vehicle's current speed and max speed, figure out the
-        // gear it's in
-        //
-        int CalculateCurrentGear( float currentSpeed, float previousSpeed, 
-                                  float topSpeed, int previousGear );
+    unsigned int GetDelayTimeMsecs() { return (m_delayTime); }
 
-        //
-        // Given a vehicle's current gear, speed, and max speed, figure out the
-        // pitch for the engine clip
-        //
-        float CalculateEnginePitch( int gear, float currentSpeed, float topSpeed );
+    void SetDecayTimeMsecs(float msecs);
 
-        float GetRevLimit();
+    float GetDecayTimeMsecs() { return (m_decayTime); }
 
-    private:
-        //Prevent wasteful constructor creation.
-        carSoundParameters( const carSoundParameters& original );
-        carSoundParameters& operator=( const carSoundParameters& rhs );
+    void SetDecayFinishTrim(float trim);
 
-        static const unsigned int MAX_GEARS = 6;
+    float GetDecayFinishTrim() { return (m_decayFinishTrim); }
 
-        float m_clipRPM;
+    //
+    // Reverse
+    //
+    void SetReversePitchCapKmh(float speed);
 
-        float m_minPitch[MAX_GEARS];
-        float m_maxPitch[MAX_GEARS];
+    float GetReversePitchCapKmh() { return (m_maxReverseKmh); }
 
-        char* m_engineClipName;
-        char* m_idleClipName;
-        char* m_damagedClipName;
-        char* m_hornClipName;
-        char* m_carOpenClipName;
-        char* m_carCloseClipName;
-        char* m_overlayClipName;
-        char* m_roadSkidClipName;
-        char* m_dirtSkidClipName;
-        char* m_backupClipName;
+    void SetReversePitchRange(float min, float max);
 
-        //
-        // Percentages of top speed at which we shift gears.
-        // E.g. m_shiftPoints[0] == 0.01f means that we shift from idle
-        // to first at 1% of top speed.  m_shiftPoints[MAX_GEARS+1] is
-        // 1.0f to simplify math.
-        //
+    void GetReversePitchRange(float &min, float &max) {
+        min = m_minReversePitch;
+        max = m_maxReversePitch;
+    }
 
-        // Used for shifting
-        float m_shiftPoints[MAX_GEARS+1];
-        float m_downshiftDamper;
+    //
+    // Gear shifts
+    //
+    void SetGearShiftPitchDrop(unsigned int gear, float drop);
 
-        //
-        // Attack/delay/decay
-        //
-        float m_attackTime;
-        unsigned int m_delayTime;
-        float m_decayTime;
+    float GetGearShiftPitchDrop(unsigned int gear);
 
-        float m_decayFinishTrim;
+    //
+    // Damage
+    //
+    void SetDamageStartPcnt(float damagePercent);
 
-        //
-        // Reverse
-        //
-        float m_maxReverseKmh;
-        float m_minReversePitch;
-        float m_maxReversePitch;
+    float GetDamageStartPcnt() { return (m_damageStartPcnt); }
 
-        //
-        // Gear shifts
-        //
-        float m_gearShiftPitchDrop[MAX_GEARS];
-        unsigned int m_gearShiftTimeMsecs[MAX_GEARS];
+    void SetDamageMaxVolPcnt(float percent);
 
-        //
-        // Damage
-        //
-        float m_damageStartPcnt;
-        float m_damageVolumeRange;
+    float GetDamageVolumeRange() { return (m_damageVolumeRange); }
 
-        float m_damageStartTrim;
-        float m_damageMaxTrim;
+    void SetDamageStartTrim(float trim);
 
-        //
-        // Idle
-        //
-        float m_idleEnginePitch;
+    float GetDamageStartTrim() { return (m_damageStartTrim); }
 
-        //
-        // Airborne
-        //
-        float m_inAirThrottlePitch;
-        float m_inAirIdlePitch;
-        unsigned int m_inAirResponseMsecs;
+    void SetDamageMaxTrim(float trim);
 
-        //
-        // Burnout
-        //
-        float m_burnoutMinPitch;
-        float m_burnoutMaxPitch;
+    float GetDamageMaxTrim() { return (m_damageMaxTrim); }
 
-        //
-        // Powerslide
-        //
-        float m_powerslideMinPitch;
-        float m_powerslideMaxPitch;
+    //
+    // Idle
+    //
+    void SetIdleEnginePitch(float pitch);
 
-        //
-        // Makes transitions a little less abrupt
-        //
-        float m_msecsPerOctave;
+    float GetIdleEnginePitch() { return (m_idleEnginePitch); }
+
+    //
+    // In-air sound characteristics
+    //
+    void SetInAirThrottlePitch(float pitch);
+
+    float GetInAirThrottlePitch();
+
+    void SetInAirIdlePitch(float pitch);
+
+    float GetInAirIdlePitch();
+
+    void SetInAirThrottleResponseTimeMsecs(unsigned int msecs);
+
+    unsigned int GetInAirThrottleResponseTimeMsecs() { return (m_inAirResponseMsecs); }
+
+    //
+    // Burnout sound characteristics
+    //
+    void SetBurnoutMinPitch(float pitch);
+
+    float GetBurnoutMinPitch() { return (m_burnoutMinPitch); }
+
+    void SetBurnoutMaxPitch(float pitch);
+
+    float GetBurnoutMaxPitch() { return (m_burnoutMaxPitch); }
+
+    //
+    // Powerslide sound characteristics
+    //
+    void SetPowerslideMinPitch(float pitch);
+
+    float GetPowerslideMinPitch();
+
+    void SetPowerslideMaxPitch(float pitch);
+
+    float GetPowerslideMaxPitch();
+
+    //
+    // Given a vehicle's current speed and max speed, figure out the
+    // gear it's in
+    //
+    int CalculateCurrentGear(float currentSpeed, float previousSpeed,
+                             float topSpeed, int previousGear);
+
+    //
+    // Given a vehicle's current gear, speed, and max speed, figure out the
+    // pitch for the engine clip
+    //
+    float CalculateEnginePitch(int gear, float currentSpeed, float topSpeed);
+
+    float GetRevLimit();
+
+private:
+    //Prevent wasteful constructor creation.
+    carSoundParameters(const carSoundParameters &original);
+
+    carSoundParameters &operator=(const carSoundParameters &rhs);
+
+    static const unsigned int MAX_GEARS = 6;
+
+    float m_clipRPM;
+
+    float m_minPitch[MAX_GEARS];
+    float m_maxPitch[MAX_GEARS];
+
+    char *m_engineClipName;
+    char *m_idleClipName;
+    char *m_damagedClipName;
+    char *m_hornClipName;
+    char *m_carOpenClipName;
+    char *m_carCloseClipName;
+    char *m_overlayClipName;
+    char *m_roadSkidClipName;
+    char *m_dirtSkidClipName;
+    char *m_backupClipName;
+
+    //
+    // Percentages of top speed at which we shift gears.
+    // E.g. m_shiftPoints[0] == 0.01f means that we shift from idle
+    // to first at 1% of top speed.  m_shiftPoints[MAX_GEARS+1] is
+    // 1.0f to simplify math.
+    //
+
+    // Used for shifting
+    float m_shiftPoints[MAX_GEARS + 1];
+    float m_downshiftDamper;
+
+    //
+    // Attack/delay/decay
+    //
+    float m_attackTime;
+    unsigned int m_delayTime;
+    float m_decayTime;
+
+    float m_decayFinishTrim;
+
+    //
+    // Reverse
+    //
+    float m_maxReverseKmh;
+    float m_minReversePitch;
+    float m_maxReversePitch;
+
+    //
+    // Gear shifts
+    //
+    float m_gearShiftPitchDrop[MAX_GEARS];
+    unsigned int m_gearShiftTimeMsecs[MAX_GEARS];
+
+    //
+    // Damage
+    //
+    float m_damageStartPcnt;
+    float m_damageVolumeRange;
+
+    float m_damageStartTrim;
+    float m_damageMaxTrim;
+
+    //
+    // Idle
+    //
+    float m_idleEnginePitch;
+
+    //
+    // Airborne
+    //
+    float m_inAirThrottlePitch;
+    float m_inAirIdlePitch;
+    unsigned int m_inAirResponseMsecs;
+
+    //
+    // Burnout
+    //
+    float m_burnoutMinPitch;
+    float m_burnoutMaxPitch;
+
+    //
+    // Powerslide
+    //
+    float m_powerslideMinPitch;
+    float m_powerslideMaxPitch;
+
+    //
+    // Makes transitions a little less abrupt
+    //
+    float m_msecsPerOctave;
 };
 
 //=============================================================================
@@ -290,12 +326,10 @@ class carSoundParameters: public ICarSoundParameters,
 // Create a CarSoundParameters object
 //
 void CarSoundParameterObjCreate
-(
-    ICarSoundParameters** ppSoundResource,
-    radMemoryAllocator allocator
-);
-
-
+        (
+                ICarSoundParameters **ppSoundResource,
+                radMemoryAllocator allocator
+        );
 
 
 #endif // CARSOUNDPARAMETERS_H

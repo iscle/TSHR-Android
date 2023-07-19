@@ -43,11 +43,10 @@
 // Return:      N/A.
 //
 //=============================================================================
-RacePositionBonusObjective::RacePositionBonusObjective() : 
-    mPosition( 1 ),
-    mDesiredPosition( 1 )
-{
-    SetType( BonusObjective::POSITION );
+RacePositionBonusObjective::RacePositionBonusObjective() :
+        mPosition(1),
+        mDesiredPosition(1) {
+    SetType(BonusObjective::POSITION);
 }
 
 //=============================================================================
@@ -60,8 +59,7 @@ RacePositionBonusObjective::RacePositionBonusObjective() :
 // Return:      N/A.
 //
 //=============================================================================
-RacePositionBonusObjective::~RacePositionBonusObjective()
-{
+RacePositionBonusObjective::~RacePositionBonusObjective() {
 }
 
 //=============================================================================
@@ -74,9 +72,8 @@ RacePositionBonusObjective::~RacePositionBonusObjective()
 // Return:      void 
 //
 //=============================================================================
-void RacePositionBonusObjective::Initialize()
-{
-    GetEventManager()->AddListener( this, EVENT_WAYAI_AT_DESTINATION );
+void RacePositionBonusObjective::Initialize() {
+    GetEventManager()->AddListener(this, EVENT_WAYAI_AT_DESTINATION);
 }
 
 //=============================================================================
@@ -89,9 +86,8 @@ void RacePositionBonusObjective::Initialize()
 // Return:      void 
 //
 //=============================================================================
-void RacePositionBonusObjective::Finalize()
-{
-    GetEventManager()->RemoveListener( this, EVENT_WAYAI_AT_DESTINATION );
+void RacePositionBonusObjective::Finalize() {
+    GetEventManager()->RemoveListener(this, EVENT_WAYAI_AT_DESTINATION);
 }
 
 //=============================================================================
@@ -99,23 +95,20 @@ void RacePositionBonusObjective::Finalize()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void RacePositionBonusObjective::HandleEvent( EventEnum id, void* pEventData )
-{
+void RacePositionBonusObjective::HandleEvent(EventEnum id, void *pEventData) {
     //We're handling this: EVENT_WAYAI_AT_DESTINATION
     //Everytime an AI car sends this, we are permanently back one position.
 
-    if ( GetStarted() && GetSuccessful() )
-    {
+    if (GetStarted() && GetSuccessful()) {
         ++mPosition;
 
-        if ( mPosition > mDesiredPosition )
-        {
-            SetSuccessful( false );
+        if (mPosition > mDesiredPosition) {
+            SetSuccessful(false);
             //TODO: Update the HUD!
         }
     }
@@ -137,9 +130,8 @@ void RacePositionBonusObjective::HandleEvent( EventEnum id, void* pEventData )
 // Return:      void 
 //
 //=============================================================================
-void RacePositionBonusObjective::OnReset()
-{
-    SetSuccessful( true );
+void RacePositionBonusObjective::OnReset() {
+    SetSuccessful(true);
     mPosition = 1;
 }
 
@@ -153,8 +145,7 @@ void RacePositionBonusObjective::OnReset()
 // Return:      void 
 //
 //=============================================================================
-void RacePositionBonusObjective::OnStart()
-{
+void RacePositionBonusObjective::OnStart() {
     //Turn on the HUD.
 }
 
@@ -163,13 +154,12 @@ void RacePositionBonusObjective::OnStart()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void RacePositionBonusObjective::OnUpdate( unsigned int milliseconds )
-{
+void RacePositionBonusObjective::OnUpdate(unsigned int milliseconds) {
 }
 
 //*****************************************************************************

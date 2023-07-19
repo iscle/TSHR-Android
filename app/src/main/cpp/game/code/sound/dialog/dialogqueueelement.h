@@ -28,15 +28,17 @@
 // Forward References
 //========================================
 class SelectableDialog;
+
 class SimpsonsSoundPlayer;
+
 class DialogSoundDebugPage;
+
 class Character;
 
 //
 // Four levels of playback priority
 //
-enum DialogPriority
-{
+enum DialogPriority {
     UnknownPriority,
 
     OccasionalPlayLine,
@@ -53,10 +55,9 @@ enum DialogPriority
 //
 //=============================================================================
 
-class DialogLineCompleteCallback
-{
-    public:
-        virtual void OnDialogLineComplete() = 0;
+class DialogLineCompleteCallback {
+public:
+    virtual void OnDialogLineComplete() = 0;
 };
 
 //=============================================================================
@@ -66,10 +67,9 @@ class DialogLineCompleteCallback
 //
 //=============================================================================
 
-class DialogCompleteCallback
-{
-    public:
-        virtual void OnDialogComplete() = 0;
+class DialogCompleteCallback {
+public:
+    virtual void OnDialogComplete() = 0;
 };
 
 //=============================================================================
@@ -80,77 +80,85 @@ class DialogCompleteCallback
 
 class DialogQueueElement : public IRadTimerCallback,
                            public SimpsonsSoundPlayerCallback,
-                           public radRefCount
-{
-    public:
-        IMPLEMENT_REFCOUNTED( "DialogQueueElement" );
+                           public radRefCount {
+public:
+    IMPLEMENT_REFCOUNTED("DialogQueueElement");
 
-        DialogQueueElement( SelectableDialog* dialog );
-        virtual ~DialogQueueElement();
+    DialogQueueElement(SelectableDialog *dialog);
 
-        static void CreateTimerList();
+    virtual ~DialogQueueElement();
 
-        void OnTimerDone( unsigned int elapsedTime, void * pUserData );
+    static void CreateTimerList();
 
-        void AddToQueue( DialogQueueType* queue, rmt::Vector* posn );
-        void RemoveSelfFromList();
+    void OnTimerDone(unsigned int elapsedTime, void *pUserData);
 
-        void PlayDialog( SimpsonsSoundPlayer& player1,
-                         SimpsonsSoundPlayer& player2,
-                         DialogLineCompleteCallback* lineCallback,
-                         DialogCompleteCallback* dialogCallback );
-        void StopDialog();
+    void AddToQueue(DialogQueueType *queue, rmt::Vector *posn);
 
-        DialogPriority GetPriority() { return( CalculateDialogPriority( *m_dialog ) ); }
+    void RemoveSelfFromList();
 
-        bool DialogMatches( SelectableDialog* dialog ) { return( dialog == m_dialog ); }
+    void PlayDialog(SimpsonsSoundPlayer &player1,
+                    SimpsonsSoundPlayer &player2,
+                    DialogLineCompleteCallback *lineCallback,
+                    DialogCompleteCallback *dialogCallback);
 
-        rmt::Vector* GetPosition();
+    void StopDialog();
 
-        void FillDebugInfo( DialogSoundDebugPage& debugInfo, unsigned int lineNum );
+    DialogPriority GetPriority() { return (CalculateDialogPriority(*m_dialog)); }
 
-        //
-        // SimpsonsSoundPlayer callbacks
-        //
-        void OnPlaybackComplete();
-        void OnSoundReady();
+    bool DialogMatches(SelectableDialog *dialog) { return (dialog == m_dialog); }
 
-        static DialogPriority CalculateDialogPriority( const SelectableDialog& dialog );
-        static unsigned int CalculateDialogProbability( const SelectableDialog& dialog );
-        static void Service();
+    rmt::Vector *GetPosition();
 
-        static const unsigned int MAX_QUEUE_ELEMENTS = 16;
+    void FillDebugInfo(DialogSoundDebugPage &debugInfo, unsigned int lineNum);
 
-    private:
-        //Prevent wasteful constructor creation.
-        DialogQueueElement();
-        DialogQueueElement( const DialogQueueElement& original );
-        DialogQueueElement& operator=( const DialogQueueElement& rhs );
+    //
+    // SimpsonsSoundPlayer callbacks
+    //
+    void OnPlaybackComplete();
 
-        bool dialogLineIsWalker( unsigned int lineNum );
-        Character* dialogLineIsNPC( unsigned int lineNum );
+    void OnSoundReady();
 
-        bool isMouthFlappingEvent( EventEnum theEvent );
+    static DialogPriority CalculateDialogPriority(const SelectableDialog &dialog);
 
-        static IRadTimerList* s_timerList;
+    static unsigned int CalculateDialogProbability(const SelectableDialog &dialog);
 
-        static bool s_watcherInitialized;
-        
-        SelectableDialog* m_dialog;
-        IRadTimer* m_timer;
+    static void Service();
 
-        SimpsonsSoundPlayer* m_player1;
-        SimpsonsSoundPlayer* m_player2;
+    static const unsigned int MAX_QUEUE_ELEMENTS = 16;
 
-        DialogLineCompleteCallback* m_lineDoneCallback;
-        DialogCompleteCallback* m_dialogDoneCallback;
+private:
+    //Prevent wasteful constructor creation.
+    DialogQueueElement();
 
-        unsigned int m_linesPlayed;
+    DialogQueueElement(const DialogQueueElement &original);
 
-        DialogQueueType* m_queue;
+    DialogQueueElement &operator=(const DialogQueueElement &rhs);
 
-        rmt::Vector m_position;
-        bool m_hasPosition;
+    bool dialogLineIsWalker(unsigned int lineNum);
+
+    Character *dialogLineIsNPC(unsigned int lineNum);
+
+    bool isMouthFlappingEvent(EventEnum theEvent);
+
+    static IRadTimerList *s_timerList;
+
+    static bool s_watcherInitialized;
+
+    SelectableDialog *m_dialog;
+    IRadTimer *m_timer;
+
+    SimpsonsSoundPlayer *m_player1;
+    SimpsonsSoundPlayer *m_player2;
+
+    DialogLineCompleteCallback *m_lineDoneCallback;
+    DialogCompleteCallback *m_dialogDoneCallback;
+
+    unsigned int m_linesPlayed;
+
+    DialogQueueType *m_queue;
+
+    rmt::Vector m_position;
+    bool m_hasPosition;
 };
 
 

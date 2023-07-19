@@ -28,19 +28,23 @@
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiManagerMiniGame : public CGuiManager
-{
+class CGuiManagerMiniGame : public CGuiManager {
 public:
-    CGuiManagerMiniGame( Scrooby::Project* pProject, CGuiEntity* pParent );
+    CGuiManagerMiniGame(Scrooby::Project *pProject, CGuiEntity *pParent);
+
     virtual ~CGuiManagerMiniGame();
 
-	virtual void Populate();
-    virtual void Start( CGuiWindow::eGuiWindowID initialWindow = CGuiWindow::GUI_WINDOW_ID_UNDEFINED );
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void Populate();
+
+    virtual void
+    Start(CGuiWindow::eGuiWindowID initialWindow = CGuiWindow::GUI_WINDOW_ID_UNDEFINED);
+
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
     static void LoadCharacters();
+
     static void UnloadCharacters();
 
 private:
@@ -50,19 +54,22 @@ private:
 
     // No copying or assignment. Declare but don't define.
     //
-    CGuiManagerMiniGame( const CGuiManagerMiniGame& );
-    CGuiManagerMiniGame& operator= ( const CGuiManagerMiniGame& );
+    CGuiManagerMiniGame(const CGuiManagerMiniGame &);
 
-    void OnControllerDisconnected( int controllerID, bool force_display = false );
-    void OnControllerConnected( int controllerID );
+    CGuiManagerMiniGame &operator=(const CGuiManagerMiniGame &);
+
+    void OnControllerDisconnected(int controllerID, bool force_display = false);
+
+    void OnControllerConnected(int controllerID);
+
     bool PollControllers();
     //---------------------------------------------------------------------
     // Private Data
     //---------------------------------------------------------------------
 
-    bool m_isQuittingToSupersprint : 1;
-    bool m_controllerPromptShown : 1;
-    bool m_isControllerReconnected : 1;
+    bool m_isQuittingToSupersprint: 1;
+    bool m_controllerPromptShown: 1;
+    bool m_isControllerReconnected: 1;
     int m_lastControllerDisconnectedId;
     Input::ActiveState m_oldControllerState;
 

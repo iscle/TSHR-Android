@@ -31,53 +31,55 @@
 //
 //=============================================================================
 
-class DialogSoundDebugPage : public SoundDebugPage
-{
-    public:
-        DialogSoundDebugPage( unsigned int pageNum, SoundDebugDisplay* master );
-        virtual ~DialogSoundDebugPage();
+class DialogSoundDebugPage : public SoundDebugPage {
+public:
+    DialogSoundDebugPage(unsigned int pageNum, SoundDebugDisplay *master);
 
-        void SetQueueLength( unsigned int size );
+    virtual ~DialogSoundDebugPage();
 
-        void SetQueueEntry( unsigned int position,
-                            EventEnum event,
-                            unsigned int mission,
-                            unsigned int level,
-                            tUID theCharacter,
-                            DialogPriority priority,
-                            unsigned int msecsRemaining );
+    void SetQueueLength(unsigned int size);
 
-    protected:
-        //
-        // Pure virtual functions from SoundDebugPage
-        //
-        void fillLineBuffer( int lineNum, char* buffer );
-        int getNumLines();
+    void SetQueueEntry(unsigned int position,
+                       EventEnum event,
+                       unsigned int mission,
+                       unsigned int level,
+                       tUID theCharacter,
+                       DialogPriority priority,
+                       unsigned int msecsRemaining);
 
-    private:
-        //Prevent wasteful constructor creation.
-        DialogSoundDebugPage();
-        DialogSoundDebugPage( const DialogSoundDebugPage& dialogsounddebugpage );
-        DialogSoundDebugPage& operator=( const DialogSoundDebugPage& dialogsounddebugpage );
+protected:
+    //
+    // Pure virtual functions from SoundDebugPage
+    //
+    void fillLineBuffer(int lineNum, char *buffer);
 
-        void fillQueueText( char* buffer, unsigned int index );
+    int getNumLines();
 
-        //
-        // Structure for holding queue information
-        //
-        struct QueueInfo
-        {
-            EventEnum eventID;
-            unsigned int mission;
-            unsigned int level;
-            tUID theCharacter;
-            DialogPriority priority;
-            unsigned int msecsRemaining;
-        };
+private:
+    //Prevent wasteful constructor creation.
+    DialogSoundDebugPage();
 
-        static const unsigned int MAX_QUEUE_SIZE = 10;
+    DialogSoundDebugPage(const DialogSoundDebugPage &dialogsounddebugpage);
 
-        QueueInfo m_queueData[MAX_QUEUE_SIZE];
+    DialogSoundDebugPage &operator=(const DialogSoundDebugPage &dialogsounddebugpage);
+
+    void fillQueueText(char *buffer, unsigned int index);
+
+    //
+    // Structure for holding queue information
+    //
+    struct QueueInfo {
+        EventEnum eventID;
+        unsigned int mission;
+        unsigned int level;
+        tUID theCharacter;
+        DialogPriority priority;
+        unsigned int msecsRemaining;
+    };
+
+    static const unsigned int MAX_QUEUE_SIZE = 10;
+
+    QueueInfo m_queueData[MAX_QUEUE_SIZE];
 };
 
 //*****************************************************************************

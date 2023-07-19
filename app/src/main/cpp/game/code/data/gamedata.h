@@ -35,22 +35,20 @@ const unsigned int NUM_GAME_SLOTS = 8; // number of available game slots
 const unsigned int NUM_GAME_SLOTS = 4; // number of available game slots
 #endif
 
-struct GameDataHandler
-{
-    virtual void LoadData( const GameDataByte* dataBuffer,
-                           unsigned int numBytes ) = 0;
+struct GameDataHandler {
+    virtual void LoadData(const GameDataByte *dataBuffer,
+                          unsigned int numBytes) = 0;
 
-    virtual void SaveData( GameDataByte* dataBuffer,
-                           unsigned int numBytes ) = 0;
+    virtual void SaveData(GameDataByte *dataBuffer,
+                          unsigned int numBytes) = 0;
 
     // reset data to defaults
     //
     virtual void ResetData() = 0;
 };
 
-struct GameData
-{
-    GameDataHandler* m_gdHandler;
+struct GameData {
+    GameDataHandler *m_gdHandler;
     unsigned int m_numBytes;
 
 #ifdef RAD_DEBUG

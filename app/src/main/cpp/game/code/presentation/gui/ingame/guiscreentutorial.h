@@ -27,27 +27,29 @@
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenTutorial : public CGuiScreen
-{
+class CGuiScreenTutorial : public CGuiScreen {
 public:
-    CGuiScreenTutorial( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenTutorial(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenTutorial();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    void SetTutorialMessage( int index );
+    void SetTutorialMessage(int index);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
     static const int MAX_TUTORIAL_MESSAGE_LENGTH = 256;
-    Scrooby::Sprite* m_tutorialMessage;
-    Scrooby::Sprite* m_bartsHead;
-    Scrooby::Group* m_disableTutorial;
+    Scrooby::Sprite *m_tutorialMessage;
+    Scrooby::Sprite *m_bartsHead;
+    Scrooby::Group *m_disableTutorial;
 
     static const unsigned int MAX_TUTORIAL_DIALOG_TIME = 10000; // in msec
     unsigned int m_elapsedDialogTime;

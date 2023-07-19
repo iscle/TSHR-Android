@@ -23,8 +23,7 @@
 
 #define NISENUM_H
 
-enum NISSoundEnum
-{
+enum NISSoundEnum {
     MOLEMAN_GAG,
     GRAMPA_GAG,
     FRINK_GAG,

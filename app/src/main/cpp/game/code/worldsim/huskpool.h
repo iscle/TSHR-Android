@@ -13,44 +13,45 @@
 #define HUSKPOOL_H
 
 
-
 #include <worldsim/redbrick/vehicle.h>
 
 // vehicle central can own this
-class HuskPool
-{
+class HuskPool {
 public:
 
-    HuskPool();   
+    HuskPool();
+
     ~HuskPool();
-    
-    void Init(int num); // how big the pool should be - the max number of simultaneous husks we ever want to have
+
+    void
+    Init(int num); // how big the pool should be - the max number of simultaneous husks we ever want to have
     void Empty();       // empty lists - for the OnStop..
-    
-    Vehicle* RequestHusk( VehicleType vt, Vehicle* originalVehicle );
-    void FreeHusk( Vehicle* husk );
 
-    Vehicle* FindOriginalVehicleGivenHusk( Vehicle* husk );
-    Vehicle* FindHuskGivenOriginalVehicle( Vehicle* v );
+    Vehicle *RequestHusk(VehicleType vt, Vehicle *originalVehicle);
 
-    bool IsHuskType( VehicleEnum::VehicleID id );
+    void FreeHusk(Vehicle *husk);
+
+    Vehicle *FindOriginalVehicleGivenHusk(Vehicle *husk);
+
+    Vehicle *FindHuskGivenOriginalVehicle(Vehicle *v);
+
+    bool IsHuskType(VehicleEnum::VehicleID id);
 
 private:
-    bool WillMakeConvincingHusk( Vehicle* origV );
+    bool WillMakeConvincingHusk(Vehicle *origV);
 
 private:
     int mTotalNum;
 
-    struct HuskData
-    {
-        Vehicle* originalVehicle;
-        Vehicle* huskVehicle;
+    struct HuskData {
+        Vehicle *originalVehicle;
+        Vehicle *huskVehicle;
         bool inUse;
     };
 
-    HuskData* mHuskArray;
+    HuskData *mHuskArray;
 
 };
 
-         
+
 #endif // HUSKPOOL_H

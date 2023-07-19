@@ -45,8 +45,7 @@
 // Return:      N/A.
 //
 //==============================================================================
-PresentationEvent::PresentationEvent()
-{
+PresentationEvent::PresentationEvent() {
     Init();
 }
 
@@ -60,9 +59,8 @@ PresentationEvent::PresentationEvent()
 // Return:      N/A.
 //
 //==============================================================================
-PresentationEvent::~PresentationEvent()
-{
-    
+PresentationEvent::~PresentationEvent() {
+
 }
 
 
@@ -77,11 +75,9 @@ PresentationEvent::~PresentationEvent()
 // Return:      
 //
 //==============================================================================
-void PresentationEvent::OnLoadDataComplete()
-{
-    if( pCallback != NULL )
-    {
-        pCallback->OnPresentationEventLoadComplete( this );
+void PresentationEvent::OnLoadDataComplete() {
+    if (pCallback != NULL) {
+        pCallback->OnPresentationEventLoadComplete(this);
     }
 }
 
@@ -90,18 +86,17 @@ void PresentationEvent::OnLoadDataComplete()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      bool 
 //
 //=============================================================================
-bool PresentationEvent::Update( unsigned int elapsedTime )
-{
-    AnimationPlayer* player = GetPlayer();
-    
-    player->Update( elapsedTime );
+bool PresentationEvent::Update(unsigned int elapsedTime) {
+    AnimationPlayer *player = GetPlayer();
 
-    return( player->IsPlaying() );
+    player->Update(elapsedTime);
+
+    return (player->IsPlaying());
 }
 
 //=============================================================================
@@ -114,18 +109,16 @@ bool PresentationEvent::Update( unsigned int elapsedTime )
 // Return:      void 
 //
 //=============================================================================
-void PresentationEvent::Start()
-{
-    AnimationPlayer* player = GetPlayer();
+void PresentationEvent::Start() {
+    AnimationPlayer *player = GetPlayer();
 
-    if( !mbLoaded )
-    {
-        player->LoadData( fileName, this, false, GetUserData() );
+    if (!mbLoaded) {
+        player->LoadData(fileName, this, false, GetUserData());
 
         mbLoaded = true;
     }
-    player->SetKeepLayersFrozen( mbKeepLayersFrozen );
-	player->SetSkippable(mbIsSkippable);
+    player->SetKeepLayersFrozen(mbKeepLayersFrozen);
+    player->SetSkippable(mbIsSkippable);
     player->Play();
 }
 
@@ -139,16 +132,12 @@ void PresentationEvent::Start()
 // Return:      void 
 //
 //=============================================================================
-void PresentationEvent::Stop()
-{
-    AnimationPlayer* player = GetPlayer();
+void PresentationEvent::Stop() {
+    AnimationPlayer *player = GetPlayer();
 
-    if( mbClearWhenDone )
-    {
+    if (mbClearWhenDone) {
         player->ClearData();
-    }
-    else
-    {
+    } else {
         player->Reset();
     }
 }
@@ -163,13 +152,12 @@ void PresentationEvent::Stop()
 // Return:      void 
 //
 //=============================================================================
-void PresentationEvent::Init()
-{
+void PresentationEvent::Init() {
     mbAutoPlay = true;
     mbClearWhenDone = true;
     mbLoaded = false;
     mbKeepLayersFrozen = false;
-	mbIsSkippable = true;
+    mbIsSkippable = true;
 }
 
 //******************************************************************************

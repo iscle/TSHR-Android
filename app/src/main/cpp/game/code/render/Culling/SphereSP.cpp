@@ -41,9 +41,9 @@
 // Constraints: None.
 //
 //========================================================================
-SphereSP::SphereSP()
-{
+SphereSP::SphereSP() {
 }
+
 //========================================================================
 // SphereSP::
 //========================================================================
@@ -57,14 +57,13 @@ SphereSP::SphereSP()
 // Constraints: None.
 //
 //========================================================================
-SphereSP::~SphereSP()
-{
+SphereSP::~SphereSP() {
 }
 //////////////////////////////////////////////////////////////////////////
 // ISpatialProxyAA
 // <0.0   -   Inside Spatial Proxy
 // =0.0   -   On Spatial Proxy Surface
-// >0.0   -   Outside Spatial Proxy
+//>0.0   -   Outside Spatial Proxy
 //////////////////////////////////////////////////////////////////////////
 //========================================================================
 // SphereSP::
@@ -80,13 +79,13 @@ SphereSP::~SphereSP()
 //
 //========================================================================
 /*
-float SphereSP::CompareTo( AAPlane3f&       irPlane )
+float SphereSP::CompareTo(AAPlane3f&       irPlane)
 {
-   if( irPlane.mPosn - msIntersectionEpsilon <= mBounds.mMin[(int)irPlane.mAxis] )
+   if(irPlane.mPosn - msIntersectionEpsilon <= mBounds.mMin[(int)irPlane.mAxis])
    {
       return -1.0f;
    }
-   if( irPlane.mPosn + msIntersectionEpsilon >= mBounds.mMax[(int)irPlane.mAxis] )
+   if(irPlane.mPosn + msIntersectionEpsilon>= mBounds.mMax[(int)irPlane.mAxis])
    {
       return 1.0f;
    }
@@ -107,41 +106,37 @@ float SphereSP::CompareTo( AAPlane3f&       irPlane )
 // Constraints: None.
 //
 //========================================================================
-float SphereSP::CompareTo( const Vector3f& irPoint )
-{
-   float distance = (mRadius+msIntersectionEpsilon)*(mRadius+msIntersectionEpsilon);
-   Vector3f temp;
-   temp.Sub(irPoint,mCenter);
-   float result = temp.MagnitudeSqr();
-   if( result < distance )
-   {
-      return -1.0f;
-   }
-   if( result > distance )
-   {
-      return 1.0f;
-   }
-   return 0.0f;
+float SphereSP::CompareTo(const Vector3f &irPoint) {
+    float distance = (mRadius + msIntersectionEpsilon) * (mRadius + msIntersectionEpsilon);
+    Vector3f temp;
+    temp.Sub(irPoint, mCenter);
+    float result = temp.MagnitudeSqr();
+    if (result < distance) {
+        return -1.0f;
+    }
+    if (result > distance) {
+        return 1.0f;
+    }
+    return 0.0f;
 }
+
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-float SphereSP::CompareToXZ( const Vector3f& irPoint )
-{
-   float distance = (mRadius+msIntersectionEpsilon)*(mRadius+msIntersectionEpsilon);
-   Vector3f temp;
-   temp.Sub(irPoint,mCenter);
-   temp.y=0.0f;
-   float result = temp.MagnitudeSqr();
-   if( result < distance )
-   {
-      return -1.0f;
-   }
-   if( result > distance )
-   {
-      return 1.0f;
-   }
-   return 0.0f;
+float SphereSP::CompareToXZ(const Vector3f &irPoint) {
+    float distance = (mRadius + msIntersectionEpsilon) * (mRadius + msIntersectionEpsilon);
+    Vector3f temp;
+    temp.Sub(irPoint, mCenter);
+    temp.y = 0.0f;
+    float result = temp.MagnitudeSqr();
+    if (result < distance) {
+        return -1.0f;
+    }
+    if (result > distance) {
+        return 1.0f;
+    }
+    return 0.0f;
 }
+
 //========================================================================
 // SphereSP::
 //========================================================================
@@ -155,84 +150,79 @@ float SphereSP::CompareToXZ( const Vector3f& irPoint )
 // Constraints: None.
 //
 //========================================================================
-float SphereSP::CompareTo( AAPlane3f&       irPlane )
-{
-    if( irPlane.mPosn > mCenter[(int)irPlane.mAxis]+mRadius+msIntersectionEpsilon )
-    {
+float SphereSP::CompareTo(AAPlane3f &irPlane) {
+    if (irPlane.mPosn > mCenter[(int) irPlane.mAxis] + mRadius + msIntersectionEpsilon) {
         return 1.0f;
     }
-    if( irPlane.mPosn < mCenter[(int)irPlane.mAxis]-mRadius-msIntersectionEpsilon )
-    {
+    if (irPlane.mPosn < mCenter[(int) irPlane.mAxis] - mRadius - msIntersectionEpsilon) {
         return -1.0f;
     }
     return 0.0f;
 }
-//========================================================================
-// SphereSP::
-//========================================================================
-//
-// Description: 
-//
-// Parameters:  None.
-//
-// Return:      None.
-//
-// Constraints: None.
-//
-//========================================================================
-float  SphereSP::TestNotOutside( ISpatialProxyAA& irSpatialProxy )
-{
-   for( int i=irSpatialProxy.nPts()-1; i>-1; i-- )
-   {
-      if( CompareTo(irSpatialProxy.mPt(i)) < 0.0f )
-      {
-         //Inside
-         return -1.0f;
-      }
-   }
-   //Outside
-   return 1.0f;
-   
-}
-//========================================================================
-// SphereSP::
-//========================================================================
-//
-// Description: 
-//
-// Parameters:  None.
-//
-// Return:      None.
-//
-// Constraints: None.
-//
-//========================================================================
-void SphereSP::SetTo( Bounds3f& irBounds )
-{
-   rAssert(false);
-}
-//========================================================================
-// SphereSP::
-//========================================================================
-//
-// Description: 
-//
-// Parameters:  None.
-//
-// Return:      None.
-//
-// Constraints: None.
-//
-//========================================================================
-void SphereSP::SetTo( rmt::Vector irCenter, float iRadius )
-{
-   mCenter = irCenter;
-   mRadius = iRadius;
 
-   mBounds.mMin.SetTo( irCenter ); 
-   mBounds.mMin -= iRadius;
-   mBounds.mMax.SetTo( irCenter ); 
-   mBounds.mMax += iRadius;
+//========================================================================
+// SphereSP::
+//========================================================================
+//
+// Description: 
+//
+// Parameters:  None.
+//
+// Return:      None.
+//
+// Constraints: None.
+//
+//========================================================================
+float SphereSP::TestNotOutside(ISpatialProxyAA &irSpatialProxy) {
+    for (int i = irSpatialProxy.nPts() - 1; i > -1; i--) {
+        if (CompareTo(irSpatialProxy.mPt(i)) < 0.0f) {
+            //Inside
+            return -1.0f;
+        }
+    }
+    //Outside
+    return 1.0f;
+
+}
+
+//========================================================================
+// SphereSP::
+//========================================================================
+//
+// Description: 
+//
+// Parameters:  None.
+//
+// Return:      None.
+//
+// Constraints: None.
+//
+//========================================================================
+void SphereSP::SetTo(Bounds3f &irBounds) {
+    rAssert(false);
+}
+
+//========================================================================
+// SphereSP::
+//========================================================================
+//
+// Description: 
+//
+// Parameters:  None.
+//
+// Return:      None.
+//
+// Constraints: None.
+//
+//========================================================================
+void SphereSP::SetTo(rmt::Vector irCenter, float iRadius) {
+    mCenter = irCenter;
+    mRadius = iRadius;
+
+    mBounds.mMin.SetTo(irCenter);
+    mBounds.mMin -= iRadius;
+    mBounds.mMax.SetTo(irCenter);
+    mBounds.mMax += iRadius;
 }
 
 //************************************************************************

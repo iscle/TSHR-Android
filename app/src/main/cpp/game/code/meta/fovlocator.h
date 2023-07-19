@@ -30,36 +30,41 @@
 //
 //=============================================================================
 
-class FOVLocator : public TriggerLocator
-{
+class FOVLocator : public TriggerLocator {
 public:
     FOVLocator();
+
     virtual ~FOVLocator();
 
     virtual LocatorType::Type GetDataType() const;
 
-    void SetFOV( float fovInRadians );
+    void SetFOV(float fovInRadians);
+
     float GetFOV() const;
 
-    void SetTime( float seconds );
+    void SetTime(float seconds);
+
     float GetTime() const;
 
-    void SetRate( float rate );
+    void SetRate(float rate);
+
     float GetRate() const;
-    
+
     void RegisterDebugData();
+
     void UnRegisterDebugData();
 
 private:
-    float           mFOV;
-    float           mTime;
-    float           mRate;
+    float mFOV;
+    float mTime;
+    float mRate;
 
-    virtual void OnTrigger( unsigned int playerID );
+    virtual void OnTrigger(unsigned int playerID);
 
     //Prevent wasteful constructor creation.
-    FOVLocator( const FOVLocator& fovlocator );
-    FOVLocator& operator=( const FOVLocator& fovlocator );
+    FOVLocator(const FOVLocator &fovlocator);
+
+    FOVLocator &operator=(const FOVLocator &fovlocator);
 };
 
 //*****************************************************************************
@@ -78,9 +83,8 @@ private:
 // Return:      LocatorType ::Type
 //
 //=============================================================================
-inline LocatorType::Type FOVLocator::GetDataType() const
-{
-    return( LocatorType::FOV );
+inline LocatorType::Type FOVLocator::GetDataType() const {
+    return (LocatorType::FOV);
 }
 
 //=============================================================================
@@ -88,13 +92,12 @@ inline LocatorType::Type FOVLocator::GetDataType() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float fovInRadians )
+// Parameters:  (float fovInRadians)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void FOVLocator::SetFOV( float fovInRadians )
-{
+inline void FOVLocator::SetFOV(float fovInRadians) {
     mFOV = fovInRadians;
 }
 
@@ -108,8 +111,7 @@ inline void FOVLocator::SetFOV( float fovInRadians )
 // Return:      float 
 //
 //=============================================================================
-inline float FOVLocator::GetFOV() const
-{
+inline float FOVLocator::GetFOV() const {
     return mFOV;
 }
 
@@ -118,13 +120,12 @@ inline float FOVLocator::GetFOV() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float seconds )
+// Parameters:  (float seconds)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void FOVLocator::SetTime( float seconds )
-{
+inline void FOVLocator::SetTime(float seconds) {
     mTime = seconds;
 }
 
@@ -138,8 +139,7 @@ inline void FOVLocator::SetTime( float seconds )
 // Return:      float 
 //
 //=============================================================================
-inline float FOVLocator::GetTime() const
-{
+inline float FOVLocator::GetTime() const {
     return mTime;
 }
 
@@ -148,13 +148,12 @@ inline float FOVLocator::GetTime() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float rate )
+// Parameters:  (float rate)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void FOVLocator::SetRate( float rate )
-{
+inline void FOVLocator::SetRate(float rate) {
     mRate = rate;
 }
 
@@ -168,8 +167,7 @@ inline void FOVLocator::SetRate( float rate )
 // Return:      float 
 //
 //=============================================================================
-inline float FOVLocator::GetRate() const
-{
+inline float FOVLocator::GetRate() const {
     return mRate;
 }
 

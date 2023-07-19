@@ -29,20 +29,21 @@
 //
 //=============================================================================
 
-class SoundFXFrontEndLogic : public SoundFXLogic
-{
-    public:
-        SoundFXFrontEndLogic();
-        virtual ~SoundFXFrontEndLogic();
+class SoundFXFrontEndLogic : public SoundFXLogic {
+public:
+    SoundFXFrontEndLogic();
 
-        void RegisterEventListeners();
+    virtual ~SoundFXFrontEndLogic();
 
-        virtual void HandleEvent( EventEnum id, void* pEventData );
+    void RegisterEventListeners();
 
-    private:
-        //Prevent wasteful constructor creation.
-        SoundFXFrontEndLogic( const SoundFXFrontEndLogic& original );
-        SoundFXFrontEndLogic& operator=( const SoundFXFrontEndLogic& rhs );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
+
+private:
+    //Prevent wasteful constructor creation.
+    SoundFXFrontEndLogic(const SoundFXFrontEndLogic &original);
+
+    SoundFXFrontEndLogic &operator=(const SoundFXFrontEndLogic &rhs);
 };
 
 

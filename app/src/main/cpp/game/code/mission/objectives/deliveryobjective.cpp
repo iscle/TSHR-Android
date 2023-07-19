@@ -26,7 +26,7 @@
 #include <events/eventmanager.h>
 #include <events/eventdata.h>
 
-#include <meta/eventlocator.h> 
+#include <meta/eventlocator.h>
 
 #include <presentation/gui/guisystem.h>
 #include <presentation/gui/ingame/guimanageringame.h>
@@ -67,10 +67,9 @@ static const unsigned int D_DEFAULT_TIMEOUT = 5000;
 //
 //==============================================================================
 DeliveryObjective::DeliveryObjective() :
-    mDumpTimeout( 0 )
-{
+        mDumpTimeout(0) {
     // Allocate mStateProps array
-    mStateProps.Allocate( MAX_COLLECTIBLES );
+    mStateProps.Allocate(MAX_COLLECTIBLES);
 }
 
 //==============================================================================
@@ -83,8 +82,7 @@ DeliveryObjective::DeliveryObjective() :
 // Return:      N/A.
 //
 //==============================================================================
-DeliveryObjective::~DeliveryObjective()
-{
+DeliveryObjective::~DeliveryObjective() {
     ReleaseAllStateProps();
 }
 
@@ -93,61 +91,52 @@ DeliveryObjective::~DeliveryObjective()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EvenEnum id, void* pEventData )
+// Parameters:  (EvenEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void DeliveryObjective::HandleEvent( EventEnum id, void* pEventData )
-{
-    if ( id == EVENT_VEHICLE_VEHICLE_COLLISION && GetNumCollected() > 0 && mDumpTimeout == 0 )
-    {
-        CarOnCarCollisionEventData* data = static_cast<CarOnCarCollisionEventData*>(pEventData);
-        if ( data->vehicle != GetGameplayManager()->GetCurrentVehicle() && data->vehicle->mVehicleType == VT_AI )
-        {
-            rAssert( IsUserDumpAllowed() );
+void DeliveryObjective::HandleEvent(EventEnum id, void *pEventData) {
+    if (id == EVENT_VEHICLE_VEHICLE_COLLISION && GetNumCollected() > 0 && mDumpTimeout == 0) {
+        CarOnCarCollisionEventData *data = static_cast<CarOnCarCollisionEventData *>(pEventData);
+        if (data->vehicle != GetGameplayManager()->GetCurrentVehicle() &&
+            data->vehicle->mVehicleType == VT_AI) {
+            rAssert(IsUserDumpAllowed());
 
             int dumpId = GetAnyCollectedID();
-            rAssert( dumpId != -1 );
+            rAssert(dumpId != -1);
 
-            DumpCollectible( dumpId, GetGameplayManager()->GetCurrentVehicle(), data->vehicle );
-            Uncollect( dumpId );
+            DumpCollectible(dumpId, GetGameplayManager()->GetCurrentVehicle(), data->vehicle);
+            Uncollect(dumpId);
 
-            CGuiScreenHud* currentHud = GetCurrentHud();
-            if( currentHud )
-            {
+            CGuiScreenHud *currentHud = GetCurrentHud();
+            if (currentHud) {
                 //Update the collection count
-                currentHud->SetCollectibles( GetNumCollected(), GetNumCollectibles() );
+                currentHud->SetCollectibles(GetNumCollected(), GetNumCollectibles());
             }
 
             //Reset the dumo timeout.
             mDumpTimeout = D_DEFAULT_TIMEOUT;
         }
     }
- 
+
     bool handledCollect = false;
 
-    if ( id == EVENT_OBJECT_DESTROYED )
-    {
+    if (id == EVENT_OBJECT_DESTROYED) {
         // Is this a stateprop? If so, deactivate the hud icon
-        if ( pEventData )
-        {
-            Locator* locator = dynamic_cast< Locator* >( static_cast< tEntity* >( pEventData ) );
+        if (pEventData) {
+            Locator *locator = dynamic_cast<Locator *>(static_cast<tEntity *>(pEventData));
             // Iterate through the collectible locators and see if we have a pointer match
-            for ( unsigned int i = 0 ; i < GetNumCollectibles() ; i++ )
-            {                           
-                if ( locator == GetCollectibleLocator( i ) )
-                {
+            for (unsigned int i = 0; i < GetNumCollectibles(); i++) {
+                if (locator == GetCollectibleLocator(i)) {
                     // Match, disable hud icon then abort this loop
-                    UnregisterLocator( mCollectibles[ i ].iHUDIndex );
+                    UnregisterLocator(mCollectibles[i].iHUDIndex);
                     bool shouldReset = false;
-                    if ( OnCollection( i, shouldReset ) )
-                    {
-                        Collect( i, shouldReset );
+                    if (OnCollection(i, shouldReset)) {
+                        Collect(i, shouldReset);
                     }
-                    if( mNumCollected == mNumCollectibles )
-                    {
-                        SetFinished( true );
+                    if (mNumCollected == mNumCollectibles) {
+                        SetFinished(true);
                     }
                     handledCollect = true;
                     break;
@@ -156,8 +145,8 @@ void DeliveryObjective::HandleEvent( EventEnum id, void* pEventData )
         }
     }
 
-    if ( handledCollect == false )
-        CollectibleObjective::HandleEvent( id, pEventData );
+    if (handledCollect == false)
+        CollectibleObjective::HandleEvent(id, pEventData);
 }
 
 //******************************************************************************
@@ -176,23 +165,21 @@ void DeliveryObjective::HandleEvent( EventEnum id, void* pEventData )
 // Return:      void 
 //
 //=============================================================================
-void DeliveryObjective::OnInitCollectibles()
-{
+void DeliveryObjective::OnInitCollectibles() {
     unsigned int i;
-    for( i = 0; i < GetNumCollectibles(); i++ )
-    {
-        Activate( i, true, false, HudMapIcon::ICON_COLLECTIBLE );
+    for (i = 0; i < GetNumCollectibles(); i++) {
+        Activate(i, true, false, HudMapIcon::ICON_COLLECTIBLE);
     }
 
     // Find all the stateprops (could be none)
     FindStateProps();
 
-    SetStatePropHUDIconEnable( true );
-    SetButtonHandlersEnabled( false );
+    SetStatePropHUDIconEnable(true);
+    SetButtonHandlersEnabled(false);
     // Make the stateprops visible
-    SetStatePropState( 1 );
+    SetStatePropState(1);
 
-    SetFocus( 0 );
+    SetFocus(0);
 }
 
 //=============================================================================
@@ -205,26 +192,23 @@ void DeliveryObjective::OnInitCollectibles()
 // Return:      void 
 //
 //=============================================================================
-void DeliveryObjective::OnInitCollectibleObjective()
-{
-    if( mNumCollectibles > 1 ) // only show collectibles HUD overlay if more than 1 things to collect
+void DeliveryObjective::OnInitCollectibleObjective() {
+    if (mNumCollectibles > 1) // only show collectibles HUD overlay if more than 1 things to collect
     {
-        GetGuiSystem()->HandleMessage( GUI_MSG_SHOW_HUD_OVERLAY, HUD_COLLECTIBLES );
+        GetGuiSystem()->HandleMessage(GUI_MSG_SHOW_HUD_OVERLAY, HUD_COLLECTIBLES);
     }
 
-    if ( GetCurrentHud() )
-    {
-        GetCurrentHud()->SetCollectibles( 0, GetNumCollectibles() );
+    if (GetCurrentHud()) {
+        GetCurrentHud()->SetCollectibles(0, GetNumCollectibles());
     }
 
-    if ( IsUserDumpAllowed() )
-    {
-        GetEventManager()->AddListener( this, EVENT_VEHICLE_VEHICLE_COLLISION );
+    if (IsUserDumpAllowed()) {
+        GetEventManager()->AddListener(this, EVENT_VEHICLE_VEHICLE_COLLISION);
         mDumpTimeout = 0;
 #ifdef DEBUGWATCH
         char name[64];
-        sprintf( name, "Mission\\Objectives\\Delivery" );
-        radDbgWatchAddUnsignedInt( &D_DEFAULT_TIMEOUT, "Dump timeout", name, NULL, 0, 100000 );
+        sprintf(name, "Mission\\Objectives\\Delivery");
+        radDbgWatchAddUnsignedInt(&D_DEFAULT_TIMEOUT, "Dump timeout", name, NULL, 0, 100000);
 #endif
     }
 }
@@ -239,24 +223,22 @@ void DeliveryObjective::OnInitCollectibleObjective()
 // Return:      void 
 //
 //=============================================================================
-void DeliveryObjective::OnFinalizeCollectibleObjective()
-{
+void DeliveryObjective::OnFinalizeCollectibleObjective() {
     // Turn off the handlers 
-    SetButtonHandlersEnabled( false );
+    SetButtonHandlersEnabled(false);
     // Lets iterate through the stateprops (if any exist) 
     // And revert them to state 0. In this state, they will be deactivated 
     // invisible, and uncollideable
-    SetStatePropState( 0 );
-    SetStatePropHUDIconEnable( false );
+    SetStatePropState(0);
+    SetStatePropHUDIconEnable(false);
 
-    GetGuiSystem()->HandleMessage( GUI_MSG_HIDE_HUD_OVERLAY, HUD_COLLECTIBLES );
+    GetGuiSystem()->HandleMessage(GUI_MSG_HIDE_HUD_OVERLAY, HUD_COLLECTIBLES);
 
 
-    if ( IsUserDumpAllowed() )
-    {
-        GetEventManager()->RemoveListener( this, EVENT_VEHICLE_VEHICLE_COLLISION );
+    if (IsUserDumpAllowed()) {
+        GetEventManager()->RemoveListener(this, EVENT_VEHICLE_VEHICLE_COLLISION);
 #ifdef DEBUGWATCH
-        radDbgWatchDelete( &D_DEFAULT_TIMEOUT );
+        radDbgWatchDelete(&D_DEFAULT_TIMEOUT);
 #endif
     }
     ReleaseAllStateProps();
@@ -267,24 +249,21 @@ void DeliveryObjective::OnFinalizeCollectibleObjective()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int collectibleNum, bool &shouldReset )
+// Parameters:  (unsigned int collectibleNum, bool &shouldReset)
 //
 // Return:      bool 
 //
 //=============================================================================
-bool DeliveryObjective::OnCollection( unsigned int collectibleNum, bool &shouldReset )
-{
-    if ( GetCurrentHud() )
-    {
-        GetCurrentHud()->SetCollectibles( GetNumCollected() + 1, GetNumCollectibles() );  //I add 1 because the number is incremented after...  Sorry
+bool DeliveryObjective::OnCollection(unsigned int collectibleNum, bool &shouldReset) {
+    if (GetCurrentHud()) {
+        GetCurrentHud()->SetCollectibles(GetNumCollected() + 1,
+                                         GetNumCollectibles());  //I add 1 because the number is incremented after...  Sorry
     }
 
     unsigned int i;
-    for ( i = 0; i < GetNumCollectibles(); ++i )
-    {
-        if ( !IsCollected( i ) && i != collectibleNum )
-        {
-            SetFocus( i );
+    for (i = 0; i < GetNumCollectibles(); ++i) {
+        if (!IsCollected(i) && i != collectibleNum) {
+            SetFocus(i);
             break;
         }
     }
@@ -297,23 +276,17 @@ bool DeliveryObjective::OnCollection( unsigned int collectibleNum, bool &shouldR
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void DeliveryObjective::OnUpdateCollectibleObjective( unsigned int elapsedTime )
-{
-    if ( IsUserDumpAllowed() )
-    {
-        if ( mDumpTimeout != 0 )            
-        {
-            if ( elapsedTime > mDumpTimeout )
-            {
+void DeliveryObjective::OnUpdateCollectibleObjective(unsigned int elapsedTime) {
+    if (IsUserDumpAllowed()) {
+        if (mDumpTimeout != 0) {
+            if (elapsedTime > mDumpTimeout) {
                 mDumpTimeout = 0;
-            }
-            else
-            {
+            } else {
                 mDumpTimeout -= elapsedTime;
             }
         }
@@ -332,26 +305,22 @@ void DeliveryObjective::OnUpdateCollectibleObjective( unsigned int elapsedTime )
 // Return:      void 
 //
 //=============================================================================
-void DeliveryObjective::FindStateProps()
-{
+void DeliveryObjective::FindStateProps() {
     // Is the array already filled out
-    if ( mStateProps.mUseSize > 0 )
+    if (mStateProps.mUseSize > 0)
         return;
 
-    for( unsigned int i = 0; i < GetNumCollectibles(); i++ )
-    {
-        const Locator* loc = GetCollectibleLocator( i );
+    for (unsigned int i = 0; i < GetNumCollectibles(); i++) {
+        const Locator *loc = GetCollectibleLocator(i);
         // Check to see if the locator is an ActionEventLocator
-        const ActionEventLocator* actionEventLoc = dynamic_cast< const ActionEventLocator* >( loc );
-        if( actionEventLoc )
-        {
+        const ActionEventLocator *actionEventLoc = dynamic_cast<const ActionEventLocator *>(loc);
+        if (actionEventLoc) {
             // Find the stateprop and set its state to 1 (active)
-            const char* objName = actionEventLoc->GetObjName();
-            StatePropDSG* pDSG = p3d::find< StatePropDSG >( objName );
-            if ( pDSG )
-            {
+            const char *objName = actionEventLoc->GetObjName();
+            StatePropDSG *pDSG = p3d::find<StatePropDSG>(objName);
+            if (pDSG) {
                 pDSG->AddRef();
-                mStateProps.Add( pDSG );
+                mStateProps.Add(pDSG);
             }
         }
     }
@@ -368,12 +337,9 @@ void DeliveryObjective::FindStateProps()
 // Return:      void 
 //
 //=============================================================================
-void DeliveryObjective::ReleaseAllStateProps()
-{
-    for ( int i = 0 ; i < mStateProps.mUseSize ; i++ )
-    {
-        if ( mStateProps[i] != NULL )
-        {
+void DeliveryObjective::ReleaseAllStateProps() {
+    for (int i = 0; i < mStateProps.mUseSize; i++) {
+        if (mStateProps[i] != NULL) {
             mStateProps[i]->Release();
             mStateProps[i] = NULL;
         }
@@ -395,19 +361,16 @@ void DeliveryObjective::ReleaseAllStateProps()
 // Return:      void 
 //
 //=============================================================================
-void DeliveryObjective::SetButtonHandlersEnabled( bool enable )
-{
-    for( unsigned int i = 0; i < GetNumCollectibles(); i++ )
-    {
-        const Locator* loc = GetCollectibleLocator( i );
+void DeliveryObjective::SetButtonHandlersEnabled(bool enable) {
+    for (unsigned int i = 0; i < GetNumCollectibles(); i++) {
+        const Locator *loc = GetCollectibleLocator(i);
         // Check to see if the locator is an ActionEventLocator
-        const ActionEventLocator* actionEventLoc = dynamic_cast< const ActionEventLocator* >( loc );
-        if( actionEventLoc )
-        {
-            ActionButton::ActionEventHandler* handler = GetActionButtonManager()->FindHandler( actionEventLoc );
-            if ( handler )
-            {
-                handler->SetInstanceEnabled( enable );
+        const ActionEventLocator *actionEventLoc = dynamic_cast<const ActionEventLocator *>(loc);
+        if (actionEventLoc) {
+            ActionButton::ActionEventHandler *handler = GetActionButtonManager()->FindHandler(
+                    actionEventLoc);
+            if (handler) {
+                handler->SetInstanceEnabled(enable);
             }
         }
     }
@@ -427,11 +390,9 @@ void DeliveryObjective::SetButtonHandlersEnabled( bool enable )
 // Return:      void 
 //
 //=============================================================================
-void DeliveryObjective::SetStatePropState( int state )
-{
-    for ( int i = 0 ; i < mStateProps.mUseSize ; i++ )
-    {
-        mStateProps[i]->SetState( state );
+void DeliveryObjective::SetStatePropState(int state) {
+    for (int i = 0; i < mStateProps.mUseSize; i++) {
+        mStateProps[i]->SetState(state);
     }
 }
 
@@ -446,18 +407,17 @@ void DeliveryObjective::SetStatePropState( int state )
 //
 //=============================================================================
 // Iterates through the stateprops (if any) and enables/disables HUD icons
-void DeliveryObjective:: SetStatePropHUDIconEnable( bool enable )
-{
+void DeliveryObjective::SetStatePropHUDIconEnable(bool enable) {
     // Dont do anything if this is not a stateprop mission
-    if ( mStateProps.mUseSize == 0 )
+    if (mStateProps.mUseSize == 0)
         return;
 
     const bool primary = true;
-    for( unsigned int i = 0; i < GetNumCollectibles(); i++ )
-    {
-        if ( enable )
-            RegisterLocator( mCollectibles[ i ].pLocator, mCollectibles[ i ].iHUDIndex, primary, HudMapIcon::ICON_COLLECTIBLE );
+    for (unsigned int i = 0; i < GetNumCollectibles(); i++) {
+        if (enable)
+            RegisterLocator(mCollectibles[i].pLocator, mCollectibles[i].iHUDIndex, primary,
+                            HudMapIcon::ICON_COLLECTIBLE);
         else
-            UnregisterLocator( mCollectibles[ i ].iHUDIndex );
+            UnregisterLocator(mCollectibles[i].iHUDIndex);
     }
 }

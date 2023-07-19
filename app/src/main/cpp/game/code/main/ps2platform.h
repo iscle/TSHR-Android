@@ -23,7 +23,9 @@
 //========================================
 struct IRadCementLibrary;
 struct IRadMemoryHeap;
+
 class tPlatform;
+
 class tContext;
 
 //
@@ -39,169 +41,182 @@ void Simpsons2MFIFODisable();
 // Synopsis:    Provides abstraction for setting up and closing down the PS2.
 //
 //=============================================================================
-class PS2Platform : public Platform
-{
-    public:
-    
-        // Static Methods for accessing this singleton.
-        static PS2Platform* CreateInstance();
-        static PS2Platform* GetInstance();
-        static void DestroyInstance();
+class PS2Platform : public Platform {
+public:
 
-        // Had to workaround our nice clean design cause FTech must be init'ed
-        // before anything else is done.
-        static void InitializeFoundation();
-        static void InitializeMemory();
+    // Static Methods for accessing this singleton.
+    static PS2Platform *CreateInstance();
 
-        // Implement Platform interface.
-        virtual void InitializePlatform();
-        virtual void ShutdownPlatform();
+    static PS2Platform *GetInstance();
 
-        virtual void LaunchDashboard();
-        virtual void ResetMachine();
-        virtual void DisplaySplashScreen( SplashScreen screenID, 
-                                          const char* overlayText = NULL, 
-                                          float fontScale = 1.0f, 
-                                          float textPosX = 0.0f,
-                                          float textPosY = 0.0f,
-                                          tColour textColour = tColour( 255,255,255 ),
-                                          int fadeFrames = 3 );
+    static void DestroyInstance();
 
-        virtual void DisplaySplashScreen( const char* textureName,
-                                          const char* overlayText = NULL, 
-                                          float fontScale = 1.0f, 
-                                          float textPosX = 0.0f,
-                                          float textPosY = 0.0f,
-                                          tColour textColour = tColour( 255,255,255 ),
-                                          int fadeFrames = 3 );
+    // Had to workaround our nice clean design cause FTech must be init'ed
+    // before anything else is done.
+    static void InitializeFoundation();
 
-        virtual bool OnDriveError( radFileError error, const char* pDriveName, void* pUserData );  
-        virtual void OnControllerError(const char *msg);
+    static void InitializeMemory();
 
-        void SetProgressiveMode( bool progressiveScan );
-        bool GetProgressiveMode() { return mProgressiveMode; }
+    // Implement Platform interface.
+    virtual void InitializePlatform();
 
-        bool CheckForStartupButtons( void );
+    virtual void ShutdownPlatform();
 
-    protected:
+    virtual void LaunchDashboard();
 
-        virtual void InitializeFoundationDrive();
-        virtual void ShutdownFoundation();
+    virtual void ResetMachine();
 
-        virtual void InitializePure3D();
-        virtual void ShutdownPure3D();
-    
-    private:
+    virtual void DisplaySplashScreen(SplashScreen screenID,
+                                     const char *overlayText = NULL,
+                                     float fontScale = 1.0f,
+                                     float textPosX = 0.0f,
+                                     float textPosY = 0.0f,
+                                     tColour textColour = tColour(255, 255, 255),
+                                     int fadeFrames = 3);
 
-        // Constructors, Destructors, and Operators
-        PS2Platform();
-        virtual ~PS2Platform();
-        
-        // Unused Constructors, Destructors, and Operators
-        PS2Platform( const PS2Platform& aPlatform );
-        PS2Platform& operator=( const PS2Platform& aPlatform );
+    virtual void DisplaySplashScreen(const char *textureName,
+                                     const char *overlayText = NULL,
+                                     float fontScale = 1.0f,
+                                     float textPosX = 0.0f,
+                                     float textPosY = 0.0f,
+                                     tColour textColour = tColour(255, 255, 255),
+                                     int fadeFrames = 3);
 
-        // PS2 specific methods
-        void EnableSnProfiler();
+    virtual bool OnDriveError(radFileError error, const char *pDriveName, void *pUserData);
 
-        // Crash printout routines
+    virtual void OnControllerError(const char *msg);
+
+    void SetProgressiveMode(bool progressiveScan);
+
+    bool GetProgressiveMode() { return mProgressiveMode; }
+
+    bool CheckForStartupButtons(void);
+
+protected:
+
+    virtual void InitializeFoundationDrive();
+
+    virtual void ShutdownFoundation();
+
+    virtual void InitializePure3D();
+
+    virtual void ShutdownPure3D();
+
+private:
+
+    // Constructors, Destructors, and Operators
+    PS2Platform();
+
+    virtual ~PS2Platform();
+
+    // Unused Constructors, Destructors, and Operators
+    PS2Platform(const PS2Platform &aPlatform);
+
+    PS2Platform &operator=(const PS2Platform &aPlatform);
+
+    // PS2 specific methods
+    void EnableSnProfiler();
+
+    // Crash printout routines
 #ifndef FINAL
-        static void dumpExceptionData( const char* exceptionName,
-                                       unsigned int stat,
-                                       unsigned int cause,
-                                       unsigned int epc,
-                                       unsigned int bva,
-                                       unsigned int bpa,
-                                       u_long128* registers );
 
-        static void handleTLBChange( unsigned int stat,
-                                     unsigned int cause,
-                                     unsigned int epc,
-                                     unsigned int bva,
-                                     unsigned int bpa,
-                                     u_long128* registers );
+    static void dumpExceptionData(const char *exceptionName,
+                                  unsigned int stat,
+                                  unsigned int cause,
+                                  unsigned int epc,
+                                  unsigned int bva,
+                                  unsigned int bpa,
+                                  u_long128 *registers);
 
-        static void handleTLBLoadMismatch( unsigned int stat,
-                                           unsigned int cause,
-                                           unsigned int epc,
-                                           unsigned int bva,
-                                           unsigned int bpa,
-                                           u_long128* registers );
-
-        static void handleTLBStoreMismatch( unsigned int stat,
-                                            unsigned int cause,
-                                            unsigned int epc,
-                                            unsigned int bva,
-                                            unsigned int bpa,
-                                            u_long128* registers );
-
-        static void handleAddressLoadError( unsigned int stat,
-                                            unsigned int cause,
-                                            unsigned int epc,
-                                            unsigned int bva,
-                                            unsigned int bpa,
-                                            u_long128* registers );
-
-        static void handleAddressStoreError( unsigned int stat,
-                                             unsigned int cause,
-                                             unsigned int epc,
-                                             unsigned int bva,
-                                             unsigned int bpa,
-                                             u_long128* registers );
-
-        static void handleBusFetchError( unsigned int stat,
-                                         unsigned int cause,
-                                         unsigned int epc,
-                                         unsigned int bva,
-                                         unsigned int bpa,
-                                         u_long128* registers );
-
-        static void handleBusDataError( unsigned int stat,
-                                        unsigned int cause,
-                                        unsigned int epc,
-                                        unsigned int bva,
-                                        unsigned int bpa,
-                                        u_long128* registers );
-
-        static void handleReservedInstruction( unsigned int stat,
-                                               unsigned int cause,
-                                               unsigned int epc,
-                                               unsigned int bva,
-                                               unsigned int bpa,
-                                               u_long128* registers );
-
-        static void handleCoprocessor( unsigned int stat,
-                                       unsigned int cause,
-                                       unsigned int epc,
-                                       unsigned int bva,
-                                       unsigned int bpa,
-                                       u_long128* registers );
-
-        static void handleOverflow( unsigned int stat,
-                                    unsigned int cause,
-                                    unsigned int epc,
-                                    unsigned int bva,
-                                    unsigned int bpa,
-                                    u_long128* registers );
-
-        static void handleTrap( unsigned int stat,
+    static void handleTLBChange(unsigned int stat,
                                 unsigned int cause,
                                 unsigned int epc,
                                 unsigned int bva,
                                 unsigned int bpa,
-                                u_long128* registers );
+                                u_long128 *registers);
+
+    static void handleTLBLoadMismatch(unsigned int stat,
+                                      unsigned int cause,
+                                      unsigned int epc,
+                                      unsigned int bva,
+                                      unsigned int bpa,
+                                      u_long128 *registers);
+
+    static void handleTLBStoreMismatch(unsigned int stat,
+                                       unsigned int cause,
+                                       unsigned int epc,
+                                       unsigned int bva,
+                                       unsigned int bpa,
+                                       u_long128 *registers);
+
+    static void handleAddressLoadError(unsigned int stat,
+                                       unsigned int cause,
+                                       unsigned int epc,
+                                       unsigned int bva,
+                                       unsigned int bpa,
+                                       u_long128 *registers);
+
+    static void handleAddressStoreError(unsigned int stat,
+                                        unsigned int cause,
+                                        unsigned int epc,
+                                        unsigned int bva,
+                                        unsigned int bpa,
+                                        u_long128 *registers);
+
+    static void handleBusFetchError(unsigned int stat,
+                                    unsigned int cause,
+                                    unsigned int epc,
+                                    unsigned int bva,
+                                    unsigned int bpa,
+                                    u_long128 *registers);
+
+    static void handleBusDataError(unsigned int stat,
+                                   unsigned int cause,
+                                   unsigned int epc,
+                                   unsigned int bva,
+                                   unsigned int bpa,
+                                   u_long128 *registers);
+
+    static void handleReservedInstruction(unsigned int stat,
+                                          unsigned int cause,
+                                          unsigned int epc,
+                                          unsigned int bva,
+                                          unsigned int bpa,
+                                          u_long128 *registers);
+
+    static void handleCoprocessor(unsigned int stat,
+                                  unsigned int cause,
+                                  unsigned int epc,
+                                  unsigned int bva,
+                                  unsigned int bpa,
+                                  u_long128 *registers);
+
+    static void handleOverflow(unsigned int stat,
+                               unsigned int cause,
+                               unsigned int epc,
+                               unsigned int bva,
+                               unsigned int bpa,
+                               u_long128 *registers);
+
+    static void handleTrap(unsigned int stat,
+                           unsigned int cause,
+                           unsigned int epc,
+                           unsigned int bva,
+                           unsigned int bpa,
+                           u_long128 *registers);
+
 #endif
 
-        // Pointer to the one and only instance of this singleton.
-        static PS2Platform* spInstance;
+    // Pointer to the one and only instance of this singleton.
+    static PS2Platform *spInstance;
 
-        // Pure 3D attributes
-        tPlatform* mpPlatform; 
-        tContext* mpContext;
+    // Pure 3D attributes
+    tPlatform *mpPlatform;
+    tContext *mpContext;
 
-        bool mProgressiveMode;
-        
-        static IRadCementLibrary* s_MainCement;
+    bool mProgressiveMode;
+
+    static IRadCementLibrary *s_MainCement;
 };
 
 #endif // PS2PLATFORM_H

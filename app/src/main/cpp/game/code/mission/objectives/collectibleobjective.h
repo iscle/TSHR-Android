@@ -23,7 +23,9 @@
 // Forward References
 //========================================
 class Locator;
+
 class AnimatedIcon;
+
 class Vehicle;
 
 //=============================================================================
@@ -32,94 +34,112 @@ class Vehicle;
 //
 //=============================================================================
 
-class CollectibleObjective : public MissionObjective
-{
+class CollectibleObjective : public MissionObjective {
 public:
     CollectibleObjective();
-	virtual ~CollectibleObjective();
 
-    enum { MAX_COLLECTIBLES = 32 };
+    virtual ~CollectibleObjective();
+
+    enum {
+        MAX_COLLECTIBLES = 32
+    };
 
     unsigned int GetNumCollectibles() const;
+
     unsigned int GetNumCollected() const;
 
-    const Locator* GetCollectibleLocator( unsigned int num );
-    void MoveCollectible( unsigned int num, const rmt::Vector& newPos );
+    const Locator *GetCollectibleLocator(unsigned int num);
 
-    void AddCollectibleLocatorName( char* locatorname, char* p3dname, radKey32 dialogName, tUID speakerName, float scale );
-    void SetCollectEffectName( char* name );
+    void MoveCollectible(unsigned int num, const rmt::Vector &newPos);
+
+    void AddCollectibleLocatorName(char *locatorname, char *p3dname, radKey32 dialogName,
+                                   tUID speakerName, float scale);
+
+    void SetCollectEffectName(char *name);
 
     void AllowUserDump();
 
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
 protected:
-    void OnUpdate( unsigned int elapsedTime );
-    virtual void OnInitialize();
-    void OnFinalize();
-    
-    virtual void OnInitCollectibles() = 0;
-    virtual void OnInitCollectibleObjective() = 0;
-    virtual void OnFinalizeCollectibleObjective() = 0;
-    virtual bool OnCollection( unsigned int collectibleNum, bool &shouldReset ) = 0;
-    virtual void OnUpdateCollectibleObjective( unsigned int elapsedTimeMilliseconds ) {};
+    void OnUpdate(unsigned int elapsedTime);
 
-    virtual bool CheckCollectibleLocators( Locator* locator );
-    void Activate( unsigned int index, bool bIsActive, bool primary, HudMapIcon::eIconType icon = HudMapIcon::ICON_COLLECTIBLE, bool render = true );
-    void Collect( unsigned int index, bool shouldReset );
-    bool IsCollected( unsigned int index );
-    void SetFocus( unsigned int index );
-    void ChangeIcon( unsigned int index, HudMapIcon::eIconType type );
+    virtual void OnInitialize();
+
+    void OnFinalize();
+
+    virtual void OnInitCollectibles() = 0;
+
+    virtual void OnInitCollectibleObjective() = 0;
+
+    virtual void OnFinalizeCollectibleObjective() = 0;
+
+    virtual bool OnCollection(unsigned int collectibleNum, bool &shouldReset) = 0;
+
+    virtual void OnUpdateCollectibleObjective(unsigned int elapsedTimeMilliseconds) {};
+
+    virtual bool CheckCollectibleLocators(Locator *locator);
+
+    void Activate(unsigned int index, bool bIsActive, bool primary,
+                  HudMapIcon::eIconType icon = HudMapIcon::ICON_COLLECTIBLE, bool render = true);
+
+    void Collect(unsigned int index, bool shouldReset);
+
+    bool IsCollected(unsigned int index);
+
+    void SetFocus(unsigned int index);
+
+    void ChangeIcon(unsigned int index, HudMapIcon::eIconType type);
 
     void ResetCollectibles();
 
-    void DumpCollectible( int collectibleNum, Vehicle* dumper, Vehicle* hitter = NULL, bool useIntersectionList = true, bool terminal = false );
-    
+    void DumpCollectible(int collectibleNum, Vehicle *dumper, Vehicle *hitter = NULL,
+                         bool useIntersectionList = true, bool terminal = false);
+
     bool IsUserDumpAllowed() const;
+
     int GetAnyCollectedID() const;
 
-    void Uncollect( int collectibleNum );
+    void Uncollect(int collectibleNum);
 
-    void GetCollectiblePathInfo( unsigned int index, RoadManager::PathElement& elem, float& roadT );
+    void GetCollectiblePathInfo(unsigned int index, RoadManager::PathElement &elem, float &roadT);
 
     unsigned int mNumCollectibles;
     unsigned int mNumCollected;
 
-	struct CollectibleLocatorData
-	{
-        CollectibleLocatorData() : 
-            pLocator( NULL ), 
-            mAnimatedIcon( NULL ), 
-            iHUDIndex( -1 ), 
-            bTriggered( false ),
-            fScaleFactor( 1.0f ),
-            seg( NULL ),
-            segT( 0.0f ),
-            roadT( 0.0f ),
-            mDialogName( 0 )
-        { 
-            locatorName[0] = '\0'; 
-            p3dname[0]='\0'; 
-            mArrowPath.mPathRoute.Allocate( RoadManager::GetInstance()->GetNumRoads() ); 
+    struct CollectibleLocatorData {
+        CollectibleLocatorData() :
+                pLocator(NULL),
+                mAnimatedIcon(NULL),
+                iHUDIndex(-1),
+                bTriggered(false),
+                fScaleFactor(1.0f),
+                seg(NULL),
+                segT(0.0f),
+                roadT(0.0f),
+                mDialogName(0) {
+            locatorName[0] = '\0';
+            p3dname[0] = '\0';
+            mArrowPath.mPathRoute.Allocate(RoadManager::GetInstance()->GetNumRoads());
             elem.elem = NULL;
         };
 
-		char locatorName[ 32 ];
-		char p3dname[ 32 ];
+        char locatorName[32];
+        char p3dname[32];
 
-		Locator* pLocator;
-		AnimatedIcon* mAnimatedIcon;
+        Locator *pLocator;
+        AnimatedIcon *mAnimatedIcon;
 
-		int iHUDIndex;
+        int iHUDIndex;
 
-		bool bTriggered;
+        bool bTriggered;
         float fScaleFactor;
 
         PathStruct mArrowPath;
 
         // the current path info upon which my locator is located
-        RoadManager::PathElement elem; 
-        RoadSegment* seg;
+        RoadManager::PathElement elem;
+        RoadSegment *seg;
         float segT;
         float roadT;
 
@@ -129,23 +149,24 @@ protected:
         //
         radKey32 mDialogName;
         tUID mSpeakerName;
-	};
+    };
 
-    CollectibleLocatorData mCollectibles[ MAX_COLLECTIBLES ];
+    CollectibleLocatorData mCollectibles[MAX_COLLECTIBLES];
 
 private:
-    
+
     char mEffectName[32];
-    AnimatedIcon* mCollectEffect;
+    AnimatedIcon *mCollectEffect;
 
     bool mAllowUserDump;
-    
+
     unsigned int mCurrentFocus;
 
 
     //Prevent wasteful constructor creation.
-	CollectibleObjective( const CollectibleObjective& collectibleobjective );
-	CollectibleObjective& operator=( const CollectibleObjective& collectibleobjective );
+    CollectibleObjective(const CollectibleObjective &collectibleobjective);
+
+    CollectibleObjective &operator=(const CollectibleObjective &collectibleobjective);
 };
 
 //******************************************************************************
@@ -164,8 +185,7 @@ private:
 // Return:      unsigned int
 //
 //=============================================================================
-inline unsigned int CollectibleObjective::GetNumCollectibles() const
-{ 
+inline unsigned int CollectibleObjective::GetNumCollectibles() const {
     return mNumCollectibles;
 }
 
@@ -179,8 +199,7 @@ inline unsigned int CollectibleObjective::GetNumCollectibles() const
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int CollectibleObjective::GetNumCollected() const
-{
+inline unsigned int CollectibleObjective::GetNumCollected() const {
     return mNumCollected;
 }
 
@@ -189,15 +208,14 @@ inline unsigned int CollectibleObjective::GetNumCollected() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int num )
+// Parameters:  (unsigned int num)
 //
 // Return:      inline 
 //
 //=============================================================================
-inline const Locator* CollectibleObjective::GetCollectibleLocator( unsigned int num )
-{
-    rAssert( num < MAX_COLLECTIBLES );
-    return mCollectibles[ num ].pLocator;
+inline const Locator *CollectibleObjective::GetCollectibleLocator(unsigned int num) {
+    rAssert(num < MAX_COLLECTIBLES);
+    return mCollectibles[num].pLocator;
 }
 
 //=============================================================================
@@ -210,8 +228,7 @@ inline const Locator* CollectibleObjective::GetCollectibleLocator( unsigned int 
 // Return:      void 
 //
 //=============================================================================
-inline void CollectibleObjective::AllowUserDump()
-{
+inline void CollectibleObjective::AllowUserDump() {
     mAllowUserDump = true;
 }
 
@@ -227,16 +244,15 @@ inline void CollectibleObjective::AllowUserDump()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int index )
+// Parameters:  (unsigned int index)
 //
 // Return:      bool 
 //
 //=============================================================================
-inline bool CollectibleObjective::IsCollected( unsigned int index )
-{
-    rAssert( index < mNumCollectibles );
+inline bool CollectibleObjective::IsCollected(unsigned int index) {
+    rAssert(index < mNumCollectibles);
 
-    return mCollectibles[ index ].bTriggered;
+    return mCollectibles[index].bTriggered;
 }
 
 //=============================================================================
@@ -249,8 +265,7 @@ inline bool CollectibleObjective::IsCollected( unsigned int index )
 // Return:      bool 
 //
 //=============================================================================
-inline bool CollectibleObjective::IsUserDumpAllowed() const
-{
+inline bool CollectibleObjective::IsUserDumpAllowed() const {
     return mAllowUserDump;
 }
 

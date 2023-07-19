@@ -55,16 +55,15 @@
 // Return:      N/A.
 //
 //==============================================================================
-PresentationAnimator::PresentationAnimator():
-    mCharacter( NULL ),
-    mMouthFlapper( NULL ),
-    mRandomSelection( true ),
-    mTalkTime(0)
-{
-    MEMTRACK_PUSH_GROUP( "PresentationAnimator" );
+PresentationAnimator::PresentationAnimator() :
+        mCharacter(NULL),
+        mMouthFlapper(NULL),
+        mRandomSelection(true),
+        mTalkTime(0) {
+    MEMTRACK_PUSH_GROUP("PresentationAnimator");
     mMouthFlapper = new(GMA_LEVEL_OTHER) MouthFlapper();
     mMouthFlapper->AddRef();
-    MEMTRACK_POP_GROUP( "PresentationAnimator" );
+    MEMTRACK_POP_GROUP("PresentationAnimator");
 }
 
 //==============================================================================
@@ -77,26 +76,24 @@ PresentationAnimator::PresentationAnimator():
 // Return:      N/A.
 //
 //==============================================================================
-PresentationAnimator::~PresentationAnimator()
-{
+PresentationAnimator::~PresentationAnimator() {
     mMouthFlapper->Release();
 }
+
 //=============================================================================
 // PresentationAnimator::AddAmbientAnimations
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( Character* pCharacter )
+// Parameters:  (Character* pCharacter)
 //
 // Return:      void 
 //
 //=============================================================================
-void PresentationAnimator::AddAmbientAnimations( const TNAMEVECTOR& animations )
-{
-    if( !animations.empty() )
-    {
-        mAnimationNames.erase( mAnimationNames.begin(), mAnimationNames.end() );
-        mAnimationNames.insert( mAnimationNames.begin(), animations.begin(), animations.end() );
+void PresentationAnimator::AddAmbientAnimations(const TNAMEVECTOR &animations) {
+    if (!animations.empty()) {
+        mAnimationNames.erase(mAnimationNames.begin(), mAnimationNames.end());
+        mAnimationNames.insert(mAnimationNames.begin(), animations.begin(), animations.end());
     }
 }
 
@@ -110,9 +107,8 @@ void PresentationAnimator::AddAmbientAnimations( const TNAMEVECTOR& animations )
 // Return:      void 
 //
 //=============================================================================
-void PresentationAnimator::ClearAmbientAnimations( void )
-{
-    mAnimationNames.erase( mAnimationNames.begin(), mAnimationNames.end() );
+void PresentationAnimator::ClearAmbientAnimations(void) {
+    mAnimationNames.erase(mAnimationNames.begin(), mAnimationNames.end());
 }
 
 
@@ -126,17 +122,13 @@ void PresentationAnimator::ClearAmbientAnimations( void )
 // Return:      tName - the name of the animation chosen 
 //
 //=============================================================================
-const tName PresentationAnimator::ChooseNextAnimation()
-{
+const tName PresentationAnimator::ChooseNextAnimation() {
     size_t size = mAnimationNames.size();
-    if( size == 0 )
-    {
-        return tName( "NONE" );
-    }
-    else
-    {
-        tName returnMe = mAnimationNames[ 0 ];
-        mAnimationNames.erase( mAnimationNames.begin() );
+    if (size == 0) {
+        return tName("NONE");
+    } else {
+        tName returnMe = mAnimationNames[0];
+        mAnimationNames.erase(mAnimationNames.begin());
         return returnMe;
     }
 }
@@ -152,18 +144,14 @@ const tName PresentationAnimator::ChooseNextAnimation()
 // Return:      tName - the name of the animation chosen 
 //
 //=============================================================================
-const tName PresentationAnimator::ChooseRandomAnimation() const
-{
+const tName PresentationAnimator::ChooseRandomAnimation() const {
     int size = mAnimationNames.size();
-    if( size == 0 )
-    {
-        return tName( "NONE" );
-    }
-    else
-    {
+    if (size == 0) {
+        return tName("NONE");
+    } else {
         int randomNumber = rand();
         int selection = randomNumber % size;
-        return mAnimationNames[ selection ];
+        return mAnimationNames[selection];
     }
 }
 
@@ -172,15 +160,14 @@ const tName PresentationAnimator::ChooseRandomAnimation() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( Character* pCharacter )
+// Parameters:  (Character* pCharacter)
 //
 // Return:      void 
 //
 //=============================================================================
-void PresentationAnimator::SetCharacter( Character* pCharacter )
-{
+void PresentationAnimator::SetCharacter(Character *pCharacter) {
     mCharacter = pCharacter;
-    mMouthFlapper->SetCharacter( pCharacter );
+    mMouthFlapper->SetCharacter(pCharacter);
 }
 
 //=============================================================================
@@ -193,8 +180,7 @@ void PresentationAnimator::SetCharacter( Character* pCharacter )
 // Return:      Character
 //
 //=============================================================================
-Character* PresentationAnimator::GetCharacter()
-{
+Character *PresentationAnimator::GetCharacter() {
     return mCharacter;
 }
 
@@ -209,56 +195,46 @@ Character* PresentationAnimator::GetCharacter()
 // Return:      void 
 //
 //=============================================================================
-void PresentationAnimator::PlaySpecialAmbientAnimation()
-{
+void PresentationAnimator::PlaySpecialAmbientAnimation() {
     tName chosenAnimationName;
-    if( mRandomSelection )
-    {
+    if (mRandomSelection) {
         chosenAnimationName = ChooseRandomAnimation();
-    }
-    else
-    {
+    } else {
         chosenAnimationName = ChooseNextAnimation();
     }
 
-    if( ( chosenAnimationName == "NONE" ) || ( chosenAnimationName == "none" ) )
-    {
+    if ((chosenAnimationName == "NONE") || (chosenAnimationName == "none")) {
         return;
     }
 
-    if( mCharacter == NULL )
-    {
+    if (mCharacter == NULL) {
         return;
     }
-    bool canPlay = mCharacter->CanPlayAnimation( chosenAnimationName );
-    if( canPlay )
-    {
-        ActionController* actionController = mCharacter->GetActionController();
-        rAssert( actionController != NULL );
-        Sequencer* pSeq = actionController->GetNextSequencer();
-        rAssert( pSeq != NULL );
-        if( !pSeq->IsBusy() )
-        {
+    bool canPlay = mCharacter->CanPlayAnimation(chosenAnimationName);
+    if (canPlay) {
+        ActionController *actionController = mCharacter->GetActionController();
+        rAssert(actionController != NULL);
+        Sequencer *pSeq = actionController->GetNextSequencer();
+        rAssert(pSeq != NULL);
+        if (!pSeq->IsBusy()) {
             pSeq->BeginSequence();
-            PlayAnimationAction* pAction = 0;
-            pAction = new PlayAnimationAction( mCharacter, chosenAnimationName );
-            pAction->AbortWhenMovementOccurs( true );
-            pSeq->AddAction( pAction );
+            PlayAnimationAction *pAction = 0;
+            pAction = new PlayAnimationAction(mCharacter, chosenAnimationName);
+            pAction->AbortWhenMovementOccurs(true);
+            pSeq->AddAction(pAction);
             pSeq->EndSequence();
         }
-    }
-    else
-    {
-        #ifdef RAD_DEBUG
-            const char* characterName = mCharacter->GetNameDangerous();
-            const char* animationName = chosenAnimationName.GetText();
-            rDebugPrintf
-            ( 
-                "PresentationAnimator::PlaySpecialAmbientAnimation, character'%s' cannont play'%s'\n",
-                characterName, 
-                animationName 
-            );
-        #endif
+    } else {
+#ifdef RAD_DEBUG
+        const char* characterName = mCharacter->GetNameDangerous();
+        const char* animationName = chosenAnimationName.GetText();
+        rDebugPrintf
+        (
+            "PresentationAnimator::PlaySpecialAmbientAnimation, character'%s' cannont play'%s'\n",
+            characterName,
+            animationName
+);
+#endif
     }
 }
 
@@ -273,13 +249,11 @@ void PresentationAnimator::PlaySpecialAmbientAnimation()
 // Return:      NONE
 //
 //=============================================================================
-void PresentationAnimator::SetRandomSelection( const bool random )
-{
+void PresentationAnimator::SetRandomSelection(const bool random) {
     mRandomSelection = random;
 }
 
-const bool PresentationAnimator::GetRandomSelection() const
-{
+const bool PresentationAnimator::GetRandomSelection() const {
     return mRandomSelection;
 }
 
@@ -294,13 +268,11 @@ const bool PresentationAnimator::GetRandomSelection() const
 // Return:      void 
 //
 //=============================================================================
-void PresentationAnimator::StartTalking()
-{
-    if( mCharacter != NULL )
-    {
-        mCharacter->GetPuppet()->GetEngine()->GetPoseEngine()->AddPoseDriver( 2, mMouthFlapper );
+void PresentationAnimator::StartTalking() {
+    if (mCharacter != NULL) {
+        mCharacter->GetPuppet()->GetEngine()->GetPoseEngine()->AddPoseDriver(2, mMouthFlapper);
     }
-    mMouthFlapper->SetIsEnabled( true );
+    mMouthFlapper->SetIsEnabled(true);
 }
 
 //=============================================================================
@@ -313,20 +285,17 @@ void PresentationAnimator::StartTalking()
 // Return:      void 
 //
 //=============================================================================
-void PresentationAnimator::StopTalking()
-{
-    mMouthFlapper->SetIsEnabled( false );
-    if( mCharacter != NULL )
-    {
-        mCharacter->GetPuppet()->GetEngine()->GetPoseEngine()->RemovePoseDriver( 2, mMouthFlapper );
+void PresentationAnimator::StopTalking() {
+    mMouthFlapper->SetIsEnabled(false);
+    if (mCharacter != NULL) {
+        mCharacter->GetPuppet()->GetEngine()->GetPoseEngine()->RemovePoseDriver(2, mMouthFlapper);
     }
 }
 
 //=============================================================================
 // PresentationAnimator::Talkfor
 //=============================================================================
-void PresentationAnimator::TalkFor(int time)
-{
+void PresentationAnimator::TalkFor(int time) {
     mTalkTime = time;
     StartTalking();
 }
@@ -336,28 +305,23 @@ void PresentationAnimator::TalkFor(int time)
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int elapsedTime )
+// Parameters:  (int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void PresentationAnimator::Update( int elapsedTime )
-{
-    if(mTalkTime > 0)
-    {
-        if((mTalkTime - elapsedTime) < 0)
-        {
+void PresentationAnimator::Update(int elapsedTime) {
+    if (mTalkTime > 0) {
+        if ((mTalkTime - elapsedTime) < 0) {
             mTalkTime = 0;
             StopTalking();
-        }
-        else
-        {
+        } else {
             mTalkTime -= elapsedTime;
         }
     }
 
 
-    //mBlinker->Update( elapsedTime );
+    //mBlinker->Update(elapsedTime);
 }
 
 //******************************************************************************

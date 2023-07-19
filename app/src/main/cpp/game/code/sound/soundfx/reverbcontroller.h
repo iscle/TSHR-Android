@@ -23,6 +23,7 @@
 //========================================
 
 struct IRadSoundHalEffect;
+
 class reverbSettings;
 
 //=============================================================================
@@ -31,51 +32,56 @@ class reverbSettings;
 //
 //=============================================================================
 
-class ReverbController : public EventListener
-{
-    public:
-        ReverbController();
-        virtual ~ReverbController();
+class ReverbController : public EventListener {
+public:
+    ReverbController();
 
-        void SetReverbGain( float gain );
+    virtual ~ReverbController();
 
-        virtual void SetReverbOn( reverbSettings* settings ) = 0;
-        virtual void SetReverbOff() = 0;
+    void SetReverbGain(float gain);
 
-        virtual void PauseReverb();
-        virtual void UnpauseReverb();
+    virtual void SetReverbOn(reverbSettings *settings) = 0;
 
-        //
-        // EventListener interface
-        //
-        void HandleEvent( EventEnum id, void* pEventData );
+    virtual void SetReverbOff() = 0;
 
-        void ServiceOncePerFrame( unsigned int elapsedTime );
+    virtual void PauseReverb();
 
-    protected:
-        static const int REVERB_AUX_EFFECT_NUMBER = 0;
+    virtual void UnpauseReverb();
 
-        void registerReverbEffect( IRadSoundHalEffect* reverbEffect );
-        void prepareFadeSettings( float targetGain, float fadeInTime, float fadeOutTime );
-        void startFadeOut();
+    //
+    // EventListener interface
+    //
+    void HandleEvent(EventEnum id, void *pEventData);
 
-    private:
-        //Prevent wasteful constructor creation.
-        ReverbController( const ReverbController& original );
-        ReverbController& operator=( const ReverbController& rhs );
+    void ServiceOncePerFrame(unsigned int elapsedTime);
 
-        reverbSettings* getReverbSettings( const char* objName );
+protected:
+    static const int REVERB_AUX_EFFECT_NUMBER = 0;
 
-        //
-        // Used for gradual changes in reverb
-        //
-        float m_targetGain;
-        float m_currentGain;
-        float m_fadeInMultiplier;
-        float m_fadeOutMultiplier;
+    void registerReverbEffect(IRadSoundHalEffect *reverbEffect);
 
-        reverbSettings* m_lastReverb;
-        reverbSettings* m_queuedReverb;
+    void prepareFadeSettings(float targetGain, float fadeInTime, float fadeOutTime);
+
+    void startFadeOut();
+
+private:
+    //Prevent wasteful constructor creation.
+    ReverbController(const ReverbController &original);
+
+    ReverbController &operator=(const ReverbController &rhs);
+
+    reverbSettings *getReverbSettings(const char *objName);
+
+    //
+    // Used for gradual changes in reverb
+    //
+    float m_targetGain;
+    float m_currentGain;
+    float m_fadeInMultiplier;
+    float m_fadeOutMultiplier;
+
+    reverbSettings *m_lastReverb;
+    reverbSettings *m_queuedReverb;
 };
 
 

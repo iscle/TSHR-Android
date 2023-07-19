@@ -25,6 +25,7 @@
 //========================================
 
 class SoundFXLogic;
+
 class ReverbController;
 
 //=============================================================================
@@ -33,88 +34,93 @@ class ReverbController;
 //
 //=============================================================================
 
-class SoundEffectPlayer
-{
-    public:
-        SoundEffectPlayer();
-        virtual ~SoundEffectPlayer();
+class SoundEffectPlayer {
+public:
+    SoundEffectPlayer();
 
-        //
-        // Start playing front end sounds
-        //
-        void OnFrontEndStart() { setSFXState( FXSTATE_FRONTEND ); }
-        
-        //
-        // Start playing gameplay sounds
-        //
-        void OnGameplayStart() { setSFXState( FXSTATE_GAMEPLAY ); }
-        void OnGameplayEnd() { doCleanup(); }
+    virtual ~SoundEffectPlayer();
 
-        void OnPauseStart();
-        void OnPauseEnd();
+    //
+    // Start playing front end sounds
+    //
+    void OnFrontEndStart() { setSFXState(FXSTATE_FRONTEND); }
 
-        void ServiceOncePerFrame( unsigned int elapsedTime );
+    //
+    // Start playing gameplay sounds
+    //
+    void OnGameplayStart() { setSFXState(FXSTATE_GAMEPLAY); }
 
-        void PlayCarOptionStinger( float trim );
-        void PlayDialogOptionStinger( float trim );
-        void PlayMusicOptionStinger( float trim );
-        void PlaySfxOptionStinger( float trim );
+    void OnGameplayEnd() { doCleanup(); }
 
-    private:
-        //Prevent wasteful constructor creation.
-        SoundEffectPlayer( const SoundEffectPlayer& original );
-        SoundEffectPlayer& operator=( const SoundEffectPlayer& rhs );
+    void OnPauseStart();
 
-        void initialize();
+    void OnPauseEnd();
 
-        //
-        // Game states in which sound effects are played
-        //
-        enum SFXState
-        {
-            FXSTATE_FRONTEND,
-            FXSTATE_GAMEPLAY,
-            FXSTATE_PAUSED,
+    void ServiceOncePerFrame(unsigned int elapsedTime);
 
-            FXSTATE_MAX_STATES,
+    void PlayCarOptionStinger(float trim);
 
-            FXSTATE_INVALID
-        };
+    void PlayDialogOptionStinger(float trim);
 
-        //
-        // Set a new SFX state
-        //
-        void setSFXState( SFXState newState );
+    void PlayMusicOptionStinger(float trim);
 
-        //
-        // Shut down anything that might still be playing
-        //
-        void doCleanup();
+    void PlaySfxOptionStinger(float trim);
 
-        //
-        // Play a stinger (duh)
-        //
-        void playStinger( const char* stingerName, float trim );
+private:
+    //Prevent wasteful constructor creation.
+    SoundEffectPlayer(const SoundEffectPlayer &original);
 
-        //
-        // FX logic objects, one for each state
-        //
-        SoundFXLogic* m_logicObjects[FXSTATE_MAX_STATES];
+    SoundEffectPlayer &operator=(const SoundEffectPlayer &rhs);
 
-        //
-        // Reverb controller
-        //
-        ReverbController* m_reverbController;
+    void initialize();
 
-        //
-        // Current SFX state
-        //
-        SFXState m_currentState;
+    //
+    // Game states in which sound effects are played
+    //
+    enum SFXState {
+        FXSTATE_FRONTEND,
+        FXSTATE_GAMEPLAY,
+        FXSTATE_PAUSED,
 
-        //
-        // Options menu stinger player
-        //
-        SimpsonsSoundPlayer m_stingerPlayer;
+        FXSTATE_MAX_STATES,
+
+        FXSTATE_INVALID
+    };
+
+    //
+    // Set a new SFX state
+    //
+    void setSFXState(SFXState newState);
+
+    //
+    // Shut down anything that might still be playing
+    //
+    void doCleanup();
+
+    //
+    // Play a stinger (duh)
+    //
+    void playStinger(const char *stingerName, float trim);
+
+    //
+    // FX logic objects, one for each state
+    //
+    SoundFXLogic *m_logicObjects[FXSTATE_MAX_STATES];
+
+    //
+    // Reverb controller
+    //
+    ReverbController *m_reverbController;
+
+    //
+    // Current SFX state
+    //
+    SFXState m_currentState;
+
+    //
+    // Options menu stinger player
+    //
+    SimpsonsSoundPlayer m_stingerPlayer;
 };
 
 

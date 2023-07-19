@@ -57,10 +57,9 @@
 //
 //==============================================================================
 DestroyObjective::DestroyObjective() :
-    mDestroyVehicle( NULL ),
-    mAnimatedIcon( NULL )
-{
-    
+        mDestroyVehicle(NULL),
+        mAnimatedIcon(NULL) {
+
 }
 
 //==============================================================================
@@ -73,9 +72,8 @@ DestroyObjective::DestroyObjective() :
 // Return:      N/A.
 //
 //==============================================================================
-DestroyObjective::~DestroyObjective()
-{
-    
+DestroyObjective::~DestroyObjective() {
+
 }
 
 //=============================================================================
@@ -88,43 +86,42 @@ DestroyObjective::~DestroyObjective()
 // Return:      void 
 //
 //=============================================================================
-void DestroyObjective::OnInitialize()
-{
-MEMTRACK_PUSH_GROUP( "Mission - DestroyObjective" );
-    GetEventManager()->AddListener( this, EVENT_VEHICLE_DAMAGED );
-    GetEventManager()->AddListener( this, EVENT_VEHICLE_DESTROYED );
+void DestroyObjective::OnInitialize() {
+    MEMTRACK_PUSH_GROUP("Mission - DestroyObjective");
+    GetEventManager()->AddListener(this, EVENT_VEHICLE_DAMAGED);
+    GetEventManager()->AddListener(this, EVENT_VEHICLE_DESTROYED);
 
     // show damage meter
-    GetGuiSystem()->HandleMessage( GUI_MSG_SHOW_HUD_OVERLAY, HUD_DAMAGE_METER );
+    GetGuiSystem()->HandleMessage(GUI_MSG_SHOW_HUD_OVERLAY, HUD_DAMAGE_METER);
 
     //Set this vehicle as the focus of the HUD.
-    rAssert( mDestroyVehicle );
-    VehicleAI* vehicleAI = GetVehicleCentral()->GetVehicleAI( mDestroyVehicle );
-    rAssert( vehicleAI );
+    rAssert(mDestroyVehicle);
+    VehicleAI *vehicleAI = GetVehicleCentral()->GetVehicleAI(mDestroyVehicle);
+    rAssert(vehicleAI);
 
-    GetHitnRunManager()->RegisterVehicleImmunity( mDestroyVehicle );
+    GetHitnRunManager()->RegisterVehicleImmunity(mDestroyVehicle);
 
-    CGuiScreenHud* currentHud = GetCurrentHud();
-    if( currentHud != NULL )
-    {
-        currentHud->GetHudMap( 0 )->SetFocalPointIcon( vehicleAI->GetHUDIndex() );
+    CGuiScreenHud *currentHud = GetCurrentHud();
+    if (currentHud != NULL) {
+        currentHud->GetHudMap(0)->SetFocalPointIcon(vehicleAI->GetHUDIndex());
 
         // update damage meter
-        currentHud->SetDamageMeter( 0.0f ); // between 0.0 and 1.0
+        currentHud->SetDamageMeter(0.0f); // between 0.0 and 1.0
     }
 
     //========================= SET UP THE ICON
 
-    rAssert( mAnimatedIcon == NULL );
+    rAssert(mAnimatedIcon == NULL);
 
     GameMemoryAllocator gma = GetGameplayManager()->GetCurrentMissionHeap();
     mAnimatedIcon = new(gma) AnimatedIcon();
- 
+
     const rmt::Vector pos = mDestroyVehicle->GetPosition();
     //TODO put in the actual name...
-    mAnimatedIcon->Init( ARROW_DESTROY, pos );
-    mAnimatedIcon->ScaleByCameraDistance( MIN_ARROW_SCALE, MAX_ARROW_SCALE, MIN_ARROW_SCALE_DIST, MAX_ARROW_SCALE_DIST );
-MEMTRACK_POP_GROUP("Mission - DestroyObjective");
+    mAnimatedIcon->Init(ARROW_DESTROY, pos);
+    mAnimatedIcon->ScaleByCameraDistance(MIN_ARROW_SCALE, MAX_ARROW_SCALE, MIN_ARROW_SCALE_DIST,
+                                         MAX_ARROW_SCALE_DIST);
+    MEMTRACK_POP_GROUP("Mission - DestroyObjective");
 }
 
 //=============================================================================
@@ -137,20 +134,18 @@ MEMTRACK_POP_GROUP("Mission - DestroyObjective");
 // Return:      void 
 //
 //=============================================================================
-void DestroyObjective::OnFinalize()
-{
+void DestroyObjective::OnFinalize() {
     // hide damage meter
-    GetGuiSystem()->HandleMessage( GUI_MSG_HIDE_HUD_OVERLAY, HUD_DAMAGE_METER );
+    GetGuiSystem()->HandleMessage(GUI_MSG_HIDE_HUD_OVERLAY, HUD_DAMAGE_METER);
 
-    GetEventManager()->RemoveListener( this, EVENT_VEHICLE_DAMAGED );
-    GetEventManager()->RemoveListener( this, EVENT_VEHICLE_DESTROYED );
+    GetEventManager()->RemoveListener(this, EVENT_VEHICLE_DAMAGED);
+    GetEventManager()->RemoveListener(this, EVENT_VEHICLE_DESTROYED);
 
-    GetHitnRunManager()->RegisterVehicleImmunity( NULL );
+    GetHitnRunManager()->RegisterVehicleImmunity(NULL);
 
-    rAssert( mAnimatedIcon );
+    rAssert(mAnimatedIcon);
 
-    if ( mAnimatedIcon )
-    {
+    if (mAnimatedIcon) {
         delete mAnimatedIcon;
         mAnimatedIcon = NULL;
     }
@@ -161,23 +156,22 @@ void DestroyObjective::OnFinalize()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void DestroyObjective::OnUpdate( unsigned int elapsedTime )
-{
+void DestroyObjective::OnUpdate(unsigned int elapsedTime) {
     //Update the position of the bv...
     rmt::Vector carPos;
-    mDestroyVehicle->GetPosition( &carPos );
+    mDestroyVehicle->GetPosition(&carPos);
 
     rmt::Box3D bbox;
-    mDestroyVehicle->GetBoundingBox( &bbox );
+    mDestroyVehicle->GetBoundingBox(&bbox);
     carPos.y = bbox.high.y;
 
-    mAnimatedIcon->Move( carPos );
-    mAnimatedIcon->Update( elapsedTime );
+    mAnimatedIcon->Move(carPos);
+    mAnimatedIcon->Update(elapsedTime);
 }
 
 //=============================================================================
@@ -185,44 +179,37 @@ void DestroyObjective::OnUpdate( unsigned int elapsedTime )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void DestroyObjective::HandleEvent( EventEnum id, void* pEventData )
-{
-    switch( id )
-    {
-    case EVENT_VEHICLE_DAMAGED:
-        {
-            if( pEventData == (void*)mDestroyVehicle )
-            {
+void DestroyObjective::HandleEvent(EventEnum id, void *pEventData) {
+    switch (id) {
+        case EVENT_VEHICLE_DAMAGED: {
+            if (pEventData == (void *) mDestroyVehicle) {
                 //Update the HUD.
                 // update damage meter
-                if ( GetCurrentHud() )
-                {
-                    GetCurrentHud()->SetDamageMeter( 1.0f - mDestroyVehicle->GetVehicleLifePercentage(mDestroyVehicle->mHitPoints) ); // between 0.0 and 1.0
+                if (GetCurrentHud()) {
+                    GetCurrentHud()->SetDamageMeter(1.0f -
+                                                    mDestroyVehicle->GetVehicleLifePercentage(
+                                                            mDestroyVehicle->mHitPoints)); // between 0.0 and 1.0
                 }
             }
             break;
         }
-    case EVENT_VEHICLE_DESTROYED:
-        {
-            if( pEventData == (void*)mDestroyVehicle )
-            {
+        case EVENT_VEHICLE_DESTROYED: {
+            if (pEventData == (void *) mDestroyVehicle) {
                 // update damage meter
-                if ( GetCurrentHud() )
-                {
-                    GetCurrentHud()->SetDamageMeter( 1.0f ); // between 0.0 and 1.0
+                if (GetCurrentHud()) {
+                    GetCurrentHud()->SetDamageMeter(1.0f); // between 0.0 and 1.0
                 }
 
-                SetFinished( true );
+                SetFinished(true);
             }
             break;
         }
-    default:
-        {
+        default: {
             break;
         }
     }
@@ -233,16 +220,15 @@ void DestroyObjective::HandleEvent( EventEnum id, void* pEventData )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( Vehicle* pVehicle )
+// Parameters:  (Vehicle* pVehicle)
 //
 // Return:      void 
 //
 //=============================================================================
-void DestroyObjective::SetTargetVehicle( Vehicle* pVehicle )
-{ 
-    mDestroyVehicle = pVehicle; 
-    //mDestroyVehicle->SetVehicleCanSustainDamage( true ); 
-    mDestroyVehicle->VehicleIsADestroyObjective( true ); 
+void DestroyObjective::SetTargetVehicle(Vehicle *pVehicle) {
+    mDestroyVehicle = pVehicle;
+    //mDestroyVehicle->SetVehicleCanSustainDamage(true);
+    mDestroyVehicle->VehicleIsADestroyObjective(true);
 }
 
 //******************************************************************************

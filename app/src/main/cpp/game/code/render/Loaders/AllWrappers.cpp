@@ -47,7 +47,7 @@
 //
 //************************************************************************
 
-AllWrappers* AllWrappers::mspInstance = NULL;
+AllWrappers *AllWrappers::mspInstance = NULL;
 
 static const int NUM_GLOBAL_ENTITIES = 32;
 
@@ -70,15 +70,14 @@ static const int NUM_GLOBAL_ENTITIES = 32;
 // Constraints: None.
 //
 //========================================================================
-AllWrappers* AllWrappers::CreateInstance()
-{
-MEMTRACK_PUSH_GROUP( "AllWrappers" );
-   rAssert(mspInstance == NULL);
+AllWrappers *AllWrappers::CreateInstance() {
+    MEMTRACK_PUSH_GROUP("AllWrappers");
+    rAssert(mspInstance == NULL);
 
-   mspInstance = new(GMA_PERSISTENT) AllWrappers;
-MEMTRACK_POP_GROUP( "AllWrappers" );
+    mspInstance = new(GMA_PERSISTENT) AllWrappers;
+    MEMTRACK_POP_GROUP("AllWrappers");
 
-   return mspInstance;
+    return mspInstance;
 }
 
 //========================================================================
@@ -94,11 +93,10 @@ MEMTRACK_POP_GROUP( "AllWrappers" );
 // Constraints: None.
 //
 //========================================================================
-AllWrappers* AllWrappers::GetInstance()
-{
-   rAssert(mspInstance != NULL);
+AllWrappers *AllWrappers::GetInstance() {
+    rAssert(mspInstance != NULL);
 
-   return mspInstance;
+    return mspInstance;
 }
 
 //========================================================================
@@ -114,15 +112,14 @@ AllWrappers* AllWrappers::GetInstance()
 // Constraints: None.
 //
 //========================================================================
-void  AllWrappers::DestroyInstance()
-{
-   rAssert(mspInstance != NULL);
+void AllWrappers::DestroyInstance() {
+    rAssert(mspInstance != NULL);
 
-   delete mspInstance;
+    delete mspInstance;
 }
 
 //========================================================================
-// AllWrappers::mLoader( int iIndex )
+// AllWrappers::mLoader(int iIndex)
 //========================================================================
 //
 // Description: Get iIndexth's element
@@ -134,15 +131,14 @@ void  AllWrappers::DestroyInstance()
 // Constraints: None.
 //
 //========================================================================
-IWrappedLoader& AllWrappers::mLoader( int iIndex )
-{
-   rAssert( iIndex < msNumWrappers);
+IWrappedLoader &AllWrappers::mLoader(int iIndex) {
+    rAssert(iIndex < msNumWrappers);
 
-   return *(mpLoaders[iIndex]);
+    return *(mpLoaders[iIndex]);
 }
 
 //========================================================================
-// AllWrappers::mpLoader( int iIndex )
+// AllWrappers::mpLoader(int iIndex)
 //========================================================================
 //
 // Description: Get iIndexth's element's ptr
@@ -154,11 +150,10 @@ IWrappedLoader& AllWrappers::mLoader( int iIndex )
 // Constraints: None.
 //
 //========================================================================
-IWrappedLoader* AllWrappers::mpLoader( int iIndex )
-{
-   rAssert( iIndex < msNumWrappers);
+IWrappedLoader *AllWrappers::mpLoader(int iIndex) {
+    rAssert(iIndex < msNumWrappers);
 
-   return (mpLoaders[iIndex]);
+    return (mpLoaders[iIndex]);
 }
 
 //************************************************************************
@@ -166,191 +161,165 @@ IWrappedLoader* AllWrappers::mpLoader( int iIndex )
 // Protected Member Functions : AllWrappers 
 //
 //************************************************************************
-void AllWrappers::CoupleAllLoaders()
-{
-MEMTRACK_PUSH_GROUP( "AllWrappers" );
-   IWrappedLoader* pWL = NULL;
+void AllWrappers::CoupleAllLoaders() {
+    MEMTRACK_PUSH_GROUP("AllWrappers");
+    IWrappedLoader *pWL = NULL;
 
-   for( int i=msNumWrappers-1; i>-1; i-- )
-   {
-      rAssert( mpLoaders[i] == NULL );
+    for (int i = msNumWrappers - 1; i > -1; i--) {
+        rAssert(mpLoaders[i] == NULL);
 
-      switch( i ) 
-      {
-      case msGeometry:
-         {
-            pWL = new(GMA_PERSISTENT) GeometryWrappedLoader();
-            ((GeometryWrappedLoader*)pWL)->AddRef();
-            mpLoaders[i] = pWL;
-         }
-      	break;
-         
-      case msStaticPhys:
-         {
-            
-            pWL = new(GMA_PERSISTENT) StaticPhysLoader();
-            ((StaticPhysLoader*)pWL)->AddRef();
-            mpLoaders[i] = pWL;
-         }
-      	break;
+        switch (i) {
+            case msGeometry: {
+                pWL = new(GMA_PERSISTENT) GeometryWrappedLoader();
+                ((GeometryWrappedLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
 
-      case msStaticEntity:
-         {
-            pWL = new(GMA_PERSISTENT) StaticEntityLoader();
-            ((StaticEntityLoader*)pWL)->AddRef();
-            mpLoaders[i] = pWL;
-         }
-      	break;
-      
-      case msTreeDSG:
-         {
-            pWL = new(GMA_PERSISTENT) TreeDSGLoader();
-            ((TreeDSGLoader*)pWL)->AddRef();
-            mpLoaders[i] = pWL;
-         }
-      	break;
-         
-      case msFenceEntity:
-         {
-            pWL = new(GMA_PERSISTENT) FenceLoader();
-            ((FenceLoader*)pWL)->AddRef();
-            mpLoaders[i] = pWL;
-         }
-         break;
-         
-      case msIntersectDSG:
-         {
-            pWL = new(GMA_PERSISTENT) IntersectLoader();
-            ((IntersectLoader*)pWL)->AddRef();
-            mpLoaders[i] = pWL;
-         }
-         break;
+            case msStaticPhys: {
 
-      case msAnimCollEntity:
-         {
-            pWL = new(GMA_PERSISTENT) AnimCollLoader();
-            ((AnimCollLoader*)pWL)->AddRef();
-            mpLoaders[i] = pWL;
-         }
-         break;
+                pWL = new(GMA_PERSISTENT) StaticPhysLoader();
+                ((StaticPhysLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
 
-      case msDynaPhys:
-         {
-             pWL = new(GMA_PERSISTENT) DynaPhysLoader();
-             ((DynaPhysLoader*)pWL)->AddRef();
-             mpLoaders[i] =  pWL;
-         }
-         break;
+            case msStaticEntity: {
+                pWL = new(GMA_PERSISTENT) StaticEntityLoader();
+                ((StaticEntityLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
 
-      case msInstStatEntity:
-          {
-             pWL = new(GMA_PERSISTENT) InstStatEntityLoader();
-             ((InstStatEntityLoader*)pWL)->AddRef();
-             mpLoaders[i] =  pWL;
-          }
-          break;
+            case msTreeDSG: {
+                pWL = new(GMA_PERSISTENT) TreeDSGLoader();
+                ((TreeDSGLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
 
-      case msInstStatPhys:
-          {
-             pWL = new(GMA_PERSISTENT) InstStatPhysLoader();
-             ((InstStatPhysLoader*)pWL)->AddRef();
-             mpLoaders[i] =  pWL;
-          }
-          break;
- 
-      case msLocator:
-          {
-             pWL = new(GMA_PERSISTENT) LocatorLoader();
-             ((LocatorLoader*)pWL)->AddRef();
-             mpLoaders[i] =  pWL;
-          }
-          break;
+            case msFenceEntity: {
+                pWL = new(GMA_PERSISTENT) FenceLoader();
+                ((FenceLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
 
-      case msWorldSphere:
-          {
-             pWL = new(GMA_PERSISTENT) WorldSphereLoader();
-             ((WorldSphereLoader*)pWL)->AddRef();
-             mpLoaders[i] =  pWL;
-          }
-          break;
+            case msIntersectDSG: {
+                pWL = new(GMA_PERSISTENT) IntersectLoader();
+                ((IntersectLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
 
-      case msRoadSegment:
-          {
-             pWL = new(GMA_PERSISTENT) RoadLoader();
-             ((RoadLoader*)pWL)->AddRef();
-             mpLoaders[i] =  pWL;
-          }
-          break;
+            case msAnimCollEntity: {
+                pWL = new(GMA_PERSISTENT) AnimCollLoader();
+                ((AnimCollLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
 
-      case msPathSegment:
-          {
-             pWL = new(GMA_PERSISTENT) PathLoader();
-             ((PathLoader*)pWL)->AddRef();
-             mpLoaders[i] =  pWL;
-          }
-          break;
+            case msDynaPhys: {
+                pWL = new(GMA_PERSISTENT) DynaPhysLoader();
+                ((DynaPhysLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
 
-      case msBillboard:
-          {
-             pWL = new(GMA_PERSISTENT) BillboardWrappedLoader();
-             ((BillboardWrappedLoader*)pWL)->AddRef();
-             mpLoaders[i] =  pWL;
-          }
-          break;
-      case msInstParticleSystem:
-          {
-             pWL = new (GMA_PERSISTENT) InstParticleSystemLoader();
-             ((InstParticleSystemLoader*)pWL)->AddRef();
-             mpLoaders[i] = pWL;
-          }
-          break;
-      case msBreakableObject:
-          {
-             pWL = new (GMA_PERSISTENT) BreakableObjectLoader();
-             ((BreakableObjectLoader*)pWL)->AddRef();
-             mpLoaders[i] = pWL;
-          }
-          break;
-      case msAnimEntity:
-          {
-             pWL = new (GMA_PERSISTENT) AnimDSGLoader();
-             ((AnimDSGLoader*)pWL)->AddRef();
-             mpLoaders[i] = pWL;
-          }
-          break;
-	  case msLensFlare:
-		  {
-			pWL = new(GMA_PERSISTENT) LensFlareLoader();
-			((LensFlareLoader*)pWL)->AddRef();
-			mpLoaders[i] = pWL;
-		  }
-		  break;
-	  case msAnimDynaPhys:
-		  {
-			pWL = new(GMA_PERSISTENT) AnimDynaPhysLoader();
-			((AnimDynaPhysLoader*)pWL)->AddRef();
-			mpLoaders[i] = pWL;
-		  }
-		  break;
-	  case msAnimDynaPhysWrapper:
-		  {
-			pWL = new (GMA_PERSISTENT) AnimDynaPhysWrapperLoader();
-			((AnimDynaPhysWrapperLoader*)pWL)->AddRef();
-			mpLoaders[i] = pWL;			
-		  }
-		  break;
-      default:
-         rAssert(false);
-         break;
-      }
-   }
-MEMTRACK_POP_GROUP( "AllWrappers" );
+            case msInstStatEntity: {
+                pWL = new(GMA_PERSISTENT) InstStatEntityLoader();
+                ((InstStatEntityLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
+
+            case msInstStatPhys: {
+                pWL = new(GMA_PERSISTENT) InstStatPhysLoader();
+                ((InstStatPhysLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
+
+            case msLocator: {
+                pWL = new(GMA_PERSISTENT) LocatorLoader();
+                ((LocatorLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
+
+            case msWorldSphere: {
+                pWL = new(GMA_PERSISTENT) WorldSphereLoader();
+                ((WorldSphereLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
+
+            case msRoadSegment: {
+                pWL = new(GMA_PERSISTENT) RoadLoader();
+                ((RoadLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
+
+            case msPathSegment: {
+                pWL = new(GMA_PERSISTENT) PathLoader();
+                ((PathLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
+
+            case msBillboard: {
+                pWL = new(GMA_PERSISTENT) BillboardWrappedLoader();
+                ((BillboardWrappedLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
+            case msInstParticleSystem: {
+                pWL = new(GMA_PERSISTENT) InstParticleSystemLoader();
+                ((InstParticleSystemLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
+            case msBreakableObject: {
+                pWL = new(GMA_PERSISTENT) BreakableObjectLoader();
+                ((BreakableObjectLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
+            case msAnimEntity: {
+                pWL = new(GMA_PERSISTENT) AnimDSGLoader();
+                ((AnimDSGLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
+            case msLensFlare: {
+                pWL = new(GMA_PERSISTENT) LensFlareLoader();
+                ((LensFlareLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
+            case msAnimDynaPhys: {
+                pWL = new(GMA_PERSISTENT) AnimDynaPhysLoader();
+                ((AnimDynaPhysLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
+            case msAnimDynaPhysWrapper: {
+                pWL = new(GMA_PERSISTENT) AnimDynaPhysWrapperLoader();
+                ((AnimDynaPhysWrapperLoader *) pWL)->AddRef();
+                mpLoaders[i] = pWL;
+            }
+                break;
+            default:
+                rAssert(false);
+                break;
+        }
+    }
+    MEMTRACK_POP_GROUP("AllWrappers");
 }
 
-void AllWrappers::AddGlobalEntity(tDrawable* Entity)
-{
-    if( !Entity )
-    {
+void AllWrappers::AddGlobalEntity(tDrawable *Entity) {
+    if (!Entity) {
         return;
     }
     rAssert(mNumGlobalEntities < NUM_GLOBAL_ENTITIES);
@@ -360,22 +329,17 @@ void AllWrappers::AddGlobalEntity(tDrawable* Entity)
     ++mNumGlobalEntities;
 }
 
-tDrawable* AllWrappers::GetGlobalEntity(tUID EntityID) const
-{
-    for(int i = 0; i < mNumGlobalEntities; ++i)
-    {
-        if(mpGlobalEntities[i]->GetUID() == EntityID )
-        {
+tDrawable *AllWrappers::GetGlobalEntity(tUID EntityID) const {
+    for (int i = 0; i < mNumGlobalEntities; ++i) {
+        if (mpGlobalEntities[i]->GetUID() == EntityID) {
             return mpGlobalEntities[i];
         }
     }
     return 0;
 }
 
-void AllWrappers::ClearGlobalEntities(void)
-{
-    for(int i = 0; i < mNumGlobalEntities; ++i)
-    {
+void AllWrappers::ClearGlobalEntities(void) {
+    for (int i = 0; i < mNumGlobalEntities; ++i) {
         tRefCounted::Release(mpGlobalEntities[i]);
     }
     mNumGlobalEntities = 0;
@@ -401,19 +365,17 @@ void AllWrappers::ClearGlobalEntities(void)
 // Constraints: None.
 //
 //========================================================================
-AllWrappers::AllWrappers()
-{
-   for( int i=msNumWrappers-1; i>-1; i--)
-   {
-      mpLoaders[i] = NULL;
-   }
-   CoupleAllLoaders();
+AllWrappers::AllWrappers() {
+    for (int i = msNumWrappers - 1; i > -1; i--) {
+        mpLoaders[i] = NULL;
+    }
+    CoupleAllLoaders();
 
-   mpGlobalEntities = new tDrawable* [NUM_GLOBAL_ENTITIES];
-   rAssert(mpGlobalEntities);
-   mNumGlobalEntities = 0;
+    mpGlobalEntities = new tDrawable *[NUM_GLOBAL_ENTITIES];
+    rAssert(mpGlobalEntities);
+    mNumGlobalEntities = 0;
 }
-   
+
 //========================================================================
 // AllWrappers::~AllWrappers()
 //========================================================================
@@ -427,20 +389,19 @@ AllWrappers::AllWrappers()
 // Constraints: None.
 //
 //========================================================================
-AllWrappers::~AllWrappers()
-{
-   // this codeblock does not apply anymore because the inheritance tree
-   // was changed.. leaving it in just in case.
+AllWrappers::~AllWrappers() {
+    // this codeblock does not apply anymore because the inheritance tree
+    // was changed.. leaving it in just in case.
 
-   //for( int i=msNumWrappers-1; i>-1; i--)
-   //{
-   //   if( mpLoaders[i] != NULL )
-   //   {
+    //for(int i=msNumWrappers-1; i>-1; i--)
+    //{
+    //   if(mpLoaders[i] != NULL)
+    //   {
 
-   //      ( static_cast<tRefCounted*>(mpLoaders[i]) )->Release();
-   //      mpLoaders[i] = NULL;
-   //   }
-   //}
+    //      (static_cast<tRefCounted*>(mpLoaders[i]))->Release();
+    //      mpLoaders[i] = NULL;
+    //   }
+    //}
     ClearGlobalEntities();
     delete mpGlobalEntities;
     mpGlobalEntities = 0;

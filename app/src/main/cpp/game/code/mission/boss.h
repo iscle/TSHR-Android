@@ -18,7 +18,7 @@
 // Nested Includes
 //===========================================================================
 
-#include <p3d\entity.hpp>
+#include <p3d/entity.hpp>
 
 //===========================================================================
 // Forward References
@@ -51,36 +51,37 @@ class Weapon;
 //      steady state.
 //
 //===========================================================================
-class Boss : public tEntity
-{
-    public:
-        Boss();
-        virtual ~Boss();
+class Boss : public tEntity {
+public:
+    Boss();
 
-        virtual void Update( float timeInMS )=0;
-        virtual bool LoadSetup( const char* statePropDSGName, const rmt::Vector& position )=0;
-        virtual void AddWeapon( Weapon* pWeapon, const rmt::Vector& offset )=0;
+    virtual ~Boss();
 
-    protected:
-        
+    virtual void Update(float timeInMS) = 0;
+
+    virtual bool LoadSetup(const char *statePropDSGName, const rmt::Vector &position) = 0;
+
+    virtual void AddWeapon(Weapon *pWeapon, const rmt::Vector &offset) = 0;
+
+protected:
 
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow Boss from being copied and assigned.
-        Boss( const Boss& );
-        Boss& operator=( const Boss& );
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow Boss from being copied and assigned.
+    Boss(const Boss &);
 
-    
+    Boss &operator=(const Boss &);
+
+
 };
 
-inline Boss::Boss()
-{
+inline Boss::Boss() {
 
 }
-inline Boss::~Boss()
-{
+
+inline Boss::~Boss() {
 
 }
 

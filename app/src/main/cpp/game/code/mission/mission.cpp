@@ -105,58 +105,55 @@ const int MAX_NUM_STATEPROP_COLLECTIBLES = 10;
 //
 //==============================================================================
 Mission::Mission() :
-    mIsStreetRace1Or2( false ),
-    mNumMissionStages( 0 ),
-    mCurrentStage( -1 ),
+        mIsStreetRace1Or2(false),
+        mNumMissionStages(0),
+        mCurrentStage(-1),
 #ifdef RAD_GAMECUBE
-    mHeap( GMA_GC_VMM ),
+        mHeap(GMA_GC_VMM),
 #else
-    mHeap( GMA_LEVEL_MISSION ),
+        mHeap(GMA_LEVEL_MISSION),
 #endif
-    mbComplete( false ),
-    mbIsLastStage( false ),
-    mMissionTimer( 0 ),
-    mState( STATE_WAITING ),
-    mLastStageState( MissionStage::STAGE_IDLE ),
-    //mNumVehicles( 0 ),
-    mVehicleRestart( NULL ),
-    mPlayerRestart( NULL ),
-    mDynaloadLoc( NULL ),
-    mStreetRacePropsLoad(NULL),
-    mStreetRacePropsUnload(NULL),    
-    mResetToStage( 0 ),
-    mSundayDrive( false ),
-    mBonusMisison( false ),
-    mNumBonusObjectives( 0 ),
-    mIsForcedCar( false ),
-    mbAutoRepairCar(false),
-    mbSwappedCars(false),
-    mbTriggerPattyAndSelmaScreen(false),
-    mFinalDelay( -1 ),
-    mCompleteDelay( -1 ),
-    mChangingStages( false ),
-    mNoTimeUpdate(false ),
-    mJumpBackStage( false ),
-    mJumpBackBy( 1 ),
-    mNumStatePropCollectibles( 0 ),
-    mStatePropCollectibles( NULL ),
-    mDoorStars( NULL ),
-    mInitPedGroupId( 0 ),
-    mShowHUD( true ),
-    mNumValidFailureHints( -1 )
-{
-    strcpy( mcName, "" );
+        mbComplete(false),
+        mbIsLastStage(false),
+        mMissionTimer(0),
+        mState(STATE_WAITING),
+        mLastStageState(MissionStage::STAGE_IDLE),
+        //mNumVehicles(0),
+        mVehicleRestart(NULL),
+        mPlayerRestart(NULL),
+        mDynaloadLoc(NULL),
+        mStreetRacePropsLoad(NULL),
+        mStreetRacePropsUnload(NULL),
+        mResetToStage(0),
+        mSundayDrive(false),
+        mBonusMisison(false),
+        mNumBonusObjectives(0),
+        mIsForcedCar(false),
+        mbAutoRepairCar(false),
+        mbSwappedCars(false),
+        mbTriggerPattyAndSelmaScreen(false),
+        mFinalDelay(-1),
+        mCompleteDelay(-1),
+        mChangingStages(false),
+        mNoTimeUpdate(false),
+        mJumpBackStage(false),
+        mJumpBackBy(1),
+        mNumStatePropCollectibles(0),
+        mStatePropCollectibles(NULL),
+        mDoorStars(NULL),
+        mInitPedGroupId(0),
+        mShowHUD(true),
+        mNumValidFailureHints(-1) {
+    strcpy(mcName, "");
     mbCarryOverOutOfCarCondition = false;
 
     unsigned int i;
-    for ( i = 0; i < MAX_BONUS_OBJECTIVES; ++i )
-    {
-        mBonusObjectives[ i ] = NULL;
+    for (i = 0; i < MAX_BONUS_OBJECTIVES; ++i) {
+        mBonusObjectives[i] = NULL;
     }
     mElapsedTimems = 0;
-    for (int j =0; j<MAX_STAGES;j++)
-    {
-        mMissionStages[j]=NULL;
+    for (int j = 0; j < MAX_STAGES; j++) {
+        mMissionStages[j] = NULL;
     }
 }
 
@@ -170,56 +167,48 @@ Mission::Mission() :
 // Return:      N/A.
 //
 //==============================================================================
-Mission::~Mission()
-{
+Mission::~Mission() {
     /*
-    for( i = 0; i < mNumVehicles; i++ )
+    for(i = 0; i <mNumVehicles; i++)
     {
         mVehicles[ i ]->Release();
         mVehicles[ i ] = NULL;
     }
     */
-    
-    if ( mDynaloadLoc )
-    {
+
+    if (mDynaloadLoc) {
         mDynaloadLoc->Release();
     }
 
     unsigned int k;
-    for ( k = 0; k < mNumBonusObjectives; ++k )
-    {
-        delete mBonusObjectives[ k ];
-        mBonusObjectives[ k ] = NULL;
+    for (k = 0; k < mNumBonusObjectives; ++k) {
+        delete mBonusObjectives[k];
+        mBonusObjectives[k] = NULL;
     }
     mNumBonusObjectives = 0;
 
-    if ( mStreetRacePropsLoad )
-    {
+    if (mStreetRacePropsLoad) {
         mStreetRacePropsLoad->ReleaseVerified();
     }
 
-    
-    if ( mStreetRacePropsUnload )
-    {
+
+    if (mStreetRacePropsUnload) {
         mStreetRacePropsUnload->ReleaseVerified();
     }
 
     // Release all statepropcollectibles and remove them from the world
-    for ( int i = 0 ; i < mNumStatePropCollectibles ; i++ )
-    {
-        StatePropCollectible* collectible = mStatePropCollectibles[i];
-        if ( collectible )
-        {
+    for (int i = 0; i < mNumStatePropCollectibles; i++) {
+        StatePropCollectible *collectible = mStatePropCollectibles[i];
+        if (collectible) {
             collectible->RemoveFromDSG();
             collectible->Release();
         }
     }
-    delete [] mStatePropCollectibles;
+    delete[] mStatePropCollectibles;
     mStatePropCollectibles = NULL;
     mNumStatePropCollectibles = 0;
 
-    if ( mDoorStars )
-    {
+    if (mDoorStars) {
         delete mDoorStars;
     }
 }
@@ -229,27 +218,27 @@ Mission::~Mission()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( Vehicle* vehicle )
+// Parameters:  (Vehicle* vehicle)
 //
 // Return:      void 
 //
 //=============================================================================
 /*
-void Mission::AddVehicle( Vehicle* vehicle )
+void Mission::AddVehicle(Vehicle* vehicle)
 {
-    rAssert( vehicle != NULL );
+    rAssert(vehicle != NULL);
 
     int i;
-    for ( i = 0; i < mNumVehicles; ++i )
+    for (i = 0; i <mNumVehicles; ++i)
     {
-        if ( mVehicles[ i ] == vehicle )
+        if (mVehicles[ i ] == vehicle)
         { 
             //We've already got this one!
             return;
         }
     }
 
-    rAssert( mNumVehicles < MAX_VEHICLES );
+    rAssert(mNumVehicles <MAX_VEHICLES);
     mVehicles[ mNumVehicles ] = vehicle;
     vehicle->AddRef();
 
@@ -262,19 +251,19 @@ void Mission::AddVehicle( Vehicle* vehicle )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( char* name )
+// Parameters:  (char* name)
 //
 // Return:      Vehicle
 //
 //=============================================================================
 /*
-Vehicle* Mission::GetVehicleByName( char* name )
+Vehicle* Mission::GetVehicleByName(char* name)
 {
     Vehicle* vehicle = NULL;
 
-    for( int i = 0; i < mNumVehicles; i++ )
+    for(int i = 0; i <mNumVehicles; i++)
     {
-        if( strcmp( mVehicles[ i ]->GetName(), name ) == 0 )
+        if(strcmp(mVehicles[ i ]->GetName(), name) == 0)
         {
             vehicle = mVehicles[ i ];
             break;
@@ -283,9 +272,9 @@ Vehicle* Mission::GetVehicleByName( char* name )
     
     // TODOGREG - is this what we want to do here?
     // if mission doesn't have one of these, do we really want to return one from vehicle central??????????
-    if ( !vehicle )
+    if (!vehicle)
     {
-        vehicle = GetVehicleCentral()->GetVehicleByName( name );
+        vehicle = GetVehicleCentral()->GetVehicleByName(name);
     }
 
     return vehicle;
@@ -302,14 +291,12 @@ Vehicle* Mission::GetVehicleByName( char* name )
 // Return:      void 
 //
 //=============================================================================
-void Mission::Initialize( GameMemoryAllocator heap)
-{
+void Mission::Initialize(GameMemoryAllocator heap) {
     mHeap = heap;
 
     unsigned int i;
-    for ( i = 0; i < mNumBonusObjectives; ++i )
-    {
-        mBonusObjectives[ i ]->Initialize();
+    for (i = 0; i < mNumBonusObjectives; ++i) {
+        mBonusObjectives[i]->Initialize();
     }
 
     mbComplete = false;
@@ -317,43 +304,34 @@ void Mission::Initialize( GameMemoryAllocator heap)
     mJumpBackStage = false;
     mJumpBackBy = 1;
 
-    SetToStage( -1 );
-    
+    SetToStage(-1);
+
     mState = STATE_WAITING;
 
 
     //if missions are forced cars turn off phone booths
-    if(mIsForcedCar == true)
-    {
+    if (mIsForcedCar == true) {
         GetGameplayManager()->DisablePhoneBooths();
     }
 
-    if(mbAutoRepairCar == true)
-    {
+    if (mbAutoRepairCar == true) {
         //GetGameplayManager()->GetCurrentVehicle()->ResetDamageState();
-        if (GetGameplayManager()->GetCurrentVehicle() != NULL)
-        {
-            if (GetGameplayManager()->GetCurrentVehicle()->IsVehicleDestroyed() == true)
-            {
+        if (GetGameplayManager()->GetCurrentVehicle() != NULL) {
+            if (GetGameplayManager()->GetCurrentVehicle()->IsVehicleDestroyed() == true) {
                 GetEventManager()->TriggerEvent(EVENT_REPAIR_CAR);
-                
+
             }
         }
-    }
-    else
-    {
-        if (IsSundayDrive() == true ||IsWagerMission()== true  )
-        {
-            
-        }
-        else
-        {
+    } else {
+        if (IsSundayDrive() == true || IsWagerMission() == true) {
+
+        } else {
             mbAutoRepairCar = true;
         }
     }
 
     //Purchase rewards only in sunday drive.
-    ActionButton::PurchaseReward::SetEnabled( mSundayDrive );
+    ActionButton::PurchaseReward::SetEnabled(mSundayDrive);
 
     GetEventManager()->AddListener(this, EVENT_ENTER_INTERIOR_TRANSITION_START);
     GetEventManager()->AddListener(this, EVENT_ENTER_INTERIOR_END);
@@ -363,36 +341,27 @@ void Mission::Initialize( GameMemoryAllocator heap)
     GetEventManager()->AddListener(this, EVENT_GUI_TRIGGER_PATTY_AND_SELMA_SCREEN);
 
     //Try to setup the doorstars if this is sunday drive
-    rAssert( mDoorStars == NULL );
-    if ( mSundayDrive )
-    {
+    rAssert(mDoorStars == NULL);
+    if (mSundayDrive) {
         int level = GetGameplayManager()->GetCurrentLevelIndex() + 1;
-        if ( level == 5 )
-        {
+        if (level == 5) {
             level = 2;
-        }
-        else if ( level == 6 )
-        {
+        } else if (level == 6) {
             level = 3;
-        }
-        else if ( level == 7 )
-        {
+        } else if (level == 7) {
             level = 4;
         }
-        
-        char name[ 64 ];
-        sprintf( name, "l%d_doorstars", level );
+
+        char name[64];
+        sprintf(name, "l%d_doorstars", level);
         mDoorStars = new AnimatedIcon();
-        mDoorStars->Init( name, rmt::Vector( 0.0f, 0.0f, 0.0f ), true, false );
+        mDoorStars->Init(name, rmt::Vector(0.0f, 0.0f, 0.0f), true, false);
     }
 
-    if( strncmp( mcName, "sr1", 3 ) == 0 ||
-        strncmp( mcName, "sr2", 3 ) == 0 ) 
-    {
+    if (strncmp(mcName, "sr1", 3) == 0 ||
+        strncmp(mcName, "sr2", 3) == 0) {
         mIsStreetRace1Or2 = true;
-    }
-    else
-    {
+    } else {
         mIsStreetRace1Or2 = false;
     }
 
@@ -408,33 +377,28 @@ void Mission::Initialize( GameMemoryAllocator heap)
 // Return:      void
 //
 //=============================================================================
-void Mission::Finalize()
-{
-    SetToStage( -1 );
+void Mission::Finalize() {
+    SetToStage(-1);
 
     //chuck adding draw synch I hope to fix the level 5 m1 crash when user aborts missions.
     p3d::pddi->DrawSync();
 
     //Stop harrass cars from spawning
-    GameplayManager* gameplayManager = GetGameplayManager();
-    if ( gameplayManager != NULL )
-    {
-        ChaseManager* chaseManager = gameplayManager->GetChaseManager(0);
-        if ( chaseManager != NULL )
-        {
+    GameplayManager *gameplayManager = GetGameplayManager();
+    if (gameplayManager != NULL) {
+        ChaseManager *chaseManager = gameplayManager->GetChaseManager(0);
+        if (chaseManager != NULL) {
             chaseManager->ClearAllObjects();
             chaseManager->SetMaxObjects(0);
         }
         gameplayManager->EmptyMissionVehicleSlots();
-    }    
+    }
 
-    
 
     int i;
-    for ( i = 0; i < mNumMissionStages; i++ )
-    {
-        delete mMissionStages[ i ];
-        mMissionStages[ i ] = NULL;
+    for (i = 0; i < mNumMissionStages; i++) {
+        delete mMissionStages[i];
+        mMissionStages[i] = NULL;
     }
 
     // Remove all collectibles from the vehicles
@@ -442,14 +406,12 @@ void Mission::Finalize()
 
 
     // Release all statepropcollectibles and remove them from the world
-    for ( int i = 0 ; i < mNumStatePropCollectibles ; i++ )
-    {
-        StatePropCollectible* collectible = mStatePropCollectibles[i];
-        if ( collectible )
-        {
+    for (int i = 0; i < mNumStatePropCollectibles; i++) {
+        StatePropCollectible *collectible = mStatePropCollectibles[i];
+        if (collectible) {
             collectible->RemoveFromDSG();
             collectible->Release();
-            p3d::inventory->Remove( collectible );
+            p3d::inventory->Remove(collectible);
             collectible = NULL;
         }
     }
@@ -458,10 +420,10 @@ void Mission::Finalize()
 
 
     /*
-    for ( j = 0; j < mNumVehicles; ++j )
+    for (j = 0; j <mNumVehicles; ++j)
     {
-        //bool succeeded = GetVehicleCentral()->RemoveVehicleFromActiveList( mVehicles[ j ] );
-//        rAssert( succeeded );
+        //bool succeeded = GetVehicleCentral()->RemoveVehicleFromActiveList(mVehicles[ j ]);
+//        rAssert(succeeded);
         mVehicles[ j ]->Release();
         mVehicles[ j ] = NULL;
     }
@@ -470,100 +432,89 @@ void Mission::Finalize()
     */
 
     mNumMissionStages = 0;
-    
+
     mbComplete = false;
     mbIsLastStage = false;
 
     unsigned int k;
-    for ( k = 0; k < mNumBonusObjectives; ++k )
-    {
-        mBonusObjectives[ k ]->Finalize();
-        delete mBonusObjectives[ k ];
+    for (k = 0; k < mNumBonusObjectives; ++k) {
+        mBonusObjectives[k]->Finalize();
+        delete mBonusObjectives[k];
     }
 
     mNumBonusObjectives = 0;
 
     //This is a safety catch
-    GetEventManager()->RemoveAll( this );
+    GetEventManager()->RemoveAll(this);
 
     //
     // TODO: Dump all the mission vehicles (player & AI)
     //
 
     //Dump the car if this is a forced car mission
-    if ( mIsForcedCar )
-    {
+    if (mIsForcedCar) {
         //re-enable phone booths
         GetGameplayManager()->EnablePhoneBooths();
 
 
-        Character* player = GetAvatarManager()->GetAvatarForPlayer( 0 )->GetCharacter();
+        Character *player = GetAvatarManager()->GetAvatarForPlayer(0)->GetCharacter();
 
-        Vehicle* forcedCar = GetGameplayManager()->GetVehicleInSlot(GameplayManager::eOtherCar);
-		Vehicle* currCar = GetAvatarManager()->GetAvatarForPlayer(0)->GetVehicle();
-		if(currCar && currCar->mVehicleID == VehicleEnum::HUSKA)
-		{
-			currCar = GetVehicleCentral()->mHuskPool.FindOriginalVehicleGivenHusk(currCar);
-		}
-        if ( forcedCar != NULL && currCar == forcedCar && (mbSwappedCars == false) )
-        {
-           
+        Vehicle *forcedCar = GetGameplayManager()->GetVehicleInSlot(GameplayManager::eOtherCar);
+        Vehicle *currCar = GetAvatarManager()->GetAvatarForPlayer(0)->GetVehicle();
+        if (currCar && currCar->mVehicleID == VehicleEnum::HUSKA) {
+            currCar = GetVehicleCentral()->mHuskPool.FindOriginalVehicleGivenHusk(currCar);
+        }
+        if (forcedCar != NULL && currCar == forcedCar && (mbSwappedCars == false)) {
+
             //locking forced car since we are done with it. 
             forcedCar->TransitToAI();
             //The character is in the forced car
-            GetAvatarManager()->PutCharacterOnGround( player, forcedCar );
-           
+            GetAvatarManager()->PutCharacterOnGround(player, forcedCar);
+
             //Move the character somewhere reasonable
             rmt::Vector pos;
-            player->GetPosition( &pos );
+            player->GetPosition(&pos);
             float rotation = player->GetFacingDir();
 
-           
-            const Road* road;
-            RoadSegment* roadSeg;
+
+            const Road *road;
+            RoadSegment *roadSeg;
             int segIndex;
             float in;
             float lateral;
 
-            if ( RoadManager::GetInstance()->FindRoad( pos, &road, &roadSeg, segIndex, in, lateral, true ) )
-            {
+            if (RoadManager::GetInstance()->FindRoad(pos, &road, &roadSeg, segIndex, in, lateral,
+                                                     true)) {
                 //We're on a road set our position to the side of the road.
-                roadSeg->GetPosition( 0.5f, 0.5f, &pos );
-            }
-            else
-            {
+                roadSeg->GetPosition(0.5f, 0.5f, &pos);
+            } else {
                 //Am I in an intersection?
-                Intersection* intersection = RoadManager::GetInstance()->FindIntersection( pos );
-                if ( intersection != NULL )
-                {
+                Intersection *intersection = RoadManager::GetInstance()->FindIntersection(pos);
+                if (intersection != NULL) {
                     //Take the first road going out of the intersection and 
                     //put the player on the corner.
-                    const Road* road = intersection->GetRoadOut( 0 );
+                    const Road *road = intersection->GetRoadOut(0);
 
-                    if(!road)
-                    {
-                        road = intersection->GetRoadIn( 0 );
+                    if (!road) {
+                        road = intersection->GetRoadIn(0);
                     }
 
-                    if(road)
-                    {
-                        roadSeg = road->GetRoadSegment( 0 );
-                        roadSeg->GetPosition( 0.5f, 0.5f, &pos );
+                    if (road) {
+                        roadSeg = road->GetRoadSegment(0);
+                        roadSeg->GetPosition(0.5f, 0.5f, &pos);
                     }
-                }
-                else
-                {
+                } else {
                     // we're not on a road or on an intersection. get the "closeset" road
                     float distance;
-                    RoadSegment* segment;
+                    RoadSegment *segment;
                     GetIntersectManager()->FindClosestRoad(
-                        pos, 
-                        50.0f,  //yay the magic numbers i just made this one up
-                        segment, 
-                        distance 
+                            pos,
+                            50.0f,  //yay the magic numbers i just made this one up
+                            segment,
+                            distance
                     );
-                    rAssert( segment != NULL );
-                    segment->GetPosition( &pos );
+                    rAssert(segment != NULL);
+                    segment->GetPosition(&pos);
                 }
             }
 
@@ -580,11 +531,11 @@ void Mission::Finalize()
 
             //subtract the character's position from the original start position.
 
-            CharacterPositionVsCharacterStartPosition.Sub(GetGameplayManager()->mPlayerAndCarInfo.mPlayerPosition);
-           
+            CharacterPositionVsCharacterStartPosition.Sub(
+                    GetGameplayManager()->mPlayerAndCarInfo.mPlayerPosition);
 
 
-            float vaule1,vaule2;
+            float vaule1, vaule2;
 
             //distance between character and the forced cars respawn locator
             vaule1 = rmt::Sqrt(CharacterPositionVsCar.MagnitudeSqr());
@@ -596,18 +547,17 @@ void Mission::Finalize()
 
             //if the character is less than 2 meter from the forced carstart location then place them at the  spot that 
             //they were in when starting the talk to objective that started this mission
-            if (vaule1 < 2.0f  &&  vaule2 < 20.0f)
-            {
+            if (vaule1 < 2.0f && vaule2 < 20.0f) {
                 pos = GetGameplayManager()->mPlayerAndCarInfo.mPlayerPosition;
             }
-            player->RelocateAndReset( pos, rotation, true );
+            player->RelocateAndReset(pos, rotation, true);
 
-            //GetGameplayManager()->PutPlayerInCar( true );  //Hackish way to put the player in the car in the next / prev stage / mission
+            //GetGameplayManager()->PutPlayerInCar(true);  //Hackish way to put the player in the car in the next / prev stage / mission
             //GetGameplayManager()->mShouldLoadDefaultVehicle = true;
 
-            GetEventManager()->TriggerEvent( EVENT_CHARACTER_POS_RESET );
+            GetEventManager()->TriggerEvent(EVENT_CHARACTER_POS_RESET);
         }
-        GetGameplayManager()->ClearVehicleSlot(GameplayManager::eOtherCar);            
+        GetGameplayManager()->ClearVehicleSlot(GameplayManager::eOtherCar);
     }
 
     //unload streetrace props if there are any for this mission
@@ -615,8 +565,7 @@ void Mission::Finalize()
     mbSwappedCars = false;
 
 
-    if ( mDoorStars )
-    {
+    if (mDoorStars) {
         delete mDoorStars;
         mDoorStars = NULL;
     }
@@ -632,30 +581,25 @@ void Mission::Finalize()
 // Return:      void 
 //
 //=============================================================================
-void Mission::SetToStage( int index, bool resetting )
-{
-    if( index == mCurrentStage )
-    {
+void Mission::SetToStage(int index, bool resetting) {
+    if (index == mCurrentStage) {
         return;
     }
-    
-    MissionStage* stage = GetCurrentStage();
-    if( stage != NULL )
-    {
+
+    MissionStage *stage = GetCurrentStage();
+    if (stage != NULL) {
 
         stage->Finalize();
     }
 
-    stage = GetStage( index );
+    stage = GetStage(index);
     //Test if this is a "locked" stage and see if you can do it.
-    if ( stage && stage->GetMissionLocked() )
-    {
-        if ( UnlockStage( stage ) )
-        {
+    if (stage && stage->GetMissionLocked()) {
+        if (UnlockStage(stage)) {
 
             //Now we always play the dialogue.
 //            //Go to the next stage
-//            rAssert( index < MAX_STAGES );
+//            rAssert(index <MAX_STAGES);
 //            ++index;
         }
     }
@@ -663,33 +607,27 @@ void Mission::SetToStage( int index, bool resetting )
     mCurrentStage = index;
 
     stage = GetCurrentStage();
-    if( stage != NULL )
-    {
+    if (stage != NULL) {
         unsigned int time;
         MissionStage::StageTimeType type;
 
-        stage->GetStageTime( type, time );
+        stage->GetStageTime(type, time);
 
-        switch( type )
-        {
-        case MissionStage::STAGETIME_NOT_TIMED:
-            {
+        switch (type) {
+            case MissionStage::STAGETIME_NOT_TIMED: {
                 mMissionTimer = -1;
                 break;
             }
-        case MissionStage::STAGETIME_ADD:
-            {
-                mMissionTimer += static_cast<int>( time * MS_PER_SEC );
+            case MissionStage::STAGETIME_ADD: {
+                mMissionTimer += static_cast<int>(time * MS_PER_SEC);
                 break;
             }
-        case MissionStage::STAGETIME_SET:
-            {
-                mMissionTimer = static_cast<int>( time * MS_PER_SEC );
+            case MissionStage::STAGETIME_SET: {
+                mMissionTimer = static_cast<int>(time * MS_PER_SEC);
                 break;
             }
-        default:
-            {
-                rAssert( false );
+            default: {
+                rAssert(false);
                 break;
             }
         }
@@ -697,16 +635,14 @@ void Mission::SetToStage( int index, bool resetting )
         // new 
         // greg
         // jan 10, 2003
-        
+
         // loop through up to and including this stage and
         // re-initialize the vehicle stuff
-        if(resetting)
-        {
+        if (resetting) {
             ResetPlayer();
-    
+
             int i;
-            for(i = 0; i < index; i++)
-            {            
+            for (i = 0; i < index; i++) {
                 GetStage(i)->VehicleInfoInitialize();
                 GetStage(i)->VehicleFinalize();
             }
@@ -715,8 +651,7 @@ void Mission::SetToStage( int index, bool resetting )
 
         // Is this the start of the mission?
         //
-        if( index == 0 )
-        {
+        if (index == 0) {
             mState = STATE_INPROGRESS;
         }
     }
@@ -732,9 +667,8 @@ void Mission::SetToStage( int index, bool resetting )
 // Return:      void 
 //
 //=============================================================================
-void Mission::NextStage()
-{
-    SetToStage( mCurrentStage + 1 );
+void Mission::NextStage() {
+    SetToStage(mCurrentStage + 1);
 }
 
 //=============================================================================
@@ -747,19 +681,15 @@ void Mission::NextStage()
 // Return:      void 
 //
 //=============================================================================
-void Mission::PrevStage()
-{
-    rAssert( mCurrentStage != -1 );
+void Mission::PrevStage() {
+    rAssert(mCurrentStage != -1);
 
-    if ( mCurrentStage == 0 )
-    { //We're on the first stage.
+    if (mCurrentStage == 0) { //We're on the first stage.
         GetCurrentStage()->Finalize();
 
         ResetStage();
-    }
-    else
-    {
-        SetToStage( mCurrentStage - 1 );
+    } else {
+        SetToStage(mCurrentStage - 1);
     }
 }
 
@@ -773,8 +703,7 @@ void Mission::PrevStage()
 // Return:      void 
 //
 //=============================================================================
-void Mission::ResetStage()
-{
+void Mission::ResetStage() {
     GetCurrentStage()->Reset();
 }
 
@@ -783,43 +712,31 @@ void Mission::ResetStage()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void Mission::HandleEvent( EventEnum id, void* pEventData )
-{
-    if((id == EVENT_ENTER_INTERIOR_TRANSITION_START) || (id == EVENT_EXIT_INTERIOR_START))
-    {
+void Mission::HandleEvent(EventEnum id, void *pEventData) {
+    if ((id == EVENT_ENTER_INTERIOR_TRANSITION_START) || (id == EVENT_EXIT_INTERIOR_START)) {
         mNoTimeUpdate = true;
-    }
-    else if ((id == EVENT_ENTER_INTERIOR_END) || (id == EVENT_EXIT_INTERIOR_END))
-    {
+    } else if ((id == EVENT_ENTER_INTERIOR_END) || (id == EVENT_EXIT_INTERIOR_END)) {
         mNoTimeUpdate = false;
-    }
-    else if ( id == EVENT_GUI_MISSION_START )
-    {
+    } else if (id == EVENT_GUI_MISSION_START) {
         //Dirty dirty
         GetCurrentStage()->Start();
-        GetGameFlow()->GetContext( CONTEXT_GAMEPLAY )->Resume();
+        GetGameFlow()->GetContext(CONTEXT_GAMEPLAY)->Resume();
 
-        if ( GetCurrentStage()->StartBonusObjective() )
-        {
+        if (GetCurrentStage()->StartBonusObjective()) {
             StartBonusObjectives();
         }
-    }
-    else if ( id == EVENT_GUI_TRIGGER_PATTY_AND_SELMA_SCREEN)
-    {
+    } else if (id == EVENT_GUI_TRIGGER_PATTY_AND_SELMA_SCREEN) {
         mbTriggerPattyAndSelmaScreen = true;
-    }
-    else
-    {
-        MissionStage* pStage = GetCurrentStage();
-        if( pStage != NULL )
-        {
-            pStage->HandleEvent( id, pEventData );
-        } 
+    } else {
+        MissionStage *pStage = GetCurrentStage();
+        if (pStage != NULL) {
+            pStage->HandleEvent(id, pEventData);
+        }
     }
 }
 
@@ -828,132 +745,108 @@ void Mission::HandleEvent( EventEnum id, void* pEventData )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void Mission::Update( unsigned int elapsedTime )
-{
-    if ( mChangingStages )
-    {
+void Mission::Update(unsigned int elapsedTime) {
+    if (mChangingStages) {
         DoStageChange();
     }
 
-    MissionStage* stage = GetCurrentStage();
-    
+    MissionStage *stage = GetCurrentStage();
+
     // MS9: take this out! There should always be a stage
-    if( stage == NULL )
+    if (stage == NULL)
         return;
 
-    rAssert( stage != NULL );
-    
+    rAssert(stage != NULL);
 
-BEGIN_PROFILE( "Mission Update" );
+
+    BEGIN_PROFILE("Mission Update");
     MissionStage::MissionStageState state = stage->GetProgress();
 
     ContextEnum currentContext = GetGameFlow()->GetCurrentContext();
-    if( currentContext == CONTEXT_PAUSE )
-    {
+    if (currentContext == CONTEXT_PAUSE) {
         state = MissionStage::STAGE_INPROGRESS;
     }
 
-    switch( state )
-    {
-    case MissionStage::STAGE_INPROGRESS:
-        {
-            if (GetCurrentStage() != NULL)
-            {
-                if( mMissionTimer >=1 && !mNoTimeUpdate && GetCurrentStage()->mbDisablePlayerControlForCountDown != true)
-                {
-                    if(GetCurrentStage()->QueryUseElapsedTime() ==true) //make timer count up if stage is using elasped time. 
+    switch (state) {
+        case MissionStage::STAGE_INPROGRESS: {
+            if (GetCurrentStage() != NULL) {
+                if (mMissionTimer >= 1 && !mNoTimeUpdate &&
+                    GetCurrentStage()->mbDisablePlayerControlForCountDown != true) {
+                    if (GetCurrentStage()->QueryUseElapsedTime() ==
+                        true) //make timer count up if stage is using elasped time.
                     {
                         mMissionTimer += elapsedTime;
-                    }
-                    else
-                    {
+                    } else {
                         mMissionTimer -= elapsedTime;
                     }
 
                     mElapsedTimems += elapsedTime;
-                    
-                    //Chuck:only trigger red flashing timer if we aren't using elasped time.
-                    
 
-                        if( ( mMissionTimer <= 10000 ) 
-                            && ( mMissionTimer + elapsedTime > 10000 ) 
-                            && ( stage->GetFinalStage()
+                    //Chuck:only trigger red flashing timer if we aren't using elasped time.
+
+
+                    if ((mMissionTimer <= 10000)
+                        && (mMissionTimer + elapsedTime > 10000)
+                        && (stage->GetFinalStage()
                             && !(GetCurrentStage()->QueryUseElapsedTime())
-                            ) )
-                        {
-                            GetEventManager()->TriggerEvent( EVENT_TIME_RUNNING_OUT );
-                        }
-                    
+                        )) {
+                        GetEventManager()->TriggerEvent(EVENT_TIME_RUNNING_OUT);
+                    }
+
 
                 }
-                GetCurrentStage()->Update( elapsedTime );
+                GetCurrentStage()->Update(elapsedTime);
 
                 unsigned int i;
-                for ( i = 0; i < mNumBonusObjectives; ++i )
-                {
-                    mBonusObjectives[ i ]->Update( elapsedTime );
+                for (i = 0; i < mNumBonusObjectives; ++i) {
+                    mBonusObjectives[i]->Update(elapsedTime);
                 }
                 break;
             }
         }
-    case MissionStage::STAGE_COMPLETE:
-        {
-            if( state == mLastStageState && mFinalDelay == -1 && mCompleteDelay == -1 )
-            {
+        case MissionStage::STAGE_COMPLETE: {
+            if (state == mLastStageState && mFinalDelay == -1 && mCompleteDelay == -1) {
                 break;
             }
-            
-            mbComplete = mCurrentStage == mNumMissionStages-1;
 
-            if ( mFinalDelay == -1 && stage->GetFinalStage() && mbComplete )
-            {
+            mbComplete = mCurrentStage == mNumMissionStages - 1;
+
+            if (mFinalDelay == -1 && stage->GetFinalStage() && mbComplete) {
                 //Setup the delay and skip outta here.
-                MissionStage* thisStage = this->GetCurrentStage();
-                MissionObjective* objective = thisStage->GetObjective();
-                if( objective->IsPattyAndSelmaDialog() )
-                {
+                MissionStage *thisStage = this->GetCurrentStage();
+                MissionObjective *objective = thisStage->GetObjective();
+                if (objective->IsPattyAndSelmaDialog()) {
                     mFinalDelay = 0;
-                }
-                else
-                {
+                } else {
                     mFinalDelay = FINAL_DELAY;
                     //
                     // Tell the GUI system that the mission succeeded
                     //
-                    if(!IsSundayDrive())
-                    {
-                        GetGuiSystem()->HandleMessage( GUI_MSG_INGAME_MISSION_COMPLETE );
+                    if (!IsSundayDrive()) {
+                        GetGuiSystem()->HandleMessage(GUI_MSG_INGAME_MISSION_COMPLETE);
                     }
                 }
 
                 //TODO: Send off the bonus mission info too.
-                GetEventManager()->TriggerEvent( EVENT_MISSION_SUCCESS );
+                GetEventManager()->TriggerEvent(EVENT_MISSION_SUCCESS);
 
-                if( stage->GetObjective()->GetObjectiveType() == MissionObjective::OBJ_LOSETAIL )
-                {
-                    GetEventManager()->TriggerEvent( EVENT_TAIL_LOST_DIALOG );
-                }
-                else
-                {
-                    GetEventManager()->TriggerEvent( EVENT_MISSION_SUCCESS_DIALOG );
+                if (stage->GetObjective()->GetObjectiveType() == MissionObjective::OBJ_LOSETAIL) {
+                    GetEventManager()->TriggerEvent(EVENT_TAIL_LOST_DIALOG);
+                } else {
+                    GetEventManager()->TriggerEvent(EVENT_MISSION_SUCCESS_DIALOG);
                 }
 
                 break;
-            }
-            else if ( stage->GetFinalStage() && mbComplete )
-            {
-                if ( static_cast<int>(elapsedTime) >= mFinalDelay )
-                {
+            } else if (stage->GetFinalStage() && mbComplete) {
+                if (static_cast<int>(elapsedTime) >= mFinalDelay) {
                     //All done, carry on.
                     mFinalDelay = -1;
-                }
-                else
-                {
+                } else {
                     //Decrement the time and get outta here.  WE pause to show the mission complete stuff.
                     mFinalDelay -= elapsedTime;
                     break;
@@ -964,111 +857,95 @@ BEGIN_PROFILE( "Mission Update" );
             //
             unsigned int showStageComplete = stage->IsShowStageComplete() ? 1 : 0;
 
-            if ( showStageComplete && mCompleteDelay == -1 )
-            {
+            if (showStageComplete && mCompleteDelay == -1) {
                 //We need to delay the mission stage change to prevent weirdness.
                 mCompleteDelay = COMPLETE_DELAY;
 
-                GetEventManager()->TriggerEvent( EVENT_STAGE_COMPLETE,
-                    reinterpret_cast<void*>( showStageComplete ) );
+                GetEventManager()->TriggerEvent(EVENT_STAGE_COMPLETE,
+                                                reinterpret_cast<void *>(showStageComplete));
 
-                if( stage->GetObjective()->GetObjectiveType() == MissionObjective::OBJ_LOSETAIL )
-                {
-                    GetEventManager()->TriggerEvent( EVENT_TAIL_LOST_DIALOG );
+                if (stage->GetObjective()->GetObjectiveType() == MissionObjective::OBJ_LOSETAIL) {
+                    GetEventManager()->TriggerEvent(EVENT_TAIL_LOST_DIALOG);
                 }
 
                 break;
-            }
-            else if ( showStageComplete )
-            {
-                if ( mCompleteDelay > static_cast<int>(elapsedTime) )
-                {
+            } else if (showStageComplete) {
+                if (mCompleteDelay > static_cast<int>(elapsedTime)) {
                     mCompleteDelay -= elapsedTime;
                     break;
-                }
-                else
-                {
+                } else {
                     //We're good.
                     mCompleteDelay = -1;
                 }
             }
 
-            if ( stage->GetFinalStage() || mbComplete )
-            {
+            if (stage->GetFinalStage() || mbComplete) {
                 mState = STATE_SUCCESS;
 
-                if ( stage->GetFinalStage() )
-                {
+                if (stage->GetFinalStage()) {
                     //To Do::MESA Insert Call to CharacterSheetManager to update 
                     //character sheet with complete and bonus object stuff                                 
-                                      
 
-                    if (mBonusObjectives[0] != NULL)
-                    {
-                        int seconds = (mElapsedTimems /1000);
-                        GetCharacterSheetManager()->SetMissionComplete(GetGameplayManager()->GetCurrentLevelIndex(),mcName,mBonusObjectives[0]->GetSuccessful(),seconds );
-                    }
-                    else
-                    {
-                        int seconds = (mElapsedTimems/1000);
-                        GetCharacterSheetManager()->SetMissionComplete(GetGameplayManager()->GetCurrentLevelIndex(),mcName,false,seconds);
+
+                    if (mBonusObjectives[0] != NULL) {
+                        int seconds = (mElapsedTimems / 1000);
+                        GetCharacterSheetManager()->SetMissionComplete(
+                                GetGameplayManager()->GetCurrentLevelIndex(), mcName,
+                                mBonusObjectives[0]->GetSuccessful(), seconds);
+                    } else {
+                        int seconds = (mElapsedTimems / 1000);
+                        GetCharacterSheetManager()->SetMissionComplete(
+                                GetGameplayManager()->GetCurrentLevelIndex(), mcName, false,
+                                seconds);
                     }
 
-                    if ( mbTriggerPattyAndSelmaScreen == true)
-                    {
-                        GetGuiSystem()->HandleMessage( GUI_MSG_GOTO_SCREEN,
-                                            CGuiWindow::GUI_SCREEN_ID_MISSION_SUCCESS,
-                                            CLEAR_WINDOW_HISTORY );
-                        GetEventManager()->TriggerEvent( EVENT_GUI_ENTERING_MISSION_SUCCESS_SCREEN );                
-                        GetGameFlow()->SetContext( CONTEXT_PAUSE );
+                    if (mbTriggerPattyAndSelmaScreen == true) {
+                        GetGuiSystem()->HandleMessage(GUI_MSG_GOTO_SCREEN,
+                                                      CGuiWindow::GUI_SCREEN_ID_MISSION_SUCCESS,
+                                                      CLEAR_WINDOW_HISTORY);
+                        GetEventManager()->TriggerEvent(EVENT_GUI_ENTERING_MISSION_SUCCESS_SCREEN);
+                        GetGameFlow()->SetContext(CONTEXT_PAUSE);
                         InitStreetRacePropUnload();
                         mbTriggerPattyAndSelmaScreen = false;
                     }
 
 
-                    
                 }
 
                 //This is silly....  Dirty too.  At least it's not the GUI doing it.
                 //Really this just updates the state of all the missions.  GAH.
                 GetGameplayManager()->ContinueGameplay();
 
-                if ( mCurrentStage != -1 )
-                {
+                if (mCurrentStage != -1) {
                     //GetCurrentStage()->Reset();
                     GetCurrentStage()->Start();
 
-                    if ( GetCurrentStage()->StartBonusObjective() )
-                    {
+                    if (GetCurrentStage()->StartBonusObjective()) {
                         StartBonusObjectives();
                     }
                 }
-            }
-            else
-            {
+            } else {
                 SetupStageChange();
             }
             break;
         }
-    case MissionStage::STAGE_FAILED:
-        {
+        case MissionStage::STAGE_FAILED: {
             unsigned int i;
             unsigned int numConditions;
             bool isChaseCondition = false;
 
-            if( state == mLastStageState )
-            {
+            if (state == mLastStageState) {
                 break;
             }
-            
+
             mState = STATE_FAILED;
             //if we fail a forced car relock the forced car
-            if ( IsForcedCar() == true)
-            {                
-                if (GetGameplayManager()-> mVehicleSlots[GameplayManager::eOtherCar].mp_vehicle != NULL)
-                {
+            if (IsForcedCar() == true) {
+                if (GetGameplayManager()->mVehicleSlots[GameplayManager::eOtherCar].mp_vehicle !=
+                    NULL) {
 
-                    GetGameplayManager()-> mVehicleSlots[GameplayManager::eOtherCar].mp_vehicle->ActivateTriggers(false);
+                    GetGameplayManager()->mVehicleSlots[GameplayManager::eOtherCar].mp_vehicle->ActivateTriggers(
+                            false);
                 }
 
             }
@@ -1077,27 +954,26 @@ BEGIN_PROFILE( "Mission Update" );
 
             // Tell the GUI system that mission failed
             //
-            GetGuiSystem()->HandleMessage( GUI_MSG_INGAME_MISSION_FAILED );
+            GetGuiSystem()->HandleMessage(GUI_MSG_INGAME_MISSION_FAILED);
 
             // get the failure condition
             //
-            MissionCondition* failedCondition = stage->GetFailureCondition();
-            rTuneAssertMsg( failedCondition != NULL,
-                        "WTF?? How could there be no failure condition?" );
+            MissionCondition *failedCondition = stage->GetFailureCondition();
+            rTuneAssertMsg(failedCondition != NULL,
+                           "WTF?? How could there be no failure condition?");
 
             //
             // Determine whether any of the conditions involve chases
             //
             numConditions = stage->GetNumConditions();
-            for( i = 0; i < numConditions; i++ )
-            {
-                if( stage->GetCondition( i )->IsChaseCondition() )
-                {
+            for (i = 0; i < numConditions; i++) {
+                if (stage->GetCondition(i)->IsChaseCondition()) {
                     isChaseCondition = true;
                     break;
                 }
             }
-            GetEventManager()->TriggerEvent( EVENT_MISSION_FAILURE, reinterpret_cast<void*>( failedCondition ) );
+            GetEventManager()->TriggerEvent(EVENT_MISSION_FAILURE,
+                                            reinterpret_cast<void *>(failedCondition));
 
             mbComplete = true;
 
@@ -1106,30 +982,26 @@ BEGIN_PROFILE( "Mission Update" );
             // entering an interior
             //
             bool entering = GetInteriorManager()->IsEntering();
-            if( entering )
-            {
-                GetRenderManager()->mpLayer( RenderEnums::LevelSlot )->Thaw();
+            if (entering) {
+                GetRenderManager()->mpLayer(RenderEnums::LevelSlot)->Thaw();
             }
 
-            if(IsBonusMission())
-            {
+            if (IsBonusMission()) {
                 GetCharacterManager()->ResetBonusCharacters();
             }
 
             break;
         }
-    case MissionStage::STAGE_BACKUP:
-        {
+        case MissionStage::STAGE_BACKUP: {
             //This is a bad thing.
-            rAssert( false );
-            
+            rAssert(false);
+
 /*            PrevStage();
             GetCurrentStage()->Start();
 */
             break;
         }
-    default:
-        {
+        default: {
             // whatever
             break;
         }
@@ -1137,13 +1009,12 @@ BEGIN_PROFILE( "Mission Update" );
 
     mLastStageState = state;
 
-    if ( mDoorStars )
-    {
-        mDoorStars->Update( elapsedTime );
+    if (mDoorStars) {
+        mDoorStars->Update(elapsedTime);
     }
 
-    DoUpdate( elapsedTime );
-END_PROFILE( "Mission Update" );
+    DoUpdate(elapsedTime);
+    END_PROFILE("Mission Update");
 }
 
 //=============================================================================
@@ -1156,9 +1027,8 @@ END_PROFILE( "Mission Update" );
 // Return:      bool 
 //
 //=============================================================================
-bool Mission::IsComplete()
-{
-    return( mbComplete );
+bool Mission::IsComplete() {
+    return (mbComplete);
 }
 
 //=============================================================================
@@ -1166,41 +1036,35 @@ bool Mission::IsComplete()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const char* loadString )
+// Parameters:  (const char* loadString)
 //
 // Return:      void 
 //
 //=============================================================================
-void Mission::SetRestartDynaload( const char* loadString, const char* interior)
-{
-    HeapMgr()->PushHeap (GMA_LEVEL_MISSION);
-    MEMTRACK_PUSH_GROUP( "Mission - Dynaload" );
+void Mission::SetRestartDynaload(const char *loadString, const char *interior) {
+    HeapMgr()->PushHeap(GMA_LEVEL_MISSION);
+    MEMTRACK_PUSH_GROUP("Mission - Dynaload");
 
-    if ( mDynaloadLoc )
-    {
+    if (mDynaloadLoc) {
         mDynaloadLoc->Release();
     }
 
-    if( strcmp( loadString, "" ) != 0 )
-    {
+    if (strcmp(loadString, "") != 0) {
         mDynaloadLoc = new ZoneEventLocator;
         mDynaloadLoc->AddRef();
-        mDynaloadLoc->SetZoneSize( strlen(loadString) + 1 );
-        mDynaloadLoc->SetZone( loadString );
+        mDynaloadLoc->SetZoneSize(strlen(loadString) + 1);
+        mDynaloadLoc->SetZone(loadString);
         mDynaloadLoc->SetPlayerEntered();
 
-        if(interior)
-        {
+        if (interior) {
             mDynaloadLoc->SetName(interior);
         }
-    }
-    else
-    {
+    } else {
         mDynaloadLoc = NULL;
     }
 
-    MEMTRACK_POP_GROUP( "Mission - Dynaload" );
-    HeapMgr()->PopHeap (GMA_LEVEL_MISSION);
+    MEMTRACK_POP_GROUP("Mission - Dynaload");
+    HeapMgr()->PopHeap(GMA_LEVEL_MISSION);
 }
 
 //=============================================================================
@@ -1208,16 +1072,15 @@ void Mission::SetRestartDynaload( const char* loadString, const char* interior)
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( BonusObjective* bo )
+// Parameters:  (BonusObjective* bo)
 //
 // Return:      void 
 //
 //=============================================================================
-void Mission::AddBonusObjective( BonusObjective* bo )
-{
-    rAssert( mNumBonusObjectives < MAX_BONUS_OBJECTIVES );
+void Mission::AddBonusObjective(BonusObjective *bo) {
+    rAssert(mNumBonusObjectives < MAX_BONUS_OBJECTIVES);
 
-    mBonusObjectives[ mNumBonusObjectives ] = bo;
+    mBonusObjectives[mNumBonusObjectives] = bo;
     ++mNumBonusObjectives;
 }
 
@@ -1231,12 +1094,10 @@ void Mission::AddBonusObjective( BonusObjective* bo )
 // Return:      void 
 //
 //=============================================================================
-void Mission::StartBonusObjectives()
-{
+void Mission::StartBonusObjectives() {
     unsigned int i;
-    for ( i = 0; i < mNumBonusObjectives; ++i )
-    {
-        mBonusObjectives[ i ]->Start();
+    for (i = 0; i < mNumBonusObjectives; ++i) {
+        mBonusObjectives[i]->Start();
     }
 }
 
@@ -1246,13 +1107,12 @@ void Mission::StartBonusObjectives()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool isForced )
+// Parameters:  (bool isForced)
 //
 // Return:      void 
 //
 //=============================================================================
-void Mission::SetForcedCar( bool isForced )
-{
+void Mission::SetForcedCar(bool isForced) {
     mIsForcedCar = isForced;
 }
 
@@ -1261,15 +1121,15 @@ void Mission::SetForcedCar( bool isForced )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int timeMilliseconds )
+// Parameters:  (int timeMilliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void Mission::SetMissionTime( int timeMilliseconds )
-{
+void Mission::SetMissionTime(int timeMilliseconds) {
     mMissionTimer = timeMilliseconds;
 }
+
 //=============================================================================
 // Mission::CreateStatePropCollectible
 //=============================================================================
@@ -1280,61 +1140,54 @@ void Mission::SetMissionTime( int timeMilliseconds )
 // Return:      void 
 //
 //=============================================================================
-void Mission::CreateStatePropCollectible( const char* statepropname, const char* locatorname, int collisionattributes )
-{
+void Mission::CreateStatePropCollectible(const char *statepropname, const char *locatorname,
+                                         int collisionattributes) {
     // No space in the array, bail
-    if ( mNumStatePropCollectibles >= MAX_NUM_STATEPROP_COLLECTIBLES )
+    if (mNumStatePropCollectibles >= MAX_NUM_STATEPROP_COLLECTIBLES)
         return;
 
-    HeapMgr()->PushHeap (GMA_LEVEL_MISSION);
-    Locator* locator = p3d::find< Locator >( locatorname );
-    if ( locator )
-    {
-        CStatePropData* propdata = p3d::find< CStatePropData >(statepropname);
-        if ( propdata )
-        {
+    HeapMgr()->PushHeap(GMA_LEVEL_MISSION);
+    Locator *locator = p3d::find<Locator>(locatorname);
+    if (locator) {
+        CStatePropData *propdata = p3d::find<CStatePropData>(statepropname);
+        if (propdata) {
             // Get the locator's position
             rmt::Vector locatorposition;
-            locator->GetPosition( &locatorposition );
+            locator->GetPosition(&locatorposition);
 
             // Fill out a translation matrix
             rmt::Matrix transform;
             transform.Identity();
-            transform.FillTranslate( locatorposition );
+            transform.FillTranslate(locatorposition);
 
-            StatePropCollectible* collectible = new StatePropCollectible();
-            CollisionAttributes* collAttr = GetATCManager()->CreateCollisionAttributes( PROP_MOVEABLE, collisionattributes, 2.242f );
+            StatePropCollectible *collectible = new StatePropCollectible();
+            CollisionAttributes *collAttr = GetATCManager()->CreateCollisionAttributes(
+                    PROP_MOVEABLE, collisionattributes, 2.242f);
             collAttr->AddRef();
-            collectible->LoadSetup( propdata, 0, transform, collAttr, false, NULL );
+            collectible->LoadSetup(propdata, 0, transform, collAttr, false, NULL);
             collAttr->Release();
 
-            collectible->SetName( statepropname );
-            p3d::inventory->Store( collectible );
+            collectible->SetName(statepropname);
+            p3d::inventory->Store(collectible);
 
             // Add it to the internal list of prop collectibles
             // Allocate a new list if necessary
-            if ( mNumStatePropCollectibles == 0 )
-            {
-                mStatePropCollectibles = new StatePropCollectible*[ MAX_NUM_STATEPROP_COLLECTIBLES ];
+            if (mNumStatePropCollectibles == 0) {
+                mStatePropCollectibles = new StatePropCollectible *[MAX_NUM_STATEPROP_COLLECTIBLES];
             }
-            mStatePropCollectibles[ mNumStatePropCollectibles ] = collectible;
+            mStatePropCollectibles[mNumStatePropCollectibles] = collectible;
             collectible->AddRef();
 
             mNumStatePropCollectibles++;
 
+        } else {
+            rReleaseAssertMsg("can't find stateprop %s\n", statepropname);
         }
-        else
-        {
-            rReleaseAssertMsg("can't find stateprop %s\n",statepropname);
-        }
+    } else {
+        rReleaseAssertMsg("can't find locator %s\n", locatorname);
     }
-    else
-    {
-        rReleaseAssertMsg("can't find locator %s\n",locatorname);
-    }
-    HeapMgr()->PopHeap (GMA_LEVEL_MISSION);
+    HeapMgr()->PopHeap(GMA_LEVEL_MISSION);
 }
-
 
 
 //=============================================================================
@@ -1347,40 +1200,40 @@ void Mission::CreateStatePropCollectible( const char* statepropname, const char*
 // Return:      void 
 //
 //=============================================================================
-void Mission::AttachStatePropCollectible( const char* statepropname, const char* vehicleName, int collisionattributes )
-{
+void Mission::AttachStatePropCollectible(const char *statepropname, const char *vehicleName,
+                                         int collisionattributes) {
     // No space in the array, bail
-    if ( mNumStatePropCollectibles >= MAX_NUM_STATEPROP_COLLECTIBLES )
+    if (mNumStatePropCollectibles >= MAX_NUM_STATEPROP_COLLECTIBLES)
         return;
 
-    CStatePropData* statePropData = p3d::find< CStatePropData > (statepropname);
-    if ( statePropData )
-    {
-        Vehicle* vehicle = GetVehicleCentral()->GetVehicleByName( vehicleName );
-        StatePropCollectible* stateprop = new StatePropCollectible();
+    CStatePropData *statePropData = p3d::find<CStatePropData>(statepropname);
+    if (statePropData) {
+        Vehicle *vehicle = GetVehicleCentral()->GetVehicleByName(vehicleName);
+        StatePropCollectible *stateprop = new StatePropCollectible();
         rmt::Matrix transform;
         transform.Identity();
         // Create some collision attributes. Unfort I may just have to leave these hardcoded.
         // Settings seem to make very little difference anyway.
-        CollisionAttributes* collAttr = GetATCManager()->CreateCollisionAttributes( PROP_MOVEABLE, collisionattributes, 2.242f );
+        CollisionAttributes *collAttr = GetATCManager()->CreateCollisionAttributes(PROP_MOVEABLE,
+                                                                                   collisionattributes,
+                                                                                   2.242f);
         collAttr->AddRef();
-        stateprop->LoadSetup( statePropData, 0, transform, collAttr, false );
+        stateprop->LoadSetup(statePropData, 0, transform, collAttr, false);
         collAttr->Release();
         // Add it to scenegraph
         stateprop->AddToDSG();
-        vehicle->AttachCollectible( stateprop );    
+        vehicle->AttachCollectible(stateprop);
 
         // Add it to the internal list of prop collectibles
         // Allocate a new list if necessary
-        if ( mNumStatePropCollectibles == 0 )
-        {
-            mStatePropCollectibles = new StatePropCollectible*[ MAX_NUM_STATEPROP_COLLECTIBLES ];
+        if (mNumStatePropCollectibles == 0) {
+            mStatePropCollectibles = new StatePropCollectible *[MAX_NUM_STATEPROP_COLLECTIBLES];
         }
-            
-        stateprop->SetName( statepropname );
-        p3d::inventory->Store( stateprop );
 
-        mStatePropCollectibles[ mNumStatePropCollectibles ] = stateprop;
+        stateprop->SetName(statepropname);
+        p3d::inventory->Store(stateprop);
+
+        mStatePropCollectibles[mNumStatePropCollectibles] = stateprop;
         stateprop->AddRef();
 
         mNumStatePropCollectibles++;
@@ -1395,13 +1248,12 @@ void Mission::AttachStatePropCollectible( const char* statepropname, const char*
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool JumpStage )
+// Parameters:  (bool JumpStage)
 //
 // Return:      void 
 //
 //=============================================================================
-void Mission::Reset( bool jumpStage )
-{
+void Mission::Reset(bool jumpStage) {
     mbComplete = false;
     mState = STATE_INPROGRESS;
     mbIsLastStage = false;
@@ -1409,56 +1261,50 @@ void Mission::Reset( bool jumpStage )
     mbCarryOverOutOfCarCondition = false;
 
     //Reset ChaseManager Spawn Rate incase of Retries
-    GameplayManager* gameplayManager = GetGameplayManager();
-    if ( gameplayManager != NULL )
-    {
-        ChaseManager* chaseManager = gameplayManager->GetChaseManager(0);
-        if ( chaseManager != NULL )
-        {
+    GameplayManager *gameplayManager = GetGameplayManager();
+    if (gameplayManager != NULL) {
+        ChaseManager *chaseManager = gameplayManager->GetChaseManager(0);
+        if (chaseManager != NULL) {
             chaseManager->SetMaxObjects(0);
         }
         gameplayManager->MakeSureHusksAreReverted();    // do this rather than let GameplayManager catch event below, because that's too late I think
     }
 
-    SetToStage( -1 );
+    SetToStage(-1);
 
-    if ( jumpStage )
-    {   
-        SetToStage( mResetToStage, jumpStage );   
-        
+    if (jumpStage) {
+        SetToStage(mResetToStage, jumpStage);
+
         // repair car on mission reset or retry
-    
+
         GetEventManager()->TriggerEvent(EVENT_REPAIR_CAR);
-       
-        
+
+
+    } else {
+        SetToStage(0);
+
     }
-    else
-    {
-        SetToStage( 0 );
-     
-    }
-    
+
     //Reset the bonus objectives.
     unsigned int i;
-    for ( i = 0; i < mNumBonusObjectives; ++i )
-    {
-        mBonusObjectives[ i ]->Reset();
+    for (i = 0; i < mNumBonusObjectives; ++i) {
+        mBonusObjectives[i]->Reset();
     }
 
-    GetEventManager()->TriggerEvent( EVENT_MISSION_RESET, (void*)( jumpStage ) );
-       
-    
-    GetCharacterSheetManager()->IncrementMissionAttempt(GetGameplayManager()->GetCurrentLevelIndex(),this->mcName);
+    GetEventManager()->TriggerEvent(EVENT_MISSION_RESET, (void *) (jumpStage));
+
+
+    GetCharacterSheetManager()->IncrementMissionAttempt(
+            GetGameplayManager()->GetCurrentLevelIndex(), this->mcName);
     InitStreetRacePropLoad();
-    
+
     //make sure our current car doesn't have locked doors
     //since forced cars have locked doors.
 
-    if(IsForcedCar())
-    {
-        if(GetGameplayManager()->mVehicleSlots[GameplayManager::eOtherCar].mp_vehicle != NULL)
-        {
-            GetGameplayManager()->mVehicleSlots[GameplayManager::eOtherCar].mp_vehicle->ActivateTriggers(true);
+    if (IsForcedCar()) {
+        if (GetGameplayManager()->mVehicleSlots[GameplayManager::eOtherCar].mp_vehicle != NULL) {
+            GetGameplayManager()->mVehicleSlots[GameplayManager::eOtherCar].mp_vehicle->ActivateTriggers(
+                    true);
         }
     }
 
@@ -1474,41 +1320,35 @@ void Mission::Reset( bool jumpStage )
 // Return:      void 
 //
 //=============================================================================
-void Mission::ResetPlayer()
-{
+void Mission::ResetPlayer() {
     //This is where we get the reset data and apply it.  Sounds good eh?
-    Character* player = GetCharacterManager()->GetCharacter( 0 ); //This is the player...
-    Vehicle* car = GetGameplayManager()->GetCurrentVehicle(); //Current car
+    Character *player = GetCharacterManager()->GetCharacter(0); //This is the player...
+    Vehicle *car = GetGameplayManager()->GetCurrentVehicle(); //Current car
 
-    if( mVehicleRestart != NULL )
-    {
-        GetGameplayManager()->PlaceVehicleAtLocator( car, mVehicleRestart );
+    if (mVehicleRestart != NULL) {
+        GetGameplayManager()->PlaceVehicleAtLocator(car, mVehicleRestart);
 
     }
 
-    //if ( mPlayerRestart == NULL || IsForcedCar() || IsRaceMission() )
-    if ( mPlayerRestart == NULL || IsRaceMission() )
-    {
+    //if (mPlayerRestart == NULL || IsForcedCar() || IsRaceMission())
+    if (mPlayerRestart == NULL || IsRaceMission()) {
         rmt::Vector pos;
-        mVehicleRestart->GetLocation( &pos );
-        player->RelocateAndReset( pos, 0, true );
-        if (GetGameplayManager()->GetCurrentVehicle()->mVehicleDestroyed != true)
-        {
-            GetAvatarManager()->PutCharacterInCar( player, car );
+        mVehicleRestart->GetLocation(&pos);
+        player->RelocateAndReset(pos, 0, true);
+        if (GetGameplayManager()->GetCurrentVehicle()->mVehicleDestroyed != true) {
+            GetAvatarManager()->PutCharacterInCar(player, car);
         }
-    }
-    else 
-    {
+    } else {
         //TODO:  Make a put player on ground type thingie.  I shouldn't have to know about this.
-        GetGameplayManager()->PlaceCharacterAtLocator( player, mPlayerRestart );
-        GetAvatarManager()->PutCharacterOnGround( player, car );
-    }    
+        GetGameplayManager()->PlaceCharacterAtLocator(player, mPlayerRestart);
+        GetAvatarManager()->PutCharacterOnGround(player, car);
+    }
 
-    GetEventManager()->TriggerEvent( EVENT_CHARACTER_POS_RESET );
+    GetEventManager()->TriggerEvent(EVENT_CHARACTER_POS_RESET);
 
     //Let's cut the camera.
-    GetSuperCamManager()->GetSCC( 0 )->NoTransition();
-    GetSuperCamManager()->GetSCC( 0 )->DoCameraCut();
+    GetSuperCamManager()->GetSCC(0)->NoTransition();
+    GetSuperCamManager()->GetSCC(0)->DoCameraCut();
 }
 
 //=============================================================================
@@ -1521,23 +1361,20 @@ void Mission::ResetPlayer()
 // Return:      void 
 //
 //=============================================================================
-void Mission::InitDynaLoad()
-{
-    rTuneAssertMsg( mDynaloadLoc, "DYNALOAD information is required in all missions!" );
+void Mission::InitDynaLoad() {
+    rTuneAssertMsg(mDynaloadLoc, "DYNALOAD information is required in all missions!");
 
-    GetEventManager()->TriggerEvent( EVENT_FIRST_DYNAMIC_ZONE_START, mDynaloadLoc );   
+    GetEventManager()->TriggerEvent(EVENT_FIRST_DYNAMIC_ZONE_START, mDynaloadLoc);
 
     // set the pedgroup sheeyatsu...
-    if( 0 <= mInitPedGroupId && mInitPedGroupId < PedestrianManager::MAX_MODEL_GROUPS )
-    {
-        PedestrianManager::GetInstance()->SwitchModelGroup( mInitPedGroupId );
-        PedestrianManager::SetDefaultModelGroup( mInitPedGroupId );
+    if (0 <= mInitPedGroupId && mInitPedGroupId < PedestrianManager::MAX_MODEL_GROUPS) {
+        PedestrianManager::GetInstance()->SwitchModelGroup(mInitPedGroupId);
+        PedestrianManager::SetDefaultModelGroup(mInitPedGroupId);
     }
 }
 
-void Mission::SetInitPedGroup( int initGroupId )
-{
-    rTuneAssert( 0 <= mInitPedGroupId && mInitPedGroupId < PedestrianManager::MAX_MODEL_GROUPS );
+void Mission::SetInitPedGroup(int initGroupId) {
+    rTuneAssert(0 <= mInitPedGroupId && mInitPedGroupId < PedestrianManager::MAX_MODEL_GROUPS);
     mInitPedGroupId = initGroupId;
 }
 
@@ -1551,18 +1388,15 @@ void Mission::SetInitPedGroup( int initGroupId )
 // Return:      bool 
 //
 //=============================================================================
-bool Mission::DialogueCharactersTeleported()
-{
-    if ( !GetCurrentStage() ||
-         !(GetCurrentStage()->GetObjective()) )
-    {
+bool Mission::DialogueCharactersTeleported() {
+    if (!GetCurrentStage() ||
+        !(GetCurrentStage()->GetObjective())) {
         //DAMN THOSE COSMIC RAYS!
         return false;  //No cut.
     }
 
-    if ( GetCurrentStage()->GetObjective()->GetObjectiveType() == MissionObjective::OBJ_DIALOGUE )
-    {
-        return static_cast<DialogueObjective*>(GetCurrentStage()->GetObjective())->CharactersReset();
+    if (GetCurrentStage()->GetObjective()->GetObjectiveType() == MissionObjective::OBJ_DIALOGUE) {
+        return static_cast<DialogueObjective *>(GetCurrentStage()->GetObjective())->CharactersReset();
     }
 
     return false;
@@ -1578,17 +1412,13 @@ bool Mission::DialogueCharactersTeleported()
 // Return:      inline 
 //
 //=============================================================================
-MissionStage* Mission::GetCurrentStage()
-{
-    if(( mCurrentStage >= 0 ) && (mCurrentStage < (int)mNumMissionStages ))
-    {
-        return( mMissionStages[ mCurrentStage ] ); 
+MissionStage *Mission::GetCurrentStage() {
+    if ((mCurrentStage >= 0) && (mCurrentStage < (int) mNumMissionStages)) {
+        return (mMissionStages[mCurrentStage]);
+    } else {
+        return (NULL);
     }
-    else
-    {
-        return( NULL );
-    }
-    
+
 }
 
 //=============================================================================
@@ -1601,9 +1431,8 @@ MissionStage* Mission::GetCurrentStage()
 // Return:      unsigned 
 //
 //=============================================================================
-int Mission::GetMissionTimeLeftInSeconds()
-{
-    return( static_cast<int>( mMissionTimer * SEC_IN_MSEC ));
+int Mission::GetMissionTimeLeftInSeconds() {
+    return (static_cast<int>(mMissionTimer * SEC_IN_MSEC));
 }
 
 //=============================================================================
@@ -1616,9 +1445,8 @@ int Mission::GetMissionTimeLeftInSeconds()
 // Return:      unsigned 
 //
 //=============================================================================
-int Mission::GetMissionTimeLeftInMilliSeconds()
-{
-    return( mMissionTimer );
+int Mission::GetMissionTimeLeftInMilliSeconds() {
+    return (mMissionTimer);
 }
 
 //******************************************************************************
@@ -1632,13 +1460,12 @@ int Mission::GetMissionTimeLeftInMilliSeconds()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int elapsedTime )
+// Parameters:  (int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void Mission::DoUpdate( int elapsedTime )
-{
+void Mission::DoUpdate(int elapsedTime) {
 }
 
 //=============================================================================
@@ -1651,8 +1478,7 @@ void Mission::DoUpdate( int elapsedTime )
 // Return:      void 
 //
 //=============================================================================
-void Mission::SetBonusMission()
-{
+void Mission::SetBonusMission() {
     mBonusMisison = true;
 }
 
@@ -1661,15 +1487,13 @@ void Mission::SetBonusMission()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int elapsedTime )
+// Parameters:  (int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-bool Mission::IsBonusMission()
-{
-    if( IsRaceMission() )
-    {
+bool Mission::IsBonusMission() {
+    if (IsRaceMission()) {
         return false;
     }
     return mBonusMisison;
@@ -1680,15 +1504,13 @@ bool Mission::IsBonusMission()
 //=============================================================================
 // Description: determines if this mission is a special road race
 //
-// Parameters:  ( int elapsedTime )
+// Parameters:  (int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-bool Mission::IsRaceMission()
-{
-    if( ( mcName[ 0 ] == 's' ) && ( mcName[ 1 ] == 'r' ) )
-    {
+bool Mission::IsRaceMission() {
+    if ((mcName[0] == 's') && (mcName[1] == 'r')) {
         return true;
     }
     return false;
@@ -1704,10 +1526,8 @@ bool Mission::IsRaceMission()
 // Return:      bool - is it or isn't it? 
 //
 //=============================================================================
-bool Mission::IsWagerMission()
-{
-    if( ( mcName[ 0 ] == 'g' ) && ( mcName[ 1 ] == 'r' ) )
-    {
+bool Mission::IsWagerMission() {
+    if ((mcName[0] == 'g') && (mcName[1] == 'r')) {
         return true;
     }
     return false;
@@ -1718,36 +1538,29 @@ bool Mission::IsWagerMission()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( MissionStage* stage )
+// Parameters:  (MissionStage* stage)
 //
 // Return:      bool 
 //
 //=============================================================================
-bool Mission::UnlockStage( MissionStage* stage )
-{
+bool Mission::UnlockStage(MissionStage *stage) {
     unsigned int i;
-    for ( i = 0; i < MAX_LOCK_REQUIREMENTS; ++i )
-    {
-        const MissionStage::LockRequirement& requirement = stage->GetLockRequirement( i );
-        if ( requirement.mType == MissionStage::LockRequirement::NONE )
-        {
+    for (i = 0; i < MAX_LOCK_REQUIREMENTS; ++i) {
+        const MissionStage::LockRequirement &requirement = stage->GetLockRequirement(i);
+        if (requirement.mType == MissionStage::LockRequirement::NONE) {
             continue;
         }
 
         //Test this against what the character has.
-        if ( requirement.mType == MissionStage::LockRequirement::CAR )
-        {
-            if ( strcmp( GetGameplayManager()->GetCurrentVehicle()->mName, requirement.mName ) != 0 )
-            {
+        if (requirement.mType == MissionStage::LockRequirement::CAR) {
+            if (strcmp(GetGameplayManager()->GetCurrentVehicle()->mName, requirement.mName) != 0) {
                 //Failed the car test.
                 return false;
             }
-        }
-        else if ( requirement.mType == MissionStage::LockRequirement::SKIN /*Should test for skins.*/ )
-        {
-            Character* character = GetAvatarManager()->GetAvatarForPlayer(0)->GetCharacter();
-            if ( strcmp( GetCharacterManager()->GetModelName( character ), requirement.mName ) != 0 )
-            {
+        } else if (requirement.mType ==
+                   MissionStage::LockRequirement::SKIN /*Should test for skins.*/) {
+            Character *character = GetAvatarManager()->GetAvatarForPlayer(0)->GetCharacter();
+            if (strcmp(GetCharacterManager()->GetModelName(character), requirement.mName) != 0) {
                 //failed the skin test
                 return false;
             }
@@ -1763,37 +1576,32 @@ bool Mission::UnlockStage( MissionStage* stage )
 //=============================================================================
 // Description: Load the p3d file that contains the instanced streetrace props
 //
-// Parameters:  ( const char* loadString )
+// Parameters:  (const char* loadString)
 //
 // Return:      void 
 //
 //=============================================================================
-void Mission::LoadStreetRaceProps( const char* loadString )
-{
-    HeapMgr()->PushHeap (GMA_LEVEL_MISSION);
-    MEMTRACK_PUSH_GROUP( "Mission - StreetRaceProps" );
+void Mission::LoadStreetRaceProps(const char *loadString) {
+    HeapMgr()->PushHeap(GMA_LEVEL_MISSION);
+    MEMTRACK_PUSH_GROUP("Mission - StreetRaceProps");
 
     //clear any junk
-    if ( mStreetRacePropsLoad != NULL)
-    {
+    if (mStreetRacePropsLoad != NULL) {
         mStreetRacePropsLoad->ReleaseVerified();
     }
 
-    if( strcmp( loadString, "" ) != 0 )
-    {
+    if (strcmp(loadString, "") != 0) {
         mStreetRacePropsLoad = new ZoneEventLocator;
         mStreetRacePropsLoad->AddRef();
-        mStreetRacePropsLoad->SetZoneSize( strlen(loadString) + 1 );
-        mStreetRacePropsLoad->SetZone( loadString );
+        mStreetRacePropsLoad->SetZoneSize(strlen(loadString) + 1);
+        mStreetRacePropsLoad->SetZone(loadString);
         mStreetRacePropsLoad->SetPlayerEntered();
-    }
-    else
-    {
+    } else {
         mStreetRacePropsLoad = NULL;
     }
 
-    MEMTRACK_POP_GROUP( "Mission - StreetRaceProps" );
-    HeapMgr()->PopHeap (GMA_LEVEL_MISSION);
+    MEMTRACK_POP_GROUP("Mission - StreetRaceProps");
+    HeapMgr()->PopHeap(GMA_LEVEL_MISSION);
 }
 
 
@@ -1802,80 +1610,68 @@ void Mission::LoadStreetRaceProps( const char* loadString )
 //=============================================================================
 // Description: Unload the p3d file that contains the instanced streetrace props
 //
-// Parameters:  ( const char* loadString )
+// Parameters:  (const char* loadString)
 //
 // Return:      void 
 //
 //=============================================================================
-void Mission::UnloadStreetRaceProps( const char* loadString )
-{
-    HeapMgr()->PushHeap (GMA_LEVEL_MISSION);
-    MEMTRACK_PUSH_GROUP( "Mission - StreetRacePropsUnload" );
+void Mission::UnloadStreetRaceProps(const char *loadString) {
+    HeapMgr()->PushHeap(GMA_LEVEL_MISSION);
+    MEMTRACK_PUSH_GROUP("Mission - StreetRacePropsUnload");
 
     //clear any junk
-    if ( mStreetRacePropsUnload != NULL)
-    {
+    if (mStreetRacePropsUnload != NULL) {
         mStreetRacePropsUnload->ReleaseVerified();
     }
 
-    if( strcmp( loadString, "" ) != 0 )
-    {
+    if (strcmp(loadString, "") != 0) {
         mStreetRacePropsUnload = new ZoneEventLocator;
         mStreetRacePropsUnload->AddRef();
-        mStreetRacePropsUnload->SetZoneSize( strlen(loadString) + 1 );
-        mStreetRacePropsUnload->SetZone( loadString );
+        mStreetRacePropsUnload->SetZoneSize(strlen(loadString) + 1);
+        mStreetRacePropsUnload->SetZone(loadString);
         mStreetRacePropsUnload->SetPlayerEntered();
-    }
-    else
-    {
+    } else {
         mStreetRacePropsUnload = NULL;
     }
 
-    MEMTRACK_POP_GROUP( "Mission - StreetRacePropsUnload" );
-    HeapMgr()->PopHeap (GMA_LEVEL_MISSION);
+    MEMTRACK_POP_GROUP("Mission - StreetRacePropsUnload");
+    HeapMgr()->PopHeap(GMA_LEVEL_MISSION);
 }
 
-void Mission::SetupStageChange()
-{
+void Mission::SetupStageChange() {
     mChangingStages = true;
 
-     GetCurrentStage()->DoTransition();
+    GetCurrentStage()->DoTransition();
 }
 
-void Mission::DoStageChange()
-{
-//    if( !GetInteriorManager()->IsEntering() && !GetInteriorManager()->IsExiting() )
+void Mission::DoStageChange() {
+//    if(!GetInteriorManager()->IsEntering() && !GetInteriorManager()->IsExiting())
     {
-        GetGuiSystem()->HandleMessage( GUI_MSG_RESUME_INGAME );
+        GetGuiSystem()->HandleMessage(GUI_MSG_RESUME_INGAME);
     }
 
-    MissionStage* currStage = GetCurrentStage();
-    if ( currStage->GetMissionLocked() && !UnlockStage( currStage ) )
-    {
+    MissionStage *currStage = GetCurrentStage();
+    if (currStage->GetMissionLocked() && !UnlockStage(currStage)) {
         //Display the new message and stop the next stage from displaying its message
-        rAssert( currStage->GetStartMessageIndex() >= 0 );
+        rAssert(currStage->GetStartMessageIndex() >= 0);
 
-        GetGuiSystem()->HandleMessage( GUI_MSG_INGAME_DISPLAY_PROMPT, currStage->GetStartMessageIndex() );
-        GetEventManager()->TriggerEvent( EVENT_STAGE_TRANSITION_FAILED );
+        GetGuiSystem()->HandleMessage(GUI_MSG_INGAME_DISPLAY_PROMPT,
+                                      currStage->GetStartMessageIndex());
+        GetEventManager()->TriggerEvent(EVENT_STAGE_TRANSITION_FAILED);
 
-        GetStage( mCurrentStage + 1 )->ShowStartMessageIndex( false );
+        GetStage(mCurrentStage + 1)->ShowStartMessageIndex(false);
 
         NextStage();
-    }
-    else if ( mJumpBackStage )
-    {
-        rTuneAssertMsg( (mCurrentStage - mJumpBackBy) >= 0, "Jumping back too far!" );
-        SetToStage( mCurrentStage - mJumpBackBy );
+    } else if (mJumpBackStage) {
+        rTuneAssertMsg((mCurrentStage - mJumpBackBy) >= 0, "Jumping back too far!");
+        SetToStage(mCurrentStage - mJumpBackBy);
         mJumpBackStage = false;
-    }
-    else
-    {
+    } else {
         NextStage();
     }
 
     GetCurrentStage()->Start();
-    if ( GetCurrentStage()->StartBonusObjective() )
-    {
+    if (GetCurrentStage()->StartBonusObjective()) {
         StartBonusObjectives();
     }
 
@@ -1883,52 +1679,45 @@ void Mission::DoStageChange()
 }
 
 
-void Mission::SetSwappedCarsFlag(bool flag)
-{
+void Mission::SetSwappedCarsFlag(bool flag) {
     mbSwappedCars = flag;
 }
 
 
-bool Mission::GetSwappedCarsFlag()
-{
+bool Mission::GetSwappedCarsFlag() {
     return mbSwappedCars;
 }
 
 
-void Mission::InitStreetRacePropLoad()
-{
-     //Chuck: Trigger the loading of the Street Race Specify Props
-    if (mStreetRacePropsLoad != NULL)
-    {
-        GetEventManager()->TriggerEvent( (EventEnum)(EVENT_LOCATOR+LocatorEvent::DYNAMIC_ZONE), mStreetRacePropsLoad );
-                
+void Mission::InitStreetRacePropLoad() {
+    //Chuck: Trigger the loading of the Street Race Specify Props
+    if (mStreetRacePropsLoad != NULL) {
+        GetEventManager()->TriggerEvent((EventEnum)(EVENT_LOCATOR + LocatorEvent::DYNAMIC_ZONE),
+                                        mStreetRacePropsLoad);
+
         // about to do a street race so disable peds and parked cars
-        if( IsRaceMission() )
-        {
+        if (IsRaceMission()) {
             PedestrianManager::GetInstance()->DumpAllPedModels();
-        }
-        else
-        {
+        } else {
             PedestrianManager::GetInstance()->RemoveAllPeds();
         }
-        PedestrianManager::GetInstance()->AllowAddingPeds(false);        
-        GetPCM().DisableParkedCars();     
-                
+        PedestrianManager::GetInstance()->AllowAddingPeds(false);
+        GetPCM().DisableParkedCars();
+
     }
 
 }
 
-void Mission::InitStreetRacePropUnload()
-{
-    if (mStreetRacePropsUnload != NULL)
-    {
+void Mission::InitStreetRacePropUnload() {
+    if (mStreetRacePropsUnload != NULL) {
         //Chuck: Trigger the unloading of the Street Race Specify Props
-        GetEventManager()->TriggerEvent( (EventEnum)(EVENT_LOCATOR+LocatorEvent::DYNAMIC_ZONE), mStreetRacePropsUnload );
-        
+        GetEventManager()->TriggerEvent((EventEnum)(EVENT_LOCATOR + LocatorEvent::DYNAMIC_ZONE),
+                                        mStreetRacePropsUnload);
+
         // street race done so reenable peds and parked cars
-        PedestrianManager::GetInstance()->AllowAddingPeds(true);        
-        GetPCM().EnableParkedCars();   
-        
+        PedestrianManager::GetInstance()->AllowAddingPeds(true);
+        GetPCM().EnableParkedCars();
+
     }
 }
 
@@ -1942,57 +1731,44 @@ void Mission::InitStreetRacePropUnload()
 // Return:      inline 
 //
 //=============================================================================
-void Mission::ShowHUD( bool isShowHUD )
-{
+void Mission::ShowHUD(bool isShowHUD) {
     mShowHUD = isShowHUD;
 
-    CGuiScreenHud* currentHud = GetCurrentHud();
-    if( currentHud != NULL )
-    {
-        currentHud->SetVisible( isShowHUD );
+    CGuiScreenHud *currentHud = GetCurrentHud();
+    if (currentHud != NULL) {
+        currentHud->SetVisible(isShowHUD);
     }
 }
 
-bool Mission::CanMDKCar(Vehicle* pVehicle,MissionStage* pStage)
-{
+bool Mission::CanMDKCar(Vehicle *pVehicle, MissionStage *pStage) {
     //search for the input stage.
 
-    int counter =0;
+    int counter = 0;
     int i = 0;
-    int index =0;
+    int index = 0;
 
-    for (i = 0;i<MAX_STAGES;i++)
-    {
-        if (mMissionStages[i] != NULL)
-        {
-            if (mMissionStages[i] == pStage)
-            {
-                index  = i+1;
+    for (i = 0; i < MAX_STAGES; i++) {
+        if (mMissionStages[i] != NULL) {
+            if (mMissionStages[i] == pStage) {
+                index = i + 1;
                 break;
             }
         }
     }
 
-    for (index; index <MAX_STAGES;index++)
-    {
-        if (mMissionStages[index] != NULL )
-        {
-            for (int j =0; j< MissionStage::MAX_VEHICLES;j++)
-            {
-                if ( mMissionStages[index]->GetVehicle(j) == pVehicle)
-                {            
+    for (index; index < MAX_STAGES; index++) {
+        if (mMissionStages[index] != NULL) {
+            for (int j = 0; j < MissionStage::MAX_VEHICLES; j++) {
+                if (mMissionStages[index]->GetVehicle(j) == pVehicle) {
                     counter++;
                 }
             }//end of vehicle search loop
         }
     }//end of out missionstage loop
-    
-    if ( counter > 0)
-    {
+
+    if (counter > 0) {
         return false;
-    }
-    else
-    {
+    } else {
         return true;
     }
 }

@@ -23,15 +23,14 @@
 // Forward References
 //========================================
 class Character;
+
 class AnimCollisionEntityDSG;
 
-namespace ActionButton
-{
+namespace ActionButton {
     class AnimSwitch;
 };
 
-namespace sim
-{
+namespace sim {
     class Collision;
 };
 
@@ -40,8 +39,7 @@ namespace sim
 // Synopsis: Associated data for EVENT_INTERIOR_LOADED event.
 //
 //==============================================================================
-struct InteriorLoadedEventData
-{
+struct InteriorLoadedEventData {
     tName interiorName;
     tName sectionName;
     bool first;
@@ -52,12 +50,11 @@ struct InteriorLoadedEventData
 // Synopsis: Associated data for EVENT_CONVERSATION_INIT event.
 //
 //==============================================================================
-struct DialogEventData
-{
-    DialogEventData() : char1( NULL ), char2( NULL ), charUID1( 0 ), charUID2( 0 ), dialogName( 0 ) {};
+struct DialogEventData {
+    DialogEventData() : char1(NULL), char2(NULL), charUID1(0), charUID2(0), dialogName(0) {};
 
-    Character* char1;
-    Character* char2;
+    Character *char1;
+    Character *char2;
     tUID charUID1;
     tUID charUID2;
     radKey32 dialogName;
@@ -68,18 +65,18 @@ struct DialogEventData
 // Synopsis: Associated data for EVENT_START_ANIMATION_SOUND event.
 //
 //==============================================================================
-struct AnimSoundData
-{
-    AnimSoundData( const char* sound, const char* posnSettings ) :
-        soundName( sound ), animJoint( NULL ), soundObject( NULL ), positionalSettingName( posnSettings ) {};
+struct AnimSoundData {
+    AnimSoundData(const char *sound, const char *posnSettings) :
+            soundName(sound), animJoint(NULL), soundObject(NULL),
+            positionalSettingName(posnSettings) {};
 
-    const char* soundName;
-    tPose::Joint* animJoint;
-    ActionButton::AnimSwitch* soundObject;
-    const char* positionalSettingName;
+    const char *soundName;
+    tPose::Joint *animJoint;
+    ActionButton::AnimSwitch *soundObject;
+    const char *positionalSettingName;
 
-    private:
-        AnimSoundData();
+private:
+    AnimSoundData();
 };
 
 //==============================================================================
@@ -87,15 +84,16 @@ struct AnimSoundData
 // Synopsis: Associated data for EVENT_START_ANIM_ENTITY_DSG_SOUND event.
 //
 //==============================================================================
-struct AnimSoundDSGData
-{
-    AnimSoundDSGData( const char* sound, AnimCollisionEntityDSG* object, tPose::Joint* joint, const char* settingName ) : 
-        soundName( sound ), animJoint( joint ), soundObject( object ), positionalSettingName( settingName ) {};
+struct AnimSoundDSGData {
+    AnimSoundDSGData(const char *sound, AnimCollisionEntityDSG *object, tPose::Joint *joint,
+                     const char *settingName) :
+            soundName(sound), animJoint(joint), soundObject(object),
+            positionalSettingName(settingName) {};
 
-    const char* soundName;
-    tPose::Joint* animJoint;
-    AnimCollisionEntityDSG* soundObject;
-    const char* positionalSettingName;
+    const char *soundName;
+    tPose::Joint *animJoint;
+    AnimCollisionEntityDSG *soundObject;
+    const char *positionalSettingName;
 
 private:
     AnimSoundDSGData();
@@ -106,10 +104,10 @@ private:
 // Synopsis: Associated data for EVENT_CHANGE_MUSIC_STATE event.
 //
 //==============================================================================
-struct MusicStateData
-{
-    MusicStateData() : stateKey( 0 ), stateEventKey( 0 ) {};
-    MusicStateData( radKey32 state, radKey32 event ) : stateKey( state ), stateEventKey( event ) {};
+struct MusicStateData {
+    MusicStateData() : stateKey(0), stateEventKey(0) {};
+
+    MusicStateData(radKey32 state, radKey32 event) : stateKey(state), stateEventKey(event) {};
 
     radKey32 stateKey;
     radKey32 stateEventKey;
@@ -120,9 +118,10 @@ struct MusicStateData
 // Synopsis: Associated data for EVENT_CAMERA_SHAKE events.
 //
 //==============================================================================
-struct ShakeEventData
-{
-    ShakeEventData() : playerID( -1 ), force( 0.0f ), looping( false ) { direction.Set(0.0f, 0.0f, 0.0f ); };
+struct ShakeEventData {
+    ShakeEventData() : playerID(-1), force(0.0f), looping(false) {
+        direction.Set(0.0f, 0.0f, 0.0f);
+    };
 
     int playerID;
     rmt::Vector direction;
@@ -131,19 +130,18 @@ struct ShakeEventData
 };
 
 class Vehicle;
-struct CarOnCarCollisionEventData
-{
-    CarOnCarCollisionEventData() : vehicle( NULL ), force ( 0.0f ), collision( NULL ) {};
-    
-    Vehicle* vehicle;
+
+struct CarOnCarCollisionEventData {
+    CarOnCarCollisionEventData() : vehicle(NULL), force(0.0f), collision(NULL) {};
+
+    Vehicle *vehicle;
     float force;
-    sim::Collision* collision;
+    sim::Collision *collision;
 };
 
-struct RumbleCollision
-{
-    RumbleCollision() : vehicle( NULL ), normalizedForce( 0.0f ) { point.Set( 0.0f, 0.0f, 0.0f ); };
-    Vehicle* vehicle;
+struct RumbleCollision {
+    RumbleCollision() : vehicle(NULL), normalizedForce(0.0f) { point.Set(0.0f, 0.0f, 0.0f); };
+    Vehicle *vehicle;
     float normalizedForce;
     rmt::Vector point;
 };

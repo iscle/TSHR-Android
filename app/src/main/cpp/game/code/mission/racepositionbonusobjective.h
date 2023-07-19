@@ -28,32 +28,38 @@
 //
 //=============================================================================
 
-class RacePositionBonusObjective : public BonusObjective, public EventListener
-{
+class RacePositionBonusObjective : public BonusObjective, public EventListener {
 public:
     RacePositionBonusObjective();
+
     virtual ~RacePositionBonusObjective();
 
     virtual void Initialize();
+
     virtual void Finalize();
+
     virtual unsigned int GetNumericData();
 
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
-    void SetDesiredPosition( unsigned int position );
+    void SetDesiredPosition(unsigned int position);
 
 protected:
     virtual void OnReset();
+
     virtual void OnStart();
-    virtual void OnUpdate( unsigned int milliseconds );
+
+    virtual void OnUpdate(unsigned int milliseconds);
 
 private:
     unsigned int mPosition;
     unsigned int mDesiredPosition;
 
     //Prevent wasteful constructor creation.
-    RacePositionBonusObjective( const RacePositionBonusObjective& racepositionbonusobjective );
-    RacePositionBonusObjective& operator=( const RacePositionBonusObjective& racepositionbonusobjective );
+    RacePositionBonusObjective(const RacePositionBonusObjective &racepositionbonusobjective);
+
+    RacePositionBonusObjective &
+    operator=(const RacePositionBonusObjective &racepositionbonusobjective);
 };
 
 //*****************************************************************************
@@ -72,8 +78,7 @@ private:
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int RacePositionBonusObjective::GetNumericData()
-{
+inline unsigned int RacePositionBonusObjective::GetNumericData() {
     return mPosition;
 }
 
@@ -82,13 +87,12 @@ inline unsigned int RacePositionBonusObjective::GetNumericData()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int position )
+// Parameters:  (unsigned int position)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RacePositionBonusObjective::SetDesiredPosition( unsigned int position )
-{
+inline void RacePositionBonusObjective::SetDesiredPosition(unsigned int position) {
     mDesiredPosition = position;
 }
 

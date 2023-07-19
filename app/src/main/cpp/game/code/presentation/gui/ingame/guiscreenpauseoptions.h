@@ -26,33 +26,34 @@
 //===========================================================================
 class CGuiMenu;
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Screen;
 };
 
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenPauseOptions : public CGuiScreen
-{
+class CGuiScreenPauseOptions : public CGuiScreen {
 public:
-    CGuiScreenPauseOptions( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenPauseOptions(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenPauseOptions();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    virtual CGuiMenu* HasMenu() { return m_pMenu; }
+    virtual CGuiMenu *HasMenu() { return m_pMenu; }
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
-    CGuiMenu* m_pMenu;
+    CGuiMenu *m_pMenu;
 
 };
 

@@ -28,44 +28,42 @@
 //
 //=============================================================================
 
-namespace MissionConditionNames
-{
-    const char* const Name[] = 
-    {
-        "invalid",
-        "damage",
-        "playerhit",
-        "timeout",
-        "outofvehicle",
-        "followdistance",
-        "outofbounds",
-        "race",
-        "leaveinterior",
-        "position",
-        "carryingspcollectible",
-        "notabducted",
-        "hitandruncought",
-        "keepbarrel",
-        "getcollectibles"
-    };
+namespace MissionConditionNames {
+    const char *const Name[] =
+            {
+                    "invalid",
+                    "damage",
+                    "playerhit",
+                    "timeout",
+                    "outofvehicle",
+                    "followdistance",
+                    "outofbounds",
+                    "race",
+                    "leaveinterior",
+                    "position",
+                    "carryingspcollectible",
+                    "notabducted",
+                    "hitandruncought",
+                    "keepbarrel",
+                    "getcollectibles"
+            };
 
 }
 
-class MissionCondition : public EventListener
-{
+class MissionCondition : public EventListener {
 public:
     MissionCondition();
+
     virtual ~MissionCondition();
 
-    enum ConditionTypeEnum
-    {
+    enum ConditionTypeEnum {
         COND_INVALID,
-	    COND_VEHICLE_DAMAGE,
-	    COND_PLAYER_HIT,
-	    COND_TIME_OUT,
-	    COND_PLAYER_OUT_OF_VEHICLE,
+        COND_VEHICLE_DAMAGE,
+        COND_PLAYER_HIT,
+        COND_TIME_OUT,
+        COND_PLAYER_OUT_OF_VEHICLE,
         COND_FOLLOW_DISTANCE,
-	    COND_OUT_OF_BOUNDS,
+        COND_OUT_OF_BOUNDS,
         COND_RACE,
         COND_LEAVE_INTERIOR,
         COND_POSITION,
@@ -74,46 +72,52 @@ public:
         COND_HIT_AND_RUN_CAUGHT,
         COND_KEEP_BARREL,
         COND_GET_COLLECTIBLES,
-	    NUM_CONDITIONS
+        NUM_CONDITIONS
     };
 
-	ConditionTypeEnum GetType() const;
+    ConditionTypeEnum GetType() const;
 
     // Index in the text bible of the description for this condition
-	//unsigned int GetDescriptionIndex();
+    //unsigned int GetDescriptionIndex();
     // Index in the text bible of the message when this condition fails
-	//unsigned int GetFailMessageIndex();
+    //unsigned int GetFailMessageIndex();
 
     void Initialize();
+
     void Finalize();
 
     // Returns true if this condition has been violated
     bool IsViolated();
+
     bool LeaveInterior();
 
     // the Mission Stage should call this every frame
-    virtual void Update( unsigned int elapsedTime ) {};
+    virtual void Update(unsigned int elapsedTime) {};
 
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
     virtual bool IsChaseCondition();
+
     virtual bool IsClose();
-    void SetIsViolated( bool bIsViolated );
+
+    void SetIsViolated(bool bIsViolated);
 
 protected:
     virtual void OnInitialize() {};
+
     virtual void OnFinalize() {};
 
-   	void SetType( ConditionTypeEnum type );
-    
-    void SetLeaveInterior( bool bIsLeaving );
+    void SetType(ConditionTypeEnum type);
+
+    void SetLeaveInterior(bool bIsLeaving);
 
     ConditionTypeEnum mType;
 
 private:
     //Prevent wasteful constructor creation.
-    MissionCondition( const MissionCondition& missioncondition );
-    MissionCondition& operator=( const MissionCondition& missioncondition );
+    MissionCondition(const MissionCondition &missioncondition);
+
+    MissionCondition &operator=(const MissionCondition &missioncondition);
 
     bool mbIsViolated;
     bool mLeaveInterior;
@@ -133,10 +137,8 @@ private:
 //
 //=============================================================================
 inline MissionCondition::ConditionTypeEnum
-MissionCondition::GetType() const
-{
-    if ( mFailedHitNRun )
-    {
+MissionCondition::GetType() const {
+    if (mFailedHitNRun) {
         return COND_HIT_AND_RUN_CAUGHT;
     }
 
@@ -154,8 +156,7 @@ MissionCondition::GetType() const
 //
 //=============================================================================
 inline void
-MissionCondition::SetType( MissionCondition::ConditionTypeEnum type )
-{
+MissionCondition::SetType(MissionCondition::ConditionTypeEnum type) {
     mType = type;
 }
 
@@ -169,8 +170,7 @@ MissionCondition::SetType( MissionCondition::ConditionTypeEnum type )
 // Return:      inline 
 //
 //=============================================================================
-inline bool MissionCondition::IsViolated()
-{
+inline bool MissionCondition::IsViolated() {
     return mbIsViolated;
 }
 
@@ -184,8 +184,7 @@ inline bool MissionCondition::IsViolated()
 // Return:      bool 
 //
 //=============================================================================
-inline bool MissionCondition::LeaveInterior()
-{
+inline bool MissionCondition::LeaveInterior() {
     return mLeaveInterior;
 }
 
@@ -194,13 +193,12 @@ inline bool MissionCondition::LeaveInterior()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool bIsViolated )
+// Parameters:  (bool bIsViolated)
 //
 // Return:      inline 
 //
 //=============================================================================
-inline void MissionCondition::SetIsViolated( bool bIsViolated )
-{
+inline void MissionCondition::SetIsViolated(bool bIsViolated) {
     mbIsViolated = bIsViolated;
 }
 
@@ -209,14 +207,13 @@ inline void MissionCondition::SetIsViolated( bool bIsViolated )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool bIsLeaving )
+// Parameters:  (bool bIsLeaving)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void MissionCondition::SetLeaveInterior( bool bIsLeaving )
-{
+inline void MissionCondition::SetLeaveInterior(bool bIsLeaving) {
     mLeaveInterior = bIsLeaving;
 }
- 
+
 #endif //MISSIONCONDITION_H

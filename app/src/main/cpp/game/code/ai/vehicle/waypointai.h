@@ -30,95 +30,102 @@ class Locator;
 //
 //=============================================================================
 
-class WaypointAI : public VehicleAI
-{
+class WaypointAI : public VehicleAI {
 public:
 
     static const float DEFAULT_TRIGGER_RADIUS;
 
-    WaypointAI( 
-        Vehicle* pVehicle, 
-        bool enableSegmentOptimization=true, 
-        float triggerRadius=DEFAULT_TRIGGER_RADIUS,
-        bool autoResetOnDestroyed=false );
+    WaypointAI(
+            Vehicle *pVehicle,
+            bool enableSegmentOptimization = true,
+            float triggerRadius = DEFAULT_TRIGGER_RADIUS,
+            bool autoResetOnDestroyed = false);
 
     virtual ~WaypointAI();
 
     void ClearWaypoints();
-    void AddWaypoint( Locator* loc );
 
-    virtual void Update( float timeins );
+    void AddWaypoint(Locator *loc);
+
+    virtual void Update(float timeins);
+
     virtual void Initialize();
+
     virtual void Reset();
 
     int GetCurrentWayPoint() const { return miCurrentWayPoint; };
 
     // get/set collectible from mission objective
-    void SetCurrentCollectible( int collectible );
+    void SetCurrentCollectible(int collectible);
+
     int GetCurrentCollectible() const;
 
     // get/set current lap 
-    void SetCurrentLap( int lap );
+    void SetCurrentLap(int lap);
+
     int GetCurrentLap() const;
 
     // get/set dist to current collectible
     float GetDistToCurrentCollectible() const;
-    void SetDistToCurrentCollectible( float dist );
+
+    void SetDistToCurrentCollectible(float dist);
 
     static const int MAX_WAYPOINTS = 32;
 
-    enum WaypointAIType
-    {
+    enum WaypointAIType {
         RACE,
         EVADE,
         TARGET
     };
 
-    void SetAIType( WaypointAIType type );
+    void SetAIType(WaypointAIType type);
 
     void UseTurbo();
 
 protected:
     void FollowWaypoints();
-    void SetCurrentWayPoint( int index );
+
+    void SetCurrentWayPoint(int index);
+
     virtual bool MustRepopulateSegments();
-    virtual bool TestReachedTarget( const rmt::Vector& start, const rmt::Vector& end );
 
-    virtual void GetClosestPathElementToTarget( 
-        rmt::Vector& targetPos,
-        RoadManager::PathElement& elem,
-        RoadSegment*& seg,
-        float& segT,
-        float& roadT );
+    virtual bool TestReachedTarget(const rmt::Vector &start, const rmt::Vector &end);
 
-    virtual void DoCatchUp( float timeins );
+    virtual void GetClosestPathElementToTarget(
+            rmt::Vector &targetPos,
+            RoadManager::PathElement &elem,
+            RoadSegment *&seg,
+            float &segT,
+            float &roadT);
 
-    void UpdateNeedsResetOnSpot( float timeins );
+    virtual void DoCatchUp(float timeins);
 
-    void UpdateNeedToWaitForPlayer( float timeins );
+    void UpdateNeedsResetOnSpot(float timeins);
+
+    void UpdateNeedToWaitForPlayer(float timeins);
 
     void PossiblyUseTurbo();
 
 private:
     virtual int RegisterHudMapIcon();
 
-    bool TestWaypoint( int waypoint );
+    bool TestWaypoint(int waypoint);
 
     //Prevent wasteful constructor creation.
-    WaypointAI( const WaypointAI& waypointai );
-    WaypointAI& operator=( const WaypointAI& waypointai );
+    WaypointAI(const WaypointAI &waypointai);
+
+    WaypointAI &operator=(const WaypointAI &waypointai);
 
 
 private:
-    struct WayPoint
-    {
-        Locator* loc;
+    struct WayPoint {
+        Locator *loc;
         RoadManager::PathElement elem;
         float segT;
-        RoadSegment* seg; 
+        RoadSegment *seg;
         float roadT;
     };
-    WayPoint mpWayPoints[ MAX_WAYPOINTS ];
+    WayPoint mpWayPoints[MAX_WAYPOINTS];
     int miNumWayPoints;
     int miCurrentWayPoint;
     int miNextWayPoint;
@@ -135,10 +142,10 @@ private:
     int miCurrentCollectible;
     int miNumLapsCompleted;
 
-    bool mCurrWayPointHasMoved : 1;
+    bool mCurrWayPointHasMoved: 1;
     ///////////////// Auto-resetting stuff ///////////
-    bool mNeedsResetOnSpot     : 1;
-    bool mAutoResetOnDestroyed : 1;
+    bool mNeedsResetOnSpot: 1;
+    bool mAutoResetOnDestroyed: 1;
     float mSecondsTillResetOnSpot;
     WaypointAIType mWaypointAIType;
 
@@ -150,33 +157,32 @@ private:
 
 };
 
-inline void WaypointAI::SetCurrentCollectible( int collectible )
-{
+inline void WaypointAI::SetCurrentCollectible(int collectible) {
     miCurrentCollectible = collectible;
 }
-inline int WaypointAI::GetCurrentCollectible() const
-{
+
+inline int WaypointAI::GetCurrentCollectible() const {
     return miCurrentCollectible;
 }
-inline void WaypointAI::SetCurrentLap( int lap )
-{
+
+inline void WaypointAI::SetCurrentLap(int lap) {
     miNumLapsCompleted = lap;
 }
-inline int WaypointAI::GetCurrentLap() const
-{
+
+inline int WaypointAI::GetCurrentLap() const {
     return miNumLapsCompleted;
 }
-inline void WaypointAI::SetDistToCurrentCollectible( float dist )
-{
-    rAssert( dist >= 0.0f );
+
+inline void WaypointAI::SetDistToCurrentCollectible(float dist) {
+    rAssert(dist >= 0.0f);
     mDistToCurrentCollectible = dist;
 }
-inline float WaypointAI::GetDistToCurrentCollectible() const
-{
+
+inline float WaypointAI::GetDistToCurrentCollectible() const {
     return mDistToCurrentCollectible;
 }
-inline void WaypointAI::SetAIType( WaypointAIType type )
-{
+
+inline void WaypointAI::SetAIType(WaypointAIType type) {
     mWaypointAIType = type;
 }
 

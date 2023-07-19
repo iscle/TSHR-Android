@@ -49,12 +49,11 @@
 //
 //==============================================================================
 IconFileHandler::IconFileHandler()
-    :
-    mpIconFile( 0 ),
-    mFileDataBuffer( 0 ),
-    mHeap( GMA_DEFAULT ),
-    mAsyncLoadState( NONE )
-{
+        :
+        mpIconFile(0),
+        mFileDataBuffer(0),
+        mHeap(GMA_DEFAULT),
+        mAsyncLoadState(NONE) {
 }
 
 //==============================================================================
@@ -67,8 +66,7 @@ IconFileHandler::IconFileHandler()
 // Return:      N/A.
 //
 //==============================================================================
-IconFileHandler::~IconFileHandler()
-{
+IconFileHandler::~IconFileHandler() {
 }
 
 
@@ -85,16 +83,15 @@ IconFileHandler::~IconFileHandler()
 // Return:      None.
 //
 //==============================================================================
-void IconFileHandler::LoadFile 
-(
-    const char* filename, 
-    FileHandler::LoadFileCallback* pCallback,
-    void* pUserData,
-    GameMemoryAllocator heap
-)
-{
-    rAssert( filename );
-    rAssert( pCallback );
+void IconFileHandler::LoadFile
+        (
+                const char *filename,
+                FileHandler::LoadFileCallback *pCallback,
+                void *pUserData,
+                GameMemoryAllocator heap
+        ) {
+    rAssert(filename);
+    rAssert(pCallback);
 
     mpCallback = pCallback;
     mHeap = heap;
@@ -103,17 +100,17 @@ void IconFileHandler::LoadFile
     //
     mAsyncLoadState = OPENFILE;
 
-    radFileOpen( &mpIconFile,
-                 filename,
-                 false,
-                 OpenExisting,
-                 NormalPriority,
-                 0,
-                 heap );
+    radFileOpen(&mpIconFile,
+                filename,
+                false,
+                OpenExisting,
+                NormalPriority,
+                0,
+                heap);
 
-    rAssert( mpIconFile != 0 );
-    
-    mpIconFile->AddCompletionCallback( this, pUserData );
+    rAssert(mpIconFile != 0);
+
+    mpIconFile->AddCompletionCallback(this, pUserData);
 }
 
 
@@ -129,29 +126,25 @@ void IconFileHandler::LoadFile
 // Return:      None.
 //
 //==============================================================================
-void IconFileHandler::OnFileOperationsComplete( void* pUserData )
-{
-    switch( mAsyncLoadState )
-    {
-        case OPENFILE:
-        {
-MEMTRACK_PUSH_GROUP( "IconFileHandler" );
+void IconFileHandler::OnFileOperationsComplete(void *pUserData) {
+    switch (mAsyncLoadState) {
+        case OPENFILE: {
+            MEMTRACK_PUSH_GROUP("IconFileHandler");
             unsigned int length = mpIconFile->GetSize();
-            mFileDataBuffer = new( mHeap ) char[ length ];
+            mFileDataBuffer = new(mHeap) char[length];
 
-            mpIconFile->ReadAsync( mFileDataBuffer, length );
-            mpIconFile->AddCompletionCallback( this, pUserData );
+            mpIconFile->ReadAsync(mFileDataBuffer, length);
+            mpIconFile->AddCompletionCallback(this, pUserData);
 
             mAsyncLoadState = READDATA;
-MEMTRACK_POP_GROUP("IconFileHandler");
+            MEMTRACK_POP_GROUP("IconFileHandler");
         }
-        break;
-        
-        case READDATA:
-        {
+            break;
+
+        case READDATA: {
             unsigned int length = mpIconFile->GetSize();
 
-            GetMemoryCardManager()->SetMemcardIconData( mFileDataBuffer, length );
+            GetMemoryCardManager()->SetMemcardIconData(mFileDataBuffer, length);
 
             // it's up to the client to free the file data buffer!
             //
@@ -165,13 +158,12 @@ MEMTRACK_POP_GROUP("IconFileHandler");
             //
             // Percolate the callback up to the client. This must be done last!!!
             //
-            mpCallback->OnLoadFileComplete( pUserData );
+            mpCallback->OnLoadFileComplete(pUserData);
         }
-        break;
+            break;
 
-        default:
-        {
-            rAssert( 0 );
+        default: {
+            rAssert(0);
         }
     }
 }
@@ -188,8 +180,7 @@ MEMTRACK_POP_GROUP("IconFileHandler");
 // Return:      None.
 //
 //==============================================================================
-void IconFileHandler::LoadFileSync( const char* filename )
-{
+void IconFileHandler::LoadFileSync(const char *filename) {
 }
 
 //******************************************************************************

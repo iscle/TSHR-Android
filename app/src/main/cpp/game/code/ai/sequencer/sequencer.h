@@ -22,93 +22,97 @@
 
 class Action;
 
-class Sequencer
-{
+class Sequencer {
 public:
 
-	enum { MAX_SEQUENCES = 16 };
-	enum { MAX_ACTIONS = 6 };
+    enum {
+        MAX_SEQUENCES = 16
+    };
+    enum {
+        MAX_ACTIONS = 6
+    };
 
-	Sequencer();
-	virtual ~Sequencer();
+    Sequencer();
 
-	bool IsBusy() const;
-	void Clear();
+    virtual ~Sequencer();
 
-	void BeginSequence();
-	void EndSequence();
+    bool IsBusy() const;
 
-	// Dependent actions; calling these methods to add actions
-	// will queue each subsequent action up to occur after the
-	// previous action completes.
-	void AddAction(Action* action)
-		{ AddAction(0.0f, -1.0f, action); }
+    void Clear();
 
-	// Set t_duration <= 0.0f to make action indefinite.
-	void AddAction(float t_duration, Action* action)
-		{ AddAction(0.0f, t_duration, action); }
+    void BeginSequence();
 
-	// Explicitly timed actions; these actions have an explicit
-	// start time independent of other actions' completion.
-	// Set t_duration <= 0.0f to make action indefinite.
-	void AddAction(float t_begin, float t_duration, Action* action);
+    void EndSequence();
 
-	// As above, but these can be called at any time, assuming
-	// there is a sequence currently running.
-	// This allows adding actions to the currently running sequencer
-	// on the fly.  As such, it makes the most sense for these actions
-	// to be slaves.
-	void AddActionToSequence(Action* action)
-		{ AddActionToSequence(0.0f, -1.0f, action); }
-	void AddActionToSequence(float t_duration, Action* action)
-		{ AddActionToSequence(0.0f, t_duration, action); }
-	void AddActionToSequence(float t_begin, float t_duration, Action* action);
+    // Dependent actions; calling these methods to add actions
+    // will queue each subsequent action up to occur after the
+    // previous action completes.
+    void AddAction(Action *action) { AddAction(0.0f, -1.0f, action); }
 
-	// main entries
-	void WakeUp(float time);
-	void DoSimulation(float time);
-	void Update(float time);
+    // Set t_duration <= 0.0f to make action indefinite.
+    void AddAction(float t_duration, Action *action) { AddAction(0.0f, t_duration, action); }
 
-	// get time elapsed
-	float GetTimeElapsed() const
-		{ return m_TimeElapsed; }
+    // Explicitly timed actions; these actions have an explicit
+    // start time independent of other actions' completion.
+    // Set t_duration <= 0.0f to make action indefinite.
+    void AddAction(float t_begin, float t_duration, Action *action);
+
+    // As above, but these can be called at any time, assuming
+    // there is a sequence currently running.
+    // This allows adding actions to the currently running sequencer
+    // on the fly.  As such, it makes the most sense for these actions
+    // to be slaves.
+    void AddActionToSequence(Action *action) { AddActionToSequence(0.0f, -1.0f, action); }
+
+    void AddActionToSequence(float t_duration, Action *action) {
+        AddActionToSequence(0.0f, t_duration, action);
+    }
+
+    void AddActionToSequence(float t_begin, float t_duration, Action *action);
+
+    // main entries
+    void WakeUp(float time);
+
+    void DoSimulation(float time);
+
+    void Update(float time);
+
+    // get time elapsed
+    float GetTimeElapsed() const { return m_TimeElapsed; }
 
 private:
 
-	// sAction - contains timing information
-	//           and action itself
-	struct sAction
-	{
-		float timeBegin;
-		float timeDuration;
-		Action* action;
-	};
+    // sAction - contains timing information
+    //           and action itself
+    struct sAction {
+        float timeBegin;
+        float timeDuration;
+        Action *action;
+    };
 
-	// sSequence - stores multiple parallel actions
-	struct sSequence
-	{
-		unsigned actionCount;
-		sAction actions[MAX_ACTIONS];
-	};
+    // sSequence - stores multiple parallel actions
+    struct sSequence {
+        unsigned actionCount;
+        sAction actions[MAX_ACTIONS];
+    };
 
-	// queue of sequences, executed in order
-	unsigned m_SequenceCount;
-	sSequence m_Sequences[MAX_SEQUENCES];
+    // queue of sequences, executed in order
+    unsigned m_SequenceCount;
+    sSequence m_Sequences[MAX_SEQUENCES];
 
-	// edit state - reference when adding sequences/tracks/actions
-	enum State
-	{
-		STATE_NONE,
-		STATE_SEQUENCE
-	};
+    // edit state - reference when adding sequences/tracks/actions
+    enum State {
+        STATE_NONE,
+        STATE_SEQUENCE
+    };
 
-	State m_State;
-	sSequence* m_pCurrentSequence;
+    State m_State;
+    sSequence *m_pCurrentSequence;
 
-	// amount of time passed for current sequence
-	float m_TimeElapsed;
+    // amount of time passed for current sequence
+    float m_TimeElapsed;
 
-	void ClearSequence(sSequence* seq);
+    void ClearSequence(sSequence *seq);
 };
 
 

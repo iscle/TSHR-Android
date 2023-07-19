@@ -43,25 +43,28 @@
 //
 //
 //===========================================================================
-class NotAbductedCondition : public MissionCondition
-{
-    public:
+class NotAbductedCondition : public MissionCondition {
+public:
 
-        NotAbductedCondition();
-        virtual ~NotAbductedCondition();
+    NotAbductedCondition();
 
-    protected:
-        
-        virtual void HandleEvent( EventEnum id, void* pEventData );
-        virtual void OnInitialize();
-        virtual void OnFinalize();
+    virtual ~NotAbductedCondition();
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow NotAbductedCondition from being copied and assigned.
-        NotAbductedCondition( const NotAbductedCondition& );
-        NotAbductedCondition& operator=( const NotAbductedCondition& );     
+protected:
+
+    virtual void HandleEvent(EventEnum id, void *pEventData);
+
+    virtual void OnInitialize();
+
+    virtual void OnFinalize();
+
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow NotAbductedCondition from being copied and assigned.
+    NotAbductedCondition(const NotAbductedCondition &);
+
+    NotAbductedCondition &operator=(const NotAbductedCondition &);
 };
 
 

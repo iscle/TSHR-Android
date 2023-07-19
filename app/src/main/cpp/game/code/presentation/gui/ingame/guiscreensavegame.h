@@ -34,36 +34,40 @@ class CGuiMenu;
 class CGuiScreenSaveGame : public CGuiScreen,
                            public CGuiScreenLoadSave,
                            public GameDataSaveCallback,
-                           public GameDataDeleteCallback
-{
+                           public GameDataDeleteCallback {
 public:
-    CGuiScreenSaveGame( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenSaveGame(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenSaveGame();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
     // Implements GameDataSaveCallback and GameDataDeleteCallback
     //
-    virtual void OnSaveGameComplete( radFileError errorCode );
-    virtual void OnDeleteGameComplete( radFileError errorCode );
+    virtual void OnSaveGameComplete(radFileError errorCode);
 
-    virtual CGuiMenu* HasMenu() { return m_pMenu; }
+    virtual void OnDeleteGameComplete(radFileError errorCode);
+
+    virtual CGuiMenu *HasMenu() { return m_pMenu; }
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
 
-    void GotoMemoryCardScreen( bool isFromPrompt = false );
-    void HandleErrorResponse( CGuiMenuPrompt::ePromptResponse response );
+    void InitRunning();
+
+    void InitOutro();
+
+    void GotoMemoryCardScreen(bool isFromPrompt = false);
+
+    void HandleErrorResponse(CGuiMenuPrompt::ePromptResponse response);
 
 private:
     void SaveGame();
 
-    CGuiMenu* m_pMenu;
-	Scrooby::Text* m_pFullText;
+    CGuiMenu *m_pMenu;
+    Scrooby::Text *m_pFullText;
     bool m_StatusPromptShown;
     unsigned short m_nonEmptySlots;
 

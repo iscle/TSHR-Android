@@ -32,50 +32,56 @@
 #include <worldsim/physicsairef.h>
 
 
-
 class FenceEntityDSG
-:
-public CollisionEntityDSG
-{
+        :
+                public CollisionEntityDSG {
 public:
-    FenceEntityDSG( void );
-    virtual ~FenceEntityDSG( void ); 
+    FenceEntityDSG(void);
 
-   ///////////////////////////////////////////////////////////////////////
-   // Drawable
-   ///////////////////////////////////////////////////////////////////////
-   void Display();    
+    virtual ~FenceEntityDSG(void);
 
-   void DisplayBoundingBox(tColour colour = tColour(0,255,0));
-   void DisplayBoundingSphere(tColour colour = tColour(0,255,0));
+    ///////////////////////////////////////////////////////////////////////
+    // Drawable
+    ///////////////////////////////////////////////////////////////////////
+    void Display();
 
-   void GetBoundingBox(rmt::Box3D* box);
-   void GetBoundingSphere(rmt::Sphere* sphere);
+    void DisplayBoundingBox(tColour colour = tColour(0, 255, 0));
 
-   ///////////////////////////////////////////////////////////////////////
-   // IEntityDSG
-   ///////////////////////////////////////////////////////////////////////
-   rmt::Vector*       pPosition();
-   const rmt::Vector& rPosition();
-   void               GetPosition( rmt::Vector* ipPosn );
+    void DisplayBoundingSphere(tColour colour = tColour(0, 255, 0));
+
+    void GetBoundingBox(rmt::Box3D *box);
+
+    void GetBoundingSphere(rmt::Sphere *sphere);
+
+    ///////////////////////////////////////////////////////////////////////
+    // IEntityDSG
+    ///////////////////////////////////////////////////////////////////////
+    rmt::Vector *pPosition();
+
+    const rmt::Vector &rPosition();
+
+    void GetPosition(rmt::Vector *ipPosn);
 
 //////////////////////////////////////////////////////////////////////////
-   // override these methods so we can stub them out
-    virtual sim::Solving_Answer PreReactToCollision( sim::SimState* pCollidedObj, sim::Collision& inCollision );
-    virtual sim::Solving_Answer PostReactToCollision(rmt::Vector& impulse, sim::Collision& inCollision);
+    // override these methods so we can stub them out
+    virtual sim::Solving_Answer
+    PreReactToCollision(sim::SimState *pCollidedObj, sim::Collision &inCollision);
+
+    virtual sim::Solving_Answer
+    PostReactToCollision(rmt::Vector &impulse, sim::Collision &inCollision);
 
     // the only reason to inherit from CollisionEntityDSG is so desingers can
     // tweak and tune the friction values when you hit a wall.
-    CollisionAttributes* GetCollisionAttributes( void ) const;
-    void SetCollisionAttributes( CollisionAttributes* pCollisionAttributes );
+    CollisionAttributes *GetCollisionAttributes(void) const;
+
+    void SetCollisionAttributes(CollisionAttributes *pCollisionAttributes);
 
     //
     // Implement pure virtual function from CollisionEntityDSG
     //
-    int GetAIRef() { return( PhysicsAIRef::redBrickPhizFence ); }
+    int GetAIRef() { return (PhysicsAIRef::redBrickPhizFence); }
 
 
-    
     //-----------------------
     // the guts of this class
     //-----------------------

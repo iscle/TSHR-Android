@@ -23,8 +23,7 @@
 //========================================
 // typedefs
 //========================================
-enum TutorialMode
-{
+enum TutorialMode {
     TUTORIAL_BREAK_CAMERA,
     TUTORIAL_BONUS_MISSION,
     TUTORIAL_START_GAME,

@@ -11,15 +11,14 @@
 
 #include <worldsim/spawn/spawnmanager.h>
 
-void SpawnManager::Init()
-{
+void SpawnManager::Init() {
     //////////////////////////////////////////////////////////////////
     // Sanity check subclass implementations
-    rAssert( GetAbsoluteMaxObjects() >= 0 );
-    rAssert( GetMaxModels() >= 0 );
-    rAssert( GetSecondsBetwAdds() >= 0.0f );
-    rAssert( GetSecondsBetwRemoves() >= 0.0f );
-    rAssert( GetSecondsBetwUpdates() >= 0.0f );
+    rAssert(GetAbsoluteMaxObjects() >= 0);
+    rAssert(GetMaxModels() >= 0);
+    rAssert(GetSecondsBetwAdds() >= 0.0f);
+    rAssert(GetSecondsBetwRemoves() >= 0.0f);
+    rAssert(GetSecondsBetwUpdates() >= 0.0f);
 
     mSecondsSinceLastAdd = 0.0f;
     mSecondsSinceLastRemove = 0.0f;
@@ -31,25 +30,23 @@ void SpawnManager::Init()
 }
 
 
-void SpawnManager::Update( float seconds )
-{
-    rAssert( seconds >= 0.0f );
+void SpawnManager::Update(float seconds) {
+    rAssert(seconds >= 0.0f);
 
-    if( !IsActive() )
-    {
+    if (!IsActive()) {
         return;
     }
 
     ///////////////////////////////////////////////////////
     // Do some local sanity checks
-    rAssert( mSpawnRadius >= 0.0f );
-    rAssert( mRemoveRadius >= 0.0f );
+    rAssert(mSpawnRadius >= 0.0f);
+    rAssert(mRemoveRadius >= 0.0f);
 
     ///////////////////////////////////////////////////////
     // Do some enforcement of subclass implementations
-    rAssert( 0 <= mNumObjects && mNumObjects <= GetAbsoluteMaxObjects() );
-    rAssert( 0 <= GetMaxObjects() && GetMaxObjects() <= GetAbsoluteMaxObjects() );
-    rAssert( 0 < GetNumRegisteredModels() && GetNumRegisteredModels() <= GetMaxModels() );
+    rAssert(0 <= mNumObjects && mNumObjects <= GetAbsoluteMaxObjects());
+    rAssert(0 <= GetMaxObjects() && GetMaxObjects() <= GetAbsoluteMaxObjects());
+    rAssert(0 < GetNumRegisteredModels() && GetNumRegisteredModels() <= GetMaxModels());
 
     ///////////////////////////////////////////////////////
     // Do things in this order:
@@ -60,48 +57,39 @@ void SpawnManager::Update( float seconds )
     /////////////////
     // REMOVE PHASE
     float secondsBetwRemoves = GetSecondsBetwRemoves();
-    rAssert( secondsBetwRemoves >= 0.0f );
-    if( mRemoveEnabled && mSecondsSinceLastRemove >= secondsBetwRemoves )
-    {
+    rAssert(secondsBetwRemoves >= 0.0f);
+    if (mRemoveEnabled && mSecondsSinceLastRemove >= secondsBetwRemoves) {
         mSecondsSinceLastRemove = 0.0f;
-        RemoveObjects( seconds );
-    }
-    else
-    {
+        RemoveObjects(seconds);
+    } else {
         mSecondsSinceLastRemove += seconds;
     }
-    rAssert( 0 <= mNumObjects && mNumObjects <= GetAbsoluteMaxObjects() );
+    rAssert(0 <= mNumObjects && mNumObjects <= GetAbsoluteMaxObjects());
     /////////////////
 
     ////////////////
     // ADD PHASE
     float secondsBetwAdds = GetSecondsBetwAdds();
-    rAssert( secondsBetwAdds >= 0.0f );
-    if( mAddEnabled && mSecondsSinceLastAdd >= secondsBetwAdds )
-    {
+    rAssert(secondsBetwAdds >= 0.0f);
+    if (mAddEnabled && mSecondsSinceLastAdd >= secondsBetwAdds) {
         mSecondsSinceLastAdd = 0.0f;
-        AddObjects( seconds );
-    }
-    else
-    {
+        AddObjects(seconds);
+    } else {
         mSecondsSinceLastAdd += seconds;
     }
-    rAssert( 0 <= mNumObjects && mNumObjects <= GetAbsoluteMaxObjects() );
+    rAssert(0 <= mNumObjects && mNumObjects <= GetAbsoluteMaxObjects());
     ////////////////
 
     ////////////////
     // UPDATE PHASE
     float secondsBetwUpdates = GetSecondsBetwUpdates();
-    rAssert( secondsBetwUpdates >= 0.0f );
-    if( mUpdateEnabled && mSecondsSinceLastUpdate >= secondsBetwUpdates )
-    {
+    rAssert(secondsBetwUpdates >= 0.0f);
+    if (mUpdateEnabled && mSecondsSinceLastUpdate >= secondsBetwUpdates) {
         mSecondsSinceLastUpdate = 0.0f;
-        UpdateObjects( seconds );
-    }
-    else
-    {
+        UpdateObjects(seconds);
+    } else {
         mSecondsSinceLastUpdate += seconds;
     }
-    rAssert( (0 <= mNumObjects) && (mNumObjects <= GetAbsoluteMaxObjects() ) );
+    rAssert((0 <= mNumObjects) && (mNumObjects <= GetAbsoluteMaxObjects()));
     ////////////////
 }

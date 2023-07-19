@@ -27,77 +27,68 @@
 //===========================================================================
 // Forward References
 //===========================================================================
-namespace Scrooby
-{
+namespace Scrooby {
     class Group;
+
     class Page;
+
     class Text;
 }
 
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-template <class Digit>
-struct NumericText
-{
-    enum eDigits
-    {
+template<class Digit>
+struct NumericText {
+    enum eDigits {
         DIGIT_ONES,
         DIGIT_TENS,
         DIGIT_HUNDREDS,
 
         MAX_NUM_DIGITS
     };
-    
-    enum eAlignment
-    {
+
+    enum eAlignment {
         ALIGN_RIGHT,
         ALIGN_LEFT,
 
         NUM_ALIGNMENTS
     };
 
-    Digit* m_digits[ MAX_NUM_DIGITS ];
-    Scrooby::Group* m_group;
+    Digit *m_digits[MAX_NUM_DIGITS];
+    Scrooby::Group *m_group;
     int m_numDigits;
     bool m_showLeadingZeros;
     eAlignment m_alignment;
 
     NumericText()
-    :   m_group( NULL ),
-        m_numDigits( 0 ),
-        m_showLeadingZeros( false ),
-        m_alignment( ALIGN_RIGHT )
-    {
-        memset( m_digits, 0, sizeof( m_digits ) );
+            : m_group(NULL),
+              m_numDigits(0),
+              m_showLeadingZeros(false),
+              m_alignment(ALIGN_RIGHT) {
+        memset(m_digits, 0, sizeof(m_digits));
     }
 
-    void SetScroobyText( Scrooby::Group* pGroup, const char* name )
-    {
+    void SetScroobyText(Scrooby::Group *pGroup, const char *name) {
         m_group = pGroup;
         m_numDigits = 0;
 
-        char objectName[ 32 ];
-        for( int i = 0; i < MAX_NUM_DIGITS; i++ )
-        {
-            sprintf( objectName, "%s_%d", name, i );
+        char objectName[32];
+        for (int i = 0; i < MAX_NUM_DIGITS; i++) {
+            sprintf(objectName, "%s_%d", name, i);
 
-            Digit* pDrawable = dynamic_cast<Digit*>( pGroup->GetText( objectName ) );
-            if( pDrawable == NULL )
-            {
-                pDrawable = dynamic_cast<Digit*>( pGroup->GetSprite( objectName ) );
+            Digit *pDrawable = dynamic_cast<Digit *>(pGroup->GetText(objectName));
+            if (pDrawable == NULL) {
+                pDrawable = dynamic_cast<Digit *>(pGroup->GetSprite(objectName));
             }
 
-            if( pDrawable != NULL )
-            {
-                m_digits[ i ] = pDrawable;
+            if (pDrawable != NULL) {
+                m_digits[i] = pDrawable;
 
                 // increment number of digits
                 //
                 m_numDigits++;
-            }
-            else
-            {
+            } else {
                 // break, assuming no more digits to follow
                 //
                 break;
@@ -106,53 +97,41 @@ struct NumericText
 
         // set value to zero by default
         //
-        this->SetValue( 0 );
+        this->SetValue(0);
     }
 
-    void SetValue( unsigned int value, unsigned int offset = 0 )
-    {
-        for( int i = 0; i < m_numDigits; i++ )
-        {
+    void SetValue(unsigned int value, unsigned int offset = 0) {
+        for (int i = 0; i < m_numDigits; i++) {
             // set current digit value
-            rAssert( m_digits[ i ] );
+            rAssert(m_digits[i]);
 
-            m_digits[ i ]->SetIndex( value % 10 + offset );
+            m_digits[i]->SetIndex(value % 10 + offset);
 
             // show leading zeros, if enabled
-            if( m_showLeadingZeros )
-            {
-                m_digits[ i ]->SetVisible( true );
-            }
-            else
-            {
-                m_digits[ i ]->SetVisible( value > 0 || i == 0 );
+            if (m_showLeadingZeros) {
+                m_digits[i]->SetVisible(true);
+            } else {
+                m_digits[i]->SetVisible(value > 0 || i == 0);
             }
 
             // shift value one digit to the right
             value = value / 10;
         }
 
-        if( m_alignment == ALIGN_LEFT )
-        {
+        if (m_alignment == ALIGN_LEFT) {
             // align numeric text to the left (TC: Can this be improved??)
-            for( int j = m_numDigits - 1; j >= 0; j-- )
-            {
-                if( m_digits[ j ]->IsVisible() )
-                {
+            for (int j = m_numDigits - 1; j >= 0; j--) {
+                if (m_digits[j]->IsVisible()) {
                     // found leading digit = j, now shift digits to the left
                     //
-                    for( int k = m_numDigits - 1; k >= 0; k-- )
-                    {
-                        if( j >= 0 )
-                        {
-                            m_digits[ k ]->SetIndex( m_digits[ j ]->GetIndex() );
-                            m_digits[ k ]->SetVisible( true );
+                    for (int k = m_numDigits - 1; k >= 0; k--) {
+                        if (j >= 0) {
+                            m_digits[k]->SetIndex(m_digits[j]->GetIndex());
+                            m_digits[k]->SetVisible(true);
 
                             j--;
-                        }
-                        else
-                        {
-                            m_digits[ k ]->SetVisible( false );
+                        } else {
+                            m_digits[k]->SetVisible(false);
                         }
                     }
 
@@ -163,31 +142,22 @@ struct NumericText
         }
     }
 
-    void SetVisible( bool isVisible )
-    {
-        if( m_group != NULL )
-        {
-            m_group->SetVisible( isVisible );
-        }
-        else
-        {
-            for( int i = 0; i < MAX_NUM_DIGITS; i++ )
-            {
-                if( m_digits[ i ] != NULL )
-                {
-                    m_digits[ i ]->SetVisible( isVisible );
+    void SetVisible(bool isVisible) {
+        if (m_group != NULL) {
+            m_group->SetVisible(isVisible);
+        } else {
+            for (int i = 0; i < MAX_NUM_DIGITS; i++) {
+                if (m_digits[i] != NULL) {
+                    m_digits[i]->SetVisible(isVisible);
                 }
             }
         }
     }
 
-    void SetColour( tColour colour )
-    {
-        for( int i = 0; i < MAX_NUM_DIGITS; i++ )
-        {
-            if( m_digits[ i ] != NULL )
-            {
-                m_digits[ i ]->SetColour( colour );
+    void SetColour(tColour colour) {
+        for (int i = 0; i < MAX_NUM_DIGITS; i++) {
+            if (m_digits[i] != NULL) {
+                m_digits[i]->SetColour(colour);
             }
         }
     }

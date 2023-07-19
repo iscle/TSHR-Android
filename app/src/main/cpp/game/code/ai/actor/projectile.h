@@ -28,6 +28,7 @@
 //===========================================================================
 
 class Behaviour;
+
 class StatePropDSG;
 
 
@@ -49,56 +50,66 @@ class StatePropDSG;
 //      
 //
 //===========================================================================
-class Projectile : public Actor
-{
-    public:
-        Projectile();
-        virtual ~Projectile();
+class Projectile : public Actor {
+public:
+    Projectile();
 
-        static void SetSpeed( float kph );
-        
-        virtual bool Init( const char* statePropname, const char* instanceName );
-        virtual void Update( unsigned int timeInMS );
-        virtual void AddBehaviour( Behaviour* );
-        // Fixed path weapon, no turning in flight
-        virtual void LookAt( const rmt::Vector&, unsigned int timeInMS ){}
-        // Fixed path weapon, no turning in flight
-        virtual void SetRotationSpeed( float degreesPerSecond ) {}
-        virtual void ReleaseBehaviours(){}
-        virtual void MoveTo( const rmt::Vector& destination, float speed ){}
-        void Fire();
-        void CalculateIntersections();
+    virtual ~Projectile();
 
-    protected:
+    static void SetSpeed(float kph);
 
-        // Virtually all collision volumes stick out over the actual geometry
-        // this function pushes a given intersection into the object more
-        void AdjustCollisionPosition( const rmt::Vector& intersection, 
-                                      const rmt::Vector& currPos,
-                                      const rmt::Vector& prevPos,
-                                      rmt::Vector* newIntersection );
+    virtual bool Init(const char *statePropname, const char *instanceName);
+
+    virtual void Update(unsigned int timeInMS);
+
+    virtual void AddBehaviour(Behaviour *);
+
+    // Fixed path weapon, no turning in flight
+    virtual void LookAt(const rmt::Vector &, unsigned int timeInMS) {}
+
+    // Fixed path weapon, no turning in flight
+    virtual void SetRotationSpeed(float degreesPerSecond) {}
+
+    virtual void ReleaseBehaviours() {}
+
+    virtual void MoveTo(const rmt::Vector &destination, float speed) {}
+
+    void Fire();
+
+    void CalculateIntersections();
+
+protected:
+
+    // Virtually all collision volumes stick out over the actual geometry
+    // this function pushes a given intersection into the object more
+    void AdjustCollisionPosition(const rmt::Vector &intersection,
+                                 const rmt::Vector &currPos,
+                                 const rmt::Vector &prevPos,
+                                 rmt::Vector *newIntersection);
 
 
-        void ApplyDamage( DynaPhysDSG* object );
-        // Joes test, is the given object a player thats currently jumping??
-        bool IsJumpingPlayer( DynaPhysDSG* object );
+    void ApplyDamage(DynaPhysDSG *object);
 
-        CStateProp* mpStateProp;
+    // Joes test, is the given object a player thats currently jumping??
+    bool IsJumpingPlayer(DynaPhysDSG *object);
 
-        static float s_Speed;
-        float m_Speed;
-        rmt::Vector m_CurrentPosition;
+    CStateProp *mpStateProp;
 
-        
-        bool m_WillHitStatic;
-        rmt::Vector m_StaticIntersectionPoint;
+    static float s_Speed;
+    float m_Speed;
+    rmt::Vector m_CurrentPosition;
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow Actor from being copied and assigned.
-        Projectile( const Projectile& );
-        Projectile& operator=( const Projectile& );
+
+    bool m_WillHitStatic;
+    rmt::Vector m_StaticIntersectionPoint;
+
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow Actor from being copied and assigned.
+    Projectile(const Projectile &);
+
+    Projectile &operator=(const Projectile &);
 
 
 };

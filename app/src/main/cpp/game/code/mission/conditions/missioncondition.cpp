@@ -48,10 +48,9 @@ bool MissionCondition::mFailedHitNRun = false;
 //
 //==============================================================================
 MissionCondition::MissionCondition() :
-    mType( COND_INVALID ),
-    mbIsViolated( false ),
-    mLeaveInterior( false )
-{
+        mType(COND_INVALID),
+        mbIsViolated(false),
+        mLeaveInterior(false) {
 }
 
 //==============================================================================
@@ -64,8 +63,7 @@ MissionCondition::MissionCondition() :
 // Return:      N/A.
 //
 //==============================================================================
-MissionCondition::~MissionCondition()
-{
+MissionCondition::~MissionCondition() {
 }
 
 //=============================================================================
@@ -78,13 +76,12 @@ MissionCondition::~MissionCondition()
 // Return:      void 
 //
 //=============================================================================
-void MissionCondition::Initialize()
-{
+void MissionCondition::Initialize() {
     mbIsViolated = false;
     mLeaveInterior = false;
 
     mFailedHitNRun = false;
-    //GetEventManager()->AddListener( this, EVENT_HIT_AND_RUN_CAUGHT );
+    //GetEventManager()->AddListener(this, EVENT_HIT_AND_RUN_CAUGHT);
 
     OnInitialize();
 }
@@ -99,9 +96,8 @@ void MissionCondition::Initialize()
 // Return:      void 
 //
 //=============================================================================
-void MissionCondition::Finalize()
-{
-    //GetEventManager()->RemoveListener( this, EVENT_HIT_AND_RUN_CAUGHT );
+void MissionCondition::Finalize() {
+    //GetEventManager()->RemoveListener(this, EVENT_HIT_AND_RUN_CAUGHT);
 
     OnFinalize();
 
@@ -113,14 +109,13 @@ void MissionCondition::Finalize()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void MissionCondition::HandleEvent( EventEnum id, void* pEventData )
-{
-    //if ( id == EVENT_HIT_AND_RUN_CAUGHT )
+void MissionCondition::HandleEvent(EventEnum id, void *pEventData) {
+    //if (id == EVENT_HIT_AND_RUN_CAUGHT)
     //{
     //    mbIsViolated = true;
     //    mFailedHitNRun = true;
@@ -139,9 +134,8 @@ void MissionCondition::HandleEvent( EventEnum id, void* pEventData )
 // Return:      Default value of false, to be overridden by chase conditions 
 //
 //=============================================================================
-bool MissionCondition::IsChaseCondition()
-{
-    return( false );
+bool MissionCondition::IsChaseCondition() {
+    return (false);
 }
 
 //=============================================================================
@@ -155,9 +149,8 @@ bool MissionCondition::IsChaseCondition()
 // Return:      True if close, false otherwise 
 //
 //=============================================================================
-bool MissionCondition::IsClose()
-{
-    return( true );
+bool MissionCondition::IsClose() {
+    return (true);
 }
 
 //******************************************************************************

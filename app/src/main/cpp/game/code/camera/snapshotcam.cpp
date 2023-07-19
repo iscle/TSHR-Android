@@ -50,10 +50,9 @@
 //
 //==============================================================================
 SnapshotCam::SnapshotCam() :
-    mNumCameras( 0 ),
-    mCurrentCamera( 0 ),
-    mToggling( false )
-{
+        mNumCameras(0),
+        mCurrentCamera(0),
+        mToggling(false) {
 }
 
 //==============================================================================
@@ -66,13 +65,11 @@ SnapshotCam::SnapshotCam() :
 // Return:      N/A.
 //
 //==============================================================================
-SnapshotCam::~SnapshotCam()
-{
+SnapshotCam::~SnapshotCam() {
     unsigned int i;
-    for ( i = 0; i < mNumCameras; ++i )
-    {
-        mCameras[ i ]->Release();
-        mCameras[ i ] = NULL;
+    for (i = 0; i < mNumCameras; ++i) {
+        mCameras[i]->Release();
+        mCameras[i] = NULL;
     }
 }
 
@@ -81,96 +78,88 @@ SnapshotCam::~SnapshotCam()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void SnapshotCam::Update( unsigned int milliseconds )
-{
-    if ( GetFlag( (Flag)FIRST_TIME ) )
-    {
+void SnapshotCam::Update(unsigned int milliseconds) {
+    if (GetFlag((Flag) FIRST_TIME)) {
         unsigned int i;
-        for ( i = 0; i < mNumCameras; ++i )
-        {
-            mCameras[ i ]->Release();
-            mCameras[ i ] = NULL;
+        for (i = 0; i < mNumCameras; ++i) {
+            mCameras[i]->Release();
+            mCameras[i] = NULL;
         }
 
         mNumCameras = 0;
 
         //Load the file.
-        GetLoadingManager()->LoadSync( FILEHANDLER_PURE3D, "snapshot.p3d" );
+        GetLoadingManager()->LoadSync(FILEHANDLER_PURE3D, "snapshot.p3d");
 
         //Find all the tCameras.
         p3d::inventory->SelectSection("Default");
-        HeapMgr()->PushHeap( GMA_TEMP );
-        tInventory::Iterator<tVectorCamera> it;
-        HeapMgr()->PopHeap( GMA_TEMP );
-    
-        tVectorCamera* cam = it.First();
+        HeapMgr()->PushHeap(GMA_TEMP);
+        tInventory::Iterator <tVectorCamera> it;
+        HeapMgr()->PopHeap(GMA_TEMP);
 
-        while( cam )
-        {
-            mCameras[ mNumCameras ] = cam;
-            mCameras[ mNumCameras ]->AddRef();
+        tVectorCamera *cam = it.First();
+
+        while (cam) {
+            mCameras[mNumCameras] = cam;
+            mCameras[mNumCameras]->AddRef();
             ++mNumCameras;
 
-            cam = it.Next();        
-        }
-        
-        for ( i = 0; i < mNumCameras; ++i )
-        {
-            //Take all the cameras out of the inventory.
-            p3d::inventory->Remove( mCameras[ i ] );
+            cam = it.Next();
         }
 
-        SetFlag( (Flag)FIRST_TIME, false );
+        for (i = 0; i < mNumCameras; ++i) {
+            //Take all the cameras out of the inventory.
+            p3d::inventory->Remove(mCameras[i]);
+        }
+
+        SetFlag((Flag) FIRST_TIME, false);
     }
 
     rmt::Vector position, target, vup;
     float fov, aspect;
 
-    if ( mNumCameras > 0 )
-    {
+    if (mNumCameras > 0) {
         //Select a camera.
-        if ( !mToggling && rmt::Fabs(mController->GetAxisValue( SuperCamController::stickX )) == 1.0f )
-        {
+        if (!mToggling &&
+            rmt::Fabs(mController->GetAxisValue(SuperCamController::stickX)) == 1.0f) {
             mToggling = true;
 
-            mCurrentCamera = (mCurrentCamera + rmt::FtoL(mController->GetAxisValue( SuperCamController::stickX ))) % mNumCameras;
+            mCurrentCamera = (mCurrentCamera +
+                              rmt::FtoL(mController->GetAxisValue(SuperCamController::stickX))) %
+                             mNumCameras;
 
 #ifdef RAD_DEBUG
             char str[256];
-            sprintf( str, "\n\nSNAPSHOT_CAM: %s\n\n", mCameras[mCurrentCamera]->GetName() );
-            rDebugString( str );
+            sprintf(str, "\n\nSNAPSHOT_CAM: %s\n\n", mCameras[mCurrentCamera]->GetName());
+            rDebugString(str);
 #endif
-        }
-        else if ( mToggling && mController->GetAxisValue( SuperCamController::stickX ) == 0.0f )
-        {
+        } else if (mToggling && mController->GetAxisValue(SuperCamController::stickX) == 0.0f) {
             mToggling = false;
         }
 
-        mCameras[mCurrentCamera]->GetPosition( &position );
-        mCameras[mCurrentCamera]->GetDirection( &target );
-        target.Scale( 3.0f );
-        target.Add( position );
-        mCameras[mCurrentCamera]->GetUpVector( &vup );
-        mCameras[mCurrentCamera]->GetFOV( &fov, &aspect );
-    }
-    else
-    {
-        GetPosition( &position );
-        GetTarget( &target );
-        GetCameraUp( &vup );
+        mCameras[mCurrentCamera]->GetPosition(&position);
+        mCameras[mCurrentCamera]->GetDirection(&target);
+        target.Scale(3.0f);
+        target.Add(position);
+        mCameras[mCurrentCamera]->GetUpVector(&vup);
+        mCameras[mCurrentCamera]->GetFOV(&fov, &aspect);
+    } else {
+        GetPosition(&position);
+        GetTarget(&target);
+        GetCameraUp(&vup);
         fov = GetFOV();
         aspect = GetAspect();
     }
 
-    SetFOV( fov );
-    SetAspect( aspect );
-    
-    SetCameraValues( milliseconds, position, target, &vup );
+    SetFOV(fov);
+    SetAspect(aspect);
+
+    SetCameraValues(milliseconds, position, target, &vup);
 }
 
 //******************************************************************************
@@ -189,8 +178,7 @@ void SnapshotCam::Update( unsigned int milliseconds )
 // Return:      void 
 //
 //=============================================================================
-void SnapshotCam::OnRegisterDebugControls()
-{
+void SnapshotCam::OnRegisterDebugControls() {
 }
 
 //=============================================================================
@@ -203,6 +191,5 @@ void SnapshotCam::OnRegisterDebugControls()
 // Return:      void 
 //
 //=============================================================================
-void SnapshotCam::OnUnregisterDebugControls()
-{
+void SnapshotCam::OnUnregisterDebugControls() {
 }

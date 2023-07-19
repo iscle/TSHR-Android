@@ -51,19 +51,17 @@ static const radKey32 NULL_SOUND_KEY = 0;
 // Return:      N/A.
 //
 //==============================================================================
-SoundCluster::SoundCluster( int clusterIndex, 
-                            IRadNameSpace* soundNamespace ) :
-    m_isLoaded( false ),
-    m_namespace( soundNamespace ),
-    m_loadCompleteCallbackObj( NULL )
-{
+SoundCluster::SoundCluster(int clusterIndex,
+                           IRadNameSpace *soundNamespace) :
+        m_isLoaded(false),
+        m_namespace(soundNamespace),
+        m_loadCompleteCallbackObj(NULL) {
     int i;
-    
+
     //
     // Initialize the sound list to zeroes, which is hopefully an unlikely radKey32 value
     //
-    for( i = 0; i < MAX_RESOURCES; i++ )
-    {
+    for (i = 0; i < MAX_RESOURCES; i++) {
         m_soundList[i] = NULL_SOUND_KEY;
     }
 
@@ -82,8 +80,7 @@ SoundCluster::SoundCluster( int clusterIndex,
 // Return:      N/A.
 //
 //==============================================================================
-SoundCluster::~SoundCluster()
-{
+SoundCluster::~SoundCluster() {
 }
 
 //=============================================================================
@@ -96,24 +93,18 @@ SoundCluster::~SoundCluster()
 // Return:      void 
 //
 //=============================================================================
-void SoundCluster::LoadSounds( SoundFileHandler* callbackObj /* = NULL  */ )
-{
-    IDaSoundResource* resource;
+void SoundCluster::LoadSounds(SoundFileHandler *callbackObj /* = NULL  */) {
+    IDaSoundResource *resource;
     int i;
-    
-    MEMTRACK_PUSH_GROUP( "Sound" );
 
-    for( i = 0; i < MAX_RESOURCES; i++ )
-    {
-        if( m_soundList[i] != NULL_SOUND_KEY )
-        {
-            resource = reinterpret_cast< IDaSoundResource* >
-            (
-                m_namespace->GetInstance( m_soundList[i] )
-            );
+    MEMTRACK_PUSH_GROUP("Sound");
 
-            if( resource != NULL )
-            {
+    for (i = 0; i < MAX_RESOURCES; i++) {
+        if (m_soundList[i] != NULL_SOUND_KEY) {
+            resource = reinterpret_cast<IDaSoundResource *>(m_namespace->GetInstance(
+                    m_soundList[i]));
+
+            if (resource != NULL) {
                 resource->CaptureResource();
             }
 #ifdef RAD_DEBUG
@@ -122,7 +113,7 @@ void SoundCluster::LoadSounds( SoundFileHandler* callbackObj /* = NULL  */ )
                 //
                 // Sound not found, spew debug message
                 //
-                rDebugPrintf( "Sound resource #%d couldn't be found in cluster #%d\n", i, m_clusterIndex );
+                rDebugPrintf("Sound resource #%d couldn't be found in cluster #%d\n", i, m_clusterIndex);
             }
 #endif
         }
@@ -131,16 +122,16 @@ void SoundCluster::LoadSounds( SoundFileHandler* callbackObj /* = NULL  */ )
     //
     // Register for notification on load completion
     //
-    Sound::daSoundRenderingManagerGet()->GetDynaLoadManager()->AddCompletionCallback( this, NULL );
+    Sound::daSoundRenderingManagerGet()->GetDynaLoadManager()->AddCompletionCallback(this, NULL);
 
     m_loadCompleteCallbackObj = callbackObj;
 
     //
     // Tell the resource manager that we're using this namespace
     //
-    Sound::daSoundRenderingManagerGet()->GetResourceManager()->SetActiveResource( m_namespace );
+    Sound::daSoundRenderingManagerGet()->GetResourceManager()->SetActiveResource(m_namespace);
 
-    MEMTRACK_POP_GROUP( "Sound" );
+    MEMTRACK_POP_GROUP("Sound");
 }
 
 //=============================================================================
@@ -153,22 +144,16 @@ void SoundCluster::LoadSounds( SoundFileHandler* callbackObj /* = NULL  */ )
 // Return:      void 
 //
 //=============================================================================
-void SoundCluster::UnloadSounds()
-{
-    IDaSoundResource* resource;
+void SoundCluster::UnloadSounds() {
+    IDaSoundResource *resource;
     int i;
 
-    for( i = 0; i < MAX_RESOURCES; i++ )
-    {
-        if( m_soundList[i] != NULL_SOUND_KEY )
-        {
-            resource = reinterpret_cast< IDaSoundResource* >
-            (
-                m_namespace->GetInstance( m_soundList[i] )
-            );
+    for (i = 0; i < MAX_RESOURCES; i++) {
+        if (m_soundList[i] != NULL_SOUND_KEY) {
+            resource = reinterpret_cast<IDaSoundResource *>(m_namespace->GetInstance(
+                    m_soundList[i]));
 
-            if( resource != NULL )
-            {
+            if (resource != NULL) {
                 resource->ReleaseResource();
             }
 #ifdef RAD_DEBUG
@@ -177,7 +162,7 @@ void SoundCluster::UnloadSounds()
                 //
                 // Sound not found, spew debug message
                 //
-                rDebugPrintf( "Tried to free unloaded sound resource #%d in cluster #%d\n", i, m_clusterIndex );
+                rDebugPrintf("Tried to free unloaded sound resource #%d in cluster #%d\n", i, m_clusterIndex);
             }
 #endif
         }
@@ -186,7 +171,7 @@ void SoundCluster::UnloadSounds()
     //
     // Tell the resource manager that we're no longer using this namespace
     //
-    Sound::daSoundRenderingManagerGet()->GetResourceManager()->ReleaseActiveResource( m_namespace );
+    Sound::daSoundRenderingManagerGet()->GetResourceManager()->ReleaseActiveResource(m_namespace);
 
 
     m_isLoaded = false;
@@ -203,22 +188,19 @@ void SoundCluster::UnloadSounds()
 // Return:      true if we could add it to the list, false otherwise
 //
 //=============================================================================
-bool SoundCluster::AddResource( Sound::daResourceKey resourceKey )
-{
+bool SoundCluster::AddResource(Sound::daResourceKey resourceKey) {
     int i;
     bool added = false;
 
-    for( i = 0; i < MAX_RESOURCES; i++ )
-    {
-        if( m_soundList[i] == NULL_SOUND_KEY )
-        {
+    for (i = 0; i < MAX_RESOURCES; i++) {
+        if (m_soundList[i] == NULL_SOUND_KEY) {
             m_soundList[i] = resourceKey;
             added = true;
             break;
         }
     }
 
-    return( added );
+    return (added);
 }
 
 //=============================================================================
@@ -232,21 +214,18 @@ bool SoundCluster::AddResource( Sound::daResourceKey resourceKey )
 // Return:      true if resource present, false otherwise
 //
 //=============================================================================
-bool SoundCluster::ContainsResource( Sound::daResourceKey resourceKey )
-{
+bool SoundCluster::ContainsResource(Sound::daResourceKey resourceKey) {
     int i;
 
-    rAssert( resourceKey != NULL_SOUND_KEY );
+    rAssert(resourceKey != NULL_SOUND_KEY);
 
-    for( i = 0; i < MAX_RESOURCES; i++ )
-    {
-        if( m_soundList[i] == resourceKey )
-        {
-            return( true );
+    for (i = 0; i < MAX_RESOURCES; i++) {
+        if (m_soundList[i] == resourceKey) {
+            return (true);
         }
     }
 
-    return( false );
+    return (false);
 }
 
 //=============================================================================
@@ -259,11 +238,9 @@ bool SoundCluster::ContainsResource( Sound::daResourceKey resourceKey )
 // Return:      void 
 //
 //=============================================================================
-void SoundCluster::OnDynaLoadOperationsComplete( void* pUserData )
-{
+void SoundCluster::OnDynaLoadOperationsComplete(void *pUserData) {
     m_isLoaded = true;
-    if( m_loadCompleteCallbackObj != NULL )
-    {
+    if (m_loadCompleteCallbackObj != NULL) {
         m_loadCompleteCallbackObj->LoadCompleted();
         m_loadCompleteCallbackObj = NULL;
     }

@@ -28,6 +28,7 @@
 //========================================
 
 class SoundFileHandler;
+
 class Vehicle;
 
 //=============================================================================
@@ -36,61 +37,70 @@ class Vehicle;
 //
 //=============================================================================
 
-class SoundLoader : public EventListener
-{
-    public:
-        SoundLoader();
-        virtual ~SoundLoader();
+class SoundLoader : public EventListener {
+public:
+    SoundLoader();
 
-        bool LoadClusterByName( const char* clusterName, SoundFileHandler* callbackObj );
-        
-        void LoadPermanentSounds() { queueLoad( SC_ALWAYS_LOADED ); }
+    virtual ~SoundLoader();
 
-        void LevelLoad( RenderEnums::LevelEnum level );
-        void LevelUnload( bool goingToFe );
+    bool LoadClusterByName(const char *clusterName, SoundFileHandler *callbackObj);
 
-        void MissionLoad( RenderEnums::MissionEnum mission );
-        void MissionUnload( RenderEnums::MissionEnum mission );
+    void LoadPermanentSounds() { queueLoad(SC_ALWAYS_LOADED); }
 
-        void LoadFrontEnd() { queueLoad( SC_FRONTEND ); }
-        void UnloadFrontEnd() { clusterUnload( SC_FRONTEND ); }
+    void LevelLoad(RenderEnums::LevelEnum level);
 
-        void LoadCarSound( Vehicle* theCar, bool unloadOtherCars );
+    void LevelUnload(bool goingToFe);
 
-        bool IsSoundLoaded( Sound::daResourceKey soundKey );
+    void MissionLoad(RenderEnums::MissionEnum mission);
 
-        void SetCurrentCluster( SoundClusterName cluster ) 
-            { rAssert( cluster != SC_MAX_CLUSTERS ); m_currentCluster = cluster; }
-        bool AddResourceToCurrentCluster( const char* resourceName )
-            { return( m_clusterList[m_currentCluster]->AddResource( resourceName ) ); }
+    void MissionUnload(RenderEnums::MissionEnum mission);
 
-        //
-        // EventListener functions
-        //
-        void HandleEvent( EventEnum id, void* pEventData );
+    void LoadFrontEnd() { queueLoad(SC_FRONTEND); }
 
-    private:
-        //Prevent wasteful constructor creation.
-        SoundLoader( const SoundLoader& original );
-        SoundLoader& operator=( const SoundLoader& rhs );
+    void UnloadFrontEnd() { clusterUnload(SC_FRONTEND); }
 
-        //
-        // Queue a load with the loading manager
-        //
-        void queueLoad( SoundClusterName cluster );
+    void LoadCarSound(Vehicle *theCar, bool unloadOtherCars);
 
-        bool clusterLoad( SoundClusterName name, SoundFileHandler* callbackObj = NULL );
-        void clusterUnload( SoundClusterName name );
+    bool IsSoundLoaded(Sound::daResourceKey soundKey);
 
-        //
-        // List of clusters, each holding list of loadable sounds
-        //
-        SoundCluster* m_clusterList[SC_MAX_CLUSTERS];
+    void SetCurrentCluster(SoundClusterName cluster) {
+        rAssert(cluster != SC_MAX_CLUSTERS);
+        m_currentCluster = cluster;
+    }
 
-        //
-        // Cluster that any created sound resources will be added to
-        //
-        SoundClusterName m_currentCluster;
+    bool AddResourceToCurrentCluster(const char *resourceName) {
+        return (m_clusterList[m_currentCluster]->AddResource(resourceName));
+    }
+
+    //
+    // EventListener functions
+    //
+    void HandleEvent(EventEnum id, void *pEventData);
+
+private:
+    //Prevent wasteful constructor creation.
+    SoundLoader(const SoundLoader &original);
+
+    SoundLoader &operator=(const SoundLoader &rhs);
+
+    //
+    // Queue a load with the loading manager
+    //
+    void queueLoad(SoundClusterName cluster);
+
+    bool clusterLoad(SoundClusterName name, SoundFileHandler *callbackObj = NULL);
+
+    void clusterUnload(SoundClusterName name);
+
+    //
+    // List of clusters, each holding list of loadable sounds
+    //
+    SoundCluster *m_clusterList[SC_MAX_CLUSTERS];
+
+    //
+    // Cluster that any created sound resources will be added to
+    //
+    SoundClusterName m_currentCluster;
 };
 
 

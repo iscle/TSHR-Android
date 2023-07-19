@@ -51,53 +51,50 @@
 //
 //===========================================================================
 CGuiScreenMiniPause::CGuiScreenMiniPause
-(
-	Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-)
-:   CGuiScreen( pScreen, pParent, GUI_SCREEN_ID_MINI_PAUSE ),
-    m_pMenu( NULL )
-{
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        : CGuiScreen(pScreen, pParent, GUI_SCREEN_ID_MINI_PAUSE),
+          m_pMenu(NULL) {
     // Retrieve the Scrooby drawing elements (from MiniPause page).
     //
-    Scrooby::Page* pPage = m_pScroobyScreen->GetPage( "MiniPause" );
-	rAssert( pPage != NULL );
+    Scrooby::Page *pPage = m_pScroobyScreen->GetPage("MiniPause");
+    rAssert(pPage != NULL);
 
     // create menu
     //
-    m_pMenu = new CGuiMenu( this, NUM_MENU_ITEMS );
-    rAssert( m_pMenu != NULL );
+    m_pMenu = new CGuiMenu(this, NUM_MENU_ITEMS);
+    rAssert(m_pMenu != NULL);
 
-    Scrooby::Group* pGroup = pPage->GetGroup( "Menu" );
-    rAssert( pGroup != NULL );
-    m_pMenu->AddMenuItem( pGroup->GetText( "Continue" ) );
-    m_pMenu->AddMenuItem( pGroup->GetText( "Quit" ) );
+    Scrooby::Group *pGroup = pPage->GetGroup("Menu");
+    rAssert(pGroup != NULL);
+    m_pMenu->AddMenuItem(pGroup->GetText("Continue"));
+    m_pMenu->AddMenuItem(pGroup->GetText("Quit"));
 
     // Retrieve the Scrooby drawing elements (from PauseFgd page).
     //
-    pPage = m_pScroobyScreen->GetPage( "PauseFgd" );
-    if( pPage != NULL )
-    {
+    pPage = m_pScroobyScreen->GetPage("PauseFgd");
+    if (pPage != NULL) {
         // Wrap "Press Start" help text
         //
-        Scrooby::Text* pressStart = pPage->GetText( "PressStartResumePlay" );
-        if( pressStart != NULL )
-        {
-            pressStart->SetTextMode( Scrooby::TEXT_WRAP );
+        Scrooby::Text *pressStart = pPage->GetText("PressStartResumePlay");
+        if (pressStart != NULL) {
+            pressStart->SetTextMode(Scrooby::TEXT_WRAP);
 
             // add text outline
             //
-            pressStart->SetDisplayOutline( true );
+            pressStart->SetDisplayOutline(true);
 
             // set platform-specific text
             //
-            pressStart->SetIndex( PLATFORM_TEXT_INDEX );
+            pressStart->SetIndex(PLATFORM_TEXT_INDEX);
         }
     }
 
-    this->AutoScaleFrame( m_pScroobyScreen->GetPage( "XSmallBoard" ) );
+    this->AutoScaleFrame(m_pScroobyScreen->GetPage("XSmallBoard"));
 
-    this->SetZoomingEnabled( true );
+    this->SetZoomingEnabled(true);
 }
 
 
@@ -113,10 +110,8 @@ CGuiScreenMiniPause::CGuiScreenMiniPause
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenMiniPause::~CGuiScreenMiniPause()
-{
-    if( m_pMenu != NULL )
-    {
+CGuiScreenMiniPause::~CGuiScreenMiniPause() {
+    if (m_pMenu != NULL) {
         delete m_pMenu;
         m_pMenu = NULL;
     }
@@ -136,76 +131,62 @@ CGuiScreenMiniPause::~CGuiScreenMiniPause()
 //
 //===========================================================================
 void CGuiScreenMiniPause::HandleMessage
-(
-	eGuiMessage message,
-	unsigned int param1,
-	unsigned int param2
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        if( this->IsControllerMessage( message ) &&
-            static_cast<int>( param1 ) != CGuiScreenMiniHud::s_pausedControllerID )
-        {
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        if (this->IsControllerMessage(message) &&
+            static_cast<int>(param1) != CGuiScreenMiniHud::s_pausedControllerID) {
             // ignore controller messages if not from user who paused mini-game
             //
             return;
         }
 
-        switch( message )
-        {
-            case GUI_MSG_CONTROLLER_START:
-            {
-                if( !m_pMenu->HasSelectionBeenMade() )
-                {
+        switch (message) {
+            case GUI_MSG_CONTROLLER_START: {
+                if (!m_pMenu->HasSelectionBeenMade()) {
                     this->ResumeGame();
                 }
 
                 break;
             }
-            case GUI_MSG_CONTROLLER_BACK:
-            {
+            case GUI_MSG_CONTROLLER_BACK: {
 #ifdef RAD_WIN32
-                    this->ResumeGame();
-                    break;
+                this->ResumeGame();
+                break;
 #else
                 // don't allow user to back out of pause menu
                 //
                 return;
 #endif
             }
-            case GUI_MSG_MENU_SELECTION_MADE:
-            {
-                if( param1 == MENU_ITEM_CONTINUE )
-                {
+            case GUI_MSG_MENU_SELECTION_MADE: {
+                if (param1 == MENU_ITEM_CONTINUE) {
                     this->ResumeGame();
-                }
-                else if( param1 == MENU_ITEM_QUIT )
-                {
+                } else if (param1 == MENU_ITEM_QUIT) {
                     this->QuitGame();
-                }
-                else
-                {
-                    rAssertMsg( false, "Invalid menu selection!" );
+                } else {
+                    rAssertMsg(false, "Invalid menu selection!");
                 }
 
                 break;
             }
-            default:
-            {
+            default: {
                 break;
             }
         }
 
         // relay message to menu
         //
-        rAssert( m_pMenu != NULL );
-        m_pMenu->HandleMessage( message, param1, param2 );
+        rAssert(m_pMenu != NULL);
+        m_pMenu->HandleMessage(message, param1, param2);
     }
 
-	// Propogate the message up the hierarchy.
-	//
-	CGuiScreen::HandleMessage( message, param1, param2 );
+    // Propogate the message up the hierarchy.
+    //
+    CGuiScreen::HandleMessage(message, param1, param2);
 }
 
 
@@ -221,15 +202,14 @@ void CGuiScreenMiniPause::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMiniPause::InitIntro()
-{
-    rAssert( m_pMenu != NULL );
+void CGuiScreenMiniPause::InitIntro() {
+    rAssert(m_pMenu != NULL);
     m_pMenu->Reset(); // default to 'Continue'
 
     GetSoundManager()->OnPauseStart();
 
 #ifdef RAD_WIN32
-    GetInputManager()->GetFEMouse()->SetInGameMode( false );
+    GetInputManager()->GetFEMouse()->SetInGameMode(false);
 #endif
 }
 
@@ -246,8 +226,7 @@ void CGuiScreenMiniPause::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMiniPause::InitRunning()
-{
+void CGuiScreenMiniPause::InitRunning() {
 }
 
 
@@ -263,12 +242,11 @@ void CGuiScreenMiniPause::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMiniPause::InitOutro()
-{
+void CGuiScreenMiniPause::InitOutro() {
     GetSoundManager()->OnPauseEnd();
 
 #ifdef RAD_WIN32
-    GetInputManager()->GetFEMouse()->SetInGameMode( true );
+    GetInputManager()->GetFEMouse()->SetInGameMode(true);
 #endif
 }
 
@@ -278,20 +256,18 @@ void CGuiScreenMiniPause::InitOutro()
 //---------------------------------------------------------------------
 
 void
-CGuiScreenMiniPause::ResumeGame()
-{
-    m_pParent->HandleMessage( GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_MINI_HUD, CLEAR_WINDOW_HISTORY );
+CGuiScreenMiniPause::ResumeGame() {
+    m_pParent->HandleMessage(GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_MINI_HUD, CLEAR_WINDOW_HISTORY);
 }
 
 void
-CGuiScreenMiniPause::QuitGame()
-{
+CGuiScreenMiniPause::QuitGame() {
     // quit mini-game and return to mini-game FE
     //
-    m_pParent->HandleMessage( GUI_MSG_GOTO_SCREEN,
-                              GUI_SCREEN_ID_MINI_MENU,
-                              CLEAR_WINDOW_HISTORY );
+    m_pParent->HandleMessage(GUI_MSG_GOTO_SCREEN,
+                             GUI_SCREEN_ID_MINI_MENU,
+                             CLEAR_WINDOW_HISTORY);
 
-    GetGameFlow()->SetContext( CONTEXT_SUPERSPRINT_FE );
+    GetGameFlow()->SetContext(CONTEXT_SUPERSPRINT_FE);
 }
 

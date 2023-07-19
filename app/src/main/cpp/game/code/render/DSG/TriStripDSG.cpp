@@ -33,12 +33,11 @@
 //===========================================================================
 
 
-TriStripDSG::TriStripDSG( int maxVertices )
-:mpShader( NULL )
-{
-	IEntityDSG::mTranslucent = true;
+TriStripDSG::TriStripDSG(int maxVertices)
+        : mpShader(NULL) {
+    IEntityDSG::mTranslucent = true;
     mMaxVertices = maxVertices;
-    mpVertices = new TriStripDSG::Vertex[ mMaxVertices ];
+    mpVertices = new TriStripDSG::Vertex[mMaxVertices];
     mNumVertices = 0;
 }
 
@@ -59,16 +58,14 @@ TriStripDSG::TriStripDSG( int maxVertices )
 //===========================================================================
 
 
-TriStripDSG::~TriStripDSG()
-{
-BEGIN_PROFILE( "TriStripDSG Destroy" );
-    delete [] mpVertices;
-    mpVertices = NULL;       
-	if( mpShader != NULL )
-	{
-		mpShader->Release();
-	}	
-END_PROFILE( "TriStripDSG Destroy" );
+TriStripDSG::~TriStripDSG() {
+    BEGIN_PROFILE("TriStripDSG Destroy");
+    delete[] mpVertices;
+    mpVertices = NULL;
+    if (mpShader != NULL) {
+        mpShader->Release();
+    }
+    END_PROFILE("TriStripDSG Destroy");
 }
 //===========================================================================
 // TriStripDSG::GetVertex
@@ -87,10 +84,9 @@ END_PROFILE( "TriStripDSG Destroy" );
 //
 //===========================================================================
 
-const TriStripDSG::Vertex& TriStripDSG::GetVertex( int index ) const
-{
-	rAssert( index >=0 && index < mNumVertices );
-	return mpVertices[ index ];	
+const TriStripDSG::Vertex &TriStripDSG::GetVertex(int index) const {
+    rAssert(index >= 0 && index < mNumVertices);
+    return mpVertices[index];
 }
 
 //===========================================================================
@@ -109,34 +105,33 @@ const TriStripDSG::Vertex& TriStripDSG::GetVertex( int index ) const
 //		None.
 //
 //===========================================================================
-void TriStripDSG::Display()
-{
-    if(IS_DRAW_LONG) return;
+void TriStripDSG::Display() {
+    if (IS_DRAW_LONG) return;
 #ifdef PROFILER_ENABLED
     char profileName[] = "  TriStripDSG Display";
 #endif
     DSG_BEGIN_PROFILE(profileName)
-	
-	if ( mNumVertices > 0 )
-	{
 
-		// We will hack this stuff in for use with the skid marks
-		// subtractive blending
-       // rAssert( mpShader != NULL );
+    if (mNumVertices > 0) {
 
-        if( mpShader != NULL )
-        {
-		    pddiPrimStream* pStream = p3d::pddi->BeginPrims( mpShader->GetShader(), PDDI_PRIM_TRISTRIP, PDDI_V_CT, mNumVertices );
+        // We will hack this stuff in for use with the skid marks
+        // subtractive blending
+        // rAssert(mpShader != NULL);
 
-		    for (int i = 0 ; i < mNumVertices ; ++i)
-		    {
-			    pStream->Vertex( &mpVertices[ i ].vertex, mpVertices[ i ].colour, &mpVertices[ i ].uv );
-		    }
-		    p3d::pddi->EndPrims( pStream ); 
+        if (mpShader != NULL) {
+            pddiPrimStream *pStream = p3d::pddi->BeginPrims(mpShader->GetShader(),
+                                                            PDDI_PRIM_TRISTRIP, PDDI_V_CT,
+                                                            mNumVertices);
+
+            for (int i = 0; i < mNumVertices; ++i) {
+                pStream->Vertex(&mpVertices[i].vertex, mpVertices[i].colour, &mpVertices[i].uv);
+            }
+            p3d::pddi->EndPrims(pStream);
         }
-	}
+    }
     DSG_END_PROFILE(profileName)
 }
+
 //===========================================================================
 // TriStripDSG::Clear
 //===========================================================================
@@ -153,10 +148,9 @@ void TriStripDSG::Display()
 //		None.
 //
 //===========================================================================
-void TriStripDSG::Clear()
-{
-	mNumVertices = 0;
-	mBoundingBox = rmt::Box3D();
+void TriStripDSG::Clear() {
+    mNumVertices = 0;
+    mBoundingBox = rmt::Box3D();
 }
 //===========================================================================
 // TriStripDSG::SetShader
@@ -175,19 +169,15 @@ void TriStripDSG::Clear()
 //
 //===========================================================================
 
-void TriStripDSG::SetShader( tShader* pShader) 
-{
-    if ( pShader != mpShader )
-    {
-	    if( pShader != NULL)
-	    {
-		    pShader->AddRef();
-	    }
-	    if( mpShader != NULL)
-	    {
-		    mpShader->Release();
-	    }
-	    mpShader = pShader;
+void TriStripDSG::SetShader(tShader *pShader) {
+    if (pShader != mpShader) {
+        if (pShader != NULL) {
+            pShader->AddRef();
+        }
+        if (mpShader != NULL) {
+            mpShader->Release();
+        }
+        mpShader = pShader;
     }
 }
 //===========================================================================
@@ -208,18 +198,17 @@ void TriStripDSG::SetShader( tShader* pShader)
 //
 //===========================================================================
 
-void TriStripDSG::AddVertex( const pddiVector& vertex, pddiColour colour, const pddiVector2& uv )
-{
-	rAssert( IsSpaceLeft() == true );
-	mpVertices[ mNumVertices ].vertex = vertex;
-	mpVertices[ mNumVertices ].colour = colour;
-	mpVertices[ mNumVertices ].uv = uv;
+void TriStripDSG::AddVertex(const pddiVector &vertex, pddiColour colour, const pddiVector2 &uv) {
+    rAssert(IsSpaceLeft() == true);
+    mpVertices[mNumVertices].vertex = vertex;
+    mpVertices[mNumVertices].colour = colour;
+    mpVertices[mNumVertices].uv = uv;
 
-	++mNumVertices;
+    ++mNumVertices;
 
-	// Adjust bounding box based upon the new vertex position.
-	mBoundingBox.Expand( vertex );
-	mPosition = mBoundingBox.Mid();
+    // Adjust bounding box based upon the new vertex position.
+    mBoundingBox.Expand(vertex);
+    mPosition = mBoundingBox.Mid();
 }
 //===========================================================================
 // TriStripDSG::AddVertex
@@ -238,14 +227,13 @@ void TriStripDSG::AddVertex( const pddiVector& vertex, pddiColour colour, const 
 //
 //===========================================================================
 
-void TriStripDSG::AddVertex( const Vertex& vertex )
-{
-    rAssert( IsSpaceLeft() == true );
-	mpVertices[ mNumVertices ] = vertex;
-	++mNumVertices;
+void TriStripDSG::AddVertex(const Vertex &vertex) {
+    rAssert(IsSpaceLeft() == true);
+    mpVertices[mNumVertices] = vertex;
+    ++mNumVertices;
 
     // Adjust bounding box based upon the new vertex position.
-    mBoundingBox.Expand( vertex.vertex );
+    mBoundingBox.Expand(vertex.vertex);
     mPosition = mBoundingBox.Mid();
 }
 //===========================================================================
@@ -265,15 +253,15 @@ void TriStripDSG::AddVertex( const Vertex& vertex )
 //
 //===========================================================================
 
-void TriStripDSG::SetVertex( int index, const pddiVector& vertex, pddiColour colour, const pddiVector2& uv )
-{
-	rAssert( index >=0 && index < mNumVertices );
-	mpVertices[ index ].vertex = vertex;
-	mpVertices[ index ].colour = colour;
-	mpVertices[ index ].uv = uv;
+void TriStripDSG::SetVertex(int index, const pddiVector &vertex, pddiColour colour,
+                            const pddiVector2 &uv) {
+    rAssert(index >= 0 && index < mNumVertices);
+    mpVertices[index].vertex = vertex;
+    mpVertices[index].colour = colour;
+    mpVertices[index].uv = uv;
 
     // Adjust bounding box based upon the new vertex position.
-    mBoundingBox.Expand( vertex );
+    mBoundingBox.Expand(vertex);
     mPosition = mBoundingBox.Mid();
 }
 
@@ -294,59 +282,58 @@ void TriStripDSG::SetVertex( int index, const pddiVector& vertex, pddiColour col
 //
 //===========================================================================
 
-void TriStripDSG::DisplayBoundingBox( tColour colour )
-{
+void TriStripDSG::DisplayBoundingBox(tColour colour) {
 #ifndef RAD_RELEASE
-   pddiPrimStream* stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.low.x, mBoundingBox.low.y, mBoundingBox.low.z);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.high.x, mBoundingBox.low.y, mBoundingBox.low.z);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.high.x, mBoundingBox.high.y, mBoundingBox.low.z);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.low.x, mBoundingBox.high.y, mBoundingBox.low.z);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.low.x, mBoundingBox.low.y, mBoundingBox.low.z);
-   p3d::pddi->EndPrims(stream);
+    pddiPrimStream *stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.low.x, mBoundingBox.low.y, mBoundingBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.high.x, mBoundingBox.low.y, mBoundingBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.high.x, mBoundingBox.high.y, mBoundingBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.low.x, mBoundingBox.high.y, mBoundingBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.low.x, mBoundingBox.low.y, mBoundingBox.low.z);
+    p3d::pddi->EndPrims(stream);
 
-   stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.high.x, mBoundingBox.high.y, mBoundingBox.high.z);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.low.x, mBoundingBox.high.y, mBoundingBox.high.z);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.low.x, mBoundingBox.low.y, mBoundingBox.high.z);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.high.x, mBoundingBox.low.y, mBoundingBox.high.z);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.high.x, mBoundingBox.high.y, mBoundingBox.high.z);
-   p3d::pddi->EndPrims(stream);
+    stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.high.x, mBoundingBox.high.y, mBoundingBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.low.x, mBoundingBox.high.y, mBoundingBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.low.x, mBoundingBox.low.y, mBoundingBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.high.x, mBoundingBox.low.y, mBoundingBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.high.x, mBoundingBox.high.y, mBoundingBox.high.z);
+    p3d::pddi->EndPrims(stream);
 
-   stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.high.x, mBoundingBox.high.y, mBoundingBox.high.z);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.high.x, mBoundingBox.low.y, mBoundingBox.high.z);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.high.x, mBoundingBox.low.y, mBoundingBox.low.z);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.high.x, mBoundingBox.high.y, mBoundingBox.low.z);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.high.x, mBoundingBox.high.y, mBoundingBox.high.z);
-   p3d::pddi->EndPrims(stream);
+    stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.high.x, mBoundingBox.high.y, mBoundingBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.high.x, mBoundingBox.low.y, mBoundingBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.high.x, mBoundingBox.low.y, mBoundingBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.high.x, mBoundingBox.high.y, mBoundingBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.high.x, mBoundingBox.high.y, mBoundingBox.high.z);
+    p3d::pddi->EndPrims(stream);
 
-   stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.low.x, mBoundingBox.high.y, mBoundingBox.high.z);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.low.x, mBoundingBox.low.y, mBoundingBox.high.z);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.low.x, mBoundingBox.low.y, mBoundingBox.low.z);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.low.x, mBoundingBox.high.y, mBoundingBox.low.z);
-   stream->Colour(colour);
-   stream->Coord(mBoundingBox.low.x, mBoundingBox.high.y, mBoundingBox.high.z);
-   p3d::pddi->EndPrims(stream);
+    stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.low.x, mBoundingBox.high.y, mBoundingBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.low.x, mBoundingBox.low.y, mBoundingBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.low.x, mBoundingBox.low.y, mBoundingBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.low.x, mBoundingBox.high.y, mBoundingBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBoundingBox.low.x, mBoundingBox.high.y, mBoundingBox.high.z);
+    p3d::pddi->EndPrims(stream);
 #endif
 }

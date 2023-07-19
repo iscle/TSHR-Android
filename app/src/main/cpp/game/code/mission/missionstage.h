@@ -17,7 +17,7 @@
 //========================================
 
 #include <radkey.hpp>
-#include <events/eventlistener.h> 
+#include <events/eventlistener.h>
 #include <camera/supercam.h>
 #include <ai/vehicle/vehicleai.h>
 #include <ai/vehicle/waypointai.h>
@@ -31,14 +31,21 @@
 //========================================
 
 class MissionObjective;
+
 class MissionCondition;
 
 class Character;
+
 class Vehicle;
+
 class VehicleAI;
+
 class Locator;
+
 class ZoneEventLocator;
+
 class CarStartLocator;
+
 class SafeZone;
 
 
@@ -61,16 +68,16 @@ const unsigned int MAX_LOCK_REQUIREMENTS = 2;
 //
 //=============================================================================
 
-class MissionStage : 
-    public EventListener, 
-    public LoadingManager::ProcessRequestsCallback,
-    public HasPresentationInfo
-{
+class MissionStage :
+        public EventListener,
+        public LoadingManager::ProcessRequestsCallback,
+        public HasPresentationInfo {
 public:
 
     MissionStage();
+
     ~MissionStage();
-		
+
     //
     // AI and waypoints
     //
@@ -78,78 +85,87 @@ public:
     void AddVehicle(Vehicle* vehicle, 
                     int vehicleCentralIndex,  
                     CarStartLocator* spawnlocator, 
-                    VehicleAI* vehicleAI );
+                    VehicleAI* vehicleAI);
     */
-    
-    void AddVehicle(Vehicle* vehicle, 
-                    int vehicleCentralIndex,  
-                    CarStartLocator* spawnlocator, 
-                    char* ainame);
-    
-    void AddWaypoint( Locator* locator );
-    void AddCharacter( char* name, 
-                       CarStartLocator* spawnlocator,
-                       CarStartLocator* carlocator,
-                       const char* dynaloadString,
-                       Vehicle* vehicle );
-    //chuck overloaded function 
-    void AddCharacter(char* name,                        
-                       CarStartLocator* spawnlocator,
-                       CarStartLocator* carlocator,
-                       const char* dynaloadString,
-                       char* VehicleName);
 
-                        
+    void AddVehicle(Vehicle *vehicle,
+                    int vehicleCentralIndex,
+                    CarStartLocator *spawnlocator,
+                    char *ainame);
 
-    struct AIParams
-    {
+    void AddWaypoint(Locator *locator);
+
+    void AddCharacter(char *name,
+                      CarStartLocator *spawnlocator,
+                      CarStartLocator *carlocator,
+                      const char *dynaloadString,
+                      Vehicle *vehicle);
+
+    //chuck overloaded function
+    void AddCharacter(char *name,
+                      CarStartLocator *spawnlocator,
+                      CarStartLocator *carlocator,
+                      const char *dynaloadString,
+                      char *VehicleName);
+
+
+    struct AIParams {
         int minShortcutSkill;
         int maxShortcutSkill;
 
-        AIParams()
-        {
+        AIParams() {
             minShortcutSkill = 15;
             maxShortcutSkill = 25;
         };
     };
-    void SetAIParams( Vehicle* vehicle, const AIParams& params );
-    void SetAIRaceCatchupParams( Vehicle* vehicle, const VehicleAI::RaceCatchupParams& params );
-    void SetAIEvadeCatchupParams( Vehicle* vehicle, const VehicleAI::EvadeCatchupParams& params );
-    void SetAITargetCatchupParams( Vehicle* vehicle, const VehicleAI::TargetCatchupParams& params );
+
+    void SetAIParams(Vehicle *vehicle, const AIParams &params);
+
+    void SetAIRaceCatchupParams(Vehicle *vehicle, const VehicleAI::RaceCatchupParams &params);
+
+    void SetAIEvadeCatchupParams(Vehicle *vehicle, const VehicleAI::EvadeCatchupParams &params);
+
+    void SetAITargetCatchupParams(Vehicle *vehicle, const VehicleAI::TargetCatchupParams &params);
 
     //
     // The objective of this mission
     //
-    MissionObjective* GetObjective();
-    void SetObjective( MissionObjective* objective );
+    MissionObjective *GetObjective();
+
+    void SetObjective(MissionObjective *objective);
 
     //
     // The conditions for failure of this mission
     //
     unsigned int GetNumConditions();
-    void SetNumConditions( unsigned int num );
 
-    MissionCondition* GetCondition( int index );
-    void SetCondition( int index, MissionCondition* condition );
+    void SetNumConditions(unsigned int num);
+
+    MissionCondition *GetCondition(int index);
+
+    void SetCondition(int index, MissionCondition *condition);
 
     // Finds the first failure condition and returns it.
     //
-    MissionCondition* GetFailureCondition() const;
+    MissionCondition *GetFailureCondition() const;
 
     //
     // Activates all the stuff this stage uses
     //
-	void Initialize();
+    void Initialize();
+
     //
     // Cleans up all the stuff for this stage
     //
-	void Finalize();
+    void Finalize();
+
     void VehicleFinalize();
-    
+
     //
     // Resets all the objects and stuff to the default positions
     //
-	void Reset();
+    void Reset();
+
     void VehicleInfoInitialize();
 
     void Start();
@@ -163,32 +179,32 @@ public:
     // Update should call this every frame when this stage
     // is active.
     //
-	virtual void Update( unsigned int elapsedTime );
+    virtual void Update(unsigned int elapsedTime);
 
-	virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
     //
     // Time for this stage
     //
-    enum StageTimeType
-    {
+    enum StageTimeType {
         STAGETIME_NOT_TIMED,
         STAGETIME_ADD,
         STAGETIME_SET,
         NUM_STAGETIME_TYPES
     };
 
-    void SetStageTime( StageTimeType type, unsigned int seconds );
-    void GetStageTime( StageTimeType &type, unsigned int &seconds );
+    void SetStageTime(StageTimeType type, unsigned int seconds);
 
-    void SetFinalStage( bool bIsFinal );
+    void GetStageTime(StageTimeType &type, unsigned int &seconds);
+
+    void SetFinalStage(bool bIsFinal);
+
     bool GetFinalStage();
 
     //
     // Progress in this stage
     //
-    enum MissionStageState
-    {
+    enum MissionStageState {
         STAGE_IDLE,
         STAGE_INPROGRESS,
         STAGE_COMPLETE,
@@ -201,153 +217,200 @@ public:
     //
     // Returns the progress of this mission stage
     //
-    MissionStageState GetProgress() { return ( mState ); }
+    MissionStageState GetProgress() { return (mState); }
 
     //
     // Index in the bible of this mission stage's name
     //
-    void SetNameIndex( int index );
-	int GetNameIndex();
+    void SetNameIndex(int index);
+
+    int GetNameIndex();
 
     //
     // Returns the index in the text bible of the starting 
     // or success message
     //
-    void SetStartMessageIndex( int index );
-	int GetStartMessageIndex();
-    void ShowStartMessageIndex( bool show ) { mbShowMessage = show; };
+    void SetStartMessageIndex(int index);
 
-    void SetCameraInfo( SuperCam::Type type, bool cut, bool quickTransition );
+    int GetStartMessageIndex();
+
+    void ShowStartMessageIndex(bool show) { mbShowMessage = show; };
+
+    void SetCameraInfo(SuperCam::Type type, bool cut, bool quickTransition);
 
     int GetNumVehicles() const { return mNumVehicles; };
-    Vehicle* GetVehicle(  int which );
 
-    bool GetMusicChangeFlag() { return( mMusicChange ); }
+    Vehicle *GetVehicle(int which);
+
+    bool GetMusicChangeFlag() { return (mMusicChange); }
+
     void SetMusicChangeFlag() { mMusicChange = true; }
 
-    bool GetMusicAlwaysOnFlag() { return( mKeepMusicOn ); }
+    bool GetMusicAlwaysOnFlag() { return (mKeepMusicOn); }
+
     void SetMusicAlwaysOnFlag() { mKeepMusicOn = true; }
 
-    void SetStageStartMusicEvent( radKey32 key ) { mMusicEventKey = key; }
-    radKey32 GetStageStartMusicEvent() { return( mMusicEventKey ); }
+    void SetStageStartMusicEvent(radKey32 key) { mMusicEventKey = key; }
 
-    void SetStageMusicState( radKey32 stateKey, radKey32 stateEventKey );
-    void GetStageMusicState( radKey32& stateKey, radKey32& stateEventKey );
+    radKey32 GetStageStartMusicEvent() { return (mMusicEventKey); }
 
-    void SetDialogKey( radKey32 key ) { mDialogEventKey = key; }
-    void SetConversationCharacterKey( tUID uid ) { mConversationCharacterKey = uid; }
+    void SetStageMusicState(radKey32 stateKey, radKey32 stateEventKey);
 
-    void SetTrafficDensity( char density ) { mTrafficDensity = density; };
+    void GetStageMusicState(radKey32 &stateKey, radKey32 &stateEventKey);
+
+    void SetDialogKey(radKey32 key) { mDialogEventKey = key; }
+
+    void SetConversationCharacterKey(tUID uid) { mConversationCharacterKey = uid; }
+
+    void SetTrafficDensity(char density) { mTrafficDensity = density; };
 
 
-	//Setting the chase vehicle spawnrate
-	void SetChaseSpawnRate (char* vehiclename,unsigned int spawnrate);
+    //Setting the chase vehicle spawnrate
+    void SetChaseSpawnRate(char *vehiclename, unsigned int spawnrate);
 
-	//Enable Traffic etc.
-	void EnableTraffic ();
-	void DisableTraffic ();
+    //Enable Traffic etc.
+    void EnableTraffic();
+
+    void DisableTraffic();
+
     void ClearTrafficForStage();
-    void PutAllAisInLimbo( bool inLimbo );
+
+    void PutAllAisInLimbo(bool inLimbo);
+
     void DisableHitAndRun();
 
     //Add safezones
-    int AddSafeZone (CarStartLocator* locator,unsigned int radius);
+    int AddSafeZone(CarStartLocator *locator, unsigned int radius);
 
     //Make time into an elasped timer
     void UseElapsedTime();
+
     bool QueryUseElapsedTime();
-    
+
     //Chuck: Gambling Race Stuff
     void SetRaceEnteryFee(int coins);
+
     void PutMFPlayerInCar();
 
     //Chuck:Adding these for Forced Car presentation clean up.
     void SwapInDefaultCar();
+
     void SwapInDefaultCarStart();
-    void OnProcessRequestsComplete( void* pUserData );
-    void SetSwapPlayerRespawnLocatorName(char* locatorName);
-    void SetSwapDefaultCarRespawnLocatorName(char* locatorName);
-    void SetSwapForcedCarRespawnLocatorName(char* locatorName);
+
+    void OnProcessRequestsComplete(void *pUserData);
+
+    void SetSwapPlayerRespawnLocatorName(char *locatorName);
+
+    void SetSwapDefaultCarRespawnLocatorName(char *locatorName);
+
+    void SetSwapForcedCarRespawnLocatorName(char *locatorName);
 
     //Call this to reset a player to this spawn pt once per stage.
-    void SetPlayerRespawnLocatorName(char* locatorName);
-    void SetmsPlayerCarRespawnLocatorName(char* locatorName);
+    void SetPlayerRespawnLocatorName(char *locatorName);
+
+    void SetmsPlayerCarRespawnLocatorName(char *locatorName);
 
     //used to hide one character per stage, used for the bart abuduction on l1m7.
-    void SetCharacterToHide(char* charactername);
+    void SetCharacterToHide(char *charactername);
+
     //script to trigger leaving the level
     void SetLevelOver();
+
     void SetGameOver(bool IsGameOver = true) { mbGameOver = IsGameOver; }
 
-    struct CountdownSequenceUnit
-    {
-        char textID[ 64 ];
+    struct CountdownSequenceUnit {
+        char textID[64];
         int durationTime;
     };
 
-    void SetCountdownEnabled( radKey32 dialogID, tUID secondSpeakerUID );
-    void AddCountdownSequenceUnit( const char* textID, int durationTime = 1000 );
-    CountdownSequenceUnit* GetCountdownSequenceUnit( int index ) const;
+    void SetCountdownEnabled(radKey32 dialogID, tUID secondSpeakerUID);
+
+    void AddCountdownSequenceUnit(const char *textID, int durationTime = 1000);
+
+    CountdownSequenceUnit *GetCountdownSequenceUnit(int index) const;
+
     radKey32 GetCountdownDialogID() const { return mCountdownDialogKey; };
+
     tUID GetCountdownSecondSpeakerUID() const { return mSecondSpeakerUID; };
 
-    inline bool StartBonusObjective() const { return mStartBonusObjectives;  };
+    inline bool StartBonusObjective() const { return mStartBonusObjectives; };
+
     inline void MakeBonusObjectiveStart() { mIsBonusObjectiveStart = true; };
 
-    struct LockRequirement
-    {
-        enum Type { SKIN, CAR, NONE };
-        enum { MAX_NAME_LEN = 32 };
-        LockRequirement() : mType( NONE ) { mName[0] = '\0'; };
+    struct LockRequirement {
+        enum Type {
+            SKIN, CAR, NONE
+        };
+        enum {
+            MAX_NAME_LEN = 32
+        };
+
+        LockRequirement() : mType(NONE) { mName[0] = '\0'; };
         Type mType;
         char mName[MAX_NAME_LEN + 1];
     };
 
-    void SetLockRequirement( unsigned int which, LockRequirement::Type type, const char* name );
-    const LockRequirement& GetLockRequirement( unsigned int which );
+    void SetLockRequirement(unsigned int which, LockRequirement::Type type, const char *name);
+
+    const LockRequirement &GetLockRequirement(unsigned int which);
+
     bool GetMissionLocked() const { return mMissionLocked; };
 
     void DisplayMissionStageIndexMessage();
 
     // stage complete presentation
     //
-    void ShowStageComplete( bool enabled ) { mShowStageComplete = enabled; }
+    void ShowStageComplete(bool enabled) { mShowStageComplete = enabled; }
+
     bool IsShowStageComplete() const { return mShowStageComplete; }
 
     // HUD icon image
     //
-    void SetHUDIcon( const char* name );
-    const char* GetHUDIcon() const;
+    void SetHUDIcon(const char *name);
+
+    const char *GetHUDIcon() const;
 
     void SetIrisAtEnd() { mIrisAtEnd = true; };
-    void SetFadeOutAtEnd() { mFadeOutAtEnd = true; };
-    void SetIrisSpeed( float speed ) { mIrisSpeed = speed; };
 
-    enum Transition { IRIS, FADE, NONE };
-    Transition GetTransition() { if ( mIrisAtEnd ) { return IRIS; } else if ( mFadeOutAtEnd ) { return FADE; } else { return NONE; } };
+    void SetFadeOutAtEnd() { mFadeOutAtEnd = true; };
+
+    void SetIrisSpeed(float speed) { mIrisSpeed = speed; };
+
+    enum Transition {
+        IRIS, FADE, NONE
+    };
+
+    Transition
+    GetTransition() { if (mIrisAtEnd) { return IRIS; } else if (mFadeOutAtEnd) { return FADE; } else { return NONE; }};
+
     void DoTransition();
 
-    void SetMissionAbortEnabled( bool isEnabled );
+    void SetMissionAbortEnabled(bool isEnabled);
+
     bool IsMissionAbortAllowed() const;
 
     //Chuck dirty pulbic var
     bool mbStayBlackForStage;
     bool mbDisablePlayerControlForCountDown;
-    
-    Vehicle* GetMainAIVehicleForThisStage();
-    
+
+    Vehicle *GetMainAIVehicleForThisStage();
+
     static const int MAX_VEHICLES = 4;
 
 protected:
-    void ActivateVehicle( Vehicle* vehicle, bool bIsActive );
+    void ActivateVehicle(Vehicle *vehicle, bool bIsActive);
+
     void OnStageCompleteSuccessful();
+
 private:
 #ifdef RAD_DEBUG
     int m_Id;
 #endif
     MissionStageState mState;
-	int DestroyStageVehicleAI();
-    void DestroyAllSafeZones ();
+
+    int DestroyStageVehicleAI();
+
+    void DestroyAllSafeZones();
 
     //
     // Play dialog associated with stage completion if it exists
@@ -357,7 +420,7 @@ private:
     //
     // Objective (always only one per stage)
     //
-    MissionObjective* mObjective;
+    MissionObjective *mObjective;
 
     //
     // Conditions
@@ -365,7 +428,7 @@ private:
     static const int MAX_CONDITIONS = 8;
 
     int mNumConditions;
-    MissionCondition* mConditions[ MAX_CONDITIONS ];
+    MissionCondition *mConditions[MAX_CONDITIONS];
 
     //
     // Time for stage
@@ -376,57 +439,58 @@ private:
     //
     // AI Vehicles
     //
-    struct VehicleInfo
-    {
-        VehicleInfo() : vehicle( NULL ), spawn( NULL ), vehicleAINum( -1 ), vehicleAI( NULL ) {};
-        Vehicle* vehicle;
-        CarStartLocator* spawn;
+    struct VehicleInfo {
+        VehicleInfo() : vehicle(NULL), spawn(NULL), vehicleAINum(-1), vehicleAI(NULL) {};
+        Vehicle *vehicle;
+        CarStartLocator *spawn;
         int vehicleAINum;//Stupid.
-        VehicleAI* vehicleAI;
+        VehicleAI *vehicleAI;
     };
 
 
     int mNumVehicles;
-    VehicleInfo mVehicles[ MAX_VEHICLES ];
+    VehicleInfo mVehicles[MAX_VEHICLES];
 
     //
     // Waypoints
     //
     int mNumWaypoints;
-    Locator* mWaypoints[ WaypointAI::MAX_WAYPOINTS ];
+    Locator *mWaypoints[WaypointAI::MAX_WAYPOINTS];
 
     //
     // Characters
     //
-    struct CharacterInfo
-    {
-        CharacterInfo() : character( NULL ), locator( NULL ), carLocator( NULL ), pZoneEventLocator( NULL ), vehicle( NULL ) { name[0] = '\0'; };
+    struct CharacterInfo {
+        CharacterInfo() : character(NULL), locator(NULL), carLocator(NULL), pZoneEventLocator(NULL),
+                          vehicle(NULL) { name[0] = '\0'; };
         char name[16];
-        Character* character;
-        CarStartLocator* locator;
-        CarStartLocator* carLocator;
-        ZoneEventLocator* pZoneEventLocator;
-        Vehicle* vehicle;
+        Character *character;
+        CarStartLocator *locator;
+        CarStartLocator *carLocator;
+        ZoneEventLocator *pZoneEventLocator;
+        Vehicle *vehicle;
         char VehicleName[16];
     };
 
-    enum { MAX_CHARACTERS_IN_STAGE = 6 };
+    enum {
+        MAX_CHARACTERS_IN_STAGE = 6
+    };
 
     int mNumCharacters;
-    CharacterInfo mCharacters[ MAX_CHARACTERS_IN_STAGE ];
+    CharacterInfo mCharacters[MAX_CHARACTERS_IN_STAGE];
 
-    char mCharacterToHide [16];
-    bool mbLevelOver : 1;
-    bool mbGameOver : 1;
-    bool mbFinalStage : 1;
+    char mCharacterToHide[16];
+    bool mbLevelOver: 1;
+    bool mbGameOver: 1;
+    bool mbFinalStage: 1;
 
     int miNameIndex;
     int miStartMessageIndex;
     bool mbShowMessage;
 
-    struct CameraInfo
-    {
-        CameraInfo() : type ( SuperCam::FOLLOW_CAM ), cut( false ), quickTransition( false ), active( false ) {};
+    struct CameraInfo {
+        CameraInfo() : type(SuperCam::FOLLOW_CAM), cut(false), quickTransition(false),
+                       active(false) {};
         SuperCam::Type type;
         bool cut;
         bool quickTransition;
@@ -449,19 +513,18 @@ private:
     //
     radKey32 mDialogEventKey;
     tUID mConversationCharacterKey;
-	
-	//used to store any chase vehicle data that is for this stage
-	// more harrass AI etc
-	struct ChaseVehicleStruct
-	{
-		unsigned int mChaseVehicleSpawnRate;
-		char vehiclename [64] ;
-	};
 
-	ChaseVehicleStruct m_ChaseData_Array [MAX_CHASE_STRUCTS] ;
+    //used to store any chase vehicle data that is for this stage
+    // more harrass AI etc
+    struct ChaseVehicleStruct {
+        unsigned int mChaseVehicleSpawnRate;
+        char vehiclename[64];
+    };
 
-    SafeZone* m_SafeZone_Array [MAX_SAFEZONES];
-    
+    ChaseVehicleStruct m_ChaseData_Array[MAX_CHASE_STRUCTS];
+
+    SafeZone *m_SafeZone_Array[MAX_SAFEZONES];
+
     //Chuck Traffic Variable
 
     bool mbClearTrafficForStage;
@@ -469,7 +532,7 @@ private:
 
     bool mb_DisableHitAndRun;
     bool mb_InsideSafeZone;
-    
+
     bool mb_UseElapsedTime; //used to make the time count up rather than down
     int mRaceEnteryFee;
     bool mbPutPlayerInCar;
@@ -478,24 +541,24 @@ private:
 
     //Chuck: Variables for Forced car clean up
     bool mbSwapInDefaultCar;
-    char mSwapDefaultCarRespawnLocatorName [32];
-    char mSwapForcedCarRespawnLocatorName [32];
-    char mSwapPlayerRespawnLocatorName [32];
-         
+    char mSwapDefaultCarRespawnLocatorName[32];
+    char mSwapForcedCarRespawnLocatorName[32];
+    char mSwapPlayerRespawnLocatorName[32];
+
     //variable used for placing a player per stage basis
-    char mPlayerRespawnLocatorName [32];
-    char mPlayerCarRespawnLocatorName [32];
+    char mPlayerRespawnLocatorName[32];
+    char mPlayerCarRespawnLocatorName[32];
 
     char mTrafficDensity;
     bool mIsBonusObjectiveStart;
     bool mStartBonusObjectives;
 
-    LockRequirement mRequirement[ MAX_LOCK_REQUIREMENTS ];
+    LockRequirement mRequirement[MAX_LOCK_REQUIREMENTS];
     bool mMissionLocked;
 
-    bool mShowStageComplete : 1;
-    bool mCountdownEnabled  : 1;
-    char mHUDIconImage[ 16 ];
+    bool mShowStageComplete: 1;
+    bool mCountdownEnabled: 1;
+    char mHUDIconImage[16];
 
     bool mIrisAtEnd;
     bool mFadeOutAtEnd;
@@ -503,13 +566,13 @@ private:
 
     static const int MAX_NUM_COUNTDOWN_SEQUENCE_UNITS = 8;
 
-    CountdownSequenceUnit* mCountdownSequenceUnits;
+    CountdownSequenceUnit *mCountdownSequenceUnits;
     int mNumCountdownSequenceUnits;
 
     radKey32 mCountdownDialogKey;
     tUID mSecondSpeakerUID;
 
-    bool mAllowMissionAbort : 1;
+    bool mAllowMissionAbort: 1;
     int mResetCounter;
 
 };
@@ -519,13 +582,12 @@ private:
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool bIsFinal )
+// Parameters:  (bool bIsFinal)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void MissionStage::SetFinalStage( bool bIsFinal )
-{
+inline void MissionStage::SetFinalStage(bool bIsFinal) {
     mbFinalStage = bIsFinal;
 }
 
@@ -539,8 +601,7 @@ inline void MissionStage::SetFinalStage( bool bIsFinal )
 // Return:      bool 
 //
 //=============================================================================
-inline bool MissionStage::GetFinalStage()
-{
+inline bool MissionStage::GetFinalStage() {
     return mbFinalStage;
 }
 
@@ -554,9 +615,8 @@ inline bool MissionStage::GetFinalStage()
 // Return:      MissionObjective
 //
 //=============================================================================
-inline MissionObjective* MissionStage::GetObjective() 
-{ 
-    return ( mObjective ); 
+inline MissionObjective *MissionStage::GetObjective() {
+    return (mObjective);
 }
 
 //=============================================================================
@@ -564,14 +624,13 @@ inline MissionObjective* MissionStage::GetObjective()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( MissionObjective* objective )
+// Parameters:  (MissionObjective* objective)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void MissionStage::SetObjective( MissionObjective* objective ) 
-{ 
-    mObjective = objective; 
+inline void MissionStage::SetObjective(MissionObjective *objective) {
+    mObjective = objective;
 }
 
 //=============================================================================
@@ -584,9 +643,8 @@ inline void MissionStage::SetObjective( MissionObjective* objective )
 // Return:      inline 
 //
 //=============================================================================
-inline unsigned int MissionStage::GetNumConditions() 
-{ 
-    return ( mNumConditions ); 
+inline unsigned int MissionStage::GetNumConditions() {
+    return (mNumConditions);
 }
 
 //=============================================================================
@@ -594,14 +652,13 @@ inline unsigned int MissionStage::GetNumConditions()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int num )
+// Parameters:  (unsigned int num)
 //
 // Return:      inline 
 //
 //=============================================================================
-inline void MissionStage::SetNumConditions( unsigned int num ) 
-{ 
-    mNumConditions = num; 
+inline void MissionStage::SetNumConditions(unsigned int num) {
+    mNumConditions = num;
 }
 
 //=============================================================================
@@ -614,10 +671,9 @@ inline void MissionStage::SetNumConditions( unsigned int num )
 // Return:      inline 
 //
 //=============================================================================
-inline MissionCondition* MissionStage::GetCondition( int index )
-{ 
-    rAssert( index < MAX_CONDITIONS );
-    return ( mConditions[ index ] ); 
+inline MissionCondition *MissionStage::GetCondition(int index) {
+    rAssert(index < MAX_CONDITIONS);
+    return (mConditions[index]);
 }
 
 //=============================================================================
@@ -625,15 +681,14 @@ inline MissionCondition* MissionStage::GetCondition( int index )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int index, MissionCondition* condition )
+// Parameters:  (unsigned int index, MissionCondition* condition)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void MissionStage::SetCondition( int index, MissionCondition* condition ) 
-{ 
-    rAssert( index < MAX_CONDITIONS );
-    mConditions[ index ] = condition; 
+inline void MissionStage::SetCondition(int index, MissionCondition *condition) {
+    rAssert(index < MAX_CONDITIONS);
+    mConditions[index] = condition;
 }
 
 //=============================================================================
@@ -641,13 +696,12 @@ inline void MissionStage::SetCondition( int index, MissionCondition* condition )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int index )
+// Parameters:  (unsigned int index)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void MissionStage::SetNameIndex( int index )
-{
+inline void MissionStage::SetNameIndex(int index) {
     miNameIndex = index;
 }
 
@@ -656,13 +710,12 @@ inline void MissionStage::SetNameIndex( int index )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int index )
+// Parameters:  (unsigned int index)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void MissionStage::SetStartMessageIndex( int index )
-{
+inline void MissionStage::SetStartMessageIndex(int index) {
     miStartMessageIndex = index;
 }
 
@@ -676,8 +729,7 @@ inline void MissionStage::SetStartMessageIndex( int index )
 // Return:      int 
 //
 //=============================================================================
-inline int MissionStage::GetStartMessageIndex()
-{
+inline int MissionStage::GetStartMessageIndex() {
     return miStartMessageIndex;
 }
 
@@ -686,15 +738,14 @@ inline int MissionStage::GetStartMessageIndex()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int index )
+// Parameters:  (unsigned int index)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void MissionStage::SetHUDIcon( const char* name )
-{
-    sprintf( mHUDIconImage, "%s.png", name );
-    rAssert( strlen( mHUDIconImage ) < sizeof( mHUDIconImage ) );
+inline void MissionStage::SetHUDIcon(const char *name) {
+    sprintf(mHUDIconImage, "%s.png", name);
+    rAssert(strlen(mHUDIconImage) < sizeof(mHUDIconImage));
 }
 
 //=============================================================================
@@ -707,8 +758,7 @@ inline void MissionStage::SetHUDIcon( const char* name )
 // Return:      int 
 //
 //=============================================================================
-inline const char* MissionStage::GetHUDIcon() const
-{
+inline const char *MissionStage::GetHUDIcon() const {
     return mHUDIconImage;
 }
 
@@ -722,8 +772,7 @@ inline const char* MissionStage::GetHUDIcon() const
 // Return:      void 
 //
 //=============================================================================
-inline void MissionStage::SetMissionAbortEnabled( bool isEnabled )
-{
+inline void MissionStage::SetMissionAbortEnabled(bool isEnabled) {
     mAllowMissionAbort = isEnabled;
 }
 
@@ -737,8 +786,7 @@ inline void MissionStage::SetMissionAbortEnabled( bool isEnabled )
 // Return:      bool 
 //
 //=============================================================================
-inline bool MissionStage::IsMissionAbortAllowed() const
-{
+inline bool MissionStage::IsMissionAbortAllowed() const {
     return mAllowMissionAbort;
 }
 

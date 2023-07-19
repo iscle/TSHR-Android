@@ -31,7 +31,9 @@
 //===========================================================================
 
 class Weapon;
+
 class StatePropDSG;
+
 class DynaPhysDSG;
 
 //===========================================================================
@@ -67,7 +69,7 @@ public:
     ~UFOState();
 
     bool IsStateCompleted()=0;
-    void Update( float timeInMS )=0;
+    void Update(float timeInMS)=0;
 
 private:
 };
@@ -79,8 +81,8 @@ public:
     ~UFOMovingState();
 
     bool IsStateCompleted();
-    void Update( float timeInMS );
-    void SetTarget( const rmt::Vector& target );
+    void Update(float timeInMS);
+    void SetTarget(const rmt::Vector& target);
     
     
 private:
@@ -97,69 +99,73 @@ public:
 private:
 };*/
 
-struct UFOWeapon
-{
-    Weapon* weapon;
+struct UFOWeapon {
+    Weapon *weapon;
     rmt::Vector offset;
 };
 
 
-class UFO : public Boss, public EventListener
-{
-    public:
-        UFO();
-        virtual ~UFO();
+class UFO : public Boss, public EventListener {
+public:
+    UFO();
 
-        virtual void Update( float timeInMS );
-        virtual bool LoadSetup( const char* statePropDSGName, const rmt::Vector& position );
+    virtual ~UFO();
 
-        virtual void AddWeapon( Weapon* pWeapon, const rmt::Vector& offset );
-        
-        void HandleEvent( EventEnum id, void* pEventData );
+    virtual void Update(float timeInMS);
 
+    virtual bool LoadSetup(const char *statePropDSGName, const rmt::Vector &position);
 
-        enum State { eScanning, eMoving, eID4Attack, eTractorBeam };
+    virtual void AddWeapon(Weapon *pWeapon, const rmt::Vector &offset);
 
-    protected:
-
-        std::vector< UFOWeapon, s2alloc<UFOWeapon> > mWeaponList;
-        StatePropDSG*   mpDrawable;
+    void HandleEvent(EventEnum id, void *pEventData);
 
 
-        ReserveArray< DynaPhysDSG* > mTargets;
-        tName mStatePropName;
+    enum State {
+        eScanning, eMoving, eID4Attack, eTractorBeam
+    };
 
-    protected:
-        
-        void ScanForTargets();
-        bool IsStateCompleted();
-        UFO::State ChooseNextState();
+protected:
 
-        // Figure out the correct acceleration to get to where we want to go
-        // Apply the acceleration to the velocity
-        void Navigate( float timeInMS );
-        // Apply velocity and move the object, also take care of the DSG move call
-        void Move( float timeInMS ); 
+    std::vector <UFOWeapon, s2alloc<UFOWeapon>> mWeaponList;
+    StatePropDSG *mpDrawable;
 
 
+    ReserveArray<DynaPhysDSG *> mTargets;
+    tName mStatePropName;
 
-   protected:
+protected:
 
-        // Wish I could reuse some of the vehicle stuff for this.
-        rmt::Vector mVelocity;
-        rmt::Vector mPosition;
-        
-        DynaPhysDSG* mTarget;
-        
+    void ScanForTargets();
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow UFO from being copied and assigned.
-        UFO( const UFO& );
-        UFO& operator=( const UFO& );
+    bool IsStateCompleted();
+
+    UFO::State ChooseNextState();
+
+    // Figure out the correct acceleration to get to where we want to go
+    // Apply the acceleration to the velocity
+    void Navigate(float timeInMS);
+
+    // Apply velocity and move the object, also take care of the DSG move call
+    void Move(float timeInMS);
+
+
+protected:
+
+    // Wish I could reuse some of the vehicle stuff for this.
+    rmt::Vector mVelocity;
+    rmt::Vector mPosition;
+
+    DynaPhysDSG *mTarget;
+
+
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow UFO from being copied and assigned.
+    UFO(const UFO &);
+
+    UFO &operator=(const UFO &);
 };
-
 
 
 #endif

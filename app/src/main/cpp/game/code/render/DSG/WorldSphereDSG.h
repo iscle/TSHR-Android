@@ -35,53 +35,65 @@ class tCompositeDrawable;
 // Synopsis:   The WorldSphereDSG; Synopsis by Inspection.
 //
 //========================================================================
-class WorldSphereDSG : public IEntityDSG
-{
+class WorldSphereDSG : public IEntityDSG {
 public:
-   WorldSphereDSG();
-   ~WorldSphereDSG();
+    WorldSphereDSG();
 
-   void AddMesh(tGeometry* ipGeo);
-   void AddBillBoardQuadGroup( tBillboardQuadGroup* );
-   void SetNumMeshes(int iNumMeshes);
-   void SetNumBillBoardQuadGroups( int iNumGroups );
-   void SetMultiController(tMultiController* ipMultiController);
-   void SetCompositeDrawable( tCompositeDrawable* ipCompDraw );
-   void SetFlare( LensFlareDSG* pFlare );
-   void Activate();
-   void Deactivate();
+    ~WorldSphereDSG();
 
-   ///////////////////////////////////////////////////////////////////////
-   // Drawable
-   ///////////////////////////////////////////////////////////////////////
-   void Display();    
+    void AddMesh(tGeometry *ipGeo);
 
-   void DisplayBoundingBox(tColour colour = tColour(0,255,0));
-   void DisplayBoundingSphere(tColour colour = tColour(0,255,0));
+    void AddBillBoardQuadGroup(tBillboardQuadGroup *);
 
-   void GetBoundingBox(rmt::Box3D* box);
-   void GetBoundingSphere(rmt::Sphere* sphere);
+    void SetNumMeshes(int iNumMeshes);
 
-   ///////////////////////////////////////////////////////////////////////
-   // IEntityDSG
-   ///////////////////////////////////////////////////////////////////////
-   rmt::Vector*       pPosition();
-   const rmt::Vector& rPosition();
-   void               GetPosition( rmt::Vector* ipPosn );
+    void SetNumBillBoardQuadGroups(int iNumGroups);
 
-   void RenderUpdate();
+    void SetMultiController(tMultiController *ipMultiController);
+
+    void SetCompositeDrawable(tCompositeDrawable *ipCompDraw);
+
+    void SetFlare(LensFlareDSG *pFlare);
+
+    void Activate();
+
+    void Deactivate();
+
+    ///////////////////////////////////////////////////////////////////////
+    // Drawable
+    ///////////////////////////////////////////////////////////////////////
+    void Display();
+
+    void DisplayBoundingBox(tColour colour = tColour(0, 255, 0));
+
+    void DisplayBoundingSphere(tColour colour = tColour(0, 255, 0));
+
+    void GetBoundingBox(rmt::Box3D *box);
+
+    void GetBoundingSphere(rmt::Sphere *sphere);
+
+    ///////////////////////////////////////////////////////////////////////
+    // IEntityDSG
+    ///////////////////////////////////////////////////////////////////////
+    rmt::Vector *pPosition();
+
+    const rmt::Vector &rPosition();
+
+    void GetPosition(rmt::Vector *ipPosn);
+
+    void RenderUpdate();
 
 
 protected:
-   void SetInternalState();
+    void SetInternalState();
 
-   bool mbActive;
-   rmt::Vector mPosn;
-   tCompositeDrawable* mpCompDraw;
-   SwapArray<tGeometry*> mpGeos;
-   SwapArray<tBillboardQuadGroup*> mpBillBoards;
-   tMultiController* mpMultiCon;
-   LensFlareDSG*	mpFlare;
+    bool mbActive;
+    rmt::Vector mPosn;
+    tCompositeDrawable *mpCompDraw;
+    SwapArray<tGeometry *> mpGeos;
+    SwapArray<tBillboardQuadGroup *> mpBillBoards;
+    tMultiController *mpMultiCon;
+    LensFlareDSG *mpFlare;
 
 private:
 };

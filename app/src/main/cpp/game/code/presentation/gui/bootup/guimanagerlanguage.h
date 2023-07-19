@@ -27,17 +27,20 @@
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiManagerLanguage : public CGuiManager
-{
+class CGuiManagerLanguage : public CGuiManager {
 public:
-    CGuiManagerLanguage( Scrooby::Project* pProject, CGuiEntity* pParent );
+    CGuiManagerLanguage(Scrooby::Project *pProject, CGuiEntity *pParent);
+
     virtual ~CGuiManagerLanguage();
 
     virtual void Populate();
-    virtual void Start( CGuiWindow::eGuiWindowID initialWindow = CGuiWindow::GUI_WINDOW_ID_UNDEFINED );
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+
+    virtual void
+    Start(CGuiWindow::eGuiWindowID initialWindow = CGuiWindow::GUI_WINDOW_ID_UNDEFINED);
+
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
 private:
     //---------------------------------------------------------------------
@@ -46,8 +49,9 @@ private:
 
     // No copying or assignment. Declare but don't define.
     //
-    CGuiManagerLanguage( const CGuiManagerLanguage& );
-    CGuiManagerLanguage& operator= ( const CGuiManagerLanguage& );
+    CGuiManagerLanguage(const CGuiManagerLanguage &);
+
+    CGuiManagerLanguage &operator=(const CGuiManagerLanguage &);
 
     bool CheckLanguage();
 

@@ -24,15 +24,16 @@
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-struct HudMapCam : public KullCam
-{
-    HudMapCam( int playerID );
+struct HudMapCam : public KullCam {
+    HudMapCam(int playerID);
+
     virtual ~HudMapCam();
 
-    void Update( unsigned int milliseconds );
-    void SetHeight( float height );
+    void Update(unsigned int milliseconds);
 
-    tPointCamera* m_camera;
+    void SetHeight(float height);
+
+    tPointCamera *m_camera;
     rmt::Vector m_originalHeading;
 
 };

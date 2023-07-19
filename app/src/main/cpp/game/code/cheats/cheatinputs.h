@@ -12,8 +12,7 @@
 
 const unsigned int NUM_CHEAT_SEQUENCE_INPUTS = 4;
 
-enum eCheatInput
-{
+enum eCheatInput {
     UNKNOWN_CHEAT_INPUT = -1,
 
     CHEAT_INPUT_0,

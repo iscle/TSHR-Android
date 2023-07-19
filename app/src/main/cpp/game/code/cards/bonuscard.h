@@ -29,15 +29,14 @@
 // Interface Definitions
 //===========================================================================
 
-class BonusCard : public Card
-{
+class BonusCard : public Card {
 public:
-	BonusCard( unsigned int ID,
-               unsigned int level,
-               unsigned int levelID,
-               tUID cardName,
-               const eQuoteID* quotes,
-               int numQuotes );
+    BonusCard(unsigned int ID,
+              unsigned int level,
+              unsigned int levelID,
+              tUID cardName,
+              const eQuoteID *quotes,
+              int numQuotes);
 
     virtual ~BonusCard();
 
@@ -51,8 +50,9 @@ private:
 
     // No copying or assignment. Declare but don't define.
     //
-    BonusCard( const BonusCard& );
-    BonusCard& operator= ( const BonusCard& );
+    BonusCard(const BonusCard &);
+
+    BonusCard &operator=(const BonusCard &);
 
     //---------------------------------------------------------------------
     // Private Data

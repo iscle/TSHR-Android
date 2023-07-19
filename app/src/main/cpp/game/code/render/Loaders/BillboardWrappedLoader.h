@@ -28,36 +28,36 @@
 // Synopsis:   The BillboardWrappedLoader; Synopsis by Inspection.
 //
 //========================================================================
-class BillboardWrappedLoader 
-: public tBillboardQuadGroupLoader,
-  public IWrappedLoader 
-{
+class BillboardWrappedLoader
+        : public tBillboardQuadGroupLoader,
+          public IWrappedLoader {
 public:
-   BillboardWrappedLoader();
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   void SetRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    BillboardWrappedLoader();
 
-   void ModRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
+
+    void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
 
 
-   ///////////////////////////////////////////////////////////////////////
-   // tBillboardLoader
-   ///////////////////////////////////////////////////////////////////////
-   virtual tEntity* LoadObject(tChunkFile* file, tEntityStore* store);
+    ///////////////////////////////////////////////////////////////////////
+    // tBillboardLoader
+    ///////////////////////////////////////////////////////////////////////
+    virtual tEntity *LoadObject(tChunkFile *file, tEntityStore *store);
 
-   static void OverrideLoader( bool override ) { mOverrideWrapper = override; };
+    static void OverrideLoader(bool override) { mOverrideWrapper = override; };
 
 protected:
 
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   //ChunkListenerCallback*  mpListenerCB;
-   //void* mpUserData;
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    //ChunkListenerCallback*  mpListenerCB;
+    //void* mpUserData;
 private:
 
     static bool mOverrideWrapper;

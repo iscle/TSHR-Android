@@ -33,6 +33,6 @@
 // Interface Definitions
 //===========================================================================
 
-void Upcase( char* string );
+void Upcase(char *string);
 
 #endif //__UPCASE_H

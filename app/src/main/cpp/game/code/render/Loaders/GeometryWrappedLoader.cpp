@@ -44,10 +44,9 @@
 // Constraints: None.
 //
 //========================================================================
-GeometryWrappedLoader::GeometryWrappedLoader()
-{
-   mpListenerCB  = NULL;
-   mUserData     = -1;
+GeometryWrappedLoader::GeometryWrappedLoader() {
+    mpListenerCB = NULL;
+    mUserData = -1;
 }
 
 //========================================================================
@@ -66,21 +65,19 @@ GeometryWrappedLoader::GeometryWrappedLoader()
 //
 //========================================================================
 void GeometryWrappedLoader::SetRegdListener
-(
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
-   //
-   // Follow protocol; notify old Listener, that it has been 
-   // "disconnected".
-   //
-   if( mpListenerCB != NULL )
-   {
-      mpListenerCB->OnChunkLoaded( NULL, iUserData, 0 );
-   }
-   mpListenerCB  = pListenerCB;
-   mUserData     = iUserData;
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
+    //
+    // Follow protocol; notify old Listener, that it has been
+    // "disconnected".
+    //
+    if (mpListenerCB != NULL) {
+        mpListenerCB->OnChunkLoaded(NULL, iUserData, 0);
+    }
+    mpListenerCB = pListenerCB;
+    mUserData = iUserData;
 }
 
 //========================================================================
@@ -97,19 +94,18 @@ void GeometryWrappedLoader::SetRegdListener
 //
 //========================================================================
 void GeometryWrappedLoader::ModRegdListener
-( 
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
 #if 0
-   char DebugBuf[255];
-   sprintf( DebugBuf, "GeometryWrappedLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB );
-   rDebugString( DebugBuf );
+    char DebugBuf[255];
+    sprintf(DebugBuf, "GeometryWrappedLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB);
+    rDebugString(DebugBuf);
 #endif
-   rAssert( pListenerCB == mpListenerCB );
+    rAssert(pListenerCB == mpListenerCB);
 
-   mUserData = iUserData;
+    mUserData = iUserData;
 }
 
 //************************************************************************
@@ -133,22 +129,21 @@ void GeometryWrappedLoader::ModRegdListener
 // Constraints: None.
 //
 //========================================================================
-tEntity* GeometryWrappedLoader::LoadObject
-(
-   tChunkFile* file, 
-   tEntityStore* store
-)
-{
-   IEntityDSG::msDeletionsSafe=true;
-   tEntity* pEntity = tGeometryLoader::LoadObject( file, store );
+tEntity *GeometryWrappedLoader::LoadObject
+        (
+                tChunkFile *file,
+                tEntityStore *store
+        ) {
+    IEntityDSG::msDeletionsSafe = true;
+    tEntity *pEntity = tGeometryLoader::LoadObject(file, store);
 
-   //
-   // _id is from SimpleChunkHandler; it is the chunk id
-   //
-   mpListenerCB->OnChunkLoaded( pEntity, mUserData, _id );
+    //
+    // _id is from SimpleChunkHandler; it is the chunk id
+    //
+    mpListenerCB->OnChunkLoaded(pEntity, mUserData, _id);
 
-   IEntityDSG::msDeletionsSafe=false;
-   return pEntity;
+    IEntityDSG::msDeletionsSafe = false;
+    return pEntity;
 }
 
 //************************************************************************

@@ -32,39 +32,44 @@ class CGuiMenu;
 // Interface Definitions
 //===========================================================================
 class CGuiScreenPlayMovie : public CGuiScreen,
-                            public PresentationEvent::PresentationEventCallBack
-{
+                            public PresentationEvent::PresentationEventCallBack {
 public:
-    CGuiScreenPlayMovie( Scrooby::Screen* pScreen, CGuiEntity* pParent,
-                         eGuiWindowID windowID = GUI_SCREEN_ID_PLAY_MOVIE );
+    CGuiScreenPlayMovie(Scrooby::Screen *pScreen, CGuiEntity *pParent,
+                        eGuiWindowID windowID = GUI_SCREEN_ID_PLAY_MOVIE);
+
     virtual ~CGuiScreenPlayMovie();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    void SetMovieToPlay( const char* movieName, bool IsSkippable = true,
-                                                bool KillMusic = false,
-                                                bool IsLocalized = true );
+    void SetMovieToPlay(const char *movieName, bool IsSkippable = true,
+                        bool KillMusic = false,
+                        bool IsLocalized = true);
 
     // Implements PresentationEvent::PresentationEventCallBack
     //
-    virtual void OnPresentationEventBegin( PresentationEvent* pEvent );
-    virtual void OnPresentationEventLoadComplete( PresentationEvent* pEvent );
-    virtual void OnPresentationEventEnd( PresentationEvent* pEvent );
+    virtual void OnPresentationEventBegin(PresentationEvent *pEvent);
 
-	void SetSkippable(bool IsSkippable) {m_IsSkippable = IsSkippable;}
-	bool GetSkippable(void) const {return m_IsSkippable;}
+    virtual void OnPresentationEventLoadComplete(PresentationEvent *pEvent);
+
+    virtual void OnPresentationEventEnd(PresentationEvent *pEvent);
+
+    void SetSkippable(bool IsSkippable) { m_IsSkippable = IsSkippable; }
+
+    bool GetSkippable(void) const { return m_IsSkippable; }
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
-    Scrooby::Text* m_demoText;
+    Scrooby::Text *m_demoText;
     unsigned int m_elapsedTime;
-	bool m_IsSkippable : 1;
+    bool m_IsSkippable: 1;
 };
 
 #endif // GUISCREENPLAYMOVIE_H

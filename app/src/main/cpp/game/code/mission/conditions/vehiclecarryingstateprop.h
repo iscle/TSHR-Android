@@ -19,7 +19,7 @@
 // Nested Includes
 //===========================================================================
 
-#include <mission\conditions\missioncondition.h>
+#include <mission/conditions/missioncondition.h>
 
 //===========================================================================
 // Forward References
@@ -43,36 +43,37 @@
 // Constraints:
 //
 //===========================================================================
-class VehicleCarryingStateProp : public MissionCondition
-{
-    public:
-        VehicleCarryingStateProp();
-        virtual ~VehicleCarryingStateProp();
+class VehicleCarryingStateProp : public MissionCondition {
+public:
+    VehicleCarryingStateProp();
 
-        virtual void Update( unsigned int elapsedTime );
-        virtual void HandleEvent( EventEnum id, void* pEventData );
-        
-        // Sets the prop name that the vehicle must be carrying for condition success
-        void SetDesiredProp( const char* name )
-        {
-            m_PropName = tName::MakeUID( name );
-        }
+    virtual ~VehicleCarryingStateProp();
 
-    protected:
-        virtual void OnInitialize();
-        virtual void OnFinalize();
+    virtual void Update(unsigned int elapsedTime);
 
-        tUID m_PropName;
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow VehicleCarryingStateProp from being copied and assigned.
-        VehicleCarryingStateProp( const VehicleCarryingStateProp& );
-        VehicleCarryingStateProp& operator=( const VehicleCarryingStateProp& );
+    // Sets the prop name that the vehicle must be carrying for condition success
+    void SetDesiredProp(const char *name) {
+        m_PropName = tName::MakeUID(name);
+    }
+
+protected:
+    virtual void OnInitialize();
+
+    virtual void OnFinalize();
+
+    tUID m_PropName;
+
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow VehicleCarryingStateProp from being copied and assigned.
+    VehicleCarryingStateProp(const VehicleCarryingStateProp &);
+
+    VehicleCarryingStateProp &operator=(const VehicleCarryingStateProp &);
 
 };
-
 
 
 #endif

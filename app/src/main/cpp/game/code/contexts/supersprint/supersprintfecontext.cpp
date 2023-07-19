@@ -33,7 +33,7 @@
 //
 //*****************************************************************************
 
-SuperSprintFEContext* SuperSprintFEContext::spInstance = NULL;
+SuperSprintFEContext *SuperSprintFEContext::spInstance = NULL;
 
 //*****************************************************************************
 //
@@ -41,13 +41,11 @@ SuperSprintFEContext* SuperSprintFEContext::spInstance = NULL;
 //
 //*****************************************************************************
 
-SuperSprintFEContext* SuperSprintFEContext::GetInstance()
-{
-    if( spInstance == NULL )
-    {
-        HeapMgr()->PushHeap( GMA_PERSISTENT );
+SuperSprintFEContext *SuperSprintFEContext::GetInstance() {
+    if (spInstance == NULL) {
+        HeapMgr()->PushHeap(GMA_PERSISTENT);
         spInstance = new SuperSprintFEContext;
-        HeapMgr()->PopHeap( GMA_PERSISTENT );
+        HeapMgr()->PopHeap(GMA_PERSISTENT);
     }
 
     return spInstance;
@@ -64,26 +62,24 @@ SuperSprintFEContext* SuperSprintFEContext::GetInstance()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ContextEnum previousContext )
+// Parameters:  (ContextEnum previousContext)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperSprintFEContext::OnStart( ContextEnum previousContext )
-{
-    if( previousContext != CONTEXT_SUPERSPRINT )
-    {
+void SuperSprintFEContext::OnStart(ContextEnum previousContext) {
+    if (previousContext != CONTEXT_SUPERSPRINT) {
         HeapMgr()->PrepareHeapsSuperSprint();
 
         // run backend loading screen
         //
-        GetGuiSystem()->HandleMessage( GUI_MSG_RUN_BACKEND );
+        GetGuiSystem()->HandleMessage(GUI_MSG_RUN_BACKEND);
 
         // load mini-game FE
         //
-        GetGuiSystem()->HandleMessage( GUI_MSG_INIT_MINIGAME );
+        GetGuiSystem()->HandleMessage(GUI_MSG_INIT_MINIGAME);
 
-        GetLoadingManager()->AddCallback( this );
+        GetLoadingManager()->AddCallback(this);
     }
 
     // register GUI user input handlers
@@ -92,12 +88,11 @@ void SuperSprintFEContext::OnStart( ContextEnum previousContext )
 
     // unregister all players' controller IDs
     //
-    for( int i = 0; i < SuperSprintData::NUM_PLAYERS; i++ )
-    {
-        GetInputManager()->UnregisterControllerID( i );
+    for (int i = 0; i < SuperSprintData::NUM_PLAYERS; i++) {
+        GetInputManager()->UnregisterControllerID(i);
     }
 
-    GetInputManager()->SetGameState( Input::ACTIVE_FRONTEND );
+    GetInputManager()->SetGameState(Input::ACTIVE_FRONTEND);
 }
 
 //=============================================================================
@@ -105,31 +100,29 @@ void SuperSprintFEContext::OnStart( ContextEnum previousContext )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ContextEnum nextContext )
+// Parameters:  (ContextEnum nextContext)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperSprintFEContext::OnStop( ContextEnum nextContext )
-{
+void SuperSprintFEContext::OnStop(ContextEnum nextContext) {
     p3d::pddi->DrawSync();
 
-    GetInputManager()->SetGameState( Input::ACTIVE_NONE );
+    GetInputManager()->SetGameState(Input::ACTIVE_NONE);
 
     // unregister GUI user input handlers
     //
     GetGuiSystem()->UnregisterUserInputHandlers();
 
-    if( nextContext != CONTEXT_LOADING_SUPERSPRINT )
-    {
+    if (nextContext != CONTEXT_LOADING_SUPERSPRINT) {
         SuperSprintManager::DestroyInstance();
 
         // unload mini-game FE
         //
-        GetGuiSystem()->HandleMessage( GUI_MSG_RELEASE_MINIGAME );
+        GetGuiSystem()->HandleMessage(GUI_MSG_RELEASE_MINIGAME);
 
         //Clear the gameplay manager.
-        SetGameplayManager( NULL );
+        SetGameplayManager(NULL);
     }
 }
 
@@ -138,14 +131,13 @@ void SuperSprintFEContext::OnStop( ContextEnum nextContext )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperSprintFEContext::OnUpdate( unsigned int elapsedTime )
-{
-    GetGuiSystem()->Update( elapsedTime );
+void SuperSprintFEContext::OnUpdate(unsigned int elapsedTime) {
+    GetGuiSystem()->Update(elapsedTime);
 }
 
 //=============================================================================
@@ -158,8 +150,7 @@ void SuperSprintFEContext::OnUpdate( unsigned int elapsedTime )
 // Return:      void 
 //
 //=============================================================================
-void SuperSprintFEContext::OnSuspend()
-{
+void SuperSprintFEContext::OnSuspend() {
 }
 
 //=============================================================================
@@ -172,8 +163,7 @@ void SuperSprintFEContext::OnSuspend()
 // Return:      void 
 //
 //=============================================================================
-void SuperSprintFEContext::OnResume()
-{
+void SuperSprintFEContext::OnResume() {
 }
 
 //=============================================================================
@@ -181,13 +171,12 @@ void SuperSprintFEContext::OnResume()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperSprintFEContext::OnHandleEvent( EventEnum id, void* pEventData )
-{
+void SuperSprintFEContext::OnHandleEvent(EventEnum id, void *pEventData) {
 }
 
 //=============================================================================
@@ -200,15 +189,14 @@ void SuperSprintFEContext::OnHandleEvent( EventEnum id, void* pEventData )
 // Return:      void 
 //
 //=============================================================================
-void SuperSprintFEContext::OnProcessRequestsComplete( void* pUserData )
-{
+void SuperSprintFEContext::OnProcessRequestsComplete(void *pUserData) {
     // quit backend loading screen
     //
-    GetGuiSystem()->HandleMessage( GUI_MSG_QUIT_BACKEND );
+    GetGuiSystem()->HandleMessage(GUI_MSG_QUIT_BACKEND);
 
     // startup the mini-game FE
     //
-    GetGuiSystem()->HandleMessage( GUI_MSG_RUN_MINIGAME );
+    GetGuiSystem()->HandleMessage(GUI_MSG_RUN_MINIGAME);
 }
 
 //*****************************************************************************
@@ -227,8 +215,7 @@ void SuperSprintFEContext::OnProcessRequestsComplete( void* pUserData )
 // Return:      N/A.
 //
 //=============================================================================
-SuperSprintFEContext::SuperSprintFEContext()
-{
+SuperSprintFEContext::SuperSprintFEContext() {
 }
 
 //=============================================================================
@@ -241,7 +228,6 @@ SuperSprintFEContext::SuperSprintFEContext()
 // Return:      N/A.
 //
 //=============================================================================
-SuperSprintFEContext::~SuperSprintFEContext()
-{
+SuperSprintFEContext::~SuperSprintFEContext() {
 }
 

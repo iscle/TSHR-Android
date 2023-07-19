@@ -1,27 +1,26 @@
 #ifndef CONTROLLER_HPP
 #define CONTROLLER_HPP
 
-namespace Input
-{
+namespace Input {
     // Platform specific controller topology.
-    #ifdef RAD_XBOX
+#ifdef RAD_XBOX
     const static unsigned int MaxPorts = 4;
     const static unsigned int MaxSlots = 1;
-    #endif
-    #ifdef RAD_PS2
+#endif
+#ifdef RAD_PS2
     const static unsigned int MaxPorts = 2;
     const static unsigned int MaxSlots = 4;
-    #endif
-    #ifdef RAD_GAMECUBE
+#endif
+#ifdef RAD_GAMECUBE
     const static unsigned int MaxPorts = 4;
     const static unsigned int MaxSlots = 1;
-    #endif
-    #if defined( RAD_WIN32 )
+#endif
+#if defined(RAD_WIN32)
     const static unsigned int MaxPorts = 4;
     const static unsigned int MaxSlots = 1;
-    #endif
+#endif
 
-    #ifdef RAD_PS2
+#ifdef RAD_PS2
     enum USBID 
     {
         USB0 = (MaxPorts * MaxSlots),
@@ -32,29 +31,29 @@ namespace Input
     // Platform specific max controllers.
     const static unsigned int MaxControllers = (MaxPorts * MaxSlots) + MaxUSB;
 
-    #else //NOT PS2
+#else //NOT PS2
     // Platform specific max controllers.
     const static unsigned int MaxControllers = (MaxPorts * MaxSlots);
-    #endif
+#endif
 
 
-    #ifdef RAD_WIN32
-        const static unsigned int NumExtraButtonsForSuperSprint = 7;
-    #endif
+#ifdef RAD_WIN32
+    const static unsigned int NumExtraButtonsForSuperSprint = 7;
+#endif
 
     // Maximum number of physical buttons (in a UserController)
-    #ifdef RAD_WIN32
+#ifdef RAD_WIN32
     const static unsigned int MaxPhysicalButtons = 42 + NumExtraButtonsForSuperSprint;
-    #else
+#else
     const static unsigned int MaxPhysicalButtons = 40;
-    #endif
+#endif
 
     // Maximum number of logical buttons (in a UserController)
-    #ifdef RAD_WIN32
+#ifdef RAD_WIN32
     const static unsigned int MaxLogicalButtons = 42 + NumExtraButtonsForSuperSprint;
-    #else
+#else
     const static unsigned int MaxLogicalButtons = 40;
-    #endif
+#endif
 
     // Maximum number of logical controllers for a physical device
     const static unsigned int MaxMappables = 16;
@@ -64,37 +63,34 @@ namespace Input
 
     // Maximum number of physical keys that can be assigned to a virtual key
     // for a controller.
-    #ifdef RAD_WIN32
+#ifdef RAD_WIN32
     const static unsigned int MaxVirtualMappings = 2;
-    #endif
+#endif
 
     // Maximum number of rumble motors
-    #ifdef RAD_GAMECUBE
+#ifdef RAD_GAMECUBE
     const static unsigned int MaxOutputMotor = 1;
-    #else
+#else
     const static unsigned int MaxOutputMotor = 2;
-    #endif
+#endif
 
     // Control system state (for keeping input roped in in certain gameplay states)
-    enum ActiveState
-    {
-        ACTIVE_NONE         = 0,
-        ACTIVE_GAMEPLAY     = 1 << 0,
-        ACTIVE_FRONTEND     = 1 << 1,
-        ACTIVE_SS_GAME      = 1 << 2,
+    enum ActiveState {
+        ACTIVE_NONE = 0,
+        ACTIVE_GAMEPLAY = 1 << 0,
+        ACTIVE_FRONTEND = 1 << 1,
+        ACTIVE_SS_GAME = 1 << 2,
         ACTIVE_FIRST_PERSON = 1 << 3,
-        ACTIVE_ANIM_CAM     = 1 << 4,
-        DEACTIVE_ANIM_CAM   = 0xfffffffe,
-        ACTIVE_ALL      = 0xffffffff
+        ACTIVE_ANIM_CAM = 1 << 4,
+        DEACTIVE_ANIM_CAM = 0xfffffffe,
+        ACTIVE_ALL = 0xffffffff
     };
 
     // handy constant for a bunk controller / input
-    enum
-    {
+    enum {
         INVALID_CONTROLLERID = -1
     };
 };
-
 
 
 #endif

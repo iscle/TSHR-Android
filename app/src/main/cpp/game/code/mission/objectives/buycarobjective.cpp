@@ -47,8 +47,7 @@
 //
 //=============================================================================
 BuyCarObjective::BuyCarObjective() :
-    mVehicleName( NULL )
-{
+        mVehicleName(NULL) {
 }
 
 //=============================================================================
@@ -61,10 +60,8 @@ BuyCarObjective::BuyCarObjective() :
 // Return:      N/A.
 //
 //=============================================================================
-BuyCarObjective::~BuyCarObjective()
-{
-    if ( mVehicleName )
-    {
+BuyCarObjective::~BuyCarObjective() {
+    if (mVehicleName) {
         delete[] mVehicleName;
         mVehicleName = NULL;
     }
@@ -75,28 +72,27 @@ BuyCarObjective::~BuyCarObjective()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const char* name )
+// Parameters:  (const char* name)
 //
 // Return:      void 
 //
 //=============================================================================
-void BuyCarObjective::SetVehicleName( const char* name )
-{
-    int length = strlen( name );
+void BuyCarObjective::SetVehicleName(const char *name) {
+    int length = strlen(name);
 
-    rTuneAssertMsg( mVehicleName == NULL, "Can not set the name of the car to be purchased twice!\n");
+    rTuneAssertMsg(mVehicleName == NULL,
+                   "Can not set the name of the car to be purchased twice!\n");
 
-    if ( mVehicleName )
-    {
+    if (mVehicleName) {
         delete[] mVehicleName;
     }
 
-    HeapMgr()->PushHeap( GMA_LEVEL_OTHER );
-    mVehicleName = new char[ length + 1 ];
-    HeapMgr()->PopHeap( GMA_LEVEL_OTHER );
+    HeapMgr()->PushHeap(GMA_LEVEL_OTHER);
+    mVehicleName = new char[length + 1];
+    HeapMgr()->PopHeap(GMA_LEVEL_OTHER);
 
-    strcpy( mVehicleName, name );
-    mVehicleName[ length ] = '\0';
+    strcpy(mVehicleName, name);
+    mVehicleName[length] = '\0';
 }
 
 //*****************************************************************************
@@ -110,15 +106,13 @@ void BuyCarObjective::SetVehicleName( const char* name )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void BuyCarObjective::OnUpdate( unsigned int elapsedTime )
-{
-    if ( strcmp( GetGameplayManager()->GetCurrentVehicle()->GetName(), mVehicleName ) == 0 )
-    {
-        SetFinished( true );
+void BuyCarObjective::OnUpdate(unsigned int elapsedTime) {
+    if (strcmp(GetGameplayManager()->GetCurrentVehicle()->GetName(), mVehicleName) == 0) {
+        SetFinished(true);
     }
 }

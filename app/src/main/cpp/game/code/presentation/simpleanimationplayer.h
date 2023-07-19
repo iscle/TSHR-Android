@@ -23,6 +23,7 @@
 //========================================
 
 class tMultiController;
+
 class tCamera;
 
 //=============================================================================
@@ -32,57 +33,63 @@ class tCamera;
 //
 //=============================================================================
 
-class SimpleAnimationPlayer : public AnimationPlayer
-{
-    public:
-        SimpleAnimationPlayer();
-        virtual ~SimpleAnimationPlayer();
+class SimpleAnimationPlayer : public AnimationPlayer {
+public:
+    SimpleAnimationPlayer();
 
-        virtual void Update( unsigned int elapsedTime );
+    virtual ~SimpleAnimationPlayer();
 
-        virtual void ClearData();
+    virtual void Update(unsigned int elapsedTime);
 
-        void SetNameData( char* controller, char* camera, char* animation );
+    virtual void ClearData();
 
-        void SetCycleMode( p3dCycleMode cycleMode ) { mCycleMode = cycleMode; }
-        void SetIntroLoop(unsigned nFrames);
-        void SetOutroLoop(unsigned nFrames);
+    void SetNameData(char *controller, char *camera, char *animation);
 
-        void Play(void);
-        void DoneIntro(void);
+    void SetCycleMode(p3dCycleMode cycleMode) { mCycleMode = cycleMode; }
 
-        void Rewind();
+    void SetIntroLoop(unsigned nFrames);
 
-    protected:
+    void SetOutroLoop(unsigned nFrames);
 
-        // These set all the objects needs to play an animation
-        void SetController(tMultiController* pController ) { mpMasterController = pController; }
-        void SetCamera( tCamera* pCamera ) { mpCamera = pCamera; }
+    void Play(void);
 
-        virtual void DoLoaded();
-        virtual void DoRender();
+    void DoneIntro(void);
 
-        const char* GetAnimationName() { return( &msAnimation[0] ); }
+    void Rewind();
 
-    private:
+protected:
 
-        //Prevent wasteful constructor creation.
-        SimpleAnimationPlayer( const SimpleAnimationPlayer&  );
-        SimpleAnimationPlayer& operator=( const SimpleAnimationPlayer& );
+    // These set all the objects needs to play an animation
+    void SetController(tMultiController *pController) { mpMasterController = pController; }
 
-        char msController[32];
-        char msCamera[32];
-        char msAnimation[32];
+    void SetCamera(tCamera *pCamera) { mpCamera = pCamera; }
 
-        tMultiController* mpMasterController;
-        p3dCycleMode mCycleMode;
-        tCamera* mpCamera;
-        tCamera* mpViewCamera;
-        bool mbSetCamera;
-        unsigned mIntroFrames;
-        unsigned mOutroFrames;
-        bool mInIntro;
-        unsigned mNumFrames;
+    virtual void DoLoaded();
+
+    virtual void DoRender();
+
+    const char *GetAnimationName() { return (&msAnimation[0]); }
+
+private:
+
+    //Prevent wasteful constructor creation.
+    SimpleAnimationPlayer(const SimpleAnimationPlayer &);
+
+    SimpleAnimationPlayer &operator=(const SimpleAnimationPlayer &);
+
+    char msController[32];
+    char msCamera[32];
+    char msAnimation[32];
+
+    tMultiController *mpMasterController;
+    p3dCycleMode mCycleMode;
+    tCamera *mpCamera;
+    tCamera *mpViewCamera;
+    bool mbSetCamera;
+    unsigned mIntroFrames;
+    unsigned mOutroFrames;
+    bool mInIntro;
+    unsigned mNumFrames;
 };
 
 

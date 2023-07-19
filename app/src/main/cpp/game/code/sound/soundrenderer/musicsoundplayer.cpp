@@ -60,17 +60,16 @@ namespace Sound {
 //
 //-----------------------------------------------------------------------------
 
-MusicSoundPlayer::MusicSoundPlayer( )
-    :
-    m_isMusic( true ),
-    m_PlayerTrim( 1.0f ),
-    m_ResourceTrim( 1.0f ),
-    m_ExternalTrim( 1.0f ),
-    m_GroupTrim( 1.0f ),
-    m_FaderGroupTrim( 1.0f ),
-    m_MasterTrim( 1.0f )
-{
-}
+    MusicSoundPlayer::MusicSoundPlayer()
+            :
+            m_isMusic(true),
+            m_PlayerTrim(1.0f),
+            m_ResourceTrim(1.0f),
+            m_ExternalTrim(1.0f),
+            m_GroupTrim(1.0f),
+            m_FaderGroupTrim(1.0f),
+            m_MasterTrim(1.0f) {
+    }
 
 //=============================================================================
 // Function:    MusicSoundPlayer::~MusicSoundPlayer
@@ -79,9 +78,8 @@ MusicSoundPlayer::MusicSoundPlayer( )
 //
 //-----------------------------------------------------------------------------
 
-MusicSoundPlayer::~MusicSoundPlayer( )
-{
-}
+    MusicSoundPlayer::~MusicSoundPlayer() {
+    }
 
 //=============================================================================
 // Function:    MusicSoundPlayer::Initialize
@@ -90,22 +88,18 @@ MusicSoundPlayer::~MusicSoundPlayer( )
 //              set the trim for music or ambience
 //
 //-----------------------------------------------------------------------------
-void MusicSoundPlayer::Initialize( bool isMusic )
-{
-    m_isMusic = isMusic;
+    void MusicSoundPlayer::Initialize(bool isMusic) {
+        m_isMusic = isMusic;
 
-    //
-    // Set the group trim
-    //
-    if( m_isMusic )
-    {
-        SetGroupTrim( daSoundRenderingManagerGet()->GetTuner()->GetGroupTrim( Sound::MUSIC ) );
+        //
+        // Set the group trim
+        //
+        if (m_isMusic) {
+            SetGroupTrim(daSoundRenderingManagerGet()->GetTuner()->GetGroupTrim(Sound::MUSIC));
+        } else {
+            SetGroupTrim(daSoundRenderingManagerGet()->GetTuner()->GetGroupTrim(Sound::AMBIENCE));
+        }
     }
-    else
-    {
-        SetGroupTrim( daSoundRenderingManagerGet()->GetTuner()->GetGroupTrim( Sound::AMBIENCE ) );
-    }
-}
 
 //=============================================================================
 // MusicSoundPlayer::GetSoundGroup
@@ -119,17 +113,13 @@ void MusicSoundPlayer::Initialize( bool isMusic )
 // Return:      sound group (either MUSIC or AMBIENCE) 
 //
 //=============================================================================
-daSoundGroup MusicSoundPlayer::GetSoundGroup()
-{
-    if( m_isMusic )
-    {
-        return( Sound::MUSIC );
+    daSoundGroup MusicSoundPlayer::GetSoundGroup() {
+        if (m_isMusic) {
+            return (Sound::MUSIC);
+        } else {
+            return (Sound::AMBIENCE);
+        }
     }
-    else
-    {
-        return( Sound::AMBIENCE );
-    }
-}
 
 //=============================================================================
 // MusicSoundPlayer::SetExternalTrim
@@ -141,13 +131,13 @@ daSoundGroup MusicSoundPlayer::GetSoundGroup()
 // Return:      void 
 //
 //=============================================================================
-void MusicSoundPlayer::SetExternalTrim( float newTrim )
-{
-    m_ExternalTrim = newTrim;
-    m_PlayerTrim = m_ResourceTrim * m_ExternalTrim * m_GroupTrim * m_FaderGroupTrim * m_MasterTrim;
+    void MusicSoundPlayer::SetExternalTrim(float newTrim) {
+        m_ExternalTrim = newTrim;
+        m_PlayerTrim =
+                m_ResourceTrim * m_ExternalTrim * m_GroupTrim * m_FaderGroupTrim * m_MasterTrim;
 
-    ResetMusicTrim();
-}
+        ResetMusicTrim();
+    }
 
 //=============================================================================
 // MusicSoundPlayer::SetGroupTrim
@@ -159,13 +149,13 @@ void MusicSoundPlayer::SetExternalTrim( float newTrim )
 // Return:      void 
 //
 //=============================================================================
-void MusicSoundPlayer::SetGroupTrim( float newTrim )
-{
-    m_GroupTrim = newTrim;
-    m_PlayerTrim = m_ResourceTrim * m_ExternalTrim * m_GroupTrim * m_FaderGroupTrim * m_MasterTrim;
+    void MusicSoundPlayer::SetGroupTrim(float newTrim) {
+        m_GroupTrim = newTrim;
+        m_PlayerTrim =
+                m_ResourceTrim * m_ExternalTrim * m_GroupTrim * m_FaderGroupTrim * m_MasterTrim;
 
-    ResetMusicTrim();
-}
+        ResetMusicTrim();
+    }
 
 //=============================================================================
 // MusicSoundPlayer::SetFaderGroupTrim
@@ -177,13 +167,13 @@ void MusicSoundPlayer::SetGroupTrim( float newTrim )
 // Return:      void 
 //
 //=============================================================================
-void MusicSoundPlayer::SetFaderGroupTrim( float newTrim )
-{
-    m_FaderGroupTrim = newTrim;
-    m_PlayerTrim = m_ResourceTrim * m_ExternalTrim * m_GroupTrim * m_FaderGroupTrim * m_MasterTrim;
+    void MusicSoundPlayer::SetFaderGroupTrim(float newTrim) {
+        m_FaderGroupTrim = newTrim;
+        m_PlayerTrim =
+                m_ResourceTrim * m_ExternalTrim * m_GroupTrim * m_FaderGroupTrim * m_MasterTrim;
 
-    ResetMusicTrim();
-}
+        ResetMusicTrim();
+    }
 
 //=============================================================================
 // MusicSoundPlayer::SetMasterTrim
@@ -195,13 +185,13 @@ void MusicSoundPlayer::SetFaderGroupTrim( float newTrim )
 // Return:      void 
 //
 //=============================================================================
-void MusicSoundPlayer::SetMasterTrim( float newTrim )
-{
-    m_MasterTrim = newTrim;
-    m_PlayerTrim = m_ResourceTrim * m_ExternalTrim * m_GroupTrim * m_FaderGroupTrim * m_MasterTrim;
+    void MusicSoundPlayer::SetMasterTrim(float newTrim) {
+        m_MasterTrim = newTrim;
+        m_PlayerTrim =
+                m_ResourceTrim * m_ExternalTrim * m_GroupTrim * m_FaderGroupTrim * m_MasterTrim;
 
-    ResetMusicTrim();
-}
+        ResetMusicTrim();
+    }
 
 //
 // TODO: revisit trim functions below.  They're identical to the one in the base
@@ -220,23 +210,17 @@ void MusicSoundPlayer::SetMasterTrim( float newTrim )
 // Return:      void 
 //
 //=============================================================================
-void MusicSoundPlayer::ChangeTrim( daSoundGroup groupName, float newTrim )
-{
-    daSoundGroup myGroup = GetSoundGroup();
+    void MusicSoundPlayer::ChangeTrim(daSoundGroup groupName, float newTrim) {
+        daSoundGroup myGroup = GetSoundGroup();
 
-    if ( myGroup == groupName )
-    {
-        SetGroupTrim(newTrim);
+        if (myGroup == groupName) {
+            SetGroupTrim(newTrim);
+        } else if (groupName == MASTER) {
+            SetMasterTrim(newTrim);
+        } else if (daSoundRenderingManagerGet()->GetTuner()->IsSlaveGroup(myGroup, groupName)) {
+            SetGroupTrim(newTrim);
+        }
     }
-    else if ( groupName == MASTER )
-    {
-        SetMasterTrim(newTrim);
-    }
-    else if ( daSoundRenderingManagerGet()->GetTuner()->IsSlaveGroup( myGroup, groupName ) )
-    {
-        SetGroupTrim(newTrim);
-    }
-}
 
 //=============================================================================
 // MusicSoundPlayer::ChangeFaderTrim
@@ -250,24 +234,20 @@ void MusicSoundPlayer::ChangeTrim( daSoundGroup groupName, float newTrim )
 // Return:      void 
 //
 //=============================================================================
-void MusicSoundPlayer::ChangeFaderTrim( daSoundGroup groupName, float newTrim )
-{
-    daSoundGroup myGroup = GetSoundGroup();
+    void MusicSoundPlayer::ChangeFaderTrim(daSoundGroup groupName, float newTrim) {
+        daSoundGroup myGroup = GetSoundGroup();
 
-    //
-    // Shouldn't change master volume here, use ChangeTrim
-    //
-    rAssert( groupName != MASTER );
+        //
+        // Shouldn't change master volume here, use ChangeTrim
+        //
+        rAssert(groupName != MASTER);
 
-    if ( myGroup == groupName )
-    {
-        SetFaderGroupTrim(newTrim);
+        if (myGroup == groupName) {
+            SetFaderGroupTrim(newTrim);
+        } else if (daSoundRenderingManagerGet()->GetTuner()->IsSlaveGroup(myGroup, groupName)) {
+            SetFaderGroupTrim(newTrim);
+        }
     }
-    else if ( daSoundRenderingManagerGet()->GetTuner()->IsSlaveGroup( myGroup, groupName ) )
-    {
-        SetFaderGroupTrim(newTrim);
-    }
-}
 
 
 //=============================================================================
@@ -284,17 +264,13 @@ void MusicSoundPlayer::ChangeFaderTrim( daSoundGroup groupName, float newTrim )
 // Return:      void 
 //
 //=============================================================================
-void MusicSoundPlayer::ResetMusicTrim()
-{
-    if( m_isMusic )
-    {
-        GetSoundManager()->SetMusicVolumeWithoutTuner( m_PlayerTrim );
+    void MusicSoundPlayer::ResetMusicTrim() {
+        if (m_isMusic) {
+            GetSoundManager()->SetMusicVolumeWithoutTuner(m_PlayerTrim);
+        } else {
+            GetSoundManager()->SetAmbienceVolumeWithoutTuner(m_PlayerTrim);
+        }
     }
-    else
-    {
-        GetSoundManager()->SetAmbienceVolumeWithoutTuner( m_PlayerTrim );
-    }
-}
 
 } // Sound Namespace
 

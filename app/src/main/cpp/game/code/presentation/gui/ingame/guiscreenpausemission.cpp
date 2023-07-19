@@ -41,8 +41,7 @@
 // Global Data, Local Data, Local Classes
 //===========================================================================
 
-enum eMenuItem
-{
+enum eMenuItem {
     MENU_ITEM_CONTINUE,
 //    MENU_ITEM_VIEW_MAP,
     MENU_ITEM_RESTART_MISSION,
@@ -53,15 +52,15 @@ enum eMenuItem
     NUM_MENU_ITEMS
 };
 
-static const char* MENU_ITEMS[] = 
-{
-    "Continue",
+static const char *MENU_ITEMS[] =
+        {
+                "Continue",
 //    "ViewMap",
-    "RestartMission",
-    "AbortMission",
-    "Options",
-    "QuitGame"
-};
+                "RestartMission",
+                "AbortMission",
+                "Options",
+                "QuitGame"
+        };
 
 //===========================================================================
 // Public Member Functions
@@ -80,37 +79,35 @@ static const char* MENU_ITEMS[] =
 //
 //===========================================================================
 CGuiScreenPauseMission::CGuiScreenPauseMission
-(
-	Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-)
-:	
-	CGuiScreenPause( pScreen, pParent, GUI_SCREEN_ID_PAUSE_MISSION )
-{
-MEMTRACK_PUSH_GROUP( "CGUIScreenPauseMission" );
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        :
+        CGuiScreenPause(pScreen, pParent, GUI_SCREEN_ID_PAUSE_MISSION) {
+    MEMTRACK_PUSH_GROUP("CGUIScreenPauseMission");
     // Create a menu.
     //
-    m_pMenu = new(GMA_LEVEL_HUD) CGuiMenu( this, NUM_MENU_ITEMS );
-    rAssert( m_pMenu != NULL );
+    m_pMenu = new(GMA_LEVEL_HUD) CGuiMenu(this, NUM_MENU_ITEMS);
+    rAssert(m_pMenu != NULL);
 
     // Retrieve the Scrooby drawing elements.
     //
-    Scrooby::Page* pPage = m_pScroobyScreen->GetPage( "PauseMission" );
-    rAssert( pPage != NULL );
+    Scrooby::Page *pPage = m_pScroobyScreen->GetPage("PauseMission");
+    rAssert(pPage != NULL);
 
     // Add menu items
     //
-    Scrooby::Group* menu = pPage->GetGroup( "Menu" );
-    rAssert( menu != NULL );
-    Scrooby::Text* pText = NULL;
-    for( int i = 0; i < NUM_MENU_ITEMS; i++ )
-    {
-        pText = menu->GetText( MENU_ITEMS[ i ] );
-        rAssert( pText );
+    Scrooby::Group *menu = pPage->GetGroup("Menu");
+    rAssert(menu != NULL);
+    Scrooby::Text *pText = NULL;
+    for (int i = 0; i < NUM_MENU_ITEMS; i++) {
+        pText = menu->GetText(MENU_ITEMS[i]);
+        rAssert(pText);
 
-        m_pMenu->AddMenuItem( pText );
+        m_pMenu->AddMenuItem(pText);
     }
-MEMTRACK_POP_GROUP("CGUIScreenPauseMission" );
+    MEMTRACK_POP_GROUP("CGUIScreenPauseMission");
 }
 
 
@@ -126,8 +123,7 @@ MEMTRACK_POP_GROUP("CGUIScreenPauseMission" );
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenPauseMission::~CGuiScreenPauseMission()
-{
+CGuiScreenPauseMission::~CGuiScreenPauseMission() {
 }
 
 
@@ -144,62 +140,49 @@ CGuiScreenPauseMission::~CGuiScreenPauseMission()
 //
 //===========================================================================
 void CGuiScreenPauseMission::HandleMessage
-(
-	eGuiMessage message, 
-	unsigned int param1,
-	unsigned int param2 
-)
-{
-    if( message == GUI_MSG_MENU_PROMPT_RESPONSE )
-    {
-        if( param1 == PROMPT_CONFIRM_RESTART )
-        {
-            switch( param2 )
-            {
-                case (CGuiMenuPrompt::RESPONSE_YES):
-                {
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (message == GUI_MSG_MENU_PROMPT_RESPONSE) {
+        if (param1 == PROMPT_CONFIRM_RESTART) {
+            switch (param2) {
+                case (CGuiMenuPrompt::RESPONSE_YES): {
                     CGuiScreenMissionLoad::ReplaceBitmap();
-                    this->HandleResumeGame( ON_HUD_ENTER_RESTART_MISSION );
+                    this->HandleResumeGame(ON_HUD_ENTER_RESTART_MISSION);
                     break;
                 }
 
-                case (CGuiMenuPrompt::RESPONSE_NO):
-                {
+                case (CGuiMenuPrompt::RESPONSE_NO): {
                     this->ReloadScreen();
 
                     break;
                 }
 
-                default:
-                {
-                    rAssertMsg( 0, "WARNING: *** Invalid prompt response!\n" );
+                default: {
+                    rAssertMsg(0, "WARNING: *** Invalid prompt response!\n");
 
                     break;
                 }
             }
-        }
-        else if( param1 == PROMPT_CONFIRM_ABORT )
-        {
-            switch( param2 )
-            {
-                case (CGuiMenuPrompt::RESPONSE_YES):
-                {
-                    this->HandleResumeGame( ON_HUD_ENTER_ABORT_MISSION );
-                    GetEventManager()->TriggerEvent(EVENT_USER_CANCEL_PAUSE_MENU);              
+        } else if (param1 == PROMPT_CONFIRM_ABORT) {
+            switch (param2) {
+                case (CGuiMenuPrompt::RESPONSE_YES): {
+                    this->HandleResumeGame(ON_HUD_ENTER_ABORT_MISSION);
+                    GetEventManager()->TriggerEvent(EVENT_USER_CANCEL_PAUSE_MENU);
 
                     break;
                 }
 
-                case (CGuiMenuPrompt::RESPONSE_NO):
-                {
+                case (CGuiMenuPrompt::RESPONSE_NO): {
                     this->ReloadScreen();
 
                     break;
                 }
 
-                default:
-                {
-                    rAssertMsg( 0, "WARNING: *** Invalid prompt response!\n" );
+                default: {
+                    rAssertMsg(0, "WARNING: *** Invalid prompt response!\n");
 
                     break;
                 }
@@ -207,16 +190,11 @@ void CGuiScreenPauseMission::HandleMessage
         }
     }
 
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        switch( message )
-        {
-            case GUI_MSG_MENU_SELECTION_MADE:	
-            {
-                switch( param1 )
-                {
-                    case MENU_ITEM_CONTINUE:
-                    {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        switch (message) {
+            case GUI_MSG_MENU_SELECTION_MADE: {
+                switch (param1) {
+                    case MENU_ITEM_CONTINUE: {
                         this->HandleResumeGame();
 
                         break;
@@ -224,44 +202,39 @@ void CGuiScreenPauseMission::HandleMessage
 /*
                     case MENU_ITEM_VIEW_MAP:
                     {
-                        m_pParent->HandleMessage( GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_HUD_MAP );
+                        m_pParent->HandleMessage(GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_HUD_MAP);
 
                         break;
                     }
 */
-                    case MENU_ITEM_RESTART_MISSION:
-                    {
-                        rAssert( m_guiManager );
-                        m_guiManager->DisplayPrompt( PROMPT_CONFIRM_RESTART, this );
+                    case MENU_ITEM_RESTART_MISSION: {
+                        rAssert(m_guiManager);
+                        m_guiManager->DisplayPrompt(PROMPT_CONFIRM_RESTART, this);
 
-//                        this->HandleResumeGame( ON_HUD_ENTER_RESTART_MISSION );
-
-                        break;
-                    }
-                    case MENU_ITEM_ABORT_MISSION:
-                    {
-                        rAssert( m_guiManager );
-                        m_guiManager->DisplayPrompt( PROMPT_CONFIRM_ABORT, this );
-
-//                        this->HandleResumeGame( ON_HUD_ENTER_ABORT_MISSION );
+//                        this->HandleResumeGame(ON_HUD_ENTER_RESTART_MISSION);
 
                         break;
                     }
-                    case MENU_ITEM_OPTIONS:
-                    {
-                        m_pParent->HandleMessage( GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_OPTIONS );
+                    case MENU_ITEM_ABORT_MISSION: {
+                        rAssert(m_guiManager);
+                        m_guiManager->DisplayPrompt(PROMPT_CONFIRM_ABORT, this);
+
+//                        this->HandleResumeGame(ON_HUD_ENTER_ABORT_MISSION);
 
                         break;
                     }
-                    case MENU_ITEM_QUIT_GAME:
-                    {
+                    case MENU_ITEM_OPTIONS: {
+                        m_pParent->HandleMessage(GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_OPTIONS);
+
+                        break;
+                    }
+                    case MENU_ITEM_QUIT_GAME: {
                         this->HandleQuitGame();
 
                         break;
                     }
-                    default:
-                    {
-                        rAssertMsg( 0, "WARNING: Invalid case for switch statement!\n" );
+                    default: {
+                        rAssertMsg(0, "WARNING: Invalid case for switch statement!\n");
                         break;
                     }
                 }
@@ -269,16 +242,15 @@ void CGuiScreenPauseMission::HandleMessage
                 break;
             }
 
-            default:
-            {
+            default: {
                 break;
             }
         }
     }
 
-	// Propogate the message up the hierarchy.
-	//
-	CGuiScreenPause::HandleMessage( message, param1, param2 );
+    // Propogate the message up the hierarchy.
+    //
+    CGuiScreenPause::HandleMessage(message, param1, param2);
 }
 
 
@@ -294,34 +266,34 @@ void CGuiScreenPauseMission::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPauseMission::InitIntro()
-{
+void CGuiScreenPauseMission::InitIntro() {
     CGuiScreenPause::InitIntro();
 
     // enable 'restart mission' and 'abort mission' only if current mission
     // isn't completed yet; otherwise, disable these selections
     //
-    Mission* currentMission = GetGameplayManager()->GetCurrentMission();
-    rAssert( currentMission != NULL );
+    Mission *currentMission = GetGameplayManager()->GetCurrentMission();
+    rAssert(currentMission != NULL);
 
-    HitnRunManager* hnrm = GetHitnRunManager();
-    rAssert( hnrm != NULL );
+    HitnRunManager *hnrm = GetHitnRunManager();
+    rAssert(hnrm != NULL);
 
-    AvatarManager* pAvatarManager= GetAvatarManager();
-    rAssert( pAvatarManager != NULL );
+    AvatarManager *pAvatarManager = GetAvatarManager();
+    rAssert(pAvatarManager != NULL);
 
-    CGuiManagerInGame* guiManagerIngame = static_cast<CGuiManagerInGame*>( m_pParent );
-    rAssert( guiManagerIngame != NULL );
+    CGuiManagerInGame *guiManagerIngame = static_cast<CGuiManagerInGame *>(m_pParent);
+    rAssert(guiManagerIngame != NULL);
 
     bool isRestartAndAbortAllowed = !currentMission->IsSundayDrive() &&
                                     !currentMission->IsComplete() &&
                                     !hnrm->BustingPlayer() &&
                                     !pAvatarManager->IsAvatarGettingInOrOutOfCar(0) &&
-                                    (guiManagerIngame->GetResumeGameScreenID() != GUI_SCREEN_ID_TUTORIAL);
+                                    (guiManagerIngame->GetResumeGameScreenID() !=
+                                     GUI_SCREEN_ID_TUTORIAL);
 
-    rAssert( m_pMenu != NULL );
-    m_pMenu->SetMenuItemEnabled( MENU_ITEM_RESTART_MISSION, isRestartAndAbortAllowed );
-    m_pMenu->SetMenuItemEnabled( MENU_ITEM_ABORT_MISSION, isRestartAndAbortAllowed );
+    rAssert(m_pMenu != NULL);
+    m_pMenu->SetMenuItemEnabled(MENU_ITEM_RESTART_MISSION, isRestartAndAbortAllowed);
+    m_pMenu->SetMenuItemEnabled(MENU_ITEM_ABORT_MISSION, isRestartAndAbortAllowed);
 }
 
 
@@ -337,8 +309,7 @@ void CGuiScreenPauseMission::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPauseMission::InitRunning()
-{
+void CGuiScreenPauseMission::InitRunning() {
     CGuiScreenPause::InitRunning();
 }
 
@@ -355,8 +326,7 @@ void CGuiScreenPauseMission::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPauseMission::InitOutro()
-{
+void CGuiScreenPauseMission::InitOutro() {
     CGuiScreenPause::InitOutro();
 }
 

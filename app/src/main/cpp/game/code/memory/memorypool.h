@@ -28,49 +28,53 @@
 // Synopsis: 
 //
 //==============================================================================
-class FBMemoryPool
-{
-    public:
+class FBMemoryPool {
+public:
 
-        FBMemoryPool( size_t size, 
-                      int blockCapacity,
-                      GameMemoryAllocator allocator );
-        ~FBMemoryPool();
+    FBMemoryPool(size_t size,
+                 int blockCapacity,
+                 GameMemoryAllocator allocator);
 
-        void* Allocate( size_t size );
-        void Free( void* mem, size_t size );
+    ~FBMemoryPool();
 
-        bool ChangeAllocator( GameMemoryAllocator allocator );
-        void DumpStats();
+    void *Allocate(size_t size);
 
-        bool OneOfOurs(void*);
+    void Free(void *mem, size_t size);
 
-    private:
+    bool ChangeAllocator(GameMemoryAllocator allocator);
 
-        // Declared but not defined to prevent copying and assignment.
-        FBMemoryPool( const FBMemoryPool& );
-        FBMemoryPool& operator=( const FBMemoryPool& );
+    void DumpStats();
 
-        struct MemoryPoolList
-        {
-            MemoryPoolList* mpNext;
-        };
+    bool OneOfOurs(void *);
 
-        size_t mSize;
-        int mBlockCapacity;
-        GameMemoryAllocator mGMAllocator;
+private:
 
-        MemoryPoolList* mpHeadOfFreeList;
-        int mCurrentAllocs;
+    // Declared but not defined to prevent copying and assignment.
+    FBMemoryPool(const FBMemoryPool &);
 
-        enum{ MAX_BLOCKS = 16 };
-        void* mpBlockArray[MAX_BLOCKS];
-        int mCurrentBlock;
+    FBMemoryPool &operator=(const FBMemoryPool &);
+
+    struct MemoryPoolList {
+        MemoryPoolList *mpNext;
+    };
+
+    size_t mSize;
+    int mBlockCapacity;
+    GameMemoryAllocator mGMAllocator;
+
+    MemoryPoolList *mpHeadOfFreeList;
+    int mCurrentAllocs;
+
+    enum {
+        MAX_BLOCKS = 16
+    };
+    void *mpBlockArray[MAX_BLOCKS];
+    int mCurrentBlock;
 
 #ifndef RAD_RELEASE
-        int mTotalAllocs;
-        int mTotalFrees;
-        int mPeakAllocs;
+    int mTotalAllocs;
+    int mTotalFrees;
+    int mPeakAllocs;
 #endif // !RAD_RELEASE
 };
 

@@ -31,26 +31,29 @@
 //
 //=============================================================================
 
-class EventLocator : public TriggerLocator
-{
+class EventLocator : public TriggerLocator {
 public:
     EventLocator();
+
     virtual ~EventLocator();
-  
-    virtual LocatorType::Type   GetDataType() const;
+
+    virtual LocatorType::Type GetDataType() const;
 
     LocatorEvent::Event GetEventType() const;
-    void SetEventType( LocatorEvent::Event eventType );
 
-    void SetMatrix( const rmt::Matrix& mat );
-    rmt::Matrix& GetMatrix();
+    void SetEventType(LocatorEvent::Event eventType);
+
+    void SetMatrix(const rmt::Matrix &mat);
+
+    rmt::Matrix &GetMatrix();
 
 private:
-    virtual void OnTrigger( unsigned int playerID );
+    virtual void OnTrigger(unsigned int playerID);
 
     //Prevent wasteful constructor creation.
-    EventLocator( const EventLocator& eventlocator );
-    EventLocator& operator=( const EventLocator& eventlocator );
+    EventLocator(const EventLocator &eventlocator);
+
+    EventLocator &operator=(const EventLocator &eventlocator);
 
     LocatorEvent::Event mEventType;
 
@@ -67,9 +70,8 @@ private:
 // Return:      inline 
 //
 //=============================================================================
-inline LocatorType::Type EventLocator::GetDataType() const
-{
-    return( LocatorType::EVENT );
+inline LocatorType::Type EventLocator::GetDataType() const {
+    return (LocatorType::EVENT);
 }
 
 //=============================================================================
@@ -77,13 +79,12 @@ inline LocatorType::Type EventLocator::GetDataType() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( LocatorEvent eventType )
+// Parameters:  (LocatorEvent eventType)
 //
 // Return:      inline 
 //
 //=============================================================================
-inline void EventLocator::SetEventType( LocatorEvent::Event eventType )
-{
+inline void EventLocator::SetEventType(LocatorEvent::Event eventType) {
     mEventType = eventType;
 }
 
@@ -97,9 +98,8 @@ inline void EventLocator::SetEventType( LocatorEvent::Event eventType )
 // Return:      inline 
 //
 //=============================================================================
-inline LocatorEvent::Event EventLocator::GetEventType() const
-{
-    return( mEventType );
+inline LocatorEvent::Event EventLocator::GetEventType() const {
+    return (mEventType);
 }
 
 //=============================================================================
@@ -107,13 +107,12 @@ inline LocatorEvent::Event EventLocator::GetEventType() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const rmt::Matrix& mat )
+// Parameters:  (const rmt::Matrix& mat)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void EventLocator::SetMatrix( const rmt::Matrix& mat )
-{
+inline void EventLocator::SetMatrix(const rmt::Matrix &mat) {
     mMatrix = mat;
 }
 
@@ -127,8 +126,7 @@ inline void EventLocator::SetMatrix( const rmt::Matrix& mat )
 // Return:      rmt
 //
 //=============================================================================
-inline rmt::Matrix& EventLocator::GetMatrix()
-{
+inline rmt::Matrix &EventLocator::GetMatrix() {
     return mMatrix;
 }
 

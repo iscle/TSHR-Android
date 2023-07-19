@@ -32,47 +32,52 @@ class ISuperCamTarget;
 //
 //=============================================================================
 
-class FirstPersonCam : public SuperCam
-{
+class FirstPersonCam : public SuperCam {
 public:
     FirstPersonCam();
+
     virtual ~FirstPersonCam();
 
     //Update: Called when you want the super cam to update its state.
-    virtual void Update( unsigned int milliseconds );
-    virtual void UpdateForPhysics( unsigned int milliseconds );
+    virtual void Update(unsigned int milliseconds);
+
+    virtual void UpdateForPhysics(unsigned int milliseconds);
 
 
     //Returns the name of the super cam.  
     //This can be used in the FE or debug info
-    virtual const char* const GetName() const;
+    virtual const char *const GetName() const;
 
     virtual Type GetType();
 
-    virtual void SetTarget( ISuperCamTarget* target ); 
+    virtual void SetTarget(ISuperCamTarget *target);
 
     virtual unsigned int GetNumTargets() const;
 
     //Hack
     //This is so if we change views from firstperson in the pause menu we don't screw the controller
-    void OverrideOldState( Input::ActiveState state ); 
+    void OverrideOldState(Input::ActiveState state);
 
     //Support for colliding with the world.
-    void SetCollisionOffset( const rmt::Vector* offset, unsigned int numCollisions, const rmt::Vector& groundOffset );
+    void SetCollisionOffset(const rmt::Vector *offset, unsigned int numCollisions,
+                            const rmt::Vector &groundOffset);
+
     float GetCollisionRadius() const { return GetNearPlane() / 2.0f; };
 
 protected:
     //Override this if you want to get initted.
     virtual void OnInit();
+
     virtual void OnShutdown();
 
     //You'll need to overload these if you want debug watcher or other debug controls.
     virtual void OnRegisterDebugControls();
+
     virtual void OnUnregisterDebugControls();
 
 private:
-    ISuperCamTarget* mTarget;
-    bool mTargetDirty : 1;
+    ISuperCamTarget *mTarget;
+    bool mTargetDirty: 1;
     rmt::Vector mTargetPositionOffset;
 
     float mRotation;
@@ -84,12 +89,13 @@ private:
 
     float mFOVDelta;
 
-    const rmt::Vector* mCollisionOffset;
+    const rmt::Vector *mCollisionOffset;
     unsigned int mNumCollisions;
 
     //Prevent wasteful constructor creation.
-    FirstPersonCam( const FirstPersonCam& firstpersoncam );
-    FirstPersonCam& operator=( const FirstPersonCam& firstpersoncam );
+    FirstPersonCam(const FirstPersonCam &firstpersoncam);
+
+    FirstPersonCam &operator=(const FirstPersonCam &firstpersoncam);
 };
 
 //*****************************************************************************
@@ -107,8 +113,7 @@ private:
 // Return:      Type 
 //
 //=============================================================================
-inline SuperCam::Type FirstPersonCam::GetType()
-{
+inline SuperCam::Type FirstPersonCam::GetType() {
     return SuperCam::FIRST_PERSON_CAM;
 }
 
@@ -122,8 +127,7 @@ inline SuperCam::Type FirstPersonCam::GetType()
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int FirstPersonCam::GetNumTargets() const
-{
+inline unsigned int FirstPersonCam::GetNumTargets() const {
     return 1;
 }
 
@@ -137,8 +141,7 @@ inline unsigned int FirstPersonCam::GetNumTargets() const
 // Return:      const 
 //
 //=============================================================================
-inline const char* const FirstPersonCam::GetName() const
-{
+inline const char *const FirstPersonCam::GetName() const {
     return "FIRST_PERSON_CAM";
 }
 
@@ -147,14 +150,16 @@ inline const char* const FirstPersonCam::GetName() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const rmt::Vector& offset, unsigned int numCollisions, const rmt::Vector& groundOffset )
+// Parameters:  (const rmt::Vector& offset, unsigned int numCollisions, const rmt::Vector& groundOffset)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void FirstPersonCam::SetCollisionOffset( const rmt::Vector* offset, unsigned int numCollisions, const rmt::Vector& groundOffset )
-{
+inline void
+FirstPersonCam::SetCollisionOffset(const rmt::Vector *offset, unsigned int numCollisions,
+                                   const rmt::Vector &groundOffset) {
     mCollisionOffset = offset;
     mNumCollisions = numCollisions;
 }
+
 #endif //FIRSTPERSONCAM_H

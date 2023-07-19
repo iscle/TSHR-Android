@@ -48,12 +48,10 @@
 // Return:      N/A.
 //
 //=============================================================================
-TimerObjective::TimerObjective()
-    
-{
-    mDurationTime =0;
-    mElapsedTime =0;
-   
+TimerObjective::TimerObjective() {
+    mDurationTime = 0;
+    mElapsedTime = 0;
+
 }
 
 //=============================================================================
@@ -66,13 +64,11 @@ TimerObjective::TimerObjective()
 // Return:      N/A.
 //
 //=============================================================================
-TimerObjective::~TimerObjective()
-{
+TimerObjective::~TimerObjective() {
 
 }
 
-void TimerObjective::SetTimer(unsigned int milliseconds)
-{
+void TimerObjective::SetTimer(unsigned int milliseconds) {
     mDurationTime = milliseconds;
 }
 
@@ -94,9 +90,8 @@ void TimerObjective::SetTimer(unsigned int milliseconds)
 // Return:      void 
 //
 //=============================================================================
-void TimerObjective::OnInitialize()
-{
-       
+void TimerObjective::OnInitialize() {
+
 }
 
 //=============================================================================
@@ -109,29 +104,25 @@ void TimerObjective::OnInitialize()
 // Return:      void 
 //
 //=============================================================================
-void TimerObjective::OnFinalize()
-{
-    
+void TimerObjective::OnFinalize() {
+
 }
 
 
-void TimerObjective::Update(unsigned int elaspedTime)
-{
+void TimerObjective::Update(unsigned int elaspedTime) {
     OnUpdate(elaspedTime);
 }
 
 
-void TimerObjective::OnUpdate(unsigned int elapsedTime)
-{
-    mElapsedTime+=elapsedTime;
+void TimerObjective::OnUpdate(unsigned int elapsedTime) {
+    mElapsedTime += elapsedTime;
 
-    if (mElapsedTime>mDurationTime)
-    {
+    if (mElapsedTime > mDurationTime) {
         SetFinished(true);
     }
 }
-   
-   
+
+
 
 
 

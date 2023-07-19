@@ -18,21 +18,20 @@
 class Path;
 
 
-class PathManager
-{
+class PathManager {
 //METHODS
 public:
     //STATICS
-    static PathManager* GetInstance();
+    static PathManager *GetInstance();
+
     static void Destroy();
 
     //NONSTATICS
-    Path* GetFreePath();
+    Path *GetFreePath();
 
 //MEMBERS
 public:
-    enum
-    {
+    enum {
         MAX_PATHS = 125
     };
 
@@ -43,23 +42,25 @@ public:
 private:
 
     PathManager();
+
     virtual ~PathManager();
 
-    void AllocatePaths( int nPaths );
+    void AllocatePaths(int nPaths);
 
     // These copy constructors are wasteful
-    PathManager( const PathManager& pathmanager );
-    PathManager& operator=( const PathManager& pathmanager );
+    PathManager(const PathManager &pathmanager);
+
+    PathManager &operator=(const PathManager &pathmanager);
 
 
 //MEMBERS
 private:
 
     //STATICS
-    static PathManager* mInstance;
+    static PathManager *mInstance;
 
     //NONSTATICS
-    Path* mPaths;             // static array of Path objects
+    Path *mPaths;             // static array of Path objects
     int mnPaths;              // total number of Path objects
     int mNextFreeIndex;       // next free path (initially 0)
 };

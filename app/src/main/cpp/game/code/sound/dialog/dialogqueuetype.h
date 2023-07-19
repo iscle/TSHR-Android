@@ -18,7 +18,8 @@ class DialogQueueElement;
 #include <list>
 #include <memory/stlallocators.h>
 
-typedef std::list< DialogQueueElement*, s2alloc<DialogQueueElement*> > DialogQueueType;
+typedef std::list<DialogQueueElement *, s2alloc < DialogQueueElement * >>
+DialogQueueType;
 
 #endif // DIALOGQUEUETYPE_H
 

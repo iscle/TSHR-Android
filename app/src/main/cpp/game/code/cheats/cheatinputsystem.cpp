@@ -25,11 +25,11 @@
 
 #include <presentation/gui/guisystem.h>
 #include <presentation/gui/guiscreen.h>
-#include <presentation/gui/guiwindow.h> 
-#include <presentation/gui/guimanager.h> 
+#include <presentation/gui/guiwindow.h>
+#include <presentation/gui/guimanager.h>
 
 // Static pointer to instance of singleton.
-CheatInputSystem* CheatInputSystem::spInstance = NULL;
+CheatInputSystem *CheatInputSystem::spInstance = NULL;
 
 //===========================================================================
 // Local Constants
@@ -54,12 +54,11 @@ CHEATBITMASK CheatInputSystem::s_cheatsEnabled = 0;
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-CheatInputSystem* CheatInputSystem::CreateInstance()
-{
-MEMTRACK_PUSH_GROUP( "CheatInputSystem" );
-    spInstance = new( GMA_PERSISTENT ) CheatInputSystem;
-    rAssert( spInstance != NULL );
-MEMTRACK_POP_GROUP( "CheatInputSystem" );
+CheatInputSystem *CheatInputSystem::CreateInstance() {
+    MEMTRACK_PUSH_GROUP("CheatInputSystem");
+    spInstance = new(GMA_PERSISTENT) CheatInputSystem;
+    rAssert(spInstance != NULL);
+    MEMTRACK_POP_GROUP("CheatInputSystem");
 
     return spInstance;
 }
@@ -75,11 +74,10 @@ MEMTRACK_POP_GROUP( "CheatInputSystem" );
 // Return:      None.
 //
 //==============================================================================
-void CheatInputSystem::DestroyInstance()
-{
-    rAssert( spInstance != NULL );
+void CheatInputSystem::DestroyInstance() {
+    rAssert(spInstance != NULL);
 
-    delete( GMA_PERSISTENT, spInstance );
+    delete (GMA_PERSISTENT, spInstance);
     spInstance = NULL;
 }
 
@@ -97,9 +95,8 @@ void CheatInputSystem::DestroyInstance()
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-CheatInputSystem* CheatInputSystem::GetInstance()
-{
-    rAssert( spInstance != NULL );
+CheatInputSystem *CheatInputSystem::GetInstance() {
+    rAssert(spInstance != NULL);
 
     return spInstance;
 }
@@ -117,16 +114,14 @@ CheatInputSystem* CheatInputSystem::GetInstance()
 //
 //===========================================================================
 CheatInputSystem::CheatInputSystem()
-:   m_enabled( false ),
-    m_activatedBitMask( 0 ),
-    m_cheatsDB( NULL ),
-    m_cheatInputHandler( NULL ),
-    m_numClientCallbacks( 0 )
-{
-    for( unsigned int i = 0; i < sizeof( m_clientCallbacks ) /
-                                 sizeof( m_clientCallbacks[ 0 ] ); i++ )
-    {
-        m_clientCallbacks[ i ] = NULL;
+        : m_enabled(false),
+          m_activatedBitMask(0),
+          m_cheatsDB(NULL),
+          m_cheatInputHandler(NULL),
+          m_numClientCallbacks(0) {
+    for (unsigned int i = 0; i < sizeof(m_clientCallbacks) /
+                                 sizeof(m_clientCallbacks[0]); i++) {
+        m_clientCallbacks[i] = NULL;
     }
 }
 
@@ -142,18 +137,15 @@ CheatInputSystem::CheatInputSystem()
 // Return:      
 //
 //===========================================================================
-CheatInputSystem::~CheatInputSystem()
-{
+CheatInputSystem::~CheatInputSystem() {
     // clean-up memory
     //
-    if( m_cheatsDB != NULL )
-    {
-        delete( GMA_PERSISTENT, m_cheatsDB );
+    if (m_cheatsDB != NULL) {
+        delete (GMA_PERSISTENT, m_cheatsDB);
         m_cheatsDB = NULL;
     }
 
-    if( m_cheatInputHandler != NULL )
-    {
+    if (m_cheatInputHandler != NULL) {
         m_cheatInputHandler->Release();
         m_cheatInputHandler = NULL;
     }
@@ -172,20 +164,19 @@ CheatInputSystem::~CheatInputSystem()
 //
 //===========================================================================
 void
-CheatInputSystem::Init()
-{
-MEMTRACK_PUSH_GROUP( "CheatInputSystem Init" );
+CheatInputSystem::Init() {
+    MEMTRACK_PUSH_GROUP("CheatInputSystem Init");
     // create (one and only) instance of Cheats DB
     //
-    m_cheatsDB = new( GMA_PERSISTENT ) CheatsDB();
-    rAssert( m_cheatsDB );
+    m_cheatsDB = new(GMA_PERSISTENT) CheatsDB();
+    rAssert(m_cheatsDB);
 
     // create (one and only) cheat input handler
     //
-    m_cheatInputHandler = new( GMA_PERSISTENT ) CheatInputHandler;
-    rAssert( m_cheatInputHandler );
+    m_cheatInputHandler = new(GMA_PERSISTENT) CheatInputHandler;
+    rAssert(m_cheatInputHandler);
     m_cheatInputHandler->AddRef();
-MEMTRACK_POP_GROUP( "CheatInputSystem Init" );
+    MEMTRACK_POP_GROUP("CheatInputSystem Init");
 }
 
 //===========================================================================
@@ -201,24 +192,19 @@ MEMTRACK_POP_GROUP( "CheatInputSystem Init" );
 //
 //===========================================================================
 void
-CheatInputSystem::SetEnabled( bool enable )
-{
+CheatInputSystem::SetEnabled(bool enable) {
     m_enabled = enable;
 
     int maxControllers = GetInputManager()->GetMaxControllers();
-    for( int i = 0; i < maxControllers; i++ )
-    {
-        if( enable )
-        {
-            GetInputManager()->RegisterMappable( i, m_cheatInputHandler );
-        }
-        else
-        {
-            GetInputManager()->UnregisterMappable( i, m_cheatInputHandler );
+    for (int i = 0; i < maxControllers; i++) {
+        if (enable) {
+            GetInputManager()->RegisterMappable(i, m_cheatInputHandler);
+        } else {
+            GetInputManager()->UnregisterMappable(i, m_cheatInputHandler);
         }
     }
 
-    rAssert( m_cheatInputHandler );
+    rAssert(m_cheatInputHandler);
     m_cheatInputHandler->ResetInputSequence();
     m_cheatInputHandler->ResetTriggerStates();
 }
@@ -236,14 +222,10 @@ CheatInputSystem::SetEnabled( bool enable )
 //
 //===========================================================================
 void
-CheatInputSystem::SetActivated( int controllerId, bool activated )
-{
-    if( activated )
-    {
+CheatInputSystem::SetActivated(int controllerId, bool activated) {
+    if (activated) {
         m_activatedBitMask |= (1 << controllerId);
-    }
-    else
-    {
+    } else {
         m_activatedBitMask &= ~(1 << controllerId);
     }
 
@@ -251,7 +233,7 @@ CheatInputSystem::SetActivated( int controllerId, bool activated )
     // TC: *** temporary work-around to GC-specific problem w/ L and R
     //         triggers constantly sending alternating UP/DOWN inputs
     //
-    rAssert( m_cheatInputHandler );
+    rAssert(m_cheatInputHandler);
     m_cheatInputHandler->ResetInputSequence();
 #endif
 }
@@ -269,8 +251,7 @@ CheatInputSystem::SetActivated( int controllerId, bool activated )
 //
 //===========================================================================
 bool
-CheatInputSystem::IsActivated( int controllerId ) const
-{
+CheatInputSystem::IsActivated(int controllerId) const {
     return ((m_activatedBitMask & (1 << controllerId)) > 0);
 }
 
@@ -287,17 +268,16 @@ CheatInputSystem::IsActivated( int controllerId ) const
 //
 //===========================================================================
 void
-CheatInputSystem::SetCheatEnabled( eCheatID cheatID, bool enable )
-{
+CheatInputSystem::SetCheatEnabled(eCheatID cheatID, bool enable) {
 #ifdef FINAL
-    if( cheatID == CHEAT_ID_UNLOCK_CARDS ||
+    if(cheatID == CHEAT_ID_UNLOCK_CARDS ||
         cheatID == CHEAT_ID_UNLOCK_SKINS ||
-        cheatID == CHEAT_ID_UNLOCK_VEHICLES )
+        cheatID == CHEAT_ID_UNLOCK_VEHICLES)
     {
         // for these cheats, unless all missions are completed, don't do
         // anything
         //
-        if( !GetCharacterSheetManager()->IsAllStoryMissionsCompleted() )
+        if(!GetCharacterSheetManager()->IsAllStoryMissionsCompleted())
         {
             return;
         }
@@ -306,21 +286,17 @@ CheatInputSystem::SetCheatEnabled( eCheatID cheatID, bool enable )
 
     // turn on/off corresponding bit in cheats bitmask
     //
-    if( enable )
-    {
+    if (enable) {
         s_cheatsEnabled |= (1 << cheatID);
-    }
-    else
-    {
+    } else {
         s_cheatsEnabled &= ~(1 << cheatID);
     }
 
     // notify registered clients that valid cheat code has been entered
     //
-    for( int i = 0; i < m_numClientCallbacks; i++ )
-    {
-        rAssert( m_clientCallbacks[ i ] );
-        m_clientCallbacks[ i ]->OnCheatEntered( cheatID, enable );
+    for (int i = 0; i < m_numClientCallbacks; i++) {
+        rAssert(m_clientCallbacks[i]);
+        m_clientCallbacks[i]->OnCheatEntered(cheatID, enable);
     }
 }
 
@@ -337,8 +313,7 @@ CheatInputSystem::SetCheatEnabled( eCheatID cheatID, bool enable )
 //
 //===========================================================================
 bool
-CheatInputSystem::IsCheatEnabled( eCheatID cheatID ) const
-{
+CheatInputSystem::IsCheatEnabled(eCheatID cheatID) const {
     return ((s_cheatsEnabled & (1 << cheatID)) > 0);
 }
 
@@ -355,21 +330,19 @@ CheatInputSystem::IsCheatEnabled( eCheatID cheatID ) const
 //
 //===========================================================================
 void
-CheatInputSystem::ReceiveInputs( eCheatInput* cheatInputs,
-                                 int numInputs )
-{
-    int cheatIndex = CheatsDB::ConvertSequenceToIndex( cheatInputs,
-                                                       numInputs );
+CheatInputSystem::ReceiveInputs(eCheatInput *cheatInputs,
+                                int numInputs) {
+    int cheatIndex = CheatsDB::ConvertSequenceToIndex(cheatInputs,
+                                                      numInputs);
 
     // get cheatID associated with received input sequence
     //
-    rAssert( m_cheatsDB );
-    eCheatID cheatID = m_cheatsDB->GetCheatID( cheatIndex );
+    rAssert(m_cheatsDB);
+    eCheatID cheatID = m_cheatsDB->GetCheatID(cheatIndex);
 
     // validate cheatID
     //
-    if( cheatID != CHEAT_ID_UNREGISTERED )
-    {
+    if (cheatID != CHEAT_ID_UNREGISTERED) {
         // Yay! Successful cheat code entered!!
         //
 #ifdef FINAL
@@ -378,51 +351,44 @@ CheatInputSystem::ReceiveInputs( eCheatInput* cheatInputs,
         // 
         bool isCheatEnabled = true;
 #else
-        bool isCheatEnabled = !this->IsCheatEnabled( cheatID ); // toggle
+        bool isCheatEnabled = !this->IsCheatEnabled(cheatID); // toggle
 #endif
 
-        this->SetCheatEnabled( cheatID, isCheatEnabled );
+        this->SetCheatEnabled(cheatID, isCheatEnabled);
 
-        if( this->IsCheatEnabled( cheatID ) )
-        {
-            GetEventManager()->TriggerEvent( EVENT_FE_CHEAT_SUCCESS );
-        }
-        else
-        {
-            GetEventManager()->TriggerEvent( EVENT_FE_CHEAT_FAILURE );
+        if (this->IsCheatEnabled(cheatID)) {
+            GetEventManager()->TriggerEvent(EVENT_FE_CHEAT_SUCCESS);
+        } else {
+            GetEventManager()->TriggerEvent(EVENT_FE_CHEAT_FAILURE);
 
             isCheatEnabled = false;
 
-            rReleasePrintf( "*** This cheat cannot be enabled until all story missions have been completed!\n" );
+            rReleasePrintf(
+                    "*** This cheat cannot be enabled until all story missions have been completed!\n");
         }
 
-        rReleasePrintf( "*** Cheat code successfully entered: %s (%s)\n",
-                        m_cheatsDB->GetCheat( cheatID )->m_cheatName,
-                        isCheatEnabled ? "enabled" : "disabled" );
+        rReleasePrintf("*** Cheat code successfully entered: %s (%s)\n",
+                       m_cheatsDB->GetCheat(cheatID)->m_cheatName,
+                       isCheatEnabled ? "enabled" : "disabled");
 
         // if this is the "unlock everything" cheat, then unlock everything (duh...)
         //
-        if( cheatID == CHEAT_ID_UNLOCK_EVERYTHING )
-        {
-            for( int unlockCheatID = CHEAT_ID_UNLOCK_BEGIN;
+        if (cheatID == CHEAT_ID_UNLOCK_EVERYTHING) {
+            for (int unlockCheatID = CHEAT_ID_UNLOCK_BEGIN;
                  unlockCheatID < CHEAT_ID_UNLOCK_EVERYTHING;
-                 unlockCheatID++ )
-            {
-                this->SetCheatEnabled( static_cast<eCheatID>( unlockCheatID ), isCheatEnabled );
+                 unlockCheatID++) {
+                this->SetCheatEnabled(static_cast<eCheatID>(unlockCheatID), isCheatEnabled);
             }
+        } else if (cheatID == CHEAT_ID_DEMO_TEST) {
+            GetGuiSystem()->GotoScreen(CGuiWindow::GUI_SCREEN_ID_SPLASH, 0, 0,
+                                       CLEAR_WINDOW_HISTORY);
         }
-        else if ( cheatID == CHEAT_ID_DEMO_TEST )
-        {
-            GetGuiSystem()->GotoScreen( CGuiWindow::GUI_SCREEN_ID_SPLASH, 0, 0, CLEAR_WINDOW_HISTORY );
-        }
-    }
-    else
-    {
+    } else {
         // Booo.... try again!!
         //
-        GetEventManager()->TriggerEvent( EVENT_FE_CHEAT_FAILURE );
+        GetEventManager()->TriggerEvent(EVENT_FE_CHEAT_FAILURE);
 
-        rReleasePrintf( "*** Invalid cheat code entered!\n" );
+        rReleasePrintf("*** Invalid cheat code entered!\n");
     }
 }
 
@@ -439,27 +405,24 @@ CheatInputSystem::ReceiveInputs( eCheatInput* cheatInputs,
 //
 //===========================================================================
 void
-CheatInputSystem::RegisterCallback( ICheatEnteredCallback* callback )
-{
-    rAssert( callback != NULL );
+CheatInputSystem::RegisterCallback(ICheatEnteredCallback *callback) {
+    rAssert(callback != NULL);
 
     // first, check if callback is already registered
     //
-    for( int i = 0; i < m_numClientCallbacks; i++ )
-    {
-        if( m_clientCallbacks[ i ] == callback )
-        {
+    for (int i = 0; i < m_numClientCallbacks; i++) {
+        if (m_clientCallbacks[i] == callback) {
             // yup, ignore redundant request
             return;
         }
     }
 
-    rAssert( static_cast<unsigned int>( m_numClientCallbacks ) < 
-             sizeof( m_clientCallbacks ) / sizeof( m_clientCallbacks[ 0 ] ) );
+    rAssert(static_cast<unsigned int>(m_numClientCallbacks) <
+            sizeof(m_clientCallbacks) / sizeof(m_clientCallbacks[0]));
 
     // add new registered callback
     //
-    m_clientCallbacks[ m_numClientCallbacks ] = callback;
+    m_clientCallbacks[m_numClientCallbacks] = callback;
     m_numClientCallbacks++;
 }
 
@@ -476,25 +439,21 @@ CheatInputSystem::RegisterCallback( ICheatEnteredCallback* callback )
 //
 //===========================================================================
 void
-CheatInputSystem::UnregisterCallback( ICheatEnteredCallback* callback )
-{
+CheatInputSystem::UnregisterCallback(ICheatEnteredCallback *callback) {
     // search for callback
     //
-    for( int i = 0; i < m_numClientCallbacks; i++ )
-    {
-        if( m_clientCallbacks[ i ] == callback )
-        {
+    for (int i = 0; i < m_numClientCallbacks; i++) {
+        if (m_clientCallbacks[i] == callback) {
             // found it! now remove it
             //
-            m_clientCallbacks[ i ] = NULL;
+            m_clientCallbacks[i] = NULL;
             m_numClientCallbacks--;
 
             // if removed from the middle, replace w/ one at the end
             //
-            if( i < m_numClientCallbacks )
-            {
-                m_clientCallbacks[ i ] = m_clientCallbacks[ m_numClientCallbacks ];
-                m_clientCallbacks[ m_numClientCallbacks ] = NULL;
+            if (i < m_numClientCallbacks) {
+                m_clientCallbacks[i] = m_clientCallbacks[m_numClientCallbacks];
+                m_clientCallbacks[m_numClientCallbacks] = NULL;
             }
 
             // all done, return
@@ -504,7 +463,7 @@ CheatInputSystem::UnregisterCallback( ICheatEnteredCallback* callback )
 
     // callback not found!
     //
-    rAssertMsg( 0, "WARNING: *** Callback not found!" );
+    rAssertMsg(0, "WARNING: *** Callback not found!");
 }
 
 //===========================================================================

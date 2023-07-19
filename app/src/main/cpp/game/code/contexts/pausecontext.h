@@ -31,47 +31,52 @@
 // Synopsis:    
 //
 //=============================================================================
-class PauseContext : public Context
-{
-    public:
+class PauseContext : public Context {
+public:
 
-        // Static Methods for accessing this singleton.
-        static PauseContext* GetInstance();
+    // Static Methods for accessing this singleton.
+    static PauseContext *GetInstance();
 
-        bool IsWaitingForContextSwitch() { return m_waitingForContextSwitch; }
-        void SetWaitingForContextSwitch( bool tf ) { m_waitingForContextSwitch = tf; }
+    bool IsWaitingForContextSwitch() { return m_waitingForContextSwitch; }
 
-    protected:
+    void SetWaitingForContextSwitch(bool tf) { m_waitingForContextSwitch = tf; }
 
-        virtual void OnStart( ContextEnum previousContext );
-        virtual void OnStop( ContextEnum nextContext );
-        virtual void OnUpdate( unsigned int elapsedTime );
-        
-        virtual void OnSuspend();
-        virtual void OnResume();
+protected:
 
-        virtual void OnHandleEvent( EventEnum id, void* pEventData );
+    virtual void OnStart(ContextEnum previousContext);
 
-    private:
+    virtual void OnStop(ContextEnum nextContext);
 
-        // constructor and destructor are protected to force singleton implementation
-        PauseContext();
-        virtual ~PauseContext();
+    virtual void OnUpdate(unsigned int elapsedTime);
 
-        // Declared but not defined to prevent copying and assignment.
-        PauseContext( const PauseContext& );
-        PauseContext& operator=( const PauseContext& );
+    virtual void OnSuspend();
 
-        // Pointer to the one and only instance of this singleton.
-        static PauseContext* spInstance;
+    virtual void OnResume();
 
-        Input::ActiveState mOldState;
-        bool m_quitGamePending : 1;
-        bool m_waitingForContextSwitch;        
+    virtual void OnHandleEvent(EventEnum id, void *pEventData);
+
+private:
+
+    // constructor and destructor are protected to force singleton implementation
+    PauseContext();
+
+    virtual ~PauseContext();
+
+    // Declared but not defined to prevent copying and assignment.
+    PauseContext(const PauseContext &);
+
+    PauseContext &operator=(const PauseContext &);
+
+    // Pointer to the one and only instance of this singleton.
+    static PauseContext *spInstance;
+
+    Input::ActiveState mOldState;
+    bool m_quitGamePending: 1;
+    bool m_waitingForContextSwitch;
 };
 
 // A little syntactic sugar for getting at this singleton.
-inline PauseContext* GetPauseContext() { return( PauseContext::GetInstance() ); }
+inline PauseContext *GetPauseContext() { return (PauseContext::GetInstance()); }
 
 
 #endif // PAUSECONTEXT_H

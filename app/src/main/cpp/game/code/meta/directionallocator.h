@@ -30,24 +30,26 @@
 //
 //=============================================================================
 
-class DirectionalLocator : public Locator
-{
+class DirectionalLocator : public Locator {
 public:
     DirectionalLocator();
+
     virtual ~DirectionalLocator();
 
     virtual LocatorType::Type GetDataType() const;
 
-    void SetTransform( const rmt::Matrix& transform );
-    const rmt::Matrix& GetTransform() const;
+    void SetTransform(const rmt::Matrix &transform);
+
+    const rmt::Matrix &GetTransform() const;
 
 private:
 
     rmt::Matrix mTransform;
 
     //Prevent wasteful constructor creation.
-    DirectionalLocator( const DirectionalLocator& directionallocator );
-    DirectionalLocator& operator=( const DirectionalLocator& directionallocator );
+    DirectionalLocator(const DirectionalLocator &directionallocator);
+
+    DirectionalLocator &operator=(const DirectionalLocator &directionallocator);
 };
 
 //*****************************************************************************
@@ -66,8 +68,7 @@ private:
 // Return:      LocatorType::Type
 //
 //=============================================================================
-inline LocatorType::Type DirectionalLocator::GetDataType() const
-{
+inline LocatorType::Type DirectionalLocator::GetDataType() const {
     return LocatorType::DIRECTIONAL;
 }
 
@@ -77,13 +78,12 @@ inline LocatorType::Type DirectionalLocator::GetDataType() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const rmt::Matrix& transform )
+// Parameters:  (const rmt::Matrix& transform)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void DirectionalLocator::SetTransform( const rmt::Matrix& transform )
-{
+inline void DirectionalLocator::SetTransform(const rmt::Matrix &transform) {
     mTransform = transform;
 }
 
@@ -97,8 +97,7 @@ inline void DirectionalLocator::SetTransform( const rmt::Matrix& transform )
 // Return:      rmt
 //
 //=============================================================================
-inline const rmt::Matrix& DirectionalLocator::GetTransform() const
-{
+inline const rmt::Matrix &DirectionalLocator::GetTransform() const {
     return mTransform;
 }
 

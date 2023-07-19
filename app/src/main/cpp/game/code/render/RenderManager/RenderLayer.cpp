@@ -60,8 +60,7 @@
 //
 //========================================================================
 RenderLayer::RenderLayer() :
-mIsBeginView( true )
-{
+        mIsBeginView(true) {
     mNumViews = 1;
     OnRenderLayerInit();
     mExportedState = msDead;
@@ -81,10 +80,9 @@ mIsBeginView( true )
 // Constraints: 
 //
 //========================================================================
-RenderLayer::~RenderLayer()
-{
-   if(!IsDead())
-      Kill();
+RenderLayer::~RenderLayer() {
+    if (!IsDead())
+        Kill();
 }
 
 //************************************************************************
@@ -103,32 +101,27 @@ RenderLayer::~RenderLayer()
 // Constraints: 
 //
 //========================================================================
-void RenderLayer::Render()
-{
-    BEGIN_PROFILE( "UNKNOWN Render" );
-    for( unsigned int view = 0; view < mNumViews; view++ )
-    {
-        if( mIsBeginView )
-        {
-            mpView[ view ]->BeginRender();
+void RenderLayer::Render() {
+    BEGIN_PROFILE("UNKNOWN Render");
+    for (unsigned int view = 0; view < mNumViews; view++) {
+        if (mIsBeginView) {
+            mpView[view]->BeginRender();
         }
 
         rAssert(!IsDead());
 
-        //   if( mExportedState == msRenderReady )
+        //   if(mExportedState == msRenderReady)
         //   {
-        for(int i = mpGuts.mUseSize-1; i>-1; i-- )
-        {
+        for (int i = mpGuts.mUseSize - 1; i > -1; i--) {
             mpGuts[i]->Display();
         }
         //   }
 
-        if( mIsBeginView )
-        {
-            mpView[ view ]->EndRender();
+        if (mIsBeginView) {
+            mpView[view]->EndRender();
         }
     }
-    END_PROFILE( "UNKNOWN Render" );
+    END_PROFILE("UNKNOWN Render");
 }
 
 //************************************************************************
@@ -138,7 +131,7 @@ void RenderLayer::Render()
 // RenderLayer::Kill
 //========================================================================
 //
-// Description: ExportedState: RenderReady||Frozen >> Dead;
+// Description: ExportedState: RenderReady||Frozen>> Dead;
 //              Dump any data and set state to dead
 //
 // Parameters:	 None
@@ -148,13 +141,11 @@ void RenderLayer::Render()
 // Constraints: 
 //
 //========================================================================
-void RenderLayer::Kill()
-{
-    if( IsDead() )
-    {
+void RenderLayer::Kill() {
+    if (IsDead()) {
         return;
     }
-   
+
     NullifyGuts();
     NullifyViewCam();
 
@@ -165,7 +156,7 @@ void RenderLayer::Kill()
 // RenderLayer::Resurrect
 //========================================================================
 //
-// Description: ExportedState: Dead >> RenderReady
+// Description: ExportedState: Dead>> RenderReady
 //
 // Parameters:  None.
 //
@@ -174,22 +165,20 @@ void RenderLayer::Kill()
 // Constraints: None.
 //
 //========================================================================
-void RenderLayer::Resurrect()
-{
-   if( !IsDead() )
-   {
-       return;
-   }
-   rAssert(mpView != NULL);
+void RenderLayer::Resurrect() {
+    if (!IsDead()) {
+        return;
+    }
+    rAssert(mpView != NULL);
 
-   mExportedState = msRenderReady;
+    mExportedState = msRenderReady;
 }
 
 //========================================================================
 // RenderLayer::FreezeCorpse
 //========================================================================
 //
-// Description: Dead >> Frozen 
+// Description: Dead>> Frozen
 //
 // Parameters:  None.
 //
@@ -198,22 +187,20 @@ void RenderLayer::Resurrect()
 // Constraints: None.
 //
 //========================================================================
-void RenderLayer::FreezeCorpse()
-{
-   if( IsFrozen() )
-   {
-       return;
-   }
-   rAssert(mpView != NULL);
+void RenderLayer::FreezeCorpse() {
+    if (IsFrozen()) {
+        return;
+    }
+    rAssert(mpView != NULL);
 
-   mExportedState = msFrozen;
+    mExportedState = msFrozen;
 }
 
 //========================================================================
 // RenderLayer::Freeze
 //========================================================================
 //
-// Description: ExportedState: RenderReady >> Frozen; don't render
+// Description: ExportedState: RenderReady>> Frozen; don't render
 //
 // Parameters:	 None
 //
@@ -222,38 +209,36 @@ void RenderLayer::FreezeCorpse()
 // Constraints: 
 //
 //========================================================================
-void RenderLayer::Freeze()
-{
-   if( !IsRenderReady() )
-   {
-       return;
-   }
-   mExportedState = msFrozen;
+void RenderLayer::Freeze() {
+    if (!IsRenderReady()) {
+        return;
+    }
+    mExportedState = msFrozen;
 }
 
 /*=============================================================================
 Description:    Call to freeze the layer and remember the previous state.
                 Match with a call to Warm().
 =============================================================================*/
-void RenderLayer::Chill( void )
-{
+void RenderLayer::Chill(void) {
     mPreviousState = mExportedState;
     mExportedState = msFrozen;
 }
+
 /*=============================================================================
 Description:    Call to restore the state frozen in Chill. Make sure it is a
                 match to a Chill() call.
 =============================================================================*/
-void RenderLayer::Warm( void )
-{
+void RenderLayer::Warm(void) {
     mExportedState = mPreviousState;
     mPreviousState = msDead;
 }
+
 //========================================================================
 // RenderLayer::Thaw
 //========================================================================
 //
-// Description: ExportedState: Frozen >> RenderReady
+// Description: ExportedState: Frozen>> RenderReady
 //
 // Parameters:  None.
 //
@@ -262,13 +247,11 @@ void RenderLayer::Warm( void )
 // Constraints: None.
 //
 //========================================================================
-void RenderLayer::Thaw()
-{
-   if( !IsFrozen() )
-   {
-       return;
-   }
-   mExportedState = msRenderReady;
+void RenderLayer::Thaw() {
+    if (!IsFrozen()) {
+        return;
+    }
+    mExportedState = msRenderReady;
 }
 
 //************************************************************************
@@ -290,12 +273,12 @@ void RenderLayer::Thaw()
 // Constraints: 
 //
 //========================================================================
-void RenderLayer::AddGuts( tDrawable* ipDrawable )
-{
-    rAssert( ipDrawable != NULL );
+void RenderLayer::AddGuts(tDrawable *ipDrawable) {
+    rAssert(ipDrawable != NULL);
     ipDrawable->AddRef();
-    mpGuts.Add( ipDrawable );
+    mpGuts.Add(ipDrawable);
 }
+
 //========================================================================
 // RenderLayer::AddGuts
 //========================================================================
@@ -309,13 +292,10 @@ void RenderLayer::AddGuts( tDrawable* ipDrawable )
 // Constraints: 
 //
 //========================================================================
-void RenderLayer::RemoveGuts( tDrawable* ipDrawable )
-{
-    rAssert( ipDrawable != NULL );
-    for(int i=mpGuts.mUseSize-1; i>-1; i--)
-    {
-        if(mpGuts[i] == ipDrawable)
-        {
+void RenderLayer::RemoveGuts(tDrawable *ipDrawable) {
+    rAssert(ipDrawable != NULL);
+    for (int i = mpGuts.mUseSize - 1; i > -1; i--) {
+        if (mpGuts[i] == ipDrawable) {
             mpGuts.Remove(i);
             ipDrawable->Release();
         }
@@ -335,10 +315,9 @@ void RenderLayer::RemoveGuts( tDrawable* ipDrawable )
 // Constraints: 
 //
 //========================================================================
-void RenderLayer::AddGuts( tGeometry* ipGeometry )
-{
-   ipGeometry->AddRef();
-   mpGuts.Add( (tDrawable*&)ipGeometry );
+void RenderLayer::AddGuts(tGeometry *ipGeometry) {
+    ipGeometry->AddRef();
+    mpGuts.Add((tDrawable *&) ipGeometry);
 }
 
 //========================================================================
@@ -354,10 +333,9 @@ void RenderLayer::AddGuts( tGeometry* ipGeometry )
 // Constraints: None.
 //
 //========================================================================
-void RenderLayer::AddGuts( IntersectDSG* ipIntersectDSG )
-{
-   //The Basic RenderLayer does not support adding of IntersectDSG's
-   rAssert(false);
+void RenderLayer::AddGuts(IntersectDSG *ipIntersectDSG) {
+    //The Basic RenderLayer does not support adding of IntersectDSG's
+    rAssert(false);
 }
 
 //========================================================================
@@ -373,10 +351,9 @@ void RenderLayer::AddGuts( IntersectDSG* ipIntersectDSG )
 // Constraints: None.
 //
 //========================================================================
-void RenderLayer::AddGuts( StaticEntityDSG* ipStaticEntityDSG )
-{
-   //The Basic RenderLayer does not support adding of IntersectDSG's
-   rAssert(false);
+void RenderLayer::AddGuts(StaticEntityDSG *ipStaticEntityDSG) {
+    //The Basic RenderLayer does not support adding of IntersectDSG's
+    rAssert(false);
 }
 
 //========================================================================
@@ -392,10 +369,9 @@ void RenderLayer::AddGuts( StaticEntityDSG* ipStaticEntityDSG )
 // Constraints: None.
 //
 //========================================================================
-void RenderLayer::AddGuts( StaticPhysDSG* ipStaticPhysDSG )
-{
-   //The Basic RenderLayer does not support adding of IntersectDSG's
-   rAssert(false);
+void RenderLayer::AddGuts(StaticPhysDSG *ipStaticPhysDSG) {
+    //The Basic RenderLayer does not support adding of IntersectDSG's
+    rAssert(false);
 }
 
 //========================================================================
@@ -411,136 +387,9 @@ void RenderLayer::AddGuts( StaticPhysDSG* ipStaticPhysDSG )
 // Constraints: None.
 //
 //========================================================================
-void RenderLayer::AddGuts( Scrooby::App* ipScroobyApp )
-{
-   //The Basic RenderLayer does not support adding of Scrooby App
-   rAssert(false);
-}
-//========================================================================
-// RenderLayer::
-//========================================================================
-//
-// Description: 
-//
-// Parameters:  None.
-//
-// Return:      None.
-//
-// Constraints: None.
-//
-//========================================================================
-void RenderLayer::AddGuts( SpatialTree* ipSpatialTree )
-{
-   //The Basic RenderLayer does not support adding of SpatialTree
-   rAssert(false);
-}
-//========================================================================
-// RenderLayer::
-//========================================================================
-//
-// Description: 
-//
-// Parameters:  None.
-//
-// Return:      None.
-//
-// Constraints: None.
-//
-//========================================================================
-void RenderLayer::AddGuts( FenceEntityDSG* ipFenceEntityDSG )
-{
-   //The Basic RenderLayer does not support adding of fence entities
-   rAssert(false);
-}
-//========================================================================
-// RenderLayer::
-//========================================================================
-//
-// Description: 
-//
-// Parameters:  None.
-//
-// Return:      None.
-//
-// Constraints: None.
-//
-//========================================================================
-void RenderLayer::AddGuts( AnimCollisionEntityDSG* ipAnimCollDSG )
-{
-   //The Basic RenderLayer does not support adding of Animated Collision entities
-   rAssert(false);
-}
-//========================================================================
-// RenderLayer::
-//========================================================================
-//
-// Description: 
-//
-// Parameters:  None.
-//
-// Return:      None.
-//
-// Constraints: None.
-//
-//========================================================================
-void RenderLayer::AddGuts( AnimEntityDSG* ipAnimDSG )
-{
-   //The Basic RenderLayer does not support adding of Animated entities
-   rAssert(false);
-}
-//========================================================================
-// RenderLayer::
-//========================================================================
-//
-// Description: 
-//
-// Parameters:  None.
-//
-// Return:      None.
-//
-// Constraints: None.
-//
-//========================================================================
-void  RenderLayer::AddGuts( DynaPhysDSG* ipDynaPhysDSG )
-{
-   //The Basic RenderLayer does not support adding of Dyna Phys entities
-   rAssert(false);
-}
-//========================================================================
-// RenderLayer::
-//========================================================================
-//
-// Description: 
-//
-// Parameters:  None.
-//
-// Return:      None.
-//
-// Constraints: None.
-//
-//========================================================================
-void RenderLayer::AddGuts( TriggerVolume* ipTriggerVolume )
-{
-   //The Basic RenderLayer does not support adding of Trigger Volume entities
-   rAssert(false);
-}
-//========================================================================
-// RenderLayer::
-//========================================================================
-//
-// Description: 
-//
-// Parameters:  None.
-//
-// Return:      None.
-//
-// Constraints: None.
-//
-//========================================================================
-void RenderLayer::AddGuts( WorldSphereDSG* ipWorldSphereDSG )
-{
-   //The Basic RenderLayer does not support adding of WorldSphere entities
-   rAssert(false);
+void RenderLayer::AddGuts(Scrooby::App *ipScroobyApp) {
+    //The Basic RenderLayer does not support adding of Scrooby App
+    rAssert(false);
 }
 
 //========================================================================
@@ -556,10 +405,9 @@ void RenderLayer::AddGuts( WorldSphereDSG* ipWorldSphereDSG )
 // Constraints: None.
 //
 //========================================================================
-void RenderLayer::AddGuts( RoadSegment* ipRoadSegment )
-{
-   //The Basic RenderLayer does not support adding of road segment entities
-   rAssert(false);
+void RenderLayer::AddGuts(SpatialTree *ipSpatialTree) {
+    //The Basic RenderLayer does not support adding of SpatialTree
+    rAssert(false);
 }
 
 //========================================================================
@@ -575,10 +423,135 @@ void RenderLayer::AddGuts( RoadSegment* ipRoadSegment )
 // Constraints: None.
 //
 //========================================================================
-void RenderLayer::AddGuts( PathSegment* ipPathSegment )
-{
-   //The Basic RenderLayer does not support adding of path segment entities
-   rAssert(false);
+void RenderLayer::AddGuts(FenceEntityDSG *ipFenceEntityDSG) {
+    //The Basic RenderLayer does not support adding of fence entities
+    rAssert(false);
+}
+
+//========================================================================
+// RenderLayer::
+//========================================================================
+//
+// Description: 
+//
+// Parameters:  None.
+//
+// Return:      None.
+//
+// Constraints: None.
+//
+//========================================================================
+void RenderLayer::AddGuts(AnimCollisionEntityDSG *ipAnimCollDSG) {
+    //The Basic RenderLayer does not support adding of Animated Collision entities
+    rAssert(false);
+}
+
+//========================================================================
+// RenderLayer::
+//========================================================================
+//
+// Description: 
+//
+// Parameters:  None.
+//
+// Return:      None.
+//
+// Constraints: None.
+//
+//========================================================================
+void RenderLayer::AddGuts(AnimEntityDSG *ipAnimDSG) {
+    //The Basic RenderLayer does not support adding of Animated entities
+    rAssert(false);
+}
+
+//========================================================================
+// RenderLayer::
+//========================================================================
+//
+// Description: 
+//
+// Parameters:  None.
+//
+// Return:      None.
+//
+// Constraints: None.
+//
+//========================================================================
+void RenderLayer::AddGuts(DynaPhysDSG *ipDynaPhysDSG) {
+    //The Basic RenderLayer does not support adding of Dyna Phys entities
+    rAssert(false);
+}
+
+//========================================================================
+// RenderLayer::
+//========================================================================
+//
+// Description: 
+//
+// Parameters:  None.
+//
+// Return:      None.
+//
+// Constraints: None.
+//
+//========================================================================
+void RenderLayer::AddGuts(TriggerVolume *ipTriggerVolume) {
+    //The Basic RenderLayer does not support adding of Trigger Volume entities
+    rAssert(false);
+}
+
+//========================================================================
+// RenderLayer::
+//========================================================================
+//
+// Description: 
+//
+// Parameters:  None.
+//
+// Return:      None.
+//
+// Constraints: None.
+//
+//========================================================================
+void RenderLayer::AddGuts(WorldSphereDSG *ipWorldSphereDSG) {
+    //The Basic RenderLayer does not support adding of WorldSphere entities
+    rAssert(false);
+}
+
+//========================================================================
+// RenderLayer::
+//========================================================================
+//
+// Description: 
+//
+// Parameters:  None.
+//
+// Return:      None.
+//
+// Constraints: None.
+//
+//========================================================================
+void RenderLayer::AddGuts(RoadSegment *ipRoadSegment) {
+    //The Basic RenderLayer does not support adding of road segment entities
+    rAssert(false);
+}
+
+//========================================================================
+// RenderLayer::
+//========================================================================
+//
+// Description: 
+//
+// Parameters:  None.
+//
+// Return:      None.
+//
+// Constraints: None.
+//
+//========================================================================
+void RenderLayer::AddGuts(PathSegment *ipPathSegment) {
+    //The Basic RenderLayer does not support adding of path segment entities
+    rAssert(false);
 }
 
 
@@ -595,8 +568,7 @@ void RenderLayer::AddGuts( PathSegment* ipPathSegment )
 // Constraints: None.
 //
 //========================================================================
-void RenderLayer::RemoveGuts( IEntityDSG* ipEDSG )
-{
+void RenderLayer::RemoveGuts(IEntityDSG *ipEDSG) {
     //Only supported in WorldRenderLayer
     rAssert(false);
 }
@@ -614,10 +586,9 @@ void RenderLayer::RemoveGuts( IEntityDSG* ipEDSG )
 //
 //========================================================================
 
-void RenderLayer::RemoveGuts( tMultiController* ipZoneController )
-{
-	//Only supported in WorldRenderLayer
-	rAssert(false);
+void RenderLayer::RemoveGuts(tMultiController *ipZoneController) {
+    //Only supported in WorldRenderLayer
+    rAssert(false);
 }
 //////////////////////////////////////////////////////////////////////////
 // Other; Other Layer Resources of interest
@@ -636,9 +607,8 @@ void RenderLayer::RemoveGuts( tMultiController* ipZoneController )
 // Constraints: 
 //
 //========================================================================
-tCamera* RenderLayer::pCam( unsigned int viewIndex )
-{
-   return mpView[ viewIndex ]->GetCamera();
+tCamera *RenderLayer::pCam(unsigned int viewIndex) {
+    return mpView[viewIndex]->GetCamera();
 }
 
 //========================================================================
@@ -654,9 +624,8 @@ tCamera* RenderLayer::pCam( unsigned int viewIndex )
 // Constraints: 
 //
 //========================================================================
-tView* RenderLayer::pView( unsigned int viewIndex )
-{
-   return mpView[ viewIndex ];
+tView *RenderLayer::pView(unsigned int viewIndex) {
+    return mpView[viewIndex];
 }
 
 //========================================================================
@@ -672,12 +641,11 @@ tView* RenderLayer::pView( unsigned int viewIndex )
 // Constraints: 
 //
 //========================================================================
-float& RenderLayer::rAlpha()
-{
-   // This is a currently unsupported function
-   rAssert(false);
+float &RenderLayer::rAlpha() {
+    // This is a currently unsupported function
+    rAssert(false);
 
-   return mAlpha;
+    return mAlpha;
 }
 
 
@@ -694,11 +662,11 @@ float& RenderLayer::rAlpha()
 // Constraints: None.
 //
 //========================================================================
-void RenderLayer::DoAllSetups()
-{
-   SetUpViewCam();
-   SetUpGuts();
+void RenderLayer::DoAllSetups() {
+    SetUpViewCam();
+    SetUpGuts();
 }
+
 //========================================================================
 // RenderLayer::SetUpViewCam
 //========================================================================
@@ -713,54 +681,47 @@ void RenderLayer::DoAllSetups()
 // Constraints: None.
 //
 //========================================================================
-void RenderLayer::SetUpViewCam()
-{
-MEMTRACK_PUSH_GROUP( "RenderLayer" );
-    for( unsigned int i = 0; i < mNumViews; i++ )
-    {
-        if( mpView[ i ] != NULL ) 
-        {
-            mpView[ i ]->Release();
+void RenderLayer::SetUpViewCam() {
+    MEMTRACK_PUSH_GROUP("RenderLayer");
+    for (unsigned int i = 0; i < mNumViews; i++) {
+        if (mpView[i] != NULL) {
+            mpView[i]->Release();
         }
 
-        HeapMgr()->PushHeap( GMA_LEVEL_OTHER );
-        mpView[ i ] = new tView();
-        mpView[ i ]->AddRef();
+        HeapMgr()->PushHeap(GMA_LEVEL_OTHER);
+        mpView[i] = new tView();
+        mpView[i]->AddRef();
 
-        tPointCamera* pDefaultCam = new tPointCamera;
+        tPointCamera *pDefaultCam = new tPointCamera;
         pDefaultCam->AddRef();
-        mpView[ i ]->SetCamera( pDefaultCam );
+        mpView[i]->SetCamera(pDefaultCam);
         pDefaultCam->Release();
-        HeapMgr()->PopHeap( GMA_LEVEL_OTHER );
+        HeapMgr()->PopHeap(GMA_LEVEL_OTHER);
 
 
-// Senta  mpView[ i ]->SetClearColour( tColour(0x60,0x70,0xA0,0x00) );
-//        mpView[ i ]->SetClearColour( tColour(0x60,0x70,0xA0,0xff) );
-        mpView[ i ]->SetClearColour( tColour(0x9A,0xC2,0xDE,0xff) );
-        mpView[ i ]->SetClearMask( PDDI_BUFFER_ALL );
+// Senta  mpView[ i ]->SetClearColour(tColour(0x60,0x70,0xA0,0x00));
+//        mpView[ i ]->SetClearColour(tColour(0x60,0x70,0xA0,0xff));
+        mpView[i]->SetClearColour(tColour(0x9A, 0xC2, 0xDE, 0xff));
+        mpView[i]->SetClearMask(PDDI_BUFFER_ALL);
 
-        mpView[ i ]->EnableFog(false);
+        mpView[i]->EnableFog(false);
     }
 
-    switch ( mNumViews )
-    {
-    case 1:
-        {
-            mpView[ 0 ]->SetWindow( 0.0f, 0.0f, 1.0f, 1.0f );
+    switch (mNumViews) {
+        case 1: {
+            mpView[0]->SetWindow(0.0f, 0.0f, 1.0f, 1.0f);
             break;
         }
-    case 2:
-        {
-            mpView[ 0 ]->SetWindow( 0.0f, 0.0f, 1.0f, 0.5f );
-            mpView[ 1 ]->SetWindow( 0.0f, 0.5f, 1.0f, 1.0f );
+        case 2: {
+            mpView[0]->SetWindow(0.0f, 0.0f, 1.0f, 0.5f);
+            mpView[1]->SetWindow(0.0f, 0.5f, 1.0f, 1.0f);
             break;
         }
-    default:
-        {
+        default: {
             rAssertMsg(false, "Only have support for 1 or 2 players right now!");
         }
-    }        
-MEMTRACK_POP_GROUP( "RenderLayer" );
+    }
+    MEMTRACK_POP_GROUP("RenderLayer");
 }
 
 //========================================================================
@@ -776,12 +737,10 @@ MEMTRACK_POP_GROUP( "RenderLayer" );
 // Constraints: None.
 //
 //========================================================================
-void RenderLayer::NullifyViewCam()
-{
-    for( unsigned int view = 0; view < mNumViews; view++ )
-    {
-        mpView[ view ]->Release();
-        mpView[ view ] = NULL;
+void RenderLayer::NullifyViewCam() {
+    for (unsigned int view = 0; view < mNumViews; view++) {
+        mpView[view]->Release();
+        mpView[view] = NULL;
     }
 }
 
@@ -798,10 +757,9 @@ void RenderLayer::NullifyViewCam()
 // Constraints: None.
 //
 //========================================================================
-void RenderLayer::SetUpGuts()
-{
-   rAssert( !mpGuts.IsSetUp() );
-   mpGuts.Allocate( msMaxGuts );
+void RenderLayer::SetUpGuts() {
+    rAssert(!mpGuts.IsSetUp());
+    mpGuts.Allocate(msMaxGuts);
 }
 
 //========================================================================
@@ -817,15 +775,12 @@ void RenderLayer::SetUpGuts()
 // Constraints: None.
 //
 //========================================================================
-void RenderLayer::NullifyGuts()
-{
-    if( mExportedState == msDead )
-    {
+void RenderLayer::NullifyGuts() {
+    if (mExportedState == msDead) {
         return;
     }
 
-    for(int i = mpGuts.mUseSize-1; i>-1; i-- )
-    {
+    for (int i = mpGuts.mUseSize - 1; i > -1; i--) {
         mpGuts[i]->Release();
     }
     //mpGuts.mUseSize = 0;
@@ -837,17 +792,14 @@ void RenderLayer::NullifyGuts()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( tDrawable* guts )
+// Parameters:  (tDrawable* guts)
 //
 // Return:      bool 
 //
 //=============================================================================
-bool RenderLayer::HasGuts( tDrawable* guts )
-{
-    for ( int i = mpGuts.mUseSize-1; i>-1; i-- )
-    {
-        if ( mpGuts[i] == guts )
-        {
+bool RenderLayer::HasGuts(tDrawable *guts) {
+    for (int i = mpGuts.mUseSize - 1; i > -1; i--) {
+        if (mpGuts[i] == guts) {
             return true;
         }
     }
@@ -859,12 +811,19 @@ bool RenderLayer::HasGuts( tDrawable* guts )
 //////////////////////////////////////////////////////////////////////////
 // Load Related interfaces
 //////////////////////////////////////////////////////////////////////////
-void RenderLayer::DoPreStaticLoad(){}
-void RenderLayer::DoPostStaticLoad(){}
-void RenderLayer::DumpAllDynaLoads(unsigned int count, SwapArray<tRefCounted*>& irEntityDeletionList ){}
-void RenderLayer::DumpDynaLoad(tName& irGiveItAFuckinName, SwapArray<tRefCounted*>& irEntityDeletionList){}
-bool RenderLayer::DoPreDynaLoad(tName& irGiveItAFuckinName){ return false; }
-void RenderLayer::DoPostDynaLoad(){}
+void RenderLayer::DoPreStaticLoad() {}
+
+void RenderLayer::DoPostStaticLoad() {}
+
+void
+RenderLayer::DumpAllDynaLoads(unsigned int count, SwapArray<tRefCounted *> &irEntityDeletionList) {}
+
+void RenderLayer::DumpDynaLoad(tName &irGiveItAFuckinName,
+                               SwapArray<tRefCounted *> &irEntityDeletionList) {}
+
+bool RenderLayer::DoPreDynaLoad(tName &irGiveItAFuckinName) { return false; }
+
+void RenderLayer::DoPostDynaLoad() {}
 
 //************************************************************************
 // Exported Class/State
@@ -882,9 +841,8 @@ void RenderLayer::DoPostDynaLoad(){}
 // Constraints: 
 //
 //========================================================================
-bool RenderLayer::IsDead()
-{
-    return( mExportedState == msDead );
+bool RenderLayer::IsDead() {
+    return (mExportedState == msDead);
 }
 
 //========================================================================
@@ -900,10 +858,10 @@ bool RenderLayer::IsDead()
 // Constraints: 
 //
 //========================================================================
-bool RenderLayer::IsFrozen()
-{
-    return( mExportedState == msFrozen );
+bool RenderLayer::IsFrozen() {
+    return (mExportedState == msFrozen);
 }
+
 //========================================================================
 // RenderLayer::IsDead
 //========================================================================
@@ -917,9 +875,8 @@ bool RenderLayer::IsFrozen()
 // Constraints: 
 //
 //========================================================================
-bool RenderLayer::IsRenderReady()
-{
-    return( mExportedState == msRenderReady );
+bool RenderLayer::IsRenderReady() {
+    return (mExportedState == msRenderReady);
 }
 
 
@@ -939,9 +896,8 @@ bool RenderLayer::IsRenderReady()
 // Constraints: None.
 //
 //========================================================================
-bool RenderLayer::IsGutsSetup()
-{
-    return( mpGuts.IsSetUp() );
+bool RenderLayer::IsGutsSetup() {
+    return (mpGuts.IsSetUp());
 }
 
 //========================================================================
@@ -957,9 +913,8 @@ bool RenderLayer::IsGutsSetup()
 // Constraints: None.
 //
 //========================================================================
-bool RenderLayer::IsViewCamSetup( unsigned int viewIndex )
-{
-    return( mpView[ viewIndex ] != NULL );
+bool RenderLayer::IsViewCamSetup(unsigned int viewIndex) {
+    return (mpView[viewIndex] != NULL);
 }
 
 //========================================================================
@@ -975,14 +930,12 @@ bool RenderLayer::IsViewCamSetup( unsigned int viewIndex )
 // Constraints: None.
 //
 //========================================================================
-void RenderLayer::OnRenderLayerInit()
-{
-    for( int view = 0; view < MAX_PLAYERS; view++ )
-    {
-        mpView[view]         = NULL;
+void RenderLayer::OnRenderLayerInit() {
+    for (int view = 0; view < MAX_PLAYERS; view++) {
+        mpView[view] = NULL;
     }
 
-    mAlpha         = 1.0f;
+    mAlpha = 1.0f;
 
     mExportedState = msDead;
 }

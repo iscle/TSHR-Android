@@ -9,20 +9,17 @@
 //
 //===========================================================================
 
-#include <ai\actor\stunnedbehaviour.h>
+#include <ai/actor/stunnedbehaviour.h>
 
-StunnedBehaviour::StunnedBehaviour( float stunTime )
-{
+StunnedBehaviour::StunnedBehaviour(float stunTime) {
     m_StunTime = stunTime / 1000.0f;
 }
 
-StunnedBehaviour::~StunnedBehaviour()
-{
-    
+StunnedBehaviour::~StunnedBehaviour() {
+
 }
 
 void
-StunnedBehaviour::Apply( Actor* actor, unsigned int timeInMS )
-{
+StunnedBehaviour::Apply(Actor *actor, unsigned int timeInMS) {
 
 }

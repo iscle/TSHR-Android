@@ -46,141 +46,157 @@ namespace Sound {
 // Prototypes
 //=============================================================================
 
-class daSoundRenderingManager;
-class daSoundDynaLoadManager;
+    class daSoundRenderingManager;
+
+    class daSoundDynaLoadManager;
 
 //=============================================================================
 // Class Declarations
 //=============================================================================
 
-static const unsigned int NUM_CHARACTER_NAMESPACES = 5;
+    static const unsigned int NUM_CHARACTER_NAMESPACES = 5;
 
 //
 // Language enumeration
 //
-enum DialogueLanguage
-{
-    DIALOGUE_LANGUAGE_ENGLISH,
-    DIALOGUE_LANGUAGE_FRENCH,
-    DIALOGUE_LANGUAGE_GERMAN,
-    DIALOGUE_LANGUAGE_SPANISH
-};
+    enum DialogueLanguage {
+        DIALOGUE_LANGUAGE_ENGLISH,
+        DIALOGUE_LANGUAGE_FRENCH,
+        DIALOGUE_LANGUAGE_GERMAN,
+        DIALOGUE_LANGUAGE_SPANISH
+    };
 
 //
 // The sound manger
 //
-class daSoundRenderingManager : public radRefCount
-{
-public:
-    IMPLEMENT_REFCOUNTED( "daSoundManager" );
+    class daSoundRenderingManager : public radRefCount {
+    public:
+        IMPLEMENT_REFCOUNTED("daSoundManager");
 
-    //
-    // Constructor and destructor
-    //
-    daSoundRenderingManager( );
-    virtual ~daSoundRenderingManager( );
+        //
+        // Constructor and destructor
+        //
+        daSoundRenderingManager();
 
-    //
-    // Get the singleton
-    //
-    static daSoundRenderingManager* GetInstance( void );
+        virtual ~daSoundRenderingManager();
 
-    //
-    // Terminate
-    //
-    void Terminate( void );
-    
-    void QueueCementFileRegistration();
-    void QueueRadscriptFileLoads();
-    void LoadTypeInfoFile( const char* filename, SoundFileHandler* fileHandler );
-    void LoadScriptFile( const char* filename, SoundFileHandler* fileHandler );
+        //
+        // Get the singleton
+        //
+        static daSoundRenderingManager *GetInstance(void);
 
-    void SetLanguage( Scrooby::XLLanguage language );
+        //
+        // Terminate
+        //
+        void Terminate(void);
 
-    void ProcessTypeInfo( void* pUserData );
-    void ProcessScript( void* pUserData );
+        void QueueCementFileRegistration();
 
-    //
-    // IDaSoundManager
-    //
-    void Initialize( void );
-    bool IsInitialized( void );
-    void Service( void );
-    void ServiceOncePerFrame( unsigned int elapsedTime );
-    void Render( void );
+        void QueueRadscriptFileLoads();
 
-    IRadNameSpace* GetSoundNamespace( void );
-    IRadNameSpace* GetTuningNamespace( void );
-    IRadNameSpace* GetCharacterNamespace( unsigned int index );
-    IRadSoundHalListener* GetTheListener( void );
+        void LoadTypeInfoFile(const char *filename, SoundFileHandler *fileHandler);
 
-    daSoundDynaLoadManager*         GetDynaLoadManager( void );
-    IDaSoundTuner*                  GetTuner( void );
-    daSoundResourceManager*         GetResourceManager( void );
-    daSoundPlayerManager*           GetPlayerManager( void );
+        void LoadScriptFile(const char *filename, SoundFileHandler *fileHandler);
 
-protected:
+        void SetLanguage(Scrooby::XLLanguage language);
 
-    static void TypeInfoComplete( void* pUserData );
-    static void ScriptComplete( void* pUserData );
-    static void SoundObjectCreated( const char* objName, IRefCount* obj );
+        void ProcessTypeInfo(void *pUserData);
 
-private:
+        void ProcessScript(void *pUserData);
 
-    static void FilePerformanceEvent( bool start, const char * pFile, unsigned int bytes );
+        //
+        // IDaSoundManager
+        //
+        void Initialize(void);
 
-    void registerDialogueCementFiles( const char* cementFilename );
-    
-    // The singleton instance
-    static daSoundRenderingManager*              s_Singleton;
+        bool IsInitialized(void);
 
-    IRadScript*                         m_pScript;
-    bool                                m_IsInitialized;
+        void Service(void);
 
-    //
-    // Our namespaces
-    //
-    IRadNameSpace*                      m_pResourceNameSpace;
-    IRadNameSpace*                      m_pTuningNameSpace;
+        void ServiceOncePerFrame(unsigned int elapsedTime);
 
-    IRadNameSpace*                      m_pCharacterNameSpace[NUM_CHARACTER_NAMESPACES];
+        void Render(void);
 
-    //
-    // Store the various related systems
-    //
-    daSoundDynaLoadManager*             m_pDynaLoadManager;
-    IDaSoundTuner*                      m_pTuner;
-    daSoundResourceManager*             m_pResourceManager;
-    daSoundPlayerManager*               m_pPlayerManager;
+        IRadNameSpace *GetSoundNamespace(void);
 
-    //
-    // Loading system callback
-    //
-    SoundFileHandler* m_soundFileHandler;
-    
-    //
-    // Cement file handles, in case we want to release them
-    //
+        IRadNameSpace *GetTuningNamespace(void);
+
+        IRadNameSpace *GetCharacterNamespace(unsigned int index);
+
+        IRadSoundHalListener *GetTheListener(void);
+
+        daSoundDynaLoadManager *GetDynaLoadManager(void);
+
+        IDaSoundTuner *GetTuner(void);
+
+        daSoundResourceManager *GetResourceManager(void);
+
+        daSoundPlayerManager *GetPlayerManager(void);
+
+    protected:
+
+        static void TypeInfoComplete(void *pUserData);
+
+        static void ScriptComplete(void *pUserData);
+
+        static void SoundObjectCreated(const char *objName, IRefCount *obj);
+
+    private:
+
+        static void FilePerformanceEvent(bool start, const char *pFile, unsigned int bytes);
+
+        void registerDialogueCementFiles(const char *cementFilename);
+
+        // The singleton instance
+        static daSoundRenderingManager *s_Singleton;
+
+        IRadScript *m_pScript;
+        bool m_IsInitialized;
+
+        //
+        // Our namespaces
+        //
+        IRadNameSpace *m_pResourceNameSpace;
+        IRadNameSpace *m_pTuningNameSpace;
+
+        IRadNameSpace *m_pCharacterNameSpace[NUM_CHARACTER_NAMESPACES];
+
+        //
+        // Store the various related systems
+        //
+        daSoundDynaLoadManager *m_pDynaLoadManager;
+        IDaSoundTuner *m_pTuner;
+        daSoundResourceManager *m_pResourceManager;
+        daSoundPlayerManager *m_pPlayerManager;
+
+        //
+        // Loading system callback
+        //
+        SoundFileHandler *m_soundFileHandler;
+
+        //
+        // Cement file handles, in case we want to release them
+        //
 #ifdef RAD_XBOX
-    static const unsigned int NUM_SOUND_CEMENT_FILES = 12;
+        static const unsigned int NUM_SOUND_CEMENT_FILES = 12;
 #else
-    static const unsigned int NUM_SOUND_CEMENT_FILES = 7;
+        static const unsigned int NUM_SOUND_CEMENT_FILES = 7;
 #endif
-    unsigned int m_soundCementFileHandles[NUM_SOUND_CEMENT_FILES];
+        unsigned int m_soundCementFileHandles[NUM_SOUND_CEMENT_FILES];
 
-    //
-    // Script loading count, so we can tell which namespace to put stuff in
-    //
-    unsigned int m_scriptLoadCount;
-    
-    unsigned int m_LastPerformanceEventTime;
+        //
+        // Script loading count, so we can tell which namespace to put stuff in
+        //
+        unsigned int m_scriptLoadCount;
 
-    //
-    // Language
-    //
-    DialogueLanguage m_currentLanguage;
-    bool m_languageSelected;
-};
+        unsigned int m_LastPerformanceEventTime;
+
+        //
+        // Language
+        //
+        DialogueLanguage m_currentLanguage;
+        bool m_languageSelected;
+    };
 
 } // Sound Namespace
 

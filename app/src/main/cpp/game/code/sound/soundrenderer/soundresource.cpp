@@ -48,41 +48,36 @@
 //-----------------------------------------------------------------------------
 
 
-inline unsigned char vol_f_to_c( float f )
-{
-    return (unsigned char) radSoundFloatToUInt( f * 255.0f );
+inline unsigned char vol_f_to_c(float f) {
+    return (unsigned char) radSoundFloatToUInt(f * 255.0f);
 }
 
-inline float vol_c_to_f( unsigned char c )
-{
-    return radSoundUIntToFloat( (unsigned int) c ) / 255.0f;
+inline float vol_c_to_f(unsigned char c) {
+    return radSoundUIntToFloat((unsigned int) c) / 255.0f;
 }
 
-inline unsigned short pitch_f_to_s( float f )
-{
-    return (unsigned short) radSoundFloatToUInt( f * 6553.0f );
+inline unsigned short pitch_f_to_s(float f) {
+    return (unsigned short) radSoundFloatToUInt(f * 6553.0f);
 }
 
-inline float pitch_s_to_f( unsigned short c )
-{
-    return radSoundUIntToFloat( (unsigned short) c ) / 6553.0f;
+inline float pitch_s_to_f(unsigned short c) {
+    return radSoundUIntToFloat((unsigned short) c) / 6553.0f;
 }
 
 const int FLAG_LOOPING = 1 << 0;
 const int FLAG_STREAMING = 1 << 1;
 
-daSoundResourceData::daSoundResourceData( )
-{
+daSoundResourceData::daSoundResourceData() {
     m_NumFiles = 0;
-    
-    m_MinTrim = vol_f_to_c( 1.0f );
-    m_MaxTrim = vol_f_to_c( 1.0f );
-    m_MinPitch = pitch_f_to_s( 1.0f );
-    m_MaxPitch = pitch_f_to_s( 1.0f );
+
+    m_MinTrim = vol_f_to_c(1.0f);
+    m_MaxTrim = vol_f_to_c(1.0f);
+    m_MinPitch = pitch_f_to_s(1.0f);
+    m_MaxPitch = pitch_f_to_s(1.0f);
 
     m_SoundGroup = Sound::MASTER;
     m_CaptureCount = 0;
-    
+
     m_Flags = 0;
 
     m_pFileIds = 0;
@@ -95,8 +90,7 @@ daSoundResourceData::daSoundResourceData( )
 //
 //-----------------------------------------------------------------------------
 
-daSoundResourceData::~daSoundResourceData( )
-{
+daSoundResourceData::~daSoundResourceData() {
 
 }
 
@@ -113,25 +107,24 @@ daSoundResourceData::~daSoundResourceData( )
 //-----------------------------------------------------------------------------
 
 void daSoundResourceData::AddFilename
-(
-    const char* newFileName,
-    float trim
-)
-{
-    rAssert( false == Sound::daSoundResourceManager::GetInstance( )->GetResourceLockdown( ) );
+        (
+                const char *newFileName,
+                float trim
+        ) {
+    rAssert(false == Sound::daSoundResourceManager::GetInstance()->GetResourceLockdown());
 
     // very lazy indeed.
-    
-    if ( m_pFileIds == 0 )
-    {    
-        m_pFileIds = (FileId*) radMemoryAlloc( GMA_DEFAULT, sizeof( FileId ) * DASound_MaxNumSoundResourceFiles );
+
+    if (m_pFileIds == 0) {
+        m_pFileIds = (FileId *) radMemoryAlloc(GMA_DEFAULT,
+                                               sizeof(FileId) * DASound_MaxNumSoundResourceFiles);
     }
 
-    rAssert( Sound::daSoundResourceManager::GetInstance( ) != NULL );
-    rAssert( m_NumFiles < DASound_MaxNumSoundResourceFiles );
-    
-    m_pFileIds[ m_NumFiles ].m_pName = (char*) radMemoryAlloc( GMA_DEFAULT, strlen( newFileName ) + 1 );
-    strcpy( m_pFileIds[ m_NumFiles ].m_pName, newFileName );
+    rAssert(Sound::daSoundResourceManager::GetInstance() != NULL);
+    rAssert(m_NumFiles < DASound_MaxNumSoundResourceFiles);
+
+    m_pFileIds[m_NumFiles].m_pName = (char *) radMemoryAlloc(GMA_DEFAULT, strlen(newFileName) + 1);
+    strcpy(m_pFileIds[m_NumFiles].m_pName, newFileName);
     m_NumFiles++;
 }
 
@@ -143,18 +136,16 @@ void daSoundResourceData::AddFilename
 //
 //-----------------------------------------------------------------------------
 
-void daSoundResourceData::GetFileNameAt( unsigned int index, char* buffer, unsigned int max )
-{
-    rTuneAssert( false == Sound::daSoundResourceManager::GetInstance( )->GetResourceLockdown( ) );
-    rTuneAssert( index < m_NumFiles );
-    
-    strcpy( buffer, m_pFileIds[ index ].m_pName );
+void daSoundResourceData::GetFileNameAt(unsigned int index, char *buffer, unsigned int max) {
+    rTuneAssert(false == Sound::daSoundResourceManager::GetInstance()->GetResourceLockdown());
+    rTuneAssert(index < m_NumFiles);
+
+    strcpy(buffer, m_pFileIds[index].m_pName);
 }
 
-void daSoundResourceData::GetFileKeyAt( unsigned int index, char* buffer, unsigned int max )
-{
-    rTuneAssert( index < m_NumFiles );
-    KeyToStringKey32( buffer, m_pFileIds[ index ].m_Key );
+void daSoundResourceData::GetFileKeyAt(unsigned int index, char *buffer, unsigned int max) {
+    rTuneAssert(index < m_NumFiles);
+    KeyToStringKey32(buffer, m_pFileIds[index].m_Key);
 }
 
 //=============================================================================
@@ -170,13 +161,12 @@ void daSoundResourceData::GetFileKeyAt( unsigned int index, char* buffer, unsign
 //-----------------------------------------------------------------------------
 
 void daSoundResourceData::SetPitchRange
-(
-    Sound::daPitchValue minPitch,
-    Sound::daPitchValue maxPitch
-)
-{
-    m_MinPitch = pitch_f_to_s( minPitch );
-    m_MaxPitch = pitch_f_to_s( maxPitch );
+        (
+                Sound::daPitchValue minPitch,
+                Sound::daPitchValue maxPitch
+        ) {
+    m_MinPitch = pitch_f_to_s(minPitch);
+    m_MaxPitch = pitch_f_to_s(maxPitch);
 }
 
 //=============================================================================
@@ -184,7 +174,7 @@ void daSoundResourceData::SetPitchRange
 //=============================================================================
 // Description: Get the pitch range for this resource
 //
-// Parameters:  *MinPitch - (out )the minimum pitch value
+// Parameters:  *MinPitch - (out)the minimum pitch value
 //              *MaxPitch - (out) the maximum pitch value
 //
 // Returns:     n/a
@@ -192,18 +182,15 @@ void daSoundResourceData::SetPitchRange
 //-----------------------------------------------------------------------------
 
 void daSoundResourceData::GetPitchRange
-(
-    Sound::daPitchValue* pMinPitch,
-    Sound::daPitchValue* pMaxPitch
-)
-{
-    if( pMinPitch != NULL )
-    {
-        *pMinPitch = pitch_s_to_f( m_MinPitch );
+        (
+                Sound::daPitchValue *pMinPitch,
+                Sound::daPitchValue *pMaxPitch
+        ) {
+    if (pMinPitch != NULL) {
+        *pMinPitch = pitch_s_to_f(m_MinPitch);
     }
-    if( pMaxPitch != NULL )
-    {
-        *pMaxPitch = pitch_s_to_f( m_MaxPitch );
+    if (pMaxPitch != NULL) {
+        *pMaxPitch = pitch_s_to_f(m_MaxPitch);
     }
 }
 
@@ -220,13 +207,12 @@ void daSoundResourceData::GetPitchRange
 //-----------------------------------------------------------------------------
 
 void daSoundResourceData::SetTrimRange
-(
-    float minTrim,
-    float maxTrim
-)
-{
-    m_MinTrim = vol_f_to_c( minTrim );
-    m_MaxTrim = vol_f_to_c( maxTrim );
+        (
+                float minTrim,
+                float maxTrim
+        ) {
+    m_MinTrim = vol_f_to_c(minTrim);
+    m_MaxTrim = vol_f_to_c(maxTrim);
 }
 
 //=============================================================================
@@ -241,12 +227,11 @@ void daSoundResourceData::SetTrimRange
 //-----------------------------------------------------------------------------
 
 void daSoundResourceData::SetTrim
-(
-    float trim
-)
-{
-    m_MinTrim = vol_f_to_c( trim );
-    m_MaxTrim = vol_f_to_c( trim );
+        (
+                float trim
+        ) {
+    m_MinTrim = vol_f_to_c(trim);
+    m_MaxTrim = vol_f_to_c(trim);
 }
 
 //=============================================================================
@@ -254,7 +239,7 @@ void daSoundResourceData::SetTrim
 //=============================================================================
 // Description: Get the trim range for this resource
 //
-// Parameters:  *MinTrim - (out )the minimum trim value
+// Parameters:  *MinTrim - (out)the minimum trim value
 //              *MaxTrim - (out) the maximum trim value
 //
 // Returns:     n/a
@@ -262,18 +247,15 @@ void daSoundResourceData::SetTrim
 //-----------------------------------------------------------------------------
 
 void daSoundResourceData::GetTrimRange
-(
-    float* pMinTrim,
-    float* pMaxTrim
-)
-{
-    if( pMinTrim != NULL )
-    {
-        *pMinTrim = vol_c_to_f( m_MinTrim );
+        (
+                float *pMinTrim,
+                float *pMaxTrim
+        ) {
+    if (pMinTrim != NULL) {
+        *pMinTrim = vol_c_to_f(m_MinTrim);
     }
-    if( pMaxTrim != NULL )
-    {
-        *pMaxTrim = vol_c_to_f( m_MaxTrim );
+    if (pMaxTrim != NULL) {
+        *pMaxTrim = vol_c_to_f(m_MaxTrim);
     }
 }
 
@@ -288,24 +270,19 @@ void daSoundResourceData::GetTrimRange
 //
 //-----------------------------------------------------------------------------
 
-void daSoundResourceData::SetStreaming( bool streaming )
-{
-    if( streaming )
-    {
+void daSoundResourceData::SetStreaming(bool streaming) {
+    if (streaming) {
         m_Flags |= FLAG_STREAMING;
-    }
-    else
-    {
+    } else {
         m_Flags &= ~FLAG_STREAMING;
     }
-    
-    if( IsCaptured( ) )
-    {
+
+    if (IsCaptured()) {
         rReleaseString
-        (
-            "Streaming will not immediately "
-            "affect a captured resource\n"
-        );
+                (
+                        "Streaming will not immediately "
+                        "affect a captured resource\n"
+                );
     }
 }
 
@@ -320,9 +297,8 @@ void daSoundResourceData::SetStreaming( bool streaming )
 //
 //-----------------------------------------------------------------------------
 
-bool daSoundResourceData::GetStreaming( void )
-{
-    return ( m_Flags & FLAG_STREAMING ) != 0;
+bool daSoundResourceData::GetStreaming(void) {
+    return (m_Flags & FLAG_STREAMING) != 0;
 }
 
 //=============================================================================
@@ -336,24 +312,19 @@ bool daSoundResourceData::GetStreaming( void )
 //
 //-----------------------------------------------------------------------------
 
-void daSoundResourceData::SetLooping( bool looping )
-{
-    if( looping )
-    {
+void daSoundResourceData::SetLooping(bool looping) {
+    if (looping) {
         m_Flags |= FLAG_LOOPING;
-    }
-    else
-    {
+    } else {
         m_Flags &= ~FLAG_LOOPING;
     }
-    
-    if( IsCaptured( ) )
-    {
+
+    if (IsCaptured()) {
         rReleaseString
-        (
-            "Looping will not immediately "
-            "affect a captured resource\n"
-        );
+                (
+                        "Looping will not immediately "
+                        "affect a captured resource\n"
+                );
     }
 }
 
@@ -368,9 +339,8 @@ void daSoundResourceData::SetLooping( bool looping )
 //
 //-----------------------------------------------------------------------------
 
-bool daSoundResourceData::GetLooping( void )
-{
-    return ( m_Flags & FLAG_LOOPING ) != 0;
+bool daSoundResourceData::GetLooping(void) {
+    return (m_Flags & FLAG_LOOPING) != 0;
 }
 
 //=============================================================================
@@ -385,18 +355,14 @@ bool daSoundResourceData::GetLooping( void )
 //-----------------------------------------------------------------------------
 
 IDaSoundResource::Type daSoundResourceData::GetType
-(
-    void
-)
-{
+        (
+                void
+        ) {
     IDaSoundResource::Type resourceType = UNKNOWN;
 
-    if( GetStreaming( ) )
-    {
+    if (GetStreaming()) {
         resourceType = STREAM;
-    }
-    else
-    {
+    } else {
         resourceType = CLIP;
     }
 
@@ -413,10 +379,9 @@ IDaSoundResource::Type daSoundResourceData::GetType
 //-----------------------------------------------------------------------------
 
 void daSoundResourceData::SetSoundGroup
-(
-    Sound::daSoundGroup soundGroup
-)
-{
+        (
+                Sound::daSoundGroup soundGroup
+        ) {
     m_SoundGroup = soundGroup;
 }
 
@@ -431,8 +396,7 @@ void daSoundResourceData::SetSoundGroup
 //
 //-----------------------------------------------------------------------------
 
-Sound::daSoundGroup daSoundResourceData::GetSoundGroup( void )
-{
+Sound::daSoundGroup daSoundResourceData::GetSoundGroup(void) {
     return static_cast<Sound::daSoundGroup>(m_SoundGroup);
 }
 
@@ -447,16 +411,14 @@ Sound::daSoundGroup daSoundResourceData::GetSoundGroup( void )
 //
 //-----------------------------------------------------------------------------
 
-void daSoundResourceData::CaptureResource( void )
-{
-    rAssert( Sound::daSoundResourceManager::GetInstance( ) != NULL );
-    bool wasCaptured = IsCaptured( );
+void daSoundResourceData::CaptureResource(void) {
+    rAssert(Sound::daSoundResourceManager::GetInstance() != NULL);
+    bool wasCaptured = IsCaptured();
     ++m_CaptureCount;
-    if( !wasCaptured )
-    {
+    if (!wasCaptured) {
         // Inform the resource manager
-        Sound::daSoundResourceManager::GetInstance( )->
-            AllocateResource( this );
+        Sound::daSoundResourceManager::GetInstance()->
+                AllocateResource(this);
     }
 }
 
@@ -471,9 +433,8 @@ void daSoundResourceData::CaptureResource( void )
 //
 //-----------------------------------------------------------------------------
 
-bool daSoundResourceData::IsCaptured( void )
-{
-    return( m_CaptureCount > 0 );
+bool daSoundResourceData::IsCaptured(void) {
+    return (m_CaptureCount > 0);
 }
 
 //=============================================================================
@@ -487,17 +448,15 @@ bool daSoundResourceData::IsCaptured( void )
 //
 //-----------------------------------------------------------------------------
 
-void daSoundResourceData::ReleaseResource( void )
-{
-    rAssertMsg( m_CaptureCount > 0, "Cannot release uncaptured resource" );
-    rAssert( Sound::daSoundResourceManager::GetInstance( ) != NULL );
+void daSoundResourceData::ReleaseResource(void) {
+    rAssertMsg(m_CaptureCount > 0, "Cannot release uncaptured resource");
+    rAssert(Sound::daSoundResourceManager::GetInstance() != NULL);
 
     --m_CaptureCount;
-    if( m_CaptureCount == 0 )
-    {
+    if (m_CaptureCount == 0) {
         // Inform the resource manager
-        Sound::daSoundResourceManager::GetInstance( )->
-            DeallocateResource( this );
+        Sound::daSoundResourceManager::GetInstance()->
+                DeallocateResource(this);
     }
 }
 
@@ -512,28 +471,23 @@ void daSoundResourceData::ReleaseResource( void )
 //
 //-----------------------------------------------------------------------------
 
-void daSoundResourceData::Play( void )
-{
-    if( Sound::daSoundRenderingManagerGet( )->GetResourceManager( )->GetResourceLockdown( ) )
-    {
+void daSoundResourceData::Play(void) {
+    if (Sound::daSoundRenderingManagerGet()->GetResourceManager()->GetResourceLockdown()) {
         // Play it
         // DO NOT USE THIS COMMAND IF YOU ARE NOT IN RADTUNER / SOUNDTUNER / etc.
-        Sound::daSoundClipStreamPlayer* pPlayer = NULL;
-        Sound::daSoundRenderingManagerGet( )->GetPlayerManager( )->CaptureFreePlayer
-        (
-            &pPlayer,
-            this,
-            false );
-            
-        if( pPlayer != NULL )
-        {
-            pPlayer->Play(  );
+        Sound::daSoundClipStreamPlayer *pPlayer = NULL;
+        Sound::daSoundRenderingManagerGet()->GetPlayerManager()->CaptureFreePlayer
+                (
+                        &pPlayer,
+                        this,
+                        false);
+
+        if (pPlayer != NULL) {
+            pPlayer->Play();
         }
-    }
-    else
-    {
+    } else {
         // You shouldn't have left play commands in the composer script
-        rDebugString( "Can't play sounds before resources are locked down.\n" );
+        rDebugString("Can't play sounds before resources are locked down.\n");
     }
 }
 
@@ -541,14 +495,12 @@ void daSoundResourceData::Play( void )
 // Public functions
 //=============================================================================
 
-void daSoundResourceData::AddRef( void )
-{
-    //Sound::daSoundResourceManager::GetInstance( )->AddRef( );
+void daSoundResourceData::AddRef(void) {
+    //Sound::daSoundResourceManager::GetInstance()->AddRef();
 }
 
-void daSoundResourceData::Release( void )
-{
-    //Sound::daSoundResourceManager::GetInstance( )->Release( );
+void daSoundResourceData::Release(void) {
+    //Sound::daSoundResourceManager::GetInstance()->Release();
 }
 
 

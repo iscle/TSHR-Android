@@ -60,62 +60,59 @@ const float BART_ICON_CORRECTION_SCALE = 1.0f;
 //
 //===========================================================================
 CGuiScreenTutorial::CGuiScreenTutorial
-(
-    Scrooby::Screen* pScreen,
-    CGuiEntity* pParent
-)
-:   CGuiScreen( pScreen, pParent, GUI_SCREEN_ID_TUTORIAL, SCREEN_FX_ZOOM ),
-    m_tutorialMessage( NULL ),
-    m_bartsHead( NULL ),
-    m_disableTutorial( NULL ),
-    m_elapsedDialogTime( 0 )
-{
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        : CGuiScreen(pScreen, pParent, GUI_SCREEN_ID_TUTORIAL, SCREEN_FX_ZOOM),
+          m_tutorialMessage(NULL),
+          m_bartsHead(NULL),
+          m_disableTutorial(NULL),
+          m_elapsedDialogTime(0) {
     // Retrieve the Scrooby drawing elements.
     //
-    Scrooby::Page* pPage = m_pScroobyScreen->GetPage( "Tutorial" );
-    rAssert( pPage != NULL );
+    Scrooby::Page *pPage = m_pScroobyScreen->GetPage("Tutorial");
+    rAssert(pPage != NULL);
 
-    Scrooby::Group* iconAndMessage = pPage->GetGroup( "IconAndMessage" );
-    rAssert( iconAndMessage != NULL );
+    Scrooby::Group *iconAndMessage = pPage->GetGroup("IconAndMessage");
+    rAssert(iconAndMessage != NULL);
 
-    m_bartsHead = iconAndMessage->GetSprite( "BartIcon" );
+    m_bartsHead = iconAndMessage->GetSprite("BartIcon");
 
-    m_tutorialMessage = iconAndMessage->GetSprite( "TutorialMessage" );
-    rAssert( m_tutorialMessage != NULL );
-    m_tutorialMessage->SetSpriteMode( Scrooby::SPRITE_BITMAP_TEXT );
-    m_tutorialMessage->CreateBitmapTextBuffer( MAX_TUTORIAL_MESSAGE_LENGTH );
+    m_tutorialMessage = iconAndMessage->GetSprite("TutorialMessage");
+    rAssert(m_tutorialMessage != NULL);
+    m_tutorialMessage->SetSpriteMode(Scrooby::SPRITE_BITMAP_TEXT);
+    m_tutorialMessage->CreateBitmapTextBuffer(MAX_TUTORIAL_MESSAGE_LENGTH);
 #ifdef RAD_WIN32
-    m_tutorialMessage->ScaleAboutCenter( 0.25f );
+    m_tutorialMessage->ScaleAboutCenter(0.25f);
 #else
-    m_tutorialMessage->ScaleAboutCenter( 0.5f );
+    m_tutorialMessage->ScaleAboutCenter(0.5f);
 #endif
 
 #ifdef PAL
     iconAndMessage->ResetTransformation();
-    iconAndMessage->Translate( 0, 15 );
+    iconAndMessage->Translate(0, 15);
 #endif // PAL
 
-    m_disableTutorial = pPage->GetGroup( "DisableTutorial" );
-    rAssert( m_disableTutorial != NULL );
+    m_disableTutorial = pPage->GetGroup("DisableTutorial");
+    rAssert(m_disableTutorial != NULL);
 
-    Scrooby::Text* disableTutorial = m_disableTutorial->GetText( "DisableTutorial" );
-    if( disableTutorial != NULL )
-    {
-        disableTutorial->SetDisplayOutline( true );
-        disableTutorial->SetTextMode( Scrooby::TEXT_WRAP );
+    Scrooby::Text *disableTutorial = m_disableTutorial->GetText("DisableTutorial");
+    if (disableTutorial != NULL) {
+        disableTutorial->SetDisplayOutline(true);
+        disableTutorial->SetTextMode(Scrooby::TEXT_WRAP);
     }
 
-    Scrooby::Page* pPageSmallBoard = m_pScroobyScreen->GetPage( "SmallBoard" );
-    if( pPageSmallBoard != NULL )
-    {
-        this->AutoScaleFrame( pPageSmallBoard );
+    Scrooby::Page *pPageSmallBoard = m_pScroobyScreen->GetPage("SmallBoard");
+    if (pPageSmallBoard != NULL) {
+        this->AutoScaleFrame(pPageSmallBoard);
 
 #ifdef PAL
-        Scrooby::Group* frame = pPageSmallBoard->GetGroup( "Frame" );
-        if( frame != NULL )
+        Scrooby::Group* frame = pPageSmallBoard->GetGroup("Frame");
+        if(frame != NULL)
         {
             frame->ResetTransformation();
-            frame->ScaleAboutCenter( 1.0f, 1.2f, 1.0f );
+            frame->ScaleAboutCenter(1.0f, 1.2f, 1.0f);
         }
 #endif // PAL
     }
@@ -123,11 +120,11 @@ CGuiScreenTutorial::CGuiScreenTutorial
 /*
     // get continue icon button
     //
-    pPage = m_pScroobyScreen->GetPage( "Continue" );
-    if( pPage != NULL )
+    pPage = m_pScroobyScreen->GetPage("Continue");
+    if(pPage != NULL)
     {
-        m_buttonIcons[ BUTTON_ICON_ACCEPT ] = pPage->GetGroup( "Continue" );
-        rAssert( m_buttonIcons[ BUTTON_ICON_ACCEPT ] != NULL );
+        m_buttonIcons[ BUTTON_ICON_ACCEPT ] = pPage->GetGroup("Continue");
+        rAssert(m_buttonIcons[ BUTTON_ICON_ACCEPT ] != NULL);
     }
 */
 }
@@ -144,8 +141,7 @@ CGuiScreenTutorial::CGuiScreenTutorial
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenTutorial::~CGuiScreenTutorial()
-{
+CGuiScreenTutorial::~CGuiScreenTutorial() {
 }
 
 //===========================================================================
@@ -160,114 +156,103 @@ CGuiScreenTutorial::~CGuiScreenTutorial()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenTutorial::HandleMessage(	eGuiMessage message,
-                                        unsigned int param1,
-                                        unsigned int param2 )
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        switch( message )
-        {
-            case GUI_MSG_UPDATE:
-            {
+void CGuiScreenTutorial::HandleMessage(eGuiMessage message,
+                                       unsigned int param1,
+                                       unsigned int param2) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        switch (message) {
+            case GUI_MSG_UPDATE: {
                 // pulse bart's head
                 //
                 m_elapsedDialogTime += param1;
 
-                float currentScale = GuiSFX::Pulse( (float)m_elapsedDialogTime,
-                                                    600.0f,
-                                                    BART_ICON_CORRECTION_SCALE,
-                                                    0.1f );
+                float currentScale = GuiSFX::Pulse((float) m_elapsedDialogTime,
+                                                   600.0f,
+                                                   BART_ICON_CORRECTION_SCALE,
+                                                   0.1f);
 
-                rAssert( m_bartsHead != NULL );
+                rAssert(m_bartsHead != NULL);
                 m_bartsHead->ResetTransformation();
-                m_bartsHead->ScaleAboutCenter( currentScale );
+                m_bartsHead->ScaleAboutCenter(currentScale);
 
 #ifdef WAIT_UNTIL_DIALOG_DONE
 /*
     #ifndef FINAL
-                if( m_elapsedDialogTime > MAX_TUTORIAL_DIALOG_TIME )
+                if(m_elapsedDialogTime> MAX_TUTORIAL_DIALOG_TIME)
                 {
-                    this->SetButtonVisible( BUTTON_ICON_ACCEPT, true );
+                    this->SetButtonVisible(BUTTON_ICON_ACCEPT, true);
 
-                    rAssert( m_disableTutorial != NULL );
-                    m_disableTutorial->SetVisible( true );
+                    rAssert(m_disableTutorial != NULL);
+                    m_disableTutorial->SetVisible(true);
                 }
                 else
     #endif // !FINAL
 */
                 {
-                    this->SetButtonVisible( BUTTON_ICON_ACCEPT, !GetTutorialManager()->IsDialogPlaying() );
+                    this->SetButtonVisible(BUTTON_ICON_ACCEPT,
+                                           !GetTutorialManager()->IsDialogPlaying());
 
-//                    rAssert( m_disableTutorial != NULL );
-//                    m_disableTutorial->SetVisible( !GetTutorialManager()->IsDialogPlaying() );
+//                    rAssert(m_disableTutorial != NULL);
+//                    m_disableTutorial->SetVisible(!GetTutorialManager()->IsDialogPlaying());
                 }
 #endif // WAIT_UNTIL_DIALOG_DONE
 
                 break;
             }
-            case GUI_MSG_CONTROLLER_AUX_X:
-            {
-                rAssert( m_disableTutorial != NULL );
-                if( m_disableTutorial->IsVisible() )
-                {
+            case GUI_MSG_CONTROLLER_AUX_X: {
+                rAssert(m_disableTutorial != NULL);
+                if (m_disableTutorial->IsVisible()) {
                     // disable tutorial events
                     //
-                    GetTutorialManager()->EnableTutorialEvents( false );
+                    GetTutorialManager()->EnableTutorialEvents(false);
 
-                    GetEventManager()->TriggerEvent( EVENT_FE_MENU_BACK ); // sound effect
+                    GetEventManager()->TriggerEvent(EVENT_FE_MENU_BACK); // sound effect
 
-                    if( GetTutorialManager()->IsDialogPlaying() &&
-                        !CommandLineOptions::Get( CLO_MUTE ) )
-                    {
+                    if (GetTutorialManager()->IsDialogPlaying() &&
+                        !CommandLineOptions::Get(CLO_MUTE)) {
                         // if dialog is still playing, stop it!
                         // (unless all sounds are muted)
                         //
-                        GetEventManager()->TriggerEvent( EVENT_CONVERSATION_SKIP );
+                        GetEventManager()->TriggerEvent(EVENT_CONVERSATION_SKIP);
                     }
 
-                    m_pParent->HandleMessage( GUI_MSG_RESUME_INGAME );
+                    m_pParent->HandleMessage(GUI_MSG_RESUME_INGAME);
                 }
 
                 break;
             }
-            case GUI_MSG_CONTROLLER_SELECT:
-            {
+            case GUI_MSG_CONTROLLER_SELECT: {
 #ifdef WAIT_UNTIL_DIALOG_DONE
-                if( !this->IsButtonVisible( BUTTON_ICON_ACCEPT ) )
-                {
+                if (!this->IsButtonVisible(BUTTON_ICON_ACCEPT)) {
                     // ignore input
                     //
                     return;
                 }
 #endif
-                GetEventManager()->TriggerEvent( EVENT_FE_MENU_SELECT ); // sound effect
+                GetEventManager()->TriggerEvent(EVENT_FE_MENU_SELECT); // sound effect
 
-                m_pParent->HandleMessage( GUI_MSG_RESUME_INGAME );
+                m_pParent->HandleMessage(GUI_MSG_RESUME_INGAME);
 
                 break;
             }
-            case GUI_MSG_CONTROLLER_START:
-            {
+            case GUI_MSG_CONTROLLER_START: {
                 // only pause if dialog is still playing
                 //
-                if( GetTutorialManager()->IsDialogPlaying() )
-                {
-                    m_pParent->HandleMessage( GUI_MSG_PAUSE_INGAME );
+                if (GetTutorialManager()->IsDialogPlaying()) {
+                    m_pParent->HandleMessage(GUI_MSG_PAUSE_INGAME);
                 }
 
                 break;
             }
-            default:
-            {
+            default: {
                 break;
             }
         }
     }
 
     // Propogate the message up the hierarchy.
-	//
-	CGuiScreen::HandleMessage( message, param1, param2 );
+    //
+    CGuiScreen::HandleMessage(message, param1, param2);
 }
 
 //===========================================================================
@@ -282,45 +267,43 @@ void CGuiScreenTutorial::HandleMessage(	eGuiMessage message,
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenTutorial::InitIntro()
-{
+void CGuiScreenTutorial::InitIntro() {
     int index = GetTutorialManager()->GetCurrentEventID();
 
-    char textBibleID[ 32 ];
-    sprintf( textBibleID, "TUTORIAL_%03d", index );
-    P3D_UNICODE* text = GetTextBibleString( textBibleID );
+    char textBibleID[32];
+    sprintf(textBibleID, "TUTORIAL_%03d", index);
+    P3D_UNICODE *text = GetTextBibleString(textBibleID);
 
     // check for platform-specific text; if found, override default text
     //
 #ifdef RAD_GAMECUBE
-    strcat( textBibleID, "_(GC)" );
+    strcat(textBibleID, "_(GC)");
 #endif
 #ifdef RAD_PS2
-    strcat( textBibleID, "_(PS2)" );
+    strcat(textBibleID, "_(PS2)");
 #endif
 #ifdef RAD_XBOX
-    strcat( textBibleID, "_(XBOX)" );
+    strcat(textBibleID, "_(XBOX)");
 #endif
-    P3D_UNICODE* platformText = GetTextBibleString( textBibleID );
-    if( platformText != NULL )
-    {
+    P3D_UNICODE *platformText = GetTextBibleString(textBibleID);
+    if (platformText != NULL) {
         text = platformText;
 
-        rTunePrintf( "Replacing default tutorial text with entry: %s\n", textBibleID );
+        rTunePrintf("Replacing default tutorial text with entry: %s\n", textBibleID);
     }
 
-    rAssert( m_tutorialMessage != NULL );
-    m_tutorialMessage->SetBitmapText( text );
+    rAssert(m_tutorialMessage != NULL);
+    m_tutorialMessage->SetBitmapText(text);
 
 #ifdef WAIT_UNTIL_DIALOG_DONE
-    this->SetButtonVisible( BUTTON_ICON_ACCEPT, false ); // hide by default
+    this->SetButtonVisible(BUTTON_ICON_ACCEPT, false); // hide by default
 
-//    rAssert( m_disableTutorial != NULL );
-//    m_disableTutorial->SetVisible( false ); // hide by default
+//    rAssert(m_disableTutorial != NULL);
+//    m_disableTutorial->SetVisible(false); // hide by default
 
-    rAssert( m_bartsHead != NULL );
+    rAssert(m_bartsHead != NULL);
     m_bartsHead->ResetTransformation();
-    m_bartsHead->ScaleAboutCenter( BART_ICON_CORRECTION_SCALE );
+    m_bartsHead->ScaleAboutCenter(BART_ICON_CORRECTION_SCALE);
 
     m_elapsedDialogTime = 0;
 #endif
@@ -343,8 +326,7 @@ void CGuiScreenTutorial::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenTutorial::InitRunning()
-{
+void CGuiScreenTutorial::InitRunning() {
 }
 
 //===========================================================================
@@ -359,8 +341,7 @@ void CGuiScreenTutorial::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenTutorial::InitOutro()
-{
+void CGuiScreenTutorial::InitOutro() {
     //
     // Turn the sound back up
     //

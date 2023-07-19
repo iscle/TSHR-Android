@@ -31,26 +31,29 @@ class AnimationPlayer;
 //
 //=============================================================================
 
-class PlayerDrawable : public tDrawable
-{
-    public:
-        PlayerDrawable();
-        virtual ~PlayerDrawable();
+class PlayerDrawable : public tDrawable {
+public:
+    PlayerDrawable();
 
-        void SetPlayer( AnimationPlayer* pPlayer ) { mpPlayer = pPlayer; }
-        virtual void Display();
+    virtual ~PlayerDrawable();
 
-        void SetRenderLayer( RenderEnums::LayerEnum layer ) { mRenderLayer = layer; }
-        RenderEnums::LayerEnum GetRenderLayer() { return mRenderLayer; }
+    void SetPlayer(AnimationPlayer *pPlayer) { mpPlayer = pPlayer; }
 
-    private:
+    virtual void Display();
 
-        //Prevent wasteful constructor creation.
-        PlayerDrawable( const PlayerDrawable& pPlayerDrawable );
-        PlayerDrawable& operator=( const PlayerDrawable& pPlayerDrawable );
+    void SetRenderLayer(RenderEnums::LayerEnum layer) { mRenderLayer = layer; }
 
-        AnimationPlayer* mpPlayer;
-        RenderEnums::LayerEnum mRenderLayer;
+    RenderEnums::LayerEnum GetRenderLayer() { return mRenderLayer; }
+
+private:
+
+    //Prevent wasteful constructor creation.
+    PlayerDrawable(const PlayerDrawable &pPlayerDrawable);
+
+    PlayerDrawable &operator=(const PlayerDrawable &pPlayerDrawable);
+
+    AnimationPlayer *mpPlayer;
+    RenderEnums::LayerEnum mRenderLayer;
 };
 
 

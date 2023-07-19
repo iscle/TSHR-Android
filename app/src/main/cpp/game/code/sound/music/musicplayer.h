@@ -25,25 +25,24 @@
 // Forward References
 //========================================
 
-namespace Sound
-{
+namespace Sound {
     struct IDaSoundTuner;
 }
-namespace radmusic
-{
+namespace radmusic {
     struct performance;
     struct composition;
 }
 
 class SoundFileHandler;
+
 class radLoadRequest;
+
 class Actor;
 
 //
 // Events for interactive music.
 //
-enum MusicEventList
-{
+enum MusicEventList {
     MEVENT_MOVIE,
 
     MEVENT_PAUSE,
@@ -102,7 +101,7 @@ enum MusicEventList
     MEVENT_CREDITS,
 
     MEVENT_END_STANDARD_EVENTS,
-    
+
     MEVENT_MISSION_START,
     MEVENT_MISSION_DRAMA,
     MEVENT_WIN_MISSION,
@@ -126,8 +125,7 @@ enum MusicEventList
 // Events for ambient sound script.  Not actually stored anywhere, but it gives
 // me some identifiers to play with
 //
-enum AmbientEventList
-{
+enum AmbientEventList {
     AEVENT_FRONTEND,
 
     AEVENT_MOVIE,
@@ -153,190 +151,208 @@ enum AmbientEventList
 //
 //=============================================================================
 
-class MusicPlayer : public EventListener
-{
-    public:
-        MusicPlayer( Sound::IDaSoundTuner& tuner );
-        virtual ~MusicPlayer();
+class MusicPlayer : public EventListener {
+public:
+    MusicPlayer(Sound::IDaSoundTuner &tuner);
 
-        void Service();
+    virtual ~MusicPlayer();
 
-        void QueueRadmusicScriptLoad();
-        void QueueMusicLevelLoad( RenderEnums::LevelEnum level );
-        
-        //
-        // Notify loading system when script file load complete
-        //
-        void LoadRadmusicScript( const char* filename, SoundFileHandler* fileHandler );
-        void UnloadRadmusicScript();
+    void Service();
 
-        //
-        // Look for notification when the player gets in and out of the car
-        //
-        void HandleEvent( EventEnum id, void* pEventData );
+    void QueueRadmusicScriptLoad();
 
-        //
-        // Functions for notification of change in game state 
-        //
-        void OnFrontEndStart();
-        void OnFrontEndFinish();
+    void QueueMusicLevelLoad(RenderEnums::LevelEnum level);
 
-        void OnGameplayStart( bool playerInCar );
-        void OnGameplayFinish();
+    //
+    // Notify loading system when script file load complete
+    //
+    void LoadRadmusicScript(const char *filename, SoundFileHandler *fileHandler);
 
-        void OnPauseStart();
-        void OnPauseEnd();
+    void UnloadRadmusicScript();
 
-        void OnStoreStart();
-        void OnStoreEnd();
+    //
+    // Look for notification when the player gets in and out of the car
+    //
+    void HandleEvent(EventEnum id, void *pEventData);
 
-        void StopForMovie();
-        void ResumeAfterMovie();
+    //
+    // Functions for notification of change in game state
+    //
+    void OnFrontEndStart();
 
-        bool IsStoppedForMovie();
+    void OnFrontEndFinish();
 
-        void RestartSupersprintMusic();
+    void OnGameplayStart(bool playerInCar);
 
-        //
-        // Volume controls
-        //
-        float GetVolume();
-        void SetVolume( float volume );
-        float GetAmbienceVolume();
-        void SetAmbienceVolume( float volume );
+    void OnGameplayFinish();
 
-        //
-        // Beat values
-        //
-        float GetBeatValue();
+    void OnPauseStart();
 
-    private:
-        //Prevent wasteful constructor creation.
-        MusicPlayer();
-        MusicPlayer( const MusicPlayer& original );
-        MusicPlayer& operator=( const MusicPlayer& rhs );
-        
-        void SetUpPerformance(
+    void OnPauseEnd();
+
+    void OnStoreStart();
+
+    void OnStoreEnd();
+
+    void StopForMovie();
+
+    void ResumeAfterMovie();
+
+    bool IsStoppedForMovie();
+
+    void RestartSupersprintMusic();
+
+    //
+    // Volume controls
+    //
+    float GetVolume();
+
+    void SetVolume(float volume);
+
+    float GetAmbienceVolume();
+
+    void SetAmbienceVolume(float volume);
+
+    //
+    // Beat values
+    //
+    float GetBeatValue();
+
+private:
+    //Prevent wasteful constructor creation.
+    MusicPlayer();
+
+    MusicPlayer(const MusicPlayer &original);
+
+    MusicPlayer &operator=(const MusicPlayer &rhs);
+
+    void SetUpPerformance(
             radmusic::performance **,
             radmusic::composition **,
-            const char * searchPath );
-            
-        void TriggerMusicEvent( MusicEventList event );
-        void TriggerAmbientEvent( unsigned int event );
-        void triggerMusicMissionEventByName( radKey32* key );
-        
-        unsigned int m_lastServiceTime;
+            const char *searchPath);
 
-        // Needed for polling the composition loader
-        bool m_isLoadingMusic;
+    void TriggerMusicEvent(MusicEventList event);
 
-        // True if player currently in car, false otherwise
-        bool m_isInCar;
+    void TriggerAmbientEvent(unsigned int event);
 
-        // Composition loader
-        
-        radLoadRequest* m_radLoadRequest;
-        char n_currentLoadName[ 64 ]; // hack for radload memory leak.
+    void triggerMusicMissionEventByName(radKey32 *key);
 
-        // Performance object
-        radmusic::performance * m_musicPerformance;
-        radmusic::composition * m_musicComposition;
+    unsigned int m_lastServiceTime;
 
-        //
-        // Ambient script stuff
-        //
-        bool m_isLoadingAmbient;
-        
-        radmusic::performance * m_ambientPerformance;
-        radmusic::composition * m_ambientComposition;
+    // Needed for polling the composition loader
+    bool m_isLoadingMusic;
 
-        // File load completion callback object
-        SoundFileHandler* m_loadCompleteCallback;
+    // True if player currently in car, false otherwise
+    bool m_isInCar;
 
-        // Current ambient sound
-        unsigned int m_currentAmbient;
-        bool m_ambiencePlaying;
+    // Composition loader
 
-        //
-        // Special music cases
-        //
-        bool m_onApuRooftop;
-        bool m_stoneCutterSong;
-        bool m_LBCSong;
+    radLoadRequest *m_radLoadRequest;
+    char n_currentLoadName[64]; // hack for radload memory leak.
 
-        //
-        // Delayed music start
-        //
-        bool m_delayedMusicStart;
+    // Performance object
+    radmusic::performance *m_musicPerformance;
+    radmusic::composition *m_musicComposition;
 
-        //
-        // Wasp that triggered music
-        //
-        Actor* m_wasp;
+    //
+    // Ambient script stuff
+    //
+    bool m_isLoadingAmbient;
 
-        //
-        // Calculate offset for current level
-        //
-        int calculateLevelIndex();
+    radmusic::performance *m_ambientPerformance;
+    radmusic::composition *m_ambientComposition;
 
-        //
-        // Calculate offset for current mission
-        //
-        int calculateMissionIndex();
+    // File load completion callback object
+    SoundFileHandler *m_loadCompleteCallback;
 
-        //
-        // Calculate offset for interior we're about to enter
-        //
-        int calculateInteriorIndex( tUID interiorID );
+    // Current ambient sound
+    unsigned int m_currentAmbient;
+    bool m_ambiencePlaying;
 
-        //
-        // Returns flag indicating whether we use ambient on-foot stuff for
-        // this stage
-        //
-        bool musicLockedOnForStage();
+    //
+    // Special music cases
+    //
+    bool m_onApuRooftop;
+    bool m_stoneCutterSong;
+    bool m_LBCSong;
 
-        //
-        // Trigger the events to start music
-        //
-        void startMusic();
+    //
+    // Delayed music start
+    //
+    bool m_delayedMusicStart;
 
-        //
-        // Figure out what to do after the mission ends
-        //
-        void playPostMissionSounds();
+    //
+    // Wasp that triggered music
+    //
+    Actor *m_wasp;
 
-        //
-        // Turn ambient sound on and off
-        //
-        void turnAmbienceOn( unsigned int event );
-        void turnAmbienceOff( unsigned int event );
+    //
+    // Calculate offset for current level
+    //
+    int calculateLevelIndex();
 
-        //
-        // True if current mission is a race, false otherwise
-        //
-        bool currentMissionIsRace();
+    //
+    // Calculate offset for current mission
+    //
+    int calculateMissionIndex();
 
-        //
-        // True if we're in Sunday Drive, false otherwise
-        //
-        bool currentMissionIsSundayDrive();
+    //
+    // Calculate offset for interior we're about to enter
+    //
+    int calculateInteriorIndex(tUID interiorID);
 
-        //
-        // Construct tables for faster lookup of music events in script
-        //
-        void initializeTableNameKeys();
-        void buildEventTables();
+    //
+    // Returns flag indicating whether we use ambient on-foot stuff for
+    // this stage
+    //
+    bool musicLockedOnForStage();
 
-        //
-        // Change the radMusic state
-        //
-        void triggerMusicStateChange( radKey32 stateKey, radKey32 stateEventKey );
+    //
+    // Trigger the events to start music
+    //
+    void startMusic();
 
-        int findStandardMusicEvent( MusicEventList event );
-        int findMissionEvent( MusicEventList event, int mission );
-        int findRaceEvent( MusicEventList event, int race );
+    //
+    // Figure out what to do after the mission ends
+    //
+    void playPostMissionSounds();
 
-        void triggerCurrentInteriorAmbience();
+    //
+    // Turn ambient sound on and off
+    //
+    void turnAmbienceOn(unsigned int event);
+
+    void turnAmbienceOff(unsigned int event);
+
+    //
+    // True if current mission is a race, false otherwise
+    //
+    bool currentMissionIsRace();
+
+    //
+    // True if we're in Sunday Drive, false otherwise
+    //
+    bool currentMissionIsSundayDrive();
+
+    //
+    // Construct tables for faster lookup of music events in script
+    //
+    void initializeTableNameKeys();
+
+    void buildEventTables();
+
+    //
+    // Change the radMusic state
+    //
+    void triggerMusicStateChange(radKey32 stateKey, radKey32 stateEventKey);
+
+    int findStandardMusicEvent(MusicEventList event);
+
+    int findMissionEvent(MusicEventList event, int mission);
+
+    int findRaceEvent(MusicEventList event, int race);
+
+    void triggerCurrentInteriorAmbience();
 };
 
 

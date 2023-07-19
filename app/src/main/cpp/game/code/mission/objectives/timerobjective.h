@@ -28,28 +28,34 @@
 //
 //=============================================================================
 
-class TimerObjective : public MissionObjective
-{
+class TimerObjective : public MissionObjective {
 public:
-   
+
 
     TimerObjective();
+
     virtual ~TimerObjective();
-    
+
     void SetTimer(unsigned int milliseconds);
-       
+
 protected:
     virtual void OnInitialize();
+
     virtual void OnFinalize();
+
     virtual void OnUpdate(unsigned int elapsedTime);
+
     virtual void Update(unsigned int elaspedTime);
+
 private:
-    
+
     unsigned int mDurationTime;
     unsigned int mElapsedTime;
+
     //Prevent wasteful constructor creation.
-    TimerObjective( const TimerObjective& TimerObjective );
-    TimerObjective& operator=( const TimerObjective& TimerObjective );
+    TimerObjective(const TimerObjective &TimerObjective);
+
+    TimerObjective &operator=(const TimerObjective &TimerObjective);
 };
 
 

@@ -42,31 +42,32 @@
 // Constraints:
 //
 //===========================================================================
-class StunnedBehaviour : public Behaviour
-{
-    public:
-        // Ctor - stun time in seconds
-        StunnedBehaviour( float stunTime );
-        virtual ~StunnedBehaviour();
-        virtual void Apply( Actor*, unsigned int timeInMS );
+class StunnedBehaviour : public Behaviour {
+public:
+    // Ctor - stun time in seconds
+    StunnedBehaviour(float stunTime);
 
-    protected:
-        
-        // Time to be stunned in milliseconds
-        float m_StunTime;
+    virtual ~StunnedBehaviour();
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow StunnedBehaviour from being copied and assigned.
-        StunnedBehaviour( const StunnedBehaviour& );
-        StunnedBehaviour& operator=( const StunnedBehaviour& );
+    virtual void Apply(Actor *, unsigned int timeInMS);
 
-    private:
-    
-   
+protected:
+
+    // Time to be stunned in milliseconds
+    float m_StunTime;
+
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow StunnedBehaviour from being copied and assigned.
+    StunnedBehaviour(const StunnedBehaviour &);
+
+    StunnedBehaviour &operator=(const StunnedBehaviour &);
+
+private:
+
+
 };
-
 
 
 #endif

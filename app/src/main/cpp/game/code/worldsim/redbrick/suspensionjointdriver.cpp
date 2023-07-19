@@ -19,10 +19,8 @@
 #include <worldsim/redbrick/wheel.h>
 
 
-
 //------------------------------------------------------------------------
-SuspensionJointDriver::SuspensionJointDriver(Wheel* wheel, int jointIndex)
-{
+SuspensionJointDriver::SuspensionJointDriver(Wheel *wheel, int jointIndex) {
     mWheel = wheel;
     mJointIndex = jointIndex;
 
@@ -30,16 +28,13 @@ SuspensionJointDriver::SuspensionJointDriver(Wheel* wheel, int jointIndex)
 
 
 //------------------------------------------------------------------------
-SuspensionJointDriver::~SuspensionJointDriver()
-{
+SuspensionJointDriver::~SuspensionJointDriver() {
     //
 }
 
 
-
 //------------------------------------------------------------------------
-void SuspensionJointDriver::Update(poser::Pose* pose)
-{
+void SuspensionJointDriver::Update(poser::Pose *pose) {
     // process results of last time's collision detection and solving...
 
 
@@ -62,7 +57,7 @@ void SuspensionJointDriver::Update(poser::Pose* pose)
 
 
 
-    poser::Joint* joint = pose->GetJoint(mJointIndex);
+    poser::Joint *joint = pose->GetJoint(mJointIndex);
 
     // TODO - is this call inefficient?
     // I'm gonna have to make a copy of the matrix at some point so I can change some values....
@@ -85,14 +80,13 @@ void SuspensionJointDriver::Update(poser::Pose* pose)
 
     */
 
-    
+
     //matrix.m[3][1] += yOffset;
 
     // !! TODO - safe to just apply this?
     //matrix.m[3][1] += mWheel->mPhysicsVehicleOwner->mGravitySettleYCorrection;  // this is insignificant
 
-    if(mWheel->mSteerWheel)
-    {
+    if (mWheel->mSteerWheel) {
         // this is one of the two front wheels, so turn it
         float angle = mWheel->mWheelTurnAngle;
 
@@ -100,9 +94,7 @@ void SuspensionJointDriver::Update(poser::Pose* pose)
         // shouldn't matter too much....
         matrix.FillRotateXYZ(mWheel->mCumulativeRot, mWheel->mWheelTurnAngle, 0.0f);
 
-    }
-    else
-    {
+    } else {
         matrix.FillRotateX(mWheel->mCumulativeRot);
     }
 
@@ -116,7 +108,7 @@ void SuspensionJointDriver::Update(poser::Pose* pose)
     
     joint->SetObjectTranslation(trans);
 
-    if(mWheel->GetNum() < 1)
+    if(mWheel->GetNum() <1)
     {
         // this is one of the two front wheels, so rotate it
 

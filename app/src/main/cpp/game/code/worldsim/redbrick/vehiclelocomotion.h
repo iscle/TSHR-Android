@@ -17,24 +17,28 @@
 
 class Vehicle;
 
-class VehicleLocomotion
-{
+class VehicleLocomotion {
 public:
 
-    VehicleLocomotion(Vehicle* vehicle) {};
+    VehicleLocomotion(Vehicle *vehicle) {};
+
     virtual ~VehicleLocomotion() {};
 
     virtual void PreSubstepUpdate() = 0;
 
     virtual void PreCollisionPrep(bool firstSubstep) = 0;
+
     virtual void UpdateVehicleGroundPlane() = 0;
 
     virtual void PreUpdate() = 0;
+
     virtual void Update(float dt) = 0;
+
     virtual void PostUpdate() = 0;
 
-    virtual void CompareNormalAndHeight(int index, rmt::Vector& normalPointingAtCar, rmt::Vector& groundContactPoint) = 0;
-    
+    virtual void CompareNormalAndHeight(int index, rmt::Vector &normalPointingAtCar,
+                                        rmt::Vector &groundContactPoint) = 0;
+
 };
 
 

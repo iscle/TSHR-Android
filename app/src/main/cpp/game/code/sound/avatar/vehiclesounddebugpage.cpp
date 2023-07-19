@@ -43,17 +43,16 @@
 // Return:      N/A.
 //
 //==============================================================================
-VehicleSoundDebugPage::VehicleSoundDebugPage( unsigned int pageNum, SoundDebugDisplay* master ) :
-    SoundDebugPage( pageNum, master ),
-    m_shiftInProgress( false ),
-    m_currentGear( 0 ),
-    m_currentSpeed( 0.0f ),
-    m_shiftTime( 0 ),
-    m_downshiftSpeed( 0.0f ),
-    m_upshiftSpeed( 0.0f ),
-    m_currentPitch( 0.0f ),
-    m_isDamaged( false )
-{
+VehicleSoundDebugPage::VehicleSoundDebugPage(unsigned int pageNum, SoundDebugDisplay *master) :
+        SoundDebugPage(pageNum, master),
+        m_shiftInProgress(false),
+        m_currentGear(0),
+        m_currentSpeed(0.0f),
+        m_shiftTime(0),
+        m_downshiftSpeed(0.0f),
+        m_upshiftSpeed(0.0f),
+        m_currentPitch(0.0f),
+        m_isDamaged(false) {
 }
 
 //==============================================================================
@@ -66,8 +65,7 @@ VehicleSoundDebugPage::VehicleSoundDebugPage( unsigned int pageNum, SoundDebugDi
 // Return:      N/A.
 //
 //==============================================================================
-VehicleSoundDebugPage::~VehicleSoundDebugPage()
-{
+VehicleSoundDebugPage::~VehicleSoundDebugPage() {
 }
 
 //******************************************************************************
@@ -76,43 +74,35 @@ VehicleSoundDebugPage::~VehicleSoundDebugPage()
 //
 //******************************************************************************
 
-void VehicleSoundDebugPage::fillLineBuffer( int lineNum, char* buffer )
-{
-    switch( lineNum )
-    {
+void VehicleSoundDebugPage::fillLineBuffer(int lineNum, char *buffer) {
+    switch (lineNum) {
         case 0:
-            sprintf( buffer, "Gear: %d  Speed: %f", m_currentGear, m_currentSpeed );
+            sprintf(buffer, "Gear: %d  Speed: %f", m_currentGear, m_currentSpeed);
             break;
 
         case 2:
-            sprintf( buffer, "Shift speeds: %f  %f", m_downshiftSpeed, m_upshiftSpeed );
+            sprintf(buffer, "Shift speeds: %f  %f", m_downshiftSpeed, m_upshiftSpeed);
             break;
 
         case 4:
-            if( m_shiftInProgress )
-            {
-                sprintf( buffer, "SHIFTING - Time in msecs: %d", m_shiftTime );
-            }
-            else
-            {
+            if (m_shiftInProgress) {
+                sprintf(buffer, "SHIFTING - Time in msecs: %d", m_shiftTime);
+            } else {
                 buffer[0] = '\0';
             }
             break;
 
         case 6:
-            sprintf( buffer, "Pitch: %f", m_currentPitch );
+            sprintf(buffer, "Pitch: %f", m_currentPitch);
             break;
 
         case 8:
-            if( m_isDamaged )
-            {
-                sprintf( buffer, "Life: %f  Threshold: %f  CAR DAMAGE SOUND",
-                         m_vehicleLife, m_damageThreshold );
-            }
-            else
-            {
-                sprintf( buffer, "Life: %f  Threshold: %f",
-                         m_vehicleLife, m_damageThreshold );
+            if (m_isDamaged) {
+                sprintf(buffer, "Life: %f  Threshold: %f  CAR DAMAGE SOUND",
+                        m_vehicleLife, m_damageThreshold);
+            } else {
+                sprintf(buffer, "Life: %f  Threshold: %f",
+                        m_vehicleLife, m_damageThreshold);
             }
             break;
 
@@ -132,7 +122,6 @@ void VehicleSoundDebugPage::fillLineBuffer( int lineNum, char* buffer )
 // Return:      Line count 
 //
 //=============================================================================
-int VehicleSoundDebugPage::getNumLines()
-{
-    return( 9 );
+int VehicleSoundDebugPage::getNumLines() {
+    return (9);
 }

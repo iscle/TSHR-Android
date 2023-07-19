@@ -19,37 +19,46 @@
 
 class SuspensionJointDriver;
 
-enum WheelState{ WS_NORMAL, WS_SLIP, WS_LOCOMOTIVE_SLIDE, WS_LOCOMOTIVE_FREE_SPIN };
+enum WheelState {
+    WS_NORMAL, WS_SLIP, WS_LOCOMOTIVE_SLIDE, WS_LOCOMOTIVE_FREE_SPIN
+};
 
-class Wheel
-{
+class Wheel {
 private:
 
     friend class SuspensionJointDriver;
-    friend class Vehicle;   
+
+    friend class Vehicle;
+
     friend class PhysicsLocomotion;
+
     friend class GeometryVehicle;       // everyone's friends with the Wheel :)
     friend class RedBrickCollisionSolverAgent;
-     
-    
+
+
     Wheel();
+
     ~Wheel();
 
-    Vehicle* mVehicle;
+    Vehicle *mVehicle;
 
     // TODO - initialize k and c from vehicle too...easier to tune?
-    void Init(Vehicle* vehicle, int wheelNum, float radius, bool steer, bool drive);
+    void Init(Vehicle *vehicle, int wheelNum, float radius, bool steer, bool drive);
+
     void Reset();
 
-    void SetDesignerParams(Vehicle::DesignerParams* dp);
+    void SetDesignerParams(Vehicle::DesignerParams *dp);
 
     // this will check the one we're passing in against the one stored
     float SetYOffsetFromCurrentPosition(float yoffset);
-    void ResolveOffset();   // modify mYOffset by the final thing left in mObjectSpaceYOffsetFromCurrentPosition
-    
-    float GetYCorrectionValue();  
+
+    void
+    ResolveOffset();   // modify mYOffset by the final thing left in mObjectSpaceYOffsetFromCurrentPosition
+
+    float GetYCorrectionValue();
 
     float CalculateSuspensionForce(float suspensionPointYVelocity, float dt);
+
     void CalculateRenderingSpinUpRateBase(float topSpeedKmh);
 
     bool mSteerWheel;
@@ -63,6 +72,7 @@ private:
     float mYOffset; // object space offset from suspension rest point
 
     void CalculateRotAngle(float dt);
+
     float mRotAngle;
     float mCumulativeRot;
     float mTotalTime;
@@ -80,7 +90,6 @@ private:
 
     float mWheelTurnAngle;
 
-    
 
     WheelState mWheelState;
 
@@ -88,8 +97,8 @@ private:
 
     float mRenderingSpinUpRate;
     float mRenderingSpinUpRateBase;
-    
-    
+
+
     //---------------------
     // designer parameters:
     //---------------------

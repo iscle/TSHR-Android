@@ -48,12 +48,11 @@ int CGuiScreenMiniHud::s_pausedControllerID = -1;
 //
 //===========================================================================
 CGuiScreenMiniHud::CGuiScreenMiniHud
-(
-	Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-)
-:   CGuiScreen( pScreen, pParent, GUI_SCREEN_ID_MINI_HUD )
-{
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        : CGuiScreen(pScreen, pParent, GUI_SCREEN_ID_MINI_HUD) {
 }
 
 
@@ -69,8 +68,7 @@ CGuiScreenMiniHud::CGuiScreenMiniHud
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenMiniHud::~CGuiScreenMiniHud()
-{
+CGuiScreenMiniHud::~CGuiScreenMiniHud() {
 }
 
 
@@ -87,20 +85,17 @@ CGuiScreenMiniHud::~CGuiScreenMiniHud()
 //
 //===========================================================================
 void CGuiScreenMiniHud::HandleMessage
-(
-	eGuiMessage message,
-	unsigned int param1,
-	unsigned int param2
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        switch( message )
-        {
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        switch (message) {
 #ifdef RAD_WIN32
             case GUI_MSG_CONTROLLER_BACK:
             {
-                if( GetInputManager()->GetValue( 0, InputManager::KeyboardEsc ) > 0.0f )
+                if(GetInputManager()->GetValue(0, InputManager::KeyboardEsc)> 0.0f)
                 {
                     //GOOD!  Fall through.
                 }
@@ -110,16 +105,15 @@ void CGuiScreenMiniHud::HandleMessage
                 }
             }
 #endif
-            case GUI_MSG_CONTROLLER_START:
-            {
+            case GUI_MSG_CONTROLLER_START: {
                 // pause mini-game
                 //
-                GetGameFlow()->GetContext( CONTEXT_SUPERSPRINT )->Suspend();
+                GetGameFlow()->GetContext(CONTEXT_SUPERSPRINT)->Suspend();
 
                 // go to pause menu
                 //
-                s_pausedControllerID = static_cast<int>( param1 );
-                m_pParent->HandleMessage( GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_MINI_PAUSE );
+                s_pausedControllerID = static_cast<int>(param1);
+                m_pParent->HandleMessage(GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_MINI_PAUSE);
 
                 break;
             }
@@ -131,23 +125,22 @@ void CGuiScreenMiniHud::HandleMessage
             {
                 // go to Race Summary screen
                 //
-                GetGameFlow()->GetContext( CONTEXT_SUPERSPRINT )->Suspend();
+                GetGameFlow()->GetContext(CONTEXT_SUPERSPRINT)->Suspend();
 
-                m_pParent->HandleMessage( GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_MINI_SUMMARY );
+                m_pParent->HandleMessage(GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_MINI_SUMMARY);
 
                 break;
             }
 */
-            default:
-            {
+            default: {
                 break;
             }
         }
     }
 
-	// Propogate the message up the hierarchy.
-	//
-	CGuiScreen::HandleMessage( message, param1, param2 );
+    // Propogate the message up the hierarchy.
+    //
+    CGuiScreen::HandleMessage(message, param1, param2);
 }
 
 
@@ -163,10 +156,9 @@ void CGuiScreenMiniHud::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMiniHud::InitIntro()
-{
+void CGuiScreenMiniHud::InitIntro() {
 #ifdef RAD_WIN32
-    GetInputManager()->GetFEMouse()->SetInGameMode( true );
+    GetInputManager()->GetFEMouse()->SetInGameMode(true);
 #endif
 }
 
@@ -183,13 +175,11 @@ void CGuiScreenMiniHud::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMiniHud::InitRunning()
-{
-    if( GetGameFlow()->GetContext( CONTEXT_SUPERSPRINT )->IsSuspended() )
-    {
+void CGuiScreenMiniHud::InitRunning() {
+    if (GetGameFlow()->GetContext(CONTEXT_SUPERSPRINT)->IsSuspended()) {
         // resume mini-game
         //
-        GetGameFlow()->GetContext( CONTEXT_SUPERSPRINT )->Resume();
+        GetGameFlow()->GetContext(CONTEXT_SUPERSPRINT)->Resume();
     }
 }
 
@@ -206,8 +196,7 @@ void CGuiScreenMiniHud::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMiniHud::InitOutro()
-{
+void CGuiScreenMiniHud::InitOutro() {
 }
 
 

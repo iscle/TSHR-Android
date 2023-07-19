@@ -33,13 +33,15 @@
 #include <camera/animatedcam.h>
 #include <camera/conversationcam.h>
 #include <camera/frustrumdrawable.h>
-#include <camera/isupercamtarget.h> 
+#include <camera/isupercamtarget.h>
 #include <camera/supercamcontroller.h>
 #include <camera/followcam.h>
 #include <camera/wrecklesscam.h>
+
 #ifdef RAD_WIN32
 #include <camera/pccam.h>
 #endif
+
 #include <data/gamedatamanager.h>
 #include <render/RenderManager/RenderManager.h>
 #include <render/RenderManager/RenderLayer.h>
@@ -84,19 +86,19 @@ const float DEBUG_CAM_NEAR = 0.1f;
 const float DEBUG_CAM_FAR = 700.0f;
 
 SuperCam::Type CAMERAS_FOR_DRIVING[] =
-{
-    SuperCam::NEAR_FOLLOW_CAM,
-    SuperCam::FAR_FOLLOW_CAM,
-    SuperCam::BUMPER_CAM,
+        {
+                SuperCam::NEAR_FOLLOW_CAM,
+                SuperCam::FAR_FOLLOW_CAM,
+                SuperCam::BUMPER_CAM,
 
-    //Start of cheat cams
-    SuperCam::COMEDY_CAM,
-    SuperCam::WRECKLESS_CAM,
-    SuperCam::CHASE_CAM,
-    SuperCam::KULL_CAM,
-    SuperCam::TRACKER_CAM,
-    SuperCam::DEBUG_CAM
-};
+                //Start of cheat cams
+                SuperCam::COMEDY_CAM,
+                SuperCam::WRECKLESS_CAM,
+                SuperCam::CHASE_CAM,
+                SuperCam::KULL_CAM,
+                SuperCam::TRACKER_CAM,
+                SuperCam::DEBUG_CAM
+        };
 
 const int NUM_CAMERAS_FOR_DRIVING = 9;
 
@@ -105,14 +107,14 @@ const int NUM_CAMERAS_FOR_DRIVING = 9;
 const int NUM_CAMERAS_FOR_DRIVING_WITHOUT_CHEAT = 3;
 
 SuperCam::Type CAMERAS_FOR_WALKING[] =
-{
-    SuperCam::WALKER_CAM,
+        {
+                SuperCam::WALKER_CAM,
 #ifdef RAD_WIN32
-    SuperCam::PC_CAM,
+                SuperCam::PC_CAM,
 #endif
-    SuperCam::DEBUG_CAM,
-    SuperCam::KULL_CAM
-};
+                SuperCam::DEBUG_CAM,
+                SuperCam::KULL_CAM
+        };
 
 #ifdef RAD_WIN32
 const int NUM_CAMERAS_FOR_WALKING = sizeof(CAMERAS_FOR_WALKING)/sizeof(SuperCam::Type);
@@ -128,69 +130,69 @@ const int NUM_CAMERAS_FOR_WALKING = 3;
 const int NUM_CAMERAS_FOR_WALKING_WITHOUT_CHEAT = 1;
 #endif
 
-SuperCam::Type SUPER_SPRINT_CAMERAS[] = 
-{
-    SuperCam::NEAR_FOLLOW_CAM,
-    SuperCam::FAR_FOLLOW_CAM,
-    SuperCam::BUMPER_CAM,
-    SuperCam::COMEDY_CAM,
-    SuperCam::WRECKLESS_CAM
+SuperCam::Type SUPER_SPRINT_CAMERAS[] =
+        {
+                SuperCam::NEAR_FOLLOW_CAM,
+                SuperCam::FAR_FOLLOW_CAM,
+                SuperCam::BUMPER_CAM,
+                SuperCam::COMEDY_CAM,
+                SuperCam::WRECKLESS_CAM
 #ifndef RAD_RELEASE
-    ,SuperCam::KULL_CAM
+                , SuperCam::KULL_CAM
 #endif
-};
+        };
 
-const int NUM_SUPERSPRINT_CAMS = 
-sizeof( SUPER_SPRINT_CAMERAS ) / sizeof( SUPER_SPRINT_CAMERAS[ 0 ] );
+const int NUM_SUPERSPRINT_CAMS =
+        sizeof(SUPER_SPRINT_CAMERAS) / sizeof(SUPER_SPRINT_CAMERAS[0]);
 
 const unsigned int DEFAULT_CAM_SWITCH_DELAY = 0;  //milliseconds
 
 unsigned char SuperCamCentral::mTotalSuperCamCentrals = 0;
-const char* SuperCamCentral::CAMERA_INVENTORY_SECTION = "CameraInventorySection";
-FollowCamDataChunk SuperCamCentral::mFollowCamDataChunks[ MAX_DATA_CHUNKS ];
+const char *SuperCamCentral::CAMERA_INVENTORY_SECTION = "CameraInventorySection";
+FollowCamDataChunk SuperCamCentral::mFollowCamDataChunks[MAX_DATA_CHUNKS];
 unsigned int SuperCamCentral::mNumUsedFDC = 0;
 
 
 #ifdef DEBUGWATCH
 
-void ToggleDebugViewCallBack( void* userData )
+void ToggleDebugViewCallBack(void* userData)
 {
     SuperCamCentral* ssc = (SuperCamCentral*)userData;
 
     ssc->ToggleDebugView();
 }
 
-void ToggleCameraForwardsCallBack( void* userData )
+void ToggleCameraForwardsCallBack(void* userData)
 {
     SuperCamCentral* ssc = (SuperCamCentral*)userData;
 
-    ssc->ToggleSuperCam( true );
+    ssc->ToggleSuperCam(true);
 }
 
-void ToggleCameraBackwardsCallBack( void* userData )
+void ToggleCameraBackwardsCallBack(void* userData)
 {
     SuperCamCentral* ssc = (SuperCamCentral*)userData;
 
-    ssc->ToggleSuperCam( false );
+    ssc->ToggleSuperCam(false);
 }
 
-void ToggleBurnoutCallBack( void* userData )
+void ToggleBurnoutCallBack(void* userData)
 {
     static bool gBurnout = false;
 
-    if ( !gBurnout )
+    if (!gBurnout)
     {
-        GetEventManager()->TriggerEvent( EVENT_BURNOUT );
+        GetEventManager()->TriggerEvent(EVENT_BURNOUT);
         gBurnout = true;
     }
     else
     {
-        GetEventManager()->TriggerEvent( EVENT_BURNOUT_END );
+        GetEventManager()->TriggerEvent(EVENT_BURNOUT_END);
         gBurnout = false;
     }
 }
 
-void ToggleCameraCut( void* userData )
+void ToggleCameraCut(void* userData)
 {
     SuperCamCentral* ssc = (SuperCamCentral*)userData;
 
@@ -215,33 +217,32 @@ void ToggleCameraCut( void* userData )
 //
 //=============================================================================
 SuperCamCentral::SuperCamCentral() :
-    mCollisionAreaIndex(-1),
-    mActiveSuperCam( NULL ),
-    mActiveSuperCamIndex( 0 ),
-    mNumRegisteredSuperCams( 0 ),
-    mCamera( NULL ),
-    mTarget( NULL ),
+        mCollisionAreaIndex(-1),
+        mActiveSuperCam(NULL),
+        mActiveSuperCamIndex(0),
+        mNumRegisteredSuperCams(0),
+        mCamera(NULL),
+        mTarget(NULL),
 #ifdef SUPERCAM_DEBUG
-    mDebugXZAngle( 0.0f ),
-    mDebugYAngle( rmt::PI ),
-    mDebugMagnitude( DEBUG_CAM_DIST ),
+        mDebugXZAngle(0.0f),
+        mDebugYAngle(rmt::PI),
+        mDebugMagnitude(DEBUG_CAM_DIST),
 #endif
-    mCurrentFOVLocator( NULL ),
-    mDoCameraCut( false ),
-    mChanceToBurnout( 10 ),
-    mCameraSimState( NULL ),
-    mCameraCollisionFudge( 1.05f ),
-    mController( NULL ),
-    mControllerHandle( -1 ),
-    mWrecklessCount( 0 ),
-    mPreferredFollowCam( FollowCam::FAR_FOLLOW_CAM ),
-    mInitialCamera(false),
-    mIsInvertedCameraEnabled( false ),
-    mJumpCamsEnabled( true ),
-    mCameraToggling( false ),
-    mNastyHypeCamHackEnabled( false )
-{
-MEMTRACK_PUSH_GROUP( "SuperCamCentral" );
+        mCurrentFOVLocator(NULL),
+        mDoCameraCut(false),
+        mChanceToBurnout(10),
+        mCameraSimState(NULL),
+        mCameraCollisionFudge(1.05f),
+        mController(NULL),
+        mControllerHandle(-1),
+        mWrecklessCount(0),
+        mPreferredFollowCam(FollowCam::FAR_FOLLOW_CAM),
+        mInitialCamera(false),
+        mIsInvertedCameraEnabled(false),
+        mJumpCamsEnabled(true),
+        mCameraToggling(false),
+        mNastyHypeCamHackEnabled(false) {
+    MEMTRACK_PUSH_GROUP("SuperCamCentral");
     //Each SuperCamCentral is uniquely numbered.
     //These numbers correspond to players.
     mMyNumber = mTotalSuperCamCentrals;
@@ -249,62 +250,61 @@ MEMTRACK_PUSH_GROUP( "SuperCamCentral" );
 
     unsigned int i;
 
-    for ( i = 0; i < MAX_CAMERAS; ++i )
-    {  
-        mSuperCameras[ i ] = NULL;
+    for (i = 0; i < MAX_CAMERAS; ++i) {
+        mSuperCameras[i] = NULL;
     }
 
-    #ifdef RAD_GAMECUBE
-        HeapMgr()->PushHeap( GMA_GC_VMM );
-    #else
-        HeapMgr()->PushHeap( GMA_PERSISTENT );
-    #endif
+#ifdef RAD_GAMECUBE
+    HeapMgr()->PushHeap(GMA_GC_VMM);
+#else
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
+#endif
 
 #ifdef SUPERCAM_DEBUG
     mDebugCamera = new tPointCamera();
     mDebugCamera->AddRef();
 
     char camName[256];
-    sprintf( camName, "SuperCamCentral %d DebugCam", mMyNumber );
-    mDebugCamera->SetName( camName );
+    sprintf(camName, "SuperCamCentral %d DebugCam", mMyNumber);
+    mDebugCamera->SetName(camName);
 
     mFrustrumDrawable = new FrustrumDrawable();
     mFrustrumDrawable->AddRef();
 
     char frustName[256];
-    sprintf( frustName, "FrustrumDrawable%d", mMyNumber );
-    mFrustrumDrawable->SetName( frustName );
+    sprintf(frustName, "FrustrumDrawable%d", mMyNumber);
+    mFrustrumDrawable->SetName(frustName);
 #endif
 
-    GetEventManager()->AddListener( this, EVENT_ENTER_INTERIOR_END );
-    GetEventManager()->AddListener( this, EVENT_BURNOUT );
-    GetEventManager()->AddListener( this, EVENT_BURNOUT_END );
+    GetEventManager()->AddListener(this, EVENT_ENTER_INTERIOR_END);
+    GetEventManager()->AddListener(this, EVENT_BURNOUT);
+    GetEventManager()->AddListener(this, EVENT_BURNOUT_END);
 
-    GetEventManager()->AddListener( this, EVENT_CAMERA_SHAKE );
+    GetEventManager()->AddListener(this, EVENT_CAMERA_SHAKE);
 
-    GetGameDataManager()->RegisterGameData( this, 1, "Super Cam Central" );
+    GetGameDataManager()->RegisterGameData(this, 1, "Super Cam Central");
 
-    #ifdef RAD_GAMECUBE
-        HeapMgr()->PopHeap( GMA_GC_VMM );
-    #else
-        HeapMgr()->PopHeap( GMA_PERSISTENT );
-    #endif
+#ifdef RAD_GAMECUBE
+    HeapMgr()->PopHeap(GMA_GC_VMM);
+#else
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
+#endif
 #ifdef DEBUGWATCH
     char player[256];
-    sprintf( player, "SuperCamCentral\\Player%d", mMyNumber );
-    radDbgWatchAddFunction( "Toggle Debug View", &ToggleDebugViewCallBack, this, player );
-    radDbgWatchAddFunction( "Toggle Cameras Forwards", &ToggleCameraForwardsCallBack, this, player );
-    radDbgWatchAddFunction( "Toggle Cameras Backwards", &ToggleCameraBackwardsCallBack, this, player );
-    radDbgWatchAddFunction( "Toggle Burnout Test", &ToggleBurnoutCallBack, this, player );
-    radDbgWatchAddFunction( "Toggle Camera Cut", &ToggleCameraCut, this, player );
+    sprintf(player, "SuperCamCentral\\Player%d", mMyNumber);
+    radDbgWatchAddFunction("Toggle Debug View", &ToggleDebugViewCallBack, this, player);
+    radDbgWatchAddFunction("Toggle Cameras Forwards", &ToggleCameraForwardsCallBack, this, player);
+    radDbgWatchAddFunction("Toggle Cameras Backwards", &ToggleCameraBackwardsCallBack, this, player);
+    radDbgWatchAddFunction("Toggle Burnout Test", &ToggleBurnoutCallBack, this, player);
+    radDbgWatchAddFunction("Toggle Camera Cut", &ToggleCameraCut, this, player);
     
-    radDbgWatchAddFloat( &mDebugXZAngle, "Debug Camera XZ Angle", player, NULL, NULL, 0.0f, rmt::PI_2 );
-    radDbgWatchAddFloat( &mDebugYAngle, "Debug Camera Y Angle", player, NULL, NULL, 0.001f, rmt::PI_2 );
-    radDbgWatchAddFloat( &mDebugMagnitude, "Debug Camera Distance", player, NULL, NULL, 10.0f, 1000.0f );
-    radDbgWatchAddUnsignedInt( &mChanceToBurnout, "Burnout Cam Chance", player, NULL, NULL, 1, 100 );
-    radDbgWatchAddFloat( &mCameraCollisionFudge, "Camera Collision Fudge", player, NULL, NULL, 0.01f, 2.0f );
+    radDbgWatchAddFloat(&mDebugXZAngle, "Debug Camera XZ Angle", player, NULL, NULL, 0.0f, rmt::PI_2);
+    radDbgWatchAddFloat(&mDebugYAngle, "Debug Camera Y Angle", player, NULL, NULL, 0.001f, rmt::PI_2);
+    radDbgWatchAddFloat(&mDebugMagnitude, "Debug Camera Distance", player, NULL, NULL, 10.0f, 1000.0f);
+    radDbgWatchAddUnsignedInt(&mChanceToBurnout, "Burnout Cam Chance", player, NULL, NULL, 1, 100);
+    radDbgWatchAddFloat(&mCameraCollisionFudge, "Camera Collision Fudge", player, NULL, NULL, 0.01f, 2.0f);
 #endif
-MEMTRACK_POP_GROUP( "SuperCamCentral" );
+    MEMTRACK_POP_GROUP("SuperCamCentral");
 }
 
 //=============================================================================
@@ -317,42 +317,40 @@ MEMTRACK_POP_GROUP( "SuperCamCentral" );
 // Return:      N/A.
 //
 //=============================================================================
-SuperCamCentral::~SuperCamCentral()
-{
+SuperCamCentral::~SuperCamCentral() {
     const bool shutdown = true;
-    Init( shutdown ); //Clear everything out.
+    Init(shutdown); //Clear everything out.
 
 #ifdef SUPERCAM_DEBUG
-    if ( mDebugCamera )
+    if (mDebugCamera)
     {
         mDebugCamera->Release();
         mDebugCamera = NULL;
     }
 
-    if ( mFrustrumDrawable )
+    if (mFrustrumDrawable)
     {
         mFrustrumDrawable->Release();
         mFrustrumDrawable = NULL;
     }
 #endif
 
-    if ( mCurrentFOVLocator )
-    {
+    if (mCurrentFOVLocator) {
         mCurrentFOVLocator->Release();
         mCurrentFOVLocator = NULL;
     }
 
-    GetEventManager()->RemoveAll( this );
+    GetEventManager()->RemoveAll(this);
 
 #ifdef DEBUGWATCH
-    radDbgWatchDelete( & ToggleDebugViewCallBack );
-    radDbgWatchDelete( & ToggleCameraForwardsCallBack );
-    radDbgWatchDelete( & ToggleCameraBackwardsCallBack );
-    radDbgWatchDelete( & mDebugXZAngle );
-    radDbgWatchDelete( & mDebugYAngle );
-    radDbgWatchDelete( & mDebugMagnitude );
-    radDbgWatchDelete( & mChanceToBurnout );
-    radDbgWatchDelete( & mCameraCollisionFudge );
+    radDbgWatchDelete(& ToggleDebugViewCallBack);
+    radDbgWatchDelete(& ToggleCameraForwardsCallBack);
+    radDbgWatchDelete(& ToggleCameraBackwardsCallBack);
+    radDbgWatchDelete(& mDebugXZAngle);
+    radDbgWatchDelete(& mDebugYAngle);
+    radDbgWatchDelete(& mDebugMagnitude);
+    radDbgWatchDelete(& mChanceToBurnout);
+    radDbgWatchDelete(& mCameraCollisionFudge);
 #endif
 }
 
@@ -361,51 +359,45 @@ SuperCamCentral::~SuperCamCentral()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool shutdown )
+// Parameters:  (bool shutdown)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::Init( bool shutdown )
-{
+void SuperCamCentral::Init(bool shutdown) {
     // Make sure this is a valid call
-    if( !shutdown && IsInit() ||    // already initialized
-        shutdown && !IsInit() )     // already shut down
+    if (!shutdown && IsInit() ||    // already initialized
+        shutdown && !IsInit())     // already shut down
     {
         return;
     }
 
-    HeapMgr()->PushHeap( GMA_LEVEL_OTHER );
+    HeapMgr()->PushHeap(GMA_LEVEL_OTHER);
 
     unsigned int i;
 
-    if ( mActiveSuperCam )
-    {
+    if (mActiveSuperCam) {
         mActiveSuperCam->Shutdown();
     }
 
-    for ( i = 0; i < MAX_CAMERAS; ++i )
-    {  
-        if ( mSuperCameras[ i ] )
-        {
-            mSuperCameras[ i ]->UnregisterDebugControls();
-            mSuperCameras[ i ]->Release();
+    for (i = 0; i < MAX_CAMERAS; ++i) {
+        if (mSuperCameras[i]) {
+            mSuperCameras[i]->UnregisterDebugControls();
+            mSuperCameras[i]->Release();
         }
 
-        mSuperCameras[ i ] = NULL;
+        mSuperCameras[i] = NULL;
     }
 
     mActiveSuperCam = NULL;
     mActiveSuperCamIndex = 0;
 
-    if ( mCurrentFOVLocator )
-    {
+    if (mCurrentFOVLocator) {
         mCurrentFOVLocator->Release();
         mCurrentFOVLocator = NULL;
     }
 
-    if ( mCamera )
-    {
+    if (mCamera) {
         mCamera->Release();
     }
     mCamera = NULL;
@@ -414,32 +406,32 @@ void SuperCamCentral::Init( bool shutdown )
 
 #ifdef SUPERCAM_DEBUG
     mDebugViewOn = false;
-    mDebugCamera->SetFOV( rmt::DegToRadian( DEBUG_CAM_FOV ), DEBUG_CAM_ASPECT );
-    mDebugCamera->SetNearPlane( DEBUG_CAM_NEAR );
-    mDebugCamera->SetFarPlane( DEBUG_CAM_FAR );
+    mDebugCamera->SetFOV(rmt::DegToRadian(DEBUG_CAM_FOV), DEBUG_CAM_ASPECT);
+    mDebugCamera->SetNearPlane(DEBUG_CAM_NEAR);
+    mDebugCamera->SetFarPlane(DEBUG_CAM_FAR);
 #endif
 
     mIntersectionList.Clear();
 
-    if ( !shutdown )
-    {
+    if (!shutdown) {
         // find mCollisionAreaIndex we can use:
         mCollisionAreaIndex = GetWorldPhysicsManager()->GetCameraCollisionAreaIndex();
         rAssert(mCollisionAreaIndex != -1);
 
-   
+
         // probably a good place to make the camera collision sphere
 
-        const rmt::Vector p(0.0f, 0.0f,0.0f);
+        const rmt::Vector p(0.0f, 0.0f, 0.0f);
         const float sphereRadius = 2.0f;    // TODO - what should this be.
 
         mCameraCollisionVolume = new sim::SphereVolume(p, sphereRadius);
         mCameraCollisionVolume->AddRef();
-        
+
         //mCameraCollisionObject = new(GMA_PERSISTENT)sim::CollisionObject(mCameraCollisionVolume);
         //mCameraCollisionObject->AddRef();
-        
-        mCameraSimState = (sim::ManualSimState*)sim::SimState::CreateManualSimState(mCameraCollisionVolume);
+
+        mCameraSimState = (sim::ManualSimState *) sim::SimState::CreateManualSimState(
+                mCameraCollisionVolume);
         mCameraSimState->AddRef();
 
         mCameraCollisionObject = mCameraSimState->GetCollisionObject();
@@ -448,7 +440,7 @@ void SuperCamCentral::Init( bool shutdown )
         mCameraCollisionObject->SetManualUpdate(true);
         mCameraCollisionObject->SetAutoPair(true);
         mCameraCollisionObject->SetIsStatic(false); // hmmmmmm....
-        
+
         mCameraCollisionObject->SetCollisionEnabled(true);
 
         char buffy[128];
@@ -456,81 +448,71 @@ void SuperCamCentral::Init( bool shutdown )
         mCameraCollisionObject->SetName(buffy);
 
         mCameraSimState->mAIRefIndex = PhysicsAIRef::CameraSphere;
-        mCameraSimState->mAIRefPointer = (void*)this;
+        mCameraSimState->mAIRefPointer = (void *) this;
 
-        
-        GetWorldPhysicsManager()->mCollisionManager->AddCollisionObject(mCameraCollisionObject, mCollisionAreaIndex);
+
+        GetWorldPhysicsManager()->mCollisionManager->AddCollisionObject(mCameraCollisionObject,
+                                                                        mCollisionAreaIndex);
 
         mCameraCollisionCount = 0;
         mCameraTerrainCollisionOffsetFix.Set(0.0f, 0.0f, 0.0f);
 
         mController = new SuperCamController();
-        rAssert( mController );
+        rAssert(mController);
         mController->AddRef();
 
-        InputManager* im = InputManager::GetInstance();
-        rAssert( im ); 
+        InputManager *im = InputManager::GetInstance();
+        rAssert(im);
 
-        int controllerID = GetInputManager()->GetControllerIDforPlayer( mMyNumber );
-        if( controllerID != -1 )
-        {
-            mControllerHandle = im->RegisterMappable( controllerID, mController );
+        int controllerID = GetInputManager()->GetControllerIDforPlayer(mMyNumber);
+        if (controllerID != -1) {
+            mControllerHandle = im->RegisterMappable(controllerID, mController);
 
-            if( mMyNumber == 0 )
-            {
+            if (mMyNumber == 0) {
                 const int NUM_CONTROLLERS = Input::MaxControllers;
 
                 // set secondary SuperCam controller to be = (primary + 1),
                 // and wrap back to controller 0
                 //
                 int secondaryControllerID = (controllerID + 1) % NUM_CONTROLLERS;
-                while ( !(GetInputManager()->GetController( secondaryControllerID )->IsConnected()) )
-                {
+                while (!(GetInputManager()->GetController(secondaryControllerID)->IsConnected())) {
                     secondaryControllerID = (secondaryControllerID + 1) % NUM_CONTROLLERS;
-                    if ( secondaryControllerID == controllerID )
-                    {
+                    if (secondaryControllerID == controllerID) {
                         secondaryControllerID = (secondaryControllerID + 1) % NUM_CONTROLLERS;
                         break;
                     }
                 }
 
-                SuperCam::SetSecondaryControllerID( static_cast<unsigned int>( secondaryControllerID ) );
+                SuperCam::SetSecondaryControllerID(
+                        static_cast<unsigned int>(secondaryControllerID));
             }
         }
 
-        if ( GetGameplayManager()->mIsDemo )
-        {
-            //GetEventManager()->AddListener( this, (EventEnum)(EVENT_LOCATOR + LocatorEvent::CAMERA_CUT) );
+        if (GetGameplayManager()->mIsDemo) {
+            //GetEventManager()->AddListener(this, (EventEnum)(EVENT_LOCATOR + LocatorEvent::CAMERA_CUT));
         }
 
-        p3d::inventory->AddSection( CAMERA_INVENTORY_SECTION );
-    }
-    else
-    {
+        p3d::inventory->AddSection(CAMERA_INVENTORY_SECTION);
+    } else {
         // remove from collision manager
         // empty area?!
 
         mCameraCollisionVolume->Release();
         mCameraCollisionObject->Release();
 
-        GetWorldPhysicsManager()->FreeCollisionAreaIndex( mCollisionAreaIndex );
+        GetWorldPhysicsManager()->FreeCollisionAreaIndex(mCollisionAreaIndex);
 
-        if ( mController )
-        {
-            InputManager* im = InputManager::GetInstance();
-            rAssert( im );
+        if (mController) {
+            InputManager *im = InputManager::GetInstance();
+            rAssert(im);
 
-            if( mControllerHandle != -1 )
-            {
-                int controllerID = GetInputManager()->GetControllerIDforPlayer( mMyNumber );
-                
-                if ( controllerID == -1 )
-                {
-                    im->UnregisterMappable( mController );
-                }
-                else
-                {
-                    im->UnregisterMappable( controllerID, mControllerHandle );
+            if (mControllerHandle != -1) {
+                int controllerID = GetInputManager()->GetControllerIDforPlayer(mMyNumber);
+
+                if (controllerID == -1) {
+                    im->UnregisterMappable(mController);
+                } else {
+                    im->UnregisterMappable(controllerID, mControllerHandle);
                 }
             }
 
@@ -539,20 +521,19 @@ void SuperCamCentral::Init( bool shutdown )
             mControllerHandle = -1;
         }
 
-        if ( mCameraSimState )
-        {
+        if (mCameraSimState) {
             mCameraSimState->Release();
             mCameraSimState = NULL;
         }
 
-        p3d::inventory->RemoveSectionElements( tEntity::MakeUID( CAMERA_INVENTORY_SECTION ) );
-        p3d::inventory->DeleteSection( CAMERA_INVENTORY_SECTION );
+        p3d::inventory->RemoveSectionElements(tEntity::MakeUID(CAMERA_INVENTORY_SECTION));
+        p3d::inventory->DeleteSection(CAMERA_INVENTORY_SECTION);
     }
 
     //This is safe for startup or shutdown.
     CleanupDataChunks();
 
-    HeapMgr()->PopHeap( GMA_LEVEL_OTHER );
+    HeapMgr()->PopHeap(GMA_LEVEL_OTHER);
 }
 
 //=============================================================================
@@ -566,8 +547,7 @@ void SuperCamCentral::Init( bool shutdown )
 //
 //=============================================================================
 
-bool SuperCamCentral::IsInit() const
-{
+bool SuperCamCentral::IsInit() const {
     return mController != NULL;
 }
 
@@ -581,8 +561,7 @@ bool SuperCamCentral::IsInit() const
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::UpdateCameraCollisionSpherePosition(rmt::Vector& p)
-{
+void SuperCamCentral::UpdateCameraCollisionSpherePosition(rmt::Vector &p) {
     mCameraCollisionVolume->mPosition = p;
 
     //mCameraCollisionObject->Update();
@@ -601,13 +580,12 @@ void SuperCamCentral::UpdateCameraCollisionSpherePosition(rmt::Vector& p)
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::UpdateCameraCollisionSphereRadius(float radius)
-{
+void SuperCamCentral::UpdateCameraCollisionSphereRadius(float radius) {
     // this if for Cary
     //
     // not sure how he wants to use it.
 
-     mCameraCollisionVolume->UpdateRadius(radius);
+    mCameraCollisionVolume->UpdateRadius(radius);
 
 }
 
@@ -616,171 +594,165 @@ void SuperCamCentral::UpdateCameraCollisionSphereRadius(float radius)
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds, bool isFirstSubstep )
+// Parameters:  (unsigned int milliseconds, bool isFirstSubstep)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::Update( unsigned int milliseconds, bool isFirstSubstep )
-{
+void SuperCamCentral::Update(unsigned int milliseconds, bool isFirstSubstep) {
 #if defined(RAD_XBOX) || defined(RAD_WIN32)
-    if ( mController && 
+    if (mController &&
          !mCameraToggling && 
-         mController->GetValue( SuperCamController::cameraToggle ) == 1.0f &&
+         mController->GetValue(SuperCamController::cameraToggle) == 1.0f &&
          AllowCameraToggle() && 
          GetGameplayManager()->GetGameType() != GameplayManager::GT_SUPERSPRINT &&
          mActiveSuperCam &&
 #ifdef RAD_WIN32
          mActiveSuperCam->GetType() != SuperCam::PC_CAM &&
 #endif
-         mActiveSuperCam->GetType() != SuperCam::WALKER_CAM )
+         mActiveSuperCam->GetType() != SuperCam::WALKER_CAM)
     {
-        ToggleSuperCam( true );
+        ToggleSuperCam(true);
         mCameraToggling = true;
     }
-    else if ( mController && mCameraToggling && mController->GetValue( SuperCamController::cameraToggle) < 0.5f )
+    else if (mController && mCameraToggling && mController->GetValue(SuperCamController::cameraToggle) <0.5f)
     {
         mCameraToggling = false;
     }
 #endif
 
     //Test to see if we should change cameras or not.
-    if ( mNextSuperCam.incoming )
-    {
+    if (mNextSuperCam.incoming) {
         //Let's see if we should switch cameras.
-        if ( mNextSuperCam.nextCamDelay - static_cast<int>(milliseconds) <= 0 || mActiveSuperCam == NULL || mDoCameraCut )
-        {
-            if ( mDoCameraCut )
-            {
+        if (mNextSuperCam.nextCamDelay - static_cast<int>(milliseconds) <= 0 ||
+            mActiveSuperCam == NULL || mDoCameraCut) {
+            if (mDoCameraCut) {
                 mNextSuperCam.timems = 0;
             }
 
-            SetActiveSuperCam( mNextSuperCam.nextSuperCam, mNextSuperCam.flags, mNextSuperCam.timems );
-        }
-        else
-        {
+            SetActiveSuperCam(mNextSuperCam.nextSuperCam, mNextSuperCam.flags,
+                              mNextSuperCam.timems);
+        } else {
             mNextSuperCam.nextCamDelay -= milliseconds;
         }
     }
 
-    if ( mActiveSuperCam != NULL )
-    {
-  
+    if (mActiveSuperCam != NULL) {
+
 #ifdef PROFILER_ENABLED
         char sCCname[256];
-        sprintf( sCCname, "SCC: %d Update", mMyNumber );
-        BEGIN_PROFILE( sCCname )
+        sprintf(sCCname, "SCC: %d Update", mMyNumber);
+        BEGIN_PROFILE(sCCname)
 #endif
 #if defined(DEBUGMENU) && defined(SUPERCAM_DEBUG)
-        if ( BEGIN_DEBUGINFO_SECTION("Super Cam Debug") )
+        if (BEGIN_DEBUGINFO_SECTION("Super Cam Debug"))
         {
-            DEBUGINFO_ADDLINE( rmt::Vector( 0,0,0 ), rmt::Vector(10.0f,0,0), tColour( 255, 0, 0 ) );
-            DEBUGINFO_ADDLINE( rmt::Vector( 0,0,0 ), rmt::Vector(0,10.0f,0), tColour( 0, 255, 0 ) );
-            DEBUGINFO_ADDLINE( rmt::Vector( 0,0,0 ), rmt::Vector(0,0,10.0f), tColour( 0, 0, 255 ) );
+            DEBUGINFO_ADDLINE(rmt::Vector(0,0,0), rmt::Vector(10.0f,0,0), tColour(255, 0, 0));
+            DEBUGINFO_ADDLINE(rmt::Vector(0,0,0), rmt::Vector(0,10.0f,0), tColour(0, 255, 0));
+            DEBUGINFO_ADDLINE(rmt::Vector(0,0,0), rmt::Vector(0,0,10.0f), tColour(0, 0, 255));
         }
 #endif
 
         //Do the reverse cam thing if we're using the followcam
-        if ( ( mActiveSuperCam->GetType() == SuperCam::NEAR_FOLLOW_CAM ||
-               mActiveSuperCam->GetType() == SuperCam::FAR_FOLLOW_CAM ) &&
-             static_cast<FollowCam*>(mActiveSuperCam)->ShouldReverse() )
-        {
-            if ( !mNextSuperCam.incoming || mSuperCameras[mNextSuperCam.nextSuperCam]->GetType() != SuperCam::REVERSE_CAM )
-            {
-                SelectSuperCam( SuperCam::REVERSE_CAM, FORCE | NO_TRANS, 0 );
+        if ((mActiveSuperCam->GetType() == SuperCam::NEAR_FOLLOW_CAM ||
+             mActiveSuperCam->GetType() == SuperCam::FAR_FOLLOW_CAM) &&
+            static_cast<FollowCam *>(mActiveSuperCam)->ShouldReverse()) {
+            if (!mNextSuperCam.incoming ||
+                mSuperCameras[mNextSuperCam.nextSuperCam]->GetType() != SuperCam::REVERSE_CAM) {
+                SelectSuperCam(SuperCam::REVERSE_CAM, FORCE | NO_TRANS, 0);
             }
-        }
-        else if ( mActiveSuperCam->GetType() == SuperCam::REVERSE_CAM && mActiveSuperCam->CanSwitch() )
-        {
-            if ( !mNextSuperCam.incoming || 
-                 ( mSuperCameras[mNextSuperCam.nextSuperCam]->GetType() != SuperCam::NEAR_FOLLOW_CAM && 
-                   mSuperCameras[mNextSuperCam.nextSuperCam]->GetType() != SuperCam::FAR_FOLLOW_CAM ) )
-            {
-                SelectSuperCam( SuperCam::FOLLOW_CAM, FORCE | NO_TRANS, 0 );
+        } else if (mActiveSuperCam->GetType() == SuperCam::REVERSE_CAM &&
+                   mActiveSuperCam->CanSwitch()) {
+            if (!mNextSuperCam.incoming ||
+                (mSuperCameras[mNextSuperCam.nextSuperCam]->GetType() !=
+                 SuperCam::NEAR_FOLLOW_CAM &&
+                 mSuperCameras[mNextSuperCam.nextSuperCam]->GetType() !=
+                 SuperCam::FAR_FOLLOW_CAM)) {
+                SelectSuperCam(SuperCam::FOLLOW_CAM, FORCE | NO_TRANS, 0);
             }
         }
 
-        if ( mDoCameraCut )
-        {
+        if (mDoCameraCut) {
             mActiveSuperCam->DoCameraCut();
             mDoCameraCut = false;
         }
 
-        if ( mController )
-        {
+        if (mController) {
             //Test for lookback.
-            float lookBack = mController->GetValue( SuperCamController::lookBack );
+            float lookBack = mController->GetValue(SuperCamController::lookBack);
 
 #if defined(RAD_GAMECUBE) || defined(RAD_XBOX)  //Both now!
-            float altLookBack = mController->GetValue( SuperCamController::altLookBack );
+            float altLookBack = mController->GetValue(SuperCamController::altLookBack);
 
-            lookBack = mController->GetAxisValue( SuperCamController::stickY );
+            lookBack = mController->GetAxisValue(SuperCamController::stickY);
 #if defined(RAD_XBOX)
-            lookBack = lookBack < -0.8f ? -1.0f : 0.0f;
+            lookBack = lookBack <-0.8f ? -1.0f : 0.0f;
 #endif
 
-            if ( altLookBack == 1.0f || lookBack == -1.0f )
+            if (altLookBack == 1.0f || lookBack == -1.0f)
 #elif defined(RAD_WIN32)
-            if( lookBack > 0.8f )
+            if(lookBack> 0.8f)
 #else //This is PS2
-            if ( mController->GetValue( SuperCamController::l2) >= 0.9f && mController->GetValue( SuperCamController::r2 ) >= 0.9f )
-            {
+            if (mController->GetValue(SuperCamController::l2) >= 0.9f &&
+                mController->GetValue(SuperCamController::r2) >= 0.9f) {
                 lookBack = 1.0f;
             }
 
-            if ( rmt::Fabs( lookBack ) > STICK_DEAD_ZONE )
+            if (rmt::Fabs(lookBack) > STICK_DEAD_ZONE)
 #endif
             {
                 //This will be reset at end of use.
-                mActiveSuperCam->LookBack( true );
+                mActiveSuperCam->LookBack(true);
             }
         }
 
 #ifdef PROFILER_ENABLED
         char sCname[256];
-        sprintf( sCname, "SC: %s #%d Update", mActiveSuperCam->GetName(), mMyNumber );
-        BEGIN_PROFILE( sCname )
+        sprintf(sCname, "SC: %s #%d Update", mActiveSuperCam->GetName(), mMyNumber);
+        BEGIN_PROFILE(sCname)
 #endif
 
-        if ( isFirstSubstep )
-        {
+        if (isFirstSubstep) {
             mIntersectionList.Clear();
 
             rmt::Vector targetPos;
-            mTarget->GetPosition( &targetPos );
-            mIntersectionList.FillIntersectionListStatics( targetPos, mActiveSuperCam->GetIntersectionRadius() );
-            if ( mTarget->IsCar() )
-            {
-                Vehicle* playerCar = GetGameplayManager()->GetCurrentVehicle();
-                mIntersectionList.FillIntersectionListDynamics( targetPos, mActiveSuperCam->GetIntersectionRadius(), false, playerCar );
-            }
-            else
-            {
-                Character* playerCharacter = GetCharacterManager()->GetCharacter( 0 );
-                mIntersectionList.FillIntersectionListDynamics( targetPos, mActiveSuperCam->GetIntersectionRadius(), false, playerCharacter );
-                mIntersectionList.FillIntersectionListAnimPhys( targetPos, mActiveSuperCam->GetIntersectionRadius() );
+            mTarget->GetPosition(&targetPos);
+            mIntersectionList.FillIntersectionListStatics(targetPos,
+                                                          mActiveSuperCam->GetIntersectionRadius());
+            if (mTarget->IsCar()) {
+                Vehicle *playerCar = GetGameplayManager()->GetCurrentVehicle();
+                mIntersectionList.FillIntersectionListDynamics(targetPos,
+                                                               mActiveSuperCam->GetIntersectionRadius(),
+                                                               false, playerCar);
+            } else {
+                Character *playerCharacter = GetCharacterManager()->GetCharacter(0);
+                mIntersectionList.FillIntersectionListDynamics(targetPos,
+                                                               mActiveSuperCam->GetIntersectionRadius(),
+                                                               false, playerCharacter);
+                mIntersectionList.FillIntersectionListAnimPhys(targetPos,
+                                                               mActiveSuperCam->GetIntersectionRadius());
             }
         }
 
         //Update the currently active supercam.
-        #ifdef DEBUGWATCH
-            #ifdef PRINTCAMERANAMES
-                mActiveSuperCam->PrintClassName();
-            #endif
-        #endif
-        mActiveSuperCam->Update( milliseconds );
+#ifdef DEBUGWATCH
+#ifdef PRINTCAMERANAMES
+        mActiveSuperCam->PrintClassName();
+#endif
+#endif
+        mActiveSuperCam->Update(milliseconds);
 
 #ifdef PROFILER_ENABLED
-        END_PROFILE( sCname )
+        END_PROFILE(sCname)
 #endif
 
 #if defined(DEBUGMENU) && defined(SUPERCAM_DEBUG)
         //This displays the name of the active SuperCam
-        DEBUGINFO_ADDSCREENTEXTVECTOR( mActiveSuperCam->GetName(), DEBUG_NAME_POS )
+        DEBUGINFO_ADDSCREENTEXTVECTOR(mActiveSuperCam->GetName(), DEBUG_NAME_POS)
         END_DEBUGINFO_SECTION;
 #endif
 #ifdef PROFILER_ENABLED
-        END_PROFILE( sCCname )
+        END_PROFILE(sCCname)
 #endif
 
         //Hmmm  Must think about this.  This could be a virtual position and
@@ -788,19 +760,18 @@ void SuperCamCentral::Update( unsigned int milliseconds, bool isFirstSubstep )
         rmt::Vector pos;
         mActiveSuperCam->GetPosition(&pos);
 
-        if ( mActiveSuperCam->GetType() == SuperCam::WALKER_CAM ||
-             mActiveSuperCam->GetType() == SuperCam::FIRST_PERSON_CAM )
-        {
+        if (mActiveSuperCam->GetType() == SuperCam::WALKER_CAM ||
+            mActiveSuperCam->GetType() == SuperCam::FIRST_PERSON_CAM) {
             rmt::Vector heading;
-            mActiveSuperCam->GetHeading( &heading );
+            mActiveSuperCam->GetHeading(&heading);
             heading.NormalizeSafe();
-            heading.Scale( mActiveSuperCam->GetCollisionRadius() );
+            heading.Scale(mActiveSuperCam->GetCollisionRadius());
 
-            pos.Add( heading );
+            pos.Add(heading);
         }
 
         UpdateCameraCollisionSpherePosition(pos);
-        UpdateCameraCollisionSphereRadius( mActiveSuperCam->GetCollisionRadius() );
+        UpdateCameraCollisionSphereRadius(mActiveSuperCam->GetCollisionRadius());
     }
 }
 
@@ -815,59 +786,55 @@ void SuperCamCentral::Update( unsigned int milliseconds, bool isFirstSubstep )
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::PreCollisionPrep()
-{
+void SuperCamCentral::PreCollisionPrep() {
     mCameraCollisionCount = 0;
-    
+
     mCameraTerrainCollisionOffsetFix.Set(0.0f, 0.0f, 0.0f);
     // new
     // special vector just for ground collision
-    
+
     // do get intersects here.
-    
+
     bool foundTri = false;
     bool foundPlane = false;
-    
+
     rmt::Vector closestTriNormal, closestTriPosn;
     rmt::Vector planeNormal, planePosn;
     rmt::Vector fudgedCollisionPos = mCameraCollisionVolume->mPosition;
 //    fudgedCollisionPos.y -= 1.0f;  //Lower it down.
 
-    GetIntersectManager()->FindIntersection(fudgedCollisionPos, 
+    GetIntersectManager()->FindIntersection(fudgedCollisionPos,
                                             foundPlane,
                                             planeNormal,
-                                            planePosn );
+                                            planePosn);
 
 
     // hmmm....
     // if we get both a tri and a plane, use the one with the more upright normal?
-    
+
     // for starters, just use plane
-    
-    if(foundPlane)
-    {
-        mCameraTerrainCollisionOffsetFix = planeNormal;  
+
+    if (foundPlane) {
+        mCameraTerrainCollisionOffsetFix = planeNormal;
         //mCameraTerrainCollisionOffsetFix.Set(0.0f, 1.0f, 0.0f);
-        
+
         rmt::Vector uptest(0.0f, 1.0f, 0.0f);
         rAssert(planeNormal.DotProduct(uptest) > 0.0f);
-        
+
         float y = planePosn.y;
         float penetratingDepth = y - (fudgedCollisionPos.y - mCameraCollisionVolume->mSphereRadius);
-        
-        if(penetratingDepth > 0.0f)        
-        {
-         
-            float fixAlongPlaneNormal = penetratingDepth / rmt::Fabs( (planeNormal.DotProduct(uptest))); // the fabs should be redundant here
 
-            mCameraTerrainCollisionOffsetFix.Scale(fixAlongPlaneNormal);            
+        if (penetratingDepth > 0.0f) {
 
+            float fixAlongPlaneNormal = penetratingDepth / rmt::Fabs(
+                    (planeNormal.DotProduct(uptest))); // the fabs should be redundant here
+
+            mCameraTerrainCollisionOffsetFix.Scale(fixAlongPlaneNormal);
+
+        } else {
+            mCameraTerrainCollisionOffsetFix.Set(0.0f, 0.0f, 0.0f);
         }
-        else
-        {
-            mCameraTerrainCollisionOffsetFix.Set( 0.0f, 0.0f, 0.0f );
-        }
-    
+
     }
 }
 
@@ -882,21 +849,19 @@ void SuperCamCentral::PreCollisionPrep()
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::AddCameraCollisionOffset(rmt::Vector& fixOffset)
-{
-    rAssertMsg( mCameraCollisionCount < MAX_COLLISIONS, "Too many collisions for the camera!  This one is ignored! \n" );
-    if ( mCameraCollisionCount >= MAX_COLLISIONS )
-    {
+void SuperCamCentral::AddCameraCollisionOffset(rmt::Vector &fixOffset) {
+    rAssertMsg(mCameraCollisionCount < MAX_COLLISIONS,
+               "Too many collisions for the camera!  This one is ignored! \n");
+    if (mCameraCollisionCount >= MAX_COLLISIONS) {
         return;
     }
 
-    if ( rmt::Epsilon( fixOffset.MagnitudeSqr(), 0.0000001f ) )
-    {
+    if (rmt::Epsilon(fixOffset.MagnitudeSqr(), 0.0000001f)) {
         //Too small to care about.
         return;
     }
 
-//    if ( fixOffset.DotProduct( rmt::Vector( 0.0f, -1.0f, 0.0f ) ) > 0.0f )
+//    if (fixOffset.DotProduct(rmt::Vector(0.0f, -1.0f, 0.0f))> 0.0f)
 //    {
 //        //We don't get forced down.
 //        return;
@@ -906,69 +871,61 @@ void SuperCamCentral::AddCameraCollisionOffset(rmt::Vector& fixOffset)
     rmt::Vector normalTestFix = fixOffset;
     normalTestFix.NormalizeSafe();
     unsigned int i;
-    for ( i = 0; i < mCameraCollisionCount; ++i )
-    {
+    for (i = 0; i < mCameraCollisionCount; ++i) {
         const float dotTest = 0.7f;
-        float dotResult = normalTestFix.DotProduct( mCameraCollisionOffsetFix[ i ] );
-        if ( dotResult >= dotTest )
-        {
+        float dotResult = normalTestFix.DotProduct(mCameraCollisionOffsetFix[i]);
+        if (dotResult >= dotTest) {
             //Throw me away please.
             return;
         }
     }
 
     //Fuge-ma scale
-    fixOffset.Scale( 1.0f + mCameraCollisionFudge );
+    fixOffset.Scale(1.0f + mCameraCollisionFudge);
 
-    if ( mCameraCollisionCount < MAX_COLLISIONS )
-    {
-        mCameraCollisionOffsetFix[ mCameraCollisionCount ] = fixOffset;
+    if (mCameraCollisionCount < MAX_COLLISIONS) {
+        mCameraCollisionOffsetFix[mCameraCollisionCount] = fixOffset;
         mCameraCollisionCount++;
     }
 }
-    
+
 
 //=============================================================================
 // SuperCamCentral::RegisterSuperCam
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( SuperCam* cam )
+// Parameters:  (SuperCam* cam)
 //
 // Return:      unsigned int 
 //
 //=============================================================================
-unsigned int SuperCamCentral::RegisterSuperCam( SuperCam* cam )
-{
-    rAssert( cam->GetType() < SuperCam::INVALID );
+unsigned int SuperCamCentral::RegisterSuperCam(SuperCam *cam) {
+    rAssert(cam->GetType() < SuperCam::INVALID);
 
     cam->AddRef();
 
-    cam->SetPlayerID( (int)mMyNumber );
+    cam->SetPlayerID((int) mMyNumber);
 
     unsigned int i;
     bool added = false;
 
-    for ( i = 0; i < MAX_CAMERAS; ++i )
-    {  
-        if ( mSuperCameras[ i ] == NULL )
-        {
-            mSuperCameras[ i ] = cam;
+    for (i = 0; i < MAX_CAMERAS; ++i) {
+        if (mSuperCameras[i] == NULL) {
+            mSuperCameras[i] = cam;
             added = true;
             break;
         }
     }
 
-    rAssert( added );
-    
-    if ( mCamera )
-    {
-        cam->SetCamera( mCamera );
+    rAssert(added);
+
+    if (mCamera) {
+        cam->SetCamera(mCamera);
     }
 
-    if ( mTarget )
-    {
-        cam->SetTarget( mTarget );
+    if (mTarget) {
+        cam->SetTarget(mTarget);
     }
 
     //DO this last in case the init needs to know about the cameras.
@@ -977,7 +934,7 @@ unsigned int SuperCamCentral::RegisterSuperCam( SuperCam* cam )
     // increment number of registered super cams
     mNumRegisteredSuperCams++;
 
-    cam->SetRegistered( true );
+    cam->SetRegistered(true);
 
     return i;
 }
@@ -987,63 +944,55 @@ unsigned int SuperCamCentral::RegisterSuperCam( SuperCam* cam )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( SuperCam* cam )
+// Parameters:  (SuperCam* cam)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::UnregisterSuperCam( SuperCam* cam )
-{
-    rAssert( cam != NULL );
-    if ( cam == NULL )
+void SuperCamCentral::UnregisterSuperCam(SuperCam *cam) {
+    rAssert(cam != NULL);
+    if (cam == NULL)
         return;
 
-    rAssert( cam->GetType() < SuperCam::INVALID );
+    rAssert(cam->GetType() < SuperCam::INVALID);
 
     bool found = false;
     unsigned int i;
-    for ( i = 0; i < MAX_CAMERAS; ++i )
-    {  
-        if ( mSuperCameras[ i ] == cam )
-        {
-            mSuperCameras[ i ]->SetRegistered( false );
-            mSuperCameras[ i ]->UnregisterDebugControls();
-            mSuperCameras[ i ]->Release();
-            mSuperCameras[ i ] = NULL;
+    for (i = 0; i < MAX_CAMERAS; ++i) {
+        if (mSuperCameras[i] == cam) {
+            mSuperCameras[i]->SetRegistered(false);
+            mSuperCameras[i]->UnregisterDebugControls();
+            mSuperCameras[i]->Release();
+            mSuperCameras[i] = NULL;
 
             found = true;
             break;
         }
     }
 
-    if ( !found )
-    {
+    if (!found) {
         return;
     }
 
     //If there is no incoming camera and the current cam is the active one, let's choose a new
     //one intelligently.
-    if ( !mNextSuperCam.incoming && mActiveSuperCam == cam )
-    {
+    if (!mNextSuperCam.incoming && mActiveSuperCam == cam) {
         //This one is gone now.
         mActiveSuperCam = NULL;
 
         unsigned int timems = 7000;
         int extraFlags = 0;
-        if ( mDoCameraCut )
-        {
+        if (mDoCameraCut) {
             timems = 0;
             extraFlags = CUT;
         }
 
         //Should do something smart here.  How about this...
-        SelectSuperCam( SuperCam::DEFAULT_CAM, FORCE | extraFlags, timems );
+        SelectSuperCam(SuperCam::DEFAULT_CAM, FORCE | extraFlags, timems);
 
-        rAssert( mActiveSuperCam );
-    }
-    else if ( mNextSuperCam.incoming && mActiveSuperCam == cam )
-    {
-        SetActiveSuperCam( mNextSuperCam.nextSuperCam, mNextSuperCam.flags, mNextSuperCam.timems );
+        rAssert(mActiveSuperCam);
+    } else if (mNextSuperCam.incoming && mActiveSuperCam == cam) {
+        SetActiveSuperCam(mNextSuperCam.nextSuperCam, mNextSuperCam.flags, mNextSuperCam.timems);
     }
 
     // decrement number of registered super cams
@@ -1055,16 +1004,15 @@ void SuperCamCentral::UnregisterSuperCam( SuperCam* cam )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int which )
+// Parameters:  (unsigned int which)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::UnregisterSuperCam( unsigned int which )
-{
-    rAssert( mSuperCameras[ which ] != NULL );
+void SuperCamCentral::UnregisterSuperCam(unsigned int which) {
+    rAssert(mSuperCameras[which] != NULL);
 
-    UnregisterSuperCam( mSuperCameras[ which ] );
+    UnregisterSuperCam(mSuperCameras[which]);
 }
 
 //=============================================================================        
@@ -1077,8 +1025,7 @@ void SuperCamCentral::UnregisterSuperCam( unsigned int which )
 // Return:      number of registered super cams 
 //
 //=============================================================================
-unsigned int SuperCamCentral::GetNumRegisteredSuperCams() const
-{
+unsigned int SuperCamCentral::GetNumRegisteredSuperCams() const {
     return mNumRegisteredSuperCams;
 }
 
@@ -1092,8 +1039,7 @@ unsigned int SuperCamCentral::GetNumRegisteredSuperCams() const
 // Return:      index to active super cam
 //
 //=============================================================================
-unsigned int SuperCamCentral::GetActiveSuperCamIndex() const
-{
+unsigned int SuperCamCentral::GetActiveSuperCamIndex() const {
     return mActiveSuperCamIndex;
 }
 
@@ -1107,11 +1053,10 @@ unsigned int SuperCamCentral::GetActiveSuperCamIndex() const
 // Return:      reference to specified super cam
 //
 //=============================================================================
-SuperCam* SuperCamCentral::GetSuperCam( unsigned int which ) const
-{
-    rAssert( which < MAX_CAMERAS );
+SuperCam *SuperCamCentral::GetSuperCam(unsigned int which) const {
+    rAssert(which < MAX_CAMERAS);
 
-    return mSuperCameras[ which ];
+    return mSuperCameras[which];
 }
 
 //=============================================================================        
@@ -1124,18 +1069,15 @@ SuperCam* SuperCamCentral::GetSuperCam( unsigned int which ) const
 // Return:      if found, return reference to super cam; otherwise, return NULL
 //
 //=============================================================================
-SuperCam* SuperCamCentral::GetSuperCam( SuperCam::Type type ) const
-{
-    SuperCam* superCam = NULL;
+SuperCam *SuperCamCentral::GetSuperCam(SuperCam::Type type) const {
+    SuperCam *superCam = NULL;
 
-    for( int i = 0; i < MAX_CAMERAS; i++ )
-    {
-        if( mSuperCameras[ i ] != NULL &&
-            mSuperCameras[ i ]->GetType() == type )
-        {
+    for (int i = 0; i < MAX_CAMERAS; i++) {
+        if (mSuperCameras[i] != NULL &&
+            mSuperCameras[i]->GetType() == type) {
             // found it!
             //
-            superCam = mSuperCameras[ i ];
+            superCam = mSuperCameras[i];
 
             break;
         }
@@ -1149,47 +1091,34 @@ SuperCam* SuperCamCentral::GetSuperCam( SuperCam::Type type ) const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool forwards, bool quickTransition )
+// Parameters:  (bool forwards, bool quickTransition)
 //
 // Return:      bool 
 //
 //=============================================================================
-bool SuperCamCentral::ToggleSuperCam( bool forwards, bool quickTransition )
-{
-    SuperCam::Type* cameras = NULL;
+bool SuperCamCentral::ToggleSuperCam(bool forwards, bool quickTransition) {
+    SuperCam::Type *cameras = NULL;
     unsigned int numCameras = 0;
-    if ( mTarget->IsCar() )
-    {
-        if ( GetGameplayManager()->IsSuperSprint() )
-        {
+    if (mTarget->IsCar()) {
+        if (GetGameplayManager()->IsSuperSprint()) {
             cameras = SUPER_SPRINT_CAMERAS;
             numCameras = NUM_SUPERSPRINT_CAMS;
-        }
-        else
-        {
+        } else {
             cameras = CAMERAS_FOR_DRIVING;
 
-            if( GetCheatInputSystem()->IsCheatEnabled( CHEAT_ID_UNLOCK_CAMERAS ) )
-            {
+            if (GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_UNLOCK_CAMERAS)) {
                 numCameras = NUM_CAMERAS_FOR_DRIVING;
-            }
-            else
-            {
+            } else {
                 numCameras = NUM_CAMERAS_FOR_DRIVING_WITHOUT_CHEAT;
             }
         }
 
-    }
-    else
-    {
+    } else {
         cameras = CAMERAS_FOR_WALKING;
 
-        if( GetCheatInputSystem()->IsCheatEnabled( CHEAT_ID_UNLOCK_CAMERAS ) )
-        {
+        if (GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_UNLOCK_CAMERAS)) {
             numCameras = NUM_CAMERAS_FOR_WALKING;
-        }
-        else
-        {
+        } else {
             numCameras = NUM_CAMERAS_FOR_WALKING_WITHOUT_CHEAT;
         }
     }
@@ -1197,10 +1126,8 @@ bool SuperCamCentral::ToggleSuperCam( bool forwards, bool quickTransition )
     unsigned int start = 0;
 
     unsigned int i;
-    for ( i = 0; i < numCameras; ++i )
-    {
-        if ( mActiveSuperCam && cameras[ i ] == mActiveSuperCam->GetType() )
-        {
+    for (i = 0; i < numCameras; ++i) {
+        if (mActiveSuperCam && cameras[i] == mActiveSuperCam->GetType()) {
             start = i;
             break;
         }
@@ -1208,16 +1135,13 @@ bool SuperCamCentral::ToggleSuperCam( bool forwards, bool quickTransition )
 
     unsigned int current;
 
-    if ( forwards )
-    {
-        current = (start+1) % numCameras;
-    }
-    else
-    {
-        current = ((start-1) + numCameras) % numCameras;
+    if (forwards) {
+        current = (start + 1) % numCameras;
+    } else {
+        current = ((start - 1) + numCameras) % numCameras;
     }
 
-    SelectSuperCam( cameras[ current ], SuperCamCentral::CUT | SuperCamCentral::QUICK, 0 );
+    SelectSuperCam(cameras[current], SuperCamCentral::CUT | SuperCamCentral::QUICK, 0);
 
     return true;
 }
@@ -1227,88 +1151,73 @@ bool SuperCamCentral::ToggleSuperCam( bool forwards, bool quickTransition )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int which, int flags, unsigned int timems )
+// Parameters:  (unsigned int which, int flags, unsigned int timems)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::SelectSuperCam( unsigned int which, int flags, unsigned int timems )
-{
-    if ( mNastyHypeCamHackEnabled )
-    {
+void SuperCamCentral::SelectSuperCam(unsigned int which, int flags, unsigned int timems) {
+    if (mNastyHypeCamHackEnabled) {
         //This is for the frickin' camera on level 6 where the user should never
         //go, but can and will enevitably fuck the camera system.
         return;
     }
 
-    if ( which < MAX_CAMERAS && mSuperCameras[ which ] != NULL )
-    {
-        SuperCam::Type whichType = mSuperCameras[ which ]->GetType();
+    if (which < MAX_CAMERAS && mSuperCameras[which] != NULL) {
+        SuperCam::Type whichType = mSuperCameras[which]->GetType();
 
-        if ( !IsLegalType( whichType ) )
-        {
+        if (!IsLegalType(whichType)) {
             //This is a fix to trying to select cams you shouldn't (hack)
             //You can't switch to a camera that isn't legal.
-            SelectSuperCam( SuperCam::DEFAULT_CAM, flags, timems );
+            SelectSuperCam(SuperCam::DEFAULT_CAM, flags, timems);
             return;
         }
 
-        if( whichType == SuperCam::CONVERSATION_CAM )
-        {
-            ConversationCam* conv = dynamic_cast< ConversationCam* >( mSuperCameras[ which ] );
-            rAssert( conv != NULL );
+        if (whichType == SuperCam::CONVERSATION_CAM) {
+            ConversationCam *conv = dynamic_cast<ConversationCam *>(mSuperCameras[which]);
+            rAssert(conv != NULL);
             conv->LockCharacterPositions();
-        }
-        else if ( whichType == SuperCam::BUMPER_CAM &&
-                  mTarget->IsCar() )
-        {
+        } else if (whichType == SuperCam::BUMPER_CAM &&
+                   mTarget->IsCar()) {
             //Always force.
             flags |= FORCE;
 
             //No bumper cam for RC Car.
-            Vehicle* target = dynamic_cast<Vehicle*>( mTarget );
-            rAssert( target );
+            Vehicle *target = dynamic_cast<Vehicle *>(mTarget);
+            rAssert(target);
 
-            if ( target->mVehicleID == VehicleEnum::DUNE_V )
-            {
-                SelectSuperCam( SuperCam::NEAR_FOLLOW_CAM, flags, timems );
+            if (target->mVehicleID == VehicleEnum::DUNE_V) {
+                SelectSuperCam(SuperCam::NEAR_FOLLOW_CAM, flags, timems);
                 return;
             }
         }
 
         SuperCam::Type activeType;
-        if( mActiveSuperCam != NULL )
-        {
+        if (mActiveSuperCam != NULL) {
             activeType = mActiveSuperCam->GetType();
         }
 
-        if ( mActiveSuperCam == NULL || timems == 0 )
-        {
-            SetActiveSuperCam( which, flags, timems );
-        }
-        else if(
-            ( mSuperCameras[ which ]->GetType() == SuperCam::ANIMATED_CAM ) ||
-            ( mSuperCameras[ which ]->GetType() == SuperCam::RELATIVE_ANIMATED_CAM )
-            )
-        {
-            AnimatedCam* cam = static_cast< AnimatedCam* >( mSuperCameras[ which ] );
-            SuperCam::Type currentType = mSuperCameras[ mActiveSuperCamIndex ]->GetType();
-            cam->SetNextCameraType( currentType );
-            SetActiveSuperCam( which, flags, timems );
-        }
-        else if( mActiveSuperCam && ( activeType == SuperCam::ANIMATED_CAM ) && ( ( flags & FORCE ) == 0x00 ) )
-        {
-            AnimatedCam* cam = dynamic_cast< AnimatedCam* >( GetSuperCam( SuperCam::ANIMATED_CAM ) );
-            rAssert( cam != NULL );
-            cam->SetNextCameraType( mSuperCameras[ which ]->GetType() );
-        }
-        else
-        {
+        if (mActiveSuperCam == NULL || timems == 0) {
+            SetActiveSuperCam(which, flags, timems);
+        } else if (
+                (mSuperCameras[which]->GetType() == SuperCam::ANIMATED_CAM) ||
+                (mSuperCameras[which]->GetType() == SuperCam::RELATIVE_ANIMATED_CAM)
+                ) {
+            AnimatedCam *cam = static_cast<AnimatedCam *>(mSuperCameras[which]);
+            SuperCam::Type currentType = mSuperCameras[mActiveSuperCamIndex]->GetType();
+            cam->SetNextCameraType(currentType);
+            SetActiveSuperCam(which, flags, timems);
+        } else if (mActiveSuperCam && (activeType == SuperCam::ANIMATED_CAM) &&
+                   ((flags & FORCE) == 0x00)) {
+            AnimatedCam *cam = dynamic_cast<AnimatedCam *>(GetSuperCam(SuperCam::ANIMATED_CAM));
+            rAssert(cam != NULL);
+            cam->SetNextCameraType(mSuperCameras[which]->GetType());
+        } else {
             //Crap..  Let's eliminate this...
             /*
             mNextSuperCam.nextSuperCam = which;
 
-            if ( timems == 0 )
+            if (timems == 0)
             {
                 mNextSuperCam.nextCamDelay = 0;
             }
@@ -1322,7 +1231,7 @@ void SuperCamCentral::SelectSuperCam( unsigned int which, int flags, unsigned in
             mNextSuperCam.incoming = true;
             */
 
-            SetActiveSuperCam( which, flags, timems );
+            SetActiveSuperCam(which, flags, timems);
         }
     }
 }
@@ -1332,50 +1241,38 @@ void SuperCamCentral::SelectSuperCam( unsigned int which, int flags, unsigned in
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( SuperCam::Type type, int flags, unsigned int timems )
+// Parameters:  (SuperCam::Type type, int flags, unsigned int timems)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::SelectSuperCam( SuperCam::Type type, int flags, unsigned int timems )
-{
-    if ( type == SuperCam::DEFAULT_CAM )
-    {
-		if( mTarget == NULL )
-		{
-			type = SuperCam::FOLLOW_CAM;
-		}
-		else if ( mTarget->IsCar() )
-		{
-			if ( GetGameplayManager()->mIsDemo )
-			{
-				type =  SuperCam::FOLLOW_CAM;
-			}
-			else if ( GetGameplayManager()->IsSuperSprint() )
-			{
-				type = SuperCam::SUPER_SPRINT_CAM;
-			}
-			else
-			{
-				type =  SuperCam::FOLLOW_CAM;
-			}
-		}
-		else
-		{
+void SuperCamCentral::SelectSuperCam(SuperCam::Type type, int flags, unsigned int timems) {
+    if (type == SuperCam::DEFAULT_CAM) {
+        if (mTarget == NULL) {
+            type = SuperCam::FOLLOW_CAM;
+        } else if (mTarget->IsCar()) {
+            if (GetGameplayManager()->mIsDemo) {
+                type = SuperCam::FOLLOW_CAM;
+            } else if (GetGameplayManager()->IsSuperSprint()) {
+                type = SuperCam::SUPER_SPRINT_CAM;
+            } else {
+                type = SuperCam::FOLLOW_CAM;
+            }
+        } else {
 #ifdef RAD_WIN32
             type =  SuperCam::ON_FOOT_CAM;
 #else
-            type =  SuperCam::WALKER_CAM;
+            type = SuperCam::WALKER_CAM;
 #endif
-		}
+        }
     }
 
 #ifdef RAD_WIN32
-    if ( type == SuperCam::ON_FOOT_CAM )
+    if (type == SuperCam::ON_FOOT_CAM)
     {
         //Ziemek?   Check the PC cam flag here.
         bool bMouseLookMode = GetInputManager()->GetController(0)->IsMouseLookOn();
-        if ( bMouseLookMode ) //Or PC flag is set
+        if (bMouseLookMode) //Or PC flag is set
         {
             type = SuperCam::PC_CAM;
         }
@@ -1386,32 +1283,26 @@ void SuperCamCentral::SelectSuperCam( SuperCam::Type type, int flags, unsigned i
     }
 #endif
 
-    if ( type == SuperCam::FOLLOW_CAM )
-    {
+    if (type == SuperCam::FOLLOW_CAM) {
         //Find the preferred type
         type = mPreferredFollowCam;
-    }
-    else if ( type == SuperCam::NEAR_FOLLOW_CAM || type == SuperCam::FAR_FOLLOW_CAM || type == SuperCam::BUMPER_CAM || type == SuperCam::COMEDY_CAM )
-    {
+    } else if (type == SuperCam::NEAR_FOLLOW_CAM || type == SuperCam::FAR_FOLLOW_CAM ||
+               type == SuperCam::BUMPER_CAM || type == SuperCam::COMEDY_CAM) {
         //Set the new preferred type
         mPreferredFollowCam = type;
     }
 
     //If it still ain't legal, make it legal.
-    if ( !IsLegalType( type ) )
-    {
+    if (!IsLegalType(type)) {
         type = SuperCam::FAR_FOLLOW_CAM;
         mPreferredFollowCam = type;
     }
 
     unsigned int i;
-    for ( i = 0; i < MAX_CAMERAS; ++i )
-    {
-        if ( mSuperCameras[ i ] != NULL )
-        {
-            if ( mSuperCameras[ i ]->GetType() == type )
-            {
-                SelectSuperCam( i, flags, timems );
+    for (i = 0; i < MAX_CAMERAS; ++i) {
+        if (mSuperCameras[i] != NULL) {
+            if (mSuperCameras[i]->GetType() == type) {
+                SelectSuperCam(i, flags, timems);
                 break;
             }
         }
@@ -1423,25 +1314,20 @@ void SuperCamCentral::SelectSuperCam( SuperCam::Type type, int flags, unsigned i
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( SuperCam* cam, int flags = CUT | QUICK, unsigned int timems = 7000 )
+// Parameters:  (SuperCam* cam, int flags = CUT | QUICK, unsigned int timems = 7000)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::SelectSuperCam( SuperCam* cam, int flags, unsigned int timems )
-{
-    rAssert( cam );
+void SuperCamCentral::SelectSuperCam(SuperCam *cam, int flags, unsigned int timems) {
+    rAssert(cam);
 
-    if ( cam )
-    {
+    if (cam) {
         unsigned int i;
-        for ( i = 0; i < MAX_CAMERAS; ++i )
-        {
-            if ( mSuperCameras[ i ] != NULL )
-            {
-                if ( mSuperCameras[ i ] == cam )
-                {
-                    SelectSuperCam( i, flags, timems );
+        for (i = 0; i < MAX_CAMERAS; ++i) {
+            if (mSuperCameras[i] != NULL) {
+                if (mSuperCameras[i] == cam) {
+                    SelectSuperCam(i, flags, timems);
                     break;
                 }
             }
@@ -1454,24 +1340,20 @@ void SuperCamCentral::SelectSuperCam( SuperCam* cam, int flags, unsigned int tim
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( tPointCamera* cam )
+// Parameters:  (tPointCamera* cam)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::SetCamera( tPointCamera* cam )
-{
-    if ( mCamera )
-    {
+void SuperCamCentral::SetCamera(tPointCamera *cam) {
+    if (mCamera) {
         mCamera->Release();
     }
 
     unsigned int i;
-    for ( i = 0; i < MAX_CAMERAS; ++i )
-    {
-        if ( mSuperCameras[ i ] )
-        {
-            mSuperCameras[ i ]->SetCamera( cam );
+    for (i = 0; i < MAX_CAMERAS; ++i) {
+        if (mSuperCameras[i]) {
+            mSuperCameras[i]->SetCamera(cam);
         }
     }
 
@@ -1484,34 +1366,29 @@ void SuperCamCentral::SetCamera( tPointCamera* cam )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::SetTarget( ISuperCamTarget* target )
-{
-    if ( mTarget != target )
-    {
+void SuperCamCentral::SetTarget(ISuperCamTarget *target) {
+    if (mTarget != target) {
         unsigned int i;
-        for ( i = 0; i < MAX_CAMERAS; ++i )
-        {
-            if ( mSuperCameras[ i ] )
-            {
-                mSuperCameras[ i ]->SetTarget( target );
+        for (i = 0; i < MAX_CAMERAS; ++i) {
+            if (mSuperCameras[i]) {
+                mSuperCameras[i]->SetTarget(target);
             }
         }
 
         //We should do a transition on the active super cam to make sure that
         //We don't jump around too much.
-        if ( mActiveSuperCam )
-        {
-            mActiveSuperCam->DoCameraTransition( false );
+        if (mActiveSuperCam) {
+            mActiveSuperCam->DoCameraTransition(false);
         }
 
         mTarget = target;
     }
-    
+
 }
 
 //=============================================================================
@@ -1519,20 +1396,18 @@ void SuperCamCentral::SetTarget( ISuperCamTarget* target )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::AddTarget( ISuperCamTarget* target )
-{
-    mActiveSuperCam->AddTarget( target );   
+void SuperCamCentral::AddTarget(ISuperCamTarget *target) {
+    mActiveSuperCam->AddTarget(target);
 
-    if ( mNextSuperCam.incoming )
-    {
-        rAssert( mNextSuperCam.nextSuperCam < MAX_CAMERAS );
-        rAssert( mSuperCameras[ mNextSuperCam.nextSuperCam ] != NULL );
-        mSuperCameras[ mNextSuperCam.nextSuperCam ]->AddTarget( target );
+    if (mNextSuperCam.incoming) {
+        rAssert(mNextSuperCam.nextSuperCam < MAX_CAMERAS);
+        rAssert(mSuperCameras[mNextSuperCam.nextSuperCam] != NULL);
+        mSuperCameras[mNextSuperCam.nextSuperCam]->AddTarget(target);
     }
 }
 
@@ -1541,30 +1416,26 @@ void SuperCamCentral::AddTarget( ISuperCamTarget* target )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int which, int flags, unsigned int timems )
+// Parameters:  (unsigned int which, int flags, unsigned int timems)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::SetActiveSuperCam( unsigned int which, int flags, unsigned int timems )
-{   
+void SuperCamCentral::SetActiveSuperCam(unsigned int which, int flags, unsigned int timems) {
     //Clear the incoming.
     mNextSuperCam.incoming = false;
 
-    if ( !AllowCameraToggle() && (flags & FORCE) == 0 )  //Not forced
+    if (!AllowCameraToggle() && (flags & FORCE) == 0)  //Not forced
     {
         return;
     }
 
-    if ( mSuperCameras[ which ] == mActiveSuperCam )
-    {
+    if (mSuperCameras[which] == mActiveSuperCam) {
         //This one is already active.
-        if( ( mNextSuperCam.flags & FORCE ) != 0 )
-        {
+        if ((mNextSuperCam.flags & FORCE) != 0) {
             mActiveSuperCam->EndTransition();
         }
-        if ( (flags & CUT) != 0 )
-        {
+        if ((flags & CUT) != 0) {
             mActiveSuperCam->DoCameraCut();
         }
         return;
@@ -1572,8 +1443,7 @@ void SuperCamCentral::SetActiveSuperCam( unsigned int which, int flags, unsigned
 
     bool oldWasBumperCam = false;
 
-    if ( mActiveSuperCam != NULL )
-    {
+    if (mActiveSuperCam != NULL) {
         mActiveSuperCam->UnregisterDebugControls();
 
         mActiveSuperCam->Shutdown();
@@ -1581,43 +1451,40 @@ void SuperCamCentral::SetActiveSuperCam( unsigned int which, int flags, unsigned
         oldWasBumperCam = mActiveSuperCam->GetType() == SuperCam::BUMPER_CAM;
     }
 
-    if ( mSuperCameras[ which ] != NULL)
-    {
-        mActiveSuperCam = mSuperCameras[ which ];
+    if (mSuperCameras[which] != NULL) {
+        mActiveSuperCam = mSuperCameras[which];
         mActiveSuperCam->RegisterDebugControls();
 
-        GetEventManager()->TriggerEvent( EVENT_CAMERA_CHANGE, mActiveSuperCam );
+        GetEventManager()->TriggerEvent(EVENT_CAMERA_CHANGE, mActiveSuperCam);
         mActiveSuperCamIndex = which;
 
         //Hack..  TODO:  Should this be moved?
-        mActiveSuperCam->SetNearPlane( SUPERCAM_NEAR );
+        mActiveSuperCam->SetNearPlane(SUPERCAM_NEAR);
 
         mActiveSuperCam->Init();
         mActiveSuperCam->ResetTwistDelta();  //This stops funny twist snap
 
-        if ( mCurrentFOVLocator )
-        {
+        if (mCurrentFOVLocator) {
             //Enable the FOV override here.  There could be some issues with timing, but we'll see.
-            mActiveSuperCam->SetFOVOverride( mCurrentFOVLocator->GetFOV() );
-            mActiveSuperCam->OverrideFOV( true, mCurrentFOVLocator->GetTime(), mCurrentFOVLocator->GetRate() );
+            mActiveSuperCam->SetFOVOverride(mCurrentFOVLocator->GetFOV());
+            mActiveSuperCam->OverrideFOV(true, mCurrentFOVLocator->GetTime(),
+                                         mCurrentFOVLocator->GetRate());
         }
-        
+
         //Cut the camera view
-        if ( (flags & CUT) != 0 || 
-             oldWasBumperCam ||
-             mActiveSuperCam->GetType() == SuperCam::BUMPER_CAM )  //Auto cut on bumper cam too
+        if ((flags & CUT) != 0 ||
+            oldWasBumperCam ||
+            mActiveSuperCam->GetType() == SuperCam::BUMPER_CAM)  //Auto cut on bumper cam too
         {
             mActiveSuperCam->DoCameraCut();
-        }
-        else if ( (flags & NO_TRANS) == 0 )
-        {
+        } else if ((flags & NO_TRANS) == 0) {
             //Smothly blend the camera views
-            mActiveSuperCam->DoCameraTransition( (flags & QUICK) != 0, timems );
+            mActiveSuperCam->DoCameraTransition((flags & QUICK) != 0, timems);
         }
 
         mActiveSuperCam->DoFirstTime();
 
-        rDebugString( "NEW SUPER CAM!\n" );
+        rDebugString("NEW SUPER CAM!\n");
     }
 }
 
@@ -1632,39 +1499,47 @@ void SuperCamCentral::SetActiveSuperCam( unsigned int which, int flags, unsigned
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::SubmitStatics()
-{
+void SuperCamCentral::SubmitStatics() {
     // only do this for certain types of camers:
     // TODO - add others?
     SuperCam::Type camType = mActiveSuperCam->GetType();
     rmt::Vector pos;
     pos = mCameraCollisionVolume->mPosition;
 
-    if( mActiveSuperCam && 
+    if (mActiveSuperCam &&
         (camType == SuperCam::NEAR_FOLLOW_CAM ||
          camType == SuperCam::FAR_FOLLOW_CAM ||
          camType == SuperCam::WALKER_CAM ||
-#ifdef RAD_WIN32
+         #ifdef RAD_WIN32
          camType == SuperCam::PC_CAM ||
-#endif
+         #endif
          camType == SuperCam::COMEDY_CAM ||
          camType == SuperCam::FIRST_PERSON_CAM ||
          camType == SuperCam::REVERSE_CAM)
-       )
-    {
+            ) {
 
-        GetWorldPhysicsManager()->SubmitStaticsPseudoCallback(pos, mActiveSuperCam->GetCollisionRadius() /* need multiplier? */, mCollisionAreaIndex, mCameraSimState);
-        GetWorldPhysicsManager()->SubmitFencePiecesPseudoCallback(pos, mActiveSuperCam->GetCollisionRadius(), 
-                                                                  mCollisionAreaIndex, mCameraSimState);
-        GetWorldPhysicsManager()->SubmitAnimCollisionsPseudoCallback( pos, mActiveSuperCam->GetCollisionRadius(), mCollisionAreaIndex, mCameraSimState );
+        GetWorldPhysicsManager()->SubmitStaticsPseudoCallback(pos,
+                                                              mActiveSuperCam->GetCollisionRadius() /* need multiplier? */,
+                                                              mCollisionAreaIndex, mCameraSimState);
+        GetWorldPhysicsManager()->SubmitFencePiecesPseudoCallback(pos,
+                                                                  mActiveSuperCam->GetCollisionRadius(),
+                                                                  mCollisionAreaIndex,
+                                                                  mCameraSimState);
+        GetWorldPhysicsManager()->SubmitAnimCollisionsPseudoCallback(pos,
+                                                                     mActiveSuperCam->GetCollisionRadius(),
+                                                                     mCollisionAreaIndex,
+                                                                     mCameraSimState);
 #ifdef RAD_WIN32
-        if ( camType == SuperCam::PC_CAM )
+        if (camType == SuperCam::PC_CAM)
         {
             //No dynamics in PC_CAM
             return;
         }
 #endif
-        GetWorldPhysicsManager()->SubmitDynamicsPseudoCallback( pos, mActiveSuperCam->GetCollisionRadius(), mCollisionAreaIndex, mCameraSimState );
+        GetWorldPhysicsManager()->SubmitDynamicsPseudoCallback(pos,
+                                                               mActiveSuperCam->GetCollisionRadius(),
+                                                               mCollisionAreaIndex,
+                                                               mCameraSimState);
     }
 }
 
@@ -1673,15 +1548,13 @@ void SuperCamCentral::SubmitStatics()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::UpdateForPhysics( unsigned int milliseconds )
-{
-    if ( mActiveSuperCam )
-    {
+void SuperCamCentral::UpdateForPhysics(unsigned int milliseconds) {
+    if (mActiveSuperCam) {
         //Inform the supercam of the physics collision
 
 
@@ -1692,25 +1565,26 @@ void SuperCamCentral::UpdateForPhysics( unsigned int milliseconds )
         //
         // use as you please.    
 
-        mActiveSuperCam->SetCollisionOffset( mCameraCollisionOffsetFix, mCameraCollisionCount, mCameraTerrainCollisionOffsetFix );
-        mActiveSuperCam->UpdateForPhysics( milliseconds );
+        mActiveSuperCam->SetCollisionOffset(mCameraCollisionOffsetFix, mCameraCollisionCount,
+                                            mCameraTerrainCollisionOffsetFix);
+        mActiveSuperCam->UpdateForPhysics(milliseconds);
 
 #ifdef SUPERCAM_DEBUG
         //This is the debug system to allow the game to "see" what the active supercam sees.
-        if ( mDebugViewOn )
+        if (mDebugViewOn)
         {
             //Position the debug cam relative to the actual cam
             rmt::Vector newPos, camPos;
-            mCamera->GetPosition( &camPos );
+            mCamera->GetPosition(&camPos);
 
-            rmt::SphericalToCartesian( mDebugMagnitude, mDebugXZAngle, mDebugYAngle, 
-                &newPos.x, &newPos.z, &newPos.y );
-            newPos.Add( camPos );
-            mDebugCamera->SetPosition( newPos );
-            mDebugCamera->SetTarget( camPos );
+            rmt::SphericalToCartesian(mDebugMagnitude, mDebugXZAngle, mDebugYAngle,
+                &newPos.x, &newPos.z, &newPos.y);
+            newPos.Add(camPos);
+            mDebugCamera->SetPosition(newPos);
+            mDebugCamera->SetTarget(camPos);
 #ifdef DEBUGWATCH
             //Draw the cam's frustrum.
-            DrawFrustrum( );
+            DrawFrustrum();
 #endif
         }
 #endif
@@ -1727,17 +1601,16 @@ void SuperCamCentral::UpdateForPhysics( unsigned int milliseconds )
 // Return:      bool 
 //
 //=============================================================================
-bool SuperCamCentral::AllowCameraToggle()
-{
-    if ( mActiveSuperCam == NULL )
-    {
+bool SuperCamCentral::AllowCameraToggle() {
+    if (mActiveSuperCam == NULL) {
         return true;
     }
 
     //In these modes do not allow the camera to be toggled.
     SuperCam::Type type = mActiveSuperCam->GetType();
-    
-    return !( type == SuperCam::RAIL_CAM || type == SuperCam::STATIC_CAM || type == SuperCam::ANIMATED_CAM );
+
+    return !(type == SuperCam::RAIL_CAM || type == SuperCam::STATIC_CAM ||
+             type == SuperCam::ANIMATED_CAM);
 }
 
 //=============================================================================
@@ -1750,27 +1623,25 @@ bool SuperCamCentral::AllowCameraToggle()
 // Return:      bool 
 //
 //=============================================================================
-bool SuperCamCentral::AllowAutoCameraChange()
-{
-    if ( mActiveSuperCam == NULL )
-    {
+bool SuperCamCentral::AllowAutoCameraChange() {
+    if (mActiveSuperCam == NULL) {
         return true;
     }
 
     SuperCam::Type type = mActiveSuperCam->GetType();
 
-    return ( type == SuperCam::FOLLOW_CAM || 
-             type == SuperCam::NEAR_FOLLOW_CAM || 
-             type == SuperCam::FAR_FOLLOW_CAM || 
-             type == SuperCam::WALKER_CAM || 
-#ifdef RAD_WIN32
-             type == SuperCam::PC_CAM || 
-#endif
-             type == SuperCam::COMEDY_CAM ||
-             type == SuperCam::BUMPER_CAM ||
-             type == SuperCam::RAIL_CAM ||
-             type == SuperCam::STATIC_CAM ||
-             type == SuperCam::SPLINE_CAM );
+    return (type == SuperCam::FOLLOW_CAM ||
+            type == SuperCam::NEAR_FOLLOW_CAM ||
+            type == SuperCam::FAR_FOLLOW_CAM ||
+            type == SuperCam::WALKER_CAM ||
+            #ifdef RAD_WIN32
+            type == SuperCam::PC_CAM ||
+            #endif
+            type == SuperCam::COMEDY_CAM ||
+            type == SuperCam::BUMPER_CAM ||
+            type == SuperCam::RAIL_CAM ||
+            type == SuperCam::STATIC_CAM ||
+            type == SuperCam::SPLINE_CAM);
 }
 
 //=============================================================================
@@ -1778,22 +1649,21 @@ bool SuperCamCentral::AllowAutoCameraChange()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( FOVLocator* loc )
+// Parameters:  (FOVLocator* loc)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::RegisterFOVLocator( FOVLocator* loc )
-{
-    rAssertMsg( NULL == mCurrentFOVLocator, "There should never be FOV locators that interpenetrate!" );
+void SuperCamCentral::RegisterFOVLocator(FOVLocator *loc) {
+    rAssertMsg(NULL == mCurrentFOVLocator,
+               "There should never be FOV locators that interpenetrate!");
 
     mCurrentFOVLocator = loc;
     mCurrentFOVLocator->AddRef();
 
-    if ( mActiveSuperCam )
-    {
-        mActiveSuperCam->SetFOVOverride( loc->GetFOV() );
-        mActiveSuperCam->OverrideFOV( true, loc->GetTime(), loc->GetRate() );
+    if (mActiveSuperCam) {
+        mActiveSuperCam->SetFOVOverride(loc->GetFOV());
+        mActiveSuperCam->OverrideFOV(true, loc->GetTime(), loc->GetRate());
     }
 }
 
@@ -1807,13 +1677,12 @@ void SuperCamCentral::RegisterFOVLocator( FOVLocator* loc )
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::UnregisterFOVLocator()
-{
-    rAssert( mCurrentFOVLocator );
+void SuperCamCentral::UnregisterFOVLocator() {
+    rAssert(mCurrentFOVLocator);
 
-    if ( mActiveSuperCam )
-    {
-        mActiveSuperCam->OverrideFOV( false, mCurrentFOVLocator->GetTime(), mCurrentFOVLocator->GetRate() );
+    if (mActiveSuperCam) {
+        mActiveSuperCam->OverrideFOV(false, mCurrentFOVLocator->GetTime(),
+                                     mCurrentFOVLocator->GetRate());
     }
 
     mCurrentFOVLocator->Release();
@@ -1830,16 +1699,11 @@ void SuperCamCentral::UnregisterFOVLocator()
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::NoTransition()
-{
-    if ( mNextSuperCam.incoming )
-    {
+void SuperCamCentral::NoTransition() {
+    if (mNextSuperCam.incoming) {
         mNextSuperCam.flags |= FORCE;
-    }
-    else
-    {
-        if( mActiveSuperCam != NULL )
-        {
+    } else {
+        if (mActiveSuperCam != NULL) {
             mActiveSuperCam->EndTransition();
         }
     }
@@ -1850,66 +1714,53 @@ void SuperCamCentral::NoTransition()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::HandleEvent( EventEnum id, void* pEventData )
-{
-    switch ( id )
-    {
-    case EVENT_ENTER_INTERIOR_END:
-        {
+void SuperCamCentral::HandleEvent(EventEnum id, void *pEventData) {
+    switch (id) {
+        case EVENT_ENTER_INTERIOR_END: {
             DoCameraCut();
             break;
         }
-    case EVENT_CAMERA_SHAKE:
-        {
-            ShakeEventData* shakeData = static_cast<ShakeEventData*>(pEventData);
-            if ( shakeData->playerID == mMyNumber && GetGameplayManager()->GetGameType() == GameplayManager::GT_NORMAL )
-            {
+        case EVENT_CAMERA_SHAKE: {
+            ShakeEventData *shakeData = static_cast<ShakeEventData *>(pEventData);
+            if (shakeData->playerID == mMyNumber &&
+                GetGameplayManager()->GetGameType() == GameplayManager::GT_NORMAL) {
                 //Do the shaking.
                 mActiveSuperCam->EnableShake();
-                mActiveSuperCam->SetCameraShakerData( shakeData );
+                mActiveSuperCam->SetCameraShakerData(shakeData);
             }
             break;
         }
-    case EVENT_LOCATOR + LocatorEvent::CAMERA_CUT:
-        {
-            EventLocator* evtLoc = static_cast<EventLocator*>(pEventData);
-            if ( evtLoc->GetPlayerID() == mMyNumber )
-            {
+        case EVENT_LOCATOR + LocatorEvent::CAMERA_CUT: {
+            EventLocator *evtLoc = static_cast<EventLocator *>(pEventData);
+            if (evtLoc->GetPlayerID() == mMyNumber) {
                 //Only switch to Wreckless cam in demo mode.
-                if ( GetGameplayManager()->mIsDemo )
-                {
-                    if ( evtLoc->GetPlayerEntered() )
-                    {
-                        SelectSuperCam( SuperCam::WRECKLESS_CAM, CUT | FORCE, 0 );  //0 means do right away.
-                        
+                if (GetGameplayManager()->mIsDemo) {
+                    if (evtLoc->GetPlayerEntered()) {
+                        SelectSuperCam(SuperCam::WRECKLESS_CAM, CUT | FORCE,
+                                       0);  //0 means do right away.
+
                         //Hackish, trigger the cameras event listener.  This is specific to wreckless cams.
-                        WrecklessCam* wc = static_cast<WrecklessCam*>(GetSuperCam( SuperCam::WRECKLESS_CAM ));
-                        if ( wc )
-                        {
-                            wc->GetEventListener()->HandleEvent( id, pEventData );
+                        WrecklessCam *wc = static_cast<WrecklessCam *>(GetSuperCam(
+                                SuperCam::WRECKLESS_CAM));
+                        if (wc) {
+                            wc->GetEventListener()->HandleEvent(id, pEventData);
                         }
 
                         ++mWrecklessCount;
-                    }
-                    else
-                    {
-                        if ( mWrecklessCount == 1 )
-                        {
-                            if ( mTarget->IsCar() )
-                            {
-                                SelectSuperCam( SuperCam::FOLLOW_CAM, CUT | FORCE );
-                            }
-                            else
-                            {
+                    } else {
+                        if (mWrecklessCount == 1) {
+                            if (mTarget->IsCar()) {
+                                SelectSuperCam(SuperCam::FOLLOW_CAM, CUT | FORCE);
+                            } else {
 #ifdef RAD_WIN32
-                                SelectSuperCam( SuperCam::ON_FOOT_CAM, CUT | FORCE );
+                                SelectSuperCam(SuperCam::ON_FOOT_CAM, CUT | FORCE);
 #else
-                                SelectSuperCam( SuperCam::WALKER_CAM, CUT | FORCE );
+                                SelectSuperCam(SuperCam::WALKER_CAM, CUT | FORCE);
 #endif
                             }
                         }
@@ -1920,24 +1771,23 @@ void SuperCamCentral::HandleEvent( EventEnum id, void* pEventData )
             }
             break;
         }
-    default:
-        {
+        default: {
             break;
         }
     }
 
 
 
-/*  else if ( id == EVENT_BURNOUT )
+/*  else if (id == EVENT_BURNOUT)
     {
-        if ( rand() % mChanceToBurnout == 0 )
+        if (rand() % mChanceToBurnout == 0)
         {
-            SelectSuperCam( SuperCam::BURNOUT_CAM, true, false, true );
+            SelectSuperCam(SuperCam::BURNOUT_CAM, true, false, true);
         }
     }
-    else if ( id == EVENT_BURNOUT_END )
+    else if (id == EVENT_BURNOUT_END)
     {
-        SelectSuperCam( SuperCam::FOLLOW_CAM, false, false, true );
+        SelectSuperCam(SuperCam::FOLLOW_CAM, false, false, true);
     }
 */
 
@@ -1948,26 +1798,25 @@ void SuperCamCentral::HandleEvent( EventEnum id, void* pEventData )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int controllerID )
+// Parameters:  (int controllerID)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::ToggleFirstPerson( int controllerID )
-{
+void SuperCamCentral::ToggleFirstPerson(int controllerID) {
     /*
-    if ( controllerID == GetInputManager()->GetControllerIDforPlayer( mMyNumber ) )
+    if (controllerID == GetInputManager()->GetControllerIDforPlayer(mMyNumber))
     {
-        if ( mActiveSuperCam && mActiveSuperCam->GetType() == SuperCam::WALKER_CAM )
+        if (mActiveSuperCam && mActiveSuperCam->GetType() == SuperCam::WALKER_CAM)
         {
             //Switch to first person cam.
-            SelectSuperCam( SuperCam::FIRST_PERSON_CAM, SuperCamCentral::CUT | SuperCamCentral::FORCE, 0 );
+            SelectSuperCam(SuperCam::FIRST_PERSON_CAM, SuperCamCentral::CUT | SuperCamCentral::FORCE, 0);
             GetEventManager()->TriggerEvent(EVENT_TOGGLE_FIRSTPERSON, (void*)true); 
         }
-        else if ( mActiveSuperCam && mActiveSuperCam->GetType() == SuperCam::FIRST_PERSON_CAM )
+        else if (mActiveSuperCam && mActiveSuperCam->GetType() == SuperCam::FIRST_PERSON_CAM)
         {
             //Switch to walker cam
-            SelectSuperCam( SuperCam::WALKER_CAM, SuperCamCentral::CUT | SuperCamCentral::FORCE, 0 );
+            SelectSuperCam(SuperCam::WALKER_CAM, SuperCamCentral::CUT | SuperCamCentral::FORCE, 0);
             GetEventManager()->TriggerEvent(EVENT_TOGGLE_FIRSTPERSON, (void*)false); 
         }
     }
@@ -1984,11 +1833,10 @@ void SuperCamCentral::ToggleFirstPerson( int controllerID )
 // Return:      bool 
 //
 //=============================================================================
-bool SuperCamCentral::IsCutCam()
-{
-    return !( mActiveSuperCam != NULL &&
-              mActiveSuperCam->GetType() != SuperCam::STATIC_CAM &&
-              mActiveSuperCam->GetType() != SuperCam::RAIL_CAM );
+bool SuperCamCentral::IsCutCam() {
+    return !(mActiveSuperCam != NULL &&
+             mActiveSuperCam->GetType() != SuperCam::STATIC_CAM &&
+             mActiveSuperCam->GetType() != SuperCam::RAIL_CAM);
 }
 
 
@@ -2001,28 +1849,27 @@ bool SuperCamCentral::IsCutCam()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool on )
+// Parameters:  (bool on)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::ToggleDebugView( bool on )
-{  
+void SuperCamCentral::ToggleDebugView(bool on) {
 #ifdef SUPERCAM_DEBUG
-    rAssert( mCamera );
+    rAssert(mCamera);
     RenderManager* rm = GetRenderManager();
-    RenderLayer* rloutside = rm->mpLayer( RenderEnums::LevelSlot );
-    rAssert( rloutside );
+    RenderLayer* rloutside = rm->mpLayer(RenderEnums::LevelSlot);
+    rAssert(rloutside);
     
     // TO DO: Cary, this isn't good... do we care which player?
-    tView* viewOutside = rloutside->pView( 0 );
+    tView* viewOutside = rloutside->pView(0);
 
-    if ( on && !mDebugViewOn )
+    if (on && !mDebugViewOn)
     {
         //Turn on
-        viewOutside->SetCamera( mDebugCamera );
+        viewOutside->SetCamera(mDebugCamera);
 
-        rloutside->AddGuts( mFrustrumDrawable );
+        rloutside->AddGuts(mFrustrumDrawable);
         
         mFrustrumDrawable->Enable();
         
@@ -2030,12 +1877,12 @@ void SuperCamCentral::ToggleDebugView( bool on )
         mDebugYAngle = DEBUG_CAM_Y_ANGLE;
         mDebugMagnitude = DEBUG_CAM_DIST;
     }
-    else if ( !on && mDebugViewOn )
+    else if (!on && mDebugViewOn)
     {
         //Turn off
-        viewOutside->SetCamera( mCamera );
+        viewOutside->SetCamera(mCamera);
 
-        rloutside->RemoveGuts( mFrustrumDrawable );
+        rloutside->RemoveGuts(mFrustrumDrawable);
 
         mFrustrumDrawable->Disable();
     }
@@ -2054,13 +1901,12 @@ void SuperCamCentral::ToggleDebugView( bool on )
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::ToggleDebugView()
-{
+void SuperCamCentral::ToggleDebugView() {
 #ifdef SUPERCAM_DEBUG
-    ToggleDebugView( !mDebugViewOn );
+    ToggleDebugView(!mDebugViewOn);
 #endif
 }
-        
+
 #ifdef DEBUGWATCH
 //=============================================================================
 // SuperCamCentral::DrawFrustrum
@@ -2077,24 +1923,24 @@ void SuperCamCentral::DrawFrustrum()
     rmt::Vector wnp[4], wfp[4];
     rmt::Vector temp;
     rmt::Vector realPos;
-    const tColour colour( tColour( 255, 255, 255 ) );
+    const tColour colour(tColour(255, 255, 255));
 
-    mCamera->GetPosition( &realPos );
+    mCamera->GetPosition(&realPos);
 
     float tempFP  = mCamera->GetFarPlane();
 
     mCamera->SetFarPlane(200.0f);
-    mCamera->ViewToWorld( rmt::Vector( -0.5f, 0.5f, 0 ), &wnp[0], &wfp[0] );
-    mCamera->ViewToWorld( rmt::Vector( 0.5f, 0.5f, 0 ), &wnp[1], &wfp[1] );
-    mCamera->ViewToWorld( rmt::Vector( 0.5f, -0.5f, 0 ), &wnp[2], &wfp[2] );
-    mCamera->ViewToWorld( rmt::Vector( -0.5f, -0.5f, 0 ), &wnp[3], &wfp[3] );
+    mCamera->ViewToWorld(rmt::Vector(-0.5f, 0.5f, 0), &wnp[0], &wfp[0]);
+    mCamera->ViewToWorld(rmt::Vector(0.5f, 0.5f, 0), &wnp[1], &wfp[1]);
+    mCamera->ViewToWorld(rmt::Vector(0.5f, -0.5f, 0), &wnp[2], &wfp[2]);
+    mCamera->ViewToWorld(rmt::Vector(-0.5f, -0.5f, 0), &wnp[3], &wfp[3]);
 
     mCamera->SetFarPlane(tempFP);
     //This is hard coded line drawing.
-    mFrustrumDrawable->SetColour( colour );
-    mFrustrumDrawable->SetPoints( mCameraCollisionVolume->mPosition, realPos, wfp[0], wfp[1], wfp[2], wfp[3] );
-    mFrustrumDrawable->SetScale( mActiveSuperCam->GetCollisionRadius() );
-    mFrustrumDrawable->SetSuperCam( mActiveSuperCam );
+    mFrustrumDrawable->SetColour(colour);
+    mFrustrumDrawable->SetPoints(mCameraCollisionVolume->mPosition, realPos, wfp[0], wfp[1], wfp[2], wfp[3]);
+    mFrustrumDrawable->SetScale(mActiveSuperCam->GetCollisionRadius());
+    mFrustrumDrawable->SetSuperCam(mActiveSuperCam);
 }
 #endif
 
@@ -2103,14 +1949,13 @@ void SuperCamCentral::DrawFrustrum()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const GameDataByte* dataBuffer, unsigned int numBytes )
+// Parameters:  (const GameDataByte* dataBuffer, unsigned int numBytes)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::LoadData( const GameDataByte* dataBuffer, unsigned int numBytes )
-{
-    GameDataByte bitmask = dataBuffer[ 0 ];
+void SuperCamCentral::LoadData(const GameDataByte *dataBuffer, unsigned int numBytes) {
+    GameDataByte bitmask = dataBuffer[0];
 
     /*
      *  BITS:       7654 3210
@@ -2121,20 +1966,17 @@ void SuperCamCentral::LoadData( const GameDataByte* dataBuffer, unsigned int num
      *
      */
 
-    mJumpCamsEnabled =          ( (bitmask & 0x01) > 0 );
-    mIsInvertedCameraEnabled =  ( (bitmask & 0x02) > 0 );
+    mJumpCamsEnabled = ((bitmask & 0x01) > 0);
+    mIsInvertedCameraEnabled = ((bitmask & 0x02) > 0);
 
     GameDataByte preferredFollowCam = (bitmask >> 2);
-    if( preferredFollowCam == 0 )
-    {
+    if (preferredFollowCam == 0) {
         // this is for backward-compatibility w/ old saved game formats
         // that didn't have the preferred follow cam data
         //
         mPreferredFollowCam = SuperCam::FAR_FOLLOW_CAM;
-    }
-    else
-    {
-        mPreferredFollowCam = static_cast<SuperCam::Type>( preferredFollowCam );
+    } else {
+        mPreferredFollowCam = static_cast<SuperCam::Type>(preferredFollowCam);
     }
 }
 
@@ -2143,13 +1985,12 @@ void SuperCamCentral::LoadData( const GameDataByte* dataBuffer, unsigned int num
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( GameDataByte* dataBuffer, unsigned int numBytes )
+// Parameters:  (GameDataByte* dataBuffer, unsigned int numBytes)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::SaveData( GameDataByte* dataBuffer, unsigned int numBytes )
-{
+void SuperCamCentral::SaveData(GameDataByte *dataBuffer, unsigned int numBytes) {
     GameDataByte bitmask = 0x00;
 
     /*
@@ -2161,23 +2002,21 @@ void SuperCamCentral::SaveData( GameDataByte* dataBuffer, unsigned int numBytes 
      *
      */
 
-    if( mJumpCamsEnabled )
-    {
+    if (mJumpCamsEnabled) {
         bitmask |= 0x01;
     }
 
-    if( mIsInvertedCameraEnabled )
-    {
+    if (mIsInvertedCameraEnabled) {
         bitmask |= 0x02;
     }
 
-    GameDataByte preferredFollowCam = static_cast<GameDataByte>( mPreferredFollowCam );
-    rAssertMsg( (preferredFollowCam & 0xC0) == 0,
-                "Not enough bits to save preferred follow cam data!" );
+    GameDataByte preferredFollowCam = static_cast<GameDataByte>(mPreferredFollowCam);
+    rAssertMsg((preferredFollowCam & 0xC0) == 0,
+               "Not enough bits to save preferred follow cam data!");
 
     bitmask |= (preferredFollowCam << 2);
 
-    dataBuffer[ 0 ] = bitmask;
+    dataBuffer[0] = bitmask;
 }
 
 //=============================================================================
@@ -2190,8 +2029,7 @@ void SuperCamCentral::SaveData( GameDataByte* dataBuffer, unsigned int numBytes 
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::ResetData()
-{
+void SuperCamCentral::ResetData() {
     mJumpCamsEnabled = true;
     mIsInvertedCameraEnabled = false;
     mPreferredFollowCam = FollowCam::FAR_FOLLOW_CAM;
@@ -2202,73 +2040,56 @@ void SuperCamCentral::ResetData()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( SuperCam::Type type )
+// Parameters:  (SuperCam::Type type)
 //
 // Return:      bool 
 //
 //=============================================================================
-bool SuperCamCentral::IsLegalType( SuperCam::Type type )
-{
-	if( mTarget == NULL )
-	{
-		return false;
-	}
+bool SuperCamCentral::IsLegalType(SuperCam::Type type) {
+    if (mTarget == NULL) {
+        return false;
+    }
 
-    if ( type == SuperCam::STATIC_CAM ||
-         type == SuperCam::RAIL_CAM ||
-         type == SuperCam::CONVERSATION_CAM ||
-         (mTarget != NULL && !mTarget->IsCar() && type == SuperCam::FIRST_PERSON_CAM ) ||
-         (mTarget != NULL && mTarget->IsCar() && type == SuperCam::REVERSE_CAM) ||
-         type == SuperCam::ANIMATED_CAM ||
-         type == SuperCam::RELATIVE_ANIMATED_CAM ||
-         type == SuperCam::SUPER_SPRINT_CAM )
-    {
+    if (type == SuperCam::STATIC_CAM ||
+        type == SuperCam::RAIL_CAM ||
+        type == SuperCam::CONVERSATION_CAM ||
+        (mTarget != NULL && !mTarget->IsCar() && type == SuperCam::FIRST_PERSON_CAM) ||
+        (mTarget != NULL && mTarget->IsCar() && type == SuperCam::REVERSE_CAM) ||
+        type == SuperCam::ANIMATED_CAM ||
+        type == SuperCam::RELATIVE_ANIMATED_CAM ||
+        type == SuperCam::SUPER_SPRINT_CAM) {
         return true;
     }
 
-    SuperCam::Type* cameras = NULL;
+    SuperCam::Type *cameras = NULL;
     unsigned int numCameras = 0;
 
-    if( mTarget != NULL && mTarget->IsCar() )
-    {
-        if ( GetGameplayManager()->IsSuperSprint() )
-        {
+    if (mTarget != NULL && mTarget->IsCar()) {
+        if (GetGameplayManager()->IsSuperSprint()) {
             cameras = SUPER_SPRINT_CAMERAS;
             numCameras = NUM_SUPERSPRINT_CAMS;
-        }
-        else
-        {
+        } else {
             cameras = CAMERAS_FOR_DRIVING;
 
-            if( GetCheatInputSystem()->IsCheatEnabled( CHEAT_ID_UNLOCK_CAMERAS ) )
-            {
+            if (GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_UNLOCK_CAMERAS)) {
                 numCameras = NUM_CAMERAS_FOR_DRIVING;
-            }
-            else
-            {
+            } else {
                 numCameras = NUM_CAMERAS_FOR_DRIVING_WITHOUT_CHEAT;
             }
         }
-    }
-    else
-    {
+    } else {
         cameras = CAMERAS_FOR_WALKING;
 
-        if( GetCheatInputSystem()->IsCheatEnabled( CHEAT_ID_UNLOCK_CAMERAS ) )
-        {
+        if (GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_UNLOCK_CAMERAS)) {
             numCameras = NUM_CAMERAS_FOR_WALKING;
-        }
-        else
-        {
+        } else {
             numCameras = NUM_CAMERAS_FOR_WALKING_WITHOUT_CHEAT;
         }
     }
 
     unsigned int i;
-    for ( i = 0; i < numCameras; ++i )
-    {
-        if ( cameras[ i ] == type )
-        {
+    for (i = 0; i < numCameras; ++i) {
+        if (cameras[i] == type) {
             return true;
         }
     }
@@ -2286,18 +2107,16 @@ bool SuperCamCentral::IsLegalType( SuperCam::Type type )
 // Return:      FollowCamDataChunk
 //
 //=============================================================================
-FollowCamDataChunk& SuperCamCentral::GetNewFollowCamDataChunk()
-{
-    rAssert( mNumUsedFDC < MAX_DATA_CHUNKS );
+FollowCamDataChunk &SuperCamCentral::GetNewFollowCamDataChunk() {
+    rAssert(mNumUsedFDC < MAX_DATA_CHUNKS);
 
-    if ( mNumUsedFDC < MAX_DATA_CHUNKS )
-    {
-        FollowCamDataChunk& chunk = mFollowCamDataChunks[ mNumUsedFDC ];
+    if (mNumUsedFDC < MAX_DATA_CHUNKS) {
+        FollowCamDataChunk &chunk = mFollowCamDataChunks[mNumUsedFDC];
         ++mNumUsedFDC;
         return chunk;
     }
 
-    return mFollowCamDataChunks[ 0 ];  //This is BAD, but not fatal
+    return mFollowCamDataChunks[0];  //This is BAD, but not fatal
 }
 
 //=============================================================================
@@ -2305,19 +2124,16 @@ FollowCamDataChunk& SuperCamCentral::GetNewFollowCamDataChunk()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( FollowCamDataChunk& chunk )
+// Parameters:  (FollowCamDataChunk& chunk)
 //
 // Return:      void 
 //
 //=============================================================================
-void SuperCamCentral::ReleaseFollowCamDataChunk( FollowCamDataChunk& chunk )
-{
+void SuperCamCentral::ReleaseFollowCamDataChunk(FollowCamDataChunk &chunk) {
     unsigned int i;
-    for ( i = 0; i < mNumUsedFDC; ++i )
-    {
-        if ( mFollowCamDataChunks[ i ] == chunk )
-        {
-            mFollowCamDataChunks[ i ] = mFollowCamDataChunks[ mNumUsedFDC - 1 ];
+    for (i = 0; i < mNumUsedFDC; ++i) {
+        if (mFollowCamDataChunks[i] == chunk) {
+            mFollowCamDataChunks[i] = mFollowCamDataChunks[mNumUsedFDC - 1];
             mNumUsedFDC--;
             return;
         }
@@ -2329,19 +2145,16 @@ void SuperCamCentral::ReleaseFollowCamDataChunk( FollowCamDataChunk& chunk )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int id )
+// Parameters:  (unsigned int id)
 //
 // Return:      FollowCamDataChunk*
 //
 //=============================================================================
-FollowCamDataChunk* SuperCamCentral::FindFCD( unsigned int id )
-{
+FollowCamDataChunk *SuperCamCentral::FindFCD(unsigned int id) {
     unsigned int i;
-    for ( i = 0; i < mNumUsedFDC; ++i )
-    {
-        if ( mFollowCamDataChunks[ i ].mID == id )
-        {
-            return &mFollowCamDataChunks[ i ];
+    for (i = 0; i < mNumUsedFDC; ++i) {
+        if (mFollowCamDataChunks[i].mID == id) {
+            return &mFollowCamDataChunks[i];
         }
     }
 

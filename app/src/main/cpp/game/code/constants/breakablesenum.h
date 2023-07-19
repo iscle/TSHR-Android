@@ -17,22 +17,20 @@
 // Constants, Typedefs, and Macro Definitions (needed by external clients)
 //===========================================================================
 
-namespace BreakablesEnum
-{
-    enum BreakableID
-    {
+namespace BreakablesEnum {
+    enum BreakableID {
         eNull = -1,                   // No breakable. Assertion if this is attempted to play
         eHydrantBreaking = 3,
-        eMailboxBreaking = 5 ,            
+        eMailboxBreaking = 5,
         eParkingMeterBreaking = 6,
         eWoodenCratesBreaking = 7,
         eTommacoPlantsBreaking = 8,
         ePowerCouplingBreaking = 9,
-		ePineTreeBreaking = 14,
+        ePineTreeBreaking = 14,
         eOakTreeBreaking = 15,
-		eBigBarrierBreaking = 16,
-		eRailCrossBreaking  = 17,
-		eSpaceNeedleBreaking = 18,
+        eBigBarrierBreaking = 16,
+        eRailCrossBreaking = 17,
+        eSpaceNeedleBreaking = 18,
         eKrustyGlassBreaking = 19,
         eCypressTreeBreaking = 20,
         eDeadTreeBreaking = 21,
@@ -51,6 +49,8 @@ namespace BreakablesEnum
         eNumBreakables = 34
     };
 
-    enum { eMaxBreakableNames = 10 };
+    enum {
+        eMaxBreakableNames = 10
+    };
 }
 #endif

@@ -135,14 +135,17 @@
 //******************************************************************************
 
 // Static pointer to instance of singleton.
-GCPlatform* GCPlatform::spInstance = NULL;
+GCPlatform *GCPlatform::spInstance = NULL;
 
 //Add baked in loadable headers here.
 static unsigned char gLicenseP3D[] =
+
 #include <main/gamecube_extras/license.h>
 
 //The Adlib font.  <sigh>
-unsigned char gFont[] = 
+        unsigned char
+gFont[] =
+
 #include <font/defaultfont.h>
 
 //GX Warning Levels.
@@ -153,12 +156,11 @@ unsigned char gFont[] =
 
 const GXWarningLevel gxWarningLevel = GX_WARN_NONE;
 
-void LoadMemP3DFile( unsigned char* buffer, unsigned int size, tEntityStore* store )
-{
-    tFileMem* file = new tFileMem(buffer,size);
+void LoadMemP3DFile(unsigned char *buffer, unsigned int size, tEntityStore *store) {
+    tFileMem *file = new tFileMem(buffer, size);
     file->AddRef();
     file->SetFilename("memfile.p3d");
-    p3d::loadManager->GetP3DHandler()->Load( file, p3d::inventory );
+    p3d::loadManager->GetP3DHandler()->Load(file, p3d::inventory);
     file->Release();
 }
 
@@ -181,15 +183,14 @@ void LoadMemP3DFile( unsigned char* buffer, unsigned int size, tEntityStore* sto
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-GCPlatform* GCPlatform::CreateInstance()
-{
-MEMTRACK_PUSH_GROUP( "GCPlatform" );
-    rAssert( spInstance == NULL );
+GCPlatform *GCPlatform::CreateInstance() {
+    MEMTRACK_PUSH_GROUP("GCPlatform");
+    rAssert(spInstance == NULL);
 
     spInstance = new(GMA_PERSISTENT) GCPlatform;
-    rAssert( spInstance );
-MEMTRACK_POP_GROUP( "GCPlatform" );
-    
+    rAssert(spInstance);
+    MEMTRACK_POP_GROUP("GCPlatform");
+
     return spInstance;
 }
 
@@ -206,10 +207,9 @@ MEMTRACK_POP_GROUP( "GCPlatform" );
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-GCPlatform* GCPlatform::GetInstance()
-{
-    rAssert( spInstance != NULL );
-    
+GCPlatform *GCPlatform::GetInstance() {
+    rAssert(spInstance != NULL);
+
     return spInstance;
 }
 
@@ -225,14 +225,12 @@ GCPlatform* GCPlatform::GetInstance()
 // Return:      None.
 //
 //==============================================================================
-void GCPlatform::DestroyInstance()
-{
-    rAssert( spInstance != NULL );
+void GCPlatform::DestroyInstance() {
+    rAssert(spInstance != NULL);
 
-    delete( GMA_PERSISTENT, spInstance );
+    delete (GMA_PERSISTENT, spInstance);
     spInstance = NULL;
 }
-
 
 
 //==============================================================================
@@ -250,39 +248,37 @@ void GCPlatform::DestroyInstance()
 //              first license screens.
 //
 //==============================================================================
-void GCPlatform::InitializeFoundation() 
-{
+void GCPlatform::InitializeFoundation() {
     //
     // Initialize the memory heaps
     //
     GCPlatform::InitializeMemory();
-    
+
 #ifndef FINAL
     //
     // Register an out-of-memory display handler in case something goes bad
     // while allocating the heaps
     //
-    ::radMemorySetOutOfMemoryCallback( PrintOutOfMemoryMessage, NULL );
+    ::radMemorySetOutOfMemoryCallback(PrintOutOfMemoryMessage, NULL);
 #endif
 
 #ifndef RAD_RELEASE
     //
     // Initialize memory monitor by JamesCo. TM.
     //
-    if( CommandLineOptions::Get( CLO_MEMORY_MONITOR ) )
-    {
+    if (CommandLineOptions::Get(CLO_MEMORY_MONITOR)) {
         const int KB = 1024;
-        ::radMemoryMonitorInitialize( 2048 * KB, GMA_DEBUG );
+        ::radMemoryMonitorInitialize(2048 * KB, GMA_DEBUG);
     }
-#endif 
+#endif
 
     // Setup the memory heaps
     //
-    HeapMgr()->PrepareHeapsStartup ();
+    HeapMgr()->PrepareHeapsStartup();
 
     // Seed the heap stack
     //
-    HeapMgr()->PushHeap (GMA_PERSISTENT);
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
     //
     // Initilalize the platform system
@@ -298,25 +294,25 @@ void GCPlatform::InitializeFoundation()
     //
     // Initialize the debug communication system.
     //
-    ::radDbgComTargetInitialize( HostIO, 
-                                 radDbgComDefaultPort, // Default
-                                 NULL,                 // Default
-                                 GMA_DEBUG );
+    ::radDbgComTargetInitialize(HostIO,
+                                radDbgComDefaultPort, // Default
+                                NULL,                 // Default
+                                GMA_DEBUG);
 
     //
     // Initialize the Watcher.
     //
-   ::radDbgWatchInitialize( "SRR2",
-                             16384 * 16, // Default
-                             GMA_DEBUG );
+    ::radDbgWatchInitialize("SRR2",
+                            16384 * 16, // Default
+                            GMA_DEBUG);
 #endif
 
     //
     // Initialize the file system.
     //
-    ::radFileInitialize( 50, // Default
-                         32, // Default
-                         GMA_PERSISTENT );
+    ::radFileInitialize(50, // Default
+                        32, // Default
+                        GMA_PERSISTENT);
 
     ::radLoadInitialize();
 
@@ -325,7 +321,7 @@ void GCPlatform::InitializeFoundation()
     //
     // Initialize the new movie player
     //
-    ::radMovieInitialize2( GMA_PERSISTENT );
+    ::radMovieInitialize2(GMA_PERSISTENT);
 
 }
 
@@ -341,18 +337,16 @@ void GCPlatform::InitializeFoundation()
 // Return:      
 //
 //==============================================================================
-void GCPlatform::InitializeMemory()
-{
+void GCPlatform::InitializeMemory() {
     //
     // Only do this once!
     //
-    if( gMemorySystemInitialized == true )
-    {
+    if (gMemorySystemInitialized == true) {
         return;
     }
 
     gMemorySystemInitialized = true;
-    
+
     //
     // Initialize thread system.
     //
@@ -361,7 +355,7 @@ void GCPlatform::InitializeMemory()
     //
     // Initialize memory system.
     //
-    ::radMemoryInitialize( VMM_MAIN_RAM, VMM_ARAM );
+    ::radMemoryInitialize(VMM_MAIN_RAM, VMM_ARAM);
 }
 
 //==============================================================================
@@ -374,9 +368,8 @@ void GCPlatform::InitializeMemory()
 // Return:      None.
 //
 //=============================================================================
-void GCPlatform::InitializePlatform() 
-{
-    HeapMgr()->PushHeap (GMA_PERSISTENT);
+void GCPlatform::InitializePlatform() {
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
     //
     // Get some rendering action setup.
@@ -402,18 +395,17 @@ void GCPlatform::InitializePlatform()
 #endif // !PAL
 
     //TRC: The license screen needs to be
-    DisplaySplashScreen( License, NULL );
+    DisplaySplashScreen(License, NULL);
 
 
     //Set the serial cable debug verbosity level
-    GXSetVerifyLevel( gxWarningLevel );
+    GXSetVerifyLevel(gxWarningLevel);
 
-    HeapMgr()->PopHeap (GMA_PERSISTENT);
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
 
-void GCPlatform::OnControllerError(const char *msg)
-{
-    DisplaySplashScreen( Error, msg, 0.7f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
+void GCPlatform::OnControllerError(const char *msg) {
+    DisplaySplashScreen(Error, msg, 0.7f, 0.0f, 0.0f, tColour(255, 255, 255), 0);
     mErrorState = CTL_ERROR;
     mPauseForError = true;
 
@@ -430,11 +422,10 @@ void GCPlatform::OnControllerError(const char *msg)
 // Return:      None.
 //
 //==============================================================================
-void GCPlatform::ShutdownPlatform()
-{
+void GCPlatform::ShutdownPlatform() {
     ShutdownPure3D();
     ShutdownFoundation();
-    
+
     //Shutdown the steering wheel system.
     ::radControllerTerminate();
 }
@@ -449,8 +440,7 @@ void GCPlatform::ShutdownPlatform()
 // Return:      void 
 //
 //=============================================================================
-void GCPlatform::ResetMachine()
-{
+void GCPlatform::ResetMachine() {
     LaunchDashboard();
 }
 
@@ -464,10 +454,9 @@ void GCPlatform::ResetMachine()
 // Return:      void 
 //
 //=============================================================================
-void GCPlatform::LaunchDashboard()
-{
+void GCPlatform::LaunchDashboard() {
     GCManager::GetInstance()->Reset();
-    GCManager::GetInstance()->PerformReset( false );
+    GCManager::GetInstance()->PerformReset(false);
 }
 
 
@@ -476,73 +465,65 @@ void GCPlatform::LaunchDashboard()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( SplashScreen screenID, 
+// Parameters:  (SplashScreen screenID,
 //                const char* overlayText = NULL, 
 //                float fontScale = 1.0f, 
 //                float textPosX = 0.0f, 
 //                float textPosY = 0.0f, 
 //                tColour textColour,
-//                int fadeFrames = 3 )
+//                int fadeFrames = 3)
 //
 // Return:      void 
 //
 //=============================================================================
-void GCPlatform::DisplaySplashScreen( SplashScreen screenID, 
-                                       const char* overlayText, 
-                                       float fontScale, 
-                                       float textPosX, 
-                                       float textPosY, 
-                                       tColour textColour,
-                                       int fadeFrames )
-{
+void GCPlatform::DisplaySplashScreen(SplashScreen screenID,
+                                     const char *overlayText,
+                                     float fontScale,
+                                     float textPosX,
+                                     float textPosY,
+                                     tColour textColour,
+                                     int fadeFrames) {
     //Just in case this was called during a draw!
     GXWaitDrawDone();
 
-    HeapMgr()->PushHeap( GMA_TEMP );
+    HeapMgr()->PushHeap(GMA_TEMP);
 
     p3d::inventory->PushSection();
-    p3d::inventory->AddSection( GC_SECTION );
-    p3d::inventory->SelectSection( GC_SECTION );
+    p3d::inventory->AddSection(GC_SECTION);
+    p3d::inventory->SelectSection(GC_SECTION);
 
-    unsigned char* screen = NULL;
-    const char* texname = NULL;
+    unsigned char *screen = NULL;
+    const char *texname = NULL;
     int size = 0;
-    tTexture* texture = NULL;
+    tTexture *texture = NULL;
 
     P3D_UNICODE unicodeText[256];
 
 
     //Create shader
-    tShader* splashShader = new tShader("simple");
+    tShader *splashShader = new tShader("simple");
     splashShader->SetInt(PDDI_SP_FILTER, PDDI_FILTER_NONE);
     splashShader->AddRef();
 
-    if ( screenID == FadeToBlack )
-    {
-        splashShader->SetInt(PDDI_SP_BLENDMODE,PDDI_BLEND_ALPHA);
-        splashShader->SetInt(PDDI_SP_FILTER,PDDI_FILTER_BILINEAR);
-    }
-    else if ( screenID == Error )
-    {
+    if (screenID == FadeToBlack) {
+        splashShader->SetInt(PDDI_SP_BLENDMODE, PDDI_BLEND_ALPHA);
+        splashShader->SetInt(PDDI_SP_FILTER, PDDI_FILTER_BILINEAR);
+    } else if (screenID == Error) {
         splashShader->SetColour(PDDI_SP_DIFFUSE, tColour(0, 0, 0));
         splashShader->SetColour(PDDI_SP_AMBIENT, tColour(0, 0, 0));
         splashShader->SetColour(PDDI_SP_SPECULAR, tColour(0, 0, 0));
         splashShader->SetColour(PDDI_SP_EMISSIVE, tColour(0, 0, 0));
-    }
-    else
-    {
+    } else {
         //This is so we can handle more baked in screens if we want
-        switch (screenID)
-        {
-            case License:
-            {
-                screen  = gLicenseP3D;
+        switch (screenID) {
+            case License: {
+                screen = gLicenseP3D;
                 texname = LICENSE_NAME;
-                size    = LICENSE_SIZE;
+                size = LICENSE_SIZE;
             }
-            break;
+                break;
             default:
-            rAssert( false);
+                rAssert(false);
         }
 
         // Load the in screen texture file from memory
@@ -550,7 +531,7 @@ void GCPlatform::DisplaySplashScreen( SplashScreen screenID,
 
         // Get the texture to draw
         texture = p3d::find<tTexture>(texname);
-        rAssert( texture );
+        rAssert(texture);
 
         // Put it in our shader
         splashShader->SetTexture(PDDI_SP_BASETEX, texture);
@@ -564,24 +545,23 @@ void GCPlatform::DisplaySplashScreen( SplashScreen screenID,
     p3d::pddi->SetCullMode(PDDI_CULL_NONE);
 
     //CREATE THE FONT
-    tTextureFont* thisFont = NULL;
+    tTextureFont *thisFont = NULL;
 
-    if ( overlayText != NULL )
-    {
+    if (overlayText != NULL) {
         // Convert memory buffer into a texturefont.
         //
-        //p3d::load(gFont, DEFAULTFONT_SIZE, HeapMgr()->GetCurrentHeap() );
-        LoadMemP3DFile( gFont, DEFAULTFONT_SIZE, p3d::inventory );
+        //p3d::load(gFont, DEFAULTFONT_SIZE, HeapMgr()->GetCurrentHeap());
+        LoadMemP3DFile(gFont, DEFAULTFONT_SIZE, p3d::inventory);
 
         thisFont = p3d::find<tTextureFont>("adlibn_20");
-        rAssert( thisFont );
+        rAssert(thisFont);
 
         thisFont->AddRef();
-        tShader* fontShader = thisFont->GetShader();
-        fontShader->SetInt(PDDI_SP_BLENDMODE,PDDI_BLEND_ALPHA);
-        fontShader->SetInt(PDDI_SP_FILTER,PDDI_FILTER_BILINEAR);
+        tShader *fontShader = thisFont->GetShader();
+        fontShader->SetInt(PDDI_SP_BLENDMODE, PDDI_BLEND_ALPHA);
+        fontShader->SetInt(PDDI_SP_FILTER, PDDI_FILTER_BILINEAR);
 
-        p3d::AsciiToUnicode( overlayText, unicodeText, 256 );
+        p3d::AsciiToUnicode(overlayText, unicodeText, 256);
 
         // Make the missing letter into somthing I can see
         //
@@ -590,12 +570,10 @@ void GCPlatform::DisplaySplashScreen( SplashScreen screenID,
 
     // Fade up the screen
     int a = 0;
-    do
-    {
-        if ( screenID != FadeToBlack )
-        {
+    do {
+        if (screenID != FadeToBlack) {
             p3d::pddi->SetColourWrite(true, true, true, true);
-            p3d::pddi->SetClearColour( pddiColour(0,0,0) );
+            p3d::pddi->SetClearColour(pddiColour(0, 0, 0));
         }
 
         p3d::pddi->BeginFrame();
@@ -609,84 +587,82 @@ void GCPlatform::DisplaySplashScreen( SplashScreen screenID,
         GXSetScissor(0, 0, 640, 480);
 #endif
 
-        if ( screenID != FadeToBlack )
-        {
+        if (screenID != FadeToBlack) {
             p3d::pddi->Clear(PDDI_BUFFER_ALL);
         }
 
         int bright = 255;
         if (a < fadeFrames) bright = (a * 255) / fadeFrames / 10;
-        if ( bright > 255 ) bright = 255;
+        if (bright > 255) bright = 255;
 
         tColour c;
-        if ( screenID == FadeToBlack)
-        {
+        if (screenID == FadeToBlack) {
             c.Set(0, 0, 0, bright);
-        }
-        else
-        {
+        } else {
             c.Set(bright, bright, bright, 255);
         }
 
-        if ( screenID != Error )
-        {
+        if (screenID != Error) {
             p3d::pddi->PushMatrix(PDDI_MATRIX_MODELVIEW);
             p3d::pddi->IdentityMatrix(PDDI_MATRIX_MODELVIEW);
 
             p3d::stack->Push();
             p3d::stack->LoadIdentity();
 
-            pddiPrimStream* stream;
+            pddiPrimStream *stream;
 
-            if ( screenID == FadeToBlack )
-            {
-                stream = p3d::pddi->BeginPrims(splashShader->GetShader(), PDDI_PRIM_TRISTRIP, PDDI_V_C, 4);
-            }
-            else
-            {
-                stream = p3d::pddi->BeginPrims(splashShader->GetShader(), PDDI_PRIM_TRISTRIP, PDDI_V_CT, 4);
+            if (screenID == FadeToBlack) {
+                stream = p3d::pddi->BeginPrims(splashShader->GetShader(), PDDI_PRIM_TRISTRIP,
+                                               PDDI_V_C, 4);
+            } else {
+                stream = p3d::pddi->BeginPrims(splashShader->GetShader(), PDDI_PRIM_TRISTRIP,
+                                               PDDI_V_CT, 4);
             }
 
 #ifdef PAL
-            stream->Colour(c); stream->UV(0.0F, 0.0F); stream->Coord(  0.0F, 528.0F, 2.01F);
-            stream->Colour(c); stream->UV(1.0F, 0.0F); stream->Coord(640.0F, 528.0F, 2.01F);         
+            stream->Colour(c); stream->UV(0.0F, 0.0F); stream->Coord(0.0F, 528.0F, 2.01F);
+            stream->Colour(c); stream->UV(1.0F, 0.0F); stream->Coord(640.0F, 528.0F, 2.01F);
 #else
-            stream->Colour(c); stream->UV(0.0F, 0.0F); stream->Coord(  0.0F, 480.0F, 2.01F);
-            stream->Colour(c); stream->UV(1.0F, 0.0F); stream->Coord(640.0F, 480.0F, 2.01F);         
+            stream->Colour(c);
+            stream->UV(0.0F, 0.0F);
+            stream->Coord(0.0F, 480.0F, 2.01F);
+            stream->Colour(c);
+            stream->UV(1.0F, 0.0F);
+            stream->Coord(640.0F, 480.0F, 2.01F);
 #endif
-            stream->Colour(c); stream->UV(0.0F, 1.0F); stream->Coord(  0.0F,   0.0F, 2.01F);         
-            stream->Colour(c); stream->UV(1.0F, 1.0F); stream->Coord(640.0F,   0.0F, 2.01F);         
-  
+            stream->Colour(c);
+            stream->UV(0.0F, 1.0F);
+            stream->Coord(0.0F, 0.0F, 2.01F);
+            stream->Colour(c);
+            stream->UV(1.0F, 1.0F);
+            stream->Coord(640.0F, 0.0F, 2.01F);
+
             p3d::pddi->EndPrims(stream);
 
             p3d::stack->Pop();
-    
+
             p3d::pddi->PopMatrix(PDDI_MATRIX_MODELVIEW);
         }
 
-        if (overlayText != NULL)
-        {
+        if (overlayText != NULL) {
             tColour colour = textColour;
-            colour.SetAlpha( bright );
+            colour.SetAlpha(bright);
 
-            thisFont->SetColour( colour );
+            thisFont->SetColour(colour);
 
             p3d::pddi->SetProjectionMode(PDDI_PROJECTION_ORTHOGRAPHIC);
 
             p3d::stack->Push();
             p3d::stack->LoadIdentity();
 
-            p3d::stack->Translate( textPosX, textPosY, 1.5f);
+            p3d::stack->Translate(textPosX, textPosY, 1.5f);
             float scaleSize = 1.0f / 480.0f;  //This is likely good for 528 also.
-            p3d::stack->Scale(scaleSize * fontScale, scaleSize* fontScale , 1.0f);
+            p3d::stack->Scale(scaleSize * fontScale, scaleSize * fontScale, 1.0f);
 
-            if ( textPosX != 0.0f || textPosY != 0.0f )
-            {
-                thisFont->DisplayText( unicodeText );
-            }
-            else
-            {
-                thisFont->DisplayText( unicodeText, 3 );
+            if (textPosX != 0.0f || textPosY != 0.0f) {
+                thisFont->DisplayText(unicodeText);
+            } else {
+                thisFont->DisplayText(unicodeText, 3);
             }
 
             p3d::stack->Pop();
@@ -697,8 +673,7 @@ void GCPlatform::DisplaySplashScreen( SplashScreen screenID,
 
         ++a;
 
-        if (screenID == FadeToBlack && bright >= 255)
-        {
+        if (screenID == FadeToBlack && bright >= 255) {
             //This is a sucky hack...
             break;
         }
@@ -706,8 +681,7 @@ void GCPlatform::DisplaySplashScreen( SplashScreen screenID,
     } while (a <= fadeFrames);
 
     // [ps]: flush out this screen now.
-    if ( screenID == FadeToBlack )
-    {
+    if (screenID == FadeToBlack) {
         GXSetScissorBoxOffset(0, 0);
 #ifdef PAL
         GXSetScissor(0, 0, 640, 528);
@@ -723,16 +697,14 @@ void GCPlatform::DisplaySplashScreen( SplashScreen screenID,
     splashShader->Release();
 
     // remove the texture from the inventory
-    if ( texture )
-    {
+    if (texture) {
         p3d::inventory->Remove(texture);
     }
 
     p3d::pddi->SetCullMode(cm);
     p3d::pddi->SetProjectionMode(pm);
 
-    if ( thisFont )
-    {
+    if (thisFont) {
         thisFont->Release();
         p3d::inventory->Remove(thisFont);
     }
@@ -741,7 +713,7 @@ void GCPlatform::DisplaySplashScreen( SplashScreen screenID,
     p3d::inventory->DeleteSection(GC_SECTION);
     p3d::inventory->PopSection();
 
-    HeapMgr()->PopHeap( GMA_TEMP );
+    HeapMgr()->PopHeap(GMA_TEMP);
 }
 
 //=============================================================================
@@ -749,48 +721,47 @@ void GCPlatform::DisplaySplashScreen( SplashScreen screenID,
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const char* overlayText = NULL, 
+// Parameters:  (const char* overlayText = NULL,
 //                float fontScale = 1.0f, 
 //                float textPosX = 0.0f, 
 //                float textPosY = 0.0f, 
 //                tColour textColour,
-//                int fadeFrames = 3 )
+//                int fadeFrames = 3)
 //
 // Return:      void 
 //
 //=============================================================================
-void GCPlatform::DisplaySplashScreen( const char* textureName,
-                                      const char* overlayText, 
-                                      float fontScale, 
-                                      float textPosX, 
-                                      float textPosY, 
-                                      tColour textColour,
-                                      int fadeFrames )
-{
+void GCPlatform::DisplaySplashScreen(const char *textureName,
+                                     const char *overlayText,
+                                     float fontScale,
+                                     float textPosX,
+                                     float textPosY,
+                                     tColour textColour,
+                                     int fadeFrames) {
     //Just in case this was called during a draw!
     GXWaitDrawDone();
 
-    HeapMgr()->PushHeap( GMA_TEMP );
+    HeapMgr()->PushHeap(GMA_TEMP);
 
     p3d::inventory->PushSection();
-    p3d::inventory->AddSection( GC_SECTION );
-    p3d::inventory->SelectSection( GC_SECTION );
+    p3d::inventory->AddSection(GC_SECTION);
+    p3d::inventory->SelectSection(GC_SECTION);
 
-    tTexture* texture = NULL;
+    tTexture *texture = NULL;
 
     P3D_UNICODE unicodeText[256];
 
-    rAssertMsg( textureName, "There must be a texture, use the other one with Error otherwise." );
+    rAssertMsg(textureName, "There must be a texture, use the other one with Error otherwise.");
 
     //Create shader
-    tShader* splashShader = new tShader("simple");
+    tShader *splashShader = new tShader("simple");
     splashShader->SetInt(PDDI_SP_FILTER, PDDI_FILTER_NONE);
     splashShader->AddRef();
 
 
     // Get the texture to draw
     texture = p3d::find<tTexture>(textureName);
-    rAssert( texture );
+    rAssert(texture);
 
     // Put it in our shader
     splashShader->SetTexture(PDDI_SP_BASETEX, texture);
@@ -804,25 +775,24 @@ void GCPlatform::DisplaySplashScreen( const char* textureName,
     p3d::pddi->SetCullMode(PDDI_CULL_NONE);
 
     //CREATE THE FONT
-    tTextureFont* thisFont = NULL;
+    tTextureFont *thisFont = NULL;
 
-    if ( overlayText != NULL )
-    {
+    if (overlayText != NULL) {
         // Convert memory buffer into a texturefont.
         //
         //p3d::load(gFont, DEFAULTFONT_SIZE, HeapMgr()->GetCurrentHeap());
-        LoadMemP3DFile( gFont, DEFAULTFONT_SIZE, p3d::inventory );
+        LoadMemP3DFile(gFont, DEFAULTFONT_SIZE, p3d::inventory);
 
         thisFont = p3d::find<tTextureFont>("adlibn_20");
-        rAssert( thisFont );
+        rAssert(thisFont);
 
         thisFont->AddRef();
-        tShader* fontShader = thisFont->GetShader();
-        fontShader->SetInt(PDDI_SP_BLENDMODE,PDDI_BLEND_ALPHA);
-        fontShader->SetInt(PDDI_SP_FILTER,PDDI_FILTER_BILINEAR);
+        tShader *fontShader = thisFont->GetShader();
+        fontShader->SetInt(PDDI_SP_BLENDMODE, PDDI_BLEND_ALPHA);
+        fontShader->SetInt(PDDI_SP_FILTER, PDDI_FILTER_BILINEAR);
 
 
-        p3d::AsciiToUnicode( overlayText, unicodeText, 256 );
+        p3d::AsciiToUnicode(overlayText, unicodeText, 256);
 
         // Make the missing letter into somthing I can see
         //
@@ -832,10 +802,9 @@ void GCPlatform::DisplaySplashScreen( const char* textureName,
     // Fade up the screen
     int a = 0;
 
-    do
-    {
-    	p3d::pddi->SetColourWrite(true, true, true, true);
-        p3d::pddi->SetClearColour( pddiColour(0,0,0) );
+    do {
+        p3d::pddi->SetColourWrite(true, true, true, true);
+        p3d::pddi->SetClearColour(pddiColour(0, 0, 0));
         p3d::pddi->BeginFrame();
         p3d::pddi->Clear(PDDI_BUFFER_ALL);
         p3d::pddi->SetProjectionMode(PDDI_PROJECTION_DEVICE);
@@ -852,46 +821,54 @@ void GCPlatform::DisplaySplashScreen( const char* textureName,
 
         int bright = 255;
         if (a < fadeFrames) bright = (a * 255) / fadeFrames;
-        if ( bright > 255 ) bright = 255;
+        if (bright > 255) bright = 255;
         tColour c(bright, bright, bright, 255);
 
         p3d::stack->Push();
         p3d::stack->LoadIdentity();
 
-        pddiPrimStream* stream = p3d::pddi->BeginPrims(splashShader->GetShader(), PDDI_PRIM_TRISTRIP, PDDI_V_CT, 4);
+        pddiPrimStream *stream = p3d::pddi->BeginPrims(splashShader->GetShader(),
+                                                       PDDI_PRIM_TRISTRIP, PDDI_V_CT, 4);
 
 #ifdef PAL
-        stream->Colour(c); stream->UV(0.0F, 0.0F); stream->Coord(  0.0F, 528.0F, 2.01F);
-        stream->Colour(c); stream->UV(1.0F, 0.0F); stream->Coord(640.0F, 528.0F, 2.01F);         
+        stream->Colour(c); stream->UV(0.0F, 0.0F); stream->Coord(0.0F, 528.0F, 2.01F);
+        stream->Colour(c); stream->UV(1.0F, 0.0F); stream->Coord(640.0F, 528.0F, 2.01F);
 #else
-        stream->Colour(c); stream->UV(0.0F, 0.0F); stream->Coord(  0.0F, 480.0F, 2.01F);
-        stream->Colour(c); stream->UV(1.0F, 0.0F); stream->Coord(640.0F, 480.0F, 2.01F);         
+        stream->Colour(c);
+        stream->UV(0.0F, 0.0F);
+        stream->Coord(0.0F, 480.0F, 2.01F);
+        stream->Colour(c);
+        stream->UV(1.0F, 0.0F);
+        stream->Coord(640.0F, 480.0F, 2.01F);
 #endif
-        stream->Colour(c); stream->UV(0.0F, 1.0F); stream->Coord(  0.0F,   0.0F, 2.01F);         
-        stream->Colour(c); stream->UV(1.0F, 1.0F); stream->Coord(640.0F,   0.0F, 2.01F);         
-  
+        stream->Colour(c);
+        stream->UV(0.0F, 1.0F);
+        stream->Coord(0.0F, 0.0F, 2.01F);
+        stream->Colour(c);
+        stream->UV(1.0F, 1.0F);
+        stream->Coord(640.0F, 0.0F, 2.01F);
+
         p3d::pddi->EndPrims(stream);
 
         p3d::stack->Pop();
 
         p3d::pddi->PopMatrix(PDDI_MATRIX_MODELVIEW);
 
-        if (overlayText != NULL)
-        {
+        if (overlayText != NULL) {
             tColour colour = textColour;
-            colour.SetAlpha( bright );
+            colour.SetAlpha(bright);
 
-            thisFont->SetColour( colour );
+            thisFont->SetColour(colour);
 
             p3d::pddi->SetProjectionMode(PDDI_PROJECTION_ORTHOGRAPHIC);
             p3d::stack->Push();
             p3d::stack->LoadIdentity();
 
-            p3d::stack->Translate( textPosX, textPosY, 1.5f);
+            p3d::stack->Translate(textPosX, textPosY, 1.5f);
             float scaleSize = 1.0f / 480.0f;  //This is likely good for 528 also.
-            p3d::stack->Scale(scaleSize * fontScale, scaleSize* fontScale , 1.0f);
+            p3d::stack->Scale(scaleSize * fontScale, scaleSize * fontScale, 1.0f);
 
-            thisFont->DisplayText( unicodeText );
+            thisFont->DisplayText(unicodeText);
 
             p3d::stack->Pop();
         }
@@ -910,8 +887,7 @@ void GCPlatform::DisplaySplashScreen( const char* textureName,
     p3d::pddi->SetCullMode(cm);
     p3d::pddi->SetProjectionMode(pm);
 
-    if ( overlayText != NULL )
-    {
+    if (overlayText != NULL) {
         thisFont->Release();
         p3d::inventory->Remove(thisFont);
     }
@@ -920,7 +896,7 @@ void GCPlatform::DisplaySplashScreen( const char* textureName,
     p3d::inventory->DeleteSection(GC_SECTION);
     p3d::inventory->PopSection();
 
-    HeapMgr()->PopHeap( GMA_TEMP );
+    HeapMgr()->PopHeap(GMA_TEMP);
 }
 
 //=============================================================================
@@ -928,31 +904,30 @@ void GCPlatform::DisplaySplashScreen( const char* textureName,
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float fontScale = 1.0f, 
+// Parameters:  (float fontScale = 1.0f,
 //                float yesPosX = 0.0f, 
 //                float yesPosY = 0.0f, 
 //                float noPosX = 0.0f, 
 //                float noPosY = 0.0f, 
-//                int fadeFrames = 3 )
+//                int fadeFrames = 3)
 //
 // Return:      bool 
 //
 //=============================================================================
-bool GCPlatform::DisplayYesNo( float fontScale, 
-                               float yesPosX, 
-                               float yesPosY, 
-                               float noPosX, 
-                               float noPosY, 
-                               int fadeFrames )
-{
+bool GCPlatform::DisplayYesNo(float fontScale,
+                              float yesPosX,
+                              float yesPosY,
+                              float noPosX,
+                              float noPosY,
+                              int fadeFrames) {
     //Just in case this was called during a draw!
     GXWaitDrawDone();
 
-    HeapMgr()->PushHeap( GMA_TEMP );
+    HeapMgr()->PushHeap(GMA_TEMP);
 
     p3d::inventory->PushSection();
-    p3d::inventory->AddSection( GC_SECTION );
-    p3d::inventory->SelectSection( GC_SECTION );
+    p3d::inventory->AddSection(GC_SECTION);
+    p3d::inventory->SelectSection(GC_SECTION);
 
     // Save the current Projection mode so I can restore it later
     pddiProjectionMode pm = p3d::pddi->GetProjectionMode();
@@ -961,30 +936,30 @@ bool GCPlatform::DisplayYesNo( float fontScale,
     p3d::pddi->SetCullMode(PDDI_CULL_NONE);
 
     //CREATE THE FONT
-    tTextureFont* thisFont = NULL;
+    tTextureFont *thisFont = NULL;
 
     // Convert memory buffer into a texturefont.
     //
     //p3d::load(gFont, DEFAULTFONT_SIZE, HeapMgr()->GetCurrentHeap());
-    LoadMemP3DFile( gFont, DEFAULTFONT_SIZE, p3d::inventory );
+    LoadMemP3DFile(gFont, DEFAULTFONT_SIZE, p3d::inventory);
 
     thisFont = p3d::find<tTextureFont>("adlibn_20");
-    rAssert( thisFont );
+    rAssert(thisFont);
 
     thisFont->AddRef();
-    tShader* fontShader = thisFont->GetShader();
-    fontShader->SetInt(PDDI_SP_BLENDMODE,PDDI_BLEND_ALPHA);
-    fontShader->SetInt(PDDI_SP_FILTER,PDDI_FILTER_BILINEAR);
+    tShader *fontShader = thisFont->GetShader();
+    fontShader->SetInt(PDDI_SP_BLENDMODE, PDDI_BLEND_ALPHA);
+    fontShader->SetInt(PDDI_SP_FILTER, PDDI_FILTER_BILINEAR);
 
     //This is the text!
-    const char* yes = "Yes";
-    const char* no = "No";
-    
+    const char *yes = "Yes";
+    const char *no = "No";
+
     P3D_UNICODE unicodeYes[256];
     P3D_UNICODE unicodeNo[256];
 
-    p3d::AsciiToUnicode( yes, unicodeYes, 256 );
-    p3d::AsciiToUnicode( no, unicodeNo, 256 );
+    p3d::AsciiToUnicode(yes, unicodeYes, 256);
+    p3d::AsciiToUnicode(no, unicodeNo, 256);
 
     // Make the missing letter into somthing I can see
     //
@@ -993,37 +968,34 @@ bool GCPlatform::DisplayYesNo( float fontScale,
     unsigned int inputCount = 0;
     PADStatus controllers[PAD_MAX_CONTROLLERS];
 
-    for ( inputCount = 0; inputCount < PAD_MAX_CONTROLLERS; ++inputCount )
-    {
-        controllers[ inputCount ].button = 0;
+    for (inputCount = 0; inputCount < PAD_MAX_CONTROLLERS; ++inputCount) {
+        controllers[inputCount].button = 0;
     }
 
-    LGPosition lgStatus[ SI_MAX_CHAN ];
-    memset( lgStatus, 0, sizeof( LGPosition )*SI_MAX_CHAN  );
+    LGPosition lgStatus[SI_MAX_CHAN];
+    memset(lgStatus, 0, sizeof(LGPosition) * SI_MAX_CHAN);
 
     bool yesSelected = true;
-    bool buttonAPressed[ PAD_MAX_CONTROLLERS ];
+    bool buttonAPressed[PAD_MAX_CONTROLLERS];
     bool buttonAReleased = false;
 
     // Fade up the screen
     int a = 0;
     tColour colour;
 
-    unsigned int start = OSTicksToMilliseconds( OSGetTime() );
+    unsigned int start = OSTicksToMilliseconds(OSGetTime());
 
-    bool buttonDown[ PAD_MAX_CONTROLLERS ];
-    
+    bool buttonDown[PAD_MAX_CONTROLLERS];
+
     unsigned int i;
 
-    for ( i = 0; i < PAD_MAX_CONTROLLERS; ++i )
-    {
-        buttonDown[ i ] = false;
-        buttonAPressed[ i ] = false;
+    for (i = 0; i < PAD_MAX_CONTROLLERS; ++i) {
+        buttonDown[i] = false;
+        buttonAPressed[i] = false;
     }
 
-    do
-    {
-        unsigned int end = OSTicksToMilliseconds( OSGetTime() );
+    do {
+        unsigned int end = OSTicksToMilliseconds(OSGetTime());
         unsigned int milliseconds = end - start;
         start = end;
 
@@ -1037,31 +1009,28 @@ bool GCPlatform::DisplayYesNo( float fontScale,
 #endif
         int bright = 255;
         if (a < fadeFrames) bright = (a * 255) / fadeFrames;
-        if ( bright > 255 ) bright = 255;
+        if (bright > 255) bright = 255;
         tColour c(bright, bright, bright, 255);
 
         p3d::pddi->SetProjectionMode(PDDI_PROJECTION_ORTHOGRAPHIC);
-        
+
         float scaleSize = 1.0f / 480.0f;  //This is likely good for 528 also.
 
         //Draw Yes
         p3d::stack->Push();
         p3d::stack->LoadIdentity();
 
-        p3d::stack->Translate( yesPosX, yesPosY, 1.5f);
-        p3d::stack->Scale(scaleSize * fontScale, scaleSize* fontScale , 1.0f);
+        p3d::stack->Translate(yesPosX, yesPosY, 1.5f);
+        p3d::stack->Scale(scaleSize * fontScale, scaleSize * fontScale, 1.0f);
 
-        if ( yesSelected )
-        {
+        if (yesSelected) {
             colour = tColour(255, 255, 255, bright);
-        }
-        else
-        {
+        } else {
             colour = tColour(100, 100, 100, bright);
         }
 
-        thisFont->SetColour( colour );
-        thisFont->DisplayText( unicodeYes );
+        thisFont->SetColour(colour);
+        thisFont->DisplayText(unicodeYes);
 
         p3d::stack->Pop();
 
@@ -1069,88 +1038,79 @@ bool GCPlatform::DisplayYesNo( float fontScale,
         p3d::stack->Push();
         p3d::stack->LoadIdentity();
 
-        p3d::stack->Translate( noPosX, noPosY, 1.5f);
-        p3d::stack->Scale(scaleSize * fontScale, scaleSize* fontScale , 1.0f);
+        p3d::stack->Translate(noPosX, noPosY, 1.5f);
+        p3d::stack->Scale(scaleSize * fontScale, scaleSize * fontScale, 1.0f);
 
-        if ( !yesSelected )
-        {
+        if (!yesSelected) {
             colour = tColour(255, 255, 255, bright);
-        }
-        else
-        {
+        } else {
             colour = tColour(100, 100, 100, bright);
         }
 
-        thisFont->SetColour( colour );
-        thisFont->DisplayText( unicodeNo );
+        thisFont->SetColour(colour);
+        thisFont->DisplayText(unicodeNo);
 
         p3d::stack->Pop();
 
         p3d::pddi->EndFrame();
         p3d::context->SwapBuffers();
 
-        if ( bright < 255 )
-        {
+        if (bright < 255) {
             ++a;
         }
 
         ::radControllerSystemService();
-        ::radThreadSleep( 32 );
+        ::radThreadSleep(32);
 
         PADRead(controllers);
-        LGRead( lgStatus );
+        LGRead(lgStatus);
 
-        rAssert( PAD_MAX_CONTROLLERS == SI_MAX_CHAN );
-        for ( i = 0; i < PAD_MAX_CONTROLLERS; ++i )
-        {
-            bool start = controllers[ i ].err == PAD_ERR_NONE &&
-                         ( controllers[ i ].button & PAD_BUTTON_MENU );
+        rAssert(PAD_MAX_CONTROLLERS == SI_MAX_CHAN);
+        for (i = 0; i < PAD_MAX_CONTROLLERS; ++i) {
+            bool start = controllers[i].err == PAD_ERR_NONE &&
+                         (controllers[i].button & PAD_BUTTON_MENU);
 
             start = start ||
-                    (lgStatus[ i ].err == LG_ERR_NONE && (lgStatus[ i ].button & LG_BUTTON_START )); 
-            
-            bool x = controllers[ i ].err == PAD_ERR_NONE &&
-                     ( controllers[ i ].button & PAD_BUTTON_A );
+                    (lgStatus[i].err == LG_ERR_NONE && (lgStatus[i].button & LG_BUTTON_START));
+
+            bool x = controllers[i].err == PAD_ERR_NONE &&
+                     (controllers[i].button & PAD_BUTTON_A);
 
             x = x ||
-                (lgStatus[ i ].err == LG_ERR_NONE && (lgStatus[ i ].button & LG_BUTTON_A )); 
-            
-            if ( x || start )
-            {
-                buttonAPressed[ i ] = true;
-            }
-            else if ( buttonAPressed[ i ] )
-            {
+                (lgStatus[i].err == LG_ERR_NONE && (lgStatus[i].button & LG_BUTTON_A));
+
+            if (x || start) {
+                buttonAPressed[i] = true;
+            } else if (buttonAPressed[i]) {
                 buttonAReleased = true;
                 break;
             }
 
-            bool dLeft = ( controllers[ i ].err == PAD_ERR_NONE &&
-                           ( ( controllers[ i ].button & PAD_BUTTON_LEFT ) ||
-                             ( controllers[ i ].stickX < -50 ) ) );
-            bool dRight = ( controllers[ i ].err == PAD_ERR_NONE &&
-                            ( ( controllers[ i ].button & PAD_BUTTON_RIGHT ) ||
-                              ( controllers[ i ].stickX > 50 ) ) );
+            bool dLeft = (controllers[i].err == PAD_ERR_NONE &&
+                          ((controllers[i].button & PAD_BUTTON_LEFT) ||
+                           (controllers[i].stickX < -50)));
+            bool dRight = (controllers[i].err == PAD_ERR_NONE &&
+                           ((controllers[i].button & PAD_BUTTON_RIGHT) ||
+                            (controllers[i].stickX > 50)));
 
             dLeft = dLeft ||
-                    (lgStatus[ i ].err == LG_ERR_NONE && ((lgStatus[ i ].button & LG_BUTTON_LEFT) || (lgStatus[ i ].wheel < -50 )));
+                    (lgStatus[i].err == LG_ERR_NONE &&
+                     ((lgStatus[i].button & LG_BUTTON_LEFT) || (lgStatus[i].wheel < -50)));
 
             dRight = dRight ||
-                     (lgStatus[ i ].err == LG_ERR_NONE && ((lgStatus[ i ].button & LG_BUTTON_RIGHT) || (lgStatus[ i ].wheel > 50 )));
+                     (lgStatus[i].err == LG_ERR_NONE &&
+                      ((lgStatus[i].button & LG_BUTTON_RIGHT) || (lgStatus[i].wheel > 50)));
 
-            if ( ( dLeft || dRight ) && !buttonDown[ i ] )
-            {
+            if ((dLeft || dRight) && !buttonDown[i]) {
                 yesSelected = !yesSelected;
-                buttonDown[ i ] = true;
-            }
-            else if ( !dLeft && !dRight )
-            {
-                buttonDown[ i ] = false;
+                buttonDown[i] = true;
+            } else if (!dLeft && !dRight) {
+                buttonDown[i] = false;
             }
         }
 
         GXWaitDrawDone();
-    } while ( !buttonAReleased );
+    } while (!buttonAReleased);
 
     p3d::pddi->SetCullMode(cm);
     p3d::pddi->SetProjectionMode(pm);
@@ -1163,7 +1123,7 @@ bool GCPlatform::DisplayYesNo( float fontScale,
     p3d::inventory->DeleteSection(GC_SECTION);
     p3d::inventory->PopSection();
 
-    HeapMgr()->PopHeap( GMA_TEMP );
+    HeapMgr()->PopHeap(GMA_TEMP);
 
     return yesSelected;
 }
@@ -1173,14 +1133,13 @@ bool GCPlatform::DisplayYesNo( float fontScale,
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( radFileError error, const char* pDriveName, void* pUserData )
+// Parameters:  (radFileError error, const char* pDriveName, void* pUserData)
 //
 // Return:      bool 
 //
 //=============================================================================
-bool GCPlatform::OnDriveError( radFileError error, const char* pDriveName, void* pUserData )
-{
-    GCManager::GetInstance()->OnTimerDone( 16, NULL );
+bool GCPlatform::OnDriveError(radFileError error, const char *pDriveName, void *pUserData) {
+    GCManager::GetInstance()->OnTimerDone(16, NULL);
 
     // Halt rumbling
     GCManager::GetInstance()->StopRumble();
@@ -1191,7 +1150,7 @@ bool GCPlatform::OnDriveError( radFileError error, const char* pDriveName, void*
     unsigned int errorIndex = error;
 
 #ifdef PAL
-    switch( CGuiTextBible::GetCurrentLanguage() )
+    switch(CGuiTextBible::GetCurrentLanguage())
     {
         case Scrooby::XL_FRENCH:
         {
@@ -1218,48 +1177,38 @@ bool GCPlatform::OnDriveError( radFileError error, const char* pDriveName, void*
     }
 #endif // PAL
 
-    rAssert( errorIndex < sizeof( ERROR_STRINGS ) / sizeof( ERROR_STRINGS[ 0 ] ) );
+    rAssert(errorIndex < sizeof(ERROR_STRINGS) / sizeof(ERROR_STRINGS[0]));
 
-    switch ( error )
-    {   
-    case Success:
-        {
-            if ( mErrorState != NONE )
-            {
-                if ( inFrame ) p3d::context->EndFrame( true );
-                DisplaySplashScreen( FadeToBlack );
-                if ( inFrame ) p3d::context->BeginFrame( );
+    switch (error) {
+        case Success: {
+            if (mErrorState != NONE) {
+                if (inFrame) p3d::context->EndFrame(true);
+                DisplaySplashScreen(FadeToBlack);
+                if (inFrame) p3d::context->BeginFrame();
                 mErrorState = NONE;
                 mPauseForError = false;
             }
 
-            if ( GetPresentationManager()->GetFMVPlayer()->IsPlaying() )
-            {
-                GetPresentationManager()->GetFMVPlayer()->UnPause( );
-            }
-            else
-            {
+            if (GetPresentationManager()->GetFMVPlayer()->IsPlaying()) {
+                GetPresentationManager()->GetFMVPlayer()->UnPause();
+            } else {
                 GetSoundManager()->ResumeAfterMovie();
             }
             return true;
             break;
         }
-    case FileNotFound:
-        {
-            if ( CommandLineOptions::Get( CLO_FILE_NOT_FOUND ) )
-            {
-                rAssert( pUserData != NULL );
+        case FileNotFound: {
+            if (CommandLineOptions::Get(CLO_FILE_NOT_FOUND)) {
+                rAssert(pUserData != NULL);
 
-                radFileRequest* request = static_cast<radFileRequest*>( pUserData );
-                const char* fileName = request->GetFilename();
+                radFileRequest *request = static_cast<radFileRequest *>(pUserData);
+                const char *fileName = request->GetFilename();
 
                 //Get rid of the slashes.
                 unsigned int i;
                 unsigned int lastIndex = 0;
-                for ( i = 0; i < strlen( fileName ); ++i )
-                {
-                    if ( fileName[ i ] == '\\' )
-                    {
+                for (i = 0; i < strlen(fileName); ++i) {
+                    if (fileName[i] == '\\') {
                         lastIndex = i;
                     }
                 }
@@ -1267,60 +1216,52 @@ bool GCPlatform::OnDriveError( radFileError error, const char* pDriveName, void*
                 unsigned int adjustedIndex = lastIndex == 0 ? lastIndex : lastIndex + 1;
 
                 char adjustedName[32];
-                strncpy( adjustedName, &fileName[adjustedIndex], ( strlen( fileName ) - lastIndex ) );
-                adjustedName[ strlen( fileName ) - lastIndex ] = '\0';
+                strncpy(adjustedName, &fileName[adjustedIndex], (strlen(fileName) - lastIndex));
+                adjustedName[strlen(fileName) - lastIndex] = '\0';
 
                 char errorString[256];
-                sprintf( errorString, "%s:\n%s", ERROR_STRINGS[errorIndex], adjustedName );
-                if ( inFrame ) p3d::context->EndFrame( true );
-                DisplaySplashScreen( Error, errorString, 1.0f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
-                if ( inFrame ) p3d::context->BeginFrame( );
+                sprintf(errorString, "%s:\n%s", ERROR_STRINGS[errorIndex], adjustedName);
+                if (inFrame) p3d::context->EndFrame(true);
+                DisplaySplashScreen(Error, errorString, 1.0f, 0.0f, 0.0f, tColour(255, 255, 255),
+                                    0);
+                if (inFrame) p3d::context->BeginFrame();
                 mErrorState = P_ERROR;
                 mPauseForError = true;
 
-                if ( GetPresentationManager()->GetFMVPlayer()->IsPlaying() )
-                {
-                    GetPresentationManager()->GetFMVPlayer()->Pause( );
-                }
-                else
-                {
+                if (GetPresentationManager()->GetFMVPlayer()->IsPlaying()) {
+                    GetPresentationManager()->GetFMVPlayer()->Pause();
+                } else {
                     GetSoundManager()->StopForMovie();
                 }
                 return true;
-            }
-            else
-            {
+            } else {
                 error = NoMedia;
                 //Fall through.
             }
         }
-    case ShellOpen:
-    case WrongMedia:
-    case NoMedia:
-    case MediaCorrupt:
-    case HardwareFailure:
-        {
+        case ShellOpen:
+        case WrongMedia:
+        case NoMedia:
+        case MediaCorrupt:
+        case HardwareFailure: {
             //This could be the wrong disc.
-            if ( inFrame ) p3d::context->EndFrame( true );
-            DisplaySplashScreen( Error, ERROR_STRINGS[errorIndex], 1.0f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
-            if ( inFrame ) p3d::context->BeginFrame( );
+            if (inFrame) p3d::context->EndFrame(true);
+            DisplaySplashScreen(Error, ERROR_STRINGS[errorIndex], 1.0f, 0.0f, 0.0f,
+                                tColour(255, 255, 255), 0);
+            if (inFrame) p3d::context->BeginFrame();
             mErrorState = P_ERROR;
             mPauseForError = true;
 
-            if ( GetPresentationManager()->GetFMVPlayer()->IsPlaying() )
-            {
-                GetPresentationManager()->GetFMVPlayer()->Pause( );
-            }
-            else
-            {
+            if (GetPresentationManager()->GetFMVPlayer()->IsPlaying()) {
+                GetPresentationManager()->GetFMVPlayer()->Pause();
+            } else {
                 GetSoundManager()->StopForMovie();
             }
             return true;
         }
-    default:
-        {
+        default: {
             //Others are not supported.
-            rAssert( false );
+            rAssert(false);
         }
     }
 
@@ -1350,30 +1291,29 @@ bool GCPlatform::OnDriveError( radFileError error, const char* pDriveName, void*
 //              slower elements of FTech
 //
 //==============================================================================
-void GCPlatform::InitializeFoundationDrive() 
-{
+void GCPlatform::InitializeFoundationDrive() {
     //
     // Get the DVD drive and hold it open for the life of the game.
     // This is a costly operation so we only want to do it once.
     //
 
-    ::radDriveOpen( &mpIRadDrive, 
-                    "DVD:",
-                    NormalPriority, // Default
-                    GMA_PERSISTENT );
+    ::radDriveOpen(&mpIRadDrive,
+                   "DVD:",
+                   NormalPriority, // Default
+                   GMA_PERSISTENT);
 
-    rAssert( mpIRadDrive != NULL );
+    rAssert(mpIRadDrive != NULL);
 
-    mpIRadDrive->RegisterErrorHandler( this, NULL );
+    mpIRadDrive->RegisterErrorHandler(this, NULL);
 
     //
     // Set the read-write granulatity to prevent operations from
     // being partitioned.
     //
 //    const int GRANULARITY = 20 * 1024 * 1024;
-//    mpIRadDrive->SetReadWriteGranularity( GRANULARITY );
+//    mpIRadDrive->SetReadWriteGranularity(GRANULARITY);
 
-    DVDSetAutoFatalMessaging( true );
+    DVDSetAutoFatalMessaging(true);
 }
 
 
@@ -1390,14 +1330,13 @@ void GCPlatform::InitializeFoundationDrive()
 //              they were initialized in.
 //
 //==============================================================================
-void GCPlatform::ShutdownFoundation()
-{
+void GCPlatform::ShutdownFoundation() {
     //
     // Release the drive we've held open since the begining.
     //
     mpIRadDrive->Release();
     mpIRadDrive = NULL;
-     
+
     //
     // Shutdown the systems in the reverse order.
     //
@@ -1406,8 +1345,7 @@ void GCPlatform::ShutdownFoundation()
 
 #ifndef RAD_RELEASE
     ::radDbgWatchTerminate();
-    if( CommandLineOptions::Get( CLO_MEMORY_MONITOR ) )
-    {
+    if (CommandLineOptions::Get(CLO_MEMORY_MONITOR)) {
         ::radMemoryMonitorTerminate();
     }
     ::radDbgComTargetTerminate();
@@ -1430,16 +1368,15 @@ void GCPlatform::ShutdownFoundation()
 // Return:      None.
 //
 //==============================================================================
-void GCPlatform::InitializePure3D() 
-{
-MEMTRACK_PUSH_GROUP( "GCPlatform" );
+void GCPlatform::InitializePure3D() {
+    MEMTRACK_PUSH_GROUP("GCPlatform");
     //
     // Initialise Pure3D platform object.
     // This call differs between different platforms.  The Win32 version,
     // for example requires the application instance to be passed in.
     //
     mpPlatform = tPlatform::Create();
-    rAssert( mpPlatform != NULL );
+    rAssert(mpPlatform != NULL);
 
     //
     // Initialiase the Pure3D context object.
@@ -1466,11 +1403,11 @@ MEMTRACK_PUSH_GROUP( "GCPlatform" );
     // supported by most 3D hardware, and not by Pure3D.
     //
 //    mInitData.bpp = WindowBPP;
-    mInitData.bufferMask  = PDDI_BUFFER_COLOUR | PDDI_BUFFER_DEPTH;
+    mInitData.bufferMask = PDDI_BUFFER_COLOUR | PDDI_BUFFER_DEPTH;
     //
     // Rendering to NTSC or PAL.
     //
-#ifdef PAL    
+#ifdef PAL
     mInitData.pal = true;
 #else
     mInitData.pal = false;
@@ -1479,14 +1416,14 @@ MEMTRACK_PUSH_GROUP( "GCPlatform" );
 //    mInitData.progressive = OSGetProgressiveMode() && VIGetDTVStatus();
     mInitData.progressive = false;
 #endif
-    
+
     //TODO: Investigate VSync
     mInitData.lockToVsync = false;
     //
     // Create the context.
     //
-    mpContext = mpPlatform->CreateContext( &mInitData );
-    rAssert( mpContext != NULL );
+    mpContext = mpPlatform->CreateContext(&mInitData);
+    rAssert(mpContext != NULL);
 
     VISetBlack(FALSE);
     VIFlush();
@@ -1495,8 +1432,8 @@ MEMTRACK_PUSH_GROUP( "GCPlatform" );
     //
     // Assign this context to the platform.
     //
-    mpPlatform->SetActiveContext( mpContext );
-    p3d::pddi->EnableZBuffer( true );
+    mpPlatform->SetActiveContext(mpContext);
+    p3d::pddi->EnableZBuffer(true);
 
     //
     // This call installs chunk handlers for all the primary chunk types that
@@ -1504,19 +1441,16 @@ MEMTRACK_PUSH_GROUP( "GCPlatform" );
     // like.
     //
 //    p3d::InstallDefaultLoaders();
-        P3DASSERT(p3d::context);
-    tP3DFileHandler* p3d = new(GMA_GC_VMM) tP3DFileHandler;
+    P3DASSERT(p3d::context);
+    tP3DFileHandler *p3d = new(GMA_GC_VMM) tP3DFileHandler;
 //    p3d::loadManager->AddHandler(p3d);
     p3d::context->GetLoadManager()->AddHandler(p3d, "p3d");
     p3d::context->GetLoadManager()->AddHandler(new(GMA_GC_VMM) tPNGHandler, "png");
 
-    if( CommandLineOptions::Get( CLO_FE_UNJOINED ) )
-    {
+    if (CommandLineOptions::Get(CLO_FE_UNJOINED)) {
         p3d::context->GetLoadManager()->AddHandler(new(GMA_GC_VMM) tBMPHandler, "bmp");
         p3d::context->GetLoadManager()->AddHandler(new(GMA_GC_VMM) tTargaHandler, "tga");
-    }
-    else
-    {
+    } else {
         p3d::context->GetLoadManager()->AddHandler(new(GMA_GC_VMM) tBMPHandler, "p3d");
         p3d::context->GetLoadManager()->AddHandler(new(GMA_GC_VMM) tPNGHandler, "p3d");
         p3d::context->GetLoadManager()->AddHandler(new(GMA_GC_VMM) tTargaHandler, "p3d");
@@ -1524,118 +1458,120 @@ MEMTRACK_PUSH_GROUP( "GCPlatform" );
 
 //    p3d->AddHandler(new tGeometryLoader);
 //    GeometryWrappedLoader* pGWL = new GeometryWrappedLoader;
-    GeometryWrappedLoader* pGWL = 
-       (GeometryWrappedLoader*)GetAllWrappers()->mpLoader( AllWrappers::msGeometry );
-    pGWL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pGWL );
+    GeometryWrappedLoader *pGWL =
+            (GeometryWrappedLoader *) GetAllWrappers()->mpLoader(AllWrappers::msGeometry);
+    pGWL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pGWL);
 
-    StaticEntityLoader* pSEL = 
-       (StaticEntityLoader*)GetAllWrappers()->mpLoader( AllWrappers::msStaticEntity );
-    pSEL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pSEL );
+    StaticEntityLoader *pSEL =
+            (StaticEntityLoader *) GetAllWrappers()->mpLoader(AllWrappers::msStaticEntity);
+    pSEL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pSEL);
 
-    StaticPhysLoader* pSPL = 
-       (StaticPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msStaticPhys );
-    pSPL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pSPL );
+    StaticPhysLoader *pSPL =
+            (StaticPhysLoader *) GetAllWrappers()->mpLoader(AllWrappers::msStaticPhys);
+    pSPL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pSPL);
 
-    TreeDSGLoader* pTDL = 
-       (TreeDSGLoader*)GetAllWrappers()->mpLoader( AllWrappers::msTreeDSG );
-    pTDL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pTDL );
+    TreeDSGLoader *pTDL =
+            (TreeDSGLoader *) GetAllWrappers()->mpLoader(AllWrappers::msTreeDSG);
+    pTDL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pTDL);
 
-    FenceLoader* pFL = 
-       (FenceLoader*)GetAllWrappers()->mpLoader( AllWrappers::msFenceEntity );
-    pFL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pFL );
+    FenceLoader *pFL =
+            (FenceLoader *) GetAllWrappers()->mpLoader(AllWrappers::msFenceEntity);
+    pFL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pFL);
 
-    IntersectLoader* pIL = 
-       (IntersectLoader*)GetAllWrappers()->mpLoader( AllWrappers::msIntersectDSG );
-    pIL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pIL );
-    
-    AnimCollLoader* pACL = 
-        (AnimCollLoader*)GetAllWrappers()->mpLoader( AllWrappers::msAnimCollEntity );
-    pACL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pACL );
-     
-    AnimDSGLoader* pAnimDSGLoader = 
-        (AnimDSGLoader*)GetAllWrappers()->mpLoader( AllWrappers::msAnimEntity );
-    pAnimDSGLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pAnimDSGLoader );
+    IntersectLoader *pIL =
+            (IntersectLoader *) GetAllWrappers()->mpLoader(AllWrappers::msIntersectDSG);
+    pIL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pIL);
 
-    DynaPhysLoader* pDPL = 
-        (DynaPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msDynaPhys );
-    pDPL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pDPL );
-   
-    InstStatPhysLoader* pISPL = 
-        (InstStatPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msInstStatPhys );
-    pISPL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pISPL );
-    
-    InstStatEntityLoader* pISEL = 
-        (InstStatEntityLoader*)GetAllWrappers()->mpLoader( AllWrappers::msInstStatEntity );
-    pISEL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pISEL );
-    
-    LocatorLoader* pLL = 
-        (LocatorLoader*)GetAllWrappers()->mpLoader( AllWrappers::msLocator);
-    pLL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pLL );
-    
-    RoadLoader* pRL = 
-        (RoadLoader*)GetAllWrappers()->mpLoader( AllWrappers::msRoadSegment);
-    pRL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pRL );
+    AnimCollLoader *pACL =
+            (AnimCollLoader *) GetAllWrappers()->mpLoader(AllWrappers::msAnimCollEntity);
+    pACL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pACL);
 
-    PathLoader* pPL = 
-        (PathLoader*)GetAllWrappers()->mpLoader( AllWrappers::msPathSegment);
-    pPL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pPL );
+    AnimDSGLoader *pAnimDSGLoader =
+            (AnimDSGLoader *) GetAllWrappers()->mpLoader(AllWrappers::msAnimEntity);
+    pAnimDSGLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pAnimDSGLoader);
 
-    WorldSphereLoader* pWSL = 
-        (WorldSphereLoader*)GetAllWrappers()->mpLoader( AllWrappers::msWorldSphere);
-    pWSL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pWSL );
+    DynaPhysLoader *pDPL =
+            (DynaPhysLoader *) GetAllWrappers()->mpLoader(AllWrappers::msDynaPhys);
+    pDPL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pDPL);
 
-    LensFlareLoader* pLSL = 
-        (LensFlareLoader*)GetAllWrappers()->mpLoader( AllWrappers::msLensFlare);
-    pLSL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pLSL );
+    InstStatPhysLoader *pISPL =
+            (InstStatPhysLoader *) GetAllWrappers()->mpLoader(AllWrappers::msInstStatPhys);
+    pISPL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pISPL);
 
-    BillboardWrappedLoader* pBWL = 
-        (BillboardWrappedLoader*)GetAllWrappers()->mpLoader( AllWrappers::msBillboard);
-    pBWL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pBWL );
+    InstStatEntityLoader *pISEL =
+            (InstStatEntityLoader *) GetAllWrappers()->mpLoader(AllWrappers::msInstStatEntity);
+    pISEL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pISEL);
 
-    InstParticleSystemLoader* pInstParticleSystemLoader = 
-        (InstParticleSystemLoader*) GetAllWrappers()->mpLoader( AllWrappers::msInstParticleSystem);
-    pInstParticleSystemLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pInstParticleSystemLoader );
+    LocatorLoader *pLL =
+            (LocatorLoader *) GetAllWrappers()->mpLoader(AllWrappers::msLocator);
+    pLL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pLL);
 
-    BreakableObjectLoader* pBreakableObjectLoader = 
-        (BreakableObjectLoader*) GetAllWrappers()->mpLoader( AllWrappers::msBreakableObject);
-    pBreakableObjectLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pBreakableObjectLoader );
+    RoadLoader *pRL =
+            (RoadLoader *) GetAllWrappers()->mpLoader(AllWrappers::msRoadSegment);
+    pRL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pRL);
 
-	AnimDynaPhysLoader*	pAnimDynaPhysLoader = 
-		(AnimDynaPhysLoader*) GetAllWrappers()->mpLoader( AllWrappers::msAnimDynaPhys);
-    pAnimDynaPhysLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pAnimDynaPhysLoader );
+    PathLoader *pPL =
+            (PathLoader *) GetAllWrappers()->mpLoader(AllWrappers::msPathSegment);
+    pPL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pPL);
 
-	AnimDynaPhysWrapperLoader* pAnimWrapperLoader = 
-		(AnimDynaPhysWrapperLoader*) GetAllWrappers()->mpLoader( AllWrappers::msAnimDynaPhysWrapper);
-	pAnimWrapperLoader->SetRegdListener( GetRenderManager(), 0 );
-	p3d->AddHandler( pAnimWrapperLoader );
+    WorldSphereLoader *pWSL =
+            (WorldSphereLoader *) GetAllWrappers()->mpLoader(AllWrappers::msWorldSphere);
+    pWSL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pWSL);
+
+    LensFlareLoader *pLSL =
+            (LensFlareLoader *) GetAllWrappers()->mpLoader(AllWrappers::msLensFlare);
+    pLSL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pLSL);
+
+    BillboardWrappedLoader *pBWL =
+            (BillboardWrappedLoader *) GetAllWrappers()->mpLoader(AllWrappers::msBillboard);
+    pBWL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pBWL);
+
+    InstParticleSystemLoader *pInstParticleSystemLoader =
+            (InstParticleSystemLoader *) GetAllWrappers()->mpLoader(
+                    AllWrappers::msInstParticleSystem);
+    pInstParticleSystemLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pInstParticleSystemLoader);
+
+    BreakableObjectLoader *pBreakableObjectLoader =
+            (BreakableObjectLoader *) GetAllWrappers()->mpLoader(AllWrappers::msBreakableObject);
+    pBreakableObjectLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pBreakableObjectLoader);
+
+    AnimDynaPhysLoader *pAnimDynaPhysLoader =
+            (AnimDynaPhysLoader *) GetAllWrappers()->mpLoader(AllWrappers::msAnimDynaPhys);
+    pAnimDynaPhysLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pAnimDynaPhysLoader);
+
+    AnimDynaPhysWrapperLoader *pAnimWrapperLoader =
+            (AnimDynaPhysWrapperLoader *) GetAllWrappers()->mpLoader(
+                    AllWrappers::msAnimDynaPhysWrapper);
+    pAnimWrapperLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pAnimWrapperLoader);
 
     p3d->AddHandler(new(GMA_GC_VMM) tTextureLoader);
-    p3d->AddHandler( new(GMA_GC_VMM) tSetLoader );
+    p3d->AddHandler(new(GMA_GC_VMM) tSetLoader);
     p3d->AddHandler(new(GMA_GC_VMM) tShaderLoader);
     p3d->AddHandler(new(GMA_GC_VMM) tCameraLoader);
     p3d->AddHandler(new(GMA_GC_VMM) tGameAttrLoader);
     p3d->AddHandler(new(GMA_GC_VMM) tLightLoader);
-  
+
     p3d->AddHandler(new(GMA_GC_VMM) tLocatorLoader);
     p3d->AddHandler(new(GMA_GC_VMM) tLightGroupLoader);
     p3d->AddHandler(new(GMA_GC_VMM) tImageLoader);
@@ -1664,20 +1600,20 @@ MEMTRACK_PUSH_GROUP( "GCPlatform" );
 
     //p3d->AddHandler(new p3d::tIgnoreLoader);
 
-    tSEQFileHandler* sequencerFileHandler = new(GMA_GC_VMM) tSEQFileHandler;
+    tSEQFileHandler *sequencerFileHandler = new(GMA_GC_VMM) tSEQFileHandler;
     p3d::loadManager->AddHandler(sequencerFileHandler, "seq");
 
-     // sim lib
+    // sim lib
     sim::InstallSimLoaders();
 
-    p3d->AddHandler(new(GMA_GC_VMM) CameraDataLoader, SRR2::ChunkID::WALKERCAM );    
-    p3d->AddHandler(new(GMA_GC_VMM) CameraDataLoader, SRR2::ChunkID::FOLLOWCAM );    
-    p3d->AddHandler(new(GMA_GC_VMM) IntersectionLoader);    
+    p3d->AddHandler(new(GMA_GC_VMM) CameraDataLoader, SRR2::ChunkID::WALKERCAM);
+    p3d->AddHandler(new(GMA_GC_VMM) CameraDataLoader, SRR2::ChunkID::FOLLOWCAM);
+    p3d->AddHandler(new(GMA_GC_VMM) IntersectionLoader);
 //    p3d->AddHandler(new(GMA_GC_VMM) RoadLoader);    
-    p3d->AddHandler(new(GMA_GC_VMM) RoadDataSegmentLoader);    
+    p3d->AddHandler(new(GMA_GC_VMM) RoadDataSegmentLoader);
     p3d->AddHandler(new(GMA_GC_VMM) ATCLoader);
     p3d->AddHandler(new(GMA_GC_VMM) CStatePropDataLoader);
-MEMTRACK_POP_GROUP( "GCPlatform" );
+    MEMTRACK_POP_GROUP("GCPlatform");
 }
 
 
@@ -1691,8 +1627,7 @@ MEMTRACK_POP_GROUP( "GCPlatform" );
 // Return:      None.
 //
 //==============================================================================
-void GCPlatform::ShutdownPure3D()
-{
+void GCPlatform::ShutdownPure3D() {
     //
     // Clean-up the Pure3D Inventory
     //
@@ -1702,18 +1637,16 @@ void GCPlatform::ShutdownPure3D()
     //
     // Clean-up the space taken by the Pure 3D context.
     //
-    if( mpContext != NULL )
-    {
-        mpPlatform->DestroyContext( mpContext );
+    if (mpContext != NULL) {
+        mpPlatform->DestroyContext(mpContext);
         mpContext = NULL;
     }
 
     //
     // Clean-up the space taken by the Pure 3D platform.
     //
-    if( mpPlatform != NULL )
-    {
-        tPlatform::Destroy( mpPlatform );
+    if (mpPlatform != NULL) {
+        tPlatform::Destroy(mpPlatform);
         mpPlatform = NULL;
     }
 }
@@ -1737,9 +1670,8 @@ void GCPlatform::ShutdownPure3D()
 //
 //==============================================================================
 GCPlatform::GCPlatform() :
-    mpPlatform( NULL ),
-    mpContext( NULL )
-{
+        mpPlatform(NULL),
+        mpContext(NULL) {
 }
 
 
@@ -1753,6 +1685,5 @@ GCPlatform::GCPlatform() :
 // Return:      N/A.
 //
 //==============================================================================
-GCPlatform::~GCPlatform()
-{
+GCPlatform::~GCPlatform() {
 }

@@ -47,8 +47,7 @@
 //
 //=============================================================================
 BuySkinObjective::BuySkinObjective() :
-    mSkinName( NULL )
-{
+        mSkinName(NULL) {
 }
 
 //=============================================================================
@@ -61,10 +60,8 @@ BuySkinObjective::BuySkinObjective() :
 // Return:      N/A.
 //
 //=============================================================================
-BuySkinObjective::~BuySkinObjective()
-{
-    if ( mSkinName )
-    {
+BuySkinObjective::~BuySkinObjective() {
+    if (mSkinName) {
         delete[] mSkinName;
         mSkinName = NULL;
     }
@@ -75,28 +72,26 @@ BuySkinObjective::~BuySkinObjective()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const char* name )
+// Parameters:  (const char* name)
 //
 // Return:      void 
 //
 //=============================================================================
-void BuySkinObjective::SetSkinName( const char* name )
-{
-    int length = strlen( name );
+void BuySkinObjective::SetSkinName(const char *name) {
+    int length = strlen(name);
 
-    rTuneAssertMsg( mSkinName == NULL, "Can not set the name of the skin to be purchased twice!\n");
+    rTuneAssertMsg(mSkinName == NULL, "Can not set the name of the skin to be purchased twice!\n");
 
-    if ( mSkinName )
-    {
+    if (mSkinName) {
         delete[] mSkinName;
     }
 
-    HeapMgr()->PushHeap( GMA_LEVEL_OTHER );
-    mSkinName = new char[ length + 1 ];
-    HeapMgr()->PopHeap( GMA_LEVEL_OTHER );
+    HeapMgr()->PushHeap(GMA_LEVEL_OTHER);
+    mSkinName = new char[length + 1];
+    HeapMgr()->PopHeap(GMA_LEVEL_OTHER);
 
-    strcpy( mSkinName, name );
-    mSkinName[ length ] = '\0';
+    strcpy(mSkinName, name);
+    mSkinName[length] = '\0';
 }
 
 //*****************************************************************************
@@ -110,17 +105,15 @@ void BuySkinObjective::SetSkinName( const char* name )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void BuySkinObjective::OnUpdate( unsigned int elapsedTime )
-{
-    Character* character = GetCharacterManager()->GetCharacter( 0 );
+void BuySkinObjective::OnUpdate(unsigned int elapsedTime) {
+    Character *character = GetCharacterManager()->GetCharacter(0);
 
-    if ( strcmp( GetCharacterManager()->GetModelName( character ), mSkinName ) == 0 )
-    {
-        SetFinished( true );
+    if (strcmp(GetCharacterManager()->GetModelName(character), mSkinName) == 0) {
+        SetFinished(true);
     }
 }

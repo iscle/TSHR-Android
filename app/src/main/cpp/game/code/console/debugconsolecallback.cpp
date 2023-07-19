@@ -54,14 +54,13 @@
 //
 //==============================================================================
 DebugConsoleCallback::DebugConsoleCallback()
-    :
-    mFirstHistoryIndex( 0 ),
-    mLastHistoryIndex( 0 ),
-    mGetHistoryIndex( 0 ),
-    mCursorPosition( 0 )
-{
+        :
+        mFirstHistoryIndex(0),
+        mLastHistoryIndex(0),
+        mGetHistoryIndex(0),
+        mCursorPosition(0) {
     mConsoleHistory[0][0] = '\0';
-    mTabCompleteString  = "";
+    mTabCompleteString = "";
     mTabCurrentFunction = "";
 }
 
@@ -77,8 +76,7 @@ DebugConsoleCallback::DebugConsoleCallback()
 // Return:      
 //
 //==============================================================================
-DebugConsoleCallback::~DebugConsoleCallback()
-{
+DebugConsoleCallback::~DebugConsoleCallback() {
 }
 
 
@@ -94,13 +92,12 @@ DebugConsoleCallback::~DebugConsoleCallback()
 //
 //==============================================================================
 void DebugConsoleCallback::OnVKey
-(
-    int virtualKey, 
-    bool ctrl, 
-    bool shift, 
-    bool alt
-)
-{
+        (
+                int virtualKey,
+                bool ctrl,
+                bool shift,
+                bool alt
+        ) {
 #ifdef RAD_DEBUG
     //set the bool so that OnChar() will not process the event as well...
     mInputHandled = true;
@@ -112,17 +109,17 @@ void DebugConsoleCallback::OnVKey
         {
             //cut
             case 'X':
-	            p3d::printf("DEBUG cut not yet implemented.");
+                p3d::printf("DEBUG cut not yet implemented.");
                 break;
 
             //copy:
             case 'C':
-	            p3d::printf("DEBUG copy not yet implemented.");
+                p3d::printf("DEBUG copy not yet implemented.");
                 break;
 
             //paste:
             case 'V':
-	            p3d::printf("DEBUG paste not yet implemented.");
+                p3d::printf("DEBUG paste not yet implemented.");
                 break;
         }
     }
@@ -132,7 +129,7 @@ void DebugConsoleCallback::OnVKey
         {
             case VK_RETURN:
                 GetConsole()->Printf("=>%s", mConsoleHistory[0]);
-	            GetConsole()->Evaluate(mConsoleHistory[0], "CMDLine");
+                GetConsole()->Evaluate(mConsoleHistory[0], "CMDLine");
 
                 //only copy the current console history if we have a non-empty line
                 if (mConsoleHistory[0][0] != '\0')
@@ -142,7 +139,7 @@ void DebugConsoleCallback::OnVKey
                     {
                         //copy the current console history[0] into the next history buffer
                         mLastHistoryIndex++;
-                        if (mLastHistoryIndex >= CONSOLE_HISTORY_SIZE)
+                        if (mLastHistoryIndex>= CONSOLE_HISTORY_SIZE)
                             mLastHistoryIndex = 1;
                         strcpy(mConsoleHistory[mLastHistoryIndex], mConsoleHistory[0]);
 
@@ -170,7 +167,7 @@ void DebugConsoleCallback::OnVKey
 
             case VK_BACK:
                 //delete from the current cursor position
-                if (mCursorPosition > 0)
+                if (mCursorPosition> 0)
                 {
                     //copy from the cursor position into a temp buffer
                     char temp[Console::MAX_STRING_LENGTH];
@@ -188,7 +185,7 @@ void DebugConsoleCallback::OnVKey
 
             case VK_DELETE:
                 //delete the character at the cursor position
-                if( mCursorPosition < static_cast<int>(strlen(mConsoleHistory[0])) )
+                if(mCursorPosition <static_cast<int>(strlen(mConsoleHistory[0])))
                 {
                     //copy from the cursor position + 1 into a temp buffer
                     char temp[Console::MAX_STRING_LENGTH];
@@ -234,7 +231,7 @@ void DebugConsoleCallback::OnVKey
                     break;
 
                 mGetHistoryIndex++;
-                if (mGetHistoryIndex >= CONSOLE_HISTORY_SIZE)
+                if (mGetHistoryIndex>= CONSOLE_HISTORY_SIZE)
                     mGetHistoryIndex = 1;
 
                 //now copy the history into the "current" entry buffer
@@ -249,12 +246,12 @@ void DebugConsoleCallback::OnVKey
                 break;
 
             case VK_LEFT:
-                if (mCursorPosition > 0)
+                if (mCursorPosition> 0)
                     mCursorPosition--;
                 break;
 
             case VK_RIGHT:
-                if (mCursorPosition < static_cast<int>(strlen(mConsoleHistory[0])) - 1)
+                if (mCursorPosition <static_cast<int>(strlen(mConsoleHistory[0])) - 1)
                     mCursorPosition++;
                 break;
 
@@ -287,21 +284,21 @@ void DebugConsoleCallback::OnVKey
                 if (mConsoleHistory[0][0])
                 {
                     //initialize the tab search
-                    if ( mTabCompleteString.GetUID() != static_cast< tUID >( 0 ) )
+                    if (mTabCompleteString.GetUID() != static_cast<tUID>(0))
                     {
                         mTabCompleteString = mConsoleHistory[ 0 ];
                         mTabCurrentFunction = "";
                     }
 
-                    const tNameInsensitive& tabCompleteFunction = GetConsole()->TabCompleteFunction(mTabCompleteString.GetText(), mTabCurrentFunction.GetText() );
-                    if( tabCompleteFunction.GetUID() != static_cast< tUID >( 0 ) )
+                    const tNameInsensitive& tabCompleteFunction = GetConsole()->TabCompleteFunction(mTabCompleteString.GetText(), mTabCurrentFunction.GetText());
+                    if(tabCompleteFunction.GetUID() != static_cast<tUID>(0))
                     {
                         //copy the tabCompleteFunction
                         mTabCurrentFunction  = tabCompleteFunction;
 
                         //create the new console entry string
-		                char tabConsoleEntry[Console::MAX_STRING_LENGTH];
-                        sprintf(tabConsoleEntry, "%s();", tabCompleteFunction.GetText() );
+                        char tabConsoleEntry[Console::MAX_STRING_LENGTH];
+                        sprintf(tabConsoleEntry, "%s();", tabCompleteFunction.GetText());
                         strcpy(mConsoleHistory[0], tabConsoleEntry);
                         mCursorPosition = strlen(mConsoleHistory[0]) - 2;
                     }
@@ -337,8 +334,7 @@ void DebugConsoleCallback::OnVKey
 // Return:      
 //
 //==============================================================================
-void DebugConsoleCallback::OnChar(int asciiKey)
-{
+void DebugConsoleCallback::OnChar(int asciiKey) {
 #ifdef RAD_DEBUG
     //if the bool is set, OnVKey already handled the event
     if (mInputHandled)
@@ -346,7 +342,7 @@ void DebugConsoleCallback::OnChar(int asciiKey)
 
     //anything not handled by OnVKey will fall through and be handled here...
     int length = strlen(mConsoleHistory[0]);
-    if (asciiKey >= 0x20 && length < Console::MAX_STRING_LENGTH - 1)
+    if (asciiKey>= 0x20 && length <Console::MAX_STRING_LENGTH - 1)
     {
         //add the character to the console entry at the cursor position
         char temp[Console::MAX_STRING_LENGTH];
@@ -366,15 +362,19 @@ void DebugConsoleCallback::OnChar(int asciiKey)
 }
 
 
-void DebugConsoleCallback::OnButtonClick( int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl, bool shift, bool alt )
-{
+void DebugConsoleCallback::OnButtonClick(int xTextPixels, int yTextPixels, int xScreenPixels,
+                                         int yScreenPixels, bool ctrl, bool shift, bool alt) {
 }
-void DebugConsoleCallback::OnButtonDown( int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl, bool shift, bool alt )
-{
+
+void DebugConsoleCallback::OnButtonDown(int xTextPixels, int yTextPixels, int xScreenPixels,
+                                        int yScreenPixels, bool ctrl, bool shift, bool alt) {
 }
-void DebugConsoleCallback::OnButtonUp( int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl, bool shift, bool alt )
-{
+
+void DebugConsoleCallback::OnButtonUp(int xTextPixels, int yTextPixels, int xScreenPixels,
+                                      int yScreenPixels, bool ctrl, bool shift, bool alt) {
 }
-void DebugConsoleCallback::OnButtonMove( int xTextPixels, int yTextPixels, int xScreenPixels, int yScreenPixels, bool ctrl, bool shift, bool alt, bool bottondown )
-{
+
+void DebugConsoleCallback::OnButtonMove(int xTextPixels, int yTextPixels, int xScreenPixels,
+                                        int yScreenPixels, bool ctrl, bool shift, bool alt,
+                                        bool bottondown) {
 }

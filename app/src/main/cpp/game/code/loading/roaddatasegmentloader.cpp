@@ -48,8 +48,7 @@
 // Return:      N/A.
 //
 //==============================================================================
-RoadDataSegmentLoader::RoadDataSegmentLoader()
-{
+RoadDataSegmentLoader::RoadDataSegmentLoader() {
 }
 
 //==============================================================================
@@ -62,8 +61,7 @@ RoadDataSegmentLoader::RoadDataSegmentLoader()
 // Return:      N/A.
 //
 //==============================================================================
-RoadDataSegmentLoader::~RoadDataSegmentLoader()
-{
+RoadDataSegmentLoader::~RoadDataSegmentLoader() {
 }
 
 //=============================================================================
@@ -76,13 +74,12 @@ RoadDataSegmentLoader::~RoadDataSegmentLoader()
 // Return:      tLoadStatus 
 //
 //=============================================================================
-tLoadStatus RoadDataSegmentLoader::Load(tChunkFile* f, tEntityStore* store)
-{
+tLoadStatus RoadDataSegmentLoader::Load(tChunkFile *f, tEntityStore *store) {
     char name[256];
-    f->GetString( name );
+    f->GetString(name);
     unsigned int type = f->GetUInt();
     unsigned int numLanes = f->GetUInt();
-    bool hasShoulder = ( f->GetUInt() ? true : false );
+    bool hasShoulder = (f->GetUInt() ? true : false);
 
     rmt::Vector direction;
     direction.x = f->GetFloat();
@@ -99,15 +96,15 @@ tLoadStatus RoadDataSegmentLoader::Load(tChunkFile* f, tEntityStore* store)
     bottom.y = f->GetFloat();
     bottom.z = f->GetFloat();
 
-    RoadManager* rm = RoadManager::GetInstance();
+    RoadManager *rm = RoadManager::GetInstance();
 
-    RoadSegmentData* rsd = rm->GetFreeRoadSegmentDataMemory();
-    rAssert( rsd );
+    RoadSegmentData *rsd = rm->GetFreeRoadSegmentDataMemory();
+    rAssert(rsd);
 
-    rsd->SetName( name );
-    rsd->SetData( direction, top, bottom, numLanes );
+    rsd->SetName(name);
+    rsd->SetData(direction, top, bottom, numLanes);
 
-    rm->AddRoadSegmentData( rsd );
+    rm->AddRoadSegmentData(rsd);
 
     return LOAD_OK;
 }
@@ -122,14 +119,12 @@ tLoadStatus RoadDataSegmentLoader::Load(tChunkFile* f, tEntityStore* store)
 // Return:      bool 
 //
 //=============================================================================
-bool RoadDataSegmentLoader::CheckChunkID(unsigned id)
-{
-    return ( SRR2::ChunkID::ROAD_SEGMENT_DATA == id );
+bool RoadDataSegmentLoader::CheckChunkID(unsigned id) {
+    return (SRR2::ChunkID::ROAD_SEGMENT_DATA == id);
 }
 
-unsigned int RoadDataSegmentLoader::GetChunkID()
-{
-	return SRR2::ChunkID::ROAD_SEGMENT_DATA;
+unsigned int RoadDataSegmentLoader::GetChunkID() {
+    return SRR2::ChunkID::ROAD_SEGMENT_DATA;
 }
 
 

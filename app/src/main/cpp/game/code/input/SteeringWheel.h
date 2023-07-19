@@ -10,22 +10,26 @@
 
 #include <input/RealController.h>
 
-class SteeringWheel : public RealController
-{
-public: 
-	SteeringWheel();
-	virtual ~SteeringWheel();
+class SteeringWheel : public RealController {
+public:
+    SteeringWheel();
 
-    virtual void Init( IRadController* pController );
-    virtual int GetDICode( int inputpoint ) const;
+    virtual ~SteeringWheel();
+
+    virtual void Init(IRadController *pController);
+
+    virtual int GetDICode(int inputpoint) const;
+
     bool IsPedalInverted() const { return m_bPedalInverted; }
 
 private:
     virtual void MapInputToDICode();
-    int GetIndependentDICode( int diCode ) const;
+
+    int GetIndependentDICode(int diCode) const;
 
 private:
-    int* m_InputToDICode;
+    int *m_InputToDICode;
     bool m_bPedalInverted;
 };
+
 #endif

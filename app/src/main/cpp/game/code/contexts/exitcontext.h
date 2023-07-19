@@ -30,40 +30,44 @@
 // Synopsis:    
 //
 //=============================================================================
-class ExitContext : public Context
-{
-    public:
+class ExitContext : public Context {
+public:
 
-        // Static Methods for accessing this singleton.
-        static ExitContext* GetInstance();
+    // Static Methods for accessing this singleton.
+    static ExitContext *GetInstance();
 
-    protected:
+protected:
 
-        virtual void OnStart( ContextEnum previousContext );
-        virtual void OnStop( ContextEnum nextContext );
-        virtual void OnUpdate( unsigned int elapsedTime );
-        
-        virtual void OnSuspend();
-        virtual void OnResume();
+    virtual void OnStart(ContextEnum previousContext);
 
-        virtual void OnHandleEvent( EventEnum id, void* pEventData );
+    virtual void OnStop(ContextEnum nextContext);
 
-    private:
+    virtual void OnUpdate(unsigned int elapsedTime);
 
-        // constructor and destructor are protected to force singleton implementation
-        ExitContext();
-        virtual ~ExitContext();
+    virtual void OnSuspend();
 
-        // Declared but not defined to prevent copying and assignment.
-        ExitContext( const ExitContext& );
-        ExitContext& operator=( const ExitContext& );
+    virtual void OnResume();
 
-        // Pointer to the one and only instance of this singleton.
-        static ExitContext* spInstance;
+    virtual void OnHandleEvent(EventEnum id, void *pEventData);
+
+private:
+
+    // constructor and destructor are protected to force singleton implementation
+    ExitContext();
+
+    virtual ~ExitContext();
+
+    // Declared but not defined to prevent copying and assignment.
+    ExitContext(const ExitContext &);
+
+    ExitContext &operator=(const ExitContext &);
+
+    // Pointer to the one and only instance of this singleton.
+    static ExitContext *spInstance;
 };
 
 // A little syntactic sugar for getting at this singleton.
-inline ExitContext* GetExitContext() { return( ExitContext::GetInstance() ); }
+inline ExitContext *GetExitContext() { return (ExitContext::GetInstance()); }
 
 
 #endif

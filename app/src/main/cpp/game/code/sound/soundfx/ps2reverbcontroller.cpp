@@ -46,16 +46,15 @@
 // Return:      N/A.
 //
 //==============================================================================
-PS2ReverbController::PS2ReverbController()
-{
-    m_reverbInterface = ::radSoundCreateEffectPs2( GMA_PERSISTENT );
+PS2ReverbController::PS2ReverbController() {
+    m_reverbInterface = ::radSoundCreateEffectPs2(GMA_PERSISTENT);
 
     //
     // Wheee!!!!
     //
-    m_reverbInterface->SetMode( IRadSoundEffectPs2::Off );
+    m_reverbInterface->SetMode(IRadSoundEffectPs2::Off);
 
-    registerReverbEffect( m_reverbInterface );
+    registerReverbEffect(m_reverbInterface);
 }
 
 //==============================================================================
@@ -68,8 +67,7 @@ PS2ReverbController::PS2ReverbController()
 // Return:      N/A.
 //
 //==============================================================================
-PS2ReverbController::~PS2ReverbController()
-{
+PS2ReverbController::~PS2ReverbController() {
     m_reverbInterface->Release();
     m_reverbInterface = NULL;
 }
@@ -84,21 +82,18 @@ PS2ReverbController::~PS2ReverbController()
 // Return:      void 
 //
 //=============================================================================
-void PS2ReverbController::SetReverbOn( reverbSettings* settings )
-{
-    if( settings != NULL )
-    {
-        m_reverbInterface->SetMode( static_cast<IRadSoundEffectPs2::Mode>(settings->GetPS2ReverbMode()) );
-        m_reverbInterface->SetGain( settings->GetGain() );
-        m_reverbInterface->SetDelay( settings->GetPS2Delay() );
-        m_reverbInterface->SetFeedback( settings->GetPS2Feedback() );
+void PS2ReverbController::SetReverbOn(reverbSettings *settings) {
+    if (settings != NULL) {
+        m_reverbInterface->SetMode(
+                static_cast<IRadSoundEffectPs2::Mode>(settings->GetPS2ReverbMode()));
+        m_reverbInterface->SetGain(settings->GetGain());
+        m_reverbInterface->SetDelay(settings->GetPS2Delay());
+        m_reverbInterface->SetFeedback(settings->GetPS2Feedback());
 
-        prepareFadeSettings( settings->GetGain(), settings->GetFadeInTime(),
-                             settings->GetFadeOutTime() );
-    }
-    else
-    {
-        rReleaseString( "Settings is NULL\n" );
+        prepareFadeSettings(settings->GetGain(), settings->GetFadeInTime(),
+                            settings->GetFadeOutTime());
+    } else {
+        rReleaseString("Settings is NULL\n");
     }
 }
 
@@ -112,8 +107,7 @@ void PS2ReverbController::SetReverbOn( reverbSettings* settings )
 // Return:      void 
 //
 //=============================================================================
-void PS2ReverbController::SetReverbOff()
-{
+void PS2ReverbController::SetReverbOff() {
     startFadeOut();
 }
 

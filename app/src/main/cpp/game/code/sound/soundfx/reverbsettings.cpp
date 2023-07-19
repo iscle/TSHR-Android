@@ -31,8 +31,8 @@
 //
 // Initialially the list is empty
 //
-reverbSettings* radLinkedClass< reverbSettings >::s_pLinkedClassHead = NULL;
-reverbSettings* radLinkedClass< reverbSettings >::s_pLinkedClassTail = NULL;
+reverbSettings *radLinkedClass<reverbSettings>::s_pLinkedClassHead = NULL;
+reverbSettings *radLinkedClass<reverbSettings>::s_pLinkedClassTail = NULL;
 
 //******************************************************************************
 //
@@ -51,37 +51,36 @@ reverbSettings* radLinkedClass< reverbSettings >::s_pLinkedClassTail = NULL;
 //
 //==============================================================================
 reverbSettings::reverbSettings() :
-    radRefCount( 0 ),
+        radRefCount(0),
 
-    m_gain( 0.0f ),
-    m_fadeInTime( 0.0f ),
-    m_fadeOutTime( 0.0f ),
+        m_gain(0.0f),
+        m_fadeInTime(0.0f),
+        m_fadeOutTime(0.0f),
 
-    m_xboxRoom( 0 ),
-    m_xboxRoomHF( 0 ),
-    m_xboxRoomRolloff( 0.0f ),
-    m_xboxDecay( 0.0f ),
-    m_xboxDecayHFRatio( 0.0f ),
-    m_xboxReflections( 0 ),
-    m_xboxReflectionsDelay( 0.0f ),
-    m_xboxReverb( 0 ),
-    m_xboxReverbDelay( 0.0f ),
-    m_xboxDiffusion( 0.0f ),
-    m_xboxDensity( 0.0f ),
-    m_xboxHFReference( 0.0f ),
+        m_xboxRoom(0),
+        m_xboxRoomHF(0),
+        m_xboxRoomRolloff(0.0f),
+        m_xboxDecay(0.0f),
+        m_xboxDecayHFRatio(0.0f),
+        m_xboxReflections(0),
+        m_xboxReflectionsDelay(0.0f),
+        m_xboxReverb(0),
+        m_xboxReverbDelay(0.0f),
+        m_xboxDiffusion(0.0f),
+        m_xboxDensity(0.0f),
+        m_xboxHFReference(0.0f),
 
-    m_ps2ReverbMode( 0 ),
-    m_ps2Delay( 0.0f ),
-    m_ps2Feedback( 0.0f ),
+        m_ps2ReverbMode(0),
+        m_ps2Delay(0.0f),
+        m_ps2Feedback(0.0f),
 
-    m_gcPreDelay( 0.0f ),
-    m_gcReverbTime( 0.0f ),
-    m_gcColoration( 0.0f ),
-    m_gcDamping( 0.0f ),
+        m_gcPreDelay(0.0f),
+        m_gcReverbTime(0.0f),
+        m_gcColoration(0.0f),
+        m_gcDamping(0.0f),
 
-    m_winEnvironmentDiffusion( 1.0f ),
-    m_winAirAbsorptionHF( -5.0f )
-{
+        m_winEnvironmentDiffusion(1.0f),
+        m_winAirAbsorptionHF(-5.0f) {
 }
 
 //==============================================================================
@@ -94,8 +93,7 @@ reverbSettings::reverbSettings() :
 // Return:      N/A.
 //
 //==============================================================================
-reverbSettings::~reverbSettings()
-{
+reverbSettings::~reverbSettings() {
 }
 
 //******************************************************************************
@@ -121,13 +119,12 @@ reverbSettings::~reverbSettings()
 //
 //==============================================================================
 void ReverbSettingsObjCreate
-(
-    IReverbSettings** ppSettings,
-    radMemoryAllocator allocator
-)
-{
-    rAssert( ppSettings != NULL );
-    (*ppSettings) = new ( allocator ) reverbSettings( );
-    (*ppSettings)->AddRef( );
+        (
+                IReverbSettings **ppSettings,
+                radMemoryAllocator allocator
+        ) {
+    rAssert(ppSettings != NULL);
+    (*ppSettings) = new(allocator) reverbSettings();
+    (*ppSettings)->AddRef();
 }
 

@@ -36,21 +36,28 @@
 // Forward References
 //========================================
 class Character;
+
 class NISPlayer;
+
 class FMVPlayer;
+
 class CameraPlayer;
+
 class TransitionPlayer;
+
 class PlayerDrawable;
+
 class SuperCam;
+
 class PresentationAnimator;
 
 //========================================
 // typedefs
 //========================================
 
-typedef AllocPool< FMVEvent > FMVEventPool;
-typedef AllocPool< NISEvent > NISEventPool;
-typedef AllocPool< TransitionEvent > TransitionEventPool;
+typedef AllocPool <FMVEvent> FMVEventPool;
+typedef AllocPool <NISEvent> NISEventPool;
+typedef AllocPool <TransitionEvent> TransitionEventPool;
 
 //=============================================================================
 //
@@ -65,25 +72,35 @@ loaded and while playing a movie during game play we don't have that.
  This could also be used for putting a texture over the screen, but that's not
 implemented at this time.
 =============================================================================*/
-const tColour BLACK( 0x00, 0x00, 0x00, 0xFF );
-const tColour WHITE( 0xFF, 0xFF, 0xFF, 0xFF );
-const tColour BLACK_TRANSPARENT( 0x00, 0x00, 0x00, 0x00 );
-const tColour WHITE_TRANSPARENT( 0xFF, 0xFF, 0xFF, 0x00 );
-class PresentationOverlay : public tDrawable
-{
+const tColour BLACK(0x00, 0x00, 0x00, 0xFF);
+const tColour WHITE(0xFF, 0xFF, 0xFF, 0xFF);
+const tColour BLACK_TRANSPARENT(0x00, 0x00, 0x00, 0x00);
+const tColour WHITE_TRANSPARENT(0xFF, 0xFF, 0xFF, 0x00);
+
+class PresentationOverlay : public tDrawable {
 public:
     PresentationOverlay();
 
     virtual void Display();
-    void Update( unsigned int ElapsedTime );
 
-    void SetStart( tColour Colour ) { mStart = Colour; }
-    void SetEnd( tColour Colour ) { mEnd = Colour; }
+    void Update(unsigned int ElapsedTime);
+
+    void SetStart(tColour Colour) { mStart = Colour; }
+
+    void SetEnd(tColour Colour) { mEnd = Colour; }
+
     // Note setting the duration begins the fading from one colour to another.
-    void SetDuration( float Duration ) { mInvDuration = 0.001f / Duration; mAlpha = 1.0f; mFrameCount = -1; }
-    void SetFrames( int FrameCount ) { mFrameCount = FrameCount; } // Hold start colour for this many frames.
-    float GetAlpha( void ) const { return mAlpha; }
-    void SetRemoveOnComplete( bool AutoRemove ) { mIsAutoRemove = AutoRemove; }
+    void SetDuration(float Duration) {
+        mInvDuration = 0.001f / Duration;
+        mAlpha = 1.0f;
+        mFrameCount = -1;
+    }
+
+    void SetFrames(
+            int FrameCount) { mFrameCount = FrameCount; } // Hold start colour for this many frames.
+    float GetAlpha(void) const { return mAlpha; }
+
+    void SetRemoveOnComplete(bool AutoRemove) { mIsAutoRemove = AutoRemove; }
 
 protected:
     float mAlpha;
@@ -91,127 +108,155 @@ protected:
     tColour mStart;
     tColour mEnd;
     int mFrameCount;
-    bool mIsAutoRemove : 1;
+    bool mIsAutoRemove: 1;
 };
 
 class PresentationManager : public EventListener,
                             public PresentationEvent::PresentationEventCallBack,
-                            public LoadingManager::ProcessRequestsCallback
-{
-    public:
-        // Static Methods for accessing this singleton.
-        static PresentationManager* CreateInstance();
-        static PresentationManager* GetInstance();
-        static void DestroyInstance();
+                            public LoadingManager::ProcessRequestsCallback {
+public:
+    // Static Methods for accessing this singleton.
+    static PresentationManager *CreateInstance();
 
-        void Initialize();
-        void Finalize();
-        void OnGameplayStart();
-        void OnGameplayStop();
+    static PresentationManager *GetInstance();
 
-        void InitializePlayerDrawable();
-        void FinalizePlayerDrawable();
+    static void DestroyInstance();
 
-		// Free frontend, play movie, reload frontend.
-        void PlayFMV( const char* FileName, PresentationEvent::PresentationEventCallBack* pCallback = 0,
-                      bool IsSkippable = true,
-                      bool StopMusic = false,
-                      bool IsLocalized = true );
+    void Initialize();
 
-        // Creates an event and passes it back.  Adds this event to the queue.
-        void QueueFMV( FMVEvent** pFMVEvent, 
-                       PresentationEvent::PresentationEventCallBack* pCallback );
+    void Finalize();
 
-        // Creates an event and passes it back.  Adds this event to the queue.
-	    void QueueNIS( NISEvent** pNISEvent, 
-                       PresentationEvent::PresentationEventCallBack* pCallback );
+    void OnGameplayStart();
 
-        // Creates an event and passes it back.  Adds this event to the queue.
-	    void QueueTransition( TransitionEvent** pTransitionEvent, 
-                              PresentationEvent::PresentationEventCallBack* pCallback );
+    void OnGameplayStop();
 
-        // Scales the p3d stack by 11.9
-        void ClearQueue();
-        bool IsQueueEmpty() { return( mEventFIFO[ mFIFOBegin ] == NULL ); }
-		bool IsBusy(void) const;
+    void InitializePlayerDrawable();
 
-	    void Update( unsigned int elapsedTime );
+    void FinalizePlayerDrawable();
 
-        FMVPlayer* GetFMVPlayer() { return( mpFMVPlayer ); }
-        NISPlayer* GetNISPlayer() { return( mpNISPlayer ); }
-        TransitionPlayer* GetTransPlayer() { return( mpTransitionPlayer ); }
-        CameraPlayer* GetCameraPlayer() {return( mpCameraPlayer ); }
+    // Free frontend, play movie, reload frontend.
+    void PlayFMV(const char *FileName, PresentationEvent::PresentationEventCallBack *pCallback = 0,
+                 bool IsSkippable = true,
+                 bool StopMusic = false,
+                 bool IsLocalized = true);
 
-        virtual void HandleEvent( EventEnum id, void* pEventData );
-        PresentationAnimator* GetAnimatorNpc();
-        PresentationAnimator* GetAnimatorPc();
-        typedef std::vector< tName, s2alloc<tName> > TNAMEVECTOR;
-        void SetCamerasForLineOfDialog( const TNAMEVECTOR& names );
-        bool InConversation() const;
-        void StopAll();
-        void CheckRaceMissionBitmaps();
-        void ReplaceMissionBriefingBitmap( const tName& conversationCharacterName );
-        void MakeCharactersFaceEachOther( Character* c0, Character* c1 );
+    // Creates an event and passes it back.  Adds this event to the queue.
+    void QueueFMV(FMVEvent **pFMVEvent,
+                  PresentationEvent::PresentationEventCallBack *pCallback);
 
-    protected:
-        void AddToQueue( PresentationEvent* pEvent );
-        const tName GetCameraTargetForLineOfDialog( const unsigned int lineOfDialog ) const;
-        void ReturnToPool( PresentationEvent* presevent );
+    // Creates an event and passes it back.  Adds this event to the queue.
+    void QueueNIS(NISEvent **pNISEvent,
+                  PresentationEvent::PresentationEventCallBack *pCallback);
 
-        virtual void OnPresentationEventBegin( PresentationEvent* pEvent );
-        virtual void OnPresentationEventLoadComplete( PresentationEvent* pEvent );
-        virtual void OnPresentationEventEnd( PresentationEvent* pEvent );
-        virtual void OnProcessRequestsComplete( void* pUserData );
+    // Creates an event and passes it back.  Adds this event to the queue.
+    void QueueTransition(TransitionEvent **pTransitionEvent,
+                         PresentationEvent::PresentationEventCallBack *pCallback);
 
-        // Gets the first event in the queue
-        PresentationEvent* GetFirst();
-    private:
-        PresentationManager();
-        virtual ~PresentationManager();
+    // Scales the p3d stack by 11.9
+    void ClearQueue();
 
-        //Prevent wasteful constructor creation.
-        PresentationManager( const PresentationManager& presentationManager );
-        PresentationManager& operator=( const PresentationManager& presentationManager );
+    bool IsQueueEmpty() { return (mEventFIFO[mFIFOBegin] == NULL); }
 
-        // Pointer to the one and only instance of this singleton.
-        static PresentationManager* spInstance;
+    bool IsBusy(void) const;
 
-        TransitionEventPool* mTransitionPool;
-        NISEventPool* mNISPool;
-        FMVEventPool* mFMVPool;
+    void Update(unsigned int elapsedTime);
 
-        SuperCam* mp_oldcam;
-        unsigned int mOldCamIndexNum;
+    FMVPlayer *GetFMVPlayer() { return (mpFMVPlayer); }
+
+    NISPlayer *GetNISPlayer() { return (mpNISPlayer); }
+
+    TransitionPlayer *GetTransPlayer() { return (mpTransitionPlayer); }
+
+    CameraPlayer *GetCameraPlayer() { return (mpCameraPlayer); }
+
+    virtual void HandleEvent(EventEnum id, void *pEventData);
+
+    PresentationAnimator *GetAnimatorNpc();
+
+    PresentationAnimator *GetAnimatorPc();
+
+    typedef std::vector <tName, s2alloc<tName>> TNAMEVECTOR;
+
+    void SetCamerasForLineOfDialog(const TNAMEVECTOR &names);
+
+    bool InConversation() const;
+
+    void StopAll();
+
+    void CheckRaceMissionBitmaps();
+
+    void ReplaceMissionBriefingBitmap(const tName &conversationCharacterName);
+
+    void MakeCharactersFaceEachOther(Character *c0, Character *c1);
+
+protected:
+    void AddToQueue(PresentationEvent *pEvent);
+
+    const tName GetCameraTargetForLineOfDialog(const unsigned int lineOfDialog) const;
+
+    void ReturnToPool(PresentationEvent *presevent);
+
+    virtual void OnPresentationEventBegin(PresentationEvent *pEvent);
+
+    virtual void OnPresentationEventLoadComplete(PresentationEvent *pEvent);
+
+    virtual void OnPresentationEventEnd(PresentationEvent *pEvent);
+
+    virtual void OnProcessRequestsComplete(void *pUserData);
+
+    // Gets the first event in the queue
+    PresentationEvent *GetFirst();
+
+private:
+    PresentationManager();
+
+    virtual ~PresentationManager();
+
+    //Prevent wasteful constructor creation.
+    PresentationManager(const PresentationManager &presentationManager);
+
+    PresentationManager &operator=(const PresentationManager &presentationManager);
+
+    // Pointer to the one and only instance of this singleton.
+    static PresentationManager *spInstance;
+
+    TransitionEventPool *mTransitionPool;
+    NISEventPool *mNISPool;
+    FMVEventPool *mFMVPool;
+
+    SuperCam *mp_oldcam;
+    unsigned int mOldCamIndexNum;
 
 
-        // Very simple implementation of a queue.  I don't actually
-        // even know if it works.
-        static const unsigned int MAX_EVENT_SIZE = 10;
-        PresentationEvent* mEventFIFO[ MAX_EVENT_SIZE ];
-        unsigned int mFIFOBegin;
-        unsigned int mFIFOEnd;
+    // Very simple implementation of a queue.  I don't actually
+    // even know if it works.
+    static const unsigned int MAX_EVENT_SIZE = 10;
+    PresentationEvent *mEventFIFO[MAX_EVENT_SIZE];
+    unsigned int mFIFOBegin;
+    unsigned int mFIFOEnd;
 
-        PresentationEvent* mpCurrent;
+    PresentationEvent *mpCurrent;
 
-        FMVPlayer* mpFMVPlayer;
-        NISPlayer* mpNISPlayer;
-        CameraPlayer* mpCameraPlayer;
-        TransitionPlayer* mpTransitionPlayer;
+    FMVPlayer *mpFMVPlayer;
+    NISPlayer *mpNISPlayer;
+    CameraPlayer *mpCameraPlayer;
+    TransitionPlayer *mpTransitionPlayer;
 
-        PlayerDrawable* mpPlayerDrawable;
-        PresentationAnimator* mp_PCAnimator;
-        PresentationAnimator* mp_NPCAnimator;
+    PlayerDrawable *mpPlayerDrawable;
+    PresentationAnimator *mp_PCAnimator;
+    PresentationAnimator *mp_NPCAnimator;
 //        Language::Language mLanguage;
-        int mDialogLineNumber;
-        TNAMEVECTOR mCameraForLineOfDialog;
-        PresentationEvent::PresentationEventCallBack* mpPlayCallback;
-        bool mInConversation : 1;
-        bool mWaitingOnFade  : 1;
-        PresentationOverlay* mOverlay;
+    int mDialogLineNumber;
+    TNAMEVECTOR mCameraForLineOfDialog;
+    PresentationEvent::PresentationEventCallBack *mpPlayCallback;
+    bool mInConversation: 1;
+    bool mWaitingOnFade: 1;
+    PresentationOverlay *mOverlay;
 };
 
 // A little syntactic sugar for getting at this singleton.
-inline PresentationManager* GetPresentationManager() { return( PresentationManager::GetInstance() ); }
+inline PresentationManager *
+GetPresentationManager() { return (PresentationManager::GetInstance()); }
 
 #endif //PRESENTATIONMANAGER_H
 

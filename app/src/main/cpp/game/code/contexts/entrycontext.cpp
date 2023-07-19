@@ -30,7 +30,7 @@
 //
 // Static pointer to instance of singleton.
 //
-EntryContext* EntryContext::spInstance = NULL;
+EntryContext *EntryContext::spInstance = NULL;
 
 
 //******************************************************************************
@@ -53,14 +53,12 @@ EntryContext* EntryContext::spInstance = NULL;
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-EntryContext* EntryContext::GetInstance()
-{
-    if( spInstance == NULL )
-    {
+EntryContext *EntryContext::GetInstance() {
+    if (spInstance == NULL) {
         spInstance = new(GMA_PERSISTENT) EntryContext;
-        rAssert( spInstance );
+        rAssert(spInstance);
     }
-    
+
     return spInstance;
 }
 
@@ -82,9 +80,8 @@ EntryContext* EntryContext::GetInstance()
 // Return:      
 //
 //==============================================================================
-void EntryContext::OnStart( ContextEnum previousContext )
-{
-    MEMTRACK_PUSH_FLAG( "Entry" );
+void EntryContext::OnStart(ContextEnum previousContext) {
+    MEMTRACK_PUSH_FLAG("Entry");
 }
 
 
@@ -99,9 +96,8 @@ void EntryContext::OnStart( ContextEnum previousContext )
 // Return:      
 //
 //==============================================================================
-void EntryContext::OnStop( ContextEnum nextContext )
-{
-    MEMTRACK_POP_FLAG( "" );
+void EntryContext::OnStop(ContextEnum nextContext) {
+    MEMTRACK_POP_FLAG("");
 }
 
 
@@ -116,8 +112,7 @@ void EntryContext::OnStop( ContextEnum nextContext )
 // Return:      
 //
 //==============================================================================
-void EntryContext::OnUpdate( unsigned int elapsedTime )
-{
+void EntryContext::OnUpdate(unsigned int elapsedTime) {
 }
 
 
@@ -132,8 +127,7 @@ void EntryContext::OnUpdate( unsigned int elapsedTime )
 // Return:      
 //
 //==============================================================================
-void EntryContext::OnSuspend()
-{
+void EntryContext::OnSuspend() {
 }
 
 
@@ -148,8 +142,7 @@ void EntryContext::OnSuspend()
 // Return:      
 //
 //==============================================================================
-void EntryContext::OnResume()
-{
+void EntryContext::OnResume() {
 }
 
 
@@ -164,8 +157,7 @@ void EntryContext::OnResume()
 // Return:      
 //
 //==============================================================================
-void EntryContext::OnHandleEvent( EventEnum id, void* pEventData )
-{
+void EntryContext::OnHandleEvent(EventEnum id, void *pEventData) {
 }
 
 
@@ -188,8 +180,7 @@ void EntryContext::OnHandleEvent( EventEnum id, void* pEventData )
 // Return:      N/A.
 //
 //==============================================================================// 
-EntryContext::EntryContext()
-{
+EntryContext::EntryContext() {
 }
 
 
@@ -204,8 +195,7 @@ EntryContext::EntryContext()
 // Return:      N/A.
 //
 //==============================================================================// 
-EntryContext::~EntryContext()
-{
+EntryContext::~EntryContext() {
     spInstance = NULL;
 }
 

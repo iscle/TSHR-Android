@@ -36,19 +36,19 @@ class radObjectBTree;
 
 namespace Sound {
 
-const unsigned int MAX_SOUND_DATA_RESOURCES = 5000;
+    const unsigned int MAX_SOUND_DATA_RESOURCES = 5000;
 
 //=============================================================================
 // Prototypes
 //=============================================================================
 
-class daSoundResourceManager;
+    class daSoundResourceManager;
 
 //=============================================================================
 // Forward declarations
 //=============================================================================
 
-class daSoundAllocatedResource;
+    class daSoundAllocatedResource;
 
 //=============================================================================
 // Class Declarations
@@ -59,104 +59,107 @@ class daSoundAllocatedResource;
 // players.  It also keeps track of these players, gives them to people
 // who ask for them, and makes sure they do not cause to much trouble :)
 //
-class daSoundResourceManager : public IRefCount,
-                               public radRefCount
-{
-public:
-    IMPLEMENT_REFCOUNTED( "daSoundResourceManager" );
+    class daSoundResourceManager : public IRefCount,
+                                   public radRefCount {
+    public:
+        IMPLEMENT_REFCOUNTED("daSoundResourceManager");
 
-    //
-    // Constructor and destructor
-    //
-    daSoundResourceManager( void );
-    
-    virtual ~daSoundResourceManager( );
+        //
+        // Constructor and destructor
+        //
+        daSoundResourceManager(void);
 
-    inline static daSoundResourceManager* GetInstance( void );
+        virtual ~daSoundResourceManager();
 
-    // Controlled by the resource data
-    void AllocateResource( IDaSoundResource* pResource );
-    void DeallocateResource( IDaSoundResource* pResource );
+        inline static daSoundResourceManager *GetInstance(void);
 
-    // Resource lockdown
-    void SetResourceLockdown( bool lockdown );
+        // Controlled by the resource data
+        void AllocateResource(IDaSoundResource *pResource);
 
-    // Allocated resources
-    daSoundAllocatedResource* FindAllocatedResource
-    (
-        IDaSoundResource* pResource
-    );
+        void DeallocateResource(IDaSoundResource *pResource);
 
-    // Get a sound file's size
-    unsigned int GetSoundFileSize
-    (
-        const char* filename
-    );
+        // Resource lockdown
+        void SetResourceLockdown(bool lockdown);
 
-    //
-    // IDaSoundResourceManager
-    //
-    IDaSoundResource* FindResource(
-        daResourceName resourceName );
-        
-    IDaSoundResource* FindResource(
-        daResourceKey resourceKey );
+        // Allocated resources
+        daSoundAllocatedResource *FindAllocatedResource
+                (
+                        IDaSoundResource *pResource
+                );
 
-    unsigned int GetLargestFileSize( IDaSoundResource* pResource );
-    unsigned int GetTotalSize( IDaSoundResource* pResource );
+        // Get a sound file's size
+        unsigned int GetSoundFileSize
+                (
+                        const char *filename
+                );
+
+        //
+        // IDaSoundResourceManager
+        //
+        IDaSoundResource *FindResource(
+                daResourceName resourceName);
+
+        IDaSoundResource *FindResource(
+                daResourceKey resourceKey);
+
+        unsigned int GetLargestFileSize(IDaSoundResource *pResource);
+
+        unsigned int GetTotalSize(IDaSoundResource *pResource);
 
 
-    bool GetResourceLockdown( void );
+        bool GetResourceLockdown(void);
 
-    void SetActiveResource( IRadNameSpace* activeNamespace );
-    void ReleaseActiveResource( IRadNameSpace* inactiveNamespace );
-    
-    unsigned int GetNumResourceDatas( void );
-    daSoundResourceData* GetResourceDataAt( unsigned int );
-    static daSoundResourceData* CreateResourceData( void );
-    
-protected:
-    //
-    // Calculate some debug info
-    //
+        void SetActiveResource(IRadNameSpace *activeNamespace);
 
-    unsigned int GetNumAllocatedResources( );
+        void ReleaseActiveResource(IRadNameSpace *inactiveNamespace);
 
-private:
-    // This is a singleton
-    static daSoundResourceManager*          s_pSingleton;
+        unsigned int GetNumResourceDatas(void);
 
-    //
-    // Store the sound namespace
-    //
-    IRadNameSpace*                          m_pSoundNamespace;
+        daSoundResourceData *GetResourceDataAt(unsigned int);
 
-    //
-    // Store all allocated resources (referenced by the resource's
-    // address cast to a radkey)
-    //
-    ref< radObjectBTree >                  m_xIOL_AllocatedResources;
+        static daSoundResourceData *CreateResourceData(void);
 
-    //
-    // Are the resources locked down?
-    //
-    bool                                    m_ResourceLockdown;
+    protected:
+        //
+        // Calculate some debug info
+        //
 
-    //
-    // Store active secondary namespace
-    //
-    IRadNameSpace* m_secondaryNamespace;
-    
-    daSoundResourceData m_ResourceData[ MAX_SOUND_DATA_RESOURCES ];
-    unsigned int m_NumResourceDatas;
-    
-    radKey32 * m_pFileIdMemory;
-};
+        unsigned int GetNumAllocatedResources();
 
-inline daSoundResourceManager* daSoundResourceManager::GetInstance( void )
-{
-    return s_pSingleton;
-}
+    private:
+        // This is a singleton
+        static daSoundResourceManager *s_pSingleton;
+
+        //
+        // Store the sound namespace
+        //
+        IRadNameSpace *m_pSoundNamespace;
+
+        //
+        // Store all allocated resources (referenced by the resource's
+        // address cast to a radkey)
+        //
+        ref <radObjectBTree> m_xIOL_AllocatedResources;
+
+        //
+        // Are the resources locked down?
+        //
+        bool m_ResourceLockdown;
+
+        //
+        // Store active secondary namespace
+        //
+        IRadNameSpace *m_secondaryNamespace;
+
+        daSoundResourceData m_ResourceData[MAX_SOUND_DATA_RESOURCES];
+        unsigned int m_NumResourceDatas;
+
+        radKey32 *m_pFileIdMemory;
+    };
+
+    inline daSoundResourceManager *daSoundResourceManager::GetInstance(void) {
+        return s_pSingleton;
+    }
 
 } // Sound Namespace
 #endif //_SOUNDRESOURCEMANAGER_HPP

@@ -132,12 +132,13 @@
 //******************************************************************************
 
 // Static pointer to instance of singleton.
-XboxPlatform* XboxPlatform::spInstance = NULL;
+XboxPlatform *XboxPlatform::spInstance = NULL;
 
 //The Adlib font.  <sigh>
-unsigned char gFont[] = 
+unsigned char gFont[] =
+
 #include <font/defaultfont.h>
-   
+
 //
 // The depth of the rendering area.  This value only has an effect
 // when Pure3D has taken over the entire display.  When running in
@@ -146,12 +147,11 @@ unsigned char gFont[] =
 //
 static const int WindowBPP = 32;
 
-void LoadMemP3DFile( unsigned char* buffer, unsigned int size, tEntityStore* store )
-{
-    tFileMem* file = new tFileMem(buffer,size);
+void LoadMemP3DFile(unsigned char *buffer, unsigned int size, tEntityStore *store) {
+    tFileMem *file = new tFileMem(buffer, size);
     file->AddRef();
     file->SetFilename("memfile.p3d");
-    p3d::loadManager->GetP3DHandler()->Load( file, p3d::inventory );
+    p3d::loadManager->GetP3DHandler()->Load(file, p3d::inventory);
     file->Release();
 }
 
@@ -174,15 +174,14 @@ void LoadMemP3DFile( unsigned char* buffer, unsigned int size, tEntityStore* sto
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-XboxPlatform* XboxPlatform::CreateInstance()
-{
-MEMTRACK_PUSH_GROUP( "XboxPlatform" );
-    rAssert( spInstance == NULL );
+XboxPlatform *XboxPlatform::CreateInstance() {
+    MEMTRACK_PUSH_GROUP("XboxPlatform");
+    rAssert(spInstance == NULL);
 
     spInstance = new(GMA_PERSISTENT) XboxPlatform;
-    rAssert( spInstance );
-MEMTRACK_POP_GROUP( "XboxPlatform" );
-    
+    rAssert(spInstance);
+    MEMTRACK_POP_GROUP("XboxPlatform");
+
     return spInstance;
 }
 
@@ -199,10 +198,9 @@ MEMTRACK_POP_GROUP( "XboxPlatform" );
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-XboxPlatform* XboxPlatform::GetInstance()
-{
-    rAssert( spInstance != NULL );
-    
+XboxPlatform *XboxPlatform::GetInstance() {
+    rAssert(spInstance != NULL);
+
     return spInstance;
 }
 
@@ -218,14 +216,12 @@ XboxPlatform* XboxPlatform::GetInstance()
 // Return:      None.
 //
 //==============================================================================
-void XboxPlatform::DestroyInstance()
-{
-    rAssert( spInstance != NULL );
+void XboxPlatform::DestroyInstance() {
+    rAssert(spInstance != NULL);
 
-    delete( GMA_PERSISTENT, spInstance );
+    delete (GMA_PERSISTENT, spInstance);
     spInstance = NULL;
 }
-
 
 
 //==============================================================================
@@ -242,8 +238,7 @@ void XboxPlatform::DestroyInstance()
 //              Consult their documentation before changing.
 //
 //==============================================================================
-void XboxPlatform::InitializeFoundation() 
-{
+void XboxPlatform::InitializeFoundation() {
     //
     // Initialize the memory heaps
     //
@@ -254,31 +249,30 @@ void XboxPlatform::InitializeFoundation()
     // Register an out-of-memory display handler in case something goes bad
     // while allocating the heaps
     //
-    ::radMemorySetOutOfMemoryCallback( PrintOutOfMemoryMessage, NULL );
+    ::radMemorySetOutOfMemoryCallback(PrintOutOfMemoryMessage, NULL);
 #endif
 
     //
     // Initialize memory monitor by JamesCo. TM.
     //
-    if( CommandLineOptions::Get( CLO_MEMORY_MONITOR ) )
-    {
+    if (CommandLineOptions::Get(CLO_MEMORY_MONITOR)) {
         const int KB = 1024;
-        ::radMemoryMonitorInitialize( 64 * KB, GMA_DEBUG );
+        ::radMemoryMonitorInitialize(64 * KB, GMA_DEBUG);
     }
 
     // Setup the memory heaps
     //
-    HeapMgr()->PrepareHeapsStartup ();
+    HeapMgr()->PrepareHeapsStartup();
 
     // Seed the heap stack
     //
-    HeapMgr()->PushHeap (GMA_PERSISTENT);
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
     //
     // Initilalize the platform system
     // 
     ::radPlatformInitialize();
-    
+
     //
     // Initialize the timer system
     //
@@ -287,37 +281,37 @@ void XboxPlatform::InitializeFoundation()
     //
     // Initialize the debug communication system.
     //
-    ::radDbgComTargetInitialize( WinSocket, 
-                                 radDbgComDefaultPort, // Default
-                                 NULL,                 // Default
-                                 GMA_DEBUG );
+    ::radDbgComTargetInitialize(WinSocket,
+                                radDbgComDefaultPort, // Default
+                                NULL,                 // Default
+                                GMA_DEBUG);
 
 
     //
     // Initialize the Watcher.
     //
-    ::radDbgWatchInitialize( "SRR2",
-                             32 * 16384, // 2 * Default
-                             GMA_DEBUG );
+    ::radDbgWatchInitialize("SRR2",
+                            32 * 16384, // 2 * Default
+                            GMA_DEBUG);
 
     //
     // Initialize the file system.
     //
-    ::radFileInitialize( 50, // Default
-                         32, // Default
-                         GMA_PERSISTENT );
+    ::radFileInitialize(50, // Default
+                        32, // Default
+                        GMA_PERSISTENT);
 
     ::radLoadInitialize();
-	//radLoad->SetSyncLoading( true );	
+    //radLoad->SetSyncLoading(true);
 
     ::radDriveMount(0, GMA_PERSISTENT);
 
     //
     // Initialize the new movie player
     //
-    ::radMovieInitialize2( GMA_PERSISTENT );
+    ::radMovieInitialize2(GMA_PERSISTENT);
 
-    HeapMgr()->PopHeap (GMA_PERSISTENT);
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
 
 //==============================================================================
@@ -331,16 +325,14 @@ void XboxPlatform::InitializeFoundation()
 // Return:      
 //
 //==============================================================================
-void XboxPlatform::InitializeMemory()
-{
+void XboxPlatform::InitializeMemory() {
     //
     // Only do this once!
     //
-    if( gMemorySystemInitialized == true )
-    {
+    if (gMemorySystemInitialized == true) {
         return;
     }
-    
+
     gMemorySystemInitialized = true;
 
     //
@@ -355,8 +347,6 @@ void XboxPlatform::InitializeMemory()
 }
 
 
- 
-
 //==============================================================================
 // XboxPlatform::InitializePlatform
 //==============================================================================
@@ -367,9 +357,8 @@ void XboxPlatform::InitializeMemory()
 // Return:      None.
 //
 //==============================================================================
-void XboxPlatform::InitializePlatform() 
-{
-    HeapMgr()->PushHeap (GMA_PERSISTENT);
+void XboxPlatform::InitializePlatform() {
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
     //
     // Rendering is good.
@@ -379,12 +368,12 @@ void XboxPlatform::InitializePlatform()
     //
     // Add anything here that needs to be before the drive is opened.
     //
-    DisplaySplashScreen( Error ); // blank screen
+    DisplaySplashScreen(Error); // blank screen
 
     //
     // Opening the drive is SLOW...
     //
-    InitializeFoundationDrive();    
+    InitializeFoundationDrive();
 
     //
     // Initialize the controller.
@@ -397,17 +386,17 @@ void XboxPlatform::InitializePlatform()
     // Display Title IP address.
     //
     XNADDR addr;
-    XNetGetTitleXnAddr( &addr );
+    XNetGetTitleXnAddr(&addr);
 
     const int BUFFER_SIZE = 256;
     char ip[BUFFER_SIZE];
-    XNetInAddrToString( addr.ina, ip, BUFFER_SIZE );
-    rDebugString( ip );
-    rDebugString( "\n" );
+    XNetInAddrToString(addr.ina, ip, BUFFER_SIZE);
+    rDebugString(ip);
+    rDebugString("\n");
 
 #endif // FINAL
 
-    HeapMgr()->PopHeap (GMA_PERSISTENT);
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
 
 }
 
@@ -422,8 +411,7 @@ void XboxPlatform::InitializePlatform()
 // Return:      None.
 //
 //==============================================================================
-void XboxPlatform::ShutdownPlatform()
-{
+void XboxPlatform::ShutdownPlatform() {
     ShutdownPure3D();
     ShutdownFoundation();
 }
@@ -438,12 +426,11 @@ void XboxPlatform::ShutdownPlatform()
 // Return:      void 
 //
 //=============================================================================
-void XboxPlatform::ResetMachine()
-{
+void XboxPlatform::ResetMachine() {
     DWORD dwLaunchMethod;
     LAUNCH_DATA launchData;
 
-    XGetLaunchInfo( &dwLaunchMethod, &launchData );
+    XGetLaunchInfo(&dwLaunchMethod, &launchData);
 
     char build = 0;
 
@@ -457,18 +444,19 @@ void XboxPlatform::ResetMachine()
 
     char imageName[64];
 
-    sprintf( imageName, "D:\\srr2x%c.xbe", build );
+    sprintf(imageName, "D:\\srr2x%c.xbe", build);
 
-    XLaunchNewImage( imageName, &launchData );
+    XLaunchNewImage(imageName, &launchData);
 
     //If it failed, try launching default.xbe
-    XLaunchNewImage( "D:\\default.xbe", &launchData );
+    XLaunchNewImage("D:\\default.xbe", &launchData);
 
     //
     // The game exits, we should never reach this point
     //
-    rAssertMsg( false, "What, you're still here?" );
+    rAssertMsg(false, "What, you're still here?");
 }
+
 //=============================================================================
 // XboxPlatform::LaunchDashboard
 //=============================================================================
@@ -479,16 +467,15 @@ void XboxPlatform::ResetMachine()
 // Return:      void 
 //
 //=============================================================================
-void XboxPlatform::LaunchDashboard()
-{
+void XboxPlatform::LaunchDashboard() {
 
-    
+
     GetLoadingManager()->CancelPendingRequests();
 
     //TODO: Make sure sounds shut down too.
-    GetSoundManager()->SetMasterVolume( 0.0f );
+    GetSoundManager()->SetMasterVolume(0.0f);
 
-    DisplaySplashScreen( FadeToBlack );
+    DisplaySplashScreen(FadeToBlack);
 
     GetPresentationManager()->StopAll();
 
@@ -501,7 +488,7 @@ void XboxPlatform::LaunchDashboard()
     SoundManager::DestroyInstance();
 
     ShutdownPlatform();
-  /*  ResetMachine();*/ // want to go to dashboard instead
+    /*  ResetMachine();*/ // want to go to dashboard instead
 
     LD_LAUNCH_DASHBOARD dashboardInfo;
 
@@ -510,12 +497,12 @@ void XboxPlatform::LaunchDashboard()
     dashboardInfo.dwParameter1 = 'U'; // go directly to hard disk save game menu
     dashboardInfo.dwParameter2 = 3;   // number of blocks required for a single save game
 
-    XLaunchNewImage( NULL, reinterpret_cast<PLAUNCH_DATA>(&dashboardInfo) );
+    XLaunchNewImage(NULL, reinterpret_cast<PLAUNCH_DATA>(&dashboardInfo));
 
     //
     // The game exits, we should never reach this point
     //
-    rAssertMsg( false, "What, you're still here?" );
+    rAssertMsg(false, "What, you're still here?");
 
 }
 
@@ -525,30 +512,29 @@ void XboxPlatform::LaunchDashboard()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( SplashScreen screenID, 
+// Parameters:  (SplashScreen screenID,
 //                const char* overlayText = NULL, 
 //                float fontScale = 1.0f, 
 //                float textPosX = 0.0f, 
 //                float textPosY = 0.0f,
 //                tColour textColour,
-//                int fadeFrames = 3 )
+//                int fadeFrames = 3)
 //
 // Return:      void 
 //
 //=============================================================================
-void XboxPlatform::DisplaySplashScreen( SplashScreen screenID, 
-                                        const char* overlayText, 
-                                        float fontScale, 
-                                        float textPosX, 
-                                        float textPosY,
-                                        tColour textColour,
-                                        int fadeFrames )
-{
-    HeapMgr()->PushHeap( GMA_TEMP );
+void XboxPlatform::DisplaySplashScreen(SplashScreen screenID,
+                                       const char *overlayText,
+                                       float fontScale,
+                                       float textPosX,
+                                       float textPosY,
+                                       tColour textColour,
+                                       int fadeFrames) {
+    HeapMgr()->PushHeap(GMA_TEMP);
 
     p3d::inventory->PushSection();
-    p3d::inventory->AddSection( XBOX_SECTION );
-    p3d::inventory->SelectSection( XBOX_SECTION );
+    p3d::inventory->AddSection(XBOX_SECTION);
+    p3d::inventory->SelectSection(XBOX_SECTION);
 
     P3D_UNICODE unicodeText[256];
 
@@ -561,22 +547,22 @@ void XboxPlatform::DisplaySplashScreen( SplashScreen screenID,
 
 
     //CREATE THE FONT
-    tTextureFont* thisFont = NULL;
+    tTextureFont *thisFont = NULL;
 
     // Convert memory buffer into a texturefont.
     //
     //p3d::load(gFont, DEFAULTFONT_SIZE, GMA_TEMP);
-    LoadMemP3DFile( gFont, DEFAULTFONT_SIZE, p3d::inventory );
+    LoadMemP3DFile(gFont, DEFAULTFONT_SIZE, p3d::inventory);
 
     thisFont = p3d::find<tTextureFont>("adlibn_20");
-    rAssert( thisFont );
+    rAssert(thisFont);
 
     thisFont->AddRef();
-    tShader* fontShader = thisFont->GetShader();
-    //fontShader->SetInt( )
+    tShader *fontShader = thisFont->GetShader();
+    //fontShader->SetInt()
 
 
-    p3d::AsciiToUnicode( overlayText, unicodeText, 256 );
+    p3d::AsciiToUnicode(overlayText, unicodeText, 256);
 
     // Make the missing letter into somthing I can see
     //
@@ -584,42 +570,37 @@ void XboxPlatform::DisplaySplashScreen( SplashScreen screenID,
 
     int a = 0;
 
-    do
-    {
-    	p3d::pddi->SetColourWrite(true, true, true, true);
-        p3d::pddi->SetClearColour( pddiColour(0,0,0) );
+    do {
+        p3d::pddi->SetColourWrite(true, true, true, true);
+        p3d::pddi->SetClearColour(pddiColour(0, 0, 0));
         p3d::pddi->BeginFrame();
         p3d::pddi->Clear(PDDI_BUFFER_COLOUR);
 
         //This is for fading in the font and shaders.
         int bright = 255;
         if (a < fadeFrames) bright = (a * 255) / fadeFrames;
-        if ( bright > 255 ) bright = 255;
+        if (bright > 255) bright = 255;
         tColour c(bright, bright, bright, 255);
 
         //Display font
-        if (overlayText != NULL)
-        {
+        if (overlayText != NULL) {
             tColour colour = textColour;
-            colour.SetAlpha( bright );
+            colour.SetAlpha(bright);
 
-            thisFont->SetColour( colour );
+            thisFont->SetColour(colour);
 
             p3d::pddi->SetProjectionMode(PDDI_PROJECTION_ORTHOGRAPHIC);
             p3d::stack->Push();
             p3d::stack->LoadIdentity();
 
-            p3d::stack->Translate( textPosX, textPosY, 1.5f);
+            p3d::stack->Translate(textPosX, textPosY, 1.5f);
             float scaleSize = 1.0f / 480.0f;  //This is likely good for 528 also.
-            p3d::stack->Scale(scaleSize * fontScale, scaleSize* fontScale , 1.0f);
+            p3d::stack->Scale(scaleSize * fontScale, scaleSize * fontScale, 1.0f);
 
-            if ( textPosX != 0.0f || textPosY != 0.0f )
-            {
-                thisFont->DisplayText( unicodeText );
-            }
-            else
-            {
-                thisFont->DisplayText( unicodeText, 3 );
+            if (textPosX != 0.0f || textPosY != 0.0f) {
+                thisFont->DisplayText(unicodeText);
+            } else {
+                thisFont->DisplayText(unicodeText, 3);
             }
 
             p3d::stack->Pop();
@@ -633,8 +614,7 @@ void XboxPlatform::DisplaySplashScreen( SplashScreen screenID,
     } while (a <= fadeFrames);
 
     // [ps]: flush out this screen now.
-    if ( screenID == FadeToBlack )
-    {
+    if (screenID == FadeToBlack) {
         p3d::pddi->Clear(PDDI_BUFFER_ALL);
     }
 
@@ -648,7 +628,7 @@ void XboxPlatform::DisplaySplashScreen( SplashScreen screenID,
     p3d::inventory->DeleteSection(XBOX_SECTION);
     p3d::inventory->PopSection();
 
-    HeapMgr()->PopHeap( GMA_TEMP );
+    HeapMgr()->PopHeap(GMA_TEMP);
 }
 
 
@@ -657,25 +637,24 @@ void XboxPlatform::DisplaySplashScreen( SplashScreen screenID,
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const char* textureName, 
+// Parameters:  (const char* textureName,
 //                const char* overlayText = NULL, 
 //                float fontScale = 1.0f, 
 //                float textPosX = 0.0f, 
 //                float textPosY = 0.0f, 
 //                tColour textColour,
-//                int fadeFrames = 3 )
+//                int fadeFrames = 3)
 //
 // Return:      void 
 //
 //=============================================================================
-void XboxPlatform::DisplaySplashScreen( const char* textureName,
-                                        const char* overlayText, 
-                                        float fontScale, 
-                                        float textPosX, 
-                                        float textPosY, 
-                                        tColour textColour,
-                                        int fadeFrames )
-{
+void XboxPlatform::DisplaySplashScreen(const char *textureName,
+                                       const char *overlayText,
+                                       float fontScale,
+                                       float textPosX,
+                                       float textPosY,
+                                       tColour textColour,
+                                       int fadeFrames) {
 }
 
 
@@ -684,20 +663,19 @@ void XboxPlatform::DisplaySplashScreen( const char* textureName,
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( radFileError error, const char* pDriveName, void* pUserData )
+// Parameters:  (radFileError error, const char* pDriveName, void* pUserData)
 //
 // Return:      bool 
 //
 //=============================================================================
-bool XboxPlatform::OnDriveError( radFileError error, const char* pDriveName, void* pUserData )
-{
+bool XboxPlatform::OnDriveError(radFileError error, const char *pDriveName, void *pUserData) {
     bool inFrame = p3d::context->InFrame();
 
     const int NUM_RADFILE_ERRORS = 13;
     unsigned int errorIndex = error;
 
 #ifdef PAL
-    switch( CGuiTextBible::GetCurrentLanguage() )
+    switch(CGuiTextBible::GetCurrentLanguage())
     {
         case Scrooby::XL_FRENCH:
         {
@@ -719,9 +697,9 @@ bool XboxPlatform::OnDriveError( radFileError error, const char* pDriveName, voi
         }
         default:
         {
-            if ( !CGuiTextBible::IsTextBibleLoaded() )
+            if (!CGuiTextBible::IsTextBibleLoaded())
             {
-                switch ( Language::GetHardwareLanguage() )
+                switch (Language::GetHardwareLanguage())
                 {
                 case Language::FRENCH:
                     {
@@ -745,48 +723,38 @@ bool XboxPlatform::OnDriveError( radFileError error, const char* pDriveName, voi
     }
 #endif // PAL
 
-    rAssert( errorIndex < sizeof( ERROR_STRINGS ) / sizeof( ERROR_STRINGS[ 0 ] ) );
+    rAssert(errorIndex < sizeof(ERROR_STRINGS) / sizeof(ERROR_STRINGS[0]));
 
-    switch ( error )
-    {
-    case Success:
-        {
-            if ( mErrorState != NONE )
-            {
-                if ( inFrame ) p3d::context->EndFrame( true );
-                DisplaySplashScreen( FadeToBlack );
-                if ( inFrame ) p3d::context->BeginFrame( );
+    switch (error) {
+        case Success: {
+            if (mErrorState != NONE) {
+                if (inFrame) p3d::context->EndFrame(true);
+                DisplaySplashScreen(FadeToBlack);
+                if (inFrame) p3d::context->BeginFrame();
                 mErrorState = NONE;
                 mPauseForError = false;
             }
 
-            if ( GetPresentationManager()->GetFMVPlayer()->IsPlaying() )
-            {
-                GetPresentationManager()->GetFMVPlayer()->UnPause( );
-            }
-            else
-            {
+            if (GetPresentationManager()->GetFMVPlayer()->IsPlaying()) {
+                GetPresentationManager()->GetFMVPlayer()->UnPause();
+            } else {
                 GetSoundManager()->ResumeAfterMovie();
             }
-            return true;   
+            return true;
             break;
         }
-    case FileNotFound:
-        {
-            if ( CommandLineOptions::Get( CLO_FILE_NOT_FOUND ) )
-            {
-                rAssert( pUserData != NULL );
+        case FileNotFound: {
+            if (CommandLineOptions::Get(CLO_FILE_NOT_FOUND)) {
+                rAssert(pUserData != NULL);
 
-                radFileRequest* request = static_cast<radFileRequest*>( pUserData );
-                const char* fileName = request->GetFilename();
+                radFileRequest *request = static_cast<radFileRequest *>(pUserData);
+                const char *fileName = request->GetFilename();
 
                 //Get rid of the slashes.
                 unsigned int i;
                 unsigned int lastIndex = 0;
-                for ( i = 0; i < strlen( fileName ); ++i )
-                {
-                    if ( fileName[ i ] == '\\' )
-                    {
+                for (i = 0; i < strlen(fileName); ++i) {
+                    if (fileName[i] == '\\') {
                         lastIndex = i;
                     }
                 }
@@ -794,81 +762,69 @@ bool XboxPlatform::OnDriveError( radFileError error, const char* pDriveName, voi
                 unsigned int adjustedIndex = lastIndex == 0 ? lastIndex : lastIndex + 1;
 
                 char adjustedName[32];
-                strncpy( adjustedName, &fileName[adjustedIndex], ( strlen( fileName ) - lastIndex ) );
-                adjustedName[ strlen( fileName ) - lastIndex ] = '\0';
+                strncpy(adjustedName, &fileName[adjustedIndex], (strlen(fileName) - lastIndex));
+                adjustedName[strlen(fileName) - lastIndex] = '\0';
 
                 char errorString[256];
-                sprintf( errorString, "%s:\n%s", ERROR_STRINGS[errorIndex], adjustedName );
-                if ( inFrame ) p3d::context->EndFrame( true );
-                DisplaySplashScreen( Error, errorString, 1.0f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
-                if ( inFrame ) p3d::context->BeginFrame( );
+                sprintf(errorString, "%s:\n%s", ERROR_STRINGS[errorIndex], adjustedName);
+                if (inFrame) p3d::context->EndFrame(true);
+                DisplaySplashScreen(Error, errorString, 1.0f, 0.0f, 0.0f, tColour(255, 255, 255),
+                                    0);
+                if (inFrame) p3d::context->BeginFrame();
                 mErrorState = P_ERROR;
                 mPauseForError = true;
 
-                if ( GetPresentationManager()->GetFMVPlayer()->IsPlaying() )
-                {
-                    GetPresentationManager()->GetFMVPlayer()->Pause( );
-                }
-                else
-                {
+                if (GetPresentationManager()->GetFMVPlayer()->IsPlaying()) {
+                    GetPresentationManager()->GetFMVPlayer()->Pause();
+                } else {
                     GetSoundManager()->StopForMovie();
                 }
                 return true;
-            }
-            else
-            {
+            } else {
                 error = HardwareFailure;
                 //Fall through.
             }
         }
-    case ShellOpen:
-    case WrongMedia:
-    case NoMedia:
-    case HardwareFailure:
-        {
+        case ShellOpen:
+        case WrongMedia:
+        case NoMedia:
+        case HardwareFailure: {
             //This could be the wrong disc.
-            if ( inFrame ) p3d::context->EndFrame( true );
-            DisplaySplashScreen( Error, ERROR_STRINGS[errorIndex], 1.0f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
-            if ( inFrame ) p3d::context->BeginFrame( );
+            if (inFrame) p3d::context->EndFrame(true);
+            DisplaySplashScreen(Error, ERROR_STRINGS[errorIndex], 1.0f, 0.0f, 0.0f,
+                                tColour(255, 255, 255), 0);
+            if (inFrame) p3d::context->BeginFrame();
             mErrorState = P_ERROR;
             mPauseForError = true;
 
-            if ( GetPresentationManager()->GetFMVPlayer()->IsPlaying() )
-            {
-                GetPresentationManager()->GetFMVPlayer()->Pause( );
-            }
-            else
-            {
+            if (GetPresentationManager()->GetFMVPlayer()->IsPlaying()) {
+                GetPresentationManager()->GetFMVPlayer()->Pause();
+            } else {
                 GetSoundManager()->StopForMovie();
             }
             return true;
         }
-    default:
-        {
+        default: {
             //Others are not supported.
-            rAssert( false );
+            rAssert(false);
         }
     }
 
     return false;
 }
 
-void XboxPlatform::OnControllerError(const char *msg)
-{
+void XboxPlatform::OnControllerError(const char *msg) {
     bool inFrame = p3d::context->InFrame();
 
-    if ( inFrame ) p3d::context->EndFrame( true );
-    DisplaySplashScreen( Error, msg, 0.7f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
-    if ( inFrame ) p3d::context->BeginFrame( );
+    if (inFrame) p3d::context->EndFrame(true);
+    DisplaySplashScreen(Error, msg, 0.7f, 0.0f, 0.0f, tColour(255, 255, 255), 0);
+    if (inFrame) p3d::context->BeginFrame();
     mErrorState = CTL_ERROR;
     mPauseForError = true;
 
-    if ( GetPresentationManager()->GetFMVPlayer()->IsPlaying() )
-    {
-        GetPresentationManager()->GetFMVPlayer()->Pause( );
-    }
-    else
-    {
+    if (GetPresentationManager()->GetFMVPlayer()->IsPlaying()) {
+        GetPresentationManager()->GetFMVPlayer()->Pause();
+    } else {
         GetSoundManager()->StopForMovie();
     }
 }
@@ -894,33 +850,32 @@ void XboxPlatform::OnControllerError(const char *msg)
 //              Consult their documentation before changing.
 //
 //==============================================================================
-void XboxPlatform::InitializeFoundationDrive() 
-{
+void XboxPlatform::InitializeFoundationDrive() {
     //
     // No shadow drive on the Xbox.
     //
-//    ::radDriveSetShadow( false );
+//    ::radDriveSetShadow(false);
 
     //
     // Get the CDROM drive and hold it open for the life of the game.
     // This is a costly operation so we only want to do it once.
     //
 
-    ::radDriveOpen( &mpIRadDrive, 
-                    "D:",
-                    NormalPriority, // Default
-                    GMA_PERSISTENT );
+    ::radDriveOpen(&mpIRadDrive,
+                   "D:",
+                   NormalPriority, // Default
+                   GMA_PERSISTENT);
 
-    rAssert( mpIRadDrive != NULL );
+    rAssert(mpIRadDrive != NULL);
 
-    mpIRadDrive->RegisterErrorHandler( this, NULL );
+    mpIRadDrive->RegisterErrorHandler(this, NULL);
 
     //
     // Set the read-write granulatity to prevent operations from
     // being partitioned.
     //
 //    const int GRANULARITY = 20 * 1024 * 1024;
-//    mpIRadDrive->SetReadWriteGranularity( GRANULARITY );
+//    mpIRadDrive->SetReadWriteGranularity(GRANULARITY);
 }
 
 
@@ -937,14 +892,13 @@ void XboxPlatform::InitializeFoundationDrive()
 //              they were initialized in.
 //
 //==============================================================================
-void XboxPlatform::ShutdownFoundation()
-{
+void XboxPlatform::ShutdownFoundation() {
     //
     // Release the drive we've held open since the begining.
     //
     mpIRadDrive->Release();
     mpIRadDrive = NULL;
-     
+
     //
     // Shutdown the systems in the reverse order.
     //
@@ -953,8 +907,7 @@ void XboxPlatform::ShutdownFoundation()
     ::radLoadTerminate();
     ::radFileTerminate();
     ::radDbgWatchTerminate();
-    if( CommandLineOptions::Get( CLO_MEMORY_MONITOR ) )
-    {
+    if (CommandLineOptions::Get(CLO_MEMORY_MONITOR)) {
         ::radMemoryMonitorTerminate();
     }
     ::radDbgComTargetTerminate();
@@ -975,19 +928,18 @@ void XboxPlatform::ShutdownFoundation()
 // Return:      None.
 //
 //==============================================================================
-void XboxPlatform::InitializePure3D() 
-{
-MEMTRACK_PUSH_GROUP( "XboxPlatform" );
-//    p3d::SetMemAllocator( p3d::ALLOC_DEFAULT, GMA_PERSISTENT );
-//    p3d::SetMemAllocator( p3d::ALLOC_LOADED, GMA_LEVEL );
-    
+void XboxPlatform::InitializePure3D() {
+    MEMTRACK_PUSH_GROUP("XboxPlatform");
+//    p3d::SetMemAllocator(p3d::ALLOC_DEFAULT, GMA_PERSISTENT);
+//    p3d::SetMemAllocator(p3d::ALLOC_LOADED, GMA_LEVEL);
+
     //
     // Initialise Pure3D platform object.
     // This call differs between different platforms.  The Win32 version,
     // for example requires the application instance to be passed in.
     //
     mpPlatform = tPlatform::Create();
-    rAssert( mpPlatform != NULL );
+    rAssert(mpPlatform != NULL);
 
     //
     // Initialiase the Pure3D context object.
@@ -1006,7 +958,7 @@ MEMTRACK_PUSH_GROUP( "XboxPlatform" );
     //
     init.bufferMask = PDDI_BUFFER_COLOUR | PDDI_BUFFER_DEPTH | PDDI_BUFFER_STENCIL;
     init.enableSnapshot = true;
-   
+
     //
     // These values only take effect in fullscreen mode.  In windowed mode, the
     // dimensions of the window define the rendering area.  We'll define them
@@ -1032,7 +984,7 @@ MEMTRACK_PUSH_GROUP( "XboxPlatform" );
     // Select anti-aliasing mode.
     //
 //    init.antiAlias = tContextInitData::NONE; 
-    init.antiAlias = tContextInitData::MULTISAMPLE_2_QUINCUNX; 
+    init.antiAlias = tContextInitData::MULTISAMPLE_2_QUINCUNX;
 //    init.antiAlias = tContextInitData::MULTISAMPLE_4_GAUSSIAN;
 
     //TODO: Investigate VSync
@@ -1042,14 +994,14 @@ MEMTRACK_PUSH_GROUP( "XboxPlatform" );
     //
     // Create the context.
     //
-    mpContext = mpPlatform->CreateContext( &init );
-    rAssert( mpContext != NULL );
+    mpContext = mpPlatform->CreateContext(&init);
+    rAssert(mpContext != NULL);
 
     //
     // Assign this context to the platform.
     //
-    mpPlatform->SetActiveContext( mpContext );
-    p3d::pddi->EnableZBuffer( true );
+    mpPlatform->SetActiveContext(mpContext);
+    p3d::pddi->EnableZBuffer(true);
 
     //
     // This call installs chunk handlers for all the primary chunk types that
@@ -1057,19 +1009,16 @@ MEMTRACK_PUSH_GROUP( "XboxPlatform" );
     // like.
     //
 //    p3d::InstallDefaultLoaders();
-        P3DASSERT(p3d::context);
-    tP3DFileHandler* p3d = new(GMA_PERSISTENT) tP3DFileHandler;
+    P3DASSERT(p3d::context);
+    tP3DFileHandler *p3d = new(GMA_PERSISTENT) tP3DFileHandler;
 //    p3d::loadManager->AddHandler(p3d, "p3d");
     p3d::context->GetLoadManager()->AddHandler(p3d, "p3d");
     p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tPNGHandler, "png");
 
-    if( CommandLineOptions::Get( CLO_FE_UNJOINED ) )
-    {
+    if (CommandLineOptions::Get(CLO_FE_UNJOINED)) {
         p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tBMPHandler, "bmp");
         p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tTargaHandler, "tga");
-    }
-    else
-    {
+    } else {
         p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tBMPHandler, "p3d");
         p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tPNGHandler, "p3d");
         p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tTargaHandler, "p3d");
@@ -1077,120 +1026,122 @@ MEMTRACK_PUSH_GROUP( "XboxPlatform" );
 
 //    p3d->AddHandler(new tGeometryLoader);
 //    GeometryWrappedLoader* pGWL = new GeometryWrappedLoader;
-    GeometryWrappedLoader* pGWL = 
-       (GeometryWrappedLoader*)GetAllWrappers()->mpLoader( AllWrappers::msGeometry );
-    pGWL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pGWL );
+    GeometryWrappedLoader *pGWL =
+            (GeometryWrappedLoader *) GetAllWrappers()->mpLoader(AllWrappers::msGeometry);
+    pGWL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pGWL);
 
-    StaticEntityLoader* pSEL = 
-       (StaticEntityLoader*)GetAllWrappers()->mpLoader( AllWrappers::msStaticEntity );
-    pSEL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pSEL );
+    StaticEntityLoader *pSEL =
+            (StaticEntityLoader *) GetAllWrappers()->mpLoader(AllWrappers::msStaticEntity);
+    pSEL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pSEL);
 
-    StaticPhysLoader* pSPL = 
-       (StaticPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msStaticPhys );
-    pSPL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pSPL );
+    StaticPhysLoader *pSPL =
+            (StaticPhysLoader *) GetAllWrappers()->mpLoader(AllWrappers::msStaticPhys);
+    pSPL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pSPL);
 
-    TreeDSGLoader* pTDL = 
-       (TreeDSGLoader*)GetAllWrappers()->mpLoader( AllWrappers::msTreeDSG );
-    pTDL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pTDL );
+    TreeDSGLoader *pTDL =
+            (TreeDSGLoader *) GetAllWrappers()->mpLoader(AllWrappers::msTreeDSG);
+    pTDL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pTDL);
 
-    FenceLoader* pFL = 
-       (FenceLoader*)GetAllWrappers()->mpLoader( AllWrappers::msFenceEntity );
-    pFL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pFL );
+    FenceLoader *pFL =
+            (FenceLoader *) GetAllWrappers()->mpLoader(AllWrappers::msFenceEntity);
+    pFL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pFL);
 
-    IntersectLoader* pIL = 
-       (IntersectLoader*)GetAllWrappers()->mpLoader( AllWrappers::msIntersectDSG );
-    pIL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pIL );
-    
-    AnimCollLoader* pACL = 
-        (AnimCollLoader*)GetAllWrappers()->mpLoader( AllWrappers::msAnimCollEntity );
-    pACL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pACL );
-    
-    AnimDSGLoader* pAnimDSGLoader = 
-        (AnimDSGLoader*)GetAllWrappers()->mpLoader( AllWrappers::msAnimEntity );
-    pAnimDSGLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pAnimDSGLoader );
-    
+    IntersectLoader *pIL =
+            (IntersectLoader *) GetAllWrappers()->mpLoader(AllWrappers::msIntersectDSG);
+    pIL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pIL);
 
-    DynaPhysLoader* pDPL = 
-        (DynaPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msDynaPhys );
-    pDPL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pDPL );
-    
-    InstStatPhysLoader* pISPL = 
-        (InstStatPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msInstStatPhys );
-    pISPL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pISPL );
-    
-    InstStatEntityLoader* pISEL = 
-        (InstStatEntityLoader*)GetAllWrappers()->mpLoader( AllWrappers::msInstStatEntity );
-    pISEL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pISEL );
-    
-    LocatorLoader* pLL = 
-        (LocatorLoader*)GetAllWrappers()->mpLoader( AllWrappers::msLocator);
-    pLL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pLL );
+    AnimCollLoader *pACL =
+            (AnimCollLoader *) GetAllWrappers()->mpLoader(AllWrappers::msAnimCollEntity);
+    pACL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pACL);
 
-    RoadLoader* pRL = 
-        (RoadLoader*)GetAllWrappers()->mpLoader( AllWrappers::msRoadSegment);
-    pRL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pRL );
-
-    PathLoader* pPL = 
-        (PathLoader*)GetAllWrappers()->mpLoader( AllWrappers::msPathSegment);
-    pPL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pPL );
-
-    WorldSphereLoader* pWSL = 
-        (WorldSphereLoader*)GetAllWrappers()->mpLoader( AllWrappers::msWorldSphere);
-    pWSL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pWSL );
-
-    LensFlareLoader* pLSL = 
-        (LensFlareLoader*)GetAllWrappers()->mpLoader( AllWrappers::msLensFlare);
-    pLSL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pLSL );
-
-    BillboardWrappedLoader* pBWL = 
-        (BillboardWrappedLoader*)GetAllWrappers()->mpLoader( AllWrappers::msBillboard);
-    pBWL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pBWL );
+    AnimDSGLoader *pAnimDSGLoader =
+            (AnimDSGLoader *) GetAllWrappers()->mpLoader(AllWrappers::msAnimEntity);
+    pAnimDSGLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pAnimDSGLoader);
 
 
-    InstParticleSystemLoader* pInstParticleSystemLoader = 
-        (InstParticleSystemLoader*) GetAllWrappers()->mpLoader( AllWrappers::msInstParticleSystem);
-    pInstParticleSystemLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pInstParticleSystemLoader );
+    DynaPhysLoader *pDPL =
+            (DynaPhysLoader *) GetAllWrappers()->mpLoader(AllWrappers::msDynaPhys);
+    pDPL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pDPL);
 
-    BreakableObjectLoader* pBreakableObjectLoader = 
-        (BreakableObjectLoader*) GetAllWrappers()->mpLoader( AllWrappers::msBreakableObject);
-    pBreakableObjectLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pBreakableObjectLoader );
+    InstStatPhysLoader *pISPL =
+            (InstStatPhysLoader *) GetAllWrappers()->mpLoader(AllWrappers::msInstStatPhys);
+    pISPL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pISPL);
 
-	AnimDynaPhysLoader*	pAnimDynaPhysLoader = 
-		(AnimDynaPhysLoader*) GetAllWrappers()->mpLoader( AllWrappers::msAnimDynaPhys);
-    pAnimDynaPhysLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pAnimDynaPhysLoader );
+    InstStatEntityLoader *pISEL =
+            (InstStatEntityLoader *) GetAllWrappers()->mpLoader(AllWrappers::msInstStatEntity);
+    pISEL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pISEL);
 
-	AnimDynaPhysWrapperLoader* pAnimWrapperLoader = 
-		(AnimDynaPhysWrapperLoader*) GetAllWrappers()->mpLoader( AllWrappers::msAnimDynaPhysWrapper);
-	pAnimWrapperLoader->SetRegdListener( GetRenderManager(), 0 );
-	p3d->AddHandler( pAnimWrapperLoader );
+    LocatorLoader *pLL =
+            (LocatorLoader *) GetAllWrappers()->mpLoader(AllWrappers::msLocator);
+    pLL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pLL);
+
+    RoadLoader *pRL =
+            (RoadLoader *) GetAllWrappers()->mpLoader(AllWrappers::msRoadSegment);
+    pRL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pRL);
+
+    PathLoader *pPL =
+            (PathLoader *) GetAllWrappers()->mpLoader(AllWrappers::msPathSegment);
+    pPL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pPL);
+
+    WorldSphereLoader *pWSL =
+            (WorldSphereLoader *) GetAllWrappers()->mpLoader(AllWrappers::msWorldSphere);
+    pWSL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pWSL);
+
+    LensFlareLoader *pLSL =
+            (LensFlareLoader *) GetAllWrappers()->mpLoader(AllWrappers::msLensFlare);
+    pLSL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pLSL);
+
+    BillboardWrappedLoader *pBWL =
+            (BillboardWrappedLoader *) GetAllWrappers()->mpLoader(AllWrappers::msBillboard);
+    pBWL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pBWL);
+
+
+    InstParticleSystemLoader *pInstParticleSystemLoader =
+            (InstParticleSystemLoader *) GetAllWrappers()->mpLoader(
+                    AllWrappers::msInstParticleSystem);
+    pInstParticleSystemLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pInstParticleSystemLoader);
+
+    BreakableObjectLoader *pBreakableObjectLoader =
+            (BreakableObjectLoader *) GetAllWrappers()->mpLoader(AllWrappers::msBreakableObject);
+    pBreakableObjectLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pBreakableObjectLoader);
+
+    AnimDynaPhysLoader *pAnimDynaPhysLoader =
+            (AnimDynaPhysLoader *) GetAllWrappers()->mpLoader(AllWrappers::msAnimDynaPhys);
+    pAnimDynaPhysLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pAnimDynaPhysLoader);
+
+    AnimDynaPhysWrapperLoader *pAnimWrapperLoader =
+            (AnimDynaPhysWrapperLoader *) GetAllWrappers()->mpLoader(
+                    AllWrappers::msAnimDynaPhysWrapper);
+    pAnimWrapperLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pAnimWrapperLoader);
 
     p3d->AddHandler(new(GMA_PERSISTENT) tTextureLoader);
-    p3d->AddHandler( new(GMA_PERSISTENT) tSetLoader );
+    p3d->AddHandler(new(GMA_PERSISTENT) tSetLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) tShaderLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) tCameraLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) tGameAttrLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) tLightLoader);
-  
+
     p3d->AddHandler(new(GMA_PERSISTENT) tLocatorLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) tLightGroupLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) tImageLoader);
@@ -1221,19 +1172,19 @@ MEMTRACK_PUSH_GROUP( "XboxPlatform" );
 
     //p3d->AddHandler(new p3d::tIgnoreLoader);
 
-    tSEQFileHandler* sequencerFileHandler = new(GMA_PERSISTENT) tSEQFileHandler;
+    tSEQFileHandler *sequencerFileHandler = new(GMA_PERSISTENT) tSEQFileHandler;
     p3d::loadManager->AddHandler(sequencerFileHandler, "seq");
 
     // sim lib
     sim::InstallSimLoaders();
 
-    p3d->AddHandler(new(GMA_PERSISTENT) CameraDataLoader, SRR2::ChunkID::FOLLOWCAM);    
-    p3d->AddHandler(new(GMA_PERSISTENT) CameraDataLoader, SRR2::ChunkID::WALKERCAM);    
-    p3d->AddHandler(new(GMA_PERSISTENT) IntersectionLoader);    
+    p3d->AddHandler(new(GMA_PERSISTENT) CameraDataLoader, SRR2::ChunkID::FOLLOWCAM);
+    p3d->AddHandler(new(GMA_PERSISTENT) CameraDataLoader, SRR2::ChunkID::WALKERCAM);
+    p3d->AddHandler(new(GMA_PERSISTENT) IntersectionLoader);
     //p3d->AddHandler(new(GMA_PERSISTENT) RoadLoader);    
-    p3d->AddHandler(new(GMA_PERSISTENT) RoadDataSegmentLoader);    
+    p3d->AddHandler(new(GMA_PERSISTENT) RoadDataSegmentLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) CStatePropDataLoader);
-MEMTRACK_POP_GROUP( "XboxPlatform" );
+    MEMTRACK_POP_GROUP("XboxPlatform");
 }
 
 
@@ -1247,8 +1198,7 @@ MEMTRACK_POP_GROUP( "XboxPlatform" );
 // Return:      None.
 //
 //==============================================================================
-void XboxPlatform::ShutdownPure3D()
-{
+void XboxPlatform::ShutdownPure3D() {
     //
     // Clean-up the Pure3D Inventory
     //
@@ -1258,18 +1208,16 @@ void XboxPlatform::ShutdownPure3D()
     //
     // Clean-up the space taken by the Pure 3D context.
     //
-    if( mpContext != NULL )
-    {
-        mpPlatform->DestroyContext( mpContext );
+    if (mpContext != NULL) {
+        mpPlatform->DestroyContext(mpContext);
         mpContext = NULL;
     }
 
     //
     // Clean-up the space taken by the Pure 3D platform.
     //
-    if( mpPlatform != NULL )
-    {
-        tPlatform::Destroy( mpPlatform );
+    if (mpPlatform != NULL) {
+        tPlatform::Destroy(mpPlatform);
         mpPlatform = NULL;
     }
 }
@@ -1292,9 +1240,8 @@ void XboxPlatform::ShutdownPure3D()
 //
 //==============================================================================
 XboxPlatform::XboxPlatform() :
-    mpPlatform( NULL ),
-    mpContext( NULL )
-{
+        mpPlatform(NULL),
+        mpContext(NULL) {
 }
 
 
@@ -1308,8 +1255,7 @@ XboxPlatform::XboxPlatform() :
 // Return:      N/A.
 //
 //==============================================================================
-XboxPlatform::~XboxPlatform()
-{
+XboxPlatform::~XboxPlatform() {
 }
 
 

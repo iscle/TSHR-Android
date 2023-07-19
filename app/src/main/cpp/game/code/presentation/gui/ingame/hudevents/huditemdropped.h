@@ -22,9 +22,9 @@
 // Forward References
 //===========================================================================
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Page;
+
     class Text;
 }
 
@@ -32,19 +32,20 @@ namespace Scrooby
 // Interface Definitions
 //===========================================================================
 
-class HudItemDropped : public HudEventHandler
-{
+class HudItemDropped : public HudEventHandler {
 public:
-    HudItemDropped( Scrooby::Page* pPage );
+    HudItemDropped(Scrooby::Page *pPage);
+
     virtual ~HudItemDropped();
 
     virtual void Start();
+
     virtual void Stop();
-    virtual void Update( float elapsedTime );
+
+    virtual void Update(float elapsedTime);
 
 private:
-    enum eSubState
-    {
+    enum eSubState {
         STATE_TRANSITION_IN,
         STATE_DISPLAY_HOLD,
         STATE_TRANSITION_OUT,
@@ -54,7 +55,7 @@ private:
 
     unsigned int m_currentSubState;
 
-    Scrooby::Text* m_itemDropped;
+    Scrooby::Text *m_itemDropped;
 
 };
 

@@ -22,6 +22,7 @@
 // Forward References
 //========================================
 class ISuperCamTarget;
+
 class InputManager;
 
 //=============================================================================
@@ -30,44 +31,47 @@ class InputManager;
 //
 //=============================================================================
 
-class TrackerCam : public SuperCam
-{
+class TrackerCam : public SuperCam {
 public:
     TrackerCam();
+
     virtual ~TrackerCam();
 
     //Update: Called when you want the super cam to update its state.
-    virtual void Update( unsigned int milliseconds );
+    virtual void Update(unsigned int milliseconds);
 
     //Returns the name of the super cam.  
     //This can be used in the FE or debug info
-    virtual const char* const GetName() const;
+    virtual const char *const GetName() const;
 
     virtual Type GetType();
 
     //These are for favourable support of this command
-    virtual void SetTarget( ISuperCamTarget* target ); 
-    virtual void AddTarget( ISuperCamTarget* target );
+    virtual void SetTarget(ISuperCamTarget *target);
+
+    virtual void AddTarget(ISuperCamTarget *target);
 
     virtual unsigned int GetNumTargets() const;
 
 private:
-    ISuperCamTarget* mTarget;
+    ISuperCamTarget *mTarget;
 
-    InputManager* mIm;
+    InputManager *mIm;
 
     TrackerCamData mData;
 
     float mFOVDelta;
-    
+
     //These functions are to allow real-time control of the settings of 
     //the supercam.
     virtual void OnRegisterDebugControls();
+
     virtual void OnUnregisterDebugControls();
 
     //Prevent wasteful constructor creation.
-    TrackerCam( const TrackerCam& trackercam );
-    TrackerCam& operator=( const TrackerCam& trackercam );
+    TrackerCam(const TrackerCam &trackercam);
+
+    TrackerCam &operator=(const TrackerCam &trackercam);
 };
 
 //*****************************************************************************
@@ -86,8 +90,7 @@ private:
 // Return:      const char* const 
 //
 //=============================================================================
-inline const char* const TrackerCam::GetName() const
-{
+inline const char *const TrackerCam::GetName() const {
     return "TRACKER_CAM";
 }
 
@@ -101,8 +104,7 @@ inline const char* const TrackerCam::GetName() const
 // Return:      Type 
 //
 //=============================================================================
-inline SuperCam::Type TrackerCam::GetType()
-{
+inline SuperCam::Type TrackerCam::GetType() {
     return TRACKER_CAM;
 }
 
@@ -111,13 +113,12 @@ inline SuperCam::Type TrackerCam::GetType()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void TrackerCam::SetTarget( ISuperCamTarget* target )
-{
+inline void TrackerCam::SetTarget(ISuperCamTarget *target) {
     mTarget = target;
 }
 
@@ -126,14 +127,13 @@ inline void TrackerCam::SetTarget( ISuperCamTarget* target )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void TrackerCam::AddTarget( ISuperCamTarget* target )
-{
-    rAssertMsg( false, "Only call SetTarget on the TrackerCam" );
+inline void TrackerCam::AddTarget(ISuperCamTarget *target) {
+    rAssertMsg(false, "Only call SetTarget on the TrackerCam");
 }
 
 //=============================================================================
@@ -146,10 +146,8 @@ inline void TrackerCam::AddTarget( ISuperCamTarget* target )
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int TrackerCam::GetNumTargets() const
-{
-    if ( mTarget )
-    {
+inline unsigned int TrackerCam::GetNumTargets() const {
+    if (mTarget) {
         return 1;
     }
 

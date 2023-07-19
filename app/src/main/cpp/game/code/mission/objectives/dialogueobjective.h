@@ -31,22 +31,28 @@ class CarStartLocator;
 //
 //=============================================================================
 
-class DialogueObjective : public MissionObjective
-{
+class DialogueObjective : public MissionObjective {
 public:
-    enum { MAX_CHAR_NAME_LEN = 30 };
+    enum {
+        MAX_CHAR_NAME_LEN = 30
+    };
 
     DialogueObjective();
+
     virtual ~DialogueObjective();
 
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
-    void SetChar1Name( const char* name );
-    void SetChar2Name( const char* name );
-    void SetDialogueName( const char* name );
-    void SetCameraDistance( const float distance );
+    void SetChar1Name(const char *name);
 
-    void SetPositions( CarStartLocator* pos1, CarStartLocator* pos2, CarStartLocator* carPos, bool dontReset );
+    void SetChar2Name(const char *name);
+
+    void SetDialogueName(const char *name);
+
+    void SetCameraDistance(const float distance);
+
+    void SetPositions(CarStartLocator *pos1, CarStartLocator *pos2, CarStartLocator *carPos,
+                      bool dontReset);
 
     bool CharactersReset();
 
@@ -54,8 +60,9 @@ public:
 
 protected:
     virtual void OnInitialize();
+
     virtual void OnFinalize();
-    
+
 private:
     char mChar1Name[MAX_CHAR_NAME_LEN];
     char mChar2Name[MAX_CHAR_NAME_LEN];
@@ -64,9 +71,9 @@ private:
 
     DialogEventData mDialogEventData;
 
-    CarStartLocator* mChar1Pos;
-    CarStartLocator* mChar2Pos;
-    CarStartLocator* mCarPos;
+    CarStartLocator *mChar1Pos;
+    CarStartLocator *mChar2Pos;
+    CarStartLocator *mCarPos;
 
     rmt::Vector mChar1OldPos;
     rmt::Vector mChar2OldPos;
@@ -75,19 +82,20 @@ private:
     float mChar2Rotation;
     float mCarRotation;
 
-    bool mReset : 1;
-    bool mMoved : 1;
-    bool mCharacter1WasInCarToStartWith : 1;
-    bool mCharacter2WasInCarToStartWith : 1;
-    bool mHidTheCar : 1;
-    bool mHidDefault : 1;
-    bool mDontReset : 1;  //This is for mission complete.
+    bool mReset: 1;
+    bool mMoved: 1;
+    bool mCharacter1WasInCarToStartWith: 1;
+    bool mCharacter2WasInCarToStartWith: 1;
+    bool mHidTheCar: 1;
+    bool mHidDefault: 1;
+    bool mDontReset: 1;  //This is for mission complete.
 
     void ResetCharacterPositions();
 
     //Prevent wasteful constructor creation.
-    DialogueObjective( const DialogueObjective& dialogueobjective );
-    DialogueObjective& operator=( const DialogueObjective& dialogueobjective );
+    DialogueObjective(const DialogueObjective &dialogueobjective);
+
+    DialogueObjective &operator=(const DialogueObjective &dialogueobjective);
 };
 
 

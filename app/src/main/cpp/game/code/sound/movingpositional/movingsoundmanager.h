@@ -29,13 +29,15 @@
 // Forward References
 //========================================
 class Vehicle;
+
 class carSoundParameters;
+
 struct AnimSoundData;
 struct AnimSoundDSGData;
+
 class AnimCollisionEntityDSG;
 
-namespace ActionButton
-{
+namespace ActionButton {
     class AnimSwitch;
 };
 
@@ -45,58 +47,73 @@ namespace ActionButton
 //
 //=============================================================================
 
-class MovingSoundManager : public EventListener
-{
-    public:
-        MovingSoundManager();
-        virtual ~MovingSoundManager();
+class MovingSoundManager : public EventListener {
+public:
+    MovingSoundManager();
 
-        void ServiceOncePerFrame();
+    virtual ~MovingSoundManager();
 
-        //
-        // EventListener functions
-        //
-        void HandleEvent( EventEnum id, void* pEventData );
+    void ServiceOncePerFrame();
 
-    private:
-        //Prevent wasteful constructor creation.
-        MovingSoundManager( const MovingSoundManager& original );
-        MovingSoundManager& operator=( const MovingSoundManager& rhs );
+    //
+    // EventListener functions
+    //
+    void HandleEvent(EventEnum id, void *pEventData);
 
-        void addTrafficSound( const char* soundName, Vehicle* vehiclePtr, bool tiePitchToVelocity );
-        void stopTrafficSound( Vehicle* vehiclePtr );
-        void addAISound( const char* soundName, Vehicle* vehiclePtr, bool tiePitchToVelocity );
-        void stopAISound( Vehicle* vehiclePtr );
-        void handleTrafficHornEvent( Vehicle* vehiclePtr );
-        void makeCarGoBoom( Vehicle* vehiclePtr );
-        void startPlatformSound( AnimSoundData* soundData );
-        void stopPlatformSound( ActionButton::AnimSwitch* soundObject );
-        void stopAllPlatforms();
-        void startAnimObjSound( AnimSoundDSGData* soundData );
-        void stopAnimObjSound( AnimCollisionEntityDSG* soundObject );
-        void startWaspSound( Actor* wasp );
-        bool hasOverlayClip( Vehicle* vehiclePtr, carSoundParameters** parameters );
-        void toggleOverlayClip( Vehicle* vehiclePtr );
-        const char* getPositionalSettingName( Vehicle* vehiclePtr, bool isMissionVehicle );
+private:
+    //Prevent wasteful constructor creation.
+    MovingSoundManager(const MovingSoundManager &original);
 
-        const static int NUM_TRAFFIC_SOUND_PLAYERS = 5;
-        TrafficSoundPlayer m_trafficPlayer[NUM_TRAFFIC_SOUND_PLAYERS];
+    MovingSoundManager &operator=(const MovingSoundManager &rhs);
 
-        const static int NUM_AI_SOUND_PLAYERS = 5;
-        AIVehicleSoundPlayer m_aiPlayer[NUM_AI_SOUND_PLAYERS];
+    void addTrafficSound(const char *soundName, Vehicle *vehiclePtr, bool tiePitchToVelocity);
 
-        AvatarVehiclePosnPlayer m_avatarVehiclePlayer;
+    void stopTrafficSound(Vehicle *vehiclePtr);
 
-        const static int NUM_WASP_SOUND_PLAYERS = 2;
-        WaspSoundPlayer m_waspPlayer[NUM_WASP_SOUND_PLAYERS];
+    void addAISound(const char *soundName, Vehicle *vehiclePtr, bool tiePitchToVelocity);
 
-        const static int NUM_PLATFORM_SOUND_PLAYERS = 8;
-        PlatformSoundPlayer m_platformPlayer[NUM_PLATFORM_SOUND_PLAYERS];
+    void stopAISound(Vehicle *vehiclePtr);
 
-        const static int NUM_ANIM_OBJ_SOUND_PLAYERS = 5;
-        AnimObjSoundPlayer m_animObjPlayer[NUM_ANIM_OBJ_SOUND_PLAYERS];
+    void handleTrafficHornEvent(Vehicle *vehiclePtr);
 
-        static tUID s_waspUID;
+    void makeCarGoBoom(Vehicle *vehiclePtr);
+
+    void startPlatformSound(AnimSoundData *soundData);
+
+    void stopPlatformSound(ActionButton::AnimSwitch *soundObject);
+
+    void stopAllPlatforms();
+
+    void startAnimObjSound(AnimSoundDSGData *soundData);
+
+    void stopAnimObjSound(AnimCollisionEntityDSG *soundObject);
+
+    void startWaspSound(Actor *wasp);
+
+    bool hasOverlayClip(Vehicle *vehiclePtr, carSoundParameters **parameters);
+
+    void toggleOverlayClip(Vehicle *vehiclePtr);
+
+    const char *getPositionalSettingName(Vehicle *vehiclePtr, bool isMissionVehicle);
+
+    const static int NUM_TRAFFIC_SOUND_PLAYERS = 5;
+    TrafficSoundPlayer m_trafficPlayer[NUM_TRAFFIC_SOUND_PLAYERS];
+
+    const static int NUM_AI_SOUND_PLAYERS = 5;
+    AIVehicleSoundPlayer m_aiPlayer[NUM_AI_SOUND_PLAYERS];
+
+    AvatarVehiclePosnPlayer m_avatarVehiclePlayer;
+
+    const static int NUM_WASP_SOUND_PLAYERS = 2;
+    WaspSoundPlayer m_waspPlayer[NUM_WASP_SOUND_PLAYERS];
+
+    const static int NUM_PLATFORM_SOUND_PLAYERS = 8;
+    PlatformSoundPlayer m_platformPlayer[NUM_PLATFORM_SOUND_PLAYERS];
+
+    const static int NUM_ANIM_OBJ_SOUND_PLAYERS = 5;
+    AnimObjSoundPlayer m_animObjPlayer[NUM_ANIM_OBJ_SOUND_PLAYERS];
+
+    static tUID s_waspUID;
 };
 
 //*****************************************************************************

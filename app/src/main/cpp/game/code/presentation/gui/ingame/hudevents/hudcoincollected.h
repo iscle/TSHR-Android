@@ -22,11 +22,13 @@
 // Forward References
 //===========================================================================
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Page;
+
     class Group;
+
     class Sprite;
+
     class Text;
 }
 
@@ -34,25 +36,26 @@ namespace Scrooby
 // Interface Definitions
 //===========================================================================
 
-class HudCoinCollected : public HudEventHandler
-{
+class HudCoinCollected : public HudEventHandler {
 public:
-    HudCoinCollected( Scrooby::Page* pPage );
+    HudCoinCollected(Scrooby::Page *pPage);
+
     virtual ~HudCoinCollected();
 
     virtual void Start();
-    virtual void Stop();
-    virtual void Update( float elapsedTime );
 
-    void SetCurrentItemCount( int itemCount );
+    virtual void Stop();
+
+    virtual void Update(float elapsedTime);
+
+    void SetCurrentItemCount(int itemCount);
 
 private:
-    void SetItemCount( unsigned int numCollected, unsigned int numCollectibles );
+    void SetItemCount(unsigned int numCollected, unsigned int numCollectibles);
 
     static const unsigned int BITMAP_TEXT_BUFFER_SIZE = 8;
 
-    enum eSubState
-    {
+    enum eSubState {
         STATE_COIN_TRANSITION_IN,
         STATE_COIN_DISPLAY_HOLD,
         STATE_COIN_TRANSITION_OUT,
@@ -62,22 +65,21 @@ private:
 
     unsigned int m_currentSubState;
 
-    Scrooby::Sprite* m_cardImage;
-    Scrooby::Group* m_cardText;
+    Scrooby::Sprite *m_cardImage;
+    Scrooby::Group *m_cardText;
 
-    Scrooby::Group* m_itemsCount;
-    Scrooby::Sprite* m_numCoins;
+    Scrooby::Group *m_itemsCount;
+    Scrooby::Sprite *m_numCoins;
     int m_currentItemCount;
 
-    Scrooby::Group* m_itemsComplete;
-    bool m_isFullCount : 1;
+    Scrooby::Group *m_itemsComplete;
+    bool m_isFullCount: 1;
 
     float m_elapsedCoinDecrementTime;
 
 };
 
-inline void HudCoinCollected::SetCurrentItemCount( int itemCount )
-{
+inline void HudCoinCollected::SetCurrentItemCount(int itemCount) {
     m_currentItemCount = itemCount;
 }
 

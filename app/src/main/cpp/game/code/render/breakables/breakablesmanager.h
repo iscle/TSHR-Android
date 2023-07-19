@@ -18,8 +18,8 @@
 // Nested Includes
 //===========================================================================
 
-#include <memory\srrmemory.h> // Needed for my STL allocations to go on the right heap
-#include <render\DSG\breakableobjectdsg.h>
+#include <memory/srrmemory.h> // Needed for my STL allocations to go on the right heap
+#include <render/DSG/breakableobjectdsg.h>
 #include <constants/breakablesenum.h>
 #include <render/culling/swaparray.h>
 #include <render/culling/reservearray.h>
@@ -56,110 +56,124 @@ const int BREAKABLE_QUEUE_SIZE = 50;
 //      Hasn't been memory leak tested yet.
 //
 //===========================================================================
-class BreakablesManager : public EventListener
-{
-    public:
+class BreakablesManager : public EventListener {
+public:
 
-        // Static Methods (for creating, destroying and acquiring an instance 
-        // of the ParticleManager)
-        static BreakablesManager* CreateInstance();
-        static BreakablesManager* GetInstance();
-        static void DestroyInstance();
+    // Static Methods (for creating, destroying and acquiring an instance
+    // of the ParticleManager)
+    static BreakablesManager *CreateInstance();
 
-        // Time in milliseconds
-        void Update( unsigned int deltaTime );
+    static BreakablesManager *GetInstance();
 
-        void AllocateBreakables( BreakablesEnum::BreakableID, tAnimatedObjectFactory* pFactory, tAnimatedObjectFrameController* pController, int numInstances );
-        void FreeBreakables( BreakablesEnum::BreakableID );    
+    static void DestroyInstance();
 
-        // Calls FreeBreakables for every allocated breakable
-		// Killing all memory, also calls RemoveAllFromDSG to get rid of any that
-		// are still playing
-        void FreeAllBreakables();
+    // Time in milliseconds
+    void Update(unsigned int deltaTime);
 
-        // Removes breakables from the specified type from the DSG
-        void RemoveFromDSG( BreakablesEnum::BreakableID );
+    void AllocateBreakables(BreakablesEnum::BreakableID, tAnimatedObjectFactory *pFactory,
+                            tAnimatedObjectFrameController *pController, int numInstances);
 
-		// Removes every breakable thats in the DSG
-		void RemoveAllFromDSG();
+    void FreeBreakables(BreakablesEnum::BreakableID);
 
-        // Trigger a breakable object animation
-        void Play( BreakablesEnum::BreakableID, const rmt::Matrix& transform );
+    // Calls FreeBreakables for every allocated breakable
+    // Killing all memory, also calls RemoveAllFromDSG to get rid of any that
+    // are still playing
+    void FreeAllBreakables();
 
-		// Flags the given DSG object as breakable object that was broken.
-		// It will need to be removed from the world, but not right away.
-		// It might still be in use with the collision system
-        void RemoveBrokenObjectFromWorld( IEntityDSG*, RenderEnums::LayerEnum layer, bool useRemoveGuts = true );
+    // Removes breakables from the specified type from the DSG
+    void RemoveFromDSG(BreakablesEnum::BreakableID);
 
-        void DebugRender()const;
-        bool IsLoaded( BreakablesEnum::BreakableID type );
-        void AddToZoneList( BreakablesEnum::BreakableID type );
+    // Removes every breakable thats in the DSG
+    void RemoveAllFromDSG();
 
-        // The section name associated with breakables
-        const char* GetInvSectionName()const { return sInventorySectionName; }
-		tUID GetInvSectionUID()const { return mInventorySectionUID; }
+    // Trigger a breakable object animation
+    void Play(BreakablesEnum::BreakableID, const rmt::Matrix &transform);
 
-        virtual void HandleEvent( EventEnum id, void* pEventData );
+    // Flags the given DSG object as breakable object that was broken.
+    // It will need to be removed from the world, but not right away.
+    // It might still be in use with the collision system
+    void RemoveBrokenObjectFromWorld(IEntityDSG *, RenderEnums::LayerEnum layer,
+                                     bool useRemoveGuts = true);
 
-    protected:
+    void DebugRender() const;
 
-    private:
-        
-        static const char* sInventorySectionName;
-		const tUID mInventorySectionUID;
+    bool IsLoaded(BreakablesEnum::BreakableID type);
 
-        // Its a singleton, prevent access to its constructors
-        
-        BreakablesManager();
-        ~BreakablesManager();
-        BreakablesManager( const BreakablesManager& );
-        BreakablesManager& operator=( const BreakablesManager& );
-        
-        struct ManagedBreakable
-        {
-            ManagedBreakable();
-            ~ManagedBreakable();
-            RenderEnums::LayerEnum mLayer;
+    void AddToZoneList(BreakablesEnum::BreakableID type);
 
-            BreakableObjectDSG* mpBreakableDSG;
-            bool mIsActive;
-            void AddToDSG();
-            void RemoveFromDSG();
-        };
-        struct BreakableInstances
-        {
-            BreakableInstances() : list(0), currElement(0), size(0) {}
+    // The section name associated with breakables
+    const char *GetInvSectionName() const { return sInventorySectionName; }
 
-            ManagedBreakable** list;
-            // Acts as a queue, gets the next item in the list and
-            // increments next
-            ManagedBreakable* Next();
-            unsigned int currElement;
-            unsigned int size;
-        };
+    tUID GetInvSectionUID() const { return mInventorySectionUID; }
 
-        std::vector< BreakableInstances, s2alloc<BreakableInstances> > mBreakablesList;
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
-        // each breakable type can be held in multiple zones
-        typedef SwapArray< tName > tNameList;
-        SwapArray< tNameList > mZoneList;
+protected:
 
-		// A list of DSG objects that were broken and need to be removed at the end of the frame
-        struct BrokenObject
-        {
-            IEntityDSG* pDSG;
-            RenderEnums::LayerEnum layer;
-            bool useRemoveGuts;
-        };
-        SwapArray< BrokenObject > mBreakableRemoveQueue;
+private:
 
-        static BreakablesManager* spInstance;
+    static const char *sInventorySectionName;
+    const tUID mInventorySectionUID;
+
+    // Its a singleton, prevent access to its constructors
+
+    BreakablesManager();
+
+    ~BreakablesManager();
+
+    BreakablesManager(const BreakablesManager &);
+
+    BreakablesManager &operator=(const BreakablesManager &);
+
+    struct ManagedBreakable {
+        ManagedBreakable();
+
+        ~ManagedBreakable();
+
+        RenderEnums::LayerEnum mLayer;
+
+        BreakableObjectDSG *mpBreakableDSG;
+        bool mIsActive;
+
+        void AddToDSG();
+
+        void RemoveFromDSG();
+    };
+
+    struct BreakableInstances {
+        BreakableInstances() : list(0), currElement(0), size(0) {}
+
+        ManagedBreakable **list;
+
+        // Acts as a queue, gets the next item in the list and
+        // increments next
+        ManagedBreakable *Next();
+
+        unsigned int currElement;
+        unsigned int size;
+    };
+
+    std::vector <BreakableInstances, s2alloc<BreakableInstances>> mBreakablesList;
+
+    // each breakable type can be held in multiple zones
+    typedef SwapArray <tName> tNameList;
+    SwapArray <tNameList> mZoneList;
+
+    // A list of DSG objects that were broken and need to be removed at the end of the frame
+    struct BrokenObject {
+        IEntityDSG *pDSG;
+        RenderEnums::LayerEnum layer;
+        bool useRemoveGuts;
+    };
+    SwapArray <BrokenObject> mBreakableRemoveQueue;
+
+    static BreakablesManager *spInstance;
 };
 
 
 // A little syntactic sugar for getting at this singleton.
-inline BreakablesManager* GetBreakablesManager() 
-{ 
-   return( BreakablesManager::GetInstance() ); 
+inline BreakablesManager *GetBreakablesManager() {
+    return (BreakablesManager::GetInstance());
 }
+
 #endif

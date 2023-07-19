@@ -29,8 +29,11 @@
 // Forward References
 //========================================
 class Vehicle;
+
 class AnimCollisionEntityDSG;
+
 class RoadSegment;
+
 class EventLocator;
 
 //=============================================================================
@@ -41,20 +44,17 @@ class EventLocator;
 
 class SuperSprintManager : public Mappable,
                            public GameplayManager,
-                           public LoadingManager::ProcessRequestsCallback
-{
+                           public LoadingManager::ProcessRequestsCallback {
 public:
 
-    enum
-    {
+    enum {
         MAX_AI_WAYPOINTS = 20,
         MAX_CHECKPOINT_LOCATORS = 16
     };
 
     //-------------  S T A T E
 
-    enum State
-    {
+    enum State {
         IDLE,               //idle, doing nothing
 
         COUNT_DOWN,         //Start of race 3, 2, 1 countdown
@@ -76,61 +76,85 @@ public:
         // At anytime we can quit back to the game through the pause menu.
         //
     };
+
     //From EventListener
-    void HandleEvent( EventEnum id, void* pEventData );
+    void HandleEvent(EventEnum id, void *pEventData);
 
     //From LoadingManager::ProcessRequestsCallback
-    void OnProcessRequestsComplete( void* pUserData );
+    void OnProcessRequestsComplete(void *pUserData);
 
     //From GamePlayManager
     virtual void LoadLevelData();
+
     virtual void InitLevelData() {};
+
     virtual void CleanMissionData() {};
+
     virtual bool IsSundayDrive() { return true; };
+
     virtual bool IsSuperSprint();
+
     virtual void PerformLoading() {};
+
     virtual void Reset();
 
     //From Mappable
-    virtual void OnButton( int controllerId, int id, const Button* pButton );
-    virtual void OnButtonUp( int controllerId, int buttonId, const Button* pButton );
-    virtual void OnButtonDown( int controllerId, int buttonId, const Button* pButton );
-    virtual void LoadControllerMappings( unsigned int controllerId );
-    virtual void OnControllerConnect( int id );
-    virtual void OnControllerDisconnect( int id );
+    virtual void OnButton(int controllerId, int id, const Button *pButton);
+
+    virtual void OnButtonUp(int controllerId, int buttonId, const Button *pButton);
+
+    virtual void OnButtonDown(int controllerId, int buttonId, const Button *pButton);
+
+    virtual void LoadControllerMappings(unsigned int controllerId);
+
+    virtual void OnControllerConnect(int id);
+
+    virtual void OnControllerDisconnect(int id);
 
     char GetNumCheckpoints();
 
     //Local
-    static SuperSprintManager* GetInstance();
+    static SuperSprintManager *GetInstance();
+
     static void DestroyInstance();
-    
+
     void Initialize();
+
     void Finalize();
-    void Update( unsigned int milliseconds );
+
+    void Update(unsigned int milliseconds);
 
     void LoadScriptData();
+
     void LoadCars();
+
     void LoadCharacters();
+
     void StartRace();
 
-    void SetCurrentLevel( int level );
-    void SetNumLaps( int numLaps );
-    void SetTrackDirection( bool reverse );
+    void SetCurrentLevel(int level);
+
+    void SetNumLaps(int numLaps);
+
+    void SetTrackDirection(bool reverse);
+
     bool IsTrackReversed() const;
-    void SetCharacter( int playerID, int index );
-    void SetVehicle( int playerID, const char* name );
+
+    void SetCharacter(int playerID, int index);
+
+    void SetVehicle(int playerID, const char *name);
 
     char FindLeader();  //Returns who's in the lead
 
     void CalculatePositions();
 
-    const SuperSprintData::CarData* GetVehicleData( int playerID ) const;
-    const SuperSprintData::PlayerData* GetPlayerData( int playerID ) const;
+    const SuperSprintData::CarData *GetVehicleData(int playerID) const;
+
+    const SuperSprintData::PlayerData *GetPlayerData(int playerID) const;
 
     int GetOnlyHumanPlayerID();
 
-    State GetState() const {return mCurrentState;};
+    State GetState() const { return mCurrentState; };
 
     void RestoreControllerState();
 
@@ -140,9 +164,7 @@ protected:
 private:
 
 
-
-    enum ButtonMap
-    {
+    enum ButtonMap {
         Start,
         Select,
         Back,
@@ -154,25 +176,25 @@ private:
         ShowPositions
     };
 
-    static SuperSprintManager* spInstance;
+    static SuperSprintManager *spInstance;
 
     State mCurrentState;
 
-    void SetState( State state );
+    void SetState(State state);
 
 
     //-------------  P L A Y E R  C A R S
 
-    SuperSprintData::CarData mVehicleSlots[ SuperSprintData::NUM_PLAYERS ];
+    SuperSprintData::CarData mVehicleSlots[SuperSprintData::NUM_PLAYERS];
 
 
     //-------------  P L A Y E R  D A T A
 
-    SuperSprintData::PlayerData mPlayers[ SuperSprintData::NUM_PLAYERS ];
+    SuperSprintData::PlayerData mPlayers[SuperSprintData::NUM_PLAYERS];
 
     //------------- D R A W A B L E
 
-    SuperSprintDrawable* mDrawable;
+    SuperSprintDrawable *mDrawable;
 
     int mCountDownTime;
     char mTime[32];
@@ -193,61 +215,79 @@ private:
     bool mGoLeft;
 
     char mNumCheckPoints;  //Use the accessor please.
-    char* mCheckPoints;
+    char *mCheckPoints;
 
-    AnimatedIcon* mFFlag;
-    AnimatedIcon* mWFlag;
+    AnimatedIcon *mFFlag;
+    AnimatedIcon *mWFlag;
     unsigned int mFFlagTimeout;
     unsigned int mWFlagTimeout;
 
-    AnimCollisionEntityDSG* mTrapController;
+    AnimCollisionEntityDSG *mTrapController;
     bool mTrapTriggered;
 
-    char mPositions[ SuperSprintData::NUM_PLAYERS ];  //This is an array of player IDs.
-    AnimatedIcon* mPositionIcon[ SuperSprintData::NUM_PLAYERS ][ SuperSprintData::NUM_PLAYERS ];
-    AnimatedIcon* mPlayerID[ SuperSprintData::NUM_PLAYERS ];
-    bool mTogglePosition[ SuperSprintData::NUM_PLAYERS ];
-    AnimatedIcon* mNitroEffect[ SuperSprintData::NUM_PLAYERS ];
+    char mPositions[SuperSprintData::NUM_PLAYERS];  //This is an array of player IDs.
+    AnimatedIcon *mPositionIcon[SuperSprintData::NUM_PLAYERS][SuperSprintData::NUM_PLAYERS];
+    AnimatedIcon *mPlayerID[SuperSprintData::NUM_PLAYERS];
+    bool mTogglePosition[SuperSprintData::NUM_PLAYERS];
+    AnimatedIcon *mNitroEffect[SuperSprintData::NUM_PLAYERS];
 
-    struct PathData
-    {
-        PathData() : seg( NULL ), segT( 0.0f ), roadT( 0.0f ), loc( NULL ) {};
-        RoadSegment* seg;
+    struct PathData {
+        PathData() : seg(NULL), segT(0.0f), roadT(0.0f), loc(NULL) {};
+        RoadSegment *seg;
         float segT;
         float roadT;
         RoadManager::PathElement closestElem;
-        EventLocator* loc;
+        EventLocator *loc;
     };
 
-    PathData mPathData[ MAX_AI_WAYPOINTS ];
-    EventLocator* mCheckPointLocators[ MAX_CHECKPOINT_LOCATORS ];
+    PathData mPathData[MAX_AI_WAYPOINTS];
+    EventLocator *mCheckPointLocators[MAX_CHECKPOINT_LOCATORS];
     unsigned int mNumCheckPointLocators;
 
     void PositionCharacters();
+
     void SetUpCars();
+
     void CleanUpCars();
+
     void PositionCars();
+
     void PositionAI();
+
     void DisableAllAI();
+
     void DisableAllControllers();
+
     void InitRaceData();
+
     void ResetRaceData();
+
     void PlaceCharactersInCars();
+
     void EnumerateControllers();
+
     void SetupIcons();
+
     void InitCamera();
+
     void SetupTraps();
+
     void PlayIntroCam();
-    void UpdatePositionIcons( unsigned int milliseconds );
-    Locator* GetCheckpointWith( char data );
-    int GetPathDataWith( Locator* loc );
+
+    void UpdatePositionIcons(unsigned int milliseconds);
+
+    Locator *GetCheckpointWith(char data);
+
+    int GetPathDataWith(Locator *loc);
 
     SuperSprintManager();
+
     virtual ~SuperSprintManager();
 
     //Prevent wasteful constructor creation.
-    SuperSprintManager( const SuperSprintManager& supersprintmanager );
-    SuperSprintManager& operator=( const SuperSprintManager& supersprintmanager );
+    SuperSprintManager(const SuperSprintManager &supersprintmanager);
+
+    SuperSprintManager &operator=(const SuperSprintManager &supersprintmanager);
 
 };
 
@@ -257,15 +297,14 @@ private:
 //
 //*****************************************************************************
 
-inline SuperSprintManager* GetSSM() { return SuperSprintManager::GetInstance(); };
+inline SuperSprintManager *GetSSM() { return SuperSprintManager::GetInstance(); };
 
 //*****************************************************************************
 //
 //Inline Private Member Functions
 //
 //*****************************************************************************
-inline void SuperSprintManager::SetState( SuperSprintManager::State state )
-{
+inline void SuperSprintManager::SetState(SuperSprintManager::State state) {
     mCurrentState = state;
 }
 
@@ -279,9 +318,8 @@ inline void SuperSprintManager::SetState( SuperSprintManager::State state )
 // Return:      inline 
 //
 //=============================================================================
-inline bool SuperSprintManager::IsSuperSprint()
-{
-    return( true );
+inline bool SuperSprintManager::IsSuperSprint() {
+    return (true);
 }
 
 //=============================================================================
@@ -289,13 +327,12 @@ inline bool SuperSprintManager::IsSuperSprint()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int level )
+// Parameters:  (int level)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperSprintManager::SetCurrentLevel( int level )
-{
+inline void SuperSprintManager::SetCurrentLevel(int level) {
     mCurrentLevel = level;
 }
 
@@ -304,13 +341,12 @@ inline void SuperSprintManager::SetCurrentLevel( int level )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int level )
+// Parameters:  (int level)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperSprintManager::SetNumLaps( int numLaps )
-{
+inline void SuperSprintManager::SetNumLaps(int numLaps) {
     mNumLaps = numLaps;
 }
 
@@ -319,13 +355,12 @@ inline void SuperSprintManager::SetNumLaps( int numLaps )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int level )
+// Parameters:  (int level)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SuperSprintManager::SetTrackDirection( bool reverse )
-{
+inline void SuperSprintManager::SetTrackDirection(bool reverse) {
     mGoLeft = reverse;
 }
 
@@ -339,8 +374,7 @@ inline void SuperSprintManager::SetTrackDirection( bool reverse )
 // Return:      bool 
 //
 //=============================================================================
-inline bool SuperSprintManager::IsTrackReversed() const
-{
+inline bool SuperSprintManager::IsTrackReversed() const {
     return mGoLeft;
 }
 
@@ -354,12 +388,11 @@ inline bool SuperSprintManager::IsTrackReversed() const
 // Return:       
 //
 //=============================================================================
-inline const SuperSprintData::PlayerData*
-SuperSprintManager::GetPlayerData( int playerID ) const
-{
-    rAssert( playerID >= 0 && playerID < SuperSprintData::NUM_PLAYERS );
+inline const SuperSprintData::PlayerData *
+SuperSprintManager::GetPlayerData(int playerID) const {
+    rAssert(playerID >= 0 && playerID < SuperSprintData::NUM_PLAYERS);
 
-    return &( mPlayers[ playerID ] );
+    return &(mPlayers[playerID]);
 }
 
 //=============================================================================
@@ -372,12 +405,11 @@ SuperSprintManager::GetPlayerData( int playerID ) const
 // Return:       
 //
 //=============================================================================
-inline const SuperSprintData::CarData*
-SuperSprintManager::GetVehicleData( int playerID ) const
-{
-    rAssert( playerID >= 0 && playerID < SuperSprintData::NUM_PLAYERS );
+inline const SuperSprintData::CarData *
+SuperSprintManager::GetVehicleData(int playerID) const {
+    rAssert(playerID >= 0 && playerID < SuperSprintData::NUM_PLAYERS);
 
-    return &( mVehicleSlots[ playerID ] );
+    return &(mVehicleSlots[playerID]);
 }
 
 #endif //SUPERSPRINTMANAGER_H

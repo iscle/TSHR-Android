@@ -28,57 +28,60 @@
 //
 //=============================================================================
 class ChoreoFileHandler : public FileHandler,
-                       public IRadFileCompletionCallback
-{
-    public:
+                          public IRadFileCompletionCallback {
+public:
 
-        ChoreoFileHandler();
-        virtual ~ChoreoFileHandler();
+    ChoreoFileHandler();
 
-        //
-        // Implement FileHandler interface.
-        //
-        virtual void LoadFile( const char* filename, 
-                               FileHandler::LoadFileCallback* pCallback,
-                               void* pUserData,
-                               GameMemoryAllocator heap );
-        
-        virtual void LoadFileSync( const char* filename );
+    virtual ~ChoreoFileHandler();
 
-        //
-        // Implement IRadFileCompletionCallback interface.
-        //
-        virtual void OnFileOperationsComplete( void* pUserData );
-        virtual void AddRef() {FileHandler::AddRef();}
-        virtual void Release() {FileHandler::Release();}
+    //
+    // Implement FileHandler interface.
+    //
+    virtual void LoadFile(const char *filename,
+                          FileHandler::LoadFileCallback *pCallback,
+                          void *pUserData,
+                          GameMemoryAllocator heap);
 
-        //
-        // Specify which Choreo inventory section to load the file into.
-        //
-        void SetSectionName( const char* sectionName );
-        const char* GetSectionName() { return( mcSectionName ); }
+    virtual void LoadFileSync(const char *filename);
 
-    private:
-        enum ChoreoFileState
-        {
-            NONE,
-            OPENFILE,
-                READDATA,
-                DONE
-        };
-        // Async Load State.
-        //
-        ChoreoFileState m_state;
-        // Data buffer.
-        //
-        char* mScriptString;
-        
-        // Prevent wasteful constructor creation.
-        ChoreoFileHandler( const ChoreoFileHandler& Choreofilehandler );
-        ChoreoFileHandler& operator=( const ChoreoFileHandler& Choreofilehandler );
+    //
+    // Implement IRadFileCompletionCallback interface.
+    //
+    virtual void OnFileOperationsComplete(void *pUserData);
 
-        char mcSectionName[32];
-        IRadFile* mpScriptFile;
+    virtual void AddRef() { FileHandler::AddRef(); }
+
+    virtual void Release() { FileHandler::Release(); }
+
+    //
+    // Specify which Choreo inventory section to load the file into.
+    //
+    void SetSectionName(const char *sectionName);
+
+    const char *GetSectionName() { return (mcSectionName); }
+
+private:
+    enum ChoreoFileState {
+        NONE,
+        OPENFILE,
+        READDATA,
+        DONE
+    };
+    // Async Load State.
+    //
+    ChoreoFileState m_state;
+    // Data buffer.
+    //
+    char *mScriptString;
+
+    // Prevent wasteful constructor creation.
+    ChoreoFileHandler(const ChoreoFileHandler &Choreofilehandler);
+
+    ChoreoFileHandler &operator=(const ChoreoFileHandler &Choreofilehandler);
+
+    char mcSectionName[32];
+    IRadFile *mpScriptFile;
 };
 
 

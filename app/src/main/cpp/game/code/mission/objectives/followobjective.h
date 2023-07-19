@@ -23,7 +23,9 @@
 //========================================
 
 class Vehicle;
+
 class Locator;
+
 class AnimatedIcon;
 
 //=============================================================================
@@ -32,29 +34,32 @@ class AnimatedIcon;
 //
 //=============================================================================
 
-class FollowObjective : public MissionObjective
-{
+class FollowObjective : public MissionObjective {
 public:
     FollowObjective();
+
     virtual ~FollowObjective();
 
-    Vehicle* GetTargetVehicle() { return( mFollowVehicle ); }
-    void SetTargetVehicle(Vehicle* pVehicle) { mFollowVehicle = pVehicle; }
+    Vehicle *GetTargetVehicle() { return (mFollowVehicle); }
+
+    void SetTargetVehicle(Vehicle *pVehicle) { mFollowVehicle = pVehicle; }
 
 /*
-    Locator* GetDestinationLocator() { return( mDestinationLocator ); }
-    void SetDestinationLocator( Locator* pLocator ) { mDestinationLocator = pLocator; }
+    Locator* GetDestinationLocator() { return(mDestinationLocator); }
+    void SetDestinationLocator(Locator* pLocator) { mDestinationLocator = pLocator; }
 */
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
 protected:
     virtual void OnInitialize();
+
     virtual void OnFinalize();
-    virtual void OnUpdate( unsigned int elapsedTime );
+
+    virtual void OnUpdate(unsigned int elapsedTime);
 
 private:
-    Vehicle* mFollowVehicle;
-    AnimatedIcon* mAnimatedIcon;
+    Vehicle *mFollowVehicle;
+    AnimatedIcon *mAnimatedIcon;
 //    Locator* mDestinationLocator;
 };
 

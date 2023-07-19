@@ -24,8 +24,7 @@
 struct AnimSoundData;
 struct radSoundVector;
 
-namespace ActionButton
-{
+namespace ActionButton {
     class AnimSwitch;
 };
 
@@ -35,34 +34,39 @@ namespace ActionButton
 //
 //=============================================================================
 
-class PlatformSoundPlayer : public PositionCarrier
-{
-    public:
-        PlatformSoundPlayer();
-        virtual ~PlatformSoundPlayer();
+class PlatformSoundPlayer : public PositionCarrier {
+public:
+    PlatformSoundPlayer();
 
-        bool IsActive() { return( m_identity != NULL ); }
-        bool UsesObject( ActionButton::AnimSwitch* soundObject ) { return( soundObject == m_identity ); }
-        void Activate( AnimSoundData* soundData );
-        void Deactivate();
+    virtual ~PlatformSoundPlayer();
 
-        void ServiceOncePerFrame();
+    bool IsActive() { return (m_identity != NULL); }
 
-        //
-        // PositionCarrier functions
-        //
-        void GetPosition( radSoundVector& position );
-        void GetVelocity( radSoundVector& velocity );
+    bool UsesObject(ActionButton::AnimSwitch *soundObject) { return (soundObject == m_identity); }
 
-    private:
-        //Prevent wasteful constructor creation.
-        PlatformSoundPlayer( const PlatformSoundPlayer& platformsoundplayer );
-        PlatformSoundPlayer& operator=( const PlatformSoundPlayer& platformsoundplayer );
+    void Activate(AnimSoundData *soundData);
 
-        tPose::Joint* m_joint;
-        ActionButton::AnimSwitch* m_identity;
+    void Deactivate();
 
-        PositionalSoundPlayer m_player;
+    void ServiceOncePerFrame();
+
+    //
+    // PositionCarrier functions
+    //
+    void GetPosition(radSoundVector &position);
+
+    void GetVelocity(radSoundVector &velocity);
+
+private:
+    //Prevent wasteful constructor creation.
+    PlatformSoundPlayer(const PlatformSoundPlayer &platformsoundplayer);
+
+    PlatformSoundPlayer &operator=(const PlatformSoundPlayer &platformsoundplayer);
+
+    tPose::Joint *m_joint;
+    ActionButton::AnimSwitch *m_identity;
+
+    PositionalSoundPlayer m_player;
 };
 
 //*****************************************************************************

@@ -30,25 +30,27 @@ class CGuiMenu;
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenLanguage : public CGuiScreen
-{
+class CGuiScreenLanguage : public CGuiScreen {
 public:
-    CGuiScreenLanguage( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenLanguage(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenLanguage();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    virtual CGuiMenu* HasMenu() { return m_pMenu; }
+    virtual CGuiMenu *HasMenu() { return m_pMenu; }
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
-    CGuiMenu* m_pMenu;
+    CGuiMenu *m_pMenu;
 
 };
 

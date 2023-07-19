@@ -28,28 +28,31 @@
 //
 //=============================================================================
 
-class DamageCondition : public VehicleCondition
-{
+class DamageCondition : public VehicleCondition {
 public:
     DamageCondition();
+
     virtual ~DamageCondition();
 
-    void SetMinValue( float value ) { mMinValue = value; }
+    void SetMinValue(float value) { mMinValue = value; }
+
     float GetMinValue() { return mMinValue; }
 
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
     bool IsClose();
 
 protected:
     virtual void OnInitialize();
+
     virtual void OnFinalize();
 
 private:
 
     //Prevent wasteful constructor creation.
-    DamageCondition( const DamageCondition& damagecondition );
-    DamageCondition& operator=( const DamageCondition& damagecondition );
+    DamageCondition(const DamageCondition &damagecondition);
+
+    DamageCondition &operator=(const DamageCondition &damagecondition);
 
     float mMinValue;
 

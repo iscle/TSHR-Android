@@ -33,43 +33,48 @@
 //
 //=============================================================================
 class FrontEndContext : public Context,
-                        public LoadingManager::ProcessRequestsCallback
-{
-    public:
+                        public LoadingManager::ProcessRequestsCallback {
+public:
 
-        // Static Methods for accessing this singleton.
-        static FrontEndContext* GetInstance();
-        
-    protected:
+    // Static Methods for accessing this singleton.
+    static FrontEndContext *GetInstance();
 
-        virtual void OnStart( ContextEnum previousContext );
-        virtual void OnStop( ContextEnum nextContext );
-        virtual void OnUpdate( unsigned int elapsedTime );
-        
-        virtual void OnSuspend();
-        virtual void OnResume();
+protected:
 
-        virtual void OnHandleEvent( EventEnum id, void* pEventData );
-        virtual void OnProcessRequestsComplete( void* pUserData );   
+    virtual void OnStart(ContextEnum previousContext);
 
-    private:
+    virtual void OnStop(ContextEnum nextContext);
 
-        void StartFrontEnd( unsigned int initialScreen );
+    virtual void OnUpdate(unsigned int elapsedTime);
 
-        // constructor and destructor are protected to force singleton implementation
-        FrontEndContext();
-        virtual ~FrontEndContext();
+    virtual void OnSuspend();
 
-        // Declared but not defined to prevent copying and assignment.
-        FrontEndContext( const FrontEndContext& );
-        FrontEndContext& operator=( const FrontEndContext& );
+    virtual void OnResume();
 
-        // Pointer to the one and only instance of this singleton.
-        static FrontEndContext* spInstance;
+    virtual void OnHandleEvent(EventEnum id, void *pEventData);
+
+    virtual void OnProcessRequestsComplete(void *pUserData);
+
+private:
+
+    void StartFrontEnd(unsigned int initialScreen);
+
+    // constructor and destructor are protected to force singleton implementation
+    FrontEndContext();
+
+    virtual ~FrontEndContext();
+
+    // Declared but not defined to prevent copying and assignment.
+    FrontEndContext(const FrontEndContext &);
+
+    FrontEndContext &operator=(const FrontEndContext &);
+
+    // Pointer to the one and only instance of this singleton.
+    static FrontEndContext *spInstance;
 };
 
 // A little syntactic sugar for getting at this singleton.
-inline FrontEndContext* GetFrontEndContext() { return( FrontEndContext::GetInstance() ); }
+inline FrontEndContext *GetFrontEndContext() { return (FrontEndContext::GetInstance()); }
 
 
 #endif // FRONTENDCONTEXT_H

@@ -29,8 +29,7 @@
 //===========================================================================
 class CGuiMenu;
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Screen;
 };
 
@@ -38,31 +37,33 @@ namespace Scrooby
 // Interface Definitions
 //===========================================================================
 class CGuiScreenPauseSettings : public CGuiScreen,
-                                public ICheatEnteredCallback
-{
+                                public ICheatEnteredCallback {
 public:
-    CGuiScreenPauseSettings( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenPauseSettings(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenPauseSettings();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    virtual CGuiMenu* HasMenu() { return m_pMenu; }
-    virtual void OnCheatEntered( eCheatID cheatID, bool isEnabled );
+    virtual CGuiMenu *HasMenu() { return m_pMenu; }
+
+    virtual void OnCheatEntered(eCheatID cheatID, bool isEnabled);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
     void UpdateCameraSelections();
 
-    CGuiMenu* m_pMenu;
+    CGuiMenu *m_pMenu;
 
-    enum eCameraSelectionMode
-    {
+    enum eCameraSelectionMode {
         CAMERA_SELECTION_NOT_AVAILABLE = -1,
 
         CAMERA_SELECTION_FOR_DRIVING,
@@ -73,8 +74,8 @@ private:
 
     eCameraSelectionMode m_currentCameraSelectionMode;
 
-    SuperCam::Type* m_cameraSelections[ NUM_CAMERA_SELECTION_MODES ];
-    int m_numCameraSelections[ NUM_CAMERA_SELECTION_MODES ];
+    SuperCam::Type *m_cameraSelections[NUM_CAMERA_SELECTION_MODES];
+    int m_numCameraSelections[NUM_CAMERA_SELECTION_MODES];
 
 };
 

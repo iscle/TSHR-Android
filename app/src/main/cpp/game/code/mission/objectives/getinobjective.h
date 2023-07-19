@@ -22,7 +22,9 @@
 // Forward References
 //========================================
 class Vehicle;
+
 class AnimatedIcon;
+
 class tName;
 
 //=============================================================================
@@ -31,34 +33,38 @@ class tName;
 //
 //=============================================================================
 
-class GetInObjective : public MissionObjective, public IHudMapIconLocator
-{
+class GetInObjective : public MissionObjective, public IHudMapIconLocator {
 public:
     GetInObjective();
+
     virtual ~GetInObjective();
-    
+
     //void SetTargetVehicle(Vehicle* pVehicle) { mGetInVehicle = pVehicle; };
 
-    void SetStrict( const char* name );
+    void SetStrict(const char *name);
 
     //Interface for IHudMapIconLocator
-    void GetPosition( rmt::Vector* currentLoc );
-    void GetHeading( rmt::Vector* heading );
+    void GetPosition(rmt::Vector *currentLoc);
+
+    void GetHeading(rmt::Vector *heading);
 
 protected:
     virtual void OnInitialize();
+
     virtual void OnFinalize();
-    virtual void OnUpdate( unsigned int elapsedTime );
-    
+
+    virtual void OnUpdate(unsigned int elapsedTime);
+
 private:
     int mHUDID;
-    AnimatedIcon* mAnimatedIcon;
+    AnimatedIcon *mAnimatedIcon;
     bool mStrict;
     tUID mVehicleUID;
 
     //Prevent wasteful constructor creation.
-    GetInObjective( const GetInObjective& getinobjective );
-    GetInObjective& operator=( const GetInObjective& getinobjective );
+    GetInObjective(const GetInObjective &getinobjective);
+
+    GetInObjective &operator=(const GetInObjective &getinobjective);
 };
 
 

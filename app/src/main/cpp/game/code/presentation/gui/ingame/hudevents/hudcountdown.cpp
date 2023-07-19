@@ -37,27 +37,25 @@
 // Public Member Functions
 //===========================================================================
 
-HudCountDown::HudCountDown( Scrooby::Page* pPage )
-:   HudEventHandler( pPage->GetGroup( "CountDown" ) ),
-    m_countDownMessage( NULL ),
-    m_missionStage( NULL ),
-    m_currentSequenceUnit( NULL ),
-    m_nextSequenceIndex( 0 ),
-    m_InputDisablePending( false ),
-    m_isDialogTriggerPending( false )
-{
+HudCountDown::HudCountDown(Scrooby::Page *pPage)
+        : HudEventHandler(pPage->GetGroup("CountDown")),
+          m_countDownMessage(NULL),
+          m_missionStage(NULL),
+          m_currentSequenceUnit(NULL),
+          m_nextSequenceIndex(0),
+          m_InputDisablePending(false),
+          m_isDialogTriggerPending(false) {
 //    const float BITMAP_TEXT_SPACING = 0.8f;
 
-    rAssert( pPage != NULL );
-    m_countDownMessage = pPage->GetSprite( "CountDown" );
-    rAssert( m_countDownMessage != NULL );
-    m_countDownMessage->SetSpriteMode( Scrooby::SPRITE_BITMAP_TEXT );
-    m_countDownMessage->CreateBitmapTextBuffer( 32 );
-//    m_countDownMessage->SetBitmapTextSpacing( BITMAP_TEXT_SPACING );
+    rAssert(pPage != NULL);
+    m_countDownMessage = pPage->GetSprite("CountDown");
+    rAssert(m_countDownMessage != NULL);
+    m_countDownMessage->SetSpriteMode(Scrooby::SPRITE_BITMAP_TEXT);
+    m_countDownMessage->CreateBitmapTextBuffer(32);
+//    m_countDownMessage->SetBitmapTextSpacing(BITMAP_TEXT_SPACING);
 }
 
-HudCountDown::~HudCountDown()
-{
+HudCountDown::~HudCountDown() {
 }
 
 //=============================================================================
@@ -70,8 +68,7 @@ HudCountDown::~HudCountDown()
 // Return:      void 
 //
 //=============================================================================
-void HudCountDown::OnStart()
-{
+void HudCountDown::OnStart() {
     Parent::OnStart();
 }
 
@@ -86,16 +83,14 @@ void HudCountDown::OnStart()
 // Return:      void 
 //
 //=============================================================================
-void HudCountDown::QueueDisableInput()
-{
+void HudCountDown::QueueDisableInput() {
     m_InputDisablePending = true;
 }
 
 void
-HudCountDown::Start()
-{
-    Character* npcPtr;
-    const char* modelName;
+HudCountDown::Start() {
+    Character *npcPtr;
+    const char *modelName;
 
     this->OnStart();
 
@@ -106,14 +101,13 @@ HudCountDown::Start()
 
     // get dialog event data and queue it up for triggering on the next update
     //
-    BonusMissionInfo* bonusMissionInfo = const_cast<BonusMissionInfo*>( GetGameplayManager()->GetCurrentBonusMissionInfo() );
-    if( bonusMissionInfo != NULL )
-    {
+    BonusMissionInfo *bonusMissionInfo = const_cast<BonusMissionInfo *>(GetGameplayManager()->GetCurrentBonusMissionInfo());
+    if (bonusMissionInfo != NULL) {
         npcPtr = bonusMissionInfo->GetNPC();
-        rAssert( npcPtr != NULL );
-        modelName = GetCharacterManager()->GetModelName( npcPtr );
+        rAssert(npcPtr != NULL);
+        modelName = GetCharacterManager()->GetModelName(npcPtr);
 
-        m_dialogData.charUID1 = tEntity::MakeUID( modelName );
+        m_dialogData.charUID1 = tEntity::MakeUID(modelName);
         m_dialogData.charUID2 = m_missionStage->GetCountdownSecondSpeakerUID();
         m_dialogData.dialogName = m_missionStage->GetCountdownDialogID();
 
@@ -124,39 +118,34 @@ HudCountDown::Start()
 }
 
 void
-HudCountDown::Stop()
-{
+HudCountDown::Stop() {
     m_missionStage = NULL;
     m_currentSequenceUnit = NULL;
 
     // enable the controller - yes i know this is not an animated cam
     //
-    if( GetInputManager()->GetGameState() == Input::ACTIVE_ANIM_CAM )
-    {
-        InputManager::GetInstance()->SetGameState( Input::DEACTIVE_ANIM_CAM );
+    if (GetInputManager()->GetGameState() == Input::ACTIVE_ANIM_CAM) {
+        InputManager::GetInstance()->SetGameState(Input::DEACTIVE_ANIM_CAM);
     }
 
     this->OnStop();
 }
 
 void
-HudCountDown::Update( float elapsedTime )
-{
-    if( m_InputDisablePending )
-    {
+HudCountDown::Update(float elapsedTime) {
+    if (m_InputDisablePending) {
         // disable the controller - yes i know this is not an animated cam
         //
-        InputManager::GetInstance()->SetGameState( Input::ACTIVE_ANIM_CAM );
+        InputManager::GetInstance()->SetGameState(Input::ACTIVE_ANIM_CAM);
         m_InputDisablePending = false;
     }
 
-    if( m_currentState == STATE_RUNNING )
-    {
-        if( m_isDialogTriggerPending )
-        {
+    if (m_currentState == STATE_RUNNING) {
+        if (m_isDialogTriggerPending) {
             m_isDialogTriggerPending = false;
 
-            GetEventManager()->TriggerEvent( EVENT_IN_GAMEPLAY_CONVERSATION, static_cast<void*>( &m_dialogData ) );
+            GetEventManager()->TriggerEvent(EVENT_IN_GAMEPLAY_CONVERSATION,
+                                            static_cast<void *>(&m_dialogData));
         }
 
 #ifdef RAD_WIN32
@@ -167,37 +156,33 @@ HudCountDown::Update( float elapsedTime )
         static float COUNT_DOWN_THRESHOLD_SCALE = 2.5f;
         static int COUNT_DOWN_ZOOM_RATE = 2;
 
-        if( m_currentSequenceUnit != NULL )
-        {
-            bool done = GuiSFX::Flash( m_countDownMessage,
-                                       m_elapsedTime,
-                                       (float)m_currentSequenceUnit->durationTime,
-                                       COUNT_DOWN_ZOOM_RATE,
-                                       COUNT_DOWN_MAX_SCALE,
-                                       COUNT_DOWN_THRESHOLD_SCALE );
-            if( done )
-            {
+        if (m_currentSequenceUnit != NULL) {
+            bool done = GuiSFX::Flash(m_countDownMessage,
+                                      m_elapsedTime,
+                                      (float) m_currentSequenceUnit->durationTime,
+                                      COUNT_DOWN_ZOOM_RATE,
+                                      COUNT_DOWN_MAX_SCALE,
+                                      COUNT_DOWN_THRESHOLD_SCALE);
+            if (done) {
                 m_elapsedTime = 0;
 
                 this->GetNextSequenceUnit();
             }
-        }
-        else
-        {
+        } else {
             // countdown finished
             //
             this->Stop();
 
             // start the mission!
             //
-            GetEventManager()->TriggerEvent( EVENT_GUI_MISSION_START );
+            GetEventManager()->TriggerEvent(EVENT_GUI_MISSION_START);
 
             //
             // Take all the AI cars out of the limbo state
             //
-            MissionStage* stage = GetGameplayManager()->GetCurrentMission()->GetCurrentStage();
-            rAssert( stage != NULL );
-            stage->PutAllAisInLimbo( false );
+            MissionStage *stage = GetGameplayManager()->GetCurrentMission()->GetCurrentStage();
+            rAssert(stage != NULL);
+            stage->PutAllAisInLimbo(false);
         }
 
         m_elapsedTime += elapsedTime;
@@ -205,26 +190,21 @@ HudCountDown::Update( float elapsedTime )
 }
 
 void
-HudCountDown::GetNextSequenceUnit()
-{
-    rAssert( m_missionStage != NULL );
-    m_currentSequenceUnit = m_missionStage->GetCountdownSequenceUnit( m_nextSequenceIndex );
+HudCountDown::GetNextSequenceUnit() {
+    rAssert(m_missionStage != NULL);
+    m_currentSequenceUnit = m_missionStage->GetCountdownSequenceUnit(m_nextSequenceIndex);
 
-    if( m_currentSequenceUnit != NULL )
-    {
+    if (m_currentSequenceUnit != NULL) {
         // set text message
         //
-        rAssert( m_countDownMessage != NULL );
-        m_countDownMessage->SetAlpha( 0.0f );
+        rAssert(m_countDownMessage != NULL);
+        m_countDownMessage->SetAlpha(0.0f);
 
-        P3D_UNICODE* text = GetTextBibleString( m_currentSequenceUnit->textID );
-        if( text != NULL )
-        {
-            m_countDownMessage->SetBitmapText( text );
-        }
-        else
-        {
-            m_countDownMessage->SetBitmapText( "" );
+        P3D_UNICODE *text = GetTextBibleString(m_currentSequenceUnit->textID);
+        if (text != NULL) {
+            m_countDownMessage->SetBitmapText(text);
+        } else {
+            m_countDownMessage->SetBitmapText("");
         }
     }
 

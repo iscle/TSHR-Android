@@ -7,33 +7,40 @@
 class Vehicle;
 
 class AiVehicleController
-:
-public VehicleController
-{
+        :
+                public VehicleController {
 public:
-	AiVehicleController( Vehicle* pVehicle );
-	virtual ~AiVehicleController( void );
+    AiVehicleController(Vehicle *pVehicle);
 
-    virtual void Update( float timeins );
+    virtual ~AiVehicleController(void);
 
-	virtual float GetGas( void ) const;
-    virtual float GetThrottle( void ) const;
-	virtual float GetBrake( void ) const;
-    virtual float GetSteering( bool& isWheel ) const;
-    
-    virtual float GetSteerLeft( void ) const;
-    virtual float GetSteerRight( void ) const;
+    virtual void Update(float timeins);
 
-	virtual float GetHandBrake( void ) const;
-	virtual float GetReverse( void ) const;
-	virtual float GetHorn( void ) const;
+    virtual float GetGas(void) const;
+
+    virtual float GetThrottle(void) const;
+
+    virtual float GetBrake(void) const;
+
+    virtual float GetSteering(bool &isWheel) const;
+
+    virtual float GetSteerLeft(void) const;
+
+    virtual float GetSteerRight(void) const;
+
+    virtual float GetHandBrake(void) const;
+
+    virtual float GetReverse(void) const;
+
+    virtual float GetHorn(void) const;
+
 protected:
-	Button mGas;
-	Button mBrake;
+    Button mGas;
+    Button mBrake;
     Button mSteering;
-	Button mHandBrake;
-	Button mReverse;
-	Button mHorn;
+    Button mHandBrake;
+    Button mReverse;
+    Button mHorn;
 private:
 };
 

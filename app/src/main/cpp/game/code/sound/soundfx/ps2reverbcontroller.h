@@ -29,24 +29,26 @@ struct IRadSoundEffectPs2;
 //
 //=============================================================================
 
-class PS2ReverbController : public ReverbController
-{
-    public:
-        PS2ReverbController();
-        virtual ~PS2ReverbController();
+class PS2ReverbController : public ReverbController {
+public:
+    PS2ReverbController();
 
-        void SetReverbOn( reverbSettings* settings );
-        void SetReverbOff();
+    virtual ~PS2ReverbController();
 
-    private:
-        //Prevent wasteful constructor creation.
-        PS2ReverbController( const PS2ReverbController& original );
-        PS2ReverbController& operator=( const PS2ReverbController& rhs );
+    void SetReverbOn(reverbSettings *settings);
 
-        //
-        // Radsound's PS2 reverb interface
-        //
-        IRadSoundEffectPs2* m_reverbInterface;
+    void SetReverbOff();
+
+private:
+    //Prevent wasteful constructor creation.
+    PS2ReverbController(const PS2ReverbController &original);
+
+    PS2ReverbController &operator=(const PS2ReverbController &rhs);
+
+    //
+    // Radsound's PS2 reverb interface
+    //
+    IRadSoundEffectPs2 *m_reverbInterface;
 };
 
 

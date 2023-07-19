@@ -1,8 +1,7 @@
 #ifndef VEHICLE_ENUM
 #define VEHICLE_ENUM
 
-namespace VehicleEnum
-{
+namespace VehicleEnum {
     /*
     enum VehicleID
     {
@@ -34,8 +33,7 @@ namespace VehicleEnum
     // new enum list with enums matching new names:
     // ordered so that old numeric values will work
 
-    enum VehicleID
-    {
+    enum VehicleID {
         BART_V = 0,                     // bart_v   0
         APU_V,                          // apu_v    1
         SNAKE_V,                        // snake_v  2
@@ -55,7 +53,7 @@ namespace VehicleEnum
         ZOMBI_V,                        // zombi_v  16
         MUNSTERS_NOTYETIN,
         HUMMER2_NOTYETIN,
-        
+
         CVAN,                           // cVan     19
         COMPACTA,                       // compactA 20
 
@@ -94,7 +92,7 @@ namespace VehicleEnum
         CNERD,      // 45
 
         FRINK_V,    // 46
-        
+
         // some more new cars: dec 18, 2002
         CMILK,      // 47
         CDONUT,     // 48
@@ -110,7 +108,7 @@ namespace VehicleEnum
         PLOWK_V,    // 58
         SCORP_V,    // 59
         WILLI_V,    // 60
-        
+
         // new traffic cars: Jan 11, 2002
         SEDANA,     // 61
         SEDANB,     // 62
@@ -124,7 +122,7 @@ namespace VehicleEnum
         // new Driver cars: Jan 11, 2002
         LISA_V,     // 67
         KRUST_V,    // 68
-                
+
         // new Traffic cars: Jan 13, 2002
         COFFIN,     // 69
         HALLO,      // 70
@@ -158,17 +156,14 @@ namespace VehicleEnum
         // new traffic car, april 2 2003
         GLASTRUC,
         CFIRE_V,
-        
+
         // new chase car, may 23, 2003 - good grief
         CBONE,      // 93
         REDBRICK,   // 94
-        
-        NUM_VEHICLES,   
+
+        NUM_VEHICLES,
         INVALID
     };
-
-
-
 
 
 }

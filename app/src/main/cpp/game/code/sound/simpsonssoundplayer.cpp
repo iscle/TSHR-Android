@@ -41,9 +41,9 @@
 unsigned int SimpsonsSoundPlayer::s_playersCreated = 0;
 unsigned int SimpsonsSoundPlayer::s_clipPlayersInUse = 0;
 unsigned int SimpsonsSoundPlayer::s_streamPlayersInUse = 0;
-Sound::daSoundResourceManager* SimpsonsSoundPlayer::s_resourceManager = NULL;
-Sound::daSoundPlayerManager* SimpsonsSoundPlayer::s_playerManager = NULL;
-SoundLoader* SimpsonsSoundPlayer::s_soundLoader = NULL;
+Sound::daSoundResourceManager *SimpsonsSoundPlayer::s_resourceManager = NULL;
+Sound::daSoundPlayerManager *SimpsonsSoundPlayer::s_playerManager = NULL;
+SoundLoader *SimpsonsSoundPlayer::s_soundLoader = NULL;
 
 //
 // Limits on the number of players that can be playing clips/streams at once.
@@ -69,26 +69,21 @@ static const unsigned int s_maxActiveStreamPlayersAllowed = 8;
 //
 //==============================================================================
 SimpsonsSoundPlayer::SimpsonsSoundPlayer() :
-    m_playa( NULL ),
-    m_callback( NULL )
-    
-{
+        m_playa(NULL),
+        m_callback(NULL) {
     m_Type = Type_NonPositional;
     //
     // Get resource manager ptr and sound loader ptr if that hasn't been done yet
     //
-    if( s_resourceManager == NULL )
-    {
+    if (s_resourceManager == NULL) {
         s_resourceManager = Sound::daSoundRenderingManagerGet()->GetResourceManager();
     }
 
-    if( s_playerManager == NULL )
-    {
+    if (s_playerManager == NULL) {
         s_playerManager = Sound::daSoundRenderingManagerGet()->GetPlayerManager();
     }
 
-    if( s_soundLoader == NULL )
-    {
+    if (s_soundLoader == NULL) {
         s_soundLoader = SoundManager::GetInstance()->GetSoundLoader();
     }
 
@@ -108,19 +103,17 @@ SimpsonsSoundPlayer::SimpsonsSoundPlayer() :
 // Return:      N/A.
 //
 //==============================================================================
-SimpsonsSoundPlayer::~SimpsonsSoundPlayer()
-{
+SimpsonsSoundPlayer::~SimpsonsSoundPlayer() {
     //
     // Update statistics
     //
     --s_playersCreated;
 
-    if( m_callback != NULL )
-    {
+    if (m_callback != NULL) {
         m_callback->CancelGameCallbackAndRelease();
     }
 
-    rAssert( m_playa == NULL );
+    rAssert(m_playa == NULL);
 }
 
 //=============================================================================
@@ -134,10 +127,9 @@ SimpsonsSoundPlayer::~SimpsonsSoundPlayer()
 // Return:      true if sound could be played, false otherwise
 //
 //=============================================================================
-bool SimpsonsSoundPlayer::PlaySound( const char* resourceName,
-                                     SimpsonsSoundPlayerCallback* callback )
-{
-    return( PlaySound( ::radMakeKey32( resourceName ), callback ) );
+bool SimpsonsSoundPlayer::PlaySound(const char *resourceName,
+                                    SimpsonsSoundPlayerCallback *callback) {
+    return (PlaySound(::radMakeKey32(resourceName), callback));
 }
 
 
@@ -152,18 +144,16 @@ bool SimpsonsSoundPlayer::PlaySound( const char* resourceName,
 // Return:      true if sound could be played, false otherwise 
 //
 //=============================================================================
-bool SimpsonsSoundPlayer::PlayResource( IDaSoundResource* resource, 
-                                        SimpsonsSoundPlayerCallback* callback /* = NULL  */ )
-{
+bool SimpsonsSoundPlayer::PlayResource(IDaSoundResource *resource,
+                                       SimpsonsSoundPlayerCallback *callback /* = NULL  */) {
     bool canPlay;
 
-    canPlay = QueueSound( resource, callback );
-    if( canPlay )
-    {
+    canPlay = QueueSound(resource, callback);
+    if (canPlay) {
         PlayQueuedSound();
     }
 
-    return( canPlay );
+    return (canPlay);
 }
 
 //=============================================================================
@@ -177,25 +167,21 @@ bool SimpsonsSoundPlayer::PlayResource( IDaSoundResource* resource,
 // Return:      true if sound could be played, false otherwise 
 //
 //=============================================================================
-bool SimpsonsSoundPlayer::PlaySound( Sound::daResourceKey resourceKey,
-                                     SimpsonsSoundPlayerCallback* callback )
-{
-    IDaSoundResource* resource;
+bool SimpsonsSoundPlayer::PlaySound(Sound::daResourceKey resourceKey,
+                                    SimpsonsSoundPlayerCallback *callback) {
+    IDaSoundResource *resource;
     bool retVal;
 
-    resource = s_resourceManager->FindResource( resourceKey );
+    resource = s_resourceManager->FindResource(resourceKey);
 
-    if( resource != NULL )
-    {
-        retVal = PlayResource( resource, callback );
-    }
-    else
-    {
-        rDebugString( "Tried to play missing sound resource\n" );
+    if (resource != NULL) {
+        retVal = PlayResource(resource, callback);
+    } else {
+        rDebugString("Tried to play missing sound resource\n");
         retVal = false;
     }
 
-    return( retVal );
+    return (retVal);
 }
 
 //=============================================================================
@@ -211,19 +197,15 @@ bool SimpsonsSoundPlayer::PlaySound( Sound::daResourceKey resourceKey,
 // Return:      true if sound could be played, false otherwise 
 //
 //=============================================================================
-bool SimpsonsSoundPlayer::QueueSound( radKey32 resourceID, 
-                                      SimpsonsSoundPlayerCallback* callback )
-{
-    IDaSoundResource* resource = s_resourceManager->FindResource( resourceID );
+bool SimpsonsSoundPlayer::QueueSound(radKey32 resourceID,
+                                     SimpsonsSoundPlayerCallback *callback) {
+    IDaSoundResource *resource = s_resourceManager->FindResource(resourceID);
 
-    if( resource != NULL )
-    {
-        return( QueueSound( resource, callback ) );
-    }
-    else
-    {
-        rDebugPrintf( "Couldn't play sound resource ID %d\n", resourceID );
-        return( false );
+    if (resource != NULL) {
+        return (QueueSound(resource, callback));
+    } else {
+        rDebugPrintf("Couldn't play sound resource ID %d\n", resourceID);
+        return (false);
     }
 }
 
@@ -240,66 +222,54 @@ bool SimpsonsSoundPlayer::QueueSound( radKey32 resourceID,
 // Return:      true if sound could be played, false otherwise 
 //
 //=============================================================================
-bool SimpsonsSoundPlayer::QueueSound( IDaSoundResource* resource,
-                                      SimpsonsSoundPlayerCallback* callback )
-{
-    if( m_playa != NULL )
-    {
-        rDebugString( "Dropped sound, player busy\n" );
-        return( false );
+bool SimpsonsSoundPlayer::QueueSound(IDaSoundResource *resource,
+                                     SimpsonsSoundPlayerCallback *callback) {
+    if (m_playa != NULL) {
+        rDebugString("Dropped sound, player busy\n");
+        return (false);
     }
 
     //
     // Make sure we haven't maxed our limit on playback of this type of
     // resource
     //
-    if( resource->GetType() == IDaSoundResource::CLIP )
-    {
-        if( s_clipPlayersInUse < s_maxActiveClipPlayersAllowed )
-        {
+    if (resource->GetType() == IDaSoundResource::CLIP) {
+        if (s_clipPlayersInUse < s_maxActiveClipPlayersAllowed) {
             ++s_clipPlayersInUse;
+        } else {
+            rAssertMsg(false, "Reached maximum allowable number of clip players\n");
+            return (false);
         }
-        else
-        {
-            rAssertMsg( false, "Reached maximum allowable number of clip players\n" );
-            return( false );
-        }
-    }
-    else
-    {
-        rAssert( resource->GetType() == IDaSoundResource::STREAM );
+    } else {
+        rAssert(resource->GetType() == IDaSoundResource::STREAM);
 
-        if( s_streamPlayersInUse < s_maxActiveStreamPlayersAllowed )
-        {
+        if (s_streamPlayersInUse < s_maxActiveStreamPlayersAllowed) {
             ++s_streamPlayersInUse;
-        }
-        else
-        {
-            rAssertMsg( false, "Reached maximum allowable number of stream players\n" );
-            return( false );
+        } else {
+            rAssertMsg(false, "Reached maximum allowable number of stream players\n");
+            return (false);
         }
     }
 
-    s_playerManager->CaptureFreePlayer( &m_playa, 
-                                        resource,
-                                        Type_Positional == m_Type );
-    rAssert( m_playa != NULL );
+    s_playerManager->CaptureFreePlayer(&m_playa,
+                                       resource,
+                                       Type_Positional == m_Type);
+    rAssert(m_playa != NULL);
 
     //
     // Reset trim, just to be safe
     //
-    m_playa->SetExternalTrim( 1.0f );
+    m_playa->SetExternalTrim(1.0f);
 
     //
     // Create a callback object and point it toward whoever wants the callback
     //
-    if( ( callback != NULL ) && ( m_callback == NULL ) )
-    {
-        m_callback = new(GMA_TEMP) SoundRenderingPlayerCallback( *this, callback );
-        m_playa->RegisterSoundPlayerStateCallback( m_callback, NULL );
+    if ((callback != NULL) && (m_callback == NULL)) {
+        m_callback = new(GMA_TEMP) SoundRenderingPlayerCallback(*this, callback);
+        m_playa->RegisterSoundPlayerStateCallback(m_callback, NULL);
     }
 
-    return( true );
+    return (true);
 }
 
 //=============================================================================
@@ -313,17 +283,15 @@ bool SimpsonsSoundPlayer::QueueSound( IDaSoundResource* resource,
 // Return:      void 
 //
 //=============================================================================
-void SimpsonsSoundPlayer::PlayQueuedSound( SimpsonsSoundPlayerCallback* callback )
-{
-    rAssert( m_playa != NULL );
+void SimpsonsSoundPlayer::PlayQueuedSound(SimpsonsSoundPlayerCallback *callback) {
+    rAssert(m_playa != NULL);
 
     //
     // Play should not get stuck on pauses.  If this causes problems,
     // then I'll have to figure out how to make 100% sure that all
     // paused streams (e.g. NIS) get unpaused in a proper fashion
     //
-    if( m_playa->IsPaused() )
-    {
+    if (m_playa->IsPaused()) {
         m_playa->UberContinue();
     }
 
@@ -333,10 +301,9 @@ void SimpsonsSoundPlayer::PlayQueuedSound( SimpsonsSoundPlayerCallback* callback
     // If requested, create a callback object and point it toward whoever 
     // wants the callback
     //
-    if( m_callback == NULL )
-    {
-        m_callback = new(GMA_TEMP) SoundRenderingPlayerCallback( *this, callback );
-        m_playa->RegisterSoundPlayerStateCallback( m_callback, NULL );
+    if (m_callback == NULL) {
+        m_callback = new(GMA_TEMP) SoundRenderingPlayerCallback(*this, callback);
+        m_playa->RegisterSoundPlayerStateCallback(m_callback, NULL);
     }
 }
 
@@ -351,8 +318,7 @@ void SimpsonsSoundPlayer::PlayQueuedSound( SimpsonsSoundPlayerCallback* callback
 // Return:      void 
 //
 //=============================================================================
-void SimpsonsSoundPlayer::OnPlaybackComplete()
-{
+void SimpsonsSoundPlayer::OnPlaybackComplete() {
     dumpSoundPlayer();
 }
 
@@ -366,31 +332,27 @@ void SimpsonsSoundPlayer::OnPlaybackComplete()
 // Return:      void 
 //
 //=============================================================================
-void SimpsonsSoundPlayer::Stop()
-{
-    if( m_playa != NULL )
-    {
+void SimpsonsSoundPlayer::Stop() {
+    if (m_playa != NULL) {
         //
         // Stop() doesn't seem to play well with paused players.  They tend
         // to remain paused when you reuse them later.
         //
-        if( m_playa->IsPaused() )
-        {
+        if (m_playa->IsPaused()) {
             m_playa->Continue();
         }
 
         m_playa->Stop();
 
-        if( m_playa != NULL )
-        {
+        if (m_playa != NULL) {
             //
             // The player didn't get released because we don't have
             // a callback set (presumably), so we do it ourselves
             //
             dumpSoundPlayer();
         }
-        
-        rAssert( m_playa == NULL );
+
+        rAssert(m_playa == NULL);
     }
 }
 
@@ -404,10 +366,8 @@ void SimpsonsSoundPlayer::Stop()
 // Return:      void 
 //
 //=============================================================================
-void SimpsonsSoundPlayer::Pause()
-{
-    if( m_playa != NULL )
-    {
+void SimpsonsSoundPlayer::Pause() {
+    if (m_playa != NULL) {
         m_playa->Pause();
     }
 }
@@ -422,10 +382,8 @@ void SimpsonsSoundPlayer::Pause()
 // Return:      void 
 //
 //=============================================================================
-void SimpsonsSoundPlayer::Continue()
-{
-    if( m_playa != NULL )
-    {
+void SimpsonsSoundPlayer::Continue() {
+    if (m_playa != NULL) {
         m_playa->Continue();
     }
 }
@@ -440,15 +398,11 @@ void SimpsonsSoundPlayer::Continue()
 // Return:      true if paused, false if not or player unused 
 //
 //=============================================================================
-bool SimpsonsSoundPlayer::IsPaused()
-{
-    if( m_playa != NULL )
-    {
-        return( m_playa->IsPaused() );
-    }
-    else
-    {
-        return( false );
+bool SimpsonsSoundPlayer::IsPaused() {
+    if (m_playa != NULL) {
+        return (m_playa->IsPaused());
+    } else {
+        return (false);
     }
 }
 
@@ -462,15 +416,11 @@ bool SimpsonsSoundPlayer::IsPaused()
 // Return:      void 
 //
 //=============================================================================
-void SimpsonsSoundPlayer::SetPitch( float pitch )
-{
-    if( m_playa != NULL )
-    {
-        m_playa->SetPitch( pitch );
-    }
-    else
-    {
-        rDebugString( "Can't set pitch without associated player\n" );
+void SimpsonsSoundPlayer::SetPitch(float pitch) {
+    if (m_playa != NULL) {
+        m_playa->SetPitch(pitch);
+    } else {
+        rDebugString("Can't set pitch without associated player\n");
     }
 }
 
@@ -484,15 +434,11 @@ void SimpsonsSoundPlayer::SetPitch( float pitch )
 // Return:      void 
 //
 //=============================================================================
-void SimpsonsSoundPlayer::SetTrim( float trim )
-{
-    if( m_playa != NULL )
-    {
-        m_playa->SetExternalTrim( trim );
-    }
-    else
-    {
-        rDebugString( "Can't set trim without associated player\n" );
+void SimpsonsSoundPlayer::SetTrim(float trim) {
+    if (m_playa != NULL) {
+        m_playa->SetExternalTrim(trim);
+    } else {
+        rDebugString("Can't set trim without associated player\n");
     }
 }
 
@@ -512,27 +458,21 @@ void SimpsonsSoundPlayer::SetTrim( float trim )
 // Return:      void  
 //
 //=============================================================================
-void SimpsonsSoundPlayer::dumpSoundPlayer()
-{
-    if( m_callback )
-    {
+void SimpsonsSoundPlayer::dumpSoundPlayer() {
+    if (m_callback) {
         m_callback->CancelGameCallbackAndRelease();
-        m_playa->UnregisterSoundPlayerStateCallback( m_callback, NULL );
+        m_playa->UnregisterSoundPlayerStateCallback(m_callback, NULL);
         m_callback = NULL;
     }
 
-    if( m_playa->GetPlayerType() == IDaSoundResource::CLIP )
-    {
+    if (m_playa->GetPlayerType() == IDaSoundResource::CLIP) {
         --s_clipPlayersInUse;
-    }
-    else
-    {
-        rAssert( m_playa->GetPlayerType() != IDaSoundResource::UNKNOWN );
+    } else {
+        rAssert(m_playa->GetPlayerType() != IDaSoundResource::UNKNOWN);
         --s_streamPlayersInUse;
     }
-    
-    if( m_playa->IsCaptured() )
-    {
+
+    if (m_playa->IsCaptured()) {
         m_playa->UnCapture();
     }
     m_playa = NULL;

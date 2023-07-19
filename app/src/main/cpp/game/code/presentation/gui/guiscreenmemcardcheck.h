@@ -31,43 +31,45 @@
 //===========================================================================
 class CGuiScreenMemCardCheck : public CGuiScreen,
                                public IMemoryCardCheckCallback,
-							   public IMemoryCardFormatCallback
-{
+                               public IMemoryCardFormatCallback {
 public:
-    CGuiScreenMemCardCheck( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenMemCardCheck(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenMemCardCheck();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    virtual void OnMemoryCardCheckDone( radFileError errorCode,
-                                        IRadDrive::MediaInfo::MediaState mediaState,
-                                        int driveIndex,
-                                        int mostRecentSaveGameDriveIndex,
-                                        int mostRecentSaveGameSlot );
+    virtual void OnMemoryCardCheckDone(radFileError errorCode,
+                                       IRadDrive::MediaInfo::MediaState mediaState,
+                                       int driveIndex,
+                                       int mostRecentSaveGameDriveIndex,
+                                       int mostRecentSaveGameSlot);
 
-	// Implements IMemoryCardFormatCallback
-	//
-	virtual void OnFormatOperationComplete(radFileError err);
+    // Implements IMemoryCardFormatCallback
+    //
+    virtual void OnFormatOperationComplete(radFileError err);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
     void OnContinue();
 
-    Scrooby::Text* m_messageText;
+    Scrooby::Text *m_messageText;
 
-	unsigned int m_minimumFormatTime;
-	unsigned int m_elapsedFormatTime;
-	radFileError m_formatResult;
-    bool         m_formatState : 1;
-    bool		 m_formatDone : 1;
-    bool         m_StatusPromptShown : 1;
-    bool         m_isAutoLoadPending : 1;
+    unsigned int m_minimumFormatTime;
+    unsigned int m_elapsedFormatTime;
+    radFileError m_formatResult;
+    bool m_formatState: 1;
+    bool m_formatDone: 1;
+    bool m_StatusPromptShown: 1;
+    bool m_isAutoLoadPending: 1;
 
 };
 

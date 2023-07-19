@@ -30,28 +30,31 @@
 //
 //=============================================================================
 
-class NISPlayer : public SimpleAnimationPlayer
-{
-    public:
-        NISPlayer();
-        virtual ~NISPlayer();
+class NISPlayer : public SimpleAnimationPlayer {
+public:
+    NISPlayer();
 
-        virtual void ClearData();
+    virtual ~NISPlayer();
 
-        bool GetBoundingBox( rmt::Box3D* box );
-        tDrawable* GetDrawable() { return mpSceneGraph; }
+    virtual void ClearData();
 
-    protected:
-        virtual void DoLoaded();
-        virtual void DoRender();
+    bool GetBoundingBox(rmt::Box3D *box);
 
-    private:
+    tDrawable *GetDrawable() { return mpSceneGraph; }
 
-        //Prevent wasteful constructor creation.
-        NISPlayer( const NISPlayer& nisPlayer );
-        NISPlayer& operator=( const NISPlayer& nisPlayer );
+protected:
+    virtual void DoLoaded();
 
-        tDrawable* mpSceneGraph;
+    virtual void DoRender();
+
+private:
+
+    //Prevent wasteful constructor creation.
+    NISPlayer(const NISPlayer &nisPlayer);
+
+    NISPlayer &operator=(const NISPlayer &nisPlayer);
+
+    tDrawable *mpSceneGraph;
 };
 
 

@@ -22,9 +22,8 @@
 // ConfigString constructor
 //==============================================================================
 
-ConfigString::ConfigString( ConfigStringMode mode, int size )
-{
-    rAssert( size > 0 );
+ConfigString::ConfigString(ConfigStringMode mode, int size) {
+    rAssert(size > 0);
 
     mMode = mode;
     mBuffer = new char[size + 1];
@@ -39,37 +38,29 @@ ConfigString::ConfigString( ConfigStringMode mode, int size )
 // ConfigString destructor
 //==============================================================================
 
-ConfigString::~ConfigString()
-{
-    delete [] mBuffer;
+ConfigString::~ConfigString() {
+    delete[] mBuffer;
 }
 
 //==============================================================================
 // ConfigString::ReadSection
 //==============================================================================
 
-bool ConfigString::ReadSection( char* section )
-{
-    rAssert( mMode == Read );
+bool ConfigString::ReadSection(char *section) {
+    rAssert(mMode == Read);
 
     char line[MaxLength];
 
-    if( GetLine(line) )
-    {
-        if( line[0] == SectionTag )
-        {
-            strcpy( section, line + 1 );
+    if (GetLine(line)) {
+        if (line[0] == SectionTag) {
+            strcpy(section, line + 1);
             return true;
-        }
-        else
-        {
+        } else {
             // Try reading a section from the next line.
-            ReadSection( section );
+            ReadSection(section);
             return false;
         }
-    }
-    else
-    {
+    } else {
         return false;
     }
 }
@@ -78,43 +69,33 @@ bool ConfigString::ReadSection( char* section )
 // ConfigString::ReadProperty
 //==============================================================================
 
-bool ConfigString::ReadProperty( char* property, char* value )
-{
-    rAssert( mMode == Read );
+bool ConfigString::ReadProperty(char *property, char *value) {
+    rAssert(mMode == Read);
 
     char line[MaxLength];
-    char* oldCursor = mCursor;
+    char *oldCursor = mCursor;
 
-    if( GetLine(line) )
-    {
-        if( line[0] == SectionTag )
-        {
+    if (GetLine(line)) {
+        if (line[0] == SectionTag) {
             // rewind - it's a new section.
             mCursor = oldCursor;
             return false;
-        }
-        else
-        {
+        } else {
             // search for a property define.
-            char* prop_def = strchr( line, PropertyTag );
-            if( prop_def != NULL )
-            {
+            char *prop_def = strchr(line, PropertyTag);
+            if (prop_def != NULL) {
                 *prop_def = '\0';
-                strcpy( property, line );
-                strcpy( value, prop_def+1 );
+                strcpy(property, line);
+                strcpy(value, prop_def + 1);
 
                 return true;
-            }
-            else
-            {
+            } else {
                 // Skip the invalid line.
                 // Call read property recursively to read the next line.
-                return ReadProperty( property, value );
+                return ReadProperty(property, value);
             }
         }
-    }
-    else
-    {
+    } else {
         return false;
     }
 }
@@ -123,25 +104,22 @@ bool ConfigString::ReadProperty( char* property, char* value )
 // ConfigString::WriteSection
 //==============================================================================
 
-void ConfigString::WriteSection( const char* section )
-{
-    rAssert( mMode == Write );
+void ConfigString::WriteSection(const char *section) {
+    rAssert(mMode == Write);
 
     // Make sure it's not too long.
-    size_t len = strlen( section );
-    rAssert( len + 1 < MaxLength );
+    size_t len = strlen(section);
+    rAssert(len + 1 < MaxLength);
 
     // Make sure we have room in the string buffer (extra chars for # and \n and \0).
-    bool HaveRoom = ( mCursor - mBuffer ) + len + 6 < (size_t) mSize;
-    rAssert( HaveRoom );
+    bool HaveRoom = (mCursor - mBuffer) + len + 6 < (size_t) mSize;
+    rAssert(HaveRoom);
 
     // Rough guide of whether this is the first section
     bool FirstSection = mCursor == mBuffer;
 
-    if( HaveRoom )
-    {
-        if( !FirstSection )
-        {
+    if (HaveRoom) {
+        if (!FirstSection) {
             *mCursor = '\r';
             mCursor++;
 
@@ -152,7 +130,7 @@ void ConfigString::WriteSection( const char* section )
         *mCursor = SectionTag;
         mCursor++;
 
-        strcpy( mCursor, section );
+        strcpy(mCursor, section);
         mCursor += len;
 
         *mCursor = '\r';
@@ -169,29 +147,27 @@ void ConfigString::WriteSection( const char* section )
 // ConfigString::WriteProperty
 //==============================================================================
 
-void ConfigString::WriteProperty( const char* property, const char* value )
-{
-    rAssert( mMode == Write );
+void ConfigString::WriteProperty(const char *property, const char *value) {
+    rAssert(mMode == Write);
 
-    size_t lenp = strlen( property );
-    size_t lenv = strlen( value );
+    size_t lenp = strlen(property);
+    size_t lenv = strlen(value);
 
     // Make sure it's not too long
-    rAssert( lenp + lenv + 1 < MaxLength );
+    rAssert(lenp + lenv + 1 < MaxLength);
 
     // Make sure we have room in the string buffer (extra 3 for = and \n and \0).
-    bool HaveRoom = ( mCursor - mBuffer ) + lenp + lenv + 4 < (size_t) mSize;
-    rAssert( HaveRoom );
+    bool HaveRoom = (mCursor - mBuffer) + lenp + lenv + 4 < (size_t) mSize;
+    rAssert(HaveRoom);
 
-    if( HaveRoom )
-    {
-        strcpy( mCursor, property );
+    if (HaveRoom) {
+        strcpy(mCursor, property);
         mCursor += lenp;
 
         *mCursor = PropertyTag;
         mCursor++;
 
-        strcpy( mCursor, value );
+        strcpy(mCursor, value);
         mCursor += lenv;
 
         *mCursor = '\r';
@@ -208,20 +184,16 @@ void ConfigString::WriteProperty( const char* property, const char* value )
 // ConfigString::GetLine
 //==============================================================================
 
-bool ConfigString::GetLine( char* buffer )
-{
+bool ConfigString::GetLine(char *buffer) {
     // skip white space
-    while( *mCursor == ' ' || *mCursor == '\t' || *mCursor == '\n' || *mCursor == '\r' )
-    {
+    while (*mCursor == ' ' || *mCursor == '\t' || *mCursor == '\n' || *mCursor == '\r') {
         mCursor++;
     }
 
     // Copy the line
     int i = 0;
-    while( *mCursor != '\0' && *mCursor != '\n' && *mCursor != '\r' )
-    {
-        if( i < MaxLength )
-        {
+    while (*mCursor != '\0' && *mCursor != '\n' && *mCursor != '\r') {
+        if (i < MaxLength) {
             buffer[i++] = *mCursor;
         }
 
@@ -229,8 +201,7 @@ bool ConfigString::GetLine( char* buffer )
     }
 
     // Trim trailing white space
-    while( i > 0 && ( buffer[i-1] == ' ' || buffer[i-1] == '\t' ) )
-    {
+    while (i > 0 && (buffer[i - 1] == ' ' || buffer[i - 1] == '\t')) {
         i--;
     }
 

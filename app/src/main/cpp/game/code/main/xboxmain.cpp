@@ -47,8 +47,7 @@ static void ProcessCommandLineArgumentsFromFile();
 // Returns:     None.
 //
 //=============================================================================
-void main()
-{
+void main() {
     //
     // Pick out and store command line settings.
     //
@@ -59,23 +58,23 @@ void main()
     // Have to get FTech setup first so that we can use all the memory services.
     //
     XboxPlatform::InitializeFoundation();
-    
-    srand (Game::GetRandomSeed ());
+
+    srand(Game::GetRandomSeed());
 
 
     // Now disable the default heap
     //
 #ifndef RAD_RELEASE
-    tName::SetAllocator (GMA_DEBUG);
+    tName::SetAllocator(GMA_DEBUG);
 
     //g_HeapActivityTracker.EnableHeapAllocs (GMA_DEFAULT, false);
     //g_HeapActivityTracker.EnableHeapFrees (GMA_DEFAULT, false);
 #endif
 
-    HeapMgr()->PushHeap (GMA_PERSISTENT);
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
-	//Process any commandline options from the command.txt file
-	ProcessCommandLineArgumentsFromFile();
+    //Process any commandline options from the command.txt file
+    ProcessCommandLineArgumentsFromFile();
 
 
     //
@@ -86,44 +85,44 @@ void main()
     //
     // Construct the platform object.
     //
-    XboxPlatform* pPlatform = XboxPlatform::CreateInstance();
-    rAssert( pPlatform != NULL );
-    
+    XboxPlatform *pPlatform = XboxPlatform::CreateInstance();
+    rAssert(pPlatform != NULL);
+
     //
     // Create the game object.
     //
-    Game* pGame = Game::CreateInstance( pPlatform );
-    rAssert( pGame != NULL );
-    
-     
+    Game *pGame = Game::CreateInstance(pPlatform);
+    rAssert(pGame != NULL);
+
+
     //
     // Initialize the game.
     //
     pGame->Initialize();
 
-    HeapMgr()->PopHeap (GMA_PERSISTENT);
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
 
     //
     // Run it!  Control will not return from here until the game is stopped.
     //
     pGame->Run();
-    
+
     //
     // Terminate the game (this frees all resources allocated by the game).
     //
     pGame->Terminate();
-    
+
     //
     // Destroy the game object.
     //
     Game::DestroyInstance();
-    
+
     //
     // Destroy the game and platform (do it in this order in case the game's 
     // destructor references the platform.
     //
     XboxPlatform::DestroyInstance();
-    
+
     //
     // Show some debug output
     //
@@ -149,8 +148,7 @@ void main()
 // Returns:     None.
 //
 //=============================================================================
-void ProcessCommandLineArguments()
-{
+void ProcessCommandLineArguments() {
     //
     // None of this gets into the shipping code.
     //
@@ -159,76 +157,66 @@ void ProcessCommandLineArguments()
     DWORD dwLaunchMethod;
     LAUNCH_DATA launchData;
 
-    XGetLaunchInfo( &dwLaunchMethod, &launchData );
+    XGetLaunchInfo(&dwLaunchMethod, &launchData);
 
-    if( LDT_FROM_DEBUGGER_CMDLINE == dwLaunchMethod )
-    {
-        LD_FROM_DEBUGGER_CMDLINE* pCmdLine = (LD_FROM_DEBUGGER_CMDLINE*)&launchData;
+    if (LDT_FROM_DEBUGGER_CMDLINE == dwLaunchMethod) {
+        LD_FROM_DEBUGGER_CMDLINE *pCmdLine = (LD_FROM_DEBUGGER_CMDLINE * ) & launchData;
 
-        char* argument;
-        argument = strtok( pCmdLine->szCmdLine, " " );    
+        char *argument;
+        argument = strtok(pCmdLine->szCmdLine, " ");
 
-        rDebugPrintf( "*************************************************************************\n" );
-        rDebugPrintf( "Command Line Args:\n" );
+        rDebugPrintf("*************************************************************************\n");
+        rDebugPrintf("Command Line Args:\n");
 
         //
         // Pick out all the command line options and store them in GameDB.
         // Also dump them to the output for handy dandy viewing.
         //
         int i = 0;
-        while( NULL != argument )
-        {
-            rDebugPrintf( "arg%d: %s\n", i++, argument );
+        while (NULL != argument) {
+            rDebugPrintf("arg%d: %s\n", i++, argument);
 
-            CommandLineOptions::HandleOption( argument );
-        
-            argument = strtok( NULL, " " );
+            CommandLineOptions::HandleOption(argument);
+
+            argument = strtok(NULL, " ");
         }
 
-        if( !CommandLineOptions::Get( CLO_ART_STATS ) )
-        {
-            //CommandLineOptions::HandleOption( "noheaps" );
+        if (!CommandLineOptions::Get(CLO_ART_STATS)) {
+            //CommandLineOptions::HandleOption("noheaps");
         }
 
-       
 
-        
-    
-        rDebugPrintf( "*************************************************************************\n" );
+        rDebugPrintf("*************************************************************************\n");
     }
 
 #endif // FINAL
 }
 
 
-
-void ProcessCommandLineArgumentsFromFile()
-{
+void ProcessCommandLineArgumentsFromFile() {
 #ifndef FINAL
 
-         //Chuck: looking for additional command line args being passed in from a file
-     //its for QA testing etc.
+    //Chuck: looking for additional command line args being passed in from a file
+    //its for QA testing etc.
 
-    IRadFile* pfile =NULL;
-    
-	::radFileOpenSync(&pfile,"command.txt", false, OpenExisting );
+    IRadFile *pfile = NULL;
 
-    if (pfile != NULL)
-    {
-        char commandlinestring [256];
-        memset( commandlinestring, 0, sizeof( commandlinestring ) );
+    ::radFileOpenSync(&pfile, "command.txt", false, OpenExisting);
 
-		unsigned int fileSize = 0;
-		pfile->GetSizeSync( &fileSize );
-		pfile->ReadSync(commandlinestring, fileSize);
+    if (pfile != NULL) {
+        char commandlinestring[256];
+        memset(commandlinestring, 0, sizeof(commandlinestring));
+
+        unsigned int fileSize = 0;
+        pfile->GetSizeSync(&fileSize);
+        pfile->ReadSync(commandlinestring, fileSize);
 
         //QA created the command line file and wants to pass additional arguements
-              
-        char* argument = strtok(commandlinestring," ");
-        while (argument != NULL)
-        {
+
+        char *argument = strtok(commandlinestring, " ");
+        while (argument != NULL) {
             CommandLineOptions::HandleOption(argument);
-            argument=strtok(NULL," ");
+            argument = strtok(NULL, " ");
         }
         pfile->Release();
     }

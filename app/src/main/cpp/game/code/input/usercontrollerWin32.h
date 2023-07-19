@@ -51,18 +51,22 @@
 //=============================================================================
 
 class Mappable;
+
 class Mapper;
+
 class SteeringSpring;
-class BaseDamper;  
+
+class BaseDamper;
+
 class ConstantEffect;
-class WheelRumble;  
+
+class WheelRumble;
 
 //=============================================================================
 // Enumerations
 //=============================================================================
 
-enum eVirtualMapSlot
-{
+enum eVirtualMapSlot {
     SLOT_PRIMARY = 0,
     SLOT_SECONDARY
 };
@@ -82,9 +86,9 @@ enum eVirtualMapSlot
 //
 //=============================================================================
 
-struct ButtonMappedCallback
-{
-    virtual void OnButtonMapped( const char* InputName, eControllerType cont, int num_dirs, eDirectionType direction ) = 0;
+struct ButtonMappedCallback {
+    virtual void OnButtonMapped(const char *InputName, eControllerType cont, int num_dirs,
+                                eDirectionType direction) = 0;
 };
 
 //=============================================================================
@@ -95,14 +99,13 @@ struct ButtonMappedCallback
 //
 //=============================================================================
 
-struct ButtonMapData
-{
+struct ButtonMapData {
     ButtonMapData() : MapNext(false) {};
 
     bool MapNext;
     int map;
     int virtualButton;
-    ButtonMappedCallback* callback;
+    ButtonMappedCallback *callback;
 };
 
 //=============================================================================
@@ -115,131 +118,174 @@ struct ButtonMapData
 //=============================================================================
 
 class UserController :
-    public IRadControllerInputPointCallback,
-    public GameConfigHandler
-{
+        public IRadControllerInputPointCallback,
+        public GameConfigHandler {
 public:
-	UserController( void );
-	virtual ~UserController( void );
+    UserController(void);
+
+    virtual ~UserController(void);
 
     // initial set up of controller (called once at input ystem init)
-    virtual void Create( int id );
+    virtual void Create(int id);
 
     // set up actual controller mapping (called once at startup and prior to any time input 
     // connection state changes)
-    virtual void Initialize( RADCONTROLLER* pIController );
+    virtual void Initialize(RADCONTROLLER *pIController);
 
     // release ftech controllers (called prior to input connection state change)
-    virtual void ReleaseRadController( void );
+    virtual void ReleaseRadController(void);
 
-    RealController* GetRealController( eControllerType type ) { return m_pController[type]; }
+    RealController *GetRealController(eControllerType type) { return m_pController[type]; }
+
     // get the index of this controller
-    unsigned int GetControllerId( void ) const { return m_controllerId; }
+    unsigned int GetControllerId(void) const { return m_controllerId; }
 
     // per-frame update
-    void Update( unsigned timeins );
+    void Update(unsigned timeins);
 
     void StartForceEffects();
+
     void StopForceEffects();
 
     // set the current game state (to activate / deactivate appropriate logical controllerts)
     void SetGameState(unsigned);
 
     // Rumble (not yet implimented)
-    void SetRumble( bool bRumbleOn, bool pulse = false );
-    bool IsRumbleOn( void ) const;
+    void SetRumble(bool bRumbleOn, bool pulse = false);
+
+    bool IsRumbleOn(void) const;
+
     void PulseRumble();
-    void ApplyEffect( RumbleEffect::Effect effect, unsigned int durationms );
-    void ApplyDynaEffect( RumbleEffect::DynaEffect effect, unsigned int durationms, float gain );
+
+    void ApplyEffect(RumbleEffect::Effect effect, unsigned int durationms);
+
+    void ApplyDynaEffect(RumbleEffect::DynaEffect effect, unsigned int durationms, float gain);
 
     // connection status
-    bool IsConnected( void ) const; 
-    void NotifyConnect( void );
-    void NotifyDisconnect( void );
+    bool IsConnected(void) const;
+
+    void NotifyConnect(void);
+
+    void NotifyDisconnect(void);
 
     // Returns the value stored by input point at index.
-    float GetInputValue( unsigned int index ) const;
-    Button* GetInputButton( unsigned int index );
+    float GetInputValue(unsigned int index) const;
+
+    Button *GetInputButton(unsigned int index);
 
     // Returns the current 'real-time' value of the input point
-    float GetInputValueRT( unsigned int index ) const;
+    float GetInputValueRT(unsigned int index) const;
 
     // Attaches an logical controller this physical controller 
-    int RegisterMappable( Mappable* pMappable );
+    int RegisterMappable(Mappable *pMappable);
 
     // Detach a logical controller
-    void UnregisterMappable( int handle );
-    void UnregisterMappable( Mappable* pMappable );
+    void UnregisterMappable(int handle);
+
+    void UnregisterMappable(Mappable *pMappable);
 
     // Set up the physical-logical button mappings.
-    void LoadControllerMappings( void );
+    void LoadControllerMappings(void);
 
     // return the button id from the name.
-    int GetIdByName( const char* pszName ) const;
+    int GetIdByName(const char *pszName) const;
 
-    SteeringSpring* GetSpring();
-    BaseDamper* GetDamper();
-    ConstantEffect* GetConstantEffect();
-    WheelRumble* GetWheelRumble();
-    WheelRumble* GetHeavyWheelRumble();
+    SteeringSpring *GetSpring();
 
-    Mappable* GetMappable( unsigned int which ) { return mMappable[ which ];  };
+    BaseDamper *GetDamper();
+
+    ConstantEffect *GetConstantEffect();
+
+    WheelRumble *GetWheelRumble();
+
+    WheelRumble *GetHeavyWheelRumble();
+
+    Mappable *GetMappable(unsigned int which) { return mMappable[which]; };
 
     bool IsWheel() const { return m_bIsWheel; }
 
     // Implementation of the GameConfigHandler interface
-    virtual const char* GetConfigName() const;
+    virtual const char *GetConfigName() const;
+
     virtual int GetNumProperties() const;
+
     virtual void LoadDefaults();
-    virtual void LoadConfig( ConfigString& config );
-    virtual void SaveConfig( ConfigString& config );
+
+    virtual void LoadConfig(ConfigString &config);
+
+    virtual void SaveConfig(ConfigString &config);
 
     // Public mapping functions for the user controller.
-    const char* GetMap( int map, int virtualKey, int& numDirs, eControllerType& cont, eDirectionType& dir ) const;
-    void RemapButton( int map, int VirtualButton, ButtonMappedCallback* callback );
+    const char *
+    GetMap(int map, int virtualKey, int &numDirs, eControllerType &cont, eDirectionType &dir) const;
 
-    void SetMouseLook( bool bMouseLook )         { m_bMouseLook = bMouseLook;         }
-    void SetInvertMouseX( bool bInvertMouseX )   { m_bInvertMouseX = bInvertMouseX;   }
-    void SetInvertMouseY( bool bInvertMouseY )   { m_bInvertMouseY = bInvertMouseY;   }
-    void SetForceFeedback( bool bForceFeedback ) { m_bForceFeedback = bForceFeedback; }
-    void SetTutorialDisabled( bool bDisabled )   { m_bTutorialDisabled = bDisabled; }
-    void SetMouseSensitivityX( float fValue )    { m_fMouseSensitivityX = fValue;     }
-    void SetMouseSensitivityY( float fValue )    { m_fMouseSensitivityY = fValue;     }
-    void SetWheelSensitivityX( float fValue )    { m_fWheelSensitivityX = fValue;     }
-    void SetWheelSensitivityY( float fValue )    { m_fWheelSensitivityY = fValue;     }
+    void RemapButton(int map, int VirtualButton, ButtonMappedCallback *callback);
 
-    bool  IsMouseLookOn()        const { return m_bMouseLook;         }
-    bool  IsMouseXInverted()     const { return m_bInvertMouseX;      }
-    bool  IsMouseYInverted()     const { return m_bInvertMouseY;      }
-    bool  IsForceFeedbackOn()    const { return m_bForceFeedback;     }
-    bool  IsTutorialDisabled()   const { return m_bTutorialDisabled;  }
+    void SetMouseLook(bool bMouseLook) { m_bMouseLook = bMouseLook; }
+
+    void SetInvertMouseX(bool bInvertMouseX) { m_bInvertMouseX = bInvertMouseX; }
+
+    void SetInvertMouseY(bool bInvertMouseY) { m_bInvertMouseY = bInvertMouseY; }
+
+    void SetForceFeedback(bool bForceFeedback) { m_bForceFeedback = bForceFeedback; }
+
+    void SetTutorialDisabled(bool bDisabled) { m_bTutorialDisabled = bDisabled; }
+
+    void SetMouseSensitivityX(float fValue) { m_fMouseSensitivityX = fValue; }
+
+    void SetMouseSensitivityY(float fValue) { m_fMouseSensitivityY = fValue; }
+
+    void SetWheelSensitivityX(float fValue) { m_fWheelSensitivityX = fValue; }
+
+    void SetWheelSensitivityY(float fValue) { m_fWheelSensitivityY = fValue; }
+
+    bool IsMouseLookOn() const { return m_bMouseLook; }
+
+    bool IsMouseXInverted() const { return m_bInvertMouseX; }
+
+    bool IsMouseYInverted() const { return m_bInvertMouseY; }
+
+    bool IsForceFeedbackOn() const { return m_bForceFeedback; }
+
+    bool IsTutorialDisabled() const { return m_bTutorialDisabled; }
 
     float GetMouseSensitivityX() const { return m_fMouseSensitivityX; }
+
     float GetMouseSensitivityY() const { return m_fMouseSensitivityY; }
+
     float GetWheelSensitivityX() const { return m_fWheelSensitivityX; }
+
     float GetWheelSensitivityY() const { return m_fWheelSensitivityY; }
 
 protected:
 
     // These register our callbacks with the RadControllers.
     void RegisterInputPoints();
-    void RegisterInputPoint( eControllerType type, int inputpoint );
+
+    void RegisterInputPoint(eControllerType type, int inputpoint);
 
     // Callback for when keys/inputs are pressed by the user.
-    void OnControllerInputPointChange( unsigned int buttonId, float value );
+    void OnControllerInputPointChange(unsigned int buttonId, float value);
 
     // These process input point values as received by the input point callback.
-    int DeriveDirectionValues( eControllerType type, int dxKey, float value, float* dir_values );
-    void SetButtonValue( unsigned int virtualButton, float value, bool sticky );
+    int DeriveDirectionValues(eControllerType type, int dxKey, float value, float *dir_values);
+
+    void SetButtonValue(unsigned int virtualButton, float value, bool sticky);
 
     // Needed to get mouse axes to function properly
     void ResetMouseAxes();
 
     // Private mapping functions for the user controller.
-    void SetMap( int map, int virtualKey, eControllerType cont, int dxKey, eDirectionType dir = DIR_UP );
-    bool GetMap( int map, int virtualKey, eControllerType& cont, int& dxKey, eDirectionType& dir ) const;
-    void Remap( eControllerType cont, int dxKey, float* dvalues, int directions );
+    void
+    SetMap(int map, int virtualKey, eControllerType cont, int dxKey, eDirectionType dir = DIR_UP);
+
+    bool
+    GetMap(int map, int virtualKey, eControllerType &cont, int &dxKey, eDirectionType &dir) const;
+
+    void Remap(eControllerType cont, int dxKey, float *dvalues, int directions);
+
     void ClearMappings();
+
     void LoadFEMappings();
 
 private:
@@ -250,43 +296,43 @@ private:
     unsigned mGameState;
     bool mbInputPointsRegistered;
 
-    RealController* m_pController[ NUM_CONTROLLERTYPES ];
+    RealController *m_pController[NUM_CONTROLLERTYPES];
 
-    SteeringSpring*  m_pSteeringSpring;
-    BaseDamper*      m_pSteeringDamper;
-    ConstantEffect*  m_pConstantEffect;
-    WheelRumble*     m_pWheelRumble;
-    WheelRumble*     m_pHeavyWheelRumble;
+    SteeringSpring *m_pSteeringSpring;
+    BaseDamper *m_pSteeringDamper;
+    ConstantEffect *m_pConstantEffect;
+    WheelRumble *m_pWheelRumble;
+    WheelRumble *m_pHeavyWheelRumble;
 
-    Mappable* mMappable[ Input::MaxMappables ];
+    Mappable *mMappable[Input::MaxMappables];
 
     // Virtual mapping data.
-    Mapper mVirtualMap[ Input::MaxVirtualMappings ];
+    Mapper mVirtualMap[Input::MaxVirtualMappings];
     ButtonMapData mMapData;
 
     // Button data.
     int mNumButtons;
-    Button mButtonArray[ Input::MaxPhysicalButtons ];
-    radKey mButtonNames[ Input::MaxPhysicalButtons ];
-    float  mButtonDeadZones[ Input::MaxPhysicalButtons ];
-    bool   mButtonSticky[ Input::MaxPhysicalButtons ];
+    Button mButtonArray[Input::MaxPhysicalButtons];
+    radKey mButtonNames[Input::MaxPhysicalButtons];
+    float mButtonDeadZones[Input::MaxPhysicalButtons];
+    bool mButtonSticky[Input::MaxPhysicalButtons];
 
     bool mKeyboardBack;
 
     bool mbIsRumbleOn;
     bool m_bIsWheel;
-    RumbleEffect mRumbleEffect;   
+    RumbleEffect mRumbleEffect;
 
     bool m_bMouseLook,
-         m_bInvertMouseX,
-         m_bInvertMouseY,
-         m_bForceFeedback;
+            m_bInvertMouseX,
+            m_bInvertMouseY,
+            m_bForceFeedback;
     bool m_bTutorialDisabled;
 
     float m_fMouseSensitivityX,
-          m_fMouseSensitivityY,
-          m_fWheelSensitivityX, // The wheel
-          m_fWheelSensitivityY; // The pedals
+            m_fMouseSensitivityY,
+            m_fWheelSensitivityX, // The wheel
+    m_fWheelSensitivityY; // The pedals
 
     int mResetMouseCounter[3]; // Hack needed for proper mouse inputs.
 };

@@ -42,13 +42,12 @@
 //
 //===========================================================================
 CGuiScreenPauseSound::CGuiScreenPauseSound
-(
-	Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-)
-:	
-	CGuiScreenSound( pScreen, pParent )
-{
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        :
+        CGuiScreenSound(pScreen, pParent) {
 }
 
 
@@ -64,8 +63,7 @@ CGuiScreenPauseSound::CGuiScreenPauseSound
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenPauseSound::~CGuiScreenPauseSound()
-{
+CGuiScreenPauseSound::~CGuiScreenPauseSound() {
 }
 
 
@@ -82,34 +80,29 @@ CGuiScreenPauseSound::~CGuiScreenPauseSound()
 //
 //===========================================================================
 void CGuiScreenPauseSound::HandleMessage
-(
-	eGuiMessage message, 
-	unsigned int param1,
-	unsigned int param2 
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        switch( message )
-        {
-            case GUI_MSG_CONTROLLER_START:
-            {
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        switch (message) {
+            case GUI_MSG_CONTROLLER_START: {
                 // resume game
-                m_pParent->HandleMessage( GUI_MSG_UNPAUSE_INGAME );
+                m_pParent->HandleMessage(GUI_MSG_UNPAUSE_INGAME);
 
                 break;
             }
 
-            default:
-            {
+            default: {
                 break;
             }
         }
     }
 
-	// Propogate the message up the hierarchy.
-	//
-	CGuiScreenSound::HandleMessage( message, param1, param2 );
+    // Propogate the message up the hierarchy.
+    //
+    CGuiScreenSound::HandleMessage(message, param1, param2);
 }
 
 
@@ -125,8 +118,7 @@ void CGuiScreenPauseSound::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPauseSound::InitIntro()
-{
+void CGuiScreenPauseSound::InitIntro() {
     CGuiScreenSound::InitIntro();
 }
 
@@ -143,8 +135,7 @@ void CGuiScreenPauseSound::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPauseSound::InitRunning()
-{
+void CGuiScreenPauseSound::InitRunning() {
     CGuiScreenSound::InitRunning();
 }
 
@@ -161,8 +152,7 @@ void CGuiScreenPauseSound::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPauseSound::InitOutro()
-{
+void CGuiScreenPauseSound::InitOutro() {
     CGuiScreenSound::InitOutro();
 }
 

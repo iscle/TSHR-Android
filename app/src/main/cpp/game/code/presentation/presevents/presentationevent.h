@@ -38,69 +38,78 @@ class AnimationPlayer;
 //
 //=============================================================================
 
-class PresentationEvent : public AnimationPlayer::LoadDataCallBack
-{
-    public:
-        PresentationEvent();
-        virtual ~PresentationEvent();
+class PresentationEvent : public AnimationPlayer::LoadDataCallBack {
+public:
+    PresentationEvent();
 
-        // Implement AnimationPlayer::LoadDataCallBack
-        // 
-        virtual void OnLoadDataComplete();
+    virtual ~PresentationEvent();
 
-        struct PresentationEventCallBack
-        {
-            virtual void OnPresentationEventBegin( PresentationEvent* pEvent ) = 0;
-            virtual void OnPresentationEventLoadComplete( PresentationEvent* pEvent ) = 0;
-            virtual void OnPresentationEventEnd( PresentationEvent* pEvent ) = 0;
-        };
+    // Implement AnimationPlayer::LoadDataCallBack
+    //
+    virtual void OnLoadDataComplete();
 
-        PresentationEventCallBack* pCallback;
-        char fileName[64];
-        bool bInInventory;
+    struct PresentationEventCallBack {
+        virtual void OnPresentationEventBegin(PresentationEvent *pEvent) = 0;
 
-        // set ClearWhenDone to true to clear all data when this event finishes
-        // or false to leave stuff (like the MoviePlayer) allocated. Default = true
-        void SetClearWhenDone( bool bClear ) { mbClearWhenDone = bClear; }
+        virtual void OnPresentationEventLoadComplete(PresentationEvent *pEvent) = 0;
 
-        // set AutoPlay to true to play animation immediately after loading finsihes
-        // Default = true
-        void SetAutoPlay( bool bAutoPlay ) { mbAutoPlay = bAutoPlay; }
-        bool GetAutoPlay() { return mbAutoPlay; }
-        void SetKeepLayersFrozen( bool IsKeep ) { mbKeepLayersFrozen = IsKeep; }
-        bool GetKeepLayersFrozen( void ) const { return mbKeepLayersFrozen; }
-		void SetSkippable(bool IsSkippable) {mbIsSkippable = IsSkippable;}
-		bool IsSkippable(void) const {return mbIsSkippable;}
+        virtual void OnPresentationEventEnd(PresentationEvent *pEvent) = 0;
+    };
 
-        void SetRenderLayer( RenderEnums::LayerEnum layer ) { mRenderLayer = layer; }
-        RenderEnums::LayerEnum GetRenderLayer() { return mRenderLayer; }
+    PresentationEventCallBack *pCallback;
+    char fileName[64];
+    bool bInInventory;
 
-        virtual AnimationPlayer* GetPlayer() = 0;
+    // set ClearWhenDone to true to clear all data when this event finishes
+    // or false to leave stuff (like the MoviePlayer) allocated. Default = true
+    void SetClearWhenDone(bool bClear) { mbClearWhenDone = bClear; }
 
-        bool Update( unsigned int elapsedTime );
+    // set AutoPlay to true to play animation immediately after loading finsihes
+    // Default = true
+    void SetAutoPlay(bool bAutoPlay) { mbAutoPlay = bAutoPlay; }
 
-        virtual void Start();
-        virtual void Stop();
-        
-        virtual void Init();
+    bool GetAutoPlay() { return mbAutoPlay; }
 
-    protected:
-        void SetLoaded( bool bLoaded ) { mbLoaded = bLoaded; }
+    void SetKeepLayersFrozen(bool IsKeep) { mbKeepLayersFrozen = IsKeep; }
 
-        virtual void* GetUserData () { return 0; }
+    bool GetKeepLayersFrozen(void) const { return mbKeepLayersFrozen; }
 
-    private:
+    void SetSkippable(bool IsSkippable) { mbIsSkippable = IsSkippable; }
 
-        //Prevent wasteful constructor creation.
-        PresentationEvent( const PresentationEvent& presentationEvent );
-        PresentationEvent& operator=( const PresentationEvent& presentationEvent );
+    bool IsSkippable(void) const { return mbIsSkippable; }
 
-		bool mbAutoPlay : 1;
-		bool mbClearWhenDone : 1;
-		bool mbLoaded : 1;
-		bool mbKeepLayersFrozen : 1;
-		bool mbIsSkippable : 1;
-        RenderEnums::LayerEnum mRenderLayer;
+    void SetRenderLayer(RenderEnums::LayerEnum layer) { mRenderLayer = layer; }
+
+    RenderEnums::LayerEnum GetRenderLayer() { return mRenderLayer; }
+
+    virtual AnimationPlayer *GetPlayer() = 0;
+
+    bool Update(unsigned int elapsedTime);
+
+    virtual void Start();
+
+    virtual void Stop();
+
+    virtual void Init();
+
+protected:
+    void SetLoaded(bool bLoaded) { mbLoaded = bLoaded; }
+
+    virtual void *GetUserData() { return 0; }
+
+private:
+
+    //Prevent wasteful constructor creation.
+    PresentationEvent(const PresentationEvent &presentationEvent);
+
+    PresentationEvent &operator=(const PresentationEvent &presentationEvent);
+
+    bool mbAutoPlay: 1;
+    bool mbClearWhenDone: 1;
+    bool mbLoaded: 1;
+    bool mbKeepLayersFrozen: 1;
+    bool mbIsSkippable: 1;
+    RenderEnums::LayerEnum mRenderLayer;
 };
 
 #endif // PRESENTATIONEVENT_H

@@ -25,6 +25,7 @@
 //========================================
 
 class Character;
+
 class MouthFlapper;
 
 //=============================================================================
@@ -33,34 +34,47 @@ class MouthFlapper;
 //
 //=============================================================================
 
-class PresentationAnimator
-{
+class PresentationAnimator {
 public:
     PresentationAnimator();
-	virtual ~PresentationAnimator();
 
-    void SetCharacter( Character* pCharacter );
-    Character* GetCharacter();
+    virtual ~PresentationAnimator();
 
-    typedef std::vector< tName, s2alloc<tName> > TNAMEVECTOR;
-    void AddAmbientAnimations( const TNAMEVECTOR& animations );
-    void ClearAmbientAnimations( void );
+    void SetCharacter(Character *pCharacter);
+
+    Character *GetCharacter();
+
+    typedef std::vector <tName, s2alloc<tName>> TNAMEVECTOR;
+
+    void AddAmbientAnimations(const TNAMEVECTOR &animations);
+
+    void ClearAmbientAnimations(void);
+
     void PlaySpecialAmbientAnimation();
-    void SetRandomSelection( const bool random );
+
+    void SetRandomSelection(const bool random);
+
     const bool GetRandomSelection() const;
+
     void StartTalking();
+
     void StopTalking();
+
     void TalkFor(int time);
-    void Update( int elapsedTime );
+
+    void Update(int elapsedTime);
 
 private:
     const tName ChooseNextAnimation();
-    const tName ChooseRandomAnimation() const;
-	PresentationAnimator( const PresentationAnimator& presentationanimator );
-	PresentationAnimator& operator=( const PresentationAnimator& presentationanimator );
 
-    Character* mCharacter;
-    MouthFlapper* mMouthFlapper;
+    const tName ChooseRandomAnimation() const;
+
+    PresentationAnimator(const PresentationAnimator &presentationanimator);
+
+    PresentationAnimator &operator=(const PresentationAnimator &presentationanimator);
+
+    Character *mCharacter;
+    MouthFlapper *mMouthFlapper;
     TNAMEVECTOR mAnimationNames;
     bool mRandomSelection;
     int mTalkTime;

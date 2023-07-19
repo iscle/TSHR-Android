@@ -43,10 +43,9 @@
 // Return:      N/A.
 //
 //=============================================================================
-NoDamageBonusObjective::NoDamageBonusObjective() : mElapsedTime( 0 )
-{
-    SetType( BonusObjective::NO_DAMAGE );
-    SetSuccessful( true );
+NoDamageBonusObjective::NoDamageBonusObjective() : mElapsedTime(0) {
+    SetType(BonusObjective::NO_DAMAGE);
+    SetSuccessful(true);
 }
 
 //=============================================================================
@@ -59,8 +58,7 @@ NoDamageBonusObjective::NoDamageBonusObjective() : mElapsedTime( 0 )
 // Return:      N/A.
 //
 //=============================================================================
-NoDamageBonusObjective::~NoDamageBonusObjective()
-{
+NoDamageBonusObjective::~NoDamageBonusObjective() {
 }
 
 //=============================================================================
@@ -73,9 +71,8 @@ NoDamageBonusObjective::~NoDamageBonusObjective()
 // Return:      void 
 //
 //=============================================================================
-void NoDamageBonusObjective::Initialize()
-{
-    GetEventManager()->AddListener( this, EVENT_COLLISION );
+void NoDamageBonusObjective::Initialize() {
+    GetEventManager()->AddListener(this, EVENT_COLLISION);
 }
 
 //=============================================================================
@@ -88,9 +85,8 @@ void NoDamageBonusObjective::Initialize()
 // Return:      void 
 //
 //=============================================================================
-void NoDamageBonusObjective::Finalize()
-{
-    GetEventManager()->RemoveListener( this, EVENT_COLLISION );
+void NoDamageBonusObjective::Finalize() {
+    GetEventManager()->RemoveListener(this, EVENT_COLLISION);
 }
 
 //=============================================================================
@@ -98,16 +94,14 @@ void NoDamageBonusObjective::Finalize()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void NoDamageBonusObjective::HandleEvent( EventEnum id, void* pEventData )
-{
-    if ( GetStarted() && GetSuccessful() )
-    {
-        SetSuccessful( false );
+void NoDamageBonusObjective::HandleEvent(EventEnum id, void *pEventData) {
+    if (GetStarted() && GetSuccessful()) {
+        SetSuccessful(false);
         //TODO: Update the HUD!
     }
 }
@@ -128,9 +122,8 @@ void NoDamageBonusObjective::HandleEvent( EventEnum id, void* pEventData )
 // Return:      void 
 //
 //=============================================================================
-void NoDamageBonusObjective::OnReset()
-{
-    SetSuccessful( true );
+void NoDamageBonusObjective::OnReset() {
+    SetSuccessful(true);
     mElapsedTime = 0;
 }
 
@@ -144,8 +137,7 @@ void NoDamageBonusObjective::OnReset()
 // Return:      void 
 //
 //=============================================================================
-void NoDamageBonusObjective::OnStart()
-{
+void NoDamageBonusObjective::OnStart() {
     //Turn on the HUD.
 }
 
@@ -154,15 +146,13 @@ void NoDamageBonusObjective::OnStart()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void NoDamageBonusObjective::OnUpdate( unsigned int milliseconds )
-{
-    if ( GetStarted() && GetSuccessful() )
-    {
+void NoDamageBonusObjective::OnUpdate(unsigned int milliseconds) {
+    if (GetStarted() && GetSuccessful()) {
         mElapsedTime += milliseconds;
     }
 }

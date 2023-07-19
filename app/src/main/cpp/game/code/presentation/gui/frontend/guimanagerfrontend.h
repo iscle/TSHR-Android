@@ -31,20 +31,21 @@ const unsigned int FOR_THE_FIRST_TIME = 1;
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiManagerFrontEnd : public CGuiManager
-{
+class CGuiManagerFrontEnd : public CGuiManager {
 public:
-    CGuiManagerFrontEnd( Scrooby::Project* pProject,
-                            CGuiEntity* pParent );
+    CGuiManagerFrontEnd(Scrooby::Project *pProject,
+                        CGuiEntity *pParent);
 
     virtual ~CGuiManagerFrontEnd();
 
-	virtual void Populate();
-    virtual void Start( CGuiWindow::eGuiWindowID initialWindow = CGuiWindow::GUI_WINDOW_ID_UNDEFINED );
+    virtual void Populate();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void
+    Start(CGuiWindow::eGuiWindowID initialWindow = CGuiWindow::GUI_WINDOW_ID_UNDEFINED);
+
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
 private:
     //---------------------------------------------------------------------
@@ -53,11 +54,13 @@ private:
 
     // No copying or assignment. Declare but don't define.
     //
-    CGuiManagerFrontEnd( const CGuiManagerFrontEnd& );
-    CGuiManagerFrontEnd& operator= ( const CGuiManagerFrontEnd& );
+    CGuiManagerFrontEnd(const CGuiManagerFrontEnd &);
 
-    void OnControllerDisconnected( int controllerID );
-    void OnControllerConnected( int controllerID );
+    CGuiManagerFrontEnd &operator=(const CGuiManagerFrontEnd &);
+
+    void OnControllerDisconnected(int controllerID);
+
+    void OnControllerConnected(int controllerID);
 
     void StartIntroMovie();
 
@@ -67,11 +70,11 @@ private:
 
     int m_levelNum;
     int m_disconnectedController;
-    bool m_quittingToDemo : 1;
-    bool m_controllerPromptShown : 1;
-    bool m_quittingToMiniGame : 1;
-    bool m_isControllerReconnected : 1;
-    bool m_wasFMVInputHandlerEnabled : 1;
+    bool m_quittingToDemo: 1;
+    bool m_controllerPromptShown: 1;
+    bool m_quittingToMiniGame: 1;
+    bool m_isControllerReconnected: 1;
+    bool m_wasFMVInputHandlerEnabled: 1;
 
 #ifdef RAD_WIN32
     bool m_quittingGame : 1;

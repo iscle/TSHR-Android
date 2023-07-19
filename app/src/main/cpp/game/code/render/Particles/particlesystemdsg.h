@@ -26,7 +26,9 @@
 //===========================================================================
 
 class tParticleSystem;
+
 class tParticleSystemFactory;
+
 class tEffectController;
 
 //===========================================================================
@@ -53,47 +55,61 @@ class tEffectController;
 //      steady state.
 //
 //===========================================================================
-class ParticleSystemDSG : public InstStatEntityDSG
-{
-    public:
-        ParticleSystemDSG();
-        ~ParticleSystemDSG();
+class ParticleSystemDSG : public InstStatEntityDSG {
+public:
+    ParticleSystemDSG();
 
-        virtual void Display();
-		virtual void DisplayBoundingBox( tColour colour );
-        virtual void GetBoundingBox( rmt::Box3D* box );
-        virtual void GetBoundingSphere( rmt::Sphere* sphere );
+    ~ParticleSystemDSG();
 
-        virtual rmt::Vector* pPosition(){ rAssert( false ); return NULL; } 
-        virtual const rmt::Vector& rPosition();
-        virtual void GetPosition( rmt::Vector* ipPosn );
-                
-        void Init( tParticleSystemFactory* pFactory, tEffectController* pController);
-        void SetVelocity( const rmt::Vector& velocity );
+    virtual void Display();
 
-        void SetBias(unsigned bias, float b);
-        int GetNumLiveParticles()const;
-        int LastFrameReached()const;
-        void SetTransform( const rmt::Matrix& transform );
-        // Reset animation to start
-        void Reset();
-        void Update( float deltaTime );
+    virtual void DisplayBoundingBox(tColour colour);
+
+    virtual void GetBoundingBox(rmt::Box3D *box);
+
+    virtual void GetBoundingSphere(rmt::Sphere *sphere);
+
+    virtual rmt::Vector *pPosition() {
+        rAssert(false);
+        return NULL;
+    }
+
+    virtual const rmt::Vector &rPosition();
+
+    virtual void GetPosition(rmt::Vector *ipPosn);
+
+    void Init(tParticleSystemFactory *pFactory, tEffectController *pController);
+
+    void SetVelocity(const rmt::Vector &velocity);
+
+    void SetBias(unsigned bias, float b);
+
+    int GetNumLiveParticles() const;
+
+    int LastFrameReached() const;
+
+    void SetTransform(const rmt::Matrix &transform);
+
+    // Reset animation to start
+    void Reset();
+
+    void Update(float deltaTime);
 
 
-    protected:
+protected:
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow ParticleSystemDSG from being copied and assigned.
-        ParticleSystemDSG( const ParticleSystemDSG& );
-        ParticleSystemDSG& operator=( const ParticleSystemDSG& );
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow ParticleSystemDSG from being copied and assigned.
+    ParticleSystemDSG(const ParticleSystemDSG &);
 
-        rmt::Vector mPosition;
-        tParticleSystem* mpSystem;
-        tEffectController* mpController;
+    ParticleSystemDSG &operator=(const ParticleSystemDSG &);
+
+    rmt::Vector mPosition;
+    tParticleSystem *mpSystem;
+    tEffectController *mpController;
 };
-
 
 
 #endif

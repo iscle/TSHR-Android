@@ -46,8 +46,7 @@
 //
 //==============================================================================
 OcclusionLocator::OcclusionLocator() :
-    mNumOccTriggers( 0 )
-{
+        mNumOccTriggers(0) {
 }
 
 //==============================================================================
@@ -60,8 +59,7 @@ OcclusionLocator::OcclusionLocator() :
 // Return:      N/A.
 //
 //==============================================================================
-OcclusionLocator::~OcclusionLocator()
-{
+OcclusionLocator::~OcclusionLocator() {
 }
 
 //******************************************************************************
@@ -75,12 +73,12 @@ OcclusionLocator::~OcclusionLocator()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int playerID )
+// Parameters:  (unsigned int playerID)
 //
 // Return:      void 
 //
 //=============================================================================
-void OcclusionLocator::OnTrigger( unsigned int playerID )
-{
-    GetEventManager()->TriggerEvent((EventEnum)(EVENT_LOCATOR+LocatorEvent::OCCLUSION_ZONE),this);
+void OcclusionLocator::OnTrigger(unsigned int playerID) {
+    GetEventManager()->TriggerEvent((EventEnum)(EVENT_LOCATOR + LocatorEvent::OCCLUSION_ZONE),
+                                    this);
 }

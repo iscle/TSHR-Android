@@ -93,150 +93,148 @@ void AddVariablesToWatcher()
 // Returns:     None
 //
 //=============================================================================
-void CreateSingletons()
-{
+void CreateSingletons() {
     //CREATE_MEMORYTRACKER();
-        
+
     CREATE_DEBUGINFO();
 
-    MEMTRACK_PUSH_GROUP( "Singletons" );
+    MEMTRACK_PUSH_GROUP("Singletons");
 
-    GameDataManager* pGameDataManager = GameDataManager::CreateInstance();
-    rAssert( pGameDataManager != NULL );
+    GameDataManager *pGameDataManager = GameDataManager::CreateInstance();
+    rAssert(pGameDataManager != NULL);
 
 #ifdef RAD_WIN32
     GameConfigManager* pGameConfigManager = GameConfigManager::CreateInstance();
-    rAssert( pGameConfigManager != NULL );
+    rAssert(pGameConfigManager != NULL);
 #endif
 
-    EventManager* pEventManager = EventManager::CreateInstance();
-    rAssert( pEventManager != NULL );
+    EventManager *pEventManager = EventManager::CreateInstance();
+    rAssert(pEventManager != NULL);
 
-    LoadingManager* pLoadingManager = LoadingManager::CreateInstance();
-    rAssert( pLoadingManager != NULL );
+    LoadingManager *pLoadingManager = LoadingManager::CreateInstance();
+    rAssert(pLoadingManager != NULL);
 
-    InputManager* pInputManager = InputManager::CreateInstance();
-    rAssert( pInputManager != NULL );
-    
-    SkidmarkManager* pSkidmarkManager = SkidmarkManager::CreateInstance();
-    rAssert( pSkidmarkManager != NULL );
+    InputManager *pInputManager = InputManager::CreateInstance();
+    rAssert(pInputManager != NULL);
+
+    SkidmarkManager *pSkidmarkManager = SkidmarkManager::CreateInstance();
+    rAssert(pSkidmarkManager != NULL);
 
     //AttributeTableChunk Manager, has the the info of physprops in a table
-    ATCManager * pATCManager =ATCManager::CreateInstance();
+    ATCManager *pATCManager = ATCManager::CreateInstance();
     rAssert(pATCManager != NULL);
 
-    CardGallery* pCardCallery = CardGallery::CreateInstance();
-    rAssert( pCardCallery != NULL );
+    CardGallery *pCardCallery = CardGallery::CreateInstance();
+    rAssert(pCardCallery != NULL);
 
     //CharacterSheetManager 
-    CharacterSheetManager* pCharacterSheetManager = CharacterSheetManager::CreateInstance();
+    CharacterSheetManager *pCharacterSheetManager = CharacterSheetManager::CreateInstance();
     rAssert(pCharacterSheetManager != NULL);
-   
+
     //RewardsManager
-    RewardsManager* pRewardsManager = RewardsManager::CreateInstance();
+    RewardsManager *pRewardsManager = RewardsManager::CreateInstance();
     rAssert(pRewardsManager);
 
-    MEMTRACK_PUSH_GROUP( "Console" );
-    
+    MEMTRACK_PUSH_GROUP("Console");
+
     // must be around before VehicleCentral tries to tie in some shit
     // ...MissionScriptLoader too
-    Console* pConsole = Console::CreateInstance();
-    rAssert( pConsole != NULL );
+    Console *pConsole = Console::CreateInstance();
+    rAssert(pConsole != NULL);
 
-    MEMTRACK_POP_GROUP( "Console" );
+    MEMTRACK_POP_GROUP("Console");
 
-   
+
 
     // must be done before init'ing worldphysicsmanager
-    VehicleCentral* pVC = VehicleCentral::CreateInstance();
+    VehicleCentral *pVC = VehicleCentral::CreateInstance();
     rAssert(pVC != 0);
 
     sim::SimUnits::Initialize();
-    WorldPhysicsManager* pWPM = WorldPhysicsManager::CreateInstance();
+    WorldPhysicsManager *pWPM = WorldPhysicsManager::CreateInstance();
     rAssert(pWPM != 0);
-   
+
     CREATE_PROFILER();
 
-    PresentationManager* pPM = PresentationManager::CreateInstance();
-    rAssert( pPM != NULL );
+    PresentationManager *pPM = PresentationManager::CreateInstance();
+    rAssert(pPM != NULL);
 
-    CGuiSystem* pGuiSystem = CGuiSystem::CreateInstance();
-    rAssert( pGuiSystem != NULL );
+    CGuiSystem *pGuiSystem = CGuiSystem::CreateInstance();
+    rAssert(pGuiSystem != NULL);
 
-    SoundManager* pSoundManager = 
-        SoundManager::CreateInstance( CommandLineOptions::Get( CLO_MUTE ),
-                                      CommandLineOptions::Get( CLO_NO_MUSIC ),
-                                      CommandLineOptions::Get( CLO_NO_EFFECTS ),
-                                      CommandLineOptions::Get( CLO_NO_DIALOG ) );
-    rAssert( pSoundManager != NULL );
+    SoundManager *pSoundManager =
+            SoundManager::CreateInstance(CommandLineOptions::Get(CLO_MUTE),
+                                         CommandLineOptions::Get(CLO_NO_MUSIC),
+                                         CommandLineOptions::Get(CLO_NO_EFFECTS),
+                                         CommandLineOptions::Get(CLO_NO_DIALOG));
+    rAssert(pSoundManager != NULL);
 
-    MissionManager* pMM = MissionManager::CreateInstance();
-    rAssert( pMM != NULL );
+    MissionManager *pMM = MissionManager::CreateInstance();
+    rAssert(pMM != NULL);
 
     /*
     HeadToHeadManager* pH2HM = HeadToHeadManager::CreateInstance();
-    rAssert( pH2HM != NULL );
+    rAssert(pH2HM != NULL);
     */
 
-    MissionScriptLoader* pMSL = MissionScriptLoader::CreateInstance();
-    rAssert( pMSL != NULL );
+    MissionScriptLoader *pMSL = MissionScriptLoader::CreateInstance();
+    rAssert(pMSL != NULL);
 
-    CharacterManager* pCM = CharacterManager::CreateInstance();
-    rAssert( pCM != NULL );
+    CharacterManager *pCM = CharacterManager::CreateInstance();
+    rAssert(pCM != NULL);
 
-    AvatarManager* pAM = AvatarManager::CreateInstance();
-    rAssert( pAM != (AvatarManager*)0 );
+    AvatarManager *pAM = AvatarManager::CreateInstance();
+    rAssert(pAM != (AvatarManager *) 0);
 
-    ActionButtonManager* pABM = ActionButtonManager::CreateInstance();
-    rAssert( pABM != (ActionButtonManager*)0 );
+    ActionButtonManager *pABM = ActionButtonManager::CreateInstance();
+    rAssert(pABM != (ActionButtonManager *) 0);
 
-    SuperCamManager* pSCM = SuperCamManager::CreateInstance();
-    rAssert( pSCM != NULL );
+    SuperCamManager *pSCM = SuperCamManager::CreateInstance();
+    rAssert(pSCM != NULL);
 
     TriggerVolumeTracker::CreateInstance();
 
-    InteriorManager* pInteriorManager = InteriorManager::CreateInstance();
-    rAssert( pInteriorManager != NULL );
+    InteriorManager *pInteriorManager = InteriorManager::CreateInstance();
+    rAssert(pInteriorManager != NULL);
 
-    CheatInputSystem* pCheatInputSystem = CheatInputSystem::CreateInstance();
-    rAssert( pCheatInputSystem != NULL );
+    CheatInputSystem *pCheatInputSystem = CheatInputSystem::CreateInstance();
+    rAssert(pCheatInputSystem != NULL);
 
-    TutorialManager* pTutorialManager = TutorialManager::CreateInstance();
-    rAssert( pTutorialManager != NULL );
+    TutorialManager *pTutorialManager = TutorialManager::CreateInstance();
+    rAssert(pTutorialManager != NULL);
 
-    ActorManager* pActorManager = ActorManager::CreateInstance();
-    rAssert( pActorManager != NULL );
+    ActorManager *pActorManager = ActorManager::CreateInstance();
+    rAssert(pActorManager != NULL);
 
-    PersistentWorldManager* pPWManager = PersistentWorldManager::CreateInstance();
-    rAssert( pPWManager );
+    PersistentWorldManager *pPWManager = PersistentWorldManager::CreateInstance();
+    rAssert(pPWManager);
 
-    FootprintManager* pFootprintManager = FootprintManager::CreateInstance();
-    rAssert( pFootprintManager != NULL );
+    FootprintManager *pFootprintManager = FootprintManager::CreateInstance();
+    rAssert(pFootprintManager != NULL);
 
-    CoinManager* pCoinManager = CoinManager::CreateInstance();
-    rAssert( pCoinManager );
-    Sparkle* pSparkle = Sparkle::CreateInstance();
-    rAssert( pSparkle );
+    CoinManager *pCoinManager = CoinManager::CreateInstance();
+    rAssert(pCoinManager);
+    Sparkle *pSparkle = Sparkle::CreateInstance();
+    rAssert(pSparkle);
 
-	HitnRunManager* pHitnRunManager = HitnRunManager::CreateInstance();
-	rAssert( pHitnRunManager );
+    HitnRunManager *pHitnRunManager = HitnRunManager::CreateInstance();
+    rAssert(pHitnRunManager);
 
     //
     // Create The RenderFlow Instance; this creates the RenderManager.
     // Create it under singletons.cpp because of co-dependency between singletons.
     //
-    RenderFlow* pRenderFlow = RenderFlow::CreateInstance();
-    rAssert( pRenderFlow );
+    RenderFlow *pRenderFlow = RenderFlow::CreateInstance();
+    rAssert(pRenderFlow);
 
 
 #ifndef RAD_RELEASE
-    if( CommandLineOptions::Get( CLO_PROP_STATS ) )
-    {
+    if (CommandLineOptions::Get(CLO_PROP_STATS)) {
         PropStats::EnableTracking();
-    }   
+    }
 #endif
 
-	MEMTRACK_POP_GROUP("Singletons");
+    MEMTRACK_POP_GROUP("Singletons");
 
     AddVariablesToWatcher();
 }
@@ -253,8 +251,7 @@ void CreateSingletons()
 // Returns:     None
 //
 //=============================================================================
-void DestroySingletons()
-{
+void DestroySingletons() {
     InteriorManager::DestroyInstance();
 
     ActionButtonManager::DestroyInstance();
@@ -264,15 +261,15 @@ void DestroySingletons()
     AvatarManager::DestroyInstance();
 
     CharacterManager::DestroyInstance();
-    
-    MissionScriptLoader::DestroyInstance();    
-    
+
+    MissionScriptLoader::DestroyInstance();
+
     //HeadToHeadManager::DestroyInstance();    
-    
+
     MissionManager::DestroyInstance();
-    
+
     SoundManager::DestroyInstance();
-    
+
     CGuiSystem::DestroyInstance();
 
     PresentationManager::DestroyInstance();
@@ -280,9 +277,9 @@ void DestroySingletons()
     WorldPhysicsManager::DestroyInstance();
 
     VehicleCentral::DestroyInstance();
-    
+
     Console::DestroyInstance();
-       
+
     ATCManager::DestroyInstance();
 
     CharacterSheetManager::DestroyInstance();
@@ -302,7 +299,7 @@ void DestroySingletons()
     HitnRunManager::DestroyInstance();
 
     InputManager::DestroyInstance();
-    
+
     LoadingManager::DestroyInstance();
 
     SkidmarkManager::DestroyInstance();

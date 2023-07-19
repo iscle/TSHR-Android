@@ -50,14 +50,13 @@
 //
 //==============================================================================
 AnimationPlayer::AnimationPlayer() :
-    mState( ANIM_IDLE ),
-    mbPlayAfterLoad( true ),
-    mbExclusive( true ),
-    mbShowAlways ( false ),
-    mbKeepLayersFrozen( false ),
-	mbIsSkippable(true),
-    mpLoadDataCallback( NULL )
-{
+        mState(ANIM_IDLE),
+        mbPlayAfterLoad(true),
+        mbExclusive(true),
+        mbShowAlways(false),
+        mbKeepLayersFrozen(false),
+        mbIsSkippable(true),
+        mpLoadDataCallback(NULL) {
 }
 
 //==============================================================================
@@ -70,8 +69,7 @@ AnimationPlayer::AnimationPlayer() :
 // Return:      N/A.
 //
 //==============================================================================
-AnimationPlayer::~AnimationPlayer()
-{
+AnimationPlayer::~AnimationPlayer() {
 }
 
 
@@ -87,40 +85,32 @@ AnimationPlayer::~AnimationPlayer()
 //
 //==============================================================================
 void AnimationPlayer::LoadData
-( 
-    const char* fileName,
-    bool bInInventory,
-    void* pUserData
-)
-{
-    if( mState == ANIM_IDLE )
-    {
+        (
+                const char *fileName,
+                bool bInInventory,
+                void *pUserData
+        ) {
+    if (mState == ANIM_IDLE) {
         mState = ANIM_LOADING;
 
-        if( bInInventory )
-        {
-            OnProcessRequestsComplete( NULL );
+        if (bInInventory) {
+            OnProcessRequestsComplete(NULL);
             mSection = 0;
-        }
-        else
-        {
-            if(!GetInteriorManager()->IsInside())
-            {
-                GetLoadingManager()->AddRequest( FILEHANDLER_ANIMATION,
-                                             fileName,
-                                             GMA_CHARS_AND_GAGS,
-                                             fileName,
-                                             "Animation Player",
-                                             this );
-            }
-            else
-            {
-                GetLoadingManager()->AddRequest( FILEHANDLER_ANIMATION,
-                                             fileName,
-                                             GMA_DEFAULT,
-                                             fileName,
-                                             "Animation Player",
-                                             this );
+        } else {
+            if (!GetInteriorManager()->IsInside()) {
+                GetLoadingManager()->AddRequest(FILEHANDLER_ANIMATION,
+                                                fileName,
+                                                GMA_CHARS_AND_GAGS,
+                                                fileName,
+                                                "Animation Player",
+                                                this);
+            } else {
+                GetLoadingManager()->AddRequest(FILEHANDLER_ANIMATION,
+                                                fileName,
+                                                GMA_DEFAULT,
+                                                fileName,
+                                                "Animation Player",
+                                                this);
             }
 
             mSection = tEntity::MakeUID(fileName);
@@ -134,22 +124,21 @@ void AnimationPlayer::LoadData
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const char* fileName )
+// Parameters:  (const char* fileName)
 //
 // Return:      void 
 //
 //=============================================================================
 void AnimationPlayer::LoadData
-( 
-    const char* fileName,
-    LoadDataCallBack* pCallback,
-    bool bInInventory,
-    void* pUserData
-)
-{
+        (
+                const char *fileName,
+                LoadDataCallBack *pCallback,
+                bool bInInventory,
+                void *pUserData
+        ) {
     mpLoadDataCallback = pCallback;
 
-    this->LoadData( fileName, bInInventory, pUserData );
+    this->LoadData(fileName, bInInventory, pUserData);
 }
 
 //=============================================================================
@@ -157,34 +146,31 @@ void AnimationPlayer::LoadData
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( void* pUserData )
+// Parameters:  (void* pUserData)
 //
 // Return:      void 
 //
 //=============================================================================
-void AnimationPlayer::OnProcessRequestsComplete( void* pUserData )
-{
+void AnimationPlayer::OnProcessRequestsComplete(void *pUserData) {
     p3d::inventory->PushSection();
 
-    p3d::inventory->SelectSection( mSection );
-    bool currentOnly = p3d::inventory->GetCurrentSectionOnly( );
-    p3d::inventory->SetCurrentSectionOnly( true );
+    p3d::inventory->SelectSection(mSection);
+    bool currentOnly = p3d::inventory->GetCurrentSectionOnly();
+    p3d::inventory->SetCurrentSectionOnly(true);
 
     mState = ANIM_LOADED;
 
     this->DoLoaded();
 
-    if( mpLoadDataCallback != NULL )
-    {
+    if (mpLoadDataCallback != NULL) {
         mpLoadDataCallback->OnLoadDataComplete();
     }
 
-    if( mbPlayAfterLoad )
-    {
+    if (mbPlayAfterLoad) {
         Play();
     }
-    
-    p3d::inventory->SetCurrentSectionOnly( currentOnly );
+
+    p3d::inventory->SetCurrentSectionOnly(currentOnly);
 
     p3d::inventory->PopSection();
 }
@@ -199,19 +185,15 @@ void AnimationPlayer::OnProcessRequestsComplete( void* pUserData )
 // Return:      void 
 //
 //=============================================================================
-void AnimationPlayer::Play()
-{
-    if( mState == ANIM_STOPPED )
-    {
+void AnimationPlayer::Play() {
+    if (mState == ANIM_STOPPED) {
         mState = ANIM_PLAYING;
     }
 
-    if( mState == ANIM_LOADED )
-    {
+    if (mState == ANIM_LOADED) {
         mState = ANIM_PLAYING;
 
-        if( mbExclusive )
-        {
+        if (mbExclusive) {
             EnterExclusive();
         }
     }
@@ -252,10 +234,8 @@ void AnimationPlayer::StopAndCleanUp()
 // Return:      void 
 //
 //=============================================================================
-void AnimationPlayer::Render()
-{
-    if( (mState == ANIM_PLAYING) || mbShowAlways )
-    {
+void AnimationPlayer::Render() {
+    if ((mState == ANIM_PLAYING) || mbShowAlways) {
         DoRender();
     }
 }
@@ -270,10 +250,8 @@ void AnimationPlayer::Render()
 // Return:      void 
 //
 //=============================================================================
-void AnimationPlayer::Stop()
-{
-    if( mbExclusive )
-    {
+void AnimationPlayer::Stop() {
+    if (mbExclusive) {
         LeaveExclusive();
     }
 
@@ -282,8 +260,7 @@ void AnimationPlayer::Stop()
     // the player to be stuck in the stopped state, since LoadData() wouldn't
     // do anything.  Added check for idle state. -- DE
     //
-    if( mState != ANIM_IDLE )
-    {
+    if (mState != ANIM_IDLE) {
         mState = ANIM_STOPPED;
     }
 }
@@ -298,10 +275,9 @@ void AnimationPlayer::Stop()
 // Return:      void 
 //
 //=============================================================================
-void AnimationPlayer::ClearData()
-{
+void AnimationPlayer::ClearData() {
     mState = ANIM_IDLE;
-    p3d::inventory->DeleteSection( mSection );
+    p3d::inventory->DeleteSection(mSection);
 }
 
 //******************************************************************************
@@ -320,14 +296,12 @@ void AnimationPlayer::ClearData()
 // Return:      void 
 //
 //=============================================================================
-void AnimationPlayer::EnterExclusive()
-{
+void AnimationPlayer::EnterExclusive() {
     GetRenderManager()->FreezeForPresentation();
 
-    RenderLayer* pLayer = GetRenderManager()->mpLayer( RenderEnums::PresentationSlot );
+    RenderLayer *pLayer = GetRenderManager()->mpLayer(RenderEnums::PresentationSlot);
 
-    if ( pLayer->IsDead() )
-    {
+    if (pLayer->IsDead()) {
         pLayer->Resurrect();
     }
     pLayer->Thaw();
@@ -343,13 +317,11 @@ void AnimationPlayer::EnterExclusive()
 // Return:      void 
 //
 //=============================================================================
-void AnimationPlayer::LeaveExclusive()
-{
-    if( !mbKeepLayersFrozen )
-    {
+void AnimationPlayer::LeaveExclusive() {
+    if (!mbKeepLayersFrozen) {
         GetRenderManager()->ThawFromPresentation();
 
-        RenderLayer* pLayer = GetRenderManager()->mpLayer( RenderEnums::PresentationSlot );
+        RenderLayer *pLayer = GetRenderManager()->mpLayer(RenderEnums::PresentationSlot);
 
         pLayer->Freeze();
     }

@@ -24,44 +24,48 @@
 //===========================================================================
 // Forward References
 //===========================================================================
-namespace Scrooby
-{
+namespace Scrooby {
     class Pure3dObject;
 };
+
 class tMultiController;
 
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenIrisWipe : public CGuiScreen
-{
+class CGuiScreenIrisWipe : public CGuiScreen {
 public:
-    CGuiScreenIrisWipe( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenIrisWipe(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenIrisWipe();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    inline void SetRelativeSpeed( float speed ) { m_relativeSpeed = speed; };
+    inline void SetRelativeSpeed(float speed) { m_relativeSpeed = speed; };
+
     static void DoNotOpenOnNextOutro();
+
     static bool IsIrisClosed();
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
-    Scrooby::Pure3dObject* m_pIris;
-    tMultiController*      m_pMultiController;
-    float                  m_numFrames;
-    float                  m_relativeSpeed;
-    static bool            g_IsIrisClosed;
+    Scrooby::Pure3dObject *m_pIris;
+    tMultiController *m_pMultiController;
+    float m_numFrames;
+    float m_relativeSpeed;
+    static bool g_IsIrisClosed;
 
-    bool m_isIrisActive : 1;
+    bool m_isIrisActive: 1;
 
-    Scrooby::Text* m_loadingText;
+    Scrooby::Text *m_loadingText;
     unsigned int m_elapsedIdleTime;
     unsigned int m_elapsedBlinkTime;
 

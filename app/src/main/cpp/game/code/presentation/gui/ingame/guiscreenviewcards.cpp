@@ -51,24 +51,21 @@
 //
 //===========================================================================
 CGuiScreenViewCards::CGuiScreenViewCards
-(
-	Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-)
-:   CGuiScreenCardGallery( pScreen, pParent, GUI_SCREEN_ID_VIEW_CARDS ),
-    m_pauseFgdLayer( NULL ),
-    m_bigBoardFgdLayer( NULL )
-{
-    Scrooby::Page* pPage = m_pScroobyScreen->GetPage( "PauseFgd" );
-    if( pPage != NULL )
-    {
-        m_pauseFgdLayer = pPage->GetLayerByIndex( 0 );
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        : CGuiScreenCardGallery(pScreen, pParent, GUI_SCREEN_ID_VIEW_CARDS),
+          m_pauseFgdLayer(NULL),
+          m_bigBoardFgdLayer(NULL) {
+    Scrooby::Page *pPage = m_pScroobyScreen->GetPage("PauseFgd");
+    if (pPage != NULL) {
+        m_pauseFgdLayer = pPage->GetLayerByIndex(0);
     }
 
-    pPage = m_pScroobyScreen->GetPage( "BigBoard" );
-    if( pPage != NULL )
-    {
-        m_bigBoardFgdLayer = pPage->GetLayerByIndex( 0 );
+    pPage = m_pScroobyScreen->GetPage("BigBoard");
+    if (pPage != NULL) {
+        m_bigBoardFgdLayer = pPage->GetLayerByIndex(0);
     }
 
 #ifndef RAD_WIN32
@@ -90,8 +87,7 @@ CGuiScreenViewCards::CGuiScreenViewCards
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenViewCards::~CGuiScreenViewCards()
-{
+CGuiScreenViewCards::~CGuiScreenViewCards() {
 }
 
 
@@ -108,50 +104,42 @@ CGuiScreenViewCards::~CGuiScreenViewCards()
 //
 //===========================================================================
 void CGuiScreenViewCards::HandleMessage
-(
-	eGuiMessage message,
-	unsigned int param1,
-	unsigned int param2
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        switch( message )
-        {
-            case GUI_MSG_UPDATE:
-            {
-                if( m_pauseFgdLayer != NULL )
-                {
-                    m_pauseFgdLayer->SetVisible( m_cardGalleryState == STATE_BROWSING_CARDS );
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        switch (message) {
+            case GUI_MSG_UPDATE: {
+                if (m_pauseFgdLayer != NULL) {
+                    m_pauseFgdLayer->SetVisible(m_cardGalleryState == STATE_BROWSING_CARDS);
                 }
 
-                if( m_bigBoardFgdLayer != NULL )
-                {
-                    m_bigBoardFgdLayer->SetVisible( m_cardGalleryState == STATE_BROWSING_CARDS );
+                if (m_bigBoardFgdLayer != NULL) {
+                    m_bigBoardFgdLayer->SetVisible(m_cardGalleryState == STATE_BROWSING_CARDS);
                 }
 
                 break;
             }
-            case GUI_MSG_CONTROLLER_START:
-            {
-                if( !m_pMenu->HasSelectionBeenMade() && m_cardGalleryState == STATE_BROWSING_CARDS )
-                {
+            case GUI_MSG_CONTROLLER_START: {
+                if (!m_pMenu->HasSelectionBeenMade() &&
+                    m_cardGalleryState == STATE_BROWSING_CARDS) {
                     // resume game
-                    m_pParent->HandleMessage( GUI_MSG_UNPAUSE_INGAME );
+                    m_pParent->HandleMessage(GUI_MSG_UNPAUSE_INGAME);
                 }
 
                 break;
             }
-            default:
-            {
+            default: {
                 break;
             }
         }
     }
 
     // Propogate the message up the hierarchy.
-	//
-	CGuiScreenCardGallery::HandleMessage( message, param1, param2 );
+    //
+    CGuiScreenCardGallery::HandleMessage(message, param1, param2);
 }
 
 
@@ -167,9 +155,8 @@ void CGuiScreenViewCards::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenViewCards::InitIntro()
-{
-    this->UpdateCards( GetGameplayManager()->GetCurrentLevelIndex() );
+void CGuiScreenViewCards::InitIntro() {
+    this->UpdateCards(GetGameplayManager()->GetCurrentLevelIndex());
 }
 
 
@@ -185,8 +172,7 @@ void CGuiScreenViewCards::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenViewCards::InitRunning()
-{
+void CGuiScreenViewCards::InitRunning() {
 }
 
 
@@ -202,8 +188,7 @@ void CGuiScreenViewCards::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenViewCards::InitOutro()
-{
+void CGuiScreenViewCards::InitOutro() {
 }
 
 

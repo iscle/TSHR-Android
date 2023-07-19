@@ -29,29 +29,30 @@ class CGuiMenu;
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenDisplay : public CGuiScreen
-{
+class CGuiScreenDisplay : public CGuiScreen {
 public:
-    CGuiScreenDisplay( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenDisplay(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenDisplay();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    virtual CGuiMenu* HasMenu() { return m_pMenu; }
+    virtual CGuiMenu *HasMenu() { return m_pMenu; }
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
     void ApplySettings();
 
 private:
-    enum eMenuItem
-    {
+    enum eMenuItem {
         MENU_ITEM_RESOLUTION,
         MENU_ITEM_COLOUR_DEPTH,
         MENU_ITEM_DISPLAY_MODE,
@@ -61,8 +62,8 @@ private:
         NUM_MENU_ITEMS
     };
 
-    CGuiMenu* m_pMenu;
-    bool      m_changedGamma;
+    CGuiMenu *m_pMenu;
+    bool m_changedGamma;
 };
 
 #endif // GUISCREENDISPLAY_H

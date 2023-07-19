@@ -27,16 +27,17 @@
 //
 //=============================================================================
 
-class ConstantEffect : public ForceEffect
-{
+class ConstantEffect : public ForceEffect {
 public:
-        ConstantEffect();
-        virtual ~ConstantEffect();
+    ConstantEffect();
 
-        void OnInit();
+    virtual ~ConstantEffect();
 
-        void SetMagnitude( s16 magnitude );
-        void SetDirection( u16 direction );
+    void OnInit();
+
+    void SetMagnitude(s16 magnitude);
+
+    void SetDirection(u16 direction);
 
 private:
 
@@ -45,9 +46,10 @@ private:
     DIENVELOPE          m_diEnvelope;
 #endif
 
-        //Prevent wasteful constructor creation.
-    ConstantEffect( const ConstantEffect& constanteffect );
-    ConstantEffect& operator=( const ConstantEffect& constanteffect );
+    //Prevent wasteful constructor creation.
+    ConstantEffect(const ConstantEffect &constanteffect);
+
+    ConstantEffect &operator=(const ConstantEffect &constanteffect);
 };
 
 //*****************************************************************************

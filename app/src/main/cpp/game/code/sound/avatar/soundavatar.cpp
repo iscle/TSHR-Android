@@ -49,24 +49,23 @@
 // Return:      N/A.
 //
 //==============================================================================
-SoundAvatar::SoundAvatar( Avatar* avatarObj ) :
-    m_avatar( avatarObj ),
-    m_isInCar( false ),
-    m_turboTimer( 0 )
-{
-    rAssert( avatarObj != NULL );
+SoundAvatar::SoundAvatar(Avatar *avatarObj) :
+        m_avatar(avatarObj),
+        m_isInCar(false),
+        m_turboTimer(0) {
+    rAssert(avatarObj != NULL);
 
     //
     // Register as an event listener
     //
-    GetEventManager()->AddListener( this, EVENT_GETINTOVEHICLE_END );
-    GetEventManager()->AddListener( this, EVENT_GETOUTOFVEHICLE_END );
-    GetEventManager()->AddListener( this, EVENT_MISSION_RESET );
-    GetEventManager()->AddListener( this, EVENT_VEHICLE_DESTROYED_SYNC_SOUND );
-    GetEventManager()->AddListener( this, EVENT_CHARACTER_POS_RESET );   
-    GetEventManager()->AddListener( this, EVENT_CHASE_VEHICLE_SPAWNED );
-    GetEventManager()->AddListener( this, EVENT_CHASE_VEHICLE_DESTROYED );
-    GetEventManager()->AddListener( this, EVENT_TURBO_START );
+    GetEventManager()->AddListener(this, EVENT_GETINTOVEHICLE_END);
+    GetEventManager()->AddListener(this, EVENT_GETOUTOFVEHICLE_END);
+    GetEventManager()->AddListener(this, EVENT_MISSION_RESET);
+    GetEventManager()->AddListener(this, EVENT_VEHICLE_DESTROYED_SYNC_SOUND);
+    GetEventManager()->AddListener(this, EVENT_CHARACTER_POS_RESET);
+    GetEventManager()->AddListener(this, EVENT_CHASE_VEHICLE_SPAWNED);
+    GetEventManager()->AddListener(this, EVENT_CHASE_VEHICLE_DESTROYED);
+    GetEventManager()->AddListener(this, EVENT_TURBO_START);
 
     syncCarSoundState();
 }
@@ -81,17 +80,15 @@ SoundAvatar::SoundAvatar( Avatar* avatarObj ) :
 // Return:      N/A.
 //
 //==============================================================================
-SoundAvatar::~SoundAvatar()
-{
-    if( m_isInCar )
-    {
+SoundAvatar::~SoundAvatar() {
+    if (m_isInCar) {
         m_vehicleSoundPlayer.StopCarSounds();
     }
 
     //
     // Deregister from EventManager
     //
-    GetEventManager()->RemoveAll( this );
+    GetEventManager()->RemoveAll(this);
 }
 
 //=============================================================================
@@ -106,23 +103,19 @@ SoundAvatar::~SoundAvatar()
 // Return:      void 
 //
 //=============================================================================
-void SoundAvatar::HandleEvent( EventEnum id, void* pEventData )
-{
-    switch( id )
-    {
+void SoundAvatar::HandleEvent(EventEnum id, void *pEventData) {
+    switch (id) {
         case EVENT_GETINTOVEHICLE_END:
-            if( static_cast<Character*>(pEventData) == m_avatar->GetCharacter() )
-            {
+            if (static_cast<Character *>(pEventData) == m_avatar->GetCharacter()) {
                 m_isInCar = true;
 
-                rAssert( m_avatar->GetVehicle() );
-                m_vehicleSoundPlayer.StartCarSounds( m_avatar->GetVehicle() );
+                rAssert(m_avatar->GetVehicle());
+                m_vehicleSoundPlayer.StartCarSounds(m_avatar->GetVehicle());
             }
             break;
 
         case EVENT_GETOUTOFVEHICLE_END:
-            if( static_cast<Character*>(pEventData) == m_avatar->GetCharacter() )
-            {
+            if (static_cast<Character *>(pEventData) == m_avatar->GetCharacter()) {
                 m_isInCar = false;
 
                 m_vehicleSoundPlayer.StopCarSounds();
@@ -136,11 +129,11 @@ void SoundAvatar::HandleEvent( EventEnum id, void* pEventData )
             break;
 
         case EVENT_CHASE_VEHICLE_SPAWNED:
-            m_vehicleSoundPlayer.AddAIVehicleProximityTest( static_cast<Vehicle*>(pEventData) );
+            m_vehicleSoundPlayer.AddAIVehicleProximityTest(static_cast<Vehicle *>(pEventData));
             break;
 
         case EVENT_CHASE_VEHICLE_DESTROYED:
-            m_vehicleSoundPlayer.DeleteAIVehicleProximityTest( static_cast<Vehicle*>(pEventData) );
+            m_vehicleSoundPlayer.DeleteAIVehicleProximityTest(static_cast<Vehicle *>(pEventData));
             break;
 
         case EVENT_TURBO_START:
@@ -148,9 +141,8 @@ void SoundAvatar::HandleEvent( EventEnum id, void* pEventData )
             // If event applies to this character, start a timer.  When it expires,
             // say something funny
             //
-            if( ( m_turboTimer == 0 ) &&
-                ( static_cast<Character*>(pEventData) == m_avatar->GetCharacter() ) )
-            {
+            if ((m_turboTimer == 0) &&
+                (static_cast<Character *>(pEventData) == m_avatar->GetCharacter())) {
                 m_turboTimer = 5000;
             }
 
@@ -170,28 +162,22 @@ void SoundAvatar::HandleEvent( EventEnum id, void* pEventData )
 // Return:      void 
 //
 //=============================================================================
-void SoundAvatar::UpdateOncePerFrame( unsigned int elapsedTime )
-{
-    if( m_isInCar )
-    {
-        m_vehicleSoundPlayer.UpdateOncePerFrame( elapsedTime );
+void SoundAvatar::UpdateOncePerFrame(unsigned int elapsedTime) {
+    if (m_isInCar) {
+        m_vehicleSoundPlayer.UpdateOncePerFrame(elapsedTime);
     }
 
-    if( m_turboTimer > 0 )
-    {
-        if( !(m_avatar->GetCharacter()->IsTurbo()) )
-        {
+    if (m_turboTimer > 0) {
+        if (!(m_avatar->GetCharacter()->IsTurbo())) {
             //
             // Player no longer sprinting, stop the countdown
             //
             m_turboTimer = 0;
-        }
-        else if( elapsedTime >= m_turboTimer )
-        {
+        } else if (elapsedTime >= m_turboTimer) {
             //
             // Timer expired.  Time to make with the funny.
             //
-            GetEventManager()->TriggerEvent( EVENT_CHARACTER_TIRED_NOW );
+            GetEventManager()->TriggerEvent(EVENT_CHARACTER_TIRED_NOW);
 
             //
             // Set up for another line, but if it's a repeat, let's make
@@ -203,9 +189,7 @@ void SoundAvatar::UpdateOncePerFrame( unsigned int elapsedTime )
             // and be done.
             //
             m_turboTimer = 0;
-        }
-        else
-        {
+        } else {
             m_turboTimer -= elapsedTime;
         }
     }
@@ -228,18 +212,14 @@ void SoundAvatar::UpdateOncePerFrame( unsigned int elapsedTime )
 // Return:      void 
 //
 //=============================================================================
-void SoundAvatar::syncCarSoundState()
-{
+void SoundAvatar::syncCarSoundState() {
     m_isInCar = m_avatar->IsInCar();
 
-    if( m_isInCar )
-    {
-        rAssert( m_avatar->GetVehicle() );
+    if (m_isInCar) {
+        rAssert(m_avatar->GetVehicle());
 
-        m_vehicleSoundPlayer.StartCarSounds( m_avatar->GetVehicle() );
-    }
-    else
-    {
+        m_vehicleSoundPlayer.StartCarSounds(m_avatar->GetVehicle());
+    } else {
         m_vehicleSoundPlayer.StopCarSounds();
     }
 }

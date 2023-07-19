@@ -46,14 +46,13 @@
 //
 //==============================================================================
 SelectableDialog::SelectableDialog() :
-    m_missionNum( NO_MISSION ),
-    m_levelNum( NO_LEVEL ),
-    m_event( NUM_EVENTS ),
+        m_missionNum(NO_MISSION),
+        m_levelNum(NO_LEVEL),
+        m_event(NUM_EVENTS),
 #ifndef RAD_RELEASE
-    m_hasBeenPlayed( false ),
+        m_hasBeenPlayed(false),
 #endif
-    m_nextListObject( NULL )
-{
+        m_nextListObject(NULL) {
 }
 
 //==============================================================================
@@ -68,15 +67,14 @@ SelectableDialog::SelectableDialog() :
 // Return:      N/A.
 //
 //==============================================================================
-SelectableDialog::SelectableDialog( unsigned int level, unsigned int mission, EventEnum event ) :
-    m_missionNum( mission ),
-    m_levelNum( level ),
-    m_event( event ),
+SelectableDialog::SelectableDialog(unsigned int level, unsigned int mission, EventEnum event) :
+        m_missionNum(mission),
+        m_levelNum(level),
+        m_event(event),
 #ifndef RAD_RELEASE
-    m_hasBeenPlayed( false ),
+        m_hasBeenPlayed(false),
 #endif
-    m_nextListObject( NULL )
-{
+        m_nextListObject(NULL) {
 }
 
 //==============================================================================
@@ -89,8 +87,7 @@ SelectableDialog::SelectableDialog( unsigned int level, unsigned int mission, Ev
 // Return:      N/A.
 //
 //==============================================================================
-SelectableDialog::~SelectableDialog()
-{
+SelectableDialog::~SelectableDialog() {
 }
 
 //=============================================================================
@@ -103,8 +100,7 @@ SelectableDialog::~SelectableDialog()
 // Return:      void 
 //
 //=============================================================================
-void SelectableDialog::AddToDialogList( SelectableDialog** list )
-{
+void SelectableDialog::AddToDialogList(SelectableDialog **list) {
     m_nextListObject = *list;
     *list = this;
 }
@@ -119,8 +115,7 @@ void SelectableDialog::AddToDialogList( SelectableDialog** list )
 // Return:      void 
 //
 //=============================================================================
-void SelectableDialog::AddToDialogList( SelectableDialog* listObj )
-{
+void SelectableDialog::AddToDialogList(SelectableDialog *listObj) {
     m_nextListObject = listObj->m_nextListObject;
     listObj->m_nextListObject = this;
 }
@@ -135,9 +130,8 @@ void SelectableDialog::AddToDialogList( SelectableDialog* listObj )
 // Return:      void 
 //
 //=============================================================================
-void SelectableDialog::RemoveNextFromList()
-{
-    rAssert( m_nextListObject != NULL );
+void SelectableDialog::RemoveNextFromList() {
+    rAssert(m_nextListObject != NULL);
     m_nextListObject = m_nextListObject->m_nextListObject;
 }
 
@@ -151,9 +145,8 @@ void SelectableDialog::RemoveNextFromList()
 // Return:      unsigned int with the mission number, NO_MISSION for no mission
 //
 //=============================================================================
-unsigned int SelectableDialog::GetMission() const
-{
-    return( m_missionNum );
+unsigned int SelectableDialog::GetMission() const {
+    return (m_missionNum);
 }
 
 //=============================================================================
@@ -166,9 +159,8 @@ unsigned int SelectableDialog::GetMission() const
 // Return:      unsigned int with the level number, NO_LEVEL for no level
 //
 //=============================================================================
-unsigned int SelectableDialog::GetLevel() const
-{
-    return( m_levelNum );
+unsigned int SelectableDialog::GetLevel() const {
+    return (m_levelNum);
 }
 
 //=============================================================================
@@ -181,9 +173,8 @@ unsigned int SelectableDialog::GetLevel() const
 // Return:      EventEnum
 //
 //=============================================================================
-EventEnum SelectableDialog::GetEvent() const
-{
-    return( m_event );
+EventEnum SelectableDialog::GetEvent() const {
+    return (m_event);
 }
 
 //******************************************************************************
@@ -194,20 +185,15 @@ EventEnum SelectableDialog::GetEvent() const
 
 #ifndef RAD_RELEASE
 
-void SelectableDialog::MarkAsPlayed()
-{
+void SelectableDialog::MarkAsPlayed() {
     m_hasBeenPlayed = true;
 }
 
-void SelectableDialog::PrintPlayedStatus()
-{
-    if( m_hasBeenPlayed )
-    {
-        rTuneString( "Played\n" );
-    }
-    else
-    {
-        rTuneString( "NOT PLAYED\n" );
+void SelectableDialog::PrintPlayedStatus() {
+    if (m_hasBeenPlayed) {
+        rTuneString("Played\n");
+    } else {
+        rTuneString("NOT PLAYED\n");
     }
 }
 

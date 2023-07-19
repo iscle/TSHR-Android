@@ -47,9 +47,9 @@
 // Constraints: None.
 //
 //========================================================================
-InstStatPhysDSG::InstStatPhysDSG()
-{
+InstStatPhysDSG::InstStatPhysDSG() {
 }
+
 //========================================================================
 // InstStatPhysDSG::
 //========================================================================
@@ -63,15 +63,14 @@ InstStatPhysDSG::InstStatPhysDSG()
 // Constraints: None.
 //
 //========================================================================
-InstStatPhysDSG::~InstStatPhysDSG()
-{
-BEGIN_PROFILE( "InstStatPhysDSG Destroy" );
-    if(mpGeo)
-    {
+InstStatPhysDSG::~InstStatPhysDSG() {
+    BEGIN_PROFILE("InstStatPhysDSG Destroy");
+    if (mpGeo) {
         mpGeo->Release();
     }
-END_PROFILE( "InstStatPhysDSG Destroy" );
+    END_PROFILE("InstStatPhysDSG Destroy");
 }
+
 //========================================================================
 // InstStatPhysDSG::
 //========================================================================
@@ -85,26 +84,24 @@ END_PROFILE( "InstStatPhysDSG Destroy" );
 // Constraints: None.
 //
 //========================================================================
-void InstStatPhysDSG::Display()
-{
+void InstStatPhysDSG::Display() {
 #ifdef PROFILER_ENABLED
     char profileName[] = "  InstStatPhysDSG Display";
 #endif
     DSG_BEGIN_PROFILE(profileName)
-    if(CastsShadow())
-    {
+    if (CastsShadow()) {
         BillboardQuadManager::Enable();
     }
     p3d::pddi->PushMultMatrix(PDDI_MATRIX_MODELVIEW, &mMatrix);
-        mpGeo->Display();
+    mpGeo->Display();
     p3d::pddi->PopMatrix(PDDI_MATRIX_MODELVIEW);
-    if(CastsShadow())
-    {
+    if (CastsShadow()) {
         BillboardQuadManager::Disable();
         DisplaySimpleShadow();
     }
     DSG_END_PROFILE(profileName)
 }
+
 //========================================================================
 // InstStatPhysDSG::
 //========================================================================
@@ -118,15 +115,15 @@ void InstStatPhysDSG::Display()
 // Constraints: None.
 //
 //========================================================================
-void InstStatPhysDSG::GetBoundingBox(rmt::Box3D* box)
-{
+void InstStatPhysDSG::GetBoundingBox(rmt::Box3D *box) {
     // the box is in world space already:
-    
+
     box->low = mBBox.low;
     box->high = mBBox.high;
-    
-    
+
+
 }
+
 //========================================================================
 // InstStatPhysDSG::
 //========================================================================
@@ -140,8 +137,7 @@ void InstStatPhysDSG::GetBoundingBox(rmt::Box3D* box)
 // Constraints: None.
 //
 //========================================================================
-void InstStatPhysDSG::GetBoundingSphere(rmt::Sphere* pSphere)
-{
+void InstStatPhysDSG::GetBoundingSphere(rmt::Sphere *pSphere) {
     // the sphere is in world space already:
 
     pSphere->centre = mSphere.centre;
@@ -154,14 +150,13 @@ void InstStatPhysDSG::GetBoundingSphere(rmt::Sphere* pSphere)
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( sim::SimState* ipSimState )
+// Parameters:  (sim::SimState* ipSimState)
 //
 // Return:      void 
 //
 //=============================================================================
-void InstStatPhysDSG::OnSetSimState( sim::SimState* ipSimState )
-{
-    tRefCounted::Assign( mpSimStateObj, ipSimState );
+void InstStatPhysDSG::OnSetSimState(sim::SimState *ipSimState) {
+    tRefCounted::Assign(mpSimStateObj, ipSimState);
 
     // ok for this to have the same ai ref I guess    
     //mpSimStateObj->mAIRefIndex = StaticPhysDSG::GetAIRef();
@@ -182,9 +177,7 @@ void InstStatPhysDSG::OnSetSimState( sim::SimState* ipSimState )
 // Return:      virtual 
 //
 //=============================================================================
-void InstStatPhysDSG::SetInternalState()
-{
-
+void InstStatPhysDSG::SetInternalState() {
 
 
     mPosn = mpSimStateObj->GetPosition();
@@ -263,9 +256,9 @@ void InstStatPhysDSG::SetInternalState()
 
 }
 
-   ///////////////////////////////////////////////////////////////////////
-   // Accessors
-   ///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+// Accessors
+///////////////////////////////////////////////////////////////////////
 //========================================================================
 // InstStatPhysDSG::
 //========================================================================
@@ -279,10 +272,10 @@ void InstStatPhysDSG::SetInternalState()
 // Constraints: None.
 //
 //========================================================================
-sim::SimState*  InstStatPhysDSG::pSimStateObj()
-{
-    return mpSimStateObj; 
+sim::SimState *InstStatPhysDSG::pSimStateObj() {
+    return mpSimStateObj;
 }
+
 //========================================================================
 // InstStatPhysDSG::
 //========================================================================
@@ -296,10 +289,10 @@ sim::SimState*  InstStatPhysDSG::pSimStateObj()
 // Constraints: None.
 //
 //========================================================================
-rmt::Matrix* InstStatPhysDSG::pMatrix()
-{
+rmt::Matrix *InstStatPhysDSG::pMatrix() {
     return &mMatrix;
 }
+
 //========================================================================
 // InstStatPhysDSG::
 //========================================================================
@@ -313,14 +306,13 @@ rmt::Matrix* InstStatPhysDSG::pMatrix()
 // Constraints: None.
 //
 //========================================================================
-tGeometry* InstStatPhysDSG::pGeo()
-{
+tGeometry *InstStatPhysDSG::pGeo() {
     return mpGeo;
 }
-   
-   ///////////////////////////////////////////////////////////////////////
-   // Load interface
-   ///////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////
+// Load interface
+///////////////////////////////////////////////////////////////////////
 //========================================================================
 // InstStatPhysDSG::
 //========================================================================
@@ -335,16 +327,15 @@ tGeometry* InstStatPhysDSG::pGeo()
 //
 //========================================================================
 void InstStatPhysDSG::LoadSetUp
-(  
-    sim::SimState*      ipSimStateObj, 
-	CollisionAttributes* ipCollAttr,
-    const rmt::Matrix&  iMatrix, 
-    tGeometry*          ipGeo     
-)
-{
- 
-    mMatrix    = iMatrix;
-    mpGeo       = ipGeo;
+        (
+                sim::SimState *ipSimStateObj,
+                CollisionAttributes *ipCollAttr,
+                const rmt::Matrix &iMatrix,
+                tGeometry *ipGeo
+        ) {
+
+    mMatrix = iMatrix;
+    mpGeo = ipGeo;
     mpGeo->AddRef();
 
     SetCollisionAttributes(ipCollAttr);
@@ -356,21 +347,20 @@ void InstStatPhysDSG::LoadSetUp
     ipGeo->ProcessShaders(*this);
 }
 
-InstStatPhysDSG* InstStatPhysDSG::Clone(const char* Name, const rmt::Matrix& iMatrix) const
-{
-    InstStatPhysDSG* c = new InstStatPhysDSG();
+InstStatPhysDSG *InstStatPhysDSG::Clone(const char *Name, const rmt::Matrix &iMatrix) const {
+    InstStatPhysDSG *c = new InstStatPhysDSG();
     rAssert(c);
     c->SetName(Name);
     c->mMatrix = iMatrix;
     c->mpGeo = this->mpGeo;
     c->mpGeo->AddRef();
     c->SetCollisionAttributes(this->GetCollisionAttributes());
-    sim::SimState* simState = sim::SimState::CreateSimState(this->GetSimState());
+    sim::SimState *simState = sim::SimState::CreateSimState(this->GetSimState());
     simState->SetControl(sim::simAICtrl);
     simState->GetCollisionObject()->SetIsStatic(false);
     simState->GetCollisionObject()->SetManualUpdate(false);
-    simState->SetTransform(iMatrix); 
-    simState->GetCollisionObject()->Update();      
+    simState->SetTransform(iMatrix);
+    simState->GetCollisionObject()->Update();
     simState->GetCollisionObject()->SetIsStatic(true);
     simState->GetCollisionObject()->SetManualUpdate(true);
     c->SetSimState(simState);

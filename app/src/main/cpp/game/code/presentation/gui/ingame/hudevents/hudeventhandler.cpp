@@ -26,28 +26,24 @@
 // Public Member Functions
 //===========================================================================
 
-HudEventHandler::HudEventHandler( Scrooby::Group* drawableGroup )
-:   m_drawableGroup( drawableGroup ),
-    m_elapsedTime( 0.0f ),
-    m_currentState( STATE_IDLE )
-{
-    rAssert( drawableGroup != NULL );
-    drawableGroup->SetVisible( false );
+HudEventHandler::HudEventHandler(Scrooby::Group *drawableGroup)
+        : m_drawableGroup(drawableGroup),
+          m_elapsedTime(0.0f),
+          m_currentState(STATE_IDLE) {
+    rAssert(drawableGroup != NULL);
+    drawableGroup->SetVisible(false);
 }
 
-HudEventHandler::~HudEventHandler()
-{
+HudEventHandler::~HudEventHandler() {
 }
 
 void
-HudEventHandler::OnStart()
-{
-    if( m_currentState != STATE_RUNNING )
-    {
+HudEventHandler::OnStart() {
+    if (m_currentState != STATE_RUNNING) {
         // show all drawable elements in group
         //
-        rAssert( m_drawableGroup != NULL );
-        m_drawableGroup->SetVisible( true );
+        rAssert(m_drawableGroup != NULL);
+        m_drawableGroup->SetVisible(true);
 
         // reset elapsed time
         //
@@ -60,14 +56,12 @@ HudEventHandler::OnStart()
 }
 
 void
-HudEventHandler::OnStop()
-{
-    if( m_currentState != STATE_IDLE )
-    {
+HudEventHandler::OnStop() {
+    if (m_currentState != STATE_IDLE) {
         // hide all drawable elements in group
         //
-        rAssert( m_drawableGroup != NULL );
-        m_drawableGroup->SetVisible( false );
+        rAssert(m_drawableGroup != NULL);
+        m_drawableGroup->SetVisible(false);
 
         // update current state
         //

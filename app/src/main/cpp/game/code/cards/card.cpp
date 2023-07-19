@@ -39,30 +39,27 @@
 //
 //===========================================================================
 Card::Card
-(
-    unsigned int ID,
-    unsigned int level,
-    unsigned int levelID,
-    tUID cardName,
-    const eQuoteID* quotes,
-    int numQuotes
-)
-:   m_ID( ID ),
-    m_level( level ),
-    m_levelID( levelID ),
-    m_cardName( cardName ),
-    m_numQuotes( 0 )
-{
-    rAssert( quotes != NULL );
+        (
+                unsigned int ID,
+                unsigned int level,
+                unsigned int levelID,
+                tUID cardName,
+                const eQuoteID *quotes,
+                int numQuotes
+        )
+        : m_ID(ID),
+          m_level(level),
+          m_levelID(levelID),
+          m_cardName(cardName),
+          m_numQuotes(0) {
+    rAssert(quotes != NULL);
 
-    for( int i = 0; i < numQuotes; i++ )
-    {
-        rAssert( quotes[ i ] < NUM_QUOTE_IDS );
+    for (int i = 0; i < numQuotes; i++) {
+        rAssert(quotes[i] < NUM_QUOTE_IDS);
 
-        m_quotes[ i ] = quotes[ i ];
+        m_quotes[i] = quotes[i];
 
-        if( m_quotes[ i ] != EMPTY_QUOTE )
-        {
+        if (m_quotes[i] != EMPTY_QUOTE) {
             m_numQuotes++;
         }
     }
@@ -80,16 +77,14 @@ Card::Card
 // Return:      
 //
 //===========================================================================
-Card::~Card()
-{
+Card::~Card() {
 }
 
 eQuoteID
-Card::GetQuoteID( int index ) const
-{
-    rAssert( static_cast<unsigned int>( index ) < MAX_NUM_QUOTES );
+Card::GetQuoteID(int index) const {
+    rAssert(static_cast<unsigned int>(index) < MAX_NUM_QUOTES);
 
-    return m_quotes[ index ];
+    return m_quotes[index];
 }
 
 //===========================================================================

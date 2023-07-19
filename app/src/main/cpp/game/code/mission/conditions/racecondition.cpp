@@ -46,10 +46,9 @@
 //
 //==============================================================================
 RaceCondition::RaceCondition() :
-    m_playerWaypointsRemaining( 0 ),
-    m_aiWaypointsRemaining( 0 )
-{
-    this->SetType( COND_RACE );
+        m_playerWaypointsRemaining(0),
+        m_aiWaypointsRemaining(0) {
+    this->SetType(COND_RACE);
 }
 
 //==============================================================================
@@ -62,8 +61,7 @@ RaceCondition::RaceCondition() :
 // Return:      N/A.
 //
 //==============================================================================
-RaceCondition::~RaceCondition()
-{
+RaceCondition::~RaceCondition() {
 }
 
 //=============================================================================
@@ -76,11 +74,10 @@ RaceCondition::~RaceCondition()
 // Return:      void 
 //
 //=============================================================================
-void RaceCondition::OnInitialize()
-{
-    GetEventManager()->AddListener( this, EVENT_WAYAI_AT_DESTINATION );
-    GetEventManager()->AddListener( this, EVENT_WAYAI_HIT_CHECKPOINT );
-    GetEventManager()->AddListener( this, EVENT_WAYAI_HIT_LAST_WAYPOINT );
+void RaceCondition::OnInitialize() {
+    GetEventManager()->AddListener(this, EVENT_WAYAI_AT_DESTINATION);
+    GetEventManager()->AddListener(this, EVENT_WAYAI_HIT_CHECKPOINT);
+    GetEventManager()->AddListener(this, EVENT_WAYAI_HIT_LAST_WAYPOINT);
 }
 
 //=============================================================================
@@ -93,11 +90,10 @@ void RaceCondition::OnInitialize()
 // Return:      void 
 //
 //=============================================================================
-void RaceCondition::OnFinalize()
-{
-    GetEventManager()->RemoveListener( this, EVENT_WAYAI_AT_DESTINATION );
-    GetEventManager()->RemoveListener( this, EVENT_WAYAI_HIT_CHECKPOINT );
-    GetEventManager()->RemoveListener( this, EVENT_WAYAI_HIT_LAST_WAYPOINT );
+void RaceCondition::OnFinalize() {
+    GetEventManager()->RemoveListener(this, EVENT_WAYAI_AT_DESTINATION);
+    GetEventManager()->RemoveListener(this, EVENT_WAYAI_HIT_CHECKPOINT);
+    GetEventManager()->RemoveListener(this, EVENT_WAYAI_HIT_LAST_WAYPOINT);
 }
 
 //=============================================================================
@@ -105,38 +101,32 @@ void RaceCondition::OnFinalize()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void RaceCondition::HandleEvent( EventEnum id, void* pEventData )
-{
-    switch( id )
-    {
-    case EVENT_WAYAI_HIT_LAST_WAYPOINT: // fall thru
-    case EVENT_WAYAI_AT_DESTINATION:
-        {
-            if( pEventData == (void*)GetVehicle() )
-            {
-                SetIsViolated( true );
+void RaceCondition::HandleEvent(EventEnum id, void *pEventData) {
+    switch (id) {
+        case EVENT_WAYAI_HIT_LAST_WAYPOINT: // fall thru
+        case EVENT_WAYAI_AT_DESTINATION: {
+            if (pEventData == (void *) GetVehicle()) {
+                SetIsViolated(true);
             }
 
             m_aiWaypointsRemaining = 0;
             break;
         }
-    case EVENT_WAYAI_HIT_CHECKPOINT:
-        {
-            m_aiWaypointsRemaining = *(static_cast<int*>( pEventData ));
+        case EVENT_WAYAI_HIT_CHECKPOINT: {
+            m_aiWaypointsRemaining = *(static_cast<int *>(pEventData));
             break;
         }
-    default:
-        {
+        default: {
             break;
         }
     }
 
-    MissionCondition::HandleEvent( id, pEventData );
+    MissionCondition::HandleEvent(id, pEventData);
 }
 
 //=============================================================================
@@ -149,9 +139,8 @@ void RaceCondition::HandleEvent( EventEnum id, void* pEventData )
 // Return:      True 
 //
 //=============================================================================
-bool RaceCondition::IsChaseCondition()
-{
-    return( true );
+bool RaceCondition::IsChaseCondition() {
+    return (true);
 }
 
 //=============================================================================
@@ -165,13 +154,12 @@ bool RaceCondition::IsChaseCondition()
 // Return:      True if close, false otherwise 
 //
 //=============================================================================
-bool RaceCondition::IsClose()
-{
+bool RaceCondition::IsClose() {
     //
     // TEMPORARY: this is certainly wrong, but let's use it until I have
     //            a chance to ask someone how to implement this correctly -- Esan
     //
-    return( m_aiWaypointsRemaining <= 1 );
+    return (m_aiWaypointsRemaining <= 1);
 }
 
 //******************************************************************************

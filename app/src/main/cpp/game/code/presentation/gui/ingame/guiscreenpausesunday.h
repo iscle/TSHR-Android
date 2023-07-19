@@ -30,20 +30,22 @@
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenPauseSunday : public CGuiScreenPause
-{
+class CGuiScreenPauseSunday : public CGuiScreenPause {
 public:
-    CGuiScreenPauseSunday( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenPauseSunday(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenPauseSunday();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 };
 

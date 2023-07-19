@@ -24,12 +24,11 @@
 //---------------------------------------------------------------------
 #include <p3d/refcounted.hpp>
 
-enum Status
-{
-	DONE,
-	FAILED,
-	RUNNING,
-	SLEEPING
+enum Status {
+    DONE,
+    FAILED,
+    RUNNING,
+    SLEEPING
 };
 
 //---------------------------------------------------------------------
@@ -37,21 +36,29 @@ enum Status
 //---------------------------------------------------------------------
 
 class Task
-:
-public tRefCounted
-{
-	public:
-		Task(void);
-		virtual ~Task(void);
-		Status GetStatus(void);
-		void SetStatus(Status status);
-		bool IsSleeping(void);
-		void Run(void);
-		bool IsRunning(void);
-		void Done(void);
-		bool IsDone(void);
-	private:
-		Status m_status;
+        :
+                public tRefCounted {
+public:
+    Task(void);
+
+    virtual ~Task(void);
+
+    Status GetStatus(void);
+
+    void SetStatus(Status status);
+
+    bool IsSleeping(void);
+
+    void Run(void);
+
+    bool IsRunning(void);
+
+    void Done(void);
+
+    bool IsDone(void);
+
+private:
+    Status m_status;
 };
 
 #endif // HC_SEQUENCER_TASK_HPP

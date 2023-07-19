@@ -14,26 +14,26 @@
 //========================================
 
 #ifdef _WIN32
-    #include <crtdbg.h>
-    #ifndef _XBOX
-        #include <windows.h>
-    #endif
+#include <crtdbg.h>
+#ifndef _XBOX
+#include <windows.h>
+#endif
 #endif
 
 
 #ifdef _XBOX
-    #include <typeinfo.h>
-    #include <xtl.h>
+#include <typeinfo.h>
+#include <xtl.h>
 #endif // XBOX
 
 #ifdef RAD_PS2
-    #include <malloc.h>
-    #include <typeinfo>
+#include <malloc.h>
+#include <typeinfo>
 #endif // RAD_PS2
 
 #ifdef RAD_GAMECUBE
-    #include <dolphin.h>
-    extern OSHeapHandle gGCHeap;
+#include <dolphin.h>
+extern OSHeapHandle gGCHeap;
 #endif
 //========================================
 // Project Includes
@@ -42,15 +42,14 @@
 #include <memory/createheap.h>
 #include <memory/memoryutilities.h>
 
-namespace Memory
-{
+namespace Memory {
 //******************************************************************************
 //
 // Global Data, Local Data, Local Classes
 //
 //******************************************************************************
 #ifdef RAD_PS2
-static size_t g_MaxFreeMemory = 0;  //used by the PS2 to determine how much memory is free
+    static size_t g_MaxFreeMemory = 0;  //used by the PS2 to determine how much memory is free
 #endif
 
 
@@ -60,37 +59,31 @@ static size_t g_MaxFreeMemory = 0;  //used by the PS2 to determine how much memo
 //
 //******************************************************************************
 
-size_t AllocateLargestFreeBlock( IRadMemoryAllocator* allocator, void*& returnMemory )
-{
-    //
-    // Find out the largest block of memory I can grab
-    //
-    size_t lo = 0;
-    size_t hi = 1024*1024*256; //this is just less than 256mb
-    int pivot;
-    void* memory = NULL;
-    do
-    {
-        pivot = ( hi + lo ) / 2;
-        if( memory != NULL )
-        {
-            allocator->FreeMemory( memory );
-            memory = NULL;
-        }
-        memory = allocator->GetMemory( pivot );
-        if( memory != NULL )
-        {
-            lo = pivot;
-        }
-        else
-        {
-            memory = allocator->GetMemory( lo );
-            hi = pivot;
-        }
-    } while( ( hi - lo ) > 1 );
-    returnMemory = memory;
-    return lo;
-}
+    size_t AllocateLargestFreeBlock(IRadMemoryAllocator *allocator, void *&returnMemory) {
+        //
+        // Find out the largest block of memory I can grab
+        //
+        size_t lo = 0;
+        size_t hi = 1024 * 1024 * 256; //this is just less than 256mb
+        int pivot;
+        void *memory = NULL;
+        do {
+            pivot = (hi + lo) / 2;
+            if (memory != NULL) {
+                allocator->FreeMemory(memory);
+                memory = NULL;
+            }
+            memory = allocator->GetMemory(pivot);
+            if (memory != NULL) {
+                lo = pivot;
+            } else {
+                memory = allocator->GetMemory(lo);
+                hi = pivot;
+            }
+        } while ((hi - lo) > 1);
+        returnMemory = memory;
+        return lo;
+    }
 
 //==============================================================================
 // InitializeMemoryUtilities
@@ -106,19 +99,17 @@ size_t AllocateLargestFreeBlock( IRadMemoryAllocator* allocator, void*& returnMe
 // Constraints: None
 //
 //==============================================================================
-void InitializeMemoryUtilities()
-{
-    static bool alreadyCalled = false;
-    if( alreadyCalled )
-    {
-        return;
-    }
-    alreadyCalled = true;
+    void InitializeMemoryUtilities() {
+        static bool alreadyCalled = false;
+        if (alreadyCalled) {
+            return;
+        }
+        alreadyCalled = true;
 #ifdef RAD_PS2
-    //this is the largest amount of memory that is free
-    g_MaxFreeMemory = GetFreeMemoryProfile();
+        //this is the largest amount of memory that is free
+        g_MaxFreeMemory = GetFreeMemoryProfile();
 #endif
-}
+    }
 
 //==============================================================================
 // GetFreeMemoryEntropy
@@ -133,73 +124,68 @@ void InitializeMemoryUtilities()
 // Constraints: None
 //
 //==============================================================================
-float GetFreeMemoryEntropy( IRadMemoryAllocator* allocator )
-{
-    //
-    // if it's a tracking heap, just quit
-    //
-    GameMemoryAllocator which = WhichAllocator( allocator );
-    HeapType type = AllocatorType( which );
-    if( type != HEAP_TYPE_DOUG_LEA )
-    {
-        return 0.0f;
-    }
+    float GetFreeMemoryEntropy(IRadMemoryAllocator *allocator) {
+        //
+        // if it's a tracking heap, just quit
+        //
+        GameMemoryAllocator which = WhichAllocator(allocator);
+        HeapType type = AllocatorType(which);
+        if (type != HEAP_TYPE_DOUG_LEA) {
+            return 0.0f;
+        }
 
 //    #ifdef RAD_XBOX
 //    return 0.0;
 //    #endif
 
-    unsigned int totalFreeMemory;
-    allocator->GetStatus( &totalFreeMemory, NULL, NULL, NULL );
+        unsigned int totalFreeMemory;
+        allocator->GetStatus(&totalFreeMemory, NULL, NULL, NULL);
 
-    //
-    // Get the largest N blocks of memory
-    //
-    const int N = 10;
-    size_t largestSize[ N ];
-    void*  memory     [ N ];
+        //
+        // Get the largest N blocks of memory
+        //
+        const int N = 10;
+        size_t largestSize[N];
+        void *memory[N];
 
-    int i;
-    for( i = 0; i < N; ++i )
-    {
-        void* pointer = NULL;
-        unsigned int freeMemory;
-        unsigned int largestBlock;
-        allocator->GetStatus( &freeMemory, &largestBlock, NULL, NULL );
+        int i;
+        for (i = 0; i < N; ++i) {
+            void *pointer = NULL;
+            unsigned int freeMemory;
+            unsigned int largestBlock;
+            allocator->GetStatus(&freeMemory, &largestBlock, NULL, NULL);
 
-        largestSize[ i ] = AllocateLargestFreeBlock( allocator, pointer );
-        memory[ i ] = pointer;
+            largestSize[i] = AllocateLargestFreeBlock(allocator, pointer);
+            memory[i] = pointer;
+        }
+
+        //
+        // Compute the entropy
+        //
+        float totalEntropy = 0.0f;
+        float remainingPercentage = 1.0f;
+        for (i = 0; i < N; ++i) {
+            float size = static_cast<float>(largestSize[i]);
+            float percentage = size / static_cast<float>(totalFreeMemory);
+            float entropy = -percentage * logf(percentage) / logf(2.0f);
+            totalEntropy += entropy;
+            remainingPercentage -= percentage;
+        }
+
+        //
+        //
+        //
+
+        //
+        // free the memory
+        //
+        for (i = 0; i < N; ++i) {
+            allocator->FreeMemory(memory[i]);
+            memory[i] = NULL;
+        }
+
+        return totalEntropy;
     }
-
-    //
-    // Compute the entropy
-    //
-    float totalEntropy = 0.0f;
-    float remainingPercentage = 1.0f;
-    for( i = 0; i < N; ++i )
-    {
-        float size = static_cast< float >( largestSize[ i ] );
-        float percentage = size / static_cast< float >( totalFreeMemory );
-        float entropy = -percentage * logf( percentage ) / logf( 2.0f );
-        totalEntropy += entropy;
-        remainingPercentage -= percentage;
-    }
-
-    //
-    //
-    //
-
-    //
-    // free the memory
-    //
-    for( i = 0; i < N; ++i )
-    {   
-        allocator->FreeMemory( memory[ i ] );
-        memory[ i ] = NULL;
-    }
-
-    return totalEntropy;
-}
 
 //==============================================================================
 // GetFreeMemoryProfile
@@ -215,100 +201,84 @@ float GetFreeMemoryEntropy( IRadMemoryAllocator* allocator )
 // Constraints: None
 //
 //==============================================================================
-size_t GetFreeMemoryProfile()
-{
-    static int numberOfTimesCalled = 0;
-    ++numberOfTimesCalled;
+    size_t GetFreeMemoryProfile() {
+        static int numberOfTimesCalled = 0;
+        ++numberOfTimesCalled;
 
 #ifdef _WIN32
-    return 0;
+        return 0;
 #endif
-    const int size = 256;
-    void* pointers[ size ];
-    size_t sizes[ size ];
+        const int size = 256;
+        void *pointers[size];
+        size_t sizes[size];
 
-    int index = 0;
-    int i;
-    for( i = 0; i < size; i++ )
-    {
-        pointers[ i ] = NULL;
-        sizes[ i ] = 0;
-    }
+        int index = 0;
+        int i;
+        for (i = 0; i < size; i++) {
+            pointers[i] = NULL;
+            sizes[i] = 0;
+        }
 
-    int retrys = 0;
-    do
-    {
-        //
-        // Find out the largest block of memory I can grab
-        //
-        int lo = 0;
-        int hi = 1024*1024*256; //this is just less than 256mb
-        int pivot;
-        void* memory = NULL;
-        do
-        {
-            pivot = ( hi + lo ) / 2;
-            if( memory != NULL )
-            {
-                free( memory );
+        int retrys = 0;
+        do {
+            //
+            // Find out the largest block of memory I can grab
+            //
+            int lo = 0;
+            int hi = 1024 * 1024 * 256; //this is just less than 256mb
+            int pivot;
+            void *memory = NULL;
+            do {
+                pivot = (hi + lo) / 2;
+                if (memory != NULL) {
+                    free(memory);
+                    memory = NULL;
+                }
+                memory = malloc(pivot);
+                if (memory != NULL) {
+                    lo = pivot;
+                } else {
+                    memory = malloc(lo);
+                    hi = pivot;
+                }
+            } while ((hi - lo) > 1);
+
+            if ((memory == NULL) && (retrys < 2)) {
+                ++retrys;
+            } else {
+                sizes[index] = lo;
+                pointers[index] = memory;
                 memory = NULL;
+                ++index;
             }
-            memory = malloc( pivot );
-            if( memory != NULL )
-            {
-                lo = pivot;
+        } while ((pointers[index - 1] != NULL) && (index < size));
+
+        //
+        // Need to sum the memory
+        //
+        size_t total = 0;
+        for (i = 0; i < size; i++) {
+            total += sizes[i];
+        }
+
+        //
+        // Need to delete the memory
+        //
+        for (i = 0; i < size; i++) {
+            void *pointer = pointers[i];
+            if (pointer != NULL) {
+                free(pointer);
+                pointers[i] = NULL;
+            } else {
+                break;
             }
-            else
-            {
-                memory = malloc( lo );
-                hi = pivot;
-            }
-        } while( ( hi - lo ) > 1 );
-
-        if( ( memory == NULL ) && ( retrys < 2 ) )
-        {
-            ++retrys;
         }
-        else
-        {
-            sizes[ index ] = lo;
-            pointers[ index ] = memory;
-            memory = NULL;
-            ++index;
-        }
-    } while( ( pointers[ index - 1 ] != NULL ) && ( index < size ) );
-
-    //
-    // Need to sum the memory
-    //
-    size_t total = 0;
-    for( i = 0; i < size; i++ )
-    {
-        total += sizes[ i ];
-    }
-
-    //
-    // Need to delete the memory
-    //
-    for( i = 0; i < size; i++ )
-    {
-        void* pointer = pointers[ i ];
-        if( pointer != NULL )
-        {
-            free( pointer );
-            pointers[ i ] = NULL;
-        }
-        else
-        {
-            break;
-        }
-    }
 
 #ifndef FINAL
-    //rReleasePrintf( "Free Memory Profile - %d\n", total );
+        //rReleasePrintf("Free Memory Profile - %d\n", total);
 #endif
-    return total;
-}
+        return total;
+    }
 
 //==============================================================================
 // GetLargestFreeBlock
@@ -324,45 +294,39 @@ size_t GetFreeMemoryProfile()
 // Constraints: None
 //
 //==============================================================================
-size_t GetLargestFreeBlock()
-{
-    #ifdef _WIN32
+    size_t GetLargestFreeBlock() {
+#ifdef _WIN32
         return 0;
-    #endif
-    
-    #ifdef RAD_GAMECUBE
-        return 0;
-    #endif
+#endif
 
-    //
-    // Find out the largest block of memory I can grab
-    //
-    size_t lo = 0;
-    size_t hi = 1024*1024*256; //this is just less than 256mb
-    int pivot;
-    void* memory = NULL;
-    do
-    {
-        pivot = ( hi + lo ) / 2;
-        if( memory != NULL )
-        {
-            free( memory );
-            memory = NULL;
-        }
-        memory = malloc( pivot );
-        if( memory != NULL )
-        {
-            lo = pivot;
-        }
-        else
-        {
-            memory = malloc( lo );
-            hi = pivot;
-        }
-    } while( ( hi - lo ) > 1 );
-    free( memory );
-    return hi;
-}
+#ifdef RAD_GAMECUBE
+        return 0;
+#endif
+
+        //
+        // Find out the largest block of memory I can grab
+        //
+        size_t lo = 0;
+        size_t hi = 1024 * 1024 * 256; //this is just less than 256mb
+        int pivot;
+        void *memory = NULL;
+        do {
+            pivot = (hi + lo) / 2;
+            if (memory != NULL) {
+                free(memory);
+                memory = NULL;
+            }
+            memory = malloc(pivot);
+            if (memory != NULL) {
+                lo = pivot;
+            } else {
+                memory = malloc(lo);
+                hi = pivot;
+            }
+        } while ((hi - lo) > 1);
+        free(memory);
+        return hi;
+    }
 
 //==============================================================================
 // GetLargestFreeBlock
@@ -378,30 +342,28 @@ size_t GetLargestFreeBlock()
 // Constraints: None
 //
 //==============================================================================
-size_t GetLargestFreeBlock( IRadMemoryAllocator* allocator )
-{
-    //
-    // Can't call this on the persistent heap
-    //
-    IRadMemoryAllocator* persistent = GetAllocator( GMA_PERSISTENT );
-    if( allocator == persistent )
-    {
-        unsigned int totalFreeMemory;
-        unsigned int largestBlock;
-        unsigned int numberOfObjects;
-        unsigned int highWater;
-        allocator->GetStatus( &totalFreeMemory, &largestBlock, &numberOfObjects, &highWater );
-        return largestBlock;
-    }
+    size_t GetLargestFreeBlock(IRadMemoryAllocator *allocator) {
+        //
+        // Can't call this on the persistent heap
+        //
+        IRadMemoryAllocator *persistent = GetAllocator(GMA_PERSISTENT);
+        if (allocator == persistent) {
+            unsigned int totalFreeMemory;
+            unsigned int largestBlock;
+            unsigned int numberOfObjects;
+            unsigned int highWater;
+            allocator->GetStatus(&totalFreeMemory, &largestBlock, &numberOfObjects, &highWater);
+            return largestBlock;
+        }
 
-    //
-    // Find out the largest block of memory I can grab
-    //
-    void* memory = NULL;
-    size_t size = AllocateLargestFreeBlock( allocator, memory );
-    allocator->FreeMemory( memory );
-    return size;
-}
+        //
+        // Find out the largest block of memory I can grab
+        //
+        void *memory = NULL;
+        size_t size = AllocateLargestFreeBlock(allocator, memory);
+        allocator->FreeMemory(memory);
+        return size;
+    }
 
 //==============================================================================
 // GetLargestNFreeBlocks
@@ -417,9 +379,8 @@ size_t GetLargestFreeBlock( IRadMemoryAllocator* allocator )
 // Constraints: None
 //
 //==============================================================================
-void GetLargestNFreeBlocks( IRadMemoryAllocator* allocator, const int n, size_t blocks[] )
-{
-}
+    void GetLargestNFreeBlocks(IRadMemoryAllocator *allocator, const int n, size_t blocks[]) {
+    }
 
 //==============================================================================
 // GetMaxFreeMemory
@@ -435,15 +396,14 @@ void GetLargestNFreeBlocks( IRadMemoryAllocator* allocator, const int n, size_t 
 // Constraints: None
 //
 //==============================================================================
-size_t GetMaxFreeMemory()
-{
+    size_t GetMaxFreeMemory() {
 #ifdef RAD_PS2
-    return g_MaxFreeMemory;
+        return g_MaxFreeMemory;
 #else
-    rAssertMsg( false, "GetMaxFreeMemory - this doesnt work on any platform but the PS2\n" );
-    return 0;
+        rAssertMsg(false, "GetMaxFreeMemory - this doesnt work on any platform but the PS2\n");
+        return 0;
 #endif
-}
+    }
 
 //=============================================================================
 // GetTotalMemoryFree
@@ -458,24 +418,23 @@ size_t GetMaxFreeMemory()
 // Constraints: None
 //
 //=============================================================================
-size_t GetTotalMemoryFree()
-{
-    #if defined _WIN32
+    size_t GetTotalMemoryFree() {
+#if defined _WIN32
         MEMORYSTATUS status;
         GlobalMemoryStatus (&status);
         return status.dwAvailPhys;
-    #elif defined RAD_PS2
+#elif defined RAD_PS2
         size_t used = GetTotalMemoryUsed();
         size_t maxFree = GetMaxFreeMemory();
         size_t free = maxFree - used;
         return free;
-    #elif defined RAD_GAMECUBE
-        return OSCheckHeap( gGCHeap );
-    #else
-        #pragma error( "CMemoryTracker::GetTotalMemoryFree - What platform is this then?");
-    #endif
-    return 0;
-}
+#elif defined RAD_GAMECUBE
+        return OSCheckHeap(gGCHeap);
+#else
+#pragma error("CMemoryTracker::GetTotalMemoryFree - What platform is this then?");
+#endif
+        return 0;
+    }
 
 //=============================================================================
 // GetTotalMemoryFreeLowWaterMark
@@ -491,16 +450,14 @@ size_t GetTotalMemoryFree()
 // Constraints: None
 //
 //=============================================================================
-size_t GetTotalMemoryFreeLowWaterMark()
-{
-    static size_t lowWaterMark = GetTotalMemoryFree();
-    size_t currentFree = GetTotalMemoryFree();
-    if( currentFree < lowWaterMark )
-    {
-        lowWaterMark = currentFree;
+    size_t GetTotalMemoryFreeLowWaterMark() {
+        static size_t lowWaterMark = GetTotalMemoryFree();
+        size_t currentFree = GetTotalMemoryFree();
+        if (currentFree < lowWaterMark) {
+            lowWaterMark = currentFree;
+        }
+        return lowWaterMark;
     }
-    return lowWaterMark;
-}
 
 //=============================================================================
 // GetTotalMemoryUnavailable
@@ -515,27 +472,26 @@ size_t GetTotalMemoryFreeLowWaterMark()
 // Constraints: None
 //
 //=============================================================================
-size_t GetTotalMemoryUnavailable()
-{
-    #if defined _WIN32
+    size_t GetTotalMemoryUnavailable() {
+#if defined _WIN32
         //IAN didn't bother writing this yet
         return 0;
-    #elif defined RAD_PS2
-        #ifdef RAD_RELEASE
-            size_t totalPhysicalMemory = 1024 * 1024 * 32;
-        #else
-            size_t totalPhysicalMemory = 1024 * 1024 * 128;
-        #endif
-        size_t maxFree = GetMaxFreeMemory();
-        size_t unavailable = totalPhysicalMemory - maxFree;
-        return unavailable;
-    #elif defined RAD_GAMECUBE
+#elif defined RAD_PS2
+#ifdef RAD_RELEASE
+        size_t totalPhysicalMemory = 1024 * 1024 * 32;
+#else
+        size_t totalPhysicalMemory = 1024 * 1024 * 128;
+#endif
+    size_t maxFree = GetMaxFreeMemory();
+    size_t unavailable = totalPhysicalMemory - maxFree;
+    return unavailable;
+#elif defined RAD_GAMECUBE
         return 0;
-    #else
-        #pragma error( "CMemoryTracker::GetTotalMemoryFree - What platform is this then?");
-    #endif
-    return 0;
-}
+#else
+#pragma error("CMemoryTracker::GetTotalMemoryFree - What platform is this then?");
+#endif
+        return 0;
+    }
 
 //==============================================================================
 // GetTotalMemoryUsed
@@ -550,15 +506,14 @@ size_t GetTotalMemoryUnavailable()
 // Constraints: None
 //
 //==============================================================================
-size_t GetTotalMemoryUsed()
-{
+    size_t GetTotalMemoryUsed() {
 #if defined _WIN32
-    #ifdef RAD_DEBUG
+#ifdef RAD_DEBUG
         _CrtMemState state;
-        _CrtMemCheckpoint( &state );
+        _CrtMemCheckpoint(&state);
         int total = 0;
         int i;
-        for( i = 0; i < _MAX_BLOCKS; i++ )
+        for(i = 0; i <_MAX_BLOCKS; i++)
         {
             total += state.lSizes[ i ];
         }
@@ -569,20 +524,20 @@ size_t GetTotalMemoryUsed()
         size_t doubleCheck =  status.dwTotalPhys - status.dwAvailPhys;
         //double check these numbers - they should match on the XBOX!
         return total;
-    #else
+#else
         return 0;
-    #endif
+#endif
 #endif
 
 #if defined RAD_PS2
-    struct mallinfo info = mallinfo();
-    return info.uordblks;
+        struct mallinfo info = mallinfo();
+        return info.uordblks;
 #endif
 
 #if defined RAD_GAMECUBE
-    return 0;
+        return 0;
 #endif
-};
+    };
 
 //=============================================================================
 // PrintMemoryStatsToTty
@@ -597,18 +552,17 @@ size_t GetTotalMemoryUsed()
 // Constraints: None
 //
 //=============================================================================
-void PrintMemoryStatsToTty()
-{
+    void PrintMemoryStatsToTty() {
 #ifdef RAD_PS2
-    size_t totalFree    = GetTotalMemoryFree();
-    size_t profileFree  = GetFreeMemoryProfile();
-    size_t largestFree  = GetLargestFreeBlock();
-    size_t lowWaterMark = GetTotalMemoryFreeLowWaterMark();
-    rReleasePrintf( "MEMSTATS\ttotalfree:%d\tprofile:%d\tlargestBlock:%d\tlowWater:%d\n", totalFree, profileFree, largestFree, lowWaterMark );
+        size_t totalFree    = GetTotalMemoryFree();
+        size_t profileFree  = GetFreeMemoryProfile();
+        size_t largestFree  = GetLargestFreeBlock();
+        size_t lowWaterMark = GetTotalMemoryFreeLowWaterMark();
+        rReleasePrintf("MEMSTATS\ttotalfree:%d\tprofile:%d\tlargestBlock:%d\tlowWater:%d\n", totalFree, profileFree, largestFree, lowWaterMark);
 #else
-    size_t totalFree = GetTotalMemoryFree();
-    rReleasePrintf( "MEMSTATS\t%d\t\n", totalFree );
+        size_t totalFree = GetTotalMemoryFree();
+        rReleasePrintf("MEMSTATS\t%d\t\n", totalFree);
 #endif
-}
+    }
 
 }   //namespace MEMORY

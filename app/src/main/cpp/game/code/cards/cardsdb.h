@@ -33,18 +33,19 @@ class Card;
 // Interface Definitions
 //===========================================================================
 
-class CardsDB
-{
+class CardsDB {
 public:
-	CardsDB();
+    CardsDB();
+
     virtual ~CardsDB();
 
     // Load cards from config file into DB
     void LoadCards();
 
     // Accessing cards DB
-    Card* GetCardByID( unsigned int cardID );
-    Card* GetCardByName( tUID cardName );
+    Card *GetCardByID(unsigned int cardID);
+
+    Card *GetCardByName(tUID cardName);
 
     int GetNumCards() const { return m_numCards; }
 
@@ -56,14 +57,15 @@ private:
 
     // No copying or assignment. Declare but don't define.
     //
-    CardsDB( const CardsDB& );
-    CardsDB& operator= ( const CardsDB& );
+    CardsDB(const CardsDB &);
+
+    CardsDB &operator=(const CardsDB &);
 
     //---------------------------------------------------------------------
     // Private Data
     //---------------------------------------------------------------------
 
-    Card** m_cards;
+    Card **m_cards;
     int m_numCards;
 
 };

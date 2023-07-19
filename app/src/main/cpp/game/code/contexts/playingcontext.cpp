@@ -52,8 +52,7 @@
 //
 //==============================================================================
 PlayingContext::PlayingContext() :
-    mQuitting( false )
-{
+        mQuitting(false) {
 }
 
 //==============================================================================
@@ -66,8 +65,7 @@ PlayingContext::PlayingContext() :
 // Return:      N/A.
 //
 //==============================================================================
-PlayingContext::~PlayingContext()
-{
+PlayingContext::~PlayingContext() {
 }
 
 //******************************************************************************
@@ -81,24 +79,24 @@ PlayingContext::~PlayingContext()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ContextEnum previousContext )
+// Parameters:  (ContextEnum previousContext)
 //
 // Return:      void 
 //
 //=============================================================================
-void PlayingContext::OnStart( ContextEnum previousContext )
-{
-    SetMemoryIdentification( "PlayingContext" );
-    HeapMgr()->PushHeap( GMA_LEVEL_OTHER );
-    GetInputManager()->SetGameState( Input::ACTIVE_GAMEPLAY );
-    GetRenderManager()->mpLayer( RenderEnums::LevelSlot )->Thaw();
+void PlayingContext::OnStart(ContextEnum previousContext) {
+    SetMemoryIdentification("PlayingContext");
+    HeapMgr()->PushHeap(GMA_LEVEL_OTHER);
+    GetInputManager()->SetGameState(Input::ACTIVE_GAMEPLAY);
+    GetRenderManager()->mpLayer(RenderEnums::LevelSlot)->Thaw();
 
     // disable screen clearing for GUI render layer
     //
-    GetRenderManager()->mpLayer( RenderEnums::GUI )->pView( 0 )->SetClearMask( PDDI_BUFFER_DEPTH | PDDI_BUFFER_STENCIL );
+    GetRenderManager()->mpLayer(RenderEnums::GUI)->pView(0)->SetClearMask(
+            PDDI_BUFFER_DEPTH | PDDI_BUFFER_STENCIL);
 
 #ifdef RAD_WIN32
-    GetInputManager()->GetFEMouse()->SetInGameMode( true );
+    GetInputManager()->GetFEMouse()->SetInGameMode(true);
 #endif
 }
 
@@ -107,26 +105,25 @@ void PlayingContext::OnStart( ContextEnum previousContext )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ContextEnum nextContext )
+// Parameters:  (ContextEnum nextContext)
 //
 // Return:      void 
 //
 //=============================================================================
-void PlayingContext::OnStop( ContextEnum nextContext )
-{
+void PlayingContext::OnStop(ContextEnum nextContext) {
     mQuitting = false; // I've quit after all.
 
 #ifdef RAD_WIN32
-    GetInputManager()->GetFEMouse()->SetInGameMode( false );
+    GetInputManager()->GetFEMouse()->SetInGameMode(false);
 #endif
 
-    GetInputManager()->SetGameState( Input::ACTIVE_ALL );
+    GetInputManager()->SetGameState(Input::ACTIVE_ALL);
 
     // Make sure no blur effects get carried over
-    GetRenderManager()->SetBlurAlpha( 0 );
+    GetRenderManager()->SetBlurAlpha(0);
 
-    HeapMgr()->PopHeap( GMA_LEVEL_OTHER );
-    SetMemoryIdentification( "PlayingContext Finished" );
+    HeapMgr()->PopHeap(GMA_LEVEL_OTHER);
+    SetMemoryIdentification("PlayingContext Finished");
 }
 
 //=============================================================================
@@ -134,16 +131,15 @@ void PlayingContext::OnStop( ContextEnum nextContext )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void PlayingContext::OnUpdate( unsigned int elapsedTime )
-{
-BEGIN_PROFILE( "GuiSystem" );
-    GetGuiSystem()->Update( elapsedTime );
-END_PROFILE( "GuiSystem" );
+void PlayingContext::OnUpdate(unsigned int elapsedTime) {
+    BEGIN_PROFILE("GuiSystem");
+    GetGuiSystem()->Update(elapsedTime);
+    END_PROFILE("GuiSystem");
 }
 
 //=============================================================================
@@ -156,8 +152,7 @@ END_PROFILE( "GuiSystem" );
 // Return:      void 
 //
 //=============================================================================
-void PlayingContext::OnSuspend()
-{
+void PlayingContext::OnSuspend() {
 }
 
 //=============================================================================
@@ -170,8 +165,7 @@ void PlayingContext::OnSuspend()
 // Return:      void 
 //
 //=============================================================================
-void PlayingContext::OnResume()
-{
+void PlayingContext::OnResume() {
 }
 
 //=============================================================================
@@ -179,12 +173,11 @@ void PlayingContext::OnResume()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void PlayingContext::OnHandleEvent( EventEnum id, void* pEventData )
-{
+void PlayingContext::OnHandleEvent(EventEnum id, void *pEventData) {
 }
 

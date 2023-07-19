@@ -28,15 +28,15 @@
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenMiniHud : public CGuiScreen
-{
+class CGuiScreenMiniHud : public CGuiScreen {
 public:
-    CGuiScreenMiniHud( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenMiniHud(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenMiniHud();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
     // controller ID of user that paused mini-game
     //
@@ -44,8 +44,10 @@ public:
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 };
 

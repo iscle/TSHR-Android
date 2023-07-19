@@ -30,19 +30,19 @@
 //
 //=============================================================================
 
-class GoOutsideObjective : public GoToObjective
-{
+class GoOutsideObjective : public GoToObjective {
 public:
 
     GoOutsideObjective();
-    virtual ~GoOutsideObjective(); 
-    
+
+    virtual ~GoOutsideObjective();
+
 
 protected:
-    virtual void OnInitialize();    
-   
+    virtual void OnInitialize();
+
 private:
-    
+
 };
 
 #endif //GOOUTSIDEOBJECTIVE_H

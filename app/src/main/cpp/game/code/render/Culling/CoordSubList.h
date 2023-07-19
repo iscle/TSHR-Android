@@ -18,79 +18,93 @@
 //    -NOT responsisble for the data mpVectorList as it is expected that
 //       other SubLists will reference the same data
 //
-class CoordSubList
-{
+class CoordSubList {
 public:
-   ~CoordSubList();
-   CoordSubList( Cell* ipCellList, int iSize, int iWeightedSize, Bounds3f& irBounds );
-   CoordSubList( Cell* ipCellList, int iSize, Vector3i iSpans );
-   CoordSubList( Cell* ipCellList, int iSize );
+    ~CoordSubList();
 
-   //
-   // SubDivide the List in-place
-   //
-   void SubDivideHeuristic( Vector3f&      irGranularity, 
-                            CoordSubList** opList1, 
-                            CoordSubList** opList2, 
-                            int&           iorAxis,
-                            float&         orPlanePosn );
-   bool CanBeSplit();
+    CoordSubList(Cell *ipCellList, int iSize, int iWeightedSize, Bounds3f &irBounds);
 
-   //
-   // SubDivide the List in-place
-   //
-   void SubDivideUniform( int iAxis, CoordSubList** opList1, CoordSubList** opList2 );
+    CoordSubList(Cell *ipCellList, int iSize, Vector3i iSpans);
 
-   int WeightedSize();
-   int Size();
+    CoordSubList(Cell *ipCellList, int iSize);
 
-   Cell& Get( int i );
+    //
+    // SubDivide the List in-place
+    //
+    void SubDivideHeuristic(Vector3f &irGranularity,
+                            CoordSubList **opList1,
+                            CoordSubList **opList2,
+                            int &iorAxis,
+                            float &orPlanePosn);
+
+    bool CanBeSplit();
+
+    //
+    // SubDivide the List in-place
+    //
+    void SubDivideUniform(int iAxis, CoordSubList **opList1, CoordSubList **opList2);
+
+    int WeightedSize();
+
+    int Size();
+
+    Cell &Get(int i);
+
 protected:
-   //////////////////////////////////////////////////////////////////
-   // Class Data
-   //////////////////////////////////////////////////////////////////
-   static const char smAxis0 = 1;
-   static const char smAxis1 = 1 << 1;
-   static const char smAxis2 = 1 << 2;
+    //////////////////////////////////////////////////////////////////
+    // Class Data
+    //////////////////////////////////////////////////////////////////
+    static const char smAxis0 = 1;
+    static const char smAxis1 = 1 << 1;
+    static const char smAxis2 = 1 << 2;
 
-   //////////////////////////////////////////////////////////////////
-   // Data
-   //////////////////////////////////////////////////////////////////
-   int         mSize;
-   int         mWeightedSize; 
-   Cell*       mpCellList;
-   Vector3i    mSpans;
-
-
-   //////////////////////////////////////////////////////////////////
-   // Methods
-   //////////////////////////////////////////////////////////////////
-//   CoordSubList( Cell* ipCellList, int iSize );
-   CoordSubList();
-
-   int   ChooseAxis();
-   char  BestSpreadAxis();
+    //////////////////////////////////////////////////////////////////
+    // Data
+    //////////////////////////////////////////////////////////////////
+    int mSize;
+    int mWeightedSize;
+    Cell *mpCellList;
+    Vector3i mSpans;
 
 
-   int   GetWeightedMedian( int iAxis );
-   int   GetWeightedMedian( float& orPlanePosn, int iAxis );
-   int   GetPlanarDivision( float& orPlanePosn, int iAxis, int iIndex );
+    //////////////////////////////////////////////////////////////////
+    // Methods
+    //////////////////////////////////////////////////////////////////
+//   CoordSubList(Cell* ipCellList, int iSize);
+    CoordSubList();
 
-   float GetCellUpperBound( float iCoord, float iGranularity );
-   //   int   GetWeightedMedian( int iAxis, int* opLowerWeightCount, tBox3D* opBounds );
+    int ChooseAxis();
 
-   int   FindSplitIndex( int& ioAxis, int iDeviationThreshold );
-   void  BinCount( int& oMedianDeviation, int& oMedian, int iAxis );
-   int   BinSort( int oMedian, int iAxis );
-   void  SeekMinPlane( float& oPlanePosn, int i, int iAxis );
-   void  SeekMaxPlane( float& oPlanePosn, int iCur, int iEnd, int iAxis );
+    char BestSpreadAxis();
 
-   //
-   // Generate deterministic members
-   //
-   void GenerateMembers();
-   void GenWeightedSize();
-   void GenSpans();
+
+    int GetWeightedMedian(int iAxis);
+
+    int GetWeightedMedian(float &orPlanePosn, int iAxis);
+
+    int GetPlanarDivision(float &orPlanePosn, int iAxis, int iIndex);
+
+    float GetCellUpperBound(float iCoord, float iGranularity);
+    //   int   GetWeightedMedian(int iAxis, int* opLowerWeightCount, tBox3D* opBounds);
+
+    int FindSplitIndex(int &ioAxis, int iDeviationThreshold);
+
+    void BinCount(int &oMedianDeviation, int &oMedian, int iAxis);
+
+    int BinSort(int oMedian, int iAxis);
+
+    void SeekMinPlane(float &oPlanePosn, int i, int iAxis);
+
+    void SeekMaxPlane(float &oPlanePosn, int iCur, int iEnd, int iAxis);
+
+    //
+    // Generate deterministic members
+    //
+    void GenerateMembers();
+
+    void GenWeightedSize();
+
+    void GenSpans();
 };
 
 #endif

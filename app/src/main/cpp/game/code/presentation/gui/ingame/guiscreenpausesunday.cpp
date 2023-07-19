@@ -34,8 +34,7 @@
 // Global Data, Local Data, Local Classes
 //===========================================================================
 
-enum ePauseSundayMenuItem
-{
+enum ePauseSundayMenuItem {
     MENU_ITEM_PAUSE_SUNDAY_CONTINUE,
     MENU_ITEM_MISSION_SELECT,
     MENU_ITEM_PAUSE_SUNDAY_LEVEL_PROGRESS,
@@ -50,19 +49,19 @@ enum ePauseSundayMenuItem
     NUM_PAUSE_SUNDAY_MENU_ITEMS
 };
 
-static const char* PAUSE_SUNDAY_MENU_ITEMS[] = 
-{
-    "Continue",
-    "MissionSelect",
-    "LevelProgress",
-    "ViewCards",
-    "Options",
-    "SaveGame",
-    "QuitGame"
+static const char *PAUSE_SUNDAY_MENU_ITEMS[] =
+        {
+                "Continue",
+                "MissionSelect",
+                "LevelProgress",
+                "ViewCards",
+                "Options",
+                "SaveGame",
+                "QuitGame"
 #ifdef RAD_WIN32
-    ,"ExitToSystem"
+                ,"ExitToSystem"
 #endif
-};
+        };
 
 //===========================================================================
 // Public Member Functions
@@ -81,43 +80,41 @@ static const char* PAUSE_SUNDAY_MENU_ITEMS[] =
 //
 //===========================================================================
 CGuiScreenPauseSunday::CGuiScreenPauseSunday
-(
-	Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-)
-:	
-	CGuiScreenPause( pScreen, pParent, GUI_SCREEN_ID_PAUSE_SUNDAY )
-{
-MEMTRACK_PUSH_GROUP( "CGUIScreenPauseSunday" );
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        :
+        CGuiScreenPause(pScreen, pParent, GUI_SCREEN_ID_PAUSE_SUNDAY) {
+    MEMTRACK_PUSH_GROUP("CGUIScreenPauseSunday");
     // Create a menu.
     //
-    m_pMenu = new(GMA_LEVEL_HUD) CGuiMenu( this, NUM_PAUSE_SUNDAY_MENU_ITEMS );
-    rAssert( m_pMenu != NULL );
+    m_pMenu = new(GMA_LEVEL_HUD) CGuiMenu(this, NUM_PAUSE_SUNDAY_MENU_ITEMS);
+    rAssert(m_pMenu != NULL);
 
     // Retrieve the Scrooby drawing elements.
     //
-    Scrooby::Page* pPage = m_pScroobyScreen->GetPage( "PauseSunday" );
-    rAssert( pPage != NULL );
+    Scrooby::Page *pPage = m_pScroobyScreen->GetPage("PauseSunday");
+    rAssert(pPage != NULL);
 
     // Add menu items
     //
-    Scrooby::Group* menu = pPage->GetGroup( "Menu" );
-    rAssert( menu != NULL );
-    Scrooby::Text* pText = NULL;
-    for( int i = 0; i < NUM_PAUSE_SUNDAY_MENU_ITEMS; i++ )
-    {
-        pText = menu->GetText( PAUSE_SUNDAY_MENU_ITEMS[ i ] );
-        rAssert( pText );
+    Scrooby::Group *menu = pPage->GetGroup("Menu");
+    rAssert(menu != NULL);
+    Scrooby::Text *pText = NULL;
+    for (int i = 0; i < NUM_PAUSE_SUNDAY_MENU_ITEMS; i++) {
+        pText = menu->GetText(PAUSE_SUNDAY_MENU_ITEMS[i]);
+        rAssert(pText);
 
-        m_pMenu->AddMenuItem( pText );
+        m_pMenu->AddMenuItem(pText);
     }
 
 #ifdef RAD_DEMO
     // disable certain menu items for demos
     //
-    m_pMenu->SetMenuItemEnabled( MENU_ITEM_SAVE_GAME, false );
+    m_pMenu->SetMenuItemEnabled(MENU_ITEM_SAVE_GAME, false);
 #endif
-MEMTRACK_POP_GROUP("CGUIScreenPauseSunday");
+    MEMTRACK_POP_GROUP("CGUIScreenPauseSunday");
 }
 
 
@@ -133,8 +130,7 @@ MEMTRACK_POP_GROUP("CGUIScreenPauseSunday");
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenPauseSunday::~CGuiScreenPauseSunday()
-{
+CGuiScreenPauseSunday::~CGuiScreenPauseSunday() {
 }
 
 
@@ -151,19 +147,17 @@ CGuiScreenPauseSunday::~CGuiScreenPauseSunday()
 //
 //===========================================================================
 void CGuiScreenPauseSunday::HandleMessage
-(
-	eGuiMessage message, 
-	unsigned int param1,
-	unsigned int param2 
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
 /*
-        if( !GetMemoryCardManager()->IsMemcardInfoLoaded() )
+        if(!GetMemoryCardManager()->IsMemcardInfoLoaded())
         {
-            if( message == GUI_MSG_CONTROLLER_SELECT ||
-                message == GUI_MSG_CONTROLLER_START )
+            if(message == GUI_MSG_CONTROLLER_SELECT ||
+                message == GUI_MSG_CONTROLLER_START)
             {
                 // ignore all menu selection inputs and start input
                 // until memcard info is loaded
@@ -172,71 +166,60 @@ void CGuiScreenPauseSunday::HandleMessage
             }
         }
 */
-        switch( message )
-        {
-            case GUI_MSG_MENU_SELECTION_MADE:	
-            {
-                switch( param1 )
-                {
-                    case MENU_ITEM_PAUSE_SUNDAY_CONTINUE:
-                    {
+        switch (message) {
+            case GUI_MSG_MENU_SELECTION_MADE: {
+                switch (param1) {
+                    case MENU_ITEM_PAUSE_SUNDAY_CONTINUE: {
                         this->HandleResumeGame();
 
                         break;
                     }
-                    case MENU_ITEM_MISSION_SELECT:
-                    {
-                        m_pParent->HandleMessage( GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_MISSION_SELECT );
+                    case MENU_ITEM_MISSION_SELECT: {
+                        m_pParent->HandleMessage(GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_MISSION_SELECT);
 
                         break;
                     }
-                    case MENU_ITEM_PAUSE_SUNDAY_LEVEL_PROGRESS:
-                    {
-                        m_pParent->HandleMessage( GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_LEVEL_STATS );
+                    case MENU_ITEM_PAUSE_SUNDAY_LEVEL_PROGRESS: {
+                        m_pParent->HandleMessage(GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_LEVEL_STATS);
 
                         break;
                     }
-                    case MENU_ITEM_PAUSE_SUNDAY_VIEW_CARDS:
-                    {
-                        m_pParent->HandleMessage( GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_VIEW_CARDS );
+                    case MENU_ITEM_PAUSE_SUNDAY_VIEW_CARDS: {
+                        m_pParent->HandleMessage(GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_VIEW_CARDS);
 
                         break;
                     }
-                    case MENU_ITEM_PAUSE_SUNDAY_OPTIONS:
-                    {
-                        m_pParent->HandleMessage( GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_OPTIONS );
+                    case MENU_ITEM_PAUSE_SUNDAY_OPTIONS: {
+                        m_pParent->HandleMessage(GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_OPTIONS);
 
                         break;
                     }
-                    case MENU_ITEM_SAVE_GAME:
-                    {
+                    case MENU_ITEM_SAVE_GAME: {
 #ifdef RAD_XBOX
                         // Xbox TCR Requirement: always prompt user to select memory
                         // device before loading/saving
                         //
                         CGuiScreenLoadSave::s_forceGotoMemoryCardScreen = true;
 #endif
-                        m_pParent->HandleMessage( GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_SAVE_GAME );
+                        m_pParent->HandleMessage(GUI_MSG_GOTO_SCREEN, GUI_SCREEN_ID_SAVE_GAME);
 
                         break;
                     }
-                    case MENU_ITEM_PAUSE_SUNDAY_QUIT_GAME:
-                    {
+                    case MENU_ITEM_PAUSE_SUNDAY_QUIT_GAME: {
                         this->HandleQuitGame();
 
                         break;
                     }
 #ifdef RAD_WIN32
-                    case MENU_ITEM_PAUSE_SUNDAY_EXIT_GAME:
-                    {
-                        this->HandleQuitToSystem();
+                        case MENU_ITEM_PAUSE_SUNDAY_EXIT_GAME:
+                        {
+                            this->HandleQuitToSystem();
 
-                        break;
-                    }
+                            break;
+                        }
 #endif
-                    default:
-                    {
-                        rAssertMsg( 0, "WARNING: Invalid case for switch statement!\n" );
+                    default: {
+                        rAssertMsg(0, "WARNING: Invalid case for switch statement!\n");
 
                         break;
                     }
@@ -245,16 +228,15 @@ void CGuiScreenPauseSunday::HandleMessage
                 break;
             }
 
-            default:
-            {
+            default: {
                 break;
             }
         }
     }
 
-	// Propogate the message up the hierarchy.
-	//
-	CGuiScreenPause::HandleMessage( message, param1, param2 );
+    // Propogate the message up the hierarchy.
+    //
+    CGuiScreenPause::HandleMessage(message, param1, param2);
 }
 
 //===========================================================================
@@ -269,21 +251,17 @@ void CGuiScreenPauseSunday::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPauseSunday::InitIntro()
-{
-    if( GetCharacterSheetManager()->QueryHighestMission().mLevel > 0 ||
+void CGuiScreenPauseSunday::InitIntro() {
+    if (GetCharacterSheetManager()->QueryHighestMission().mLevel > 0 ||
         GetCharacterSheetManager()->QueryHighestMission().mMissionNumber > 0 ||
-        GetCheatInputSystem()->IsCheatEnabled( CHEAT_ID_UNLOCK_MISSIONS ) )
-    {
-        m_pMenu->SetMenuItemEnabled( MENU_ITEM_MISSION_SELECT, true );
-    }
-    else
-    {
+        GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_UNLOCK_MISSIONS)) {
+        m_pMenu->SetMenuItemEnabled(MENU_ITEM_MISSION_SELECT, true);
+    } else {
         // this means the user's just started a new game and is
         // currently on the level 1 tutorial mission; hence, cannot
         // select any other missions
         //
-        m_pMenu->SetMenuItemEnabled( MENU_ITEM_MISSION_SELECT, false );
+        m_pMenu->SetMenuItemEnabled(MENU_ITEM_MISSION_SELECT, false);
     }
 
     CGuiScreenPause::InitIntro();
@@ -302,8 +280,7 @@ void CGuiScreenPauseSunday::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPauseSunday::InitRunning()
-{
+void CGuiScreenPauseSunday::InitRunning() {
     CGuiScreenPause::InitRunning();
 }
 
@@ -320,8 +297,7 @@ void CGuiScreenPauseSunday::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPauseSunday::InitOutro()
-{
+void CGuiScreenPauseSunday::InitOutro() {
     CGuiScreenPause::InitOutro();
 }
 

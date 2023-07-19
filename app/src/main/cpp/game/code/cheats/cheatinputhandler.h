@@ -26,8 +26,7 @@
 // Forward References
 //===========================================================================
 
-enum eAuxiliaryCheatInput
-{
+enum eAuxiliaryCheatInput {
     CHEAT_INPUT_LTRIGGER = NUM_CHEAT_INPUTS,
     CHEAT_INPUT_RTRIGGER,
 
@@ -38,28 +37,30 @@ enum eAuxiliaryCheatInput
 // Interface Definitions
 //===========================================================================
 
-class CheatInputHandler : public Mappable
-{
+class CheatInputHandler : public Mappable {
 public:
-	CheatInputHandler();
+    CheatInputHandler();
+
     virtual ~CheatInputHandler();
 
-    void ResetTriggerStates()
-    {
+    void ResetTriggerStates() {
         m_LTriggerBitMask = 0;
         m_RTriggerBitMask = 0;
     }
 
     void ResetInputSequence();
 
-    static const char* GetInputName( eCheatInput cheatInput );
+    static const char *GetInputName(eCheatInput cheatInput);
 
     // Implements Mappable Interface
     //
-    virtual void OnButton( int controllerId, int buttonId, const IButton* pButton );
-	virtual void OnButtonUp( int controllerId, int buttonId, const IButton* pButton );
-	virtual void OnButtonDown( int controllerId, int buttonId, const IButton* pButton );
-    virtual void LoadControllerMappings( unsigned int controllerId );
+    virtual void OnButton(int controllerId, int buttonId, const IButton *pButton);
+
+    virtual void OnButtonUp(int controllerId, int buttonId, const IButton *pButton);
+
+    virtual void OnButtonDown(int controllerId, int buttonId, const IButton *pButton);
+
+    virtual void LoadControllerMappings(unsigned int controllerId);
 
 private:
     //---------------------------------------------------------------------
@@ -68,8 +69,9 @@ private:
 
     // No copying or assignment. Declare but don't define.
     //
-    CheatInputHandler( const CheatInputHandler& );
-    CheatInputHandler& operator= ( const CheatInputHandler& );
+    CheatInputHandler(const CheatInputHandler &);
+
+    CheatInputHandler &operator=(const CheatInputHandler &);
 
     //---------------------------------------------------------------------
     // Private Data
@@ -78,7 +80,7 @@ private:
     unsigned int m_LTriggerBitMask;
     unsigned int m_RTriggerBitMask;
 
-    eCheatInput m_inputSequence[ NUM_CHEAT_SEQUENCE_INPUTS ];
+    eCheatInput m_inputSequence[NUM_CHEAT_SEQUENCE_INPUTS];
     unsigned int m_currentInputIndex;
 
 };

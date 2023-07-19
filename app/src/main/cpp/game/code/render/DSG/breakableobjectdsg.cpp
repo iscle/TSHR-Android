@@ -54,11 +54,10 @@
 //===========================================================================
 
 BreakableObjectDSG::BreakableObjectDSG()
-: mpObject( NULL ),
-mpController( NULL )
-{
-	IEntityDSG::mTranslucent = true;
-    mpMatrix = new rmt::Matrix;   
+        : mpObject(NULL),
+          mpController(NULL) {
+    IEntityDSG::mTranslucent = true;
+    mpMatrix = new rmt::Matrix;
     mpMatrix->Identity();
 }
 
@@ -80,20 +79,18 @@ mpController( NULL )
 //===========================================================================
 
 
-BreakableObjectDSG::~BreakableObjectDSG()
-{
-BEGIN_PROFILE( "BreakableObjectDSG Destroy" );
+BreakableObjectDSG::~BreakableObjectDSG() {
+    BEGIN_PROFILE("BreakableObjectDSG Destroy");
     // The controller should also release the attached effect, use the debugger to 
     // make sure this happens!
-    if (mpController != NULL)
-    {
+    if (mpController != NULL) {
         mpController->Release();
         mpController = NULL;
     }
 
     delete mpMatrix;
     mpMatrix = NULL;
-END_PROFILE( "BreakableObjectDSG Destroy" );
+    END_PROFILE("BreakableObjectDSG Destroy");
 }
 //===========================================================================
 // BreakableObjectDSG::Init
@@ -112,21 +109,21 @@ END_PROFILE( "BreakableObjectDSG Destroy" );
 //
 //===========================================================================
 
-void BreakableObjectDSG::Init( tAnimatedObjectFactory* pFactory, tAnimatedObjectFrameController* pController)
-{
-    rAssert( pFactory != NULL );
-    rAssert( pController != NULL );
+void BreakableObjectDSG::Init(tAnimatedObjectFactory *pFactory,
+                              tAnimatedObjectFrameController *pController) {
+    rAssert(pFactory != NULL);
+    rAssert(pController != NULL);
 
-    rAssert( mpController == NULL );
-    rAssert( mpObject == NULL );
+    rAssert(mpController == NULL);
+    rAssert(mpObject == NULL);
 
     // Clone a new frame controller off the given controller
-    mpController = static_cast<tAnimatedObjectFrameController*> (pController->Clone() );
+    mpController = static_cast<tAnimatedObjectFrameController *>(pController->Clone());
     // Check that the clone and downcast both worked correctly
-    rAssert( mpController != NULL );
-          
+    rAssert(mpController != NULL);
+
     // Clone a new animated object from the factory
-    mpObject = pFactory->CreateObject( mpController );
+    mpObject = pFactory->CreateObject(mpController);
 
     mpObject->ProcessShaders(*this);
 }
@@ -147,15 +144,14 @@ void BreakableObjectDSG::Init( tAnimatedObjectFactory* pFactory, tAnimatedObject
 //
 //===========================================================================
 
-void BreakableObjectDSG::Display()
-{
-    if(IS_DRAW_LONG) return;
+void BreakableObjectDSG::Display() {
+    if (IS_DRAW_LONG) return;
 #ifdef PROFILER_ENABLED
     char profileName[] = "  BreakableObjectDSG Display";
 #endif
     DSG_BEGIN_PROFILE(profileName)
-    p3d::stack->PushMultiply( *mpMatrix );
-    mpObject->Display(); 
+    p3d::stack->PushMultiply(*mpMatrix);
+    mpObject->Display();
     p3d::stack->Pop();
     DSG_END_PROFILE(profileName)
 }
@@ -177,19 +173,18 @@ void BreakableObjectDSG::Display()
 //
 //===========================================================================
 
-void BreakableObjectDSG::GetBoundingBox( rmt::Box3D* box )
-{
+void BreakableObjectDSG::GetBoundingBox(rmt::Box3D *box) {
 
-    mpObject->GetBaseObject()->GetBoundingBox( box );
+    mpObject->GetBaseObject()->GetBoundingBox(box);
     // Lets inflate the bounding box, as particle systems do not have accurate ones
-    rmt::Vector inflate( 5.0f,5.0f,5.0f );
-	box->low += ( rPosition() - inflate );
-	box->high += ( rPosition() + inflate );
+    rmt::Vector inflate(5.0f, 5.0f, 5.0f);
+    box->low += (rPosition() - inflate);
+    box->high += (rPosition() + inflate);
 
 }
-void BreakableObjectDSG::GetBoundingSphere( rmt::Sphere* pSphere )
-{
-    mpObject->GetBaseObject()->GetBoundingSphere( pSphere );
+
+void BreakableObjectDSG::GetBoundingSphere(rmt::Sphere *pSphere) {
+    mpObject->GetBaseObject()->GetBoundingSphere(pSphere);
     pSphere->centre += rPosition();
     // Lets inflate the bounding sphere, as particle systems do not have accurate ones
     pSphere->radius += 5.0f;
@@ -212,32 +207,31 @@ void BreakableObjectDSG::GetBoundingSphere( rmt::Sphere* pSphere )
 //      None
 //
 //===========================================================================
-void BreakableObjectDSG::Update( float deltaTime )
-{
-    mpController->Advance( deltaTime, true );
+void BreakableObjectDSG::Update(float deltaTime) {
+    mpController->Advance(deltaTime, true);
 }
-rmt::Vector* BreakableObjectDSG::pPosition()
-{
-    rAssert( 0 ); // no breaking encapsulation!
+
+rmt::Vector *BreakableObjectDSG::pPosition() {
+    rAssert(0); // no breaking encapsulation!
     return &mPosn;
 }
-const rmt::Vector& BreakableObjectDSG::rPosition()
-{
-    return mpMatrix->Row( 3 );
+
+const rmt::Vector &BreakableObjectDSG::rPosition() {
+    return mpMatrix->Row(3);
 }
-void BreakableObjectDSG::GetPosition( rmt::Vector* ipPosn )
-{
-    *ipPosn = mpMatrix->Row( 3 );
+
+void BreakableObjectDSG::GetPosition(rmt::Vector *ipPosn) {
+    *ipPosn = mpMatrix->Row(3);
 }
-void BreakableObjectDSG::SetTransform( const rmt::Matrix& transform )
-{
+
+void BreakableObjectDSG::SetTransform(const rmt::Matrix &transform) {
     *mpMatrix = transform;
 }
-void BreakableObjectDSG::Reset()
-{
+
+void BreakableObjectDSG::Reset() {
     mpController->Reset();
 }
-int BreakableObjectDSG::LastFrameReached()
-{
+
+int BreakableObjectDSG::LastFrameReached() {
     return mpController->LastFrameReached();
 }

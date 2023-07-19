@@ -48,44 +48,46 @@
 //
 //
 //===========================================================================
-class SurveillanceCam : public SuperCam
-{
-    public:
-        SurveillanceCam();
-        virtual ~SurveillanceCam();
- 
-        //Update: Called when you want the super cam to update its state.
-        virtual void Update( unsigned int milliseconds );
+class SurveillanceCam : public SuperCam {
+public:
+    SurveillanceCam();
 
-        //Returns the name of the super cam.  
-        //This can be used in the FE or debug info
-        virtual const char* const GetName() const;
+    virtual ~SurveillanceCam();
 
-        // Forces the camera to lookat the suspect
-        virtual void SetTarget( ISuperCamTarget* target ); 
+    //Update: Called when you want the super cam to update its state.
+    virtual void Update(unsigned int milliseconds);
 
-        virtual Type GetType();
+    //Returns the name of the super cam.
+    //This can be used in the FE or debug info
+    virtual const char *const GetName() const;
 
-        // Sets the position of the camera, it will remain fixed but can rotate
-        void SetPosition( const rmt::Vector& position );
+    // Forces the camera to lookat the suspect
+    virtual void SetTarget(ISuperCamTarget *target);
 
-        void OnRegisterDebugControls();
-        void OnUnregisterDebugControls();
+    virtual Type GetType();
 
-    protected:
+    // Sets the position of the camera, it will remain fixed but can rotate
+    void SetPosition(const rmt::Vector &position);
 
-        // Camera target 
-        ISuperCamTarget* mTarget;
+    void OnRegisterDebugControls();
 
-        // Current camera position
-        rmt::Vector mPosition; 
+    void OnUnregisterDebugControls();
+
+protected:
+
+    // Camera target
+    ISuperCamTarget *mTarget;
+
+    // Current camera position
+    rmt::Vector mPosition;
 
 private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow XxxClassName from being copied and assigned.
-        SurveillanceCam( const SurveillanceCam& );
-        SurveillanceCam& operator=( const SurveillanceCam& );
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow XxxClassName from being copied and assigned.
+    SurveillanceCam(const SurveillanceCam &);
+
+    SurveillanceCam &operator=(const SurveillanceCam &);
 
 };
 

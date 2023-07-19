@@ -48,8 +48,7 @@
 //
 //==============================================================================
 ConversationMatcher::ConversationMatcher() :
-    m_conversationList( NULL )
-{
+        m_conversationList(NULL) {
 }
 
 //==============================================================================
@@ -62,8 +61,7 @@ ConversationMatcher::ConversationMatcher() :
 // Return:      N/A.
 //
 //==============================================================================
-ConversationMatcher::~ConversationMatcher()
-{
+ConversationMatcher::~ConversationMatcher() {
 }
 
 //=============================================================================
@@ -77,21 +75,20 @@ ConversationMatcher::~ConversationMatcher()
 // Return:      void 
 //
 //=============================================================================
-void ConversationMatcher::AddNewLine( IDaSoundResource* resource )
-{
-    DialogLine* line;
-    Conversation* conversationObj;
-    Conversation* newConversation;
-        
+void ConversationMatcher::AddNewLine(IDaSoundResource *resource) {
+    DialogLine *line;
+    Conversation *conversationObj;
+    Conversation *newConversation;
+
     //
     // Create a DialogLine object
     //
 #ifdef RAD_GAMECUBE
-    line = new( GMA_GC_VMM ) DialogLine( resource );
+    line = new(GMA_GC_VMM) DialogLine(resource);
 #else
-    line = new( GMA_PERSISTENT ) DialogLine( resource );
+    line = new(GMA_PERSISTENT) DialogLine(resource);
 #endif
-    rAssert( line != NULL );
+    rAssert(line != NULL);
 
     //
     // Work through the conversation list, trying to find an existing
@@ -99,31 +96,29 @@ void ConversationMatcher::AddNewLine( IDaSoundResource* resource )
     //
     conversationObj = m_conversationList;
 
-    while( conversationObj != NULL )
-    {
-        if( conversationObj->LineFits( *line ) )
-        {
-            conversationObj->AddToConversation( *line );
+    while (conversationObj != NULL) {
+        if (conversationObj->LineFits(*line)) {
+            conversationObj->AddToConversation(*line);
             break;
         }
 
         //
         // Argh!  This must go.  Stinky downcast.
         //
-        conversationObj = reinterpret_cast<Conversation*>(conversationObj->GetNextInList());
+        conversationObj = reinterpret_cast<Conversation *>(conversationObj->GetNextInList());
     }
 
-    if( conversationObj == NULL )
-    {
+    if (conversationObj == NULL) {
         //
         // No conversation matched, create a new conversation
         //
 #ifdef RAD_GAMECUBE
-        newConversation = new( GMA_GC_VMM ) Conversation( *line );
+        newConversation = new(GMA_GC_VMM) Conversation(*line);
 #else
-        newConversation = new( GMA_PERSISTENT ) Conversation( *line );
+        newConversation = new(GMA_PERSISTENT) Conversation(*line);
 #endif
-        newConversation->AddToDialogList( reinterpret_cast<SelectableDialog**>(&m_conversationList) );
+        newConversation->AddToDialogList(
+                reinterpret_cast<SelectableDialog **>(&m_conversationList));
     }
 }
 
@@ -138,16 +133,13 @@ void ConversationMatcher::AddNewLine( IDaSoundResource* resource )
 // Return:      true if all conversations complete, false otherwise 
 //
 //=============================================================================
-bool ConversationMatcher::AreAllConversationsComplete()
-{
-    Conversation* current;
+bool ConversationMatcher::AreAllConversationsComplete() {
+    Conversation *current;
     bool allComplete = true;
 
     current = m_conversationList;
-    while( current != NULL )
-    {
-        if( !(current->IsComplete()) )
-        {
+    while (current != NULL) {
+        if (!(current->IsComplete())) {
             allComplete = false;
             current->PrintDialogLineNames();
 
@@ -157,10 +149,10 @@ bool ConversationMatcher::AreAllConversationsComplete()
             //
         }
 
-        current = reinterpret_cast<Conversation*>(current->GetNextInList());
+        current = reinterpret_cast<Conversation *>(current->GetNextInList());
     }
 
-    return( allComplete );
+    return (allComplete);
 }
 
 //=============================================================================
@@ -176,58 +168,51 @@ bool ConversationMatcher::AreAllConversationsComplete()
 // Return:      void 
 //
 //=============================================================================
-void ConversationMatcher::AddConversationsToList( unsigned int level, 
-                                                  unsigned int mission, 
-                                                  SelectableDialogList& list )
-{
-    HeapMgr()->PushHeap( GMA_AUDIO_PERSISTENT );
+void ConversationMatcher::AddConversationsToList(unsigned int level,
+                                                 unsigned int mission,
+                                                 SelectableDialogList &list) {
+    HeapMgr()->PushHeap(GMA_AUDIO_PERSISTENT);
 
-    Conversation* conversationObj;
-    Conversation* nextConversation = NULL;
-    Conversation* temp;
+    Conversation *conversationObj;
+    Conversation *nextConversation = NULL;
+    Conversation *temp;
 
     //
     // First, deal with the head of the list as a special case.  This can
     // probably be cleaned up
     //
-    while( ( m_conversationList != NULL )
-           && ( m_conversationList->GetLevel() == level )
-           && ( m_conversationList->GetMission() == mission ) )
-    {
+    while ((m_conversationList != NULL)
+           && (m_conversationList->GetLevel() == level)
+           && (m_conversationList->GetMission() == mission)) {
         temp = m_conversationList;
-        m_conversationList = reinterpret_cast<Conversation*>( m_conversationList->GetNextInList() );
-        list.push_back( temp );
+        m_conversationList = reinterpret_cast<Conversation *>(m_conversationList->GetNextInList());
+        list.push_back(temp);
     }
 
     //
     // Now, the first one in the list, if it exists, doesn't match the spec
     //
     conversationObj = m_conversationList;
-    if( conversationObj != NULL )
-    {
-        nextConversation = reinterpret_cast<Conversation*>( conversationObj->GetNextInList() );
+    if (conversationObj != NULL) {
+        nextConversation = reinterpret_cast<Conversation *>(conversationObj->GetNextInList());
     }
-    
-    while( ( conversationObj != NULL )
-           && ( nextConversation != NULL ) )
-    {
-        if( ( nextConversation->GetLevel() == level )
-            && ( nextConversation->GetMission() == mission ) )
-        {
+
+    while ((conversationObj != NULL)
+           && (nextConversation != NULL)) {
+        if ((nextConversation->GetLevel() == level)
+            && (nextConversation->GetMission() == mission)) {
             //
             // Remove conversation from our list and add it to the one supplied
             //
             conversationObj->RemoveNextFromList();
-            list.push_back( nextConversation );
-        }
-        else
-        {
+            list.push_back(nextConversation);
+        } else {
             conversationObj = nextConversation;
         }
 
-        nextConversation = reinterpret_cast<Conversation*>( conversationObj->GetNextInList() );
+        nextConversation = reinterpret_cast<Conversation *>(conversationObj->GetNextInList());
     }
-    HeapMgr()->PopHeap( GMA_AUDIO_PERSISTENT );
+    HeapMgr()->PopHeap(GMA_AUDIO_PERSISTENT);
 }
 
 //******************************************************************************

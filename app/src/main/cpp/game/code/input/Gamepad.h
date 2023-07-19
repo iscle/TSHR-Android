@@ -8,7 +8,7 @@
 // GDPro Properties 
 // ---------------------------------------------------
 //  - GD Symbol Type    : CLD_Class 
-//  - GD Method         : UML ( 5.0 ) 
+//  - GD Method         : UML (5.0)
 //  - GD System Name    : Simpsons Controller System 
 //  - GD Diagram Type   : Class Diagram 
 //  - GD Diagram Name   : Input Device 
@@ -26,8 +26,7 @@
 
 // We need the eGamepadButtons enum to provide a sequential equivalent to DIJOFS_X... 
 // so that we can use them to access our arrays.
-enum eGamepadButton
-{
+enum eGamepadButton {
     GAMEPAD_X,
     GAMEPAD_Y,
     GAMEPAD_Z,
@@ -73,35 +72,40 @@ enum eGamepadButton
     NUM_GAMEPAD_BUTTONS
 };
 
-class Gamepad : public RealController
-{
+class Gamepad : public RealController {
 public:
-    Gamepad () ;
+    Gamepad();
+
     virtual ~Gamepad();
 
-    virtual bool IsInputAxis( int dxKey ) const;
-    virtual bool IsPovHat( int dxKey ) const;
+    virtual bool IsInputAxis(int dxKey) const;
+
+    virtual bool IsPovHat(int dxKey) const;
 
     // Returns true if this is a valid input for the controller.
-    virtual bool IsValidInput( int dxKey ) const;
+    virtual bool IsValidInput(int dxKey) const;
 
-    void CalculatePOV( float povVal, float* up, float* down, float* right, float* left ) const;
+    void CalculatePOV(float povVal, float *up, float *down, float *right, float *left) const;
 
     // Sets up a mapping from a dxkey/direction to a virtual button
-    virtual bool SetMap( int dxKey, eDirectionType dir, int virtualButton );
+    virtual bool SetMap(int dxKey, eDirectionType dir, int virtualButton);
+
     // Retrieves the virtual button of the given type mapped to a dxKey, direction
-    virtual int  GetMap( int dxKey, eDirectionType dir, eMapType map ) const;
+    virtual int GetMap(int dxKey, eDirectionType dir, eMapType map) const;
+
     // Clears the specified mapping so it no longer exists.
-    virtual void ClearMap( int dxKey, eDirectionType dir, int virtualButton );
+    virtual void ClearMap(int dxKey, eDirectionType dir, int virtualButton);
+
     // Clears all the cached mappings.
     virtual void ClearMappedButtons();
 
 private:
     virtual void MapInputToDICode();
 
-    eGamepadButton GetButtonEnum( int dxKey ) const;
+    eGamepadButton GetButtonEnum(int dxKey) const;
 
 private:
-    int m_ButtonMap[ NUM_MAPTYPES ][ NUM_GAMEPAD_BUTTONS ][ NUM_DIRTYPES ];
+    int m_ButtonMap[NUM_MAPTYPES][NUM_GAMEPAD_BUTTONS][NUM_DIRTYPES];
 };
+
 #endif

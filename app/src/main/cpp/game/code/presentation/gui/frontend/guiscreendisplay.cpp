@@ -34,16 +34,16 @@
 //===========================================================================
 
 
-const char* DISPLAY_MENU_ITEMS[] =
-{
-    "Resolution",
-    "ColourDepth",
-    "DisplayMode",
-    "Gamma",
-    "ApplyChanges",
+const char *DISPLAY_MENU_ITEMS[] =
+        {
+                "Resolution",
+                "ColourDepth",
+                "DisplayMode",
+                "Gamma",
+                "ApplyChanges",
 
-    ""
-};
+                ""
+        };
 
 const float SLIDER_ICON_SCALE = 0.5f;
 
@@ -64,84 +64,82 @@ const float SLIDER_ICON_SCALE = 0.5f;
 //
 //===========================================================================
 CGuiScreenDisplay::CGuiScreenDisplay
-(
-    Scrooby::Screen* pScreen,
-    CGuiEntity* pParent
-)
-:   CGuiScreen( pScreen, pParent, GUI_SCREEN_ID_DISPLAY ),
-    m_pMenu( NULL ),
-    m_changedGamma( false )
-{
-MEMTRACK_PUSH_GROUP( "CGuiScreenDisplay" );
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        : CGuiScreen(pScreen, pParent, GUI_SCREEN_ID_DISPLAY),
+          m_pMenu(NULL),
+          m_changedGamma(false) {
+    MEMTRACK_PUSH_GROUP("CGuiScreenDisplay");
     // Retrieve the Scrooby drawing elements.
     //
-    Scrooby::Page* pPage = m_pScroobyScreen->GetPage( "Display" );
-    rAssert( pPage != NULL );
+    Scrooby::Page *pPage = m_pScroobyScreen->GetPage("Display");
+    rAssert(pPage != NULL);
 
     // Create a menu.
     //
-    m_pMenu = new CGuiMenu( this, NUM_MENU_ITEMS );
-    rAssert( m_pMenu != NULL );
+    m_pMenu = new CGuiMenu(this, NUM_MENU_ITEMS);
+    rAssert(m_pMenu != NULL);
 
     // Add menu items
     //
-    char itemName[ 32 ];
+    char itemName[32];
 
-    for( int i = 0; i < MENU_ITEM_GAMMA; i++ )
-    {
-        Scrooby::Group* group = pPage->GetGroup( DISPLAY_MENU_ITEMS[ i ] );
-        rAssert( group != NULL );
+    for (int i = 0; i < MENU_ITEM_GAMMA; i++) {
+        Scrooby::Group *group = pPage->GetGroup(DISPLAY_MENU_ITEMS[i]);
+        rAssert(group != NULL);
 
-        sprintf( itemName, "%s_Value", DISPLAY_MENU_ITEMS[ i ] );
-        Scrooby::Text* pTextValue = group->GetText( itemName );
+        sprintf(itemName, "%s_Value", DISPLAY_MENU_ITEMS[i]);
+        Scrooby::Text *pTextValue = group->GetText(itemName);
 
-        sprintf( itemName, "%s_ArrowL", DISPLAY_MENU_ITEMS[ i ] );
-        Scrooby::Sprite* pLArrow = group->GetSprite( itemName );
+        sprintf(itemName, "%s_ArrowL", DISPLAY_MENU_ITEMS[i]);
+        Scrooby::Sprite *pLArrow = group->GetSprite(itemName);
 
-        sprintf( itemName, "%s_ArrowR", DISPLAY_MENU_ITEMS[ i ] );
-        Scrooby::Sprite* pRArrow = group->GetSprite( itemName );
+        sprintf(itemName, "%s_ArrowR", DISPLAY_MENU_ITEMS[i]);
+        Scrooby::Sprite *pRArrow = group->GetSprite(itemName);
 
-        m_pMenu->AddMenuItem( group->GetText( DISPLAY_MENU_ITEMS[ i ] ),
-                              pTextValue,
-                              NULL,
-                              NULL,
-                              pLArrow,
-                              pRArrow,
-                              SELECTION_ENABLED | VALUES_WRAPPED | TEXT_OUTLINE_ENABLED );
+        m_pMenu->AddMenuItem(group->GetText(DISPLAY_MENU_ITEMS[i]),
+                             pTextValue,
+                             NULL,
+                             NULL,
+                             pLArrow,
+                             pRArrow,
+                             SELECTION_ENABLED | VALUES_WRAPPED | TEXT_OUTLINE_ENABLED);
     }
 
     // Add the gamma slider
-    Scrooby::Group* pgroup = pPage->GetGroup( "Gamma" );
-    rAssert(pgroup  != NULL );
+    Scrooby::Group *pgroup = pPage->GetGroup("Gamma");
+    rAssert(pgroup != NULL);
 
-    Scrooby::Text* pText = pgroup->GetText( "Gamma" );
+    Scrooby::Text *pText = pgroup->GetText("Gamma");
 
-    Scrooby::Group* sliderGroup = pgroup->GetGroup( "Gamma_Slider" );
-    rAssert( sliderGroup != NULL );
+    Scrooby::Group *sliderGroup = pgroup->GetGroup("Gamma_Slider");
+    rAssert(sliderGroup != NULL);
 
     sliderGroup->ResetTransformation();
 
-    m_pMenu->AddMenuItem( pText,
-                          NULL,
-                          NULL,
-                          sliderGroup->GetSprite( "Gamma_Slider" ),
-                          NULL,
-                          NULL,
-                          SELECTION_ENABLED | VALUES_WRAPPED | TEXT_OUTLINE_ENABLED );
+    m_pMenu->AddMenuItem(pText,
+                         NULL,
+                         NULL,
+                         sliderGroup->GetSprite("Gamma_Slider"),
+                         NULL,
+                         NULL,
+                         SELECTION_ENABLED | VALUES_WRAPPED | TEXT_OUTLINE_ENABLED);
 
-    m_pMenu->GetMenuItem( MENU_ITEM_GAMMA )->m_slider.m_type = Slider::HORIZONTAL_SLIDER_ABOUT_CENTER;
+    m_pMenu->GetMenuItem(MENU_ITEM_GAMMA)->m_slider.m_type = Slider::HORIZONTAL_SLIDER_ABOUT_CENTER;
 
-    Scrooby::Sprite* soundOnIcon = pgroup->GetSprite( "Gamma_Icon" );
-    soundOnIcon->ScaleAboutCenter( SLIDER_ICON_SCALE );
+    Scrooby::Sprite *soundOnIcon = pgroup->GetSprite("Gamma_Icon");
+    soundOnIcon->ScaleAboutCenter(SLIDER_ICON_SCALE);
 
     // Add the apply changes button
 
-    pgroup = pPage->GetGroup( "Menu" );
-    rAssert( pgroup != NULL );
+    pgroup = pPage->GetGroup("Menu");
+    rAssert(pgroup != NULL);
 
-    m_pMenu->AddMenuItem( pgroup->GetText( "ApplyChanges" ) );
+    m_pMenu->AddMenuItem(pgroup->GetText("ApplyChanges"));
 
-MEMTRACK_POP_GROUP("CGuiScreenDisplay");
+    MEMTRACK_POP_GROUP("CGuiScreenDisplay");
 }
 
 
@@ -157,10 +155,8 @@ MEMTRACK_POP_GROUP("CGuiScreenDisplay");
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenDisplay::~CGuiScreenDisplay()
-{
-    if( m_pMenu != NULL )
-    {
+CGuiScreenDisplay::~CGuiScreenDisplay() {
+    if (m_pMenu != NULL) {
         delete m_pMenu;
         m_pMenu = NULL;
     }
@@ -180,40 +176,31 @@ CGuiScreenDisplay::~CGuiScreenDisplay()
 //
 //===========================================================================
 void CGuiScreenDisplay::HandleMessage
-(
-	eGuiMessage message, 
-	unsigned int param1,
-	unsigned int param2 
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        switch( message )
-        {
-            case GUI_MSG_MENU_SELECTION_MADE:
-            {
-                switch( param1 )
-                {
-                    case MENU_ITEM_APPLY_CHANGES:
-                    {
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        switch (message) {
+            case GUI_MSG_MENU_SELECTION_MADE: {
+                switch (param1) {
+                    case MENU_ITEM_APPLY_CHANGES: {
                         ApplySettings();
                         break;
                     }
                 }
                 break;
             }
-            case GUI_MSG_MENU_SELECTION_VALUE_CHANGED:
-            {
-                rAssert( m_pMenu );
-                GuiMenuItem* currentItem = m_pMenu->GetMenuItem( param1 );
-                rAssert( currentItem );
+            case GUI_MSG_MENU_SELECTION_VALUE_CHANGED: {
+                rAssert(m_pMenu);
+                GuiMenuItem *currentItem = m_pMenu->GetMenuItem(param1);
+                rAssert(currentItem);
 
-                switch( param1 )
-                {
-                    case MENU_ITEM_GAMMA:
-                    {
+                switch (param1) {
+                    case MENU_ITEM_GAMMA: {
                         float gamma = 2 * currentItem->m_slider.m_value + 0.5f;
-                        GetRenderFlow()->SetGamma( gamma );
+                        GetRenderFlow()->SetGamma(gamma);
                         m_changedGamma = true;
 
                         break;
@@ -224,15 +211,14 @@ void CGuiScreenDisplay::HandleMessage
         }
 
         // relay message to menu
-        if( m_pMenu != NULL )
-        {
-            m_pMenu->HandleMessage( message, param1, param2 );
+        if (m_pMenu != NULL) {
+            m_pMenu->HandleMessage(message, param1, param2);
         }
     }
 
-	// Propogate the message up the hierarchy.
-	//
-	CGuiScreen::HandleMessage( message, param1, param2 );
+    // Propogate the message up the hierarchy.
+    //
+    CGuiScreen::HandleMessage(message, param1, param2);
 }
 
 //===========================================================================
@@ -247,27 +233,26 @@ void CGuiScreenDisplay::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenDisplay::InitIntro()
-{
+void CGuiScreenDisplay::InitIntro() {
     // update settings
     //
-    Win32Platform* plat = Win32Platform::GetInstance();
+    Win32Platform *plat = Win32Platform::GetInstance();
 
     Win32Platform::Resolution res = plat->GetResolution();
-    m_pMenu->SetSelectionValue( MENU_ITEM_RESOLUTION,
-                                res );
+    m_pMenu->SetSelectionValue(MENU_ITEM_RESOLUTION,
+                               res);
 
     int bpp = plat->GetBPP();
-    m_pMenu->SetSelectionValue( MENU_ITEM_COLOUR_DEPTH,
-                                bpp == 16 ? 0: 1 );
+    m_pMenu->SetSelectionValue(MENU_ITEM_COLOUR_DEPTH,
+                               bpp == 16 ? 0 : 1);
 
     bool fullscreen = plat->IsFullscreen();
-    m_pMenu->SetSelectionValue( MENU_ITEM_DISPLAY_MODE,
-                                fullscreen ? 1 : 0 );
+    m_pMenu->SetSelectionValue(MENU_ITEM_DISPLAY_MODE,
+                               fullscreen ? 1 : 0);
 
-    GuiMenuItem* menuItem = m_pMenu->GetMenuItem( MENU_ITEM_GAMMA );
-    rAssert( menuItem );
-    menuItem->m_slider.SetValue( ( GetRenderFlow()->GetGamma() - 0.5f ) / 2.0f );
+    GuiMenuItem *menuItem = m_pMenu->GetMenuItem(MENU_ITEM_GAMMA);
+    rAssert(menuItem);
+    menuItem->m_slider.SetValue((GetRenderFlow()->GetGamma() - 0.5f) / 2.0f);
 }
 
 
@@ -283,8 +268,7 @@ void CGuiScreenDisplay::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenDisplay::InitRunning()
-{
+void CGuiScreenDisplay::InitRunning() {
 }
 
 
@@ -300,11 +284,9 @@ void CGuiScreenDisplay::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenDisplay::InitOutro()
-{
+void CGuiScreenDisplay::InitOutro() {
     // Save the config if we've changed the gamma settings
-    if( m_changedGamma )
-    {
+    if (m_changedGamma) {
         GetGameConfigManager()->SaveConfigFile();
         m_changedGamma = false;
     }
@@ -327,18 +309,18 @@ void CGuiScreenDisplay::InitOutro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenDisplay::ApplySettings()
-{
+void CGuiScreenDisplay::ApplySettings() {
     // Retrieve the settings.
     //
-    Win32Platform::Resolution res = static_cast< Win32Platform::Resolution >( m_pMenu->GetSelectionValue( MENU_ITEM_RESOLUTION ) );
+    Win32Platform::Resolution res = static_cast<Win32Platform::Resolution>(m_pMenu->GetSelectionValue(
+            MENU_ITEM_RESOLUTION));
 
-    int bpp = m_pMenu->GetSelectionValue( MENU_ITEM_COLOUR_DEPTH ) ? 32: 16;
+    int bpp = m_pMenu->GetSelectionValue(MENU_ITEM_COLOUR_DEPTH) ? 32 : 16;
 
-    bool fullscreen = m_pMenu->GetSelectionValue( MENU_ITEM_DISPLAY_MODE ) == 1;
+    bool fullscreen = m_pMenu->GetSelectionValue(MENU_ITEM_DISPLAY_MODE) == 1;
 
     // Set the resolution.
-    Win32Platform::GetInstance()->SetResolution( res, bpp, fullscreen );
+    Win32Platform::GetInstance()->SetResolution(res, bpp, fullscreen);
 
     // Save the change to the config file.
     GetGameConfigManager()->SaveConfigFile();

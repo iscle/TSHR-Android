@@ -45,8 +45,7 @@
 // Return:      N/A.
 //
 //=============================================================================
-ConstantEffect::ConstantEffect()
-{
+ConstantEffect::ConstantEffect() {
     //Setup the respective force effect structures.
 #ifdef RAD_WIN32
     m_diConstant.lMagnitude              = 0;
@@ -69,15 +68,15 @@ ConstantEffect::ConstantEffect()
     mForceEffect.dwStartDelay            = 0;
 
 #else
-    mForceEffect.type                           = LG_TYPE_CONSTANT;
-    mForceEffect.duration                       = 500;
-    mForceEffect.startDelay                     = 0;
-    mForceEffect.p.constant.magnitude           = 0;
-    mForceEffect.p.constant.direction           = 0;
-    mForceEffect.p.constant.envelope.attackTime  = 0;
-    mForceEffect.p.constant.envelope.fadeTime    = 0;
+    mForceEffect.type = LG_TYPE_CONSTANT;
+    mForceEffect.duration = 500;
+    mForceEffect.startDelay = 0;
+    mForceEffect.p.constant.magnitude = 0;
+    mForceEffect.p.constant.direction = 0;
+    mForceEffect.p.constant.envelope.attackTime = 0;
+    mForceEffect.p.constant.envelope.fadeTime = 0;
     mForceEffect.p.constant.envelope.attackLevel = 0;
-    mForceEffect.p.constant.envelope.fadeLevel   = 0;
+    mForceEffect.p.constant.envelope.fadeLevel = 0;
 #endif
 }
 
@@ -91,8 +90,7 @@ ConstantEffect::ConstantEffect()
 // Return:      N/A.
 //
 //=============================================================================
-ConstantEffect::~ConstantEffect()
-{
+ConstantEffect::~ConstantEffect() {
 }
 
 //=============================================================================
@@ -105,8 +103,7 @@ ConstantEffect::~ConstantEffect()
 // Return:      void 
 //
 //=============================================================================
-void ConstantEffect::OnInit()
-{
+void ConstantEffect::OnInit() {
 #ifdef RAD_WIN32
     m_diConstant.lMagnitude = 0;
 #else
@@ -119,13 +116,12 @@ void ConstantEffect::OnInit()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( s16 magnitude )
+// Parameters:  (s16 magnitude)
 //
 // Return:      void 
 //
 //=============================================================================
-void ConstantEffect::SetMagnitude( s16 magnitude )
-{
+void ConstantEffect::SetMagnitude(s16 magnitude) {
 #ifdef RAD_WIN32
     m_diConstant.lMagnitude = magnitude;
 #else
@@ -139,13 +135,12 @@ void ConstantEffect::SetMagnitude( s16 magnitude )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( u16 direction )
+// Parameters:  (u16 direction)
 //
 // Return:      void 
 //
 //=============================================================================
-void ConstantEffect::SetDirection( u16 direction )
-{
+void ConstantEffect::SetDirection(u16 direction) {
 #ifdef RAD_WIN32
     LONG rglDirection[2]      = { direction, 0 };
     mForceEffect.rglDirection = rglDirection;

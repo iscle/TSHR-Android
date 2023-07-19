@@ -19,7 +19,7 @@
 // Nested Includes
 //===========================================================================
 
-#include <ai\actor\ufobehaviour.h>
+#include <ai/actor/ufobehaviour.h>
 
 //===========================================================================
 // Forward References
@@ -46,22 +46,23 @@ class Actor;
 //
 //
 //===========================================================================
-class UFOBeamAlwaysOn : public UFOBehaviour
-{
-    public:
-        UFOBeamAlwaysOn();
-        virtual ~UFOBeamAlwaysOn();
+class UFOBeamAlwaysOn : public UFOBehaviour {
+public:
+    UFOBeamAlwaysOn();
 
-        virtual void Apply( Actor*, unsigned int timeInMS );
-        
-    protected:
+    virtual ~UFOBeamAlwaysOn();
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow UFOBeamAlwaysOn from being copied and assigned.
-        UFOBeamAlwaysOn( const UFOBeamAlwaysOn& );
-        UFOBeamAlwaysOn& operator=( const UFOBeamAlwaysOn& );
+    virtual void Apply(Actor *, unsigned int timeInMS);
+
+protected:
+
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow UFOBeamAlwaysOn from being copied and assigned.
+    UFOBeamAlwaysOn(const UFOBeamAlwaysOn &);
+
+    UFOBeamAlwaysOn &operator=(const UFOBeamAlwaysOn &);
 
 
 };

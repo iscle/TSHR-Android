@@ -28,33 +28,35 @@
 //===========================================================================
 
 class CGuiMenu2D;
+
 class ScrollingText;
 
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenCardGallery : public CGuiScreen
-{
+class CGuiScreenCardGallery : public CGuiScreen {
 public:
-    CGuiScreenCardGallery( Scrooby::Screen* pScreen, CGuiEntity* pParent,
-                           eGuiWindowID windowID = GUI_SCREEN_ID_CARD_GALLERY );
+    CGuiScreenCardGallery(Scrooby::Screen *pScreen, CGuiEntity *pParent,
+                          eGuiWindowID windowID = GUI_SCREEN_ID_CARD_GALLERY);
+
     virtual ~CGuiScreenCardGallery();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    virtual CGuiMenu* HasMenu() { return m_pMenu; }
+    virtual CGuiMenu *HasMenu() { return m_pMenu; }
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
 
-    void UpdateCards( unsigned int currentLevel );
+    void InitRunning();
 
-    enum eScreenState
-    {
+    void InitOutro();
+
+    void UpdateCards(unsigned int currentLevel);
+
+    enum eScreenState {
         STATE_BROWSING_CARDS,
         STATE_GOTO_VIEW_CARD,
         STATE_VIEWING_CARD,
@@ -68,35 +70,37 @@ protected:
     float m_cardScaleSmall;
     float m_cardScaleLarge;
 
-    CGuiMenu2D* m_pMenu;
+    CGuiMenu2D *m_pMenu;
 
 private:
-//    void MoveCursor( unsigned int from, unsigned int to );
-    void UpdateCardTransition( unsigned int elapsedTime, bool toViewCard );
-    void UpdateViewCard( unsigned int elapsedTime );
-    void SetCurrentViewCard( unsigned int cardID );
+//    void MoveCursor(unsigned int from, unsigned int to);
+    void UpdateCardTransition(unsigned int elapsedTime, bool toViewCard);
 
-    Scrooby::Sprite* m_viewCard;
+    void UpdateViewCard(unsigned int elapsedTime);
+
+    void SetCurrentViewCard(unsigned int cardID);
+
+    Scrooby::Sprite *m_viewCard;
     int m_viewCardDistX;
     int m_viewCardDistY;
     rmt::Vector m_cardVelocity;
 
-    Scrooby::Layer* m_cardBrowseLayer;
-    Scrooby::Layer* m_cardViewLayer;
-    Scrooby::Layer* m_cardSFXLayer;
+    Scrooby::Layer *m_cardBrowseLayer;
+    Scrooby::Layer *m_cardViewLayer;
+    Scrooby::Layer *m_cardSFXLayer;
 
     unsigned int m_elapsedTime;
 
     // for viewing card
     //
-    Card* m_currentCard;
+    Card *m_currentCard;
 
-    Scrooby::Text* m_cardTitle;
-    Scrooby::Text* m_cardEpisode;
-    Scrooby::Text* m_cardDescription;
+    Scrooby::Text *m_cardTitle;
+    Scrooby::Text *m_cardEpisode;
+    Scrooby::Text *m_cardDescription;
 
-    Scrooby::Sprite* m_quoteIcon[ MAX_NUM_QUOTES ];
-    ScrollingText* m_quote[ MAX_NUM_QUOTES ];
+    Scrooby::Sprite *m_quoteIcon[MAX_NUM_QUOTES];
+    ScrollingText *m_quote[MAX_NUM_QUOTES];
     int m_currentQuote;
 
 };

@@ -26,32 +26,34 @@
 // Forward References
 //===========================================================================
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Text;
 }
 
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class ScrollingText
-{
+class ScrollingText {
 public:
-    ScrollingText( Scrooby::Text* pText );
+    ScrollingText(Scrooby::Text *pText);
+
     virtual ~ScrollingText();
 
     void RestoreText();
-    void SetTextIndex( int index );
+
+    void SetTextIndex(int index);
 
     void Start();
+
     void Stop();
+
     void Pause();
+
     void Resume();
 
-    void Update( unsigned int elapsedTime );
+    void Update(unsigned int elapsedTime);
 
-    enum eScrollState
-    {
+    enum eScrollState {
         STATE_IDLE,
         STATE_SCROLLING,
         STATE_PAUSED,
@@ -61,9 +63,10 @@ public:
 
     eScrollState GetCurrentState() const { return m_state; }
 
-    void SetSpeed( int numPixelsPerSecond ) { m_numPixelsPerSecond = numPixelsPerSecond; }
+    void SetSpeed(int numPixelsPerSecond) { m_numPixelsPerSecond = numPixelsPerSecond; }
 
-    void SetCyclic( bool isCyclic ) { m_isCyclic = isCyclic; }
+    void SetCyclic(bool isCyclic) { m_isCyclic = isCyclic; }
+
     bool IsCyclic() const { return m_isCyclic; }
 
 protected:
@@ -82,17 +85,18 @@ private:
 
     // No copying or asignment. Declare but don't define.
     //
-    ScrollingText( const ScrollingText& );
-    ScrollingText& operator= ( const ScrollingText& );
+    ScrollingText(const ScrollingText &);
 
-    void ClipText( int x, int y );
+    ScrollingText &operator=(const ScrollingText &);
+
+    void ClipText(int x, int y);
 
     //---------------------------------------------------------------------
     // Private Data
     //---------------------------------------------------------------------
 
-    Scrooby::Text* m_pText;
-    UnicodeChar* m_originalString;
+    Scrooby::Text *m_pText;
+    UnicodeChar *m_originalString;
 
     int m_x0;
     int m_y0;

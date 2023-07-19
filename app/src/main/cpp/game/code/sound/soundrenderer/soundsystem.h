@@ -31,14 +31,14 @@
 
 namespace Sound {
 
-class daSoundRenderingManager;
+    class daSoundRenderingManager;
 
 //=============================================================================
 // Constants, Definitions and Macros
 //=============================================================================
 
 // The sound memory allocator
-extern radMemoryAllocator DAMEMORY_ALLOC_SOUND;
+    extern radMemoryAllocator DAMEMORY_ALLOC_SOUND;
 
 // One aux send channels will be used for spacial effects
 #define DA_SPACIAL_EFFECT_AUX_SEND 0
@@ -48,9 +48,9 @@ extern radMemoryAllocator DAMEMORY_ALLOC_SOUND;
 // Prototypes
 //=============================================================================
 
-struct IDaSoundPlayerState;
-struct IDaSoundFadeState;
-struct IDaSoundSoundState;
+    struct IDaSoundPlayerState;
+    struct IDaSoundFadeState;
+    struct IDaSoundSoundState;
 
 //=============================================================================
 // Typedefs and Enumerations
@@ -59,14 +59,14 @@ struct IDaSoundSoundState;
 //
 // This is a sound resource name and key
 //
-typedef const char* daResourceName;
-typedef radKey32 daResourceKey;
+    typedef const char *daResourceName;
+    typedef radKey32 daResourceKey;
 
 //
 // These are the sound values
 //
-typedef float daPitchValue;
-typedef float daTrimValue;
+    typedef float daPitchValue;
+    typedef float daTrimValue;
 
 //=============================================================================
 // Interfaces
@@ -75,27 +75,25 @@ typedef float daTrimValue;
 //
 // Sound player state
 //
-struct IDaSoundPlayerState : public IRefCount
-{
-    virtual void OnSoundReady( void* pData ) = 0;
-    virtual void OnSoundDone( void* pData ) = 0;
-};
+    struct IDaSoundPlayerState : public IRefCount {
+        virtual void OnSoundReady(void *pData) = 0;
+
+        virtual void OnSoundDone(void *pData) = 0;
+    };
 
 //
 // Fade state
 //
-struct IDaSoundFadeState : public IRefCount
-{
-    virtual void OnFadeDone( void* pData ) = 0;
-};
+    struct IDaSoundFadeState : public IRefCount {
+        virtual void OnFadeDone(void *pData) = 0;
+    };
 
 //
 // A sound object
 //
-struct IDaSoundObject : public IRefCount
-{
-    // Left intentionally blank
-};
+    struct IDaSoundObject : public IRefCount {
+        // Left intentionally blank
+    };
 
 //=============================================================================
 // Public Functions
@@ -104,14 +102,16 @@ struct IDaSoundObject : public IRefCount
 //
 // Set some global sound flags
 //
-void daSoundSetSoundOn( bool soundOn );
+    void daSoundSetSoundOn(bool soundOn);
 
 //
 // Work indirectly with the sound manager
 //
-void daSoundRenderingManagerCreate( radMemoryAllocator allocator );
-daSoundRenderingManager* daSoundRenderingManagerGet( void );
-void daSoundRenderingManagerTerminate( void );
+    void daSoundRenderingManagerCreate(radMemoryAllocator allocator);
+
+    daSoundRenderingManager *daSoundRenderingManagerGet(void);
+
+    void daSoundRenderingManagerTerminate(void);
 
 } // Namespace
 #endif //_SOUNDSYSTEM_HPP

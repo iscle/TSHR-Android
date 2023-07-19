@@ -48,38 +48,37 @@
 //
 //
 //===========================================================================
-class ProjectileDSG : public ActorDSG
-{
-    public:
-        ProjectileDSG();
-        virtual ~ProjectileDSG();
-        virtual sim::Solving_Answer PreReactToCollision( sim::SimState* pCollidedObj, sim::Collision& inCollision );
-        virtual sim::Solving_Answer PostReactToCollision( rmt::Vector& impulse, sim::Collision& inCollision );
+class ProjectileDSG : public ActorDSG {
+public:
+    ProjectileDSG();
 
-        bool WasHit()const{ return mHasHit; }
-        void SetWasHit( bool wasHit ){ mHasHit = wasHit; }
+    virtual ~ProjectileDSG();
+
+    virtual sim::Solving_Answer
+    PreReactToCollision(sim::SimState *pCollidedObj, sim::Collision &inCollision);
+
+    virtual sim::Solving_Answer
+    PostReactToCollision(rmt::Vector &impulse, sim::Collision &inCollision);
+
+    bool WasHit() const { return mHasHit; }
+
+    void SetWasHit(bool wasHit) { mHasHit = wasHit; }
 
 
+protected:
 
-    protected:
+    bool mHasHit: 1;
 
-        bool mHasHit : 1;
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow XxxClassName from being copied and assigned.
+    ProjectileDSG(const ProjectileDSG &);
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow XxxClassName from being copied and assigned.
-        ProjectileDSG( const ProjectileDSG& );
-        ProjectileDSG& operator=( const ProjectileDSG& );
+    ProjectileDSG &operator=(const ProjectileDSG &);
 
- 
+
 };
-
-
-
-
-
-
 
 
 #endif

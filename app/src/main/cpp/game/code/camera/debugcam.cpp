@@ -26,7 +26,6 @@
 #include <memory/srrmemory.h>
 
 
-
 //*****************************************************************************
 //
 // Global Data, Local Data, Local Classes
@@ -59,9 +58,8 @@ float DIST = 1.0f;
 //
 //=============================================================================
 DebugCam::DebugCam() :
-    mRotationAngleXZ( 0.0f ),
-    mRotationAngleY( 2.13f )
-{
+        mRotationAngleXZ(0.0f),
+        mRotationAngleY(2.13f) {
     mIm = InputManager::GetInstance();
 }
 
@@ -75,8 +73,7 @@ DebugCam::DebugCam() :
 // Return:      N/A.
 //
 //=============================================================================
-DebugCam::~DebugCam()
-{
+DebugCam::~DebugCam() {
 }
 
 //=============================================================================
@@ -84,84 +81,78 @@ DebugCam::~DebugCam()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds  )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void DebugCam::Update( unsigned int milliseconds  )
-{
-    if ( GetFlag( (Flag)CUT ) )
-    {
+void DebugCam::Update(unsigned int milliseconds) {
+    if (GetFlag((Flag) CUT)) {
         //Reset the FOV.
-        SetFOV( SUPERCAM_FOV );//DEFAULT_FOV );
+        SetFOV(SUPERCAM_FOV);//DEFAULT_FOV);
 
-        SetFlag( (Flag)CUT, false );
+        SetFlag((Flag) CUT, false);
     }
 
     //This is to adjust interpolation when we're running substeps.
     float timeMod = 1.0f;
-    
-    timeMod = (float)milliseconds / (float)16;
-       
+
+    timeMod = (float) milliseconds / (float) 16;
+
     bool cameraRelative = false;
 
 #ifdef RAD_WIN32
-    float left = mIm->GetValue( 0, InputManager::CameraLeft );
-    float right = mIm->GetValue( 0, InputManager::CameraRight );
-    float up = mIm->GetValue( 0, InputManager::CameraMoveIn );
-    float down = mIm->GetValue( 0, InputManager::CameraMoveOut );
+    float left = mIm->GetValue(0, InputManager::CameraLeft);
+    float right = mIm->GetValue(0, InputManager::CameraRight);
+    float up = mIm->GetValue(0, InputManager::CameraMoveIn);
+    float down = mIm->GetValue(0, InputManager::CameraMoveOut);
     
-    float xAxis = ( right > left ) ? right : -left;
-    float yAxis = ( up > down ) ? up : -down;
+    float xAxis = (right> left) ? right : -left;
+    float yAxis = (up> down) ? up : -down;
     float zAxis = yAxis;
-    float zToggle = mIm->GetValue( 0, InputManager::CameraLookUp );
-    float rightTrigger = mIm->GetValue( 0, InputManager::CameraZoom );
+    float zToggle = mIm->GetValue(0, InputManager::CameraLookUp);
+    float rightTrigger = mIm->GetValue(0, InputManager::CameraZoom);
 #else
-    float xAxis = mIm->GetValue( s_secondaryControllerID, InputManager::LeftStickX );
-    float yAxis = mIm->GetValue( s_secondaryControllerID, InputManager::LeftStickY );
-    float zAxis = mIm->GetValue( s_secondaryControllerID, InputManager::LeftStickY );
-    float zToggle = mIm->GetValue( s_secondaryControllerID, InputManager::L3 );
-    float rightTrigger = mIm->GetValue( s_secondaryControllerID, InputManager::AnalogR1 );
+    float xAxis = mIm->GetValue(s_secondaryControllerID, InputManager::LeftStickX);
+    float yAxis = mIm->GetValue(s_secondaryControllerID, InputManager::LeftStickY);
+    float zAxis = mIm->GetValue(s_secondaryControllerID, InputManager::LeftStickY);
+    float zToggle = mIm->GetValue(s_secondaryControllerID, InputManager::L3);
+    float rightTrigger = mIm->GetValue(s_secondaryControllerID, InputManager::AnalogR1);
 #endif
 
-    if ( rmt::Fabs( zToggle ) > STICK_DEAD_ZONE && rmt::Fabs( zToggle ) <= 1.0f )
-    {
+    if (rmt::Fabs(zToggle) > STICK_DEAD_ZONE && rmt::Fabs(zToggle) <= 1.0f) {
         //zToggled
         yAxis = 0.0f;
-    }
-    else
-    {
+    } else {
         zAxis = 0.0f;
     }
 
-    if ( rmt::Fabs( rightTrigger ) > STICK_DEAD_ZONE && rmt::Fabs( rightTrigger ) <= 1.0f )
-    {
+    if (rmt::Fabs(rightTrigger) > STICK_DEAD_ZONE && rmt::Fabs(rightTrigger) <= 1.0f) {
         //TODO: Make camera relative movement work.
         cameraRelative = true;
     }
 
-    mRotationAngleXZ -= ( xAxis * INCREMENT * timeMod );
-    mRotationAngleY -= ( yAxis * INCREMENT * timeMod );
+    mRotationAngleXZ -= (xAxis * INCREMENT * timeMod);
+    mRotationAngleY -= (yAxis * INCREMENT * timeMod);
 
     float x, y, z;
-    rmt::SphericalToCartesian( MAGNITUDE, mRotationAngleXZ, mRotationAngleY,
-                               &x, &z, &y );
+    rmt::SphericalToCartesian(MAGNITUDE, mRotationAngleXZ, mRotationAngleY,
+                              &x, &z, &y);
 
     rmt::Vector camPos, camTarget, diff;
-    GetPosition( &camPos );
-    
-    camTarget.Add( camPos, rmt::Vector( x, y, z ) );
+    GetPosition(&camPos);
 
-    diff.Sub( camTarget, camPos );
+    camTarget.Add(camPos, rmt::Vector(x, y, z));
+
+    diff.Sub(camTarget, camPos);
     diff.NormalizeSafe();
 
-    diff.Scale( DIST * zAxis * timeMod );
+    diff.Scale(DIST * zAxis * timeMod);
 
-    camPos.Add( diff );
-    camTarget.Add( diff );
+    camPos.Add(diff);
+    camTarget.Add(diff);
 
-    SetCameraValues( milliseconds, camPos, camTarget );
+    SetCameraValues(milliseconds, camPos, camTarget);
 }
 
 //=============================================================================
@@ -174,9 +165,8 @@ void DebugCam::Update( unsigned int milliseconds  )
 // Return:      void 
 //
 //=============================================================================
-void DebugCam::EnableShake()
-{
-    SetShaker( &mSineCosShaker );
+void DebugCam::EnableShake() {
+    SetShaker(&mSineCosShaker);
 
     SuperCam::EnableShake();
 }
@@ -191,8 +181,7 @@ void DebugCam::EnableShake()
 // Return:      void 
 //
 //=============================================================================
-void DebugCam::DisableShake()
-{
+void DebugCam::DisableShake() {
     SuperCam::DisableShake();
 }
 
@@ -212,16 +201,15 @@ void DebugCam::DisableShake()
 // Return:      void 
 //
 //=============================================================================
-void DebugCam::OnRegisterDebugControls()
-{
+void DebugCam::OnRegisterDebugControls() {
 #ifdef DEBUGWATCH
     char nameSpace[256];
-    sprintf( nameSpace, "SuperCam\\Player%d\\Debug", GetPlayerID() );
+    sprintf(nameSpace, "SuperCam\\Player%d\\Debug", GetPlayerID());
     
-    radDbgWatchAddFloat( &mRotationAngleXZ, "Rotation Angle XZ", nameSpace, NULL, NULL, 0.0f, rmt::PI_2 );
-    radDbgWatchAddFloat( &mRotationAngleY, "Rotation Angle Y", nameSpace, NULL, NULL, 0.0f, rmt::PI_2 );
-    radDbgWatchAddFloat( &INCREMENT, "Rotation Increment", nameSpace, NULL, NULL, 0.0f, rmt::PI_2 );
-    radDbgWatchAddFloat( &DIST, "Move Distance", nameSpace, NULL, NULL, 0.0f, 100.0f );
+    radDbgWatchAddFloat(&mRotationAngleXZ, "Rotation Angle XZ", nameSpace, NULL, NULL, 0.0f, rmt::PI_2);
+    radDbgWatchAddFloat(&mRotationAngleY, "Rotation Angle Y", nameSpace, NULL, NULL, 0.0f, rmt::PI_2);
+    radDbgWatchAddFloat(&INCREMENT, "Rotation Increment", nameSpace, NULL, NULL, 0.0f, rmt::PI_2);
+    radDbgWatchAddFloat(&DIST, "Move Distance", nameSpace, NULL, NULL, 0.0f, 100.0f);
 #endif
 }
 
@@ -235,12 +223,11 @@ void DebugCam::OnRegisterDebugControls()
 // Return:      void 
 //
 //=============================================================================
-void DebugCam::OnUnregisterDebugControls()
-{
+void DebugCam::OnUnregisterDebugControls() {
 #ifdef DEBUGWATCH
-    radDbgWatchDelete( &mRotationAngleXZ );
-    radDbgWatchDelete( &mRotationAngleY );
-    radDbgWatchDelete( &INCREMENT );
-    radDbgWatchDelete( &DIST );
+    radDbgWatchDelete(&mRotationAngleXZ);
+    radDbgWatchDelete(&mRotationAngleY);
+    radDbgWatchDelete(&INCREMENT);
+    radDbgWatchDelete(&DIST);
 #endif
 }

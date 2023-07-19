@@ -32,21 +32,22 @@ class ConfigString;
 // Interface Definitions
 //===========================================================================
 
-class GameConfigManager
-{
+class GameConfigManager {
 public:
     // Static Methods for accessing this singleton.
-    static GameConfigManager* CreateInstance();
-    static void DestroyInstance();
-    static GameConfigManager* GetInstance();
+    static GameConfigManager *CreateInstance();
 
-    static const char* ConfigFilename;
+    static void DestroyInstance();
+
+    static GameConfigManager *GetInstance();
+
+    static const char *ConfigFilename;
     static const unsigned int MaxGameConfigs = 16;
 
 public:
 
     // Registration of client game data
-    void RegisterConfig( GameConfigHandler* gdHandler );
+    void RegisterConfig(GameConfigHandler *gdHandler);
 
     // Loads the config file and applies loaded settings to
     // registered config handlers.
@@ -59,27 +60,30 @@ public:
 private:
     // Can only be created by CreateInstance().
     GameConfigManager();
+
     ~GameConfigManager();
 
     // No copying or assignment.
-    GameConfigManager( const GameConfigManager& );
-    GameConfigManager& operator= ( const GameConfigManager& );
+    GameConfigManager(const GameConfigManager &);
+
+    GameConfigManager &operator=(const GameConfigManager &);
 
     // Loads all config data from the config string.
-    void LoadFromConfig( ConfigString& config );
+    void LoadFromConfig(ConfigString &config);
+
     // Saves all config data to the config string.
-    void SaveToConfig( ConfigString& config );
+    void SaveToConfig(ConfigString &config);
 
 private:
     // Pointer to the one and only instance of this singleton.
-    static GameConfigManager* spInstance;
+    static GameConfigManager *spInstance;
 
-    GameConfigHandler* mConfig[ MaxGameConfigs ];
+    GameConfigHandler *mConfig[MaxGameConfigs];
     int mNumConfig;
     int mConfigSize;
 };
 
 // A little syntactic sugar for getting at this singleton.
-inline GameConfigManager* GetGameConfigManager() { return( GameConfigManager::GetInstance() ); }
+inline GameConfigManager *GetGameConfigManager() { return (GameConfigManager::GetInstance()); }
 
 #endif // GAMECONFIGMANAGER_H

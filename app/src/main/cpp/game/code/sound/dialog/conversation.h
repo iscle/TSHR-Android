@@ -30,48 +30,58 @@ class DialogLine;
 //
 //=============================================================================
 
-class Conversation : public PlayableDialog
-{
-    public:
-        Conversation( DialogLine& line );
-        virtual ~Conversation();
+class Conversation : public PlayableDialog {
+public:
+    Conversation(DialogLine &line);
 
-        bool LineFits( DialogLine& line );
-        void AddToConversation( DialogLine& line );
-        bool IsComplete();
+    virtual ~Conversation();
 
-        //
-        // Pure virtual functions from SelectableDialog
-        //
-        void PlayLine( unsigned int lineIndex,
-                       SimpsonsSoundPlayer& player,
-                       SimpsonsSoundPlayerCallback* callback );
-        void QueueLine( unsigned int lineIndex,
-                        SimpsonsSoundPlayer& player );
-        void PlayQueuedLine( SimpsonsSoundPlayer& player,
-                             SimpsonsSoundPlayerCallback* callback );
+    bool LineFits(DialogLine &line);
 
-        unsigned int GetNumDialogLines() const;
-        bool UsesCharacter( tUID characterUID );
-        tUID GetDialogLineCharacterUID( unsigned int lineNum );
-        radKey32 GetConversationName();
-        bool IsVillainLine();
+    void AddToConversation(DialogLine &line);
 
-        void AddMatchingDialog( SelectableDialog& newDialog, SelectableDialogList& list );
-        
-        void PrintDialogLineNames();
+    bool IsComplete();
 
-    private:
-        //Prevent wasteful constructor creation.
-        Conversation();
-        Conversation( const Conversation& original );
-        Conversation& operator=( const Conversation& rhs );
+    //
+    // Pure virtual functions from SelectableDialog
+    //
+    void PlayLine(unsigned int lineIndex,
+                  SimpsonsSoundPlayer &player,
+                  SimpsonsSoundPlayerCallback *callback);
 
-        DialogLine* findDialogLineByIndex( unsigned int lineIndex );
+    void QueueLine(unsigned int lineIndex,
+                   SimpsonsSoundPlayer &player);
 
-        unsigned int m_maxOrderNumber;
-        DialogLine* m_dialogList;
-        DialogLine* m_currentLine;
+    void PlayQueuedLine(SimpsonsSoundPlayer &player,
+                        SimpsonsSoundPlayerCallback *callback);
+
+    unsigned int GetNumDialogLines() const;
+
+    bool UsesCharacter(tUID characterUID);
+
+    tUID GetDialogLineCharacterUID(unsigned int lineNum);
+
+    radKey32 GetConversationName();
+
+    bool IsVillainLine();
+
+    void AddMatchingDialog(SelectableDialog &newDialog, SelectableDialogList &list);
+
+    void PrintDialogLineNames();
+
+private:
+    //Prevent wasteful constructor creation.
+    Conversation();
+
+    Conversation(const Conversation &original);
+
+    Conversation &operator=(const Conversation &rhs);
+
+    DialogLine *findDialogLineByIndex(unsigned int lineIndex);
+
+    unsigned int m_maxOrderNumber;
+    DialogLine *m_dialogList;
+    DialogLine *m_currentLine;
 };
 
 

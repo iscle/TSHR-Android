@@ -28,8 +28,7 @@
 // Forward References
 //===========================================================================
 
-struct SaveGameInfoData
-{
+struct SaveGameInfoData {
     unsigned short m_magicNumber;   // used for data verification
     radDate m_timeStamp;
     GameDataByte m_level;
@@ -41,30 +40,33 @@ struct SaveGameInfoData
 // Interface Definitions
 //===========================================================================
 
-class SaveGameInfo : public GameDataHandler
-{
+class SaveGameInfo : public GameDataHandler {
 public:
-    enum{  MAGIC_NUMBER = 1978 }; 
+    enum {
+        MAGIC_NUMBER = 1978
+    };
 
-	SaveGameInfo();
+    SaveGameInfo();
+
     virtual ~SaveGameInfo();
 
-    static const unsigned int GetSize() { return sizeof( SaveGameInfoData ); }
+    static const unsigned int GetSize() { return sizeof(SaveGameInfoData); }
 
     // Implements Game Data Handler
     //
-    virtual void LoadData( const GameDataByte* dataBuffer,
-                           unsigned int numBytes );
-    virtual void SaveData( GameDataByte* dataBuffer,
-                           unsigned int numBytes );
+    virtual void LoadData(const GameDataByte *dataBuffer,
+                          unsigned int numBytes);
+
+    virtual void SaveData(GameDataByte *dataBuffer,
+                          unsigned int numBytes);
 
     virtual void ResetData();
-    
+
     void FormatLevelMissionInfo(char levelMissionInfo[32]) const;
 
     // Data accessors
     //
-    const SaveGameInfoData* GetData() const { return &m_data; }
+    const SaveGameInfoData *GetData() const { return &m_data; }
 
     // Verify data
     //
@@ -72,13 +74,13 @@ public:
 
     // Format display string for viewing in frontend screen
     //
-    void FormatDisplay( char* displayBuffer,
-                        unsigned int bufferLength ) const;
+    void FormatDisplay(char *displayBuffer,
+                       unsigned int bufferLength) const;
 
-    static int CompareTimeStamps( const radDate& date1,
-                                  const radDate& date2 );
+    static int CompareTimeStamps(const radDate &date1,
+                                 const radDate &date2);
 
-    char    m_displayFilename[radFileFilenameMax+1];
+    char m_displayFilename[radFileFilenameMax + 1];
 
 private:
     //---------------------------------------------------------------------
@@ -87,8 +89,9 @@ private:
 
     // No copying or assignment. Declare but don't define.
     //
-    SaveGameInfo( const SaveGameInfo& );
-    SaveGameInfo& operator= ( const SaveGameInfo& );
+    SaveGameInfo(const SaveGameInfo &);
+
+    SaveGameInfo &operator=(const SaveGameInfo &);
 
     //---------------------------------------------------------------------
     // Private Data

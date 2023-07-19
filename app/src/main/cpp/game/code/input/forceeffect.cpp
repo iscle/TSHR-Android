@@ -44,16 +44,15 @@
 //
 //=============================================================================
 ForceEffect::ForceEffect() :
-mOutputPoint( NULL ),
+        mOutputPoint(NULL),
 #ifdef RAD_WIN32
-m_effectTime(0),
-m_currentTime(0),
+        m_effectTime(0),
+        m_currentTime(0),
 #endif
-mEffectDirty( true )
-{
+        mEffectDirty(true) {
 #ifdef RAD_WIN32
-    ZeroMemory( &mForceEffect, sizeof(mForceEffect) );
-    ZeroMemory( &m_rglDirection, sizeof(m_rglDirection) );
+    ZeroMemory(&mForceEffect, sizeof(mForceEffect));
+    ZeroMemory(&m_rglDirection, sizeof(m_rglDirection));
 
     mForceEffect.dwSize                  = sizeof(DIEFFECT);
 
@@ -72,10 +71,8 @@ mEffectDirty( true )
 // Return:      N/A.
 //
 //=============================================================================
-ForceEffect::~ForceEffect()
-{
-    if ( mOutputPoint )
-    {
+ForceEffect::~ForceEffect() {
+    if (mOutputPoint) {
         mOutputPoint->Stop();
         mOutputPoint->Release();
         mOutputPoint = NULL;
@@ -87,17 +84,16 @@ ForceEffect::~ForceEffect()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( IRadControllerOutputPoint* outputPoint )
+// Parameters:  (IRadControllerOutputPoint* outputPoint)
 //
 // Return:      void 
 //
 //=============================================================================
-void ForceEffect::Init( IRadControllerOutputPoint* outputPoint )
-{
+void ForceEffect::Init(IRadControllerOutputPoint *outputPoint) {
 #ifdef RAD_WIN32
-    rAssertMsg( outputPoint != NULL, "Attempt to set the outputPoint with a NULL pointer." );
+    rAssertMsg(outputPoint != NULL, "Attempt to set the outputPoint with a NULL pointer.");
     // mOutputPoint is dirty.
-    if ( mOutputPoint )
+    if (mOutputPoint)
     {
         ShutDownEffects();
     }
@@ -107,7 +103,7 @@ void ForceEffect::Init( IRadControllerOutputPoint* outputPoint )
 
     OnInit();
 
-    mOutputPoint->UpdateEffect( &mForceEffect );
+    mOutputPoint->UpdateEffect(&mForceEffect);
 }
 
 //=============================================================================
@@ -120,14 +116,12 @@ void ForceEffect::Init( IRadControllerOutputPoint* outputPoint )
 // Return:      void 
 //
 //=============================================================================
-void ForceEffect::Start()
-{
+void ForceEffect::Start() {
     //Clear out current effects.
     OnInit();
     mEffectDirty = true;
 
-    if ( mOutputPoint )
-    {
+    if (mOutputPoint) {
         mOutputPoint->Start();
     }
 }
@@ -142,10 +136,8 @@ void ForceEffect::Start()
 // Return:      void 
 //
 //=============================================================================
-void ForceEffect::Stop()
-{
-    if ( mOutputPoint )
-    {
+void ForceEffect::Stop() {
+    if (mOutputPoint) {
         mOutputPoint->Stop();
     }
 }
@@ -163,19 +155,20 @@ void ForceEffect::Stop()
 #ifdef RAD_WIN32
 void ForceEffect::Update(unsigned timeins)
 #else
+
 void ForceEffect::Update()
 #endif
 {
-    if ( mEffectDirty && mOutputPoint )
-    {
-        mOutputPoint->UpdateEffect( &mForceEffect );
+    if (mEffectDirty && mOutputPoint) {
+        mOutputPoint->UpdateEffect(&mForceEffect);
         mEffectDirty = false;
     }
 }
+
 #ifdef RAD_WIN32
 void ForceEffect::ShutDownEffects()
 {
-    if ( mOutputPoint )
+    if (mOutputPoint)
     {
         mOutputPoint->ReleaseEffect();
         mOutputPoint->Release();
@@ -183,7 +176,7 @@ void ForceEffect::ShutDownEffects()
     }
 }
 
-void ForceEffect::SetResetTime( DWORD dwMilliSeconds )
+void ForceEffect::SetResetTime(DWORD dwMilliSeconds)
 {
     m_effectTime = dwMilliSeconds;
 }

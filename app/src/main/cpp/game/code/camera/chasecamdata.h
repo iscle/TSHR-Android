@@ -28,31 +28,38 @@
 //
 //=============================================================================
 
-class ChaseCamData
-{
+class ChaseCamData {
 public:
     ChaseCamData();
+
     virtual ~ChaseCamData() {};
 
-    void SetRod( rmt::Vector rod );
-    void GetRod( rmt::Vector* rod ) const;    
+    void SetRod(rmt::Vector rod);
 
-    void SetPositionLag( float lag );
+    void GetRod(rmt::Vector *rod) const;
+
+    void SetPositionLag(float lag);
+
     float GetPositionLag() const;
 
-    void SetTargetLag( float lag );
+    void SetTargetLag(float lag);
+
     float GetTargetLag() const;
 
-    void SetMinFOV( float min );
+    void SetMinFOV(float min);
+
     float GetMinFOV() const;
 
-    void SetMaxFOV( float max );
+    void SetMaxFOV(float max);
+
     float GetMaxFOV() const;
 
-    void SetMaxSpeed( float speed );
+    void SetMaxSpeed(float speed);
+
     float GetMaxSpeed() const;
 
-    void SetFOVLag( float lag );
+    void SetFOVLag(float lag);
+
     float GetFOVLag() const;
 
     rmt::Vector mRod;
@@ -65,8 +72,9 @@ public:
 
 private:
     //Prevent wasteful constructor creation.
-    ChaseCamData( const ChaseCamData& chasecamdata );
-    ChaseCamData& operator=( const ChaseCamData& chasecamdata );
+    ChaseCamData(const ChaseCamData &chasecamdata);
+
+    ChaseCamData &operator=(const ChaseCamData &chasecamdata);
 };
 
 //*****************************************************************************
@@ -86,14 +94,13 @@ private:
 //
 //=============================================================================
 inline ChaseCamData::ChaseCamData() :
-    mPositionLag( 0.01f ),
-    mTargetLag( 0.089f ),
-    mMinFOV( 0.3487f ), //Fudge...
-    mMaxFOV( 1.75079f ), //Fudge...
-    mMaxSpeed( 0.233f ),
-    mFOVLag( 0.05f )
-{
-    mRod.Set( 0.0f, 50.0f, -15.0f );
+        mPositionLag(0.01f),
+        mTargetLag(0.089f),
+        mMinFOV(0.3487f), //Fudge...
+        mMaxFOV(1.75079f), //Fudge...
+        mMaxSpeed(0.233f),
+        mFOVLag(0.05f) {
+    mRod.Set(0.0f, 50.0f, -15.0f);
 }
 
 //=============================================================================
@@ -101,13 +108,12 @@ inline ChaseCamData::ChaseCamData() :
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector rod )
+// Parameters:  (rmt::Vector rod)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ChaseCamData::SetRod( rmt::Vector rod )
-{
+inline void ChaseCamData::SetRod(rmt::Vector rod) {
     mRod = rod;
 }
 
@@ -116,13 +122,12 @@ inline void ChaseCamData::SetRod( rmt::Vector rod )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* rod )
+// Parameters:  (rmt::Vector* rod)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ChaseCamData::GetRod( rmt::Vector* rod ) const
-{
+inline void ChaseCamData::GetRod(rmt::Vector *rod) const {
     *rod = mRod;
 }
 
@@ -131,13 +136,12 @@ inline void ChaseCamData::GetRod( rmt::Vector* rod ) const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float lag )
+// Parameters:  (float lag)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ChaseCamData::SetPositionLag( float lag )
-{
+inline void ChaseCamData::SetPositionLag(float lag) {
     mPositionLag = lag;
 }
 
@@ -151,8 +155,7 @@ inline void ChaseCamData::SetPositionLag( float lag )
 // Return:      float 
 //
 //=============================================================================
-inline float ChaseCamData::GetPositionLag() const
-{
+inline float ChaseCamData::GetPositionLag() const {
     return mPositionLag;
 }
 
@@ -161,13 +164,12 @@ inline float ChaseCamData::GetPositionLag() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float lag )
+// Parameters:  (float lag)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ChaseCamData::SetTargetLag( float lag )
-{
+inline void ChaseCamData::SetTargetLag(float lag) {
     mTargetLag = lag;
 }
 
@@ -181,8 +183,7 @@ inline void ChaseCamData::SetTargetLag( float lag )
 // Return:      float 
 //
 //=============================================================================
-inline float ChaseCamData::GetTargetLag() const
-{
+inline float ChaseCamData::GetTargetLag() const {
     return mTargetLag;
 }
 
@@ -191,13 +192,12 @@ inline float ChaseCamData::GetTargetLag() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float min )
+// Parameters:  (float min)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ChaseCamData::SetMinFOV( float min )
-{
+inline void ChaseCamData::SetMinFOV(float min) {
     mMinFOV = min;
 }
 
@@ -211,8 +211,7 @@ inline void ChaseCamData::SetMinFOV( float min )
 // Return:      float 
 //
 //=============================================================================
-inline float ChaseCamData::GetMinFOV() const
-{
+inline float ChaseCamData::GetMinFOV() const {
     return mMinFOV;
 }
 
@@ -221,13 +220,12 @@ inline float ChaseCamData::GetMinFOV() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float max )
+// Parameters:  (float max)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ChaseCamData::SetMaxFOV( float max )
-{
+inline void ChaseCamData::SetMaxFOV(float max) {
     mMaxFOV = max;
 }
 
@@ -241,8 +239,7 @@ inline void ChaseCamData::SetMaxFOV( float max )
 // Return:      float 
 //
 //=============================================================================
-inline float ChaseCamData::GetMaxFOV() const
-{
+inline float ChaseCamData::GetMaxFOV() const {
     return mMaxFOV;
 }
 
@@ -251,13 +248,12 @@ inline float ChaseCamData::GetMaxFOV() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float speed )
+// Parameters:  (float speed)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ChaseCamData::SetMaxSpeed( float speed )
-{
+inline void ChaseCamData::SetMaxSpeed(float speed) {
     mMaxSpeed = speed;
 }
 
@@ -271,8 +267,7 @@ inline void ChaseCamData::SetMaxSpeed( float speed )
 // Return:      float 
 //
 //=============================================================================
-inline float ChaseCamData::GetMaxSpeed() const
-{
+inline float ChaseCamData::GetMaxSpeed() const {
     return mMaxSpeed;
 }
 
@@ -281,13 +276,12 @@ inline float ChaseCamData::GetMaxSpeed() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float lag )
+// Parameters:  (float lag)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ChaseCamData::SetFOVLag( float lag )
-{
+inline void ChaseCamData::SetFOVLag(float lag) {
     mFOVLag = lag;
 }
 
@@ -301,8 +295,7 @@ inline void ChaseCamData::SetFOVLag( float lag )
 // Return:      float 
 //
 //=============================================================================
-inline float ChaseCamData::GetFOVLag() const
-{
+inline float ChaseCamData::GetFOVLag() const {
     return mFOVLag;
 }
 

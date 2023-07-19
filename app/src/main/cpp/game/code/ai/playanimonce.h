@@ -48,34 +48,35 @@
 //
 //===========================================================================
 
-namespace ActionButton
-{
+namespace ActionButton {
 
-class PlayAnimOnce : public PlayAnim
-{
+    class PlayAnimOnce : public PlayAnim {
     public:
-        PlayAnimOnce( ActionEventLocator* pActionEventLocator );
-        virtual ~PlayAnimOnce();
-        virtual bool OnButtonPressed( Character* pCharacter, Sequencer* pSeq );
-        virtual void PositionCharacter( Character* pCharacter, Sequencer* pSeq );
+        PlayAnimOnce(ActionEventLocator *pActionEventLocator);
 
-        static ButtonHandler* NewAction( ActionEventLocator* pActionEventLocator )
-        {
-            return new PlayAnimOnce( pActionEventLocator );  
-        }  
+        virtual ~PlayAnimOnce();
+
+        virtual bool OnButtonPressed(Character *pCharacter, Sequencer *pSeq);
+
+        virtual void PositionCharacter(Character *pCharacter, Sequencer *pSeq);
+
+        static ButtonHandler *NewAction(ActionEventLocator *pActionEventLocator) {
+            return new PlayAnimOnce(pActionEventLocator);
+        }
 
     protected:
 
-        bool    mWasPressed : 1;
+        bool mWasPressed: 1;
 
     private:
         // These methods defined as private and not implemented ensure that
         // clients will not be able to use them.  For example, we will
         // disallow PlayAnimOnce from being copied and assigned.
-        PlayAnimOnce( const PlayAnimOnce& );
-        PlayAnimOnce& operator=( const PlayAnimOnce& );
+        PlayAnimOnce(const PlayAnimOnce &);
 
-};
+        PlayAnimOnce &operator=(const PlayAnimOnce &);
+
+    };
 
 };
 #endif

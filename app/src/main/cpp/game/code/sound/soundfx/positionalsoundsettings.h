@@ -29,39 +29,45 @@
 //
 //=============================================================================
 
-class positionalSoundSettings: public IPositionalSoundSettings,
-                               public radLinkedClass< positionalSoundSettings >,
-                               public radRefCount
-{
-    public:
-        IMPLEMENT_REFCOUNTED( "positionalSoundSettings" );
-        positionalSoundSettings();
-        virtual ~positionalSoundSettings();
+class positionalSoundSettings : public IPositionalSoundSettings,
+                                public radLinkedClass<positionalSoundSettings>,
+                                public radRefCount {
+public:
+    IMPLEMENT_REFCOUNTED("positionalSoundSettings");
 
-        void SetClipName( const char* clipName );
-        const char* GetClipName() { return( m_clipName ); }
+    positionalSoundSettings();
 
-        void SetMinDistance( float min );
-        float GetMinDistance() { return( m_minDist ); }
+    virtual ~positionalSoundSettings();
 
-        void SetMaxDistance( float max );
-        float GetMaxDistance() { return( m_maxDist ); }
+    void SetClipName(const char *clipName);
 
-        void SetPlaybackProbability( float prob );
-        float GetPlaybackProbability() { return( m_playProbability ); }
+    const char *GetClipName() { return (m_clipName); }
 
-    private:
-        //Prevent wasteful constructor creation.
-        positionalSoundSettings( const positionalSoundSettings& positionalsoundsettings );
-        positionalSoundSettings& operator=( const positionalSoundSettings& positionalsoundsettings );
+    void SetMinDistance(float min);
 
-        //
-        // Settings
-        //
-        char* m_clipName;
-        float m_minDist;
-        float m_maxDist;
-        float m_playProbability;
+    float GetMinDistance() { return (m_minDist); }
+
+    void SetMaxDistance(float max);
+
+    float GetMaxDistance() { return (m_maxDist); }
+
+    void SetPlaybackProbability(float prob);
+
+    float GetPlaybackProbability() { return (m_playProbability); }
+
+private:
+    //Prevent wasteful constructor creation.
+    positionalSoundSettings(const positionalSoundSettings &positionalsoundsettings);
+
+    positionalSoundSettings &operator=(const positionalSoundSettings &positionalsoundsettings);
+
+    //
+    // Settings
+    //
+    char *m_clipName;
+    float m_minDist;
+    float m_maxDist;
+    float m_playProbability;
 };
 
 //=============================================================================
@@ -72,9 +78,9 @@ class positionalSoundSettings: public IPositionalSoundSettings,
 // Create a positionalSoundSettings object
 //
 void PositionalSettingsObjCreate
-(
-    IPositionalSoundSettings** ppSettings,
-    radMemoryAllocator allocator
-);
+        (
+                IPositionalSoundSettings **ppSettings,
+                radMemoryAllocator allocator
+        );
 
 #endif //POSITIONALSOUNDSETTINGS_H

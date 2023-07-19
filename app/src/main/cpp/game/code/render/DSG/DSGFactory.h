@@ -20,8 +20,11 @@
 // Project Includes
 //=================================================
 class IEntityDSG;
+
 class IntersectDSG;
+
 class tDrawable;
+
 class tGeometry;
 
 //========================================================================
@@ -29,36 +32,38 @@ class tGeometry;
 // Synopsis:   The DSGFactory; Synopsis by Inspection.
 //
 //========================================================================
-class DSGFactory 
-{
+class DSGFactory {
 public:
-   // Static Methods (for creating, destroying and acquiring an instance 
-   // of the RenderManager)
-   static DSGFactory* CreateInstance();
-   static DSGFactory* GetInstance();
-   static void  DestroyInstance();
+    // Static Methods (for creating, destroying and acquiring an instance
+    // of the RenderManager)
+    static DSGFactory *CreateInstance();
 
-   ///////////////////////////////////////////////////////////////////////
-   //Meat Interface
-   ///////////////////////////////////////////////////////////////////////
-   IEntityDSG*    CreateEntityDSG(     tDrawable* ipDrawable );
-   IntersectDSG*  CreateIntersectDSG(  tGeometry* ipGeometry );
+    static DSGFactory *GetInstance();
+
+    static void DestroyInstance();
+
+    ///////////////////////////////////////////////////////////////////////
+    //Meat Interface
+    ///////////////////////////////////////////////////////////////////////
+    IEntityDSG *CreateEntityDSG(tDrawable *ipDrawable);
+
+    IntersectDSG *CreateIntersectDSG(tGeometry *ipGeometry);
 
 private:
-   DSGFactory();
-   ~DSGFactory();
+    DSGFactory();
 
-   static DSGFactory* mspInstance;
+    ~DSGFactory();
 
-   //MS7 Allocations can be pooled here
+    static DSGFactory *mspInstance;
+
+    //MS7 Allocations can be pooled here
 };
 
 //
 // A little syntactic sugar for getting at this singleton.
 //
-inline DSGFactory* GetDSGFactory() 
-{ 
-   return( DSGFactory::GetInstance() ); 
+inline DSGFactory *GetDSGFactory() {
+    return (DSGFactory::GetInstance());
 }
 
 #endif

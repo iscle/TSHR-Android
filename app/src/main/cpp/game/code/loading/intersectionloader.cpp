@@ -51,8 +51,7 @@
 // Return:      N/A.
 //
 //==============================================================================
-IntersectionLoader::IntersectionLoader()
-{
+IntersectionLoader::IntersectionLoader() {
 }
 
 //==============================================================================
@@ -65,8 +64,7 @@ IntersectionLoader::IntersectionLoader()
 // Return:      N/A.
 //
 //==============================================================================
-IntersectionLoader::~IntersectionLoader()
-{
+IntersectionLoader::~IntersectionLoader() {
 }
 
 //==============================================================================
@@ -80,10 +78,9 @@ IntersectionLoader::~IntersectionLoader()
 // Return:      tLoadStatus 
 //
 //==============================================================================
-tLoadStatus IntersectionLoader::Load(tChunkFile* f, tEntityStore* store)
-{
+tLoadStatus IntersectionLoader::Load(tChunkFile *f, tEntityStore *store) {
     char name[256];
-    f->GetString( name );
+    f->GetString(name);
 
     rmt::Vector loc;
     loc.x = f->GetFloat();
@@ -94,29 +91,28 @@ tLoadStatus IntersectionLoader::Load(tChunkFile* f, tEntityStore* store)
 
     unsigned int type = f->GetUInt();
 
-    RoadManager* rm = RoadManager::GetInstance();
+    RoadManager *rm = RoadManager::GetInstance();
 
-    Intersection* intersection = NULL;
+    Intersection *intersection = NULL;
 
     //First see if we've already got this one!
-    intersection = rm->FindIntersection( name );
+    intersection = rm->FindIntersection(name);
 
-    if ( NULL == intersection )
-    {
+    if (NULL == intersection) {
         //Not here yet.
         intersection = rm->GetFreeIntersectionMemory();
-        rAssert( intersection );
+        rAssert(intersection);
 
-        intersection->SetName( name );
-        intersection->SetType( (Intersection::Type)type );
-        intersection->SetRadius( radius );
-        intersection->SetLocation( loc );
+        intersection->SetName(name);
+        intersection->SetType((Intersection::Type) type);
+        intersection->SetRadius(radius);
+        intersection->SetLocation(loc);
 
-        rm->AddIntersection( intersection );    
+        rm->AddIntersection(intersection);
     }
 
 #ifdef TOOLS
-    store->Store( intersection );
+    store->Store(intersection);
     //HACK
     intersection->AddRef();
 #endif
@@ -135,16 +131,14 @@ tLoadStatus IntersectionLoader::Load(tChunkFile* f, tEntityStore* store)
 // Return:      bool 
 //
 //==============================================================================
-bool IntersectionLoader::CheckChunkID(unsigned id)
-{
+bool IntersectionLoader::CheckChunkID(unsigned id) {
     return SRR2::ChunkID::INTERSECTION == id;
 }
-    
-unsigned int IntersectionLoader::GetChunkID()
-{
-	return SRR2::ChunkID::INTERSECTION;
+
+unsigned int IntersectionLoader::GetChunkID() {
+    return SRR2::ChunkID::INTERSECTION;
 }
-    
+
 
 //******************************************************************************
 //

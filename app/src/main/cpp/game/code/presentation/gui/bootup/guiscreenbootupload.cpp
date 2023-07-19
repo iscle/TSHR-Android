@@ -46,22 +46,20 @@
 //
 //===========================================================================
 CGuiScreenBootupLoad::CGuiScreenBootupLoad
-(
-	Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-)
-:   CGuiScreen( pScreen, pParent, GUI_SCREEN_ID_BOOTUP_LOAD ),
-    m_loadingText( NULL ),
-    m_elapsedIdleTime( 0 )
-{
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        : CGuiScreen(pScreen, pParent, GUI_SCREEN_ID_BOOTUP_LOAD),
+          m_loadingText(NULL),
+          m_elapsedIdleTime(0) {
     // get loading text
     //
-    Scrooby::Page* pPage = m_pScroobyScreen->GetPage( "LoadingText" );
-    if( pPage != NULL )
-    {
-        m_loadingText = pPage->GetText( "Loading" );
-        rAssert( m_loadingText != NULL );
-        m_loadingText->SetVisible( false ); // hide by default
+    Scrooby::Page *pPage = m_pScroobyScreen->GetPage("LoadingText");
+    if (pPage != NULL) {
+        m_loadingText = pPage->GetText("Loading");
+        rAssert(m_loadingText != NULL);
+        m_loadingText->SetVisible(false); // hide by default
     }
 }
 
@@ -78,8 +76,7 @@ CGuiScreenBootupLoad::CGuiScreenBootupLoad
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenBootupLoad::~CGuiScreenBootupLoad()
-{
+CGuiScreenBootupLoad::~CGuiScreenBootupLoad() {
 }
 
 
@@ -96,43 +93,37 @@ CGuiScreenBootupLoad::~CGuiScreenBootupLoad()
 //
 //===========================================================================
 void CGuiScreenBootupLoad::HandleMessage
-(
-	eGuiMessage message, 
-	unsigned int param1,
-	unsigned int param2 
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        if( message == GUI_MSG_UPDATE )
-        {
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        if (message == GUI_MSG_UPDATE) {
             m_elapsedIdleTime += param1;
 
-            if( m_loadingText != NULL )
-            {
+            if (m_loadingText != NULL) {
                 // blink loading text if idling here on this screen to satisfy
                 // TRC/TCR requirements
                 //
                 const unsigned int BLINKING_PERIOD = 250;
-                bool isBlinked = GuiSFX::Blink( m_loadingText,
-                                                static_cast<float>( m_elapsedIdleTime ),
-                                                static_cast<float>( BLINKING_PERIOD ) );
-                if( isBlinked )
-                {
+                bool isBlinked = GuiSFX::Blink(m_loadingText,
+                                               static_cast<float>(m_elapsedIdleTime),
+                                               static_cast<float>(BLINKING_PERIOD));
+                if (isBlinked) {
                     m_elapsedIdleTime %= BLINKING_PERIOD;
                 }
             }
 
-            if( GetGuiSystem()->GetCurrentState() == CGuiSystem::BOOTUP_ACTIVE )
-            {
-                m_pParent->HandleMessage( GUI_MSG_BOOTUP_LOAD_COMPLETED );
+            if (GetGuiSystem()->GetCurrentState() == CGuiSystem::BOOTUP_ACTIVE) {
+                m_pParent->HandleMessage(GUI_MSG_BOOTUP_LOAD_COMPLETED);
             }
         }
     }
 
-	// Propogate the message up the hierarchy.
-	//
-	CGuiScreen::HandleMessage( message, param1, param2 );
+    // Propogate the message up the hierarchy.
+    //
+    CGuiScreen::HandleMessage(message, param1, param2);
 }
 
 
@@ -148,8 +139,7 @@ void CGuiScreenBootupLoad::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenBootupLoad::InitIntro()
-{
+void CGuiScreenBootupLoad::InitIntro() {
 }
 
 
@@ -165,8 +155,7 @@ void CGuiScreenBootupLoad::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenBootupLoad::InitRunning()
-{
+void CGuiScreenBootupLoad::InitRunning() {
     m_elapsedIdleTime = 0;
 }
 
@@ -183,13 +172,11 @@ void CGuiScreenBootupLoad::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenBootupLoad::InitOutro()
-{
-    if( m_loadingText != NULL )
-    {
+void CGuiScreenBootupLoad::InitOutro() {
+    if (m_loadingText != NULL) {
         // hide loading text
         //
-        m_loadingText->SetVisible( false );
+        m_loadingText->SetVisible(false);
     }
 }
 

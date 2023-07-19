@@ -17,26 +17,24 @@
 // Constants, Typedefs, and Macro Definitions (needed by external clients)
 //===========================================================================
 
-namespace ParticleEnum
-{
-    enum ParticleID
-    {
+namespace ParticleEnum {
+    enum ParticleID {
         eNull = -1,                   // No Particle Effect. Assertion if this is attempted to play
-		eShrub = 3,
+        eShrub = 3,
         eGarbage = 4,
         eOakTreeLeaves = 5,
-		eMail = 6,
-		ePineTreeNeedles = 7,
-		eStars = 8,
-		eSmokeSpray = 9,
-		eDirtSpray = 10,                   // 10
+        eMail = 6,
+        ePineTreeNeedles = 7,
+        eStars = 8,
+        eSmokeSpray = 9,
+        eDirtSpray = 10,                   // 10
         eGrassSpray = 11,
         eWaterSpray = 12,
         eEngineSmokeLight = 13,
         eEngineSmokeHeavy = 14,
         eEngineSmokeMedium = 16,
-		ePowerBoxExplosion = 17,
-		eFrinksCarSpecialEffect = 18,
+        ePowerBoxExplosion = 17,
+        eFrinksCarSpecialEffect = 18,
         eFireSpray = 19,
         eAlienCameraExplosion = 20,
         eHoverBikeFlame = 21,

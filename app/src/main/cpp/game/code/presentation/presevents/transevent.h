@@ -29,15 +29,15 @@
 //
 //=============================================================================
 
-class TransitionEvent : public PresentationEvent
-{
-    public:
-        TransitionPlayer::TransitionInfo transInfo;
+class TransitionEvent : public PresentationEvent {
+public:
+    TransitionPlayer::TransitionInfo transInfo;
 
-        AnimationPlayer* GetPlayer();
+    AnimationPlayer *GetPlayer();
 
-        virtual void Start();
-    protected:
+    virtual void Start();
+
+protected:
 };
 
 #endif //TRANSEVENT_H

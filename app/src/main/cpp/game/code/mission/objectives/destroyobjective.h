@@ -23,6 +23,7 @@
 //========================================
 
 class Vehicle;
+
 class AnimatedIcon;
 
 
@@ -32,29 +33,33 @@ class AnimatedIcon;
 //
 //=============================================================================
 
-class DestroyObjective : public MissionObjective
-{
+class DestroyObjective : public MissionObjective {
 public:
     DestroyObjective();
+
     virtual ~DestroyObjective();
 
-    Vehicle* GetTargetVehicle() { return( mDestroyVehicle ); }
-    void SetTargetVehicle(Vehicle* pVehicle);
+    Vehicle *GetTargetVehicle() { return (mDestroyVehicle); }
 
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    void SetTargetVehicle(Vehicle *pVehicle);
+
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
 protected:
     virtual void OnInitialize();
+
     virtual void OnFinalize();
-    virtual void OnUpdate( unsigned int elapsedTime );
+
+    virtual void OnUpdate(unsigned int elapsedTime);
 
 private:
-    Vehicle* mDestroyVehicle;
-    AnimatedIcon* mAnimatedIcon;
+    Vehicle *mDestroyVehicle;
+    AnimatedIcon *mAnimatedIcon;
 
     //Prevent wasteful constructor creation.
-    DestroyObjective( const DestroyObjective& objective );
-    DestroyObjective& operator=( const DestroyObjective& objective );
+    DestroyObjective(const DestroyObjective &objective);
+
+    DestroyObjective &operator=(const DestroyObjective &objective);
 };
 
 #endif //DESTROYOBJECTIVE_H

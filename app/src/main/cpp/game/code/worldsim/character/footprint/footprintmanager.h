@@ -18,15 +18,16 @@
 // Nested Includes
 //===========================================================================
 
-#include <worldsim\character\footprint\footprintmanager.h>
-#include <render\culling\swaparray.h> 
-#include <p3d\utility.hpp>
+#include <worldsim/character/footprint/footprintmanager.h>
+#include <render/culling/swaparray.h>
+#include <p3d/utility.hpp>
 
 //===========================================================================
 // Forward References
 //===========================================================================
 
 class tShader;
+
 class tTexture;
 
 //===========================================================================
@@ -48,58 +49,67 @@ class tTexture;
 //      
 //
 //===========================================================================
-class FootprintManager
-{
-    public:
-        FootprintManager();
-        ~FootprintManager();
+class FootprintManager {
+public:
+    FootprintManager();
 
-	    static FootprintManager* GetInstance( void );
-	    static FootprintManager* CreateInstance( void );
-        static void DestroyInstance( void );
+    ~FootprintManager();
 
-        enum { MAX_NUM_FOOTPRINTS = 1 };
-        enum TYPE { eSquishies, eNumFootprintTypes };
+    static FootprintManager *GetInstance(void);
 
-        bool CreateFootprint( const rmt::Matrix& transform, TYPE type );
-        void Update( unsigned int timeInMS );
-        void FreeTextures();
+    static FootprintManager *CreateInstance(void);
 
-        void SetTexture( TYPE, const char* texture );
-        void ClearAllFootPrints();
-        void Render();
+    static void DestroyInstance(void);
 
-    protected:
+    enum {
+        MAX_NUM_FOOTPRINTS = 1
+    };
+    enum TYPE {
+        eSquishies, eNumFootprintTypes
+    };
 
-    private:
+    bool CreateFootprint(const rmt::Matrix &transform, TYPE type);
 
-        static FootprintManager* spFootprintManager;
+    void Update(unsigned int timeInMS);
 
-        struct Footprint
-        {
-            Footprint();
+    void FreeTextures();
 
-            rmt::Vector points[4];
-            float alpha;
-        };
-        
-        typedef SwapArray< Footprint > ListOfFootprints;
-        
-        ListOfFootprints m_ActiveFootprints[eNumFootprintTypes];
-        
-        tTexture* mpTextures[ eNumFootprintTypes ];
+    void SetTexture(TYPE, const char *texture);
 
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow FootprintManager from being copied and assigned.
-        FootprintManager( const FootprintManager& );
-        FootprintManager& operator=( const FootprintManager& );
+    void ClearAllFootPrints();
 
-        // A little syntactic sugar for getting at this singleton.
+    void Render();
+
+protected:
+
+private:
+
+    static FootprintManager *spFootprintManager;
+
+    struct Footprint {
+        Footprint();
+
+        rmt::Vector points[4];
+        float alpha;
+    };
+
+    typedef SwapArray <Footprint> ListOfFootprints;
+
+    ListOfFootprints m_ActiveFootprints[eNumFootprintTypes];
+
+    tTexture *mpTextures[eNumFootprintTypes];
+
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow FootprintManager from being copied and assigned.
+    FootprintManager(const FootprintManager &);
+
+    FootprintManager &operator=(const FootprintManager &);
+
+    // A little syntactic sugar for getting at this singleton.
 };
 
-inline FootprintManager* GetFootprintManager() { return( FootprintManager::GetInstance() ); }
-
+inline FootprintManager *GetFootprintManager() { return (FootprintManager::GetInstance()); }
 
 
 #endif

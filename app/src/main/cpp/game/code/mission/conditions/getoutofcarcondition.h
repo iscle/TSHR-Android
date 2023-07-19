@@ -28,32 +28,37 @@ class Vehicle;
 //
 //=============================================================================
 
-class GetOutOfCarCondition : public MissionCondition
-{
+class GetOutOfCarCondition : public MissionCondition {
 public:
     GetOutOfCarCondition();
+
     virtual ~GetOutOfCarCondition();
 
     // the Mission Stage should call this every frame
-    virtual void Update( unsigned int elapsedTime );
+    virtual void Update(unsigned int elapsedTime);
 
     virtual bool IsClose();
-    virtual void HandleEvent( EventEnum id, void* pEventData );
-    virtual int   GetTimeRemainingTilFailuremilliseconds ();
+
+    virtual void HandleEvent(EventEnum id, void *pEventData);
+
+    virtual int GetTimeRemainingTilFailuremilliseconds();
 
 
-    bool IsConditionActive( ) { return mbIsConditionActive; };
-    void SetTime( unsigned int time ) { mTimeAmount = time + 1000; };
+    bool IsConditionActive() { return mbIsConditionActive; };
+
+    void SetTime(unsigned int time) { mTimeAmount = time + 1000; };
+
     void SetConditionActive();
 
 protected:
     virtual void OnInitialize();
+
     virtual void OnFinalize();
 
 private:
 
     int mTimeAmount;
-    Vehicle* mMyVehicle;
+    Vehicle *mMyVehicle;
 
     int mOldTime;
 
@@ -63,8 +68,9 @@ private:
 
 
     //Prevent wasteful constructor creation.
-    GetOutOfCarCondition( const GetOutOfCarCondition& getoutofcarcondition );
-    GetOutOfCarCondition& operator=( const GetOutOfCarCondition& getoutofcarcondition );
+    GetOutOfCarCondition(const GetOutOfCarCondition &getoutofcarcondition);
+
+    GetOutOfCarCondition &operator=(const GetOutOfCarCondition &getoutofcarcondition);
 };
 
 //*****************************************************************************

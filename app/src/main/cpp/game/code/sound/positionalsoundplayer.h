@@ -23,6 +23,7 @@
 // Forward References
 //========================================
 class positionalSoundSettings;
+
 struct IRadSoundHalPositionalGroup;
 
 //=============================================================================
@@ -31,20 +32,22 @@ struct IRadSoundHalPositionalGroup;
 //
 //=============================================================================
 
-class PositionCarrier
-{
-    public:
-        PositionCarrier();
-        virtual ~PositionCarrier();
+class PositionCarrier {
+public:
+    PositionCarrier();
 
-        virtual void GetPosition( radSoundVector& position ) = 0;
-        virtual void GetVelocity( radSoundVector& velocity ) = 0;
+    virtual ~PositionCarrier();
 
-    protected:
-    private:
-        //Prevent wasteful constructor creation.
-        PositionCarrier( const PositionCarrier& positioncarrier );
-        PositionCarrier& operator=( const PositionCarrier& positioncarrier );
+    virtual void GetPosition(radSoundVector &position) = 0;
+
+    virtual void GetVelocity(radSoundVector &velocity) = 0;
+
+protected:
+private:
+    //Prevent wasteful constructor creation.
+    PositionCarrier(const PositionCarrier &positioncarrier);
+
+    PositionCarrier &operator=(const PositionCarrier &positioncarrier);
 };
 
 //=============================================================================
@@ -53,51 +56,55 @@ class PositionCarrier
 //
 //=============================================================================
 
-class PositionalSoundPlayer : public SimpsonsSoundPlayer
-{
-    public:
-        PositionalSoundPlayer( );
-        virtual ~PositionalSoundPlayer();
+class PositionalSoundPlayer : public SimpsonsSoundPlayer {
+public:
+    PositionalSoundPlayer();
 
-        bool PlayResource( IDaSoundResource* resource,
-                           SimpsonsSoundPlayerCallback* callback = NULL );
-        void PlayQueuedSound( radSoundVector& position,
-                              SimpsonsSoundPlayerCallback* callback = NULL );
+    virtual ~PositionalSoundPlayer();
 
-        void SetPositionCarrier( PositionCarrier& movingSound );
-        void UnsetPositionCarrier();
+    bool PlayResource(IDaSoundResource *resource,
+                      SimpsonsSoundPlayerCallback *callback = NULL);
 
-        void SetParameters( positionalSoundSettings* settings );
-        positionalSoundSettings* GetParameters() { return( m_positionalSettings ); }
+    void PlayQueuedSound(radSoundVector &position,
+                         SimpsonsSoundPlayerCallback *callback = NULL);
 
-        void ServiceOncePerFrame();
+    void SetPositionCarrier(PositionCarrier &movingSound);
 
-        void SetPosition( float x, float y, float z );
+    void UnsetPositionCarrier();
 
-    protected:
-        //
-        // Called when we're done with the sound renderer player object
-        //
-        void dumpSoundPlayer();
+    void SetParameters(positionalSoundSettings *settings);
 
-    private:
-        //Prevent wasteful constructor creation.
-        PositionalSoundPlayer( const PositionalSoundPlayer& positionalsoundplayer );
-        PositionalSoundPlayer& operator=( const PositionalSoundPlayer& positionalsoundplayer );
+    positionalSoundSettings *GetParameters() { return (m_positionalSettings); }
 
-        //
-        // Pointer to sound source, used only if source is moving
-        //
-        PositionCarrier* m_positionCarrier;
+    void ServiceOncePerFrame();
 
-        positionalSoundSettings* m_positionalSettings;
+    void SetPosition(float x, float y, float z);
 
-        float m_minDist;
-        float m_maxDist;
+protected:
+    //
+    // Called when we're done with the sound renderer player object
+    //
+    void dumpSoundPlayer();
 
-        radSoundVector m_position;
+private:
+    //Prevent wasteful constructor creation.
+    PositionalSoundPlayer(const PositionalSoundPlayer &positionalsoundplayer);
 
-        bool m_outOfRange;
+    PositionalSoundPlayer &operator=(const PositionalSoundPlayer &positionalsoundplayer);
+
+    //
+    // Pointer to sound source, used only if source is moving
+    //
+    PositionCarrier *m_positionCarrier;
+
+    positionalSoundSettings *m_positionalSettings;
+
+    float m_minDist;
+    float m_maxDist;
+
+    radSoundVector m_position;
+
+    bool m_outOfRange;
 };
 
 //*****************************************************************************

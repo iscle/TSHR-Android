@@ -27,18 +27,17 @@
 //
 //========================================================================
 
-class ChunkListenerCallback
-{
+class ChunkListenerCallback {
 public:
-   //
-   // Protocol: OnChunkLoaded is called as normal, EXCEPT when the 
-   //           Listener's Registration is being cancelled.
-   //           In this case OnChunkLoaded( NULL, pNewUserData, ipCUID ) 
-   //           is called.
-   //
-   virtual void OnChunkLoaded(   tEntity* ipEntity, 
-                                 int      iUserData,
-                                 unsigned ipChunkID    ) = 0;        
+    //
+    // Protocol: OnChunkLoaded is called as normal, EXCEPT when the
+    //           Listener's Registration is being cancelled.
+    //           In this case OnChunkLoaded(NULL, pNewUserData, ipCUID)
+    //           is called.
+    //
+    virtual void OnChunkLoaded(tEntity *ipEntity,
+                               int iUserData,
+                               unsigned ipChunkID) = 0;
 };
 
 #endif

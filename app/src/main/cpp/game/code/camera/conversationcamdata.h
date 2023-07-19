@@ -27,31 +27,35 @@
 //
 //=============================================================================
 
-class ConversationCamData
-{
+class ConversationCamData {
 public:
     ConversationCamData();
+
     virtual ~ConversationCamData() {};
 
-    void GetFrontPosition( rmt::Vector* front );
-    void SetFrontPosition( rmt::Vector front );
-    void GetFrontTarget( rmt::Vector* front );
-    void SetFrontTarget( rmt::Vector front );
+    void GetFrontPosition(rmt::Vector *front);
 
-   
+    void SetFrontPosition(rmt::Vector front);
+
+    void GetFrontTarget(rmt::Vector *front);
+
+    void SetFrontTarget(rmt::Vector front);
+
 
     float GetFOV() const;
-    void SetFOV( float fov );
+
+    void SetFOV(float fov);
 
     rmt::Vector mFrontPos;
     rmt::Vector mFrontTarg;
-   
+
     float mFOV;
 
 private:
     //Prevent wasteful constructor creation.
-    ConversationCamData( const ConversationCamData& ConversationCamdata );
-    ConversationCamData& operator=( const ConversationCamData& ConversationCamdata );
+    ConversationCamData(const ConversationCamData &ConversationCamdata);
+
+    ConversationCamData &operator=(const ConversationCamData &ConversationCamdata);
 };
 
 //*****************************************************************************
@@ -71,11 +75,10 @@ private:
 //
 //=============================================================================
 inline ConversationCamData::ConversationCamData() :
-    mFOV( 0.75f )
-{
-    mFrontPos.Set( 0.0f, 1.5f, -2.8f );    
-    mFrontTarg.Set( 0.0f, 1.5f, 2.3f );    
-   
+        mFOV(0.75f) {
+    mFrontPos.Set(0.0f, 1.5f, -2.8f);
+    mFrontTarg.Set(0.0f, 1.5f, 2.3f);
+
 }
 
 //=============================================================================
@@ -83,13 +86,12 @@ inline ConversationCamData::ConversationCamData() :
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* front )
+// Parameters:  (rmt::Vector* front)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ConversationCamData::GetFrontPosition( rmt::Vector* front )
-{
+inline void ConversationCamData::GetFrontPosition(rmt::Vector *front) {
     *front = mFrontPos;
 }
 
@@ -98,13 +100,12 @@ inline void ConversationCamData::GetFrontPosition( rmt::Vector* front )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector front )
+// Parameters:  (rmt::Vector front)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ConversationCamData::SetFrontPosition( rmt::Vector front )
-{
+inline void ConversationCamData::SetFrontPosition(rmt::Vector front) {
     mFrontPos = front;
 }
 
@@ -113,13 +114,12 @@ inline void ConversationCamData::SetFrontPosition( rmt::Vector front )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* front )
+// Parameters:  (rmt::Vector* front)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ConversationCamData::GetFrontTarget( rmt::Vector* front )
-{
+inline void ConversationCamData::GetFrontTarget(rmt::Vector *front) {
     *front = mFrontTarg;
 }
 
@@ -128,13 +128,12 @@ inline void ConversationCamData::GetFrontTarget( rmt::Vector* front )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector front )
+// Parameters:  (rmt::Vector front)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ConversationCamData::SetFrontTarget( rmt::Vector front )
-{
+inline void ConversationCamData::SetFrontTarget(rmt::Vector front) {
     mFrontTarg = front;
 }
 
@@ -149,8 +148,7 @@ inline void ConversationCamData::SetFrontTarget( rmt::Vector front )
 // Return:      float 
 //
 //=============================================================================
-inline float ConversationCamData::GetFOV() const
-{
+inline float ConversationCamData::GetFOV() const {
     return mFOV;
 }
 
@@ -159,13 +157,12 @@ inline float ConversationCamData::GetFOV() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float fov )
+// Parameters:  (float fov)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void ConversationCamData::SetFOV( float fov )
-{
+inline void ConversationCamData::SetFOV(float fov) {
     mFOV = fov;
 }
 

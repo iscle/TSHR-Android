@@ -53,7 +53,7 @@ namespace Sound {
 // Debug Information
 //=============================================================================
 
-daSoundPlayerManager * daSoundPlayerManager::s_pInstance = 0;
+    daSoundPlayerManager *daSoundPlayerManager::s_pInstance = 0;
 
 //=============================================================================
 // Class Implementations
@@ -70,16 +70,15 @@ daSoundPlayerManager * daSoundPlayerManager::s_pInstance = 0;
 //
 //-----------------------------------------------------------------------------
 
-daSoundAsyncFadeCallback::daSoundAsyncFadeCallback( )
-:
-radObject( ),
-m_Action( 0 ),
-m_pPlayerManager( NULL ),
-m_pCallback( NULL ),
-m_pUserData( NULL )
-{
-     
-}
+    daSoundAsyncFadeCallback::daSoundAsyncFadeCallback()
+            :
+            radObject(),
+            m_Action(0),
+            m_pPlayerManager(NULL),
+            m_pCallback(NULL),
+            m_pUserData(NULL) {
+
+    }
 
 //=============================================================================
 // Function:    daSoundAsyncFadeCallback::~daSoundAsyncFadeCallback
@@ -88,18 +87,15 @@ m_pUserData( NULL )
 //
 //-----------------------------------------------------------------------------
 
-daSoundAsyncFadeCallback::~daSoundAsyncFadeCallback( )
-{
-    
-    if( m_pCallback != NULL )
-    {
-        m_pCallback->Release( );
+    daSoundAsyncFadeCallback::~daSoundAsyncFadeCallback() {
+
+        if (m_pCallback != NULL) {
+            m_pCallback->Release();
+        }
+        if (m_pPlayerManager != NULL) {
+            m_pPlayerManager->Release();
+        }
     }
-    if( m_pPlayerManager != NULL )
-    {
-        m_pPlayerManager->Release( );
-    }
-}
 
 //=============================================================================
 // Function:    daSoundAsyncFadeCallback::SetPlayerManager
@@ -108,17 +104,16 @@ daSoundAsyncFadeCallback::~daSoundAsyncFadeCallback( )
 //
 //-----------------------------------------------------------------------------
 
-void daSoundAsyncFadeCallback::SetPlayerManager
-(
-    daSoundPlayerManager* pPlayerManager
-)
-{
-    rAssert( m_pPlayerManager == NULL );
-    rAssert( pPlayerManager != NULL );
+    void daSoundAsyncFadeCallback::SetPlayerManager
+            (
+                    daSoundPlayerManager *pPlayerManager
+            ) {
+        rAssert(m_pPlayerManager == NULL);
+        rAssert(pPlayerManager != NULL);
 
-    m_pPlayerManager = pPlayerManager;
-    m_pPlayerManager->AddRef( );
-}
+        m_pPlayerManager = pPlayerManager;
+        m_pPlayerManager->AddRef();
+    }
 
 //=============================================================================
 // Function:    daSoundAsyncFadeCallback::GetPlayerManager
@@ -127,10 +122,9 @@ void daSoundAsyncFadeCallback::SetPlayerManager
 //
 //-----------------------------------------------------------------------------
 
-daSoundPlayerManager* daSoundAsyncFadeCallback::GetPlayerManager( void )
-{
-    return m_pPlayerManager;
-}
+    daSoundPlayerManager *daSoundAsyncFadeCallback::GetPlayerManager(void) {
+        return m_pPlayerManager;
+    }
 
 //=============================================================================
 // Function:    daSoundAsyncFadeCallback::SetCallback
@@ -139,21 +133,19 @@ daSoundPlayerManager* daSoundAsyncFadeCallback::GetPlayerManager( void )
 //
 //-----------------------------------------------------------------------------
 
-void daSoundAsyncFadeCallback::SetCallback
-(
-    IDaSoundFadeState* pCallback,
-    void* pUserData
-)
-{
-    rAssert( m_pCallback == NULL );
-    m_pCallback = pCallback;
-    m_pUserData = pUserData;
+    void daSoundAsyncFadeCallback::SetCallback
+            (
+                    IDaSoundFadeState *pCallback,
+                    void *pUserData
+            ) {
+        rAssert(m_pCallback == NULL);
+        m_pCallback = pCallback;
+        m_pUserData = pUserData;
 
-    if( m_pCallback != NULL )
-    {
-        m_pCallback->AddRef( );
-    }    
-}
+        if (m_pCallback != NULL) {
+            m_pCallback->AddRef();
+        }
+    }
 
 //=============================================================================
 // Function:    daSoundAsyncFadeCallback::GetCallback
@@ -162,14 +154,13 @@ void daSoundAsyncFadeCallback::SetCallback
 //
 //-----------------------------------------------------------------------------
 
-void daSoundAsyncFadeCallback::GetCallback( IDaSoundFadeState** ppCallback, void** ppUserData )
-{
-    rAssert( ppCallback != NULL );
-    rAssert( ppUserData != NULL );
+    void daSoundAsyncFadeCallback::GetCallback(IDaSoundFadeState **ppCallback, void **ppUserData) {
+        rAssert(ppCallback != NULL);
+        rAssert(ppUserData != NULL);
 
-    *ppCallback = m_pCallback;
-    *ppUserData = m_pUserData;
-}
+        *ppCallback = m_pCallback;
+        *ppUserData = m_pUserData;
+    }
 
 
 //=============================================================================
@@ -183,21 +174,20 @@ void daSoundAsyncFadeCallback::GetCallback( IDaSoundFadeState** ppCallback, void
 //
 //-----------------------------------------------------------------------------
 
-daSoundClipStreamPlayer * gClipPlayerArray[ SOUND_NUM_CLIP_PLAYERS ];
-daSoundClipStreamPlayer * gStreamPlayerArray [ SOUND_NUM_STREAM_PLAYERS ];
+    daSoundClipStreamPlayer *gClipPlayerArray[SOUND_NUM_CLIP_PLAYERS];
+    daSoundClipStreamPlayer *gStreamPlayerArray[SOUND_NUM_STREAM_PLAYERS];
 
-daSoundPlayerManager::daSoundPlayerManager( )
-    :
-    radRefCount( 0 )
-{
-    m_pIngameFadeIn = NULL;
-    m_pIngameFadeOut = NULL;
-    m_pMusicPlayer = NULL;
-    m_pAmbiencePlayer = NULL;
-    m_Initialized = false;    
-    
-    s_pInstance = this;
-}
+    daSoundPlayerManager::daSoundPlayerManager()
+            :
+            radRefCount(0) {
+        m_pIngameFadeIn = NULL;
+        m_pIngameFadeOut = NULL;
+        m_pMusicPlayer = NULL;
+        m_pAmbiencePlayer = NULL;
+        m_Initialized = false;
+
+        s_pInstance = this;
+    }
 
 //=============================================================================
 // Function:    daSoundPlayerManager::~daSoundPlayerManager
@@ -206,63 +196,55 @@ daSoundPlayerManager::daSoundPlayerManager( )
 //
 //-----------------------------------------------------------------------------
 
-daSoundPlayerManager::~daSoundPlayerManager( )
-{
-    s_pInstance = NULL;
-    // Release our faders
-    if( m_pIngameFadeOut != NULL )
-    {
-        m_pIngameFadeOut->Release();
-        m_pIngameFadeOut = NULL;
-    }
-    if( m_pIngameFadeIn != NULL )
-    {
-        m_pIngameFadeIn->Release();
-        m_pIngameFadeIn = NULL;
-    }
+    daSoundPlayerManager::~daSoundPlayerManager() {
+        s_pInstance = NULL;
+        // Release our faders
+        if (m_pIngameFadeOut != NULL) {
+            m_pIngameFadeOut->Release();
+            m_pIngameFadeOut = NULL;
+        }
+        if (m_pIngameFadeIn != NULL) {
+            m_pIngameFadeIn->Release();
+            m_pIngameFadeIn = NULL;
+        }
 
-    // Release music players
-    if( m_pMusicPlayer != NULL )
-    {
-        m_pMusicPlayer->Release();
-        m_pMusicPlayer = NULL;
-    }
-    if( m_pAmbiencePlayer != NULL )
-    {
-        m_pAmbiencePlayer->Release();
-        m_pAmbiencePlayer = NULL;
-    }
+        // Release music players
+        if (m_pMusicPlayer != NULL) {
+            m_pMusicPlayer->Release();
+            m_pMusicPlayer = NULL;
+        }
+        if (m_pAmbiencePlayer != NULL) {
+            m_pAmbiencePlayer->Release();
+            m_pAmbiencePlayer = NULL;
+        }
 
-    for( unsigned int c = 0; c < SOUND_NUM_CLIP_PLAYERS; c ++ )
-    {
-        gClipPlayerArray[ c ]->Release( );
+        for (unsigned int c = 0; c < SOUND_NUM_CLIP_PLAYERS; c++) {
+            gClipPlayerArray[c]->Release();
+        }
+
+        for (unsigned int s = 0; s < SOUND_NUM_STREAM_PLAYERS; s++) {
+            gStreamPlayerArray[s]->Release();
+        }
     }
-    
-    for( unsigned int s = 0; s < SOUND_NUM_STREAM_PLAYERS; s ++ )
-    {
-        gStreamPlayerArray[ s ]->Release( );
-    } 
-}
 
 //=============================================================================
 // daSoundPlayerManager::UglyHackPostInitialize
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( IDaSoundTuner* pTuner )
+// Parameters:  (IDaSoundTuner* pTuner)
 //
 // Return:      void 
 //
 //=============================================================================
-void daSoundPlayerManager::UglyHackPostInitialize( IDaSoundTuner* pTuner )
-{
-    // Ingame faders
-    m_pIngameFadeIn = new( GMA_PERSISTENT ) Fader( NULL, DUCK_FULL_FADE, *this, *pTuner );
-    rAssert( m_pIngameFadeIn != NULL );
+    void daSoundPlayerManager::UglyHackPostInitialize(IDaSoundTuner *pTuner) {
+        // Ingame faders
+        m_pIngameFadeIn = new(GMA_PERSISTENT) Fader(NULL, DUCK_FULL_FADE, *this, *pTuner);
+        rAssert(m_pIngameFadeIn != NULL);
 
-    m_pIngameFadeOut = new( GMA_PERSISTENT ) Fader( NULL, DUCK_FULL_FADE, *this, *pTuner );
-    rAssert( m_pIngameFadeOut != NULL );
-}
+        m_pIngameFadeOut = new(GMA_PERSISTENT) Fader(NULL, DUCK_FULL_FADE, *this, *pTuner);
+        rAssert(m_pIngameFadeOut != NULL);
+    }
 
 //=============================================================================
 // Function:    daSoundPlayerManager::GetObjectSize
@@ -270,41 +252,34 @@ void daSoundPlayerManager::UglyHackPostInitialize( IDaSoundTuner* pTuner )
 // Description: Get the size of the sound player object
 //-----------------------------------------------------------------------------
 
-unsigned int daSoundPlayerManager::GetObjectSize( void )
-{
-    unsigned int thisSize = sizeof( *this );
-    return thisSize;
-}
-
-unsigned int daSoundPlayerManager::GetNumUsedClipPlayers()
-{
-    unsigned int playerCount = 0;
-
-    for( unsigned int c = 0; c < SOUND_NUM_CLIP_PLAYERS; c ++ )
-    {
-        if ( gClipPlayerArray[ c ]->IsCaptured( ) )
-        {
-            playerCount++;
-        }
+    unsigned int daSoundPlayerManager::GetObjectSize(void) {
+        unsigned int thisSize = sizeof(*this);
+        return thisSize;
     }
 
-    return( playerCount );
-}
+    unsigned int daSoundPlayerManager::GetNumUsedClipPlayers() {
+        unsigned int playerCount = 0;
 
-unsigned int daSoundPlayerManager::GetNumUsedStreamPlayers()
-{
-    unsigned int playerCount = 0;
-
-    for( unsigned int s = 0; s < SOUND_NUM_STREAM_PLAYERS; s ++ )
-    {
-        if ( gStreamPlayerArray[ s ]->IsCaptured( ) )
-        {
-            playerCount++;
+        for (unsigned int c = 0; c < SOUND_NUM_CLIP_PLAYERS; c++) {
+            if (gClipPlayerArray[c]->IsCaptured()) {
+                playerCount++;
+            }
         }
+
+        return (playerCount);
     }
-    
-    return playerCount;
-}
+
+    unsigned int daSoundPlayerManager::GetNumUsedStreamPlayers() {
+        unsigned int playerCount = 0;
+
+        for (unsigned int s = 0; s < SOUND_NUM_STREAM_PLAYERS; s++) {
+            if (gStreamPlayerArray[s]->IsCaptured()) {
+                playerCount++;
+            }
+        }
+
+        return playerCount;
+    }
 
 //=============================================================================
 // Function:    daSoundPlayerManager::Initialize
@@ -313,50 +288,47 @@ unsigned int daSoundPlayerManager::GetNumUsedStreamPlayers()
 //
 //-----------------------------------------------------------------------------
 
-void daSoundPlayerManager::Initialize( void )
-{
-    // The stream players are tuned from associated radscripts
+    void daSoundPlayerManager::Initialize(void) {
+        // The stream players are tuned from associated radscripts
 
-    IRadSoundClipPlayer* pClipPlayer = NULL;
-    IRadSoundStreamPlayer* pStreamPlayer = NULL;
-    IRadSoundStitchedDataSource* pStitchedDataSource = NULL;
+        IRadSoundClipPlayer *pClipPlayer = NULL;
+        IRadSoundStreamPlayer *pStreamPlayer = NULL;
+        IRadSoundStitchedDataSource *pStitchedDataSource = NULL;
 
-    // CLIP PLAYERS ///////////////////////////////////////////////////////////
+        // CLIP PLAYERS ///////////////////////////////////////////////////////////
 
-    for( unsigned int c = 0; c < SOUND_NUM_CLIP_PLAYERS; c++ )
-    {
-        gClipPlayerArray[ c ] = new (GetThisAllocator( ) ) daSoundClipStreamPlayer( );
-        gClipPlayerArray[ c ]->AddRef( );
-        gClipPlayerArray[ c ]->InitializeAsClipPlayer( );
+        for (unsigned int c = 0; c < SOUND_NUM_CLIP_PLAYERS; c++) {
+            gClipPlayerArray[c] = new(GetThisAllocator()) daSoundClipStreamPlayer();
+            gClipPlayerArray[c]->AddRef();
+            gClipPlayerArray[c]->InitializeAsClipPlayer();
+        }
+
+        // STREAM PLAYERS /////////////////////////////////////////////////////////
+
+        for (unsigned int s = 0; s < SOUND_NUM_STREAM_PLAYERS; s++) {
+
+            gStreamPlayerArray[s] = new(GetThisAllocator()) daSoundClipStreamPlayer;
+            gStreamPlayerArray[s]->AddRef();
+            gStreamPlayerArray[s]->InitializeAsStreamPlayer();
+        }
+
+        //
+        // Make a couple of fake players for controlling music and
+        // ambience trim
+        //
+
+        // Create a music and an ambience sound player
+        m_pMusicPlayer = new(GetThisAllocator()) MusicSoundPlayer;
+        m_pMusicPlayer->AddRef();
+        m_pMusicPlayer->Initialize(true);
+
+        m_pAmbiencePlayer = new(GetThisAllocator()) MusicSoundPlayer;
+        m_pAmbiencePlayer->AddRef();
+        m_pAmbiencePlayer->Initialize(false);
+
+        m_Initialized = true;
+
     }
-
-    // STREAM PLAYERS /////////////////////////////////////////////////////////
-
-    for( unsigned int s = 0; s < SOUND_NUM_STREAM_PLAYERS; s++ )
-    {
-    
-        gStreamPlayerArray[ s ] = new ( GetThisAllocator() ) daSoundClipStreamPlayer;
-        gStreamPlayerArray[ s ]->AddRef( );
-        gStreamPlayerArray[ s ]->InitializeAsStreamPlayer( );
-    }
-
-    //
-    // Make a couple of fake players for controlling music and
-    // ambience trim
-    //
-    
-    // Create a music and an ambience sound player
-    m_pMusicPlayer = new( GetThisAllocator() ) MusicSoundPlayer;
-    m_pMusicPlayer->AddRef( );
-    m_pMusicPlayer->Initialize( true );
-
-    m_pAmbiencePlayer = new( GetThisAllocator() ) MusicSoundPlayer;
-    m_pAmbiencePlayer->AddRef( );
-    m_pAmbiencePlayer->Initialize( false );
-    
-    m_Initialized = true;
-    
-}
 
 //=============================================================================
 // Function:    daSoundPlayerManager::ServiceOncePerFrame
@@ -365,15 +337,13 @@ void daSoundPlayerManager::Initialize( void )
 //
 //-----------------------------------------------------------------------------
 
-void daSoundPlayerManager::ServiceOncePerFrame( void )
-{
-    daSoundPlayerBase* pPlayer = daSoundPlayerBase::GetLinkedClassHead( );
-    while( pPlayer != NULL )
-    {
-        pPlayer->ServiceOncePerFrame( );
-        pPlayer = pPlayer->GetLinkedClassNext( );
+    void daSoundPlayerManager::ServiceOncePerFrame(void) {
+        daSoundPlayerBase *pPlayer = daSoundPlayerBase::GetLinkedClassHead();
+        while (pPlayer != NULL) {
+            pPlayer->ServiceOncePerFrame();
+            pPlayer = pPlayer->GetLinkedClassNext();
+        }
     }
-}
 
 //=============================================================================
 // Function:    daSoundPlayerManager::CaptureFreePlayer
@@ -387,72 +357,61 @@ void daSoundPlayerManager::ServiceOncePerFrame( void )
 //
 //-----------------------------------------------------------------------------
 
-void daSoundPlayerManager::CaptureFreePlayer
-(
-    daSoundClipStreamPlayer** ppPlayer,
-    IDaSoundResource* pResource,
-    bool positional
-)
-{
-    rAssert( ppPlayer != NULL );
-    rAssert( pResource != NULL );
+    void daSoundPlayerManager::CaptureFreePlayer
+            (
+                    daSoundClipStreamPlayer **ppPlayer,
+                    IDaSoundResource *pResource,
+                    bool positional
+            ) {
+        rAssert(ppPlayer != NULL);
+        rAssert(pResource != NULL);
 
-    // Find out where to look
-    unsigned int i = 0;
-    bool playerFound = false;
-    daSoundGroup soundGroup = pResource->GetSoundGroup( );
-    IDaSoundResource::Type resourceType = pResource->GetType( );
+        // Find out where to look
+        unsigned int i = 0;
+        bool playerFound = false;
+        daSoundGroup soundGroup = pResource->GetSoundGroup();
+        IDaSoundResource::Type resourceType = pResource->GetType();
 
-    switch( pResource->GetType( ) )
-    {
-    case IDaSoundResource::CLIP:
-        {
-            // Look in the clip player list
-            playerFound = FindFreeClipPlayer( ppPlayer, pResource );
-            break;
+        switch (pResource->GetType()) {
+            case IDaSoundResource::CLIP: {
+                // Look in the clip player list
+                playerFound = FindFreeClipPlayer(ppPlayer, pResource);
+                break;
+            }
+            case IDaSoundResource::STREAM: {
+                // Look in the stream player list
+                playerFound = FindFreeStreamPlayer(ppPlayer, pResource);
+                break;
+            }
+            default: {
+                rAssert(0);
+                break;
+            }
         }
-    case IDaSoundResource::STREAM:
-        {
-            // Look in the stream player list
-            playerFound = FindFreeStreamPlayer( ppPlayer, pResource );
-            break;
+        if (playerFound) {
+            // Capture it
+            (*ppPlayer)->Capture(pResource, positional);
+        } else {
+            (*ppPlayer) = NULL;
         }
-    default:
-        {
-            rAssert( 0 );
-            break;
-        }
-    }
-    if( playerFound )
-    {
-        // Capture it
-        (*ppPlayer)->Capture( pResource, positional  );
-    }
-    else
-    {
-        (*ppPlayer) = NULL;
+
     }
 
-}
+    bool daSoundPlayerManager::FindFreePlayer(
+            daSoundClipStreamPlayer **ppPlayerArray,
+            unsigned int numPlayers,
+            daSoundClipStreamPlayer **ppPlayer) {
+        *ppPlayer = 0;
 
-bool daSoundPlayerManager::FindFreePlayer(
-    daSoundClipStreamPlayer** ppPlayerArray,
-    unsigned int numPlayers,
-    daSoundClipStreamPlayer ** ppPlayer )
-{
-    *ppPlayer = 0;
-    
-    for( unsigned int c = 0; c < numPlayers; c ++ )
-    {
-        if ( false == ppPlayerArray[ c ]->IsCaptured( ) )
-        {
-            *ppPlayer = ppPlayerArray[ c ];
-            break;       
+        for (unsigned int c = 0; c < numPlayers; c++) {
+            if (false == ppPlayerArray[c]->IsCaptured()) {
+                *ppPlayer = ppPlayerArray[c];
+                break;
+            }
         }
+
+        return NULL != *ppPlayer;
     }
-    
-    return NULL != *ppPlayer;
-}
 
 
 //=============================================================================
@@ -462,13 +421,12 @@ bool daSoundPlayerManager::FindFreePlayer(
 //
 //-----------------------------------------------------------------------------
 
-bool daSoundPlayerManager::FindFreeClipPlayer(
-    daSoundClipStreamPlayer** ppPlayer,
-    IDaSoundResource* pResource
-)
-{
-    return FindFreePlayer( gClipPlayerArray, SOUND_NUM_CLIP_PLAYERS, ppPlayer );
-}
+    bool daSoundPlayerManager::FindFreeClipPlayer(
+            daSoundClipStreamPlayer **ppPlayer,
+            IDaSoundResource *pResource
+    ) {
+        return FindFreePlayer(gClipPlayerArray, SOUND_NUM_CLIP_PLAYERS, ppPlayer);
+    }
 
 //=============================================================================
 // Function:    daSoundPlayerManager::FindFreeStreamPlayer
@@ -477,12 +435,11 @@ bool daSoundPlayerManager::FindFreeClipPlayer(
 //
 //-----------------------------------------------------------------------------
 
-bool daSoundPlayerManager::FindFreeStreamPlayer(
-    daSoundClipStreamPlayer** ppPlayer,
-    IDaSoundResource* pResource )
-{
-    return FindFreePlayer( gStreamPlayerArray, SOUND_NUM_STREAM_PLAYERS, ppPlayer );
-}
+    bool daSoundPlayerManager::FindFreeStreamPlayer(
+            daSoundClipStreamPlayer **ppPlayer,
+            IDaSoundResource *pResource) {
+        return FindFreePlayer(gStreamPlayerArray, SOUND_NUM_STREAM_PLAYERS, ppPlayer);
+    }
 
 //=============================================================================
 // Function:    daSoundPlayerManager::PausePlayers
@@ -496,22 +453,20 @@ bool daSoundPlayerManager::FindFreeStreamPlayer(
 //
 //-----------------------------------------------------------------------------
 
-void daSoundPlayerManager::PausePlayers
-(
-)
-{
-    //
-    // Pause all players
-    //
-    daSoundPlayerBase* pPlayer = daSoundPlayerBase::GetLinkedClassHead( );
-    while( pPlayer != NULL )
-    {
-        pPlayer->Pause( );
+    void daSoundPlayerManager::PausePlayers
+            (
+            ) {
+        //
+        // Pause all players
+        //
+        daSoundPlayerBase *pPlayer = daSoundPlayerBase::GetLinkedClassHead();
+        while (pPlayer != NULL) {
+            pPlayer->Pause();
 
-        // Move on
-        pPlayer = pPlayer->GetLinkedClassNext( );
+            // Move on
+            pPlayer = pPlayer->GetLinkedClassNext();
+        }
     }
-}
 
 //=============================================================================
 // Function:    daSoundPlayerManager::PausePlayersWithFade
@@ -526,29 +481,28 @@ void daSoundPlayerManager::PausePlayers
 //
 //-----------------------------------------------------------------------------
 
-void daSoundPlayerManager::PausePlayersWithFade
-(
-    IDaSoundFadeState* pCallback,
-    void* pUserData
-)
-{
-    // Create the fade info
-    daSoundAsyncFadeCallback* pFadeInfo = new( GMA_TEMP ) daSoundAsyncFadeCallback( );
-    rAssert( pFadeInfo != NULL );
-    pFadeInfo->SetPlayerManager( this );
-    pFadeInfo->SetAction( OnFade_PausePlayers );
-    pFadeInfo->SetCallback( pCallback, pUserData );
+    void daSoundPlayerManager::PausePlayersWithFade
+            (
+                    IDaSoundFadeState *pCallback,
+                    void *pUserData
+            ) {
+        // Create the fade info
+        daSoundAsyncFadeCallback *pFadeInfo = new(GMA_TEMP) daSoundAsyncFadeCallback();
+        rAssert(pFadeInfo != NULL);
+        pFadeInfo->SetPlayerManager(this);
+        pFadeInfo->SetAction(OnFade_PausePlayers);
+        pFadeInfo->SetCallback(pCallback, pUserData);
 
-    // Start fading the sounds
-    rAssert( m_pIngameFadeOut != NULL );
-    Sound::daSoundRenderingManagerGet( )->GetTuner( )->FadeSounds
-    (
-        this,
-        pFadeInfo,
-        m_pIngameFadeOut,
-        false
-    );
-}
+        // Start fading the sounds
+        rAssert(m_pIngameFadeOut != NULL);
+        Sound::daSoundRenderingManagerGet()->GetTuner()->FadeSounds
+                (
+                        this,
+                        pFadeInfo,
+                        m_pIngameFadeOut,
+                        false
+                );
+    }
 
 //=============================================================================
 // Function:    daSoundPlayerManager::ContinuePlayers
@@ -562,25 +516,22 @@ void daSoundPlayerManager::PausePlayersWithFade
 //
 //-----------------------------------------------------------------------------
 
-void daSoundPlayerManager::ContinuePlayers
-(
-)
-{
-    //
-    // Continue all players
-    //
-    daSoundPlayerBase* pPlayer = daSoundPlayerBase::GetLinkedClassHead( );
-    while( pPlayer != NULL )
-    {
-        if( pPlayer->IsPaused() )
-        {
-            pPlayer->Continue( );
-        }
+    void daSoundPlayerManager::ContinuePlayers
+            (
+            ) {
+        //
+        // Continue all players
+        //
+        daSoundPlayerBase *pPlayer = daSoundPlayerBase::GetLinkedClassHead();
+        while (pPlayer != NULL) {
+            if (pPlayer->IsPaused()) {
+                pPlayer->Continue();
+            }
 
-        // Move on
-        pPlayer = pPlayer->GetLinkedClassNext( );
+            // Move on
+            pPlayer = pPlayer->GetLinkedClassNext();
+        }
     }
-}
 
 //=============================================================================
 // Function:    daSoundPlayerManager::ContinuePlayersWithFade
@@ -595,33 +546,32 @@ void daSoundPlayerManager::ContinuePlayers
 //
 //-----------------------------------------------------------------------------
 
-void daSoundPlayerManager::ContinuePlayersWithFade
-(
-    IDaSoundFadeState* pCallback,
-    void* pUserData
-)
-{
-    // Create the fade info
-    daSoundAsyncFadeCallback* pFadeInfo =
-        new( GMA_TEMP ) daSoundAsyncFadeCallback( );
-    rAssert( pFadeInfo != NULL );
-    pFadeInfo->SetPlayerManager( this );
-    pFadeInfo->SetAction( OnFade_ContinuePlayers );
-    pFadeInfo->SetCallback( pCallback, pUserData );
+    void daSoundPlayerManager::ContinuePlayersWithFade
+            (
+                    IDaSoundFadeState *pCallback,
+                    void *pUserData
+            ) {
+        // Create the fade info
+        daSoundAsyncFadeCallback *pFadeInfo =
+                new(GMA_TEMP) daSoundAsyncFadeCallback();
+        rAssert(pFadeInfo != NULL);
+        pFadeInfo->SetPlayerManager(this);
+        pFadeInfo->SetAction(OnFade_ContinuePlayers);
+        pFadeInfo->SetCallback(pCallback, pUserData);
 
-    // Continue the players
-    ContinuePlayers();
+        // Continue the players
+        ContinuePlayers();
 
-    // Start fading the sounds
-    rAssert( m_pIngameFadeIn != NULL );
-    Sound::daSoundRenderingManagerGet( )->GetTuner( )->FadeSounds
-    (
-        this,
-        pFadeInfo,
-        m_pIngameFadeIn,
-        true
-    );
-}
+        // Start fading the sounds
+        rAssert(m_pIngameFadeIn != NULL);
+        Sound::daSoundRenderingManagerGet()->GetTuner()->FadeSounds
+                (
+                        this,
+                        pFadeInfo,
+                        m_pIngameFadeIn,
+                        true
+                );
+    }
 
 //=============================================================================
 // Function:    daSoundPlayerManager::CancelPlayers
@@ -635,34 +585,31 @@ void daSoundPlayerManager::ContinuePlayersWithFade
 //
 //-----------------------------------------------------------------------------
 
-void daSoundPlayerManager::CancelPlayers
-(
-)
-{
-    //
-    // Stop all players
-    //
-    daSoundPlayerBase* pPlayer = daSoundPlayerBase::GetLinkedClassHead( );
-    while( pPlayer != NULL )
-    {
-        if( pPlayer->IsCaptured( ) )
-        {
-            // Stop the player
-            pPlayer->Stop( );
+    void daSoundPlayerManager::CancelPlayers
+            (
+            ) {
+        //
+        // Stop all players
+        //
+        daSoundPlayerBase *pPlayer = daSoundPlayerBase::GetLinkedClassHead();
+        while (pPlayer != NULL) {
+            if (pPlayer->IsCaptured()) {
+                // Stop the player
+                pPlayer->Stop();
+            }
+
+            // Move on
+            pPlayer = pPlayer->GetLinkedClassNext();
         }
 
-        // Move on
-        pPlayer = pPlayer->GetLinkedClassNext( );
+        //
+        // Since this command may be called by the sound manager destructor,
+        // we must make sure that we service the sound system at least one
+        // more time so that we can actually stop all the sounds.
+        //
+        ::radSoundHalSystemGet()->Service();
+        ::radSoundHalSystemGet()->ServiceOncePerFrame();
     }
-
-    //
-    // Since this command may be called by the sound manager destructor,
-    // we must make sure that we service the sound system at least one
-    // more time so that we can actually stop all the sounds.
-    //
-    ::radSoundHalSystemGet( )->Service( );
-    ::radSoundHalSystemGet( )->ServiceOncePerFrame( );
-}
 
 //=============================================================================
 // daSoundPlayerManager::AreAllPlayersStopped
@@ -674,50 +621,41 @@ void daSoundPlayerManager::CancelPlayers
 // Return:      bool 
 //
 //=============================================================================
-bool daSoundPlayerManager::AreAllPlayersStopped()
-{
-    unsigned int c;
-    daSoundClipStreamPlayer::State playerState;
+    bool daSoundPlayerManager::AreAllPlayersStopped() {
+        unsigned int c;
+        daSoundClipStreamPlayer::State playerState;
 
-    for( c = 0; c < SOUND_NUM_CLIP_PLAYERS; c++ )
-    {
-        if( gClipPlayerArray[c] != NULL )
-        {
-            playerState = gClipPlayerArray[c]->GetState();
+        for (c = 0; c < SOUND_NUM_CLIP_PLAYERS; c++) {
+            if (gClipPlayerArray[c] != NULL) {
+                playerState = gClipPlayerArray[c]->GetState();
 
-            if( ( playerState == daSoundClipStreamPlayer::State_Cueing )
-                || ( playerState == daSoundClipStreamPlayer::State_CuedPlay )
-                || ( playerState == daSoundClipStreamPlayer::State_Playing ) )
-            {
-                if( !(gClipPlayerArray[c]->IsPaused()) )
-                {
-                    return( false );
+                if ((playerState == daSoundClipStreamPlayer::State_Cueing)
+                    || (playerState == daSoundClipStreamPlayer::State_CuedPlay)
+                    || (playerState == daSoundClipStreamPlayer::State_Playing)) {
+                    if (!(gClipPlayerArray[c]->IsPaused())) {
+                        return (false);
+                    }
                 }
             }
         }
-    }
 
-    for( c = 0; c < SOUND_NUM_STREAM_PLAYERS; c ++ )
-    {
-        if( gStreamPlayerArray[c] != NULL )
-        {
-            playerState = gStreamPlayerArray[c]->GetState();
+        for (c = 0; c < SOUND_NUM_STREAM_PLAYERS; c++) {
+            if (gStreamPlayerArray[c] != NULL) {
+                playerState = gStreamPlayerArray[c]->GetState();
 
-            if( ( playerState == daSoundClipStreamPlayer::State_Cueing )
-                || ( playerState == daSoundClipStreamPlayer::State_CuedPlay )
-                || ( playerState == daSoundClipStreamPlayer::State_Playing ) 
-                || ( playerState == daSoundClipStreamPlayer::State_Stopping ) )
-            {
-                if( !(gStreamPlayerArray[c]->IsPaused()) )
-                {
-                    return( false );
+                if ((playerState == daSoundClipStreamPlayer::State_Cueing)
+                    || (playerState == daSoundClipStreamPlayer::State_CuedPlay)
+                    || (playerState == daSoundClipStreamPlayer::State_Playing)
+                    || (playerState == daSoundClipStreamPlayer::State_Stopping)) {
+                    if (!(gStreamPlayerArray[c]->IsPaused())) {
+                        return (false);
+                    }
                 }
             }
         }
-    }
 
-    return( true );
-}
+        return (true);
+    }
 
 //=============================================================================
 // Function:    daSoundPlayerManager::PlayerVolumeChange
@@ -725,17 +663,15 @@ bool daSoundPlayerManager::AreAllPlayersStopped()
 // Description: updates all of the players with the new volume value
 //
 //-----------------------------------------------------------------------------
-void daSoundPlayerManager::PlayerVolumeChange( daSoundGroup groupName, float trim )
-{
-    daSoundPlayerBase* pPlayer = daSoundPlayerBase::GetLinkedClassHead( );
-    while( pPlayer != NULL )
-    {
-        pPlayer->ChangeTrim(groupName,trim);
+    void daSoundPlayerManager::PlayerVolumeChange(daSoundGroup groupName, float trim) {
+        daSoundPlayerBase *pPlayer = daSoundPlayerBase::GetLinkedClassHead();
+        while (pPlayer != NULL) {
+            pPlayer->ChangeTrim(groupName, trim);
 
-        // Move on
-        pPlayer = pPlayer->GetLinkedClassNext( );
+            // Move on
+            pPlayer = pPlayer->GetLinkedClassNext();
+        }
     }
-}
 
 //=============================================================================
 // Function:    daSoundPlayerManager::PlayerFaderVolumeChange
@@ -743,17 +679,15 @@ void daSoundPlayerManager::PlayerVolumeChange( daSoundGroup groupName, float tri
 // Description: updates all of the players with the new fader volume value
 //
 //-----------------------------------------------------------------------------
-void daSoundPlayerManager::PlayerFaderVolumeChange( daSoundGroup groupName, float trim )
-{
-    daSoundPlayerBase* pPlayer = daSoundPlayerBase::GetLinkedClassHead( );
-    while( pPlayer != NULL )
-    {
-        pPlayer->ChangeFaderTrim(groupName,trim);
+    void daSoundPlayerManager::PlayerFaderVolumeChange(daSoundGroup groupName, float trim) {
+        daSoundPlayerBase *pPlayer = daSoundPlayerBase::GetLinkedClassHead();
+        while (pPlayer != NULL) {
+            pPlayer->ChangeFaderTrim(groupName, trim);
 
-        // Move on
-        pPlayer = pPlayer->GetLinkedClassNext( );
+            // Move on
+            pPlayer = pPlayer->GetLinkedClassNext();
+        }
     }
-}
 
 //=============================================================================
 // Function:    daSoundPlayerManager::OnFadeDone
@@ -764,226 +698,203 @@ void daSoundPlayerManager::PlayerFaderVolumeChange( daSoundGroup groupName, floa
 //
 //-----------------------------------------------------------------------------
 
-void daSoundPlayerManager::OnFadeDone( void* pUserData )
-{
-    daSoundAsyncFadeCallback* pFadeInfo =
-        reinterpret_cast< daSoundAsyncFadeCallback* >( pUserData );
-    rAssert( pFadeInfo != NULL );
+    void daSoundPlayerManager::OnFadeDone(void *pUserData) {
+        daSoundAsyncFadeCallback *pFadeInfo =
+                reinterpret_cast<daSoundAsyncFadeCallback *>(pUserData);
+        rAssert(pFadeInfo != NULL);
 
-    // Perform the appropriate action
-    switch( pFadeInfo->GetAction( ) )
-    {
-    case OnFade_PausePlayers:
-        {
-            PausePlayers();
-            break;
+        // Perform the appropriate action
+        switch (pFadeInfo->GetAction()) {
+            case OnFade_PausePlayers: {
+                PausePlayers();
+                break;
+            }
+            case OnFade_ContinuePlayers: {
+                break;
+            }
+            case OnFade_CancelPlayers: {
+                CancelPlayers();
+                Sound::daSoundRenderingManagerGet()->
+                        GetTuner()->
+                        SetMasterVolume(1.0f);
+                break;
+            }
+            default: {
+                rAssert(0);
+                break;
+            }
         }
-    case OnFade_ContinuePlayers:
-        {
-            break;
+
+        // Call the callback
+        IDaSoundFadeState *pCallback = NULL;
+        void *pData = NULL;
+        pFadeInfo->GetCallback(&pCallback, &pData);
+
+        if (pCallback != NULL) {
+            pCallback->OnFadeDone(pData);
         }
-    case OnFade_CancelPlayers:
-        {
-            CancelPlayers();
-            Sound::daSoundRenderingManagerGet( )->
-                GetTuner( )->
-                SetMasterVolume( 1.0f );
-            break;
-        }
-    default:
-        {
-            rAssert( 0 );
-            break;
-        }
+
+        // Delete the fade info
+        delete pFadeInfo;
     }
 
-    // Call the callback
-    IDaSoundFadeState* pCallback = NULL;
-    void* pData = NULL;
-    pFadeInfo->GetCallback( &pCallback, &pData );
+    void TrimFileName(char *pS, int len) {
+        int sl = strlen(pS);
 
-    if( pCallback != NULL )
-    {
-        pCallback->OnFadeDone( pData );
-    }
+        char *pStart;
+        char *pEnd;
 
-    // Delete the fade info
-    delete pFadeInfo;
-}
+        pEnd = pS + sl - 4;
+        pStart = pEnd - len;
 
-void TrimFileName( char * pS, int len )
-{
-    int sl = strlen( pS );
-    
-    char * pStart;
-    char * pEnd;
-    
-    pEnd = pS + sl - 4;
-    pStart = pEnd - len;
-    
-    if ( pStart < pS )
-    {
-        pStart = pS;
-    }
-    
-    if ( pEnd < pStart )
-    {
-        pEnd = pS + 1;
-    }
-    
-    int chars = pEnd - pStart;
-    
-    ::memcpy( pS, pStart, chars);
-    pS[ chars ] = 0;
-}
-
-void RenderPlayer( daSoundClipStreamPlayer * pPlayer, int row, int col )
-{
-    char buf[ 256 ];
-    
-    if ( false == pPlayer->IsCaptured( ) )
-    {
-        sprintf( buf, "free" );
-    }
-    else
-    {
-        float fDistToListener;
-        char sDistToListener[ 64 ];
-        char sFileName[ 64 ];
-        char sMaxDistance[ 64 ];
-        
-        pPlayer->GetFileName( sFileName, 64 );
-
-        TrimFileName( sFileName, 8 );
-        
-        IRadSoundHalPositionalGroup * pPosGroup = pPlayer->GetPositionalGroup( );
-        
-        if ( pPosGroup )
-        {
-            radSoundVector listenerPos;
-            radSoundVector position;
-            
-            float minDist;
-            float maxDist;            
-            
-            radSoundHalListenerGet( )->GetPosition( & listenerPos );        
-            
-            pPosGroup->GetPosition( & position );
-            pPosGroup->GetMinMaxDistance( & minDist, & maxDist );
-            
-            fDistToListener = listenerPos.GetDistanceBetween( position );
-            
-            sprintf( sDistToListener, "%.2f", fDistToListener );
-            sprintf( sMaxDistance, "%.2f", maxDist );
+        if (pStart < pS) {
+            pStart = pS;
         }
-        else
-        {
-            strcpy( sDistToListener, "--" );
-            strcpy( sMaxDistance, "--" );
+
+        if (pEnd < pStart) {
+            pEnd = pS + 1;
         }
-        
-        
-        // gClipPlayerArray[ c ]->
-        sprintf( buf, "[%s](%s)[%d][%s][%s]",
-            sFileName,
-            pPlayer->IsPaused( ) ? "-" : "*",
-            pPlayer->GetState( ),
-            sDistToListener,
-            sMaxDistance );
+
+        int chars = pEnd - pStart;
+
+        ::memcpy(pS, pStart, chars);
+        pS[chars] = 0;
     }
-    
-    p3d::pddi->DrawString( buf, 40 + col * 320
-    , 36 + row * 16, pddiColour( 255, 255, 0 ) ); 
 
-}
+    void RenderPlayer(daSoundClipStreamPlayer *pPlayer, int row, int col) {
+        char buf[256];
 
-void daSoundPlayerManager::Render( void )
-{
-    if( m_Initialized )
-    {
-        int col = 0;
-        int row = 0;
+        if (false == pPlayer->IsCaptured()) {
+            sprintf(buf, "free");
+        } else {
+            float fDistToListener;
+            char sDistToListener[64];
+            char sFileName[64];
+            char sMaxDistance[64];
 
-        unsigned int freeMem;
-        unsigned int numObjects;
-        unsigned int largestBlock;
-        unsigned int size;
-        
-        radSoundHalSystemGet( )->GetRootMemoryRegion( )->GetStats(
-            & freeMem,
-            & numObjects,
-            & largestBlock,
-            true );
-            
-        size = radSoundHalSystemGet( )->GetRootMemoryRegion( )->GetSize( );
-        
-        char memStr[ 256 ];
-        sprintf(
-            memStr,
-            "Usd %dK Fre %dK Lrg %dK Objs: %d",
-            ( size - freeMem ) / 1024,
-            freeMem / 1024,
-            largestBlock / 1024,
-            numObjects );
-        
-        p3d::pddi->DrawString( memStr, 40 + col * 320, 36 + row * 16, pddiColour( 255, 255, 0 ) );
+            pPlayer->GetFileName(sFileName, 64);
 
-        row++;
-                
-        unsigned int usedBTreeNodes = radObjectBTree::GetNumAllocatedNodes( );
-        unsigned int nodeSize = sizeof( radObjectBTreeNode );
-        
-        sprintf( memStr,
-            "BTree Nodes: [0x%x], size: [0x%x]",
-            usedBTreeNodes,
-            nodeSize );
+            TrimFileName(sFileName, 8);
 
-        p3d::pddi->DrawString( memStr, 40 + col * 320, 36 + row * 16, pddiColour( 255, 255, 0 ) );
-                    
-        row++;
-            
-        char listenerStr[ 128 ];
-        radSoundVector lp;
-        radSoundVector lv;
-        radSoundHalListenerGet( )->GetPosition( & lp );
-        radSoundHalListenerGet( )->GetVelocity( & lv );
-        
-        sprintf( listenerStr, "Pos:[%.2f][%.2f][%.2f] Vel:[%.2f][%.2f][%.2f]\n",
-            lp.m_x, lp.m_y, lp.m_z, lv.m_x, lv.m_y, lv.m_z );
-            
-        p3d::pddi->DrawString( listenerStr, 40 + col * 320, 36 + row * 16, pddiColour( 255, 255, 0 ) );
+            IRadSoundHalPositionalGroup *pPosGroup = pPlayer->GetPositionalGroup();
 
-        row++;
-        
-        for( unsigned int c = 0; c < SOUND_NUM_CLIP_PLAYERS / 2; c ++ )
-        {
-            RenderPlayer( gClipPlayerArray[ c ], row, col );
-                         
-            col++;
-            
-            if ( col >= 2 )
-            {
-                row++;
-                col = 0;
-            }         
+            if (pPosGroup) {
+                radSoundVector listenerPos;
+                radSoundVector position;
+
+                float minDist;
+                float maxDist;
+
+                radSoundHalListenerGet()->GetPosition(&listenerPos);
+
+                pPosGroup->GetPosition(&position);
+                pPosGroup->GetMinMaxDistance(&minDist, &maxDist);
+
+                fDistToListener = listenerPos.GetDistanceBetween(position);
+
+                sprintf(sDistToListener, "%.2f", fDistToListener);
+                sprintf(sMaxDistance, "%.2f", maxDist);
+            } else {
+                strcpy(sDistToListener, "--");
+                strcpy(sMaxDistance, "--");
+            }
+
+
+            // gClipPlayerArray[ c ]->
+            sprintf(buf, "[%s](%s)[%d][%s][%s]",
+                    sFileName,
+                    pPlayer->IsPaused() ? "-" : "*",
+                    pPlayer->GetState(),
+                    sDistToListener,
+                    sMaxDistance);
         }
-        
-        row++;
-        
-        for( unsigned int c = 0; c < SOUND_NUM_STREAM_PLAYERS; c ++ )
-        {
-            RenderPlayer( gStreamPlayerArray[ c ], row, col );
-                         
-            col++;
-            
-            if ( col >= 2 )
-            {
-                row++;
-                col = 0;
-            }         
-        }        
-    }        
-}
+
+        p3d::pddi->DrawString(buf, 40 + col * 320, 36 + row * 16, pddiColour(255, 255, 0));
+
+    }
+
+    void daSoundPlayerManager::Render(void) {
+        if (m_Initialized) {
+            int col = 0;
+            int row = 0;
+
+            unsigned int freeMem;
+            unsigned int numObjects;
+            unsigned int largestBlock;
+            unsigned int size;
+
+            radSoundHalSystemGet()->GetRootMemoryRegion()->GetStats(
+                    &freeMem,
+                    &numObjects,
+                    &largestBlock,
+                    true);
+
+            size = radSoundHalSystemGet()->GetRootMemoryRegion()->GetSize();
+
+            char memStr[256];
+            sprintf(
+                    memStr,
+                    "Usd %dK Fre %dK Lrg %dK Objs: %d",
+                    (size - freeMem) / 1024,
+                    freeMem / 1024,
+                    largestBlock / 1024,
+                    numObjects);
+
+            p3d::pddi->DrawString(memStr, 40 + col * 320, 36 + row * 16, pddiColour(255, 255, 0));
+
+            row++;
+
+            unsigned int usedBTreeNodes = radObjectBTree::GetNumAllocatedNodes();
+            unsigned int nodeSize = sizeof(radObjectBTreeNode);
+
+            sprintf(memStr,
+                    "BTree Nodes: [0x%x], size: [0x%x]",
+                    usedBTreeNodes,
+                    nodeSize);
+
+            p3d::pddi->DrawString(memStr, 40 + col * 320, 36 + row * 16, pddiColour(255, 255, 0));
+
+            row++;
+
+            char listenerStr[128];
+            radSoundVector lp;
+            radSoundVector lv;
+            radSoundHalListenerGet()->GetPosition(&lp);
+            radSoundHalListenerGet()->GetVelocity(&lv);
+
+            sprintf(listenerStr, "Pos:[%.2f][%.2f][%.2f] Vel:[%.2f][%.2f][%.2f]\n",
+                    lp.m_x, lp.m_y, lp.m_z, lv.m_x, lv.m_y, lv.m_z);
+
+            p3d::pddi->DrawString(listenerStr, 40 + col * 320, 36 + row * 16,
+                                  pddiColour(255, 255, 0));
+
+            row++;
+
+            for (unsigned int c = 0; c < SOUND_NUM_CLIP_PLAYERS / 2; c++) {
+                RenderPlayer(gClipPlayerArray[c], row, col);
+
+                col++;
+
+                if (col >= 2) {
+                    row++;
+                    col = 0;
+                }
+            }
+
+            row++;
+
+            for (unsigned int c = 0; c < SOUND_NUM_STREAM_PLAYERS; c++) {
+                RenderPlayer(gStreamPlayerArray[c], row, col);
+
+                col++;
+
+                if (col >= 2) {
+                    row++;
+                    col = 0;
+                }
+            }
+        }
+    }
 
 } // Sound Namespace
 

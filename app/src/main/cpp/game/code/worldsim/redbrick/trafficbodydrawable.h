@@ -6,18 +6,20 @@
 class tShader;
 
 class TrafficBodyDrawable :
-    public tDrawable
-{
+        public tDrawable {
 public:
     TrafficBodyDrawable();
+
     ~TrafficBodyDrawable();
 
-    void SetBodyPropDrawable( tDrawable* drawable );
-    void SetBodyShader( tShader* shader );
-    void SetDesiredColour( pddiColour colour )
-    {
+    void SetBodyPropDrawable(tDrawable *drawable);
+
+    void SetBodyShader(tShader *shader);
+
+    void SetDesiredColour(pddiColour colour) {
         mDesiredColour = colour;
     }
+
     pddiColour GetDesiredColour() const { return mDesiredColour; }
 
     int mFadeAlpha;
@@ -27,11 +29,12 @@ public:
     ///////////////////////////////////////////////////
     // Implementing tDrawable
     virtual void Display();
-    virtual void ProcessShaders(ShaderCallback&);
+
+    virtual void ProcessShaders(ShaderCallback &);
 
 private:
-    tDrawable* mBodyPropDrawable;
-    tShader* mBodyShader;
+    tDrawable *mBodyPropDrawable;
+    tShader *mBodyShader;
     pddiColour mDesiredColour;
 
 };

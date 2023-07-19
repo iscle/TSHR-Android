@@ -48,11 +48,11 @@
 //
 //========================================================================
 InstStatEntityDSG::InstStatEntityDSG()
-: mpMatrix( NULL ),
-mpShadowDrawable( NULL ),
-mpShadowMatrix( NULL )
-{
+        : mpMatrix(NULL),
+          mpShadowDrawable(NULL),
+          mpShadowMatrix(NULL) {
 }
+
 //========================================================================
 // InstStatEntityDSG::
 //========================================================================
@@ -66,24 +66,20 @@ mpShadowMatrix( NULL )
 // Constraints: None.
 //
 //========================================================================
-InstStatEntityDSG::~InstStatEntityDSG()
-{
-BEGIN_PROFILE( "InstStatEntityDSG Destroy" );
-    if(mpMatrix)
-    {
+InstStatEntityDSG::~InstStatEntityDSG() {
+    BEGIN_PROFILE("InstStatEntityDSG Destroy");
+    if (mpMatrix) {
         delete mpMatrix;
     }
-    if ( mpShadowDrawable )
-    {
+    if (mpShadowDrawable) {
         mpShadowDrawable->Release();
         mpShadowDrawable = NULL;
     }
-    if ( mpShadowMatrix )
-    {
+    if (mpShadowMatrix) {
         delete mpShadowMatrix;
     }
 
-END_PROFILE( "InstStatEntityDSG Destroy" );
+    END_PROFILE("InstStatEntityDSG Destroy");
 }
 //========================================================================
 // InstStatEntityDSG::
@@ -99,27 +95,24 @@ END_PROFILE( "InstStatEntityDSG Destroy" );
 //
 //========================================================================
 
-void InstStatEntityDSG::Display()
-{
-    if(IS_DRAW_LONG) return;
+void InstStatEntityDSG::Display() {
+    if (IS_DRAW_LONG) return;
 #ifdef PROFILER_ENABLED
     char profileName[] = "  InstStatEntityDSG Display";
 #endif
     DSG_BEGIN_PROFILE(profileName)
-    if(CastsShadow())
-    {
+    if (CastsShadow()) {
         BillboardQuadManager::Enable();
     }
     p3d::pddi->PushMultMatrix(PDDI_MATRIX_MODELVIEW, mpMatrix);
-        mpDrawstuff->Display();
+    mpDrawstuff->Display();
     p3d::pddi->PopMatrix(PDDI_MATRIX_MODELVIEW);
 
-    if(CastsShadow())
-    {
+    if (CastsShadow()) {
         BillboardQuadManager::Disable();
         DisplaySimpleShadow();
     }
-    
+
     DSG_END_PROFILE(profileName)
 }
 
@@ -138,43 +131,40 @@ void InstStatEntityDSG::Display()
 //
 //========================================================================
 
-void InstStatEntityDSG::DisplaySimpleShadow()
-{
+void InstStatEntityDSG::DisplaySimpleShadow() {
     BEGIN_PROFILE("DisplaySimpleShadow")
     p3d::pddi->SetZWrite(false);
-    if ( mpShadowDrawable != NULL  )
-    {
-        if ( mpShadowMatrix == NULL )
-        {
-            mpShadowMatrix = CreateShadowMatrix( mpMatrix->Row( 3 ) );
+    if (mpShadowDrawable != NULL) {
+        if (mpShadowMatrix == NULL) {
+            mpShadowMatrix = CreateShadowMatrix(mpMatrix->Row(3));
         }
-        if ( mpShadowMatrix )
-        {
+        if (mpShadowMatrix) {
 
-        	// Create a camera that pushes the shadow a meter towards
-	        // the camera
-	        rmt::Vector camPos;
-	        p3d::context->GetView()->GetCamera()->GetWorldPosition( &camPos );
-	        camPos.Sub( mpShadowMatrix->Row(3) );
-	        camPos.Normalize();
-        	
+            // Create a camera that pushes the shadow a meter towards
+            // the camera
+            rmt::Vector camPos;
+            p3d::context->GetView()->GetCamera()->GetWorldPosition(&camPos);
+            camPos.Sub(mpShadowMatrix->Row(3));
+            camPos.Normalize();
+
             // Move the shadow towards the camera by the following distance.
             const float Z_FIGHTING_OFFSET = 0.2f;
-            camPos.Scale( Z_FIGHTING_OFFSET );
+            camPos.Scale(Z_FIGHTING_OFFSET);
 
-	        // Final shadow transform = position/orientation * tocamera translation
-	        rmt::Matrix shadowTransform( *mpShadowMatrix );
-	        shadowTransform.Row( 3 ).Add( camPos );
+            // Final shadow transform = position/orientation * tocamera translation
+            rmt::Matrix shadowTransform(*mpShadowMatrix);
+            shadowTransform.Row(3).Add(camPos);
 
-	        // Display
-	        p3d::stack->PushMultiply( shadowTransform );
-	        mpShadowDrawable->Display();
+            // Display
+            p3d::stack->PushMultiply(shadowTransform);
+            mpShadowDrawable->Display();
             p3d::stack->Pop();
         }
     }
     p3d::pddi->SetZWrite(true);
     END_PROFILE("DisplaySimpleShadow")
 }
+
 //========================================================================
 // InstStatEntityDSG::RecomputeShadowPosition
 //========================================================================
@@ -189,13 +179,11 @@ void InstStatEntityDSG::DisplaySimpleShadow()
 // Constraints: None.
 //
 //========================================================================
-void InstStatEntityDSG::RecomputeShadowPosition()
-{
-    if ( mpShadowMatrix )
-    {
+void InstStatEntityDSG::RecomputeShadowPosition() {
+    if (mpShadowMatrix) {
         rmt::Vector position;
-        GetPosition( &position );
-        ComputeShadowMatrix( position, mpShadowMatrix );
+        GetPosition(&position);
+        ComputeShadowMatrix(position, mpShadowMatrix);
     }
 }
 
@@ -212,22 +200,21 @@ void InstStatEntityDSG::RecomputeShadowPosition()
 // Constraints: None.
 //
 //========================================================================
-void InstStatEntityDSG::GetBoundingBox(rmt::Box3D* box)
-{
+void InstStatEntityDSG::GetBoundingBox(rmt::Box3D *box) {
     rmt::Box3D fuckinTempBox;
     mpDrawstuff->GetBoundingBox(&fuckinTempBox);
 
-    if ( rmt::Fabs(fuckinTempBox.Height()) > 10000.0f && 
-         rmt::Fabs(fuckinTempBox.Width()) > 10000.0f && 
-         rmt::Fabs(fuckinTempBox.Length()) > 10000.0f )
-    {
-        fuckinTempBox.low = rmt::Vector( -1.0f, -1.0f, -1.0f );
-        fuckinTempBox.high = rmt::Vector( 1.0f, 1.0f, 1.0f );
+    if (rmt::Fabs(fuckinTempBox.Height()) > 10000.0f &&
+        rmt::Fabs(fuckinTempBox.Width()) > 10000.0f &&
+        rmt::Fabs(fuckinTempBox.Length()) > 10000.0f) {
+        fuckinTempBox.low = rmt::Vector(-1.0f, -1.0f, -1.0f);
+        fuckinTempBox.high = rmt::Vector(1.0f, 1.0f, 1.0f);
     }
-    
+
     mpMatrix->Transform(fuckinTempBox.low, &box->low);
     mpMatrix->Transform(fuckinTempBox.high, &box->high);
 }
+
 //========================================================================
 // InstStatEntityDSG::
 //========================================================================
@@ -241,8 +228,7 @@ void InstStatEntityDSG::GetBoundingBox(rmt::Box3D* box)
 // Constraints: None.
 //
 //========================================================================
-void InstStatEntityDSG::GetBoundingSphere(rmt::Sphere* pSphere)
-{
+void InstStatEntityDSG::GetBoundingSphere(rmt::Sphere *pSphere) {
     rmt::Sphere fuckinTempSphere;
     mpDrawstuff->GetBoundingSphere(&fuckinTempSphere);
 
@@ -250,9 +236,9 @@ void InstStatEntityDSG::GetBoundingSphere(rmt::Sphere* pSphere)
     pSphere->radius = fuckinTempSphere.radius;
 }
 
-   ///////////////////////////////////////////////////////////////////////
-   // Accessors
-   ///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+// Accessors
+///////////////////////////////////////////////////////////////////////
 //========================================================================
 // InstStatEntityDSG::
 //========================================================================
@@ -266,10 +252,10 @@ void InstStatEntityDSG::GetBoundingSphere(rmt::Sphere* pSphere)
 // Constraints: None.
 //
 //========================================================================
-rmt::Matrix* InstStatEntityDSG::pMatrix()
-{
+rmt::Matrix *InstStatEntityDSG::pMatrix() {
     return mpMatrix;
 }
+
 //========================================================================
 // InstStatEntityDSG::
 //========================================================================
@@ -283,15 +269,14 @@ rmt::Matrix* InstStatEntityDSG::pMatrix()
 // Constraints: None.
 //
 //========================================================================
-tGeometry* InstStatEntityDSG::pGeo()
-{
+tGeometry *InstStatEntityDSG::pGeo() {
     rAssert(false);
-    return (tGeometry*)mpDrawstuff;
+    return (tGeometry *) mpDrawstuff;
 }
-   
-   ///////////////////////////////////////////////////////////////////////
-   // Load interface
-   ///////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////
+// Load interface
+///////////////////////////////////////////////////////////////////////
 //========================================================================
 // InstStatEntityDSG::
 //========================================================================
@@ -306,13 +291,12 @@ tGeometry* InstStatEntityDSG::pGeo()
 //
 //========================================================================
 void InstStatEntityDSG::LoadSetUp
-(  
-    rmt::Matrix*        ipMatrix, 
-    tGeometry*          ipGeo,
-    tDrawable*          ipShadow
-)
-{
-    mpMatrix    = ipMatrix;
+        (
+                rmt::Matrix *ipMatrix,
+                tGeometry *ipGeo,
+                tDrawable *ipShadow
+        ) {
+    mpMatrix = ipMatrix;
     mpDrawstuff = ipGeo;
 
     mpDrawstuff->AddRef();
@@ -320,13 +304,13 @@ void InstStatEntityDSG::LoadSetUp
     //mShaderUID = ipGeo->GetShader(0)->GetUID();
     ipGeo->ProcessShaders(*this);
 
-    if ( ipShadow )
-    {
-        tRefCounted::Assign( mpShadowDrawable, ipShadow );
+    if (ipShadow) {
+        tRefCounted::Assign(mpShadowDrawable, ipShadow);
 
-        mpShadowMatrix = CreateShadowMatrix( ipMatrix->Row( 3 ) );
+        mpShadowMatrix = CreateShadowMatrix(ipMatrix->Row(3));
     }
 }
+
 //========================================================================
 // InstStatEntityDSG::
 //========================================================================
@@ -341,23 +325,21 @@ void InstStatEntityDSG::LoadSetUp
 //
 //========================================================================
 void InstStatEntityDSG::LoadSetUp
-(  
-    rmt::Matrix*        ipMatrix, 
-    tDrawable*          ipGeo,
-    tDrawable*          ipShadow
-)
-{
-    mpMatrix    = ipMatrix;
+        (
+                rmt::Matrix *ipMatrix,
+                tDrawable *ipGeo,
+                tDrawable *ipShadow
+        ) {
+    mpMatrix = ipMatrix;
     mpDrawstuff = ipGeo;
 
     mpDrawstuff->AddRef();
     ipGeo->ProcessShaders(*this);
 
-    if ( ipShadow )
-    {
-        tRefCounted::Assign( mpShadowDrawable, ipShadow );
+    if (ipShadow) {
+        tRefCounted::Assign(mpShadowDrawable, ipShadow);
 
-        mpShadowMatrix = CreateShadowMatrix( ipMatrix->Row( 3 ) );
+        mpShadowMatrix = CreateShadowMatrix(ipMatrix->Row(3));
     }
 
 }
@@ -372,9 +354,8 @@ void InstStatEntityDSG::LoadSetUp
 // Return:      rmt
 //
 //=============================================================================
-rmt::Vector*  InstStatEntityDSG::pPosition()
-{
-    rAssert( false );
+rmt::Vector *InstStatEntityDSG::pPosition() {
+    rAssert(false);
 
     return NULL;
 }
@@ -389,9 +370,8 @@ rmt::Vector*  InstStatEntityDSG::pPosition()
 // Return:      const 
 //
 //=============================================================================
-const rmt::Vector& InstStatEntityDSG::rPosition()
-{
-    rAssert( false );
+const rmt::Vector &InstStatEntityDSG::rPosition() {
+    rAssert(false);
 
     return mPosn;
 }
@@ -401,18 +381,17 @@ const rmt::Vector& InstStatEntityDSG::rPosition()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* ipPosn )
+// Parameters:  (rmt::Vector* ipPosn)
 //
 // Return:      void 
 //
 //=============================================================================
-void InstStatEntityDSG::GetPosition( rmt::Vector* ipPosn )
-{
-   rmt::Sphere sphere;
-   mpDrawstuff->GetBoundingSphere(&sphere);
-   *ipPosn = sphere.centre;
+void InstStatEntityDSG::GetPosition(rmt::Vector *ipPosn) {
+    rmt::Sphere sphere;
+    mpDrawstuff->GetBoundingSphere(&sphere);
+    *ipPosn = sphere.centre;
 
-   ipPosn->Transform( *mpMatrix );
+    ipPosn->Transform(*mpMatrix);
 }
 
 //************************************************************************
@@ -422,61 +401,55 @@ void InstStatEntityDSG::GetPosition( rmt::Vector* ipPosn )
 //************************************************************************
 
 
-rmt::Matrix* 
-InstStatEntityDSG::CreateShadowMatrix( const rmt::Vector& position )
-{
+rmt::Matrix *
+InstStatEntityDSG::CreateShadowMatrix(const rmt::Vector &position) {
 
-    rmt::Matrix* pResult;
+    rmt::Matrix *pResult;
     rmt::Matrix shadowMat;
-    if ( ComputeShadowMatrix( position, &shadowMat ) )
-    {
-        HeapMgr()->PushHeap( GMA_LEVEL_OTHER );
+    if (ComputeShadowMatrix(position, &shadowMat)) {
+        HeapMgr()->PushHeap(GMA_LEVEL_OTHER);
         pResult = new rmt::Matrix();
-        HeapMgr()->PopHeap( GMA_LEVEL_OTHER );
+        HeapMgr()->PopHeap(GMA_LEVEL_OTHER);
         *pResult = shadowMat;
 
-    }
-    else
-    {
-        pResult = NULL ;
+    } else {
+        pResult = NULL;
     }
     return pResult;
-    
+
 }
 
-bool 
-InstStatEntityDSG::ComputeShadowMatrix( const rmt::Vector& in_position, rmt::Matrix* out_pMatrix )
-{
-   	// Determine where our shadow casting object intersects the ground plane
-	rmt::Vector groundNormal(0,1,0);
-	rmt::Vector groundPlaneIntersectionPoint;
+bool
+InstStatEntityDSG::ComputeShadowMatrix(const rmt::Vector &in_position, rmt::Matrix *out_pMatrix) {
+    // Determine where our shadow casting object intersects the ground plane
+    rmt::Vector groundNormal(0, 1, 0);
+    rmt::Vector groundPlaneIntersectionPoint;
 
-	const float INTERSECT_TEST_RADIUS = 10.0f;
-	bool foundPlane;
-	rmt::Vector deepestIntersectPos, deepestIntersectNormal;
+    const float INTERSECT_TEST_RADIUS = 10.0f;
+    bool foundPlane;
+    rmt::Vector deepestIntersectPos, deepestIntersectNormal;
 
     // Get rid of the fact that FindIntersection doesn't want a const value
-	// and I'm above casting away constness
+    // and I'm above casting away constness
 
     rmt::Vector searchPosition = in_position;
     searchPosition.y += 10.0f;
 
-	GetIntersectManager()->FindIntersection( searchPosition, 
-											foundPlane,
-											groundNormal,
-											groundPlaneIntersectionPoint );
+    GetIntersectManager()->FindIntersection(searchPosition,
+                                            foundPlane,
+                                            groundNormal,
+                                            groundPlaneIntersectionPoint);
 
-    if ( foundPlane )
-    {
-	    out_pMatrix->Identity();
-	    out_pMatrix->FillTranslate( groundPlaneIntersectionPoint );
-        rmt::Vector worldRight( 1,0,0 );
+    if (foundPlane) {
+        out_pMatrix->Identity();
+        out_pMatrix->FillTranslate(groundPlaneIntersectionPoint);
+        rmt::Vector worldRight(1, 0, 0);
         rmt::Vector forward;
-        forward.CrossProduct( worldRight, groundNormal );
-	    out_pMatrix->FillHeading( forward, groundNormal );
+        forward.CrossProduct(worldRight, groundNormal);
+        out_pMatrix->FillHeading(forward, groundNormal);
     }
     return foundPlane;
-    
+
 }
 
 

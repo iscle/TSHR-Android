@@ -32,8 +32,8 @@
 //
 // Initialially the list is empty
 //
-carSoundParameters* radLinkedClass< carSoundParameters >::s_pLinkedClassHead = NULL;
-carSoundParameters* radLinkedClass< carSoundParameters >::s_pLinkedClassTail = NULL;
+carSoundParameters *radLinkedClass<carSoundParameters>::s_pLinkedClassHead = NULL;
+carSoundParameters *radLinkedClass<carSoundParameters>::s_pLinkedClassTail = NULL;
 
 static float s_maxPitchDefault = 5.0f;
 static float s_inAirIdleDefault = 0.2f;
@@ -58,40 +58,39 @@ static float s_powerslideMaxDefault = 2.0f;
 //
 //==============================================================================
 carSoundParameters::carSoundParameters() :
-    radRefCount( 0 ),
-    m_clipRPM( 3000 ),
-    m_engineClipName( NULL ),
-    m_idleClipName( NULL ),
-    m_damagedClipName( NULL ),
-    m_hornClipName( NULL ),
-    m_carOpenClipName( NULL ),
-    m_carCloseClipName( NULL ),
-    m_overlayClipName( NULL ),
-    m_roadSkidClipName( NULL ),
-    m_dirtSkidClipName( NULL ),
-    m_backupClipName( NULL ),
-    m_downshiftDamper( 0.05f ),
-    m_attackTime( 100 ),
-    m_delayTime( 50 ),
-    m_decayTime( 200 ),
-    m_decayFinishTrim( 0.75f ),
-    m_maxReverseKmh( 50.0f ),
-    m_minReversePitch( 1.5f ),
-    m_maxReversePitch( 3.0f ),
-    m_damageStartPcnt( 0.4f ),
-    m_damageVolumeRange( m_damageStartPcnt ),
-    m_damageStartTrim( 0.0f ),
-    m_damageMaxTrim( 1.0f ),
-    m_idleEnginePitch( 1.0f ),
-    m_inAirThrottlePitch( s_inAirThrottleDefault ),
-    m_inAirIdlePitch( s_inAirIdleDefault ),
-    m_inAirResponseMsecs( 500 ),
-    m_burnoutMinPitch( 0.5f ),
-    m_burnoutMaxPitch( 1.3f ),
-    m_powerslideMinPitch( s_powerslideMinDefault ),
-    m_powerslideMaxPitch( s_powerslideMaxDefault ),
-    m_msecsPerOctave( 500 )
-{
+        radRefCount(0),
+        m_clipRPM(3000),
+        m_engineClipName(NULL),
+        m_idleClipName(NULL),
+        m_damagedClipName(NULL),
+        m_hornClipName(NULL),
+        m_carOpenClipName(NULL),
+        m_carCloseClipName(NULL),
+        m_overlayClipName(NULL),
+        m_roadSkidClipName(NULL),
+        m_dirtSkidClipName(NULL),
+        m_backupClipName(NULL),
+        m_downshiftDamper(0.05f),
+        m_attackTime(100),
+        m_delayTime(50),
+        m_decayTime(200),
+        m_decayFinishTrim(0.75f),
+        m_maxReverseKmh(50.0f),
+        m_minReversePitch(1.5f),
+        m_maxReversePitch(3.0f),
+        m_damageStartPcnt(0.4f),
+        m_damageVolumeRange(m_damageStartPcnt),
+        m_damageStartTrim(0.0f),
+        m_damageMaxTrim(1.0f),
+        m_idleEnginePitch(1.0f),
+        m_inAirThrottlePitch(s_inAirThrottleDefault),
+        m_inAirIdlePitch(s_inAirIdleDefault),
+        m_inAirResponseMsecs(500),
+        m_burnoutMinPitch(0.5f),
+        m_burnoutMaxPitch(1.3f),
+        m_powerslideMinPitch(s_powerslideMinDefault),
+        m_powerslideMaxPitch(s_powerslideMaxDefault),
+        m_msecsPerOctave(500) {
     unsigned int i;
 
     //
@@ -109,8 +108,7 @@ carSoundParameters::carSoundParameters() :
     //
     // Pitch range and gear shift defaults
     //
-    for( i = 0; i < MAX_GEARS; i++ )
-    {
+    for (i = 0; i < MAX_GEARS; i++) {
         m_minPitch[i] = 0.5f;
         m_maxPitch[i] = s_maxPitchDefault;
 
@@ -128,47 +126,36 @@ carSoundParameters::carSoundParameters() :
 // Return:      N/A.
 //
 //==============================================================================
-carSoundParameters::~carSoundParameters()
-{
-    if( m_engineClipName != NULL )
-    {
-        delete [] m_engineClipName;
+carSoundParameters::~carSoundParameters() {
+    if (m_engineClipName != NULL) {
+        delete[] m_engineClipName;
     }
-    if( m_idleClipName != NULL )
-    {
-        delete [] m_idleClipName;
+    if (m_idleClipName != NULL) {
+        delete[] m_idleClipName;
     }
-    if( m_damagedClipName != NULL )
-    {
-        delete [] m_damagedClipName;
+    if (m_damagedClipName != NULL) {
+        delete[] m_damagedClipName;
     }
-    if( m_hornClipName != NULL )
-    {
-        delete [] m_hornClipName;
+    if (m_hornClipName != NULL) {
+        delete[] m_hornClipName;
     }
-    if( m_carOpenClipName != NULL )
-    {
-        delete [] m_carOpenClipName;
+    if (m_carOpenClipName != NULL) {
+        delete[] m_carOpenClipName;
     }
-    if( m_carCloseClipName != NULL )
-    {
-        delete [] m_carCloseClipName;
+    if (m_carCloseClipName != NULL) {
+        delete[] m_carCloseClipName;
     }
-    if( m_overlayClipName != NULL )
-    {
-        delete [] m_overlayClipName;
+    if (m_overlayClipName != NULL) {
+        delete[] m_overlayClipName;
     }
-    if( m_roadSkidClipName != NULL )
-    {
-        delete [] m_roadSkidClipName;
+    if (m_roadSkidClipName != NULL) {
+        delete[] m_roadSkidClipName;
     }
-    if( m_dirtSkidClipName != NULL )
-    {
-        delete [] m_dirtSkidClipName;
+    if (m_dirtSkidClipName != NULL) {
+        delete[] m_dirtSkidClipName;
     }
-    if( m_backupClipName != NULL )
-    {
-        delete [] m_backupClipName;
+    if (m_backupClipName != NULL) {
+        delete[] m_backupClipName;
     }
 }
 
@@ -184,52 +171,58 @@ carSoundParameters::~carSoundParameters()
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetWatcherName( const char* name )
-{
+void carSoundParameters::SetWatcherName(const char *name) {
 #ifndef RAD_RELEASE
     unsigned int i;
     char label[50];
     char watcherGroup[50];
-    
-    sprintf( watcherGroup, "Sound::%s", name );
-    
+
+    sprintf(watcherGroup, "Sound::%s", name);
+
     //
     // Register members with Watcher for tweakage
     //
-    for( i = 1; i <= MAX_GEARS; i++ )
-    {
-        sprintf( label, "Min pitch: gear %d", i );
-        radDbgWatchAddFloat( &m_minPitch[i-1], label, watcherGroup, NULL, NULL, 0.0f, 10.0f );
-        
-        sprintf( label, "Max pitch: gear %d", i );
-        radDbgWatchAddFloat( &m_maxPitch[i-1], label, watcherGroup, NULL, NULL, 0.0f, 10.0f );
-        
-        sprintf( label, "Pitch drop: gear %d", i );
-        radDbgWatchAddFloat( &m_gearShiftPitchDrop[i-1], label, watcherGroup, NULL, NULL, 0.0f, 10.0f );
+    for (i = 1; i <= MAX_GEARS; i++) {
+        sprintf(label, "Min pitch: gear %d", i);
+        radDbgWatchAddFloat(&m_minPitch[i - 1], label, watcherGroup, NULL, NULL, 0.0f, 10.0f);
+
+        sprintf(label, "Max pitch: gear %d", i);
+        radDbgWatchAddFloat(&m_maxPitch[i - 1], label, watcherGroup, NULL, NULL, 0.0f, 10.0f);
+
+        sprintf(label, "Pitch drop: gear %d", i);
+        radDbgWatchAddFloat(&m_gearShiftPitchDrop[i - 1], label, watcherGroup, NULL, NULL, 0.0f,
+                            10.0f);
     }
-        
-    for( i = 1; i <= MAX_GEARS + 1; i++ )
-    {
-        sprintf( label, "Shift point: gear %d", i );
-        radDbgWatchAddFloat( &m_shiftPoints[i-1], label, watcherGroup );
+
+    for (i = 1; i <= MAX_GEARS + 1; i++) {
+        sprintf(label, "Shift point: gear %d", i);
+        radDbgWatchAddFloat(&m_shiftPoints[i - 1], label, watcherGroup);
     }
-    
-    radDbgWatchAddFloat( &m_downshiftDamper, "Downshift damper", watcherGroup );
-    radDbgWatchAddFloat( &m_attackTime, "Attack time (msecs)", watcherGroup, NULL, NULL, 0, 2000.0f );
-    radDbgWatchAddUnsignedInt( &m_delayTime, "Delay time (msecs)", watcherGroup, NULL, NULL, 0, 2000 );
-    radDbgWatchAddFloat( &m_decayTime, "Decay time (msecs)", watcherGroup, NULL, NULL, 0, 2000.0f );
-    radDbgWatchAddFloat( &m_decayFinishTrim, "Decay finish trim", watcherGroup );
-    radDbgWatchAddFloat( &m_maxReverseKmh, "Max reverse kmh", watcherGroup, NULL, NULL, 0.0f, 200.0f );
-    radDbgWatchAddFloat( &m_minReversePitch, "Min reverse pitch", watcherGroup, NULL, NULL, 0.0f, 10.0f );
-    radDbgWatchAddFloat( &m_maxReversePitch, "Max reverse pitch", watcherGroup, NULL, NULL, 0.0f, 10.0f );
-    radDbgWatchAddFloat( &m_damageStartPcnt, "Damage start", watcherGroup );
-    radDbgWatchAddFloat( &m_damageVolumeRange, "Damage max volume life %", watcherGroup );
-    radDbgWatchAddFloat( &m_damageStartTrim, "Damage start trim", watcherGroup );
-    radDbgWatchAddFloat( &m_damageMaxTrim, "Damage max trim", watcherGroup );
-    radDbgWatchAddFloat( &m_idleEnginePitch, "Idle engine pitch", watcherGroup, NULL, NULL, 0.0f, 10.0f );
-    radDbgWatchAddFloat( &m_inAirThrottlePitch, "In air throttle pitch", watcherGroup, NULL, NULL, 0.0f, 10.0f );
-    radDbgWatchAddFloat( &m_inAirIdlePitch, "In air idle pitch", watcherGroup, NULL, NULL, 0.0f, 10.0f );
-    radDbgWatchAddUnsignedInt( &m_inAirResponseMsecs, "In air response time (msecs)", watcherGroup, NULL, NULL, 0, 2000 );
+
+    radDbgWatchAddFloat(&m_downshiftDamper, "Downshift damper", watcherGroup);
+    radDbgWatchAddFloat(&m_attackTime, "Attack time (msecs)", watcherGroup, NULL, NULL, 0, 2000.0f);
+    radDbgWatchAddUnsignedInt(&m_delayTime, "Delay time (msecs)", watcherGroup, NULL, NULL, 0,
+                              2000);
+    radDbgWatchAddFloat(&m_decayTime, "Decay time (msecs)", watcherGroup, NULL, NULL, 0, 2000.0f);
+    radDbgWatchAddFloat(&m_decayFinishTrim, "Decay finish trim", watcherGroup);
+    radDbgWatchAddFloat(&m_maxReverseKmh, "Max reverse kmh", watcherGroup, NULL, NULL, 0.0f,
+                        200.0f);
+    radDbgWatchAddFloat(&m_minReversePitch, "Min reverse pitch", watcherGroup, NULL, NULL, 0.0f,
+                        10.0f);
+    radDbgWatchAddFloat(&m_maxReversePitch, "Max reverse pitch", watcherGroup, NULL, NULL, 0.0f,
+                        10.0f);
+    radDbgWatchAddFloat(&m_damageStartPcnt, "Damage start", watcherGroup);
+    radDbgWatchAddFloat(&m_damageVolumeRange, "Damage max volume life %", watcherGroup);
+    radDbgWatchAddFloat(&m_damageStartTrim, "Damage start trim", watcherGroup);
+    radDbgWatchAddFloat(&m_damageMaxTrim, "Damage max trim", watcherGroup);
+    radDbgWatchAddFloat(&m_idleEnginePitch, "Idle engine pitch", watcherGroup, NULL, NULL, 0.0f,
+                        10.0f);
+    radDbgWatchAddFloat(&m_inAirThrottlePitch, "In air throttle pitch", watcherGroup, NULL, NULL,
+                        0.0f, 10.0f);
+    radDbgWatchAddFloat(&m_inAirIdlePitch, "In air idle pitch", watcherGroup, NULL, NULL, 0.0f,
+                        10.0f);
+    radDbgWatchAddUnsignedInt(&m_inAirResponseMsecs, "In air response time (msecs)", watcherGroup,
+                              NULL, NULL, 0, 2000);
 #endif
 }
 
@@ -246,14 +239,13 @@ void carSoundParameters::SetWatcherName( const char* name )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetShiftPoint( unsigned int gear, float percent )
-{
-    rAssert( gear > 0 );
-    rAssert( gear <= MAX_GEARS );
-    rAssert( percent > 0.0f );
-    rAssert( percent <= 1.0f );
+void carSoundParameters::SetShiftPoint(unsigned int gear, float percent) {
+    rAssert(gear > 0);
+    rAssert(gear <= MAX_GEARS);
+    rAssert(percent > 0.0f);
+    rAssert(percent <= 1.0f);
 
-    m_shiftPoints[gear-1] = percent;
+    m_shiftPoints[gear - 1] = percent;
 }
 
 //=============================================================================
@@ -267,15 +259,11 @@ void carSoundParameters::SetShiftPoint( unsigned int gear, float percent )
 // Return:      shift point as percentage of top speed 
 //
 //=============================================================================
-float carSoundParameters::GetShiftPoint( int gear )
-{
-    if( gear > 0 )
-    {
-        return( m_shiftPoints[gear-1] );
-    }
-    else
-    {
-        return( 0.0f );
+float carSoundParameters::GetShiftPoint(int gear) {
+    if (gear > 0) {
+        return (m_shiftPoints[gear - 1]);
+    } else {
+        return (0.0f);
     }
 }
 
@@ -284,13 +272,12 @@ float carSoundParameters::GetShiftPoint( int gear )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float msecs )
+// Parameters:  (float msecs)
 //
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetAttackTimeMsecs( float msecs )
-{
+void carSoundParameters::SetAttackTimeMsecs(float msecs) {
     m_attackTime = msecs;
 }
 
@@ -299,13 +286,12 @@ void carSoundParameters::SetAttackTimeMsecs( float msecs )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int msecs )
+// Parameters:  (unsigned int msecs)
 //
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetDelayTimeMsecs( unsigned int msecs )
-{
+void carSoundParameters::SetDelayTimeMsecs(unsigned int msecs) {
     m_delayTime = msecs;
 }
 
@@ -314,13 +300,12 @@ void carSoundParameters::SetDelayTimeMsecs( unsigned int msecs )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float msecs )
+// Parameters:  (float msecs)
 //
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetDecayTimeMsecs( float msecs )
-{
+void carSoundParameters::SetDecayTimeMsecs(float msecs) {
     m_decayTime = msecs;
 }
 
@@ -329,13 +314,12 @@ void carSoundParameters::SetDecayTimeMsecs( float msecs )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float trim )
+// Parameters:  (float trim)
 //
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetDecayFinishTrim( float trim )
-{
+void carSoundParameters::SetDecayFinishTrim(float trim) {
     m_decayFinishTrim = trim;
 }
 
@@ -350,10 +334,9 @@ void carSoundParameters::SetDecayFinishTrim( float trim )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetDownshiftDamperSize( float percent )
-{
-    rAssert( percent >= 0.0f );
-    rAssert( percent <= 1.0f );
+void carSoundParameters::SetDownshiftDamperSize(float percent) {
+    rAssert(percent >= 0.0f);
+    rAssert(percent <= 1.0f);
 
     m_downshiftDamper = percent;
 }
@@ -369,14 +352,13 @@ void carSoundParameters::SetDownshiftDamperSize( float percent )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetEngineClipName( const char* clipName )
-{
-    rAssert( clipName != NULL );
+void carSoundParameters::SetEngineClipName(const char *clipName) {
+    rAssert(clipName != NULL);
 
-    HeapMgr()->PushHeap( GMA_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
-    m_engineClipName = new char[strlen(clipName)+1];
-    strcpy( m_engineClipName, clipName );
+    m_engineClipName = new char[strlen(clipName) + 1];
+    strcpy(m_engineClipName, clipName);
 
     HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
@@ -392,14 +374,13 @@ void carSoundParameters::SetEngineClipName( const char* clipName )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetEngineIdleClipName( const char* clipName )
-{
-    rAssert( clipName != NULL );
+void carSoundParameters::SetEngineIdleClipName(const char *clipName) {
+    rAssert(clipName != NULL);
 
-    HeapMgr()->PushHeap( GMA_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
-    m_idleClipName = new char[strlen(clipName)+1];
-    strcpy( m_idleClipName, clipName );
+    m_idleClipName = new char[strlen(clipName) + 1];
+    strcpy(m_idleClipName, clipName);
 
     HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
@@ -415,14 +396,13 @@ void carSoundParameters::SetEngineIdleClipName( const char* clipName )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetDamagedEngineClipName( const char* clipName )
-{
-    rAssert( clipName != NULL );
+void carSoundParameters::SetDamagedEngineClipName(const char *clipName) {
+    rAssert(clipName != NULL);
 
-    HeapMgr()->PushHeap( GMA_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
-    m_damagedClipName = new char[strlen(clipName)+1];
-    strcpy( m_damagedClipName, clipName );
+    m_damagedClipName = new char[strlen(clipName) + 1];
+    strcpy(m_damagedClipName, clipName);
 
     HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
@@ -438,14 +418,13 @@ void carSoundParameters::SetDamagedEngineClipName( const char* clipName )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetHornClipName( const char* clipName )
-{
-    rAssert( clipName != NULL );
+void carSoundParameters::SetHornClipName(const char *clipName) {
+    rAssert(clipName != NULL);
 
-    HeapMgr()->PushHeap( GMA_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
-    m_hornClipName = new char[strlen(clipName)+1];
-    strcpy( m_hornClipName, clipName );
+    m_hornClipName = new char[strlen(clipName) + 1];
+    strcpy(m_hornClipName, clipName);
 
     HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
@@ -461,14 +440,13 @@ void carSoundParameters::SetHornClipName( const char* clipName )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetCarDoorOpenClipName( const char* clipName )
-{
-    rAssert( clipName != NULL );
+void carSoundParameters::SetCarDoorOpenClipName(const char *clipName) {
+    rAssert(clipName != NULL);
 
-    HeapMgr()->PushHeap( GMA_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
-    m_carOpenClipName = new char[strlen(clipName)+1];
-    strcpy( m_carOpenClipName, clipName );
+    m_carOpenClipName = new char[strlen(clipName) + 1];
+    strcpy(m_carOpenClipName, clipName);
 
     HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
@@ -484,14 +462,13 @@ void carSoundParameters::SetCarDoorOpenClipName( const char* clipName )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetCarDoorCloseClipName( const char* clipName )
-{
-    rAssert( clipName != NULL );
+void carSoundParameters::SetCarDoorCloseClipName(const char *clipName) {
+    rAssert(clipName != NULL);
 
-    HeapMgr()->PushHeap( GMA_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
-    m_carCloseClipName = new char[strlen(clipName)+1];
-    strcpy( m_carCloseClipName, clipName );
+    m_carCloseClipName = new char[strlen(clipName) + 1];
+    strcpy(m_carCloseClipName, clipName);
 
     HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
@@ -507,14 +484,13 @@ void carSoundParameters::SetCarDoorCloseClipName( const char* clipName )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetOverlayClipName( const char* clipName )
-{
-    rAssert( clipName != NULL );
+void carSoundParameters::SetOverlayClipName(const char *clipName) {
+    rAssert(clipName != NULL);
 
-    HeapMgr()->PushHeap( GMA_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
-    m_overlayClipName = new char[strlen(clipName)+1];
-    strcpy( m_overlayClipName, clipName );
+    m_overlayClipName = new char[strlen(clipName) + 1];
+    strcpy(m_overlayClipName, clipName);
 
     HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
@@ -530,14 +506,13 @@ void carSoundParameters::SetOverlayClipName( const char* clipName )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetRoadSkidClipName( const char* clipName )
-{
-    rAssert( clipName != NULL );
+void carSoundParameters::SetRoadSkidClipName(const char *clipName) {
+    rAssert(clipName != NULL);
 
-    HeapMgr()->PushHeap( GMA_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
-    m_roadSkidClipName = new char[strlen(clipName)+1];
-    strcpy( m_roadSkidClipName, clipName );
+    m_roadSkidClipName = new char[strlen(clipName) + 1];
+    strcpy(m_roadSkidClipName, clipName);
 
     HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
@@ -553,14 +528,13 @@ void carSoundParameters::SetRoadSkidClipName( const char* clipName )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetDirtSkidClipName( const char* clipName )
-{
-    rAssert( clipName != NULL );
+void carSoundParameters::SetDirtSkidClipName(const char *clipName) {
+    rAssert(clipName != NULL);
 
-    HeapMgr()->PushHeap( GMA_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
-    m_dirtSkidClipName = new char[strlen(clipName)+1];
-    strcpy( m_dirtSkidClipName, clipName );
+    m_dirtSkidClipName = new char[strlen(clipName) + 1];
+    strcpy(m_dirtSkidClipName, clipName);
 
     HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
@@ -576,14 +550,13 @@ void carSoundParameters::SetDirtSkidClipName( const char* clipName )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetBackupClipName( const char* clipName )
-{
-    rAssert( clipName != NULL );
+void carSoundParameters::SetBackupClipName(const char *clipName) {
+    rAssert(clipName != NULL);
 
-    HeapMgr()->PushHeap( GMA_PERSISTENT );
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
-    m_backupClipName = new char[strlen(clipName)+1];
-    strcpy( m_backupClipName, clipName );
+    m_backupClipName = new char[strlen(clipName) + 1];
+    strcpy(m_backupClipName, clipName);
 
     HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
@@ -600,14 +573,13 @@ void carSoundParameters::SetBackupClipName( const char* clipName )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetGearPitchRange( unsigned int gear, float min, float max )
-{
-    rAssert( gear > 0 );
-    rAssert( gear <= MAX_GEARS );
-    rAssert( max >= min );
+void carSoundParameters::SetGearPitchRange(unsigned int gear, float min, float max) {
+    rAssert(gear > 0);
+    rAssert(gear <= MAX_GEARS);
+    rAssert(max >= min);
 
-    m_minPitch[gear-1] = min;
-    m_maxPitch[gear-1] = max;
+    m_minPitch[gear - 1] = min;
+    m_maxPitch[gear - 1] = max;
 }
 
 //=============================================================================
@@ -620,9 +592,8 @@ void carSoundParameters::SetGearPitchRange( unsigned int gear, float min, float 
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetNumberOfGears( unsigned int gear )
-{
-    rAssert( gear <= MAX_GEARS );
+void carSoundParameters::SetNumberOfGears(unsigned int gear) {
+    rAssert(gear <= MAX_GEARS);
 
     //
     // If we set the shift point for the given gear to 1.0f, we're 
@@ -642,9 +613,8 @@ void carSoundParameters::SetNumberOfGears( unsigned int gear )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetReversePitchCapKmh( float speed )
-{
-    rAssert( speed > 0.0f );
+void carSoundParameters::SetReversePitchCapKmh(float speed) {
+    rAssert(speed > 0.0f);
 
     m_maxReverseKmh = speed;
 }
@@ -660,9 +630,8 @@ void carSoundParameters::SetReversePitchCapKmh( float speed )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetReversePitchRange( float min, float max )
-{
-    rAssert( min < max );
+void carSoundParameters::SetReversePitchRange(float min, float max) {
+    rAssert(min < max);
 
     m_minReversePitch = min;
     m_maxReversePitch = max;
@@ -679,13 +648,12 @@ void carSoundParameters::SetReversePitchRange( float min, float max )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetGearShiftPitchDrop( unsigned int gear, float drop )
-{
-    rAssert( gear > 0 );
-    rAssert( gear <= MAX_GEARS );
-    rAssert( drop >= 0.0f );
+void carSoundParameters::SetGearShiftPitchDrop(unsigned int gear, float drop) {
+    rAssert(gear > 0);
+    rAssert(gear <= MAX_GEARS);
+    rAssert(drop >= 0.0f);
 
-    m_gearShiftPitchDrop[gear-1] = drop;
+    m_gearShiftPitchDrop[gear - 1] = drop;
 }
 
 //=============================================================================
@@ -698,12 +666,11 @@ void carSoundParameters::SetGearShiftPitchDrop( unsigned int gear, float drop )
 // Return:      value of pitch drop 
 //
 //=============================================================================
-float carSoundParameters::GetGearShiftPitchDrop( unsigned int gear )
-{
-    rAssert( gear > 0 );
-    rAssert( gear <= MAX_GEARS );
+float carSoundParameters::GetGearShiftPitchDrop(unsigned int gear) {
+    rAssert(gear > 0);
+    rAssert(gear <= MAX_GEARS);
 
-    return( m_gearShiftPitchDrop[gear-1] );
+    return (m_gearShiftPitchDrop[gear - 1]);
 }
 
 //=============================================================================
@@ -717,10 +684,9 @@ float carSoundParameters::GetGearShiftPitchDrop( unsigned int gear )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetDamageStartPcnt( float damagePercent )
-{
-    rAssert( damagePercent >= 0.0f );
-    rAssert( damagePercent <= 1.0f );
+void carSoundParameters::SetDamageStartPcnt(float damagePercent) {
+    rAssert(damagePercent >= 0.0f);
+    rAssert(damagePercent <= 1.0f);
 
     // Also need to adjust damage volume range when start pcnt changes
     m_damageVolumeRange += damagePercent - m_damageStartPcnt;
@@ -740,10 +706,9 @@ void carSoundParameters::SetDamageStartPcnt( float damagePercent )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetDamageMaxVolPcnt( float percent )
-{
-    rAssert( percent >= 0.0f );
-    rAssert( percent <= 1.0f );
+void carSoundParameters::SetDamageMaxVolPcnt(float percent) {
+    rAssert(percent >= 0.0f);
+    rAssert(percent <= 1.0f);
 
     //
     // We don't actually store the percentage, since the trim setting code
@@ -762,10 +727,9 @@ void carSoundParameters::SetDamageMaxVolPcnt( float percent )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetDamageStartTrim( float trim )
-{
-    rAssert( trim >= 0.0f );
-    rAssert( trim <= 1.0f );
+void carSoundParameters::SetDamageStartTrim(float trim) {
+    rAssert(trim >= 0.0f);
+    rAssert(trim <= 1.0f);
 
     m_damageStartTrim = trim;
 }
@@ -781,10 +745,9 @@ void carSoundParameters::SetDamageStartTrim( float trim )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetDamageMaxTrim( float trim )
-{
-    rAssert( trim >= 0.0f );
-    rAssert( trim <= 1.0f );
+void carSoundParameters::SetDamageMaxTrim(float trim) {
+    rAssert(trim >= 0.0f);
+    rAssert(trim <= 1.0f);
 
     m_damageMaxTrim = trim;
 }
@@ -799,8 +762,7 @@ void carSoundParameters::SetDamageMaxTrim( float trim )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetIdleEnginePitch( float pitch )
-{
+void carSoundParameters::SetIdleEnginePitch(float pitch) {
     m_idleEnginePitch = pitch;
 }
 
@@ -814,8 +776,7 @@ void carSoundParameters::SetIdleEnginePitch( float pitch )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetInAirThrottlePitch( float pitch )
-{
+void carSoundParameters::SetInAirThrottlePitch(float pitch) {
     m_inAirThrottlePitch = pitch;
 }
 
@@ -829,20 +790,18 @@ void carSoundParameters::SetInAirThrottlePitch( float pitch )
 // Return:      full-throttle pitch 
 //
 //=============================================================================
-float carSoundParameters::GetInAirThrottlePitch()
-{
+float carSoundParameters::GetInAirThrottlePitch() {
     //
     // POST-BETA HACK!!
     //
-    if( m_inAirIdlePitch == s_inAirIdleDefault )
-    {
+    if (m_inAirIdlePitch == s_inAirIdleDefault) {
         //
         // Untuned, d'oh.  Make something up.
         //
         m_inAirThrottlePitch = GetRevLimit();
     }
 
-    return( m_inAirThrottlePitch );
+    return (m_inAirThrottlePitch);
 }
 
 //=============================================================================
@@ -855,8 +814,7 @@ float carSoundParameters::GetInAirThrottlePitch()
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetInAirIdlePitch( float pitch )
-{
+void carSoundParameters::SetInAirIdlePitch(float pitch) {
     m_inAirIdlePitch = pitch;
 }
 
@@ -870,20 +828,18 @@ void carSoundParameters::SetInAirIdlePitch( float pitch )
 // Return:      idle pitch 
 //
 //=============================================================================
-float carSoundParameters::GetInAirIdlePitch()
-{
+float carSoundParameters::GetInAirIdlePitch() {
     //
     // POST-BETA HACK!!
     //
-    if( m_inAirIdlePitch == s_inAirIdleDefault )
-    {
+    if (m_inAirIdlePitch == s_inAirIdleDefault) {
         //
         // Untuned, d'oh.  Make something up as percentage of rev limit
         //
         m_inAirIdlePitch = 0.5f * GetRevLimit();
     }
 
-    return( m_inAirIdlePitch );
+    return (m_inAirIdlePitch);
 }
 
 //=============================================================================
@@ -897,8 +853,7 @@ float carSoundParameters::GetInAirIdlePitch()
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetInAirThrottleResponseTimeMsecs( unsigned int msecs )
-{
+void carSoundParameters::SetInAirThrottleResponseTimeMsecs(unsigned int msecs) {
     m_inAirResponseMsecs = msecs;
 }
 
@@ -913,8 +868,7 @@ void carSoundParameters::SetInAirThrottleResponseTimeMsecs( unsigned int msecs )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetBurnoutMinPitch( float pitch )
-{
+void carSoundParameters::SetBurnoutMinPitch(float pitch) {
     m_burnoutMinPitch = pitch;
 }
 
@@ -929,8 +883,7 @@ void carSoundParameters::SetBurnoutMinPitch( float pitch )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetBurnoutMaxPitch( float pitch )
-{
+void carSoundParameters::SetBurnoutMaxPitch(float pitch) {
     m_burnoutMaxPitch = pitch;
 }
 
@@ -945,8 +898,7 @@ void carSoundParameters::SetBurnoutMaxPitch( float pitch )
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetPowerslideMinPitch( float pitch )
-{
+void carSoundParameters::SetPowerslideMinPitch(float pitch) {
     m_powerslideMinPitch = pitch;
 }
 
@@ -961,14 +913,12 @@ void carSoundParameters::SetPowerslideMinPitch( float pitch )
 // Return:      min pitch 
 //
 //=============================================================================
-float carSoundParameters::GetPowerslideMinPitch()
-{
-    if( m_powerslideMinPitch == s_powerslideMinDefault )
-    {
+float carSoundParameters::GetPowerslideMinPitch() {
+    if (m_powerslideMinPitch == s_powerslideMinDefault) {
         m_powerslideMinPitch = 0.5f * GetRevLimit();
     }
 
-    return( m_powerslideMinPitch );
+    return (m_powerslideMinPitch);
 }
 
 //=============================================================================
@@ -982,8 +932,7 @@ float carSoundParameters::GetPowerslideMinPitch()
 // Return:      void 
 //
 //=============================================================================
-void carSoundParameters::SetPowerslideMaxPitch( float pitch )
-{
+void carSoundParameters::SetPowerslideMaxPitch(float pitch) {
     m_powerslideMaxPitch = pitch;
 }
 
@@ -998,14 +947,12 @@ void carSoundParameters::SetPowerslideMaxPitch( float pitch )
 // Return:      max pitch 
 //
 //=============================================================================
-float carSoundParameters::GetPowerslideMaxPitch()
-{
-    if( m_powerslideMaxPitch == s_powerslideMaxDefault )
-    {
+float carSoundParameters::GetPowerslideMaxPitch() {
+    if (m_powerslideMaxPitch == s_powerslideMaxDefault) {
         m_powerslideMaxPitch = 0.9f * GetRevLimit();
     }
 
-    return( m_powerslideMaxPitch );
+    return (m_powerslideMaxPitch);
 }
 
 //=============================================================================
@@ -1021,44 +968,41 @@ float carSoundParameters::GetPowerslideMaxPitch()
 // Return:      pitch as a value from 0.0f to 1.0f
 //
 //=============================================================================
-float carSoundParameters::CalculateEnginePitch( int gear, float currentSpeed, float topSpeed )
-{
+float carSoundParameters::CalculateEnginePitch(int gear, float currentSpeed, float topSpeed) {
     float enginePitch;
     float percentageOfGear;
     float bottomEndSpeed;
 
-    //rAssert( currentSpeed <= topSpeed );
-    rAssert( ( gear > 0 ) || ( gear == REVERSE_GEAR ) );
-    rAssert( gear <= static_cast<int>(MAX_GEARS) );
+    //rAssert(currentSpeed <= topSpeed);
+    rAssert((gear > 0) || (gear == REVERSE_GEAR));
+    rAssert(gear <= static_cast<int>(MAX_GEARS));
 
-    if( gear == REVERSE_GEAR )
-    {
+    if (gear == REVERSE_GEAR) {
         percentageOfGear = currentSpeed / m_maxReverseKmh;
-        if( percentageOfGear > 1.0f )
-        {
+        if (percentageOfGear > 1.0f) {
             percentageOfGear = 1.0f;
         }
 
-        enginePitch = m_minReversePitch + ( percentageOfGear * ( m_maxReversePitch - m_minReversePitch ) );
-    }
-    else
-    {
-        bottomEndSpeed = m_shiftPoints[gear-1] * topSpeed;
+        enginePitch =
+                m_minReversePitch + (percentageOfGear * (m_maxReversePitch - m_minReversePitch));
+    } else {
+        bottomEndSpeed = m_shiftPoints[gear - 1] * topSpeed;
 
         //
         // m_shiftPoints[gear+1] is allowed because we set m_shiftPoints[MAX_GEARS] to 1.0f
         //
-        percentageOfGear = ( ( currentSpeed - bottomEndSpeed )
-                             / ( ( m_shiftPoints[gear] * topSpeed ) - bottomEndSpeed ) );
+        percentageOfGear = ((currentSpeed - bottomEndSpeed)
+                            / ((m_shiftPoints[gear] * topSpeed) - bottomEndSpeed));
 
         //
         // Based on our speed position within the range of speed used for this gear, apply that
         // same percentage to the pitch range for our final pitch calculation
         //
-        enginePitch = m_minPitch[gear-1] + ( ( m_maxPitch[gear-1] - m_minPitch[gear-1] ) * percentageOfGear );
+        enginePitch = m_minPitch[gear - 1] +
+                      ((m_maxPitch[gear - 1] - m_minPitch[gear - 1]) * percentageOfGear);
     }
 
-    return( enginePitch );
+    return (enginePitch);
 }
 
 //=============================================================================
@@ -1076,21 +1020,18 @@ float carSoundParameters::CalculateEnginePitch( int gear, float currentSpeed, fl
 // Return:      0 for idle, 1 to MAX_GEARS for forward gears
 //
 //=============================================================================
-int carSoundParameters::CalculateCurrentGear( float currentSpeed,
-                                              float previousSpeed,
-                                              float topSpeed,
-                                              int previousGear )
-{
+int carSoundParameters::CalculateCurrentGear(float currentSpeed,
+                                             float previousSpeed,
+                                             float topSpeed,
+                                             int previousGear) {
     unsigned int currentGear;
     unsigned int uiPreviousGear;
 
     //
     // Find our current gear
     //
-    for( currentGear = 0; currentGear < MAX_GEARS; currentGear++ )
-    {
-        if( currentSpeed <= ( topSpeed * m_shiftPoints[currentGear] ) )
-        {
+    for (currentGear = 0; currentGear < MAX_GEARS; currentGear++) {
+        if (currentSpeed <= (topSpeed * m_shiftPoints[currentGear])) {
             break;
         }
     }
@@ -1099,23 +1040,19 @@ int carSoundParameters::CalculateCurrentGear( float currentSpeed,
     // Don't downshift if we're accelerating, and vice versa.  If
     // previousGear is -1, we'll accept the gearshift anyway
     //
-    if( previousGear >= 0 )
-    {
+    if (previousGear >= 0) {
         uiPreviousGear = static_cast<unsigned int>(previousGear);
 
-        if( ( currentSpeed > previousSpeed )
-            && ( currentGear < uiPreviousGear ) )
-        {
+        if ((currentSpeed > previousSpeed)
+            && (currentGear < uiPreviousGear)) {
             currentGear = uiPreviousGear;
-        }
-        else if( ( currentSpeed <= previousSpeed )
-                 && ( currentGear > uiPreviousGear ) )
-        {
+        } else if ((currentSpeed <= previousSpeed)
+                   && (currentGear > uiPreviousGear)) {
             currentGear = uiPreviousGear;
         }
     }
 
-    return( static_cast<int>(currentGear) );
+    return (static_cast<int>(currentGear));
 }
 
 //=============================================================================
@@ -1128,24 +1065,21 @@ int carSoundParameters::CalculateCurrentGear( float currentSpeed,
 // Return:      Rev limit as pitch value  
 //
 //=============================================================================
-float carSoundParameters::GetRevLimit()
-{
+float carSoundParameters::GetRevLimit() {
     unsigned int i;
     float revLimit = 0.0f;
 
-    for( i = 0; i < MAX_GEARS; i++ )
-    {
+    for (i = 0; i < MAX_GEARS; i++) {
         //
         // Ignore the default values of 2.0f, probably too high
         //
-        if( ( m_maxPitch[i] > revLimit )
-            && ( m_maxPitch[i] < s_maxPitchDefault ) )
-        {
+        if ((m_maxPitch[i] > revLimit)
+            && (m_maxPitch[i] < s_maxPitchDefault)) {
             revLimit = m_maxPitch[i];
         }
     }
 
-    return( revLimit );
+    return (revLimit);
 }
 
 //******************************************************************************
@@ -1172,13 +1106,12 @@ float carSoundParameters::GetRevLimit()
 //
 //==============================================================================
 void CarSoundParameterObjCreate
-(
-    ICarSoundParameters** ppParametersObj,
-    radMemoryAllocator allocator
-)
-{
-    rAssert( ppParametersObj != NULL );
-    (*ppParametersObj) = new ( allocator ) carSoundParameters( );
-    (*ppParametersObj)->AddRef( );
+        (
+                ICarSoundParameters **ppParametersObj,
+                radMemoryAllocator allocator
+        ) {
+    rAssert(ppParametersObj != NULL);
+    (*ppParametersObj) = new(allocator) carSoundParameters();
+    (*ppParametersObj)->AddRef();
 }
 

@@ -28,24 +28,26 @@
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenViewCards : public CGuiScreenCardGallery
-{
+class CGuiScreenViewCards : public CGuiScreenCardGallery {
 public:
-    CGuiScreenViewCards( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenViewCards(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenViewCards();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
-    Scrooby::Layer* m_pauseFgdLayer;
-    Scrooby::Layer* m_bigBoardFgdLayer;
+    Scrooby::Layer *m_pauseFgdLayer;
+    Scrooby::Layer *m_bigBoardFgdLayer;
 
 };
 

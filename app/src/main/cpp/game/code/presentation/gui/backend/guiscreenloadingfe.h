@@ -29,8 +29,7 @@
 // Forward References
 //===========================================================================
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Text;
 }
 
@@ -38,40 +37,43 @@ namespace Scrooby
 // Interface Definitions
 //===========================================================================
 class CGuiScreenLoadingFE : public CGuiScreen,
-                            public LoadingManager::ProcessRequestsCallback
-{
+                            public LoadingManager::ProcessRequestsCallback {
 public:
-    CGuiScreenLoadingFE( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenLoadingFE(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenLoadingFE();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
     void LoadResources();
-    virtual void OnProcessRequestsComplete( void* pUserData );
+
+    virtual void OnProcessRequestsComplete(void *pUserData);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
-    float GetCurrentMemoryUsage( ContextEnum currentContext ) const;
+    float GetCurrentMemoryUsage(ContextEnum currentContext) const;
 
-    Scrooby::Text* m_loadingText;
-    Scrooby::Pure3dObject* m_itchyAndScratchy;
+    Scrooby::Text *m_loadingText;
+    Scrooby::Pure3dObject *m_itchyAndScratchy;
 
     unsigned int m_elapsedTime;
 
-    Scrooby::Group* m_loadingBarGroup;
+    Scrooby::Group *m_loadingBarGroup;
     Slider m_loadingBar;
     float m_currentMemoryUsage;     // in percent
     int m_startingMemoryAvailable;  // in bytes
     unsigned int m_elapsedFireTime;
 
-    Scrooby::Layer* m_explosionLayer;
-    Scrooby::Polygon* m_explosion;
+    Scrooby::Layer *m_explosionLayer;
+    Scrooby::Polygon *m_explosion;
     unsigned int m_elapsedExplosionTime;
 
 };

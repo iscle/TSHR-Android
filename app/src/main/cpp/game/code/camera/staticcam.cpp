@@ -21,6 +21,7 @@
 // Project Includes
 //========================================
 #ifndef WORLD_BUILDER
+
 #include <camera/StaticCam.h>
 #include <camera/isupercamtarget.h>
 #include <camera/supercamcontroller.h>
@@ -28,6 +29,7 @@
 #include <p3d/pointcamera.hpp>
 //TODO: I only really need the tuner variables...  Break this file up.
 #include <worldsim/character/character.h>
+
 #else
 #include "StaticCam.h"
 #include "isupercamtarget.h"
@@ -36,7 +38,7 @@
 class tPointCamera
 {
 public:
-    void GetFOV( float* fov, float* aspect ) { *fov = 1.5707f; *aspect = 4.0f / 3.0f; };
+    void GetFOV(float* fov, float* aspect) { *fov = 1.5707f; *aspect = 4.0f / 3.0f; };
 };
 
 namespace CharacterTune
@@ -78,16 +80,15 @@ const float STATIC_CAM_FOV_LAG = 0.022f;
 //
 //==============================================================================
 StaticCam::StaticCam() :
-    mTarget( NULL ),
-    mTargetLag( 1.0f ),
-    mTracking( false ),
-    mFOVDelta( 0.0f ),
-    mMaxFOV( 1.5707f ),
-    mFOVLag( STATIC_CAM_FOV_LAG )
-{
-    mTargetOffset.Set( 0.0f, 0.0f, 0.0f );
-    mTargetPosition.Set( 0.0f, 0.0f, 0.0f );
-    mTargetPositionDelta.Set( 0.0f, 0.0f, 0.0f );
+        mTarget(NULL),
+        mTargetLag(1.0f),
+        mTracking(false),
+        mFOVDelta(0.0f),
+        mMaxFOV(1.5707f),
+        mFOVLag(STATIC_CAM_FOV_LAG) {
+    mTargetOffset.Set(0.0f, 0.0f, 0.0f);
+    mTargetPosition.Set(0.0f, 0.0f, 0.0f);
+    mTargetPositionDelta.Set(0.0f, 0.0f, 0.0f);
 }
 
 //==============================================================================
@@ -100,8 +101,7 @@ StaticCam::StaticCam() :
 // Return:      N/A.
 //
 //==============================================================================
-StaticCam::~StaticCam()
-{
+StaticCam::~StaticCam() {
 }
 
 //=============================================================================
@@ -109,43 +109,38 @@ StaticCam::~StaticCam()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void StaticCam::Update( unsigned int milliseconds )
-{
+void StaticCam::Update(unsigned int milliseconds) {
     //This is to adjust interpolation when we're running substeps.
-    float timeMod = (float)milliseconds / EXPECTED_FRAME_RATE;
+    float timeMod = (float) milliseconds / EXPECTED_FRAME_RATE;
 
     rmt::Vector targ;
 
-    if ( mTracking )
-    {
-        mTarget->GetPosition( &targ );
+    if (mTracking) {
+        mTarget->GetPosition(&targ);
 
-        if( mTargetOffset.x != 0.0f ||
+        if (mTargetOffset.x != 0.0f ||
             mTargetOffset.y != 0.0f ||
-            mTargetOffset.z != 0.0f )
-        {
+            mTargetOffset.z != 0.0f) {
             rmt::Matrix mat;
             mat.Identity();
-        
-            rmt::Vector heading, vup;
-            mTarget->GetHeading( &heading );
-            mTarget->GetVUP( &vup );
 
-            mat.FillHeading( heading, vup );
+            rmt::Vector heading, vup;
+            mTarget->GetHeading(&heading);
+            mTarget->GetVUP(&vup);
+
+            mat.FillHeading(heading, vup);
 
             rmt::Vector offset = mTargetOffset;
-            offset.Transform( mat );
+            offset.Transform(mat);
 
-            targ.Add( offset );
+            targ.Add(offset);
         }
-    }
-    else
-    {
+    } else {
         //The offset is actually a world coordinate position to look at.
         targ = mTargetOffset;
     }
@@ -153,93 +148,79 @@ void StaticCam::Update( unsigned int milliseconds )
     rmt::Vector desiredTarget = targ;
 
     bool cut, firstTime;
-    cut = GetFlag( (Flag)CUT );
-    firstTime = GetFlag( (Flag)FIRST_TIME );
+    cut = GetFlag((Flag) CUT);
+    firstTime = GetFlag((Flag) FIRST_TIME);
 
-    if ( cut || firstTime )
-    {
+    if (cut || firstTime) {
         //Cutting camera.
         mTargetPosition = desiredTarget;
-        mTargetPositionDelta.Set( 0.0f, 0.0f, 0.0f );
+        mTargetPositionDelta.Set(0.0f, 0.0f, 0.0f);
 
-        //SetFOV( mMaxFOV );
+        //SetFOV(mMaxFOV);
         mFOVDelta = 0.0f;
 
-        if ( cut )
-        {
-            if ( GetFlag( (Flag)START_TRANSITION ) )
-            {
-                SetFlag( (Flag)START_TRANSITION, false );
-            }
-            else if ( GetFlag( (Flag)TRANSITION ) )
-            {
-                SetFlag( (Flag)END_TRANSITION, true );
+        if (cut) {
+            if (GetFlag((Flag) START_TRANSITION)) {
+                SetFlag((Flag) START_TRANSITION, false);
+            } else if (GetFlag((Flag) TRANSITION)) {
+                SetFlag((Flag) END_TRANSITION, true);
             }
 
-            SetFlag( (Flag)CUT, false );
-        }
-        else
-        {
+            SetFlag((Flag) CUT, false);
+        } else {
             //Not cutting, so let's try this.
             float fov, aspect = 0.0f;
-            GetCamera()->GetFOV( &fov, &aspect );
-            SetFOV( fov );
+            GetCamera()->GetFOV(&fov, &aspect);
+            SetFOV(fov);
         }
 
-        SetFlag( (Flag)FIRST_TIME, false );
+        SetFlag((Flag) FIRST_TIME, false);
     }
 
-    if ( mTracking )
-    {
+    if (mTracking) {
         float lag = mTargetLag * timeMod;
-        CLAMP_TO_ONE( lag );
-        MotionCubic( &mTargetPosition.x, &mTargetPositionDelta.x, desiredTarget.x, lag );
-        MotionCubic( &mTargetPosition.y, &mTargetPositionDelta.y, desiredTarget.y, lag );
-        MotionCubic( &mTargetPosition.z, &mTargetPositionDelta.z, desiredTarget.z, lag );
-    }
-    else
-    {
+        CLAMP_TO_ONE(lag);
+        MotionCubic(&mTargetPosition.x, &mTargetPositionDelta.x, desiredTarget.x, lag);
+        MotionCubic(&mTargetPosition.y, &mTargetPositionDelta.y, desiredTarget.y, lag);
+        MotionCubic(&mTargetPosition.z, &mTargetPositionDelta.z, desiredTarget.z, lag);
+    } else {
         mTargetPosition = desiredTarget;
     }
 
     //---------  Goofin' with the FOV
 
-    if ( ( GetFlag( (Flag)TRANSITION ) ||
-         ( !GetFlag( SuperCam::WRECKLESS_ZOOM ) && mTarget->IsCar() ) ) )
-    {
-        SetFOV( mMaxFOV );
+    if ((GetFlag((Flag) TRANSITION) ||
+         (!GetFlag(SuperCam::WRECKLESS_ZOOM) && mTarget->IsCar()))) {
+        SetFOV(mMaxFOV);
 
         //Reset this.
         mFOVDelta = 0.0f;
-    }
-    else if ( GetFlag( SuperCam::WRECKLESS_ZOOM ) )
-    {
+    } else if (GetFlag(SuperCam::WRECKLESS_ZOOM)) {
         rmt::Vector posToTarg;
-        posToTarg.Sub( mTargetPosition, mPosition );
+        posToTarg.Sub(mTargetPosition, mPosition);
         float dist = posToTarg.Magnitude(); //Square root!
         float FOV = GetFOV();
         float FOVDelta = 0.0f;
-        DoWrecklessZoom( dist, 10.0f, 25.0f, STATIC_CAM_MIN_FOV, mMaxFOV, FOV, FOVDelta, mFOVLag, timeMod );
+        DoWrecklessZoom(dist, 10.0f, 25.0f, STATIC_CAM_MIN_FOV, mMaxFOV, FOV, FOVDelta, mFOVLag,
+                        timeMod);
 
-        SetFOV( FOV );
-    }
-    else
-    {
+        SetFOV(FOV);
+    } else {
 #ifndef WORLD_BUILDER
-        float zoom = mController->GetValue( SuperCamController::zToggle );
+        float zoom = mController->GetValue(SuperCamController::zToggle);
 #else
         float zoom = 0.0f;
 #endif
         float FOV = GetFOV();
-        FilterFov( zoom, STATIC_CAM_MIN_FOV, mMaxFOV, FOV, mFOVDelta, mFOVLag, timeMod );
+        FilterFov(zoom, STATIC_CAM_MIN_FOV, mMaxFOV, FOV, mFOVDelta, mFOVLag, timeMod);
 
-        SetFOV( FOV );
+        SetFOV(FOV);
     }
 
 
     //---------  Set values.
 
-    SetCameraValues( milliseconds, mPosition, mTargetPosition );
+    SetCameraValues(milliseconds, mPosition, mTargetPosition);
 }
 
 //******************************************************************************
@@ -258,14 +239,13 @@ void StaticCam::Update( unsigned int milliseconds )
 // Return:      void 
 //
 //=============================================================================
-void StaticCam::OnRegisterDebugControls()
-{
+void StaticCam::OnRegisterDebugControls() {
 #ifdef DEBUGWATCH
     char nameSpace[256];
-    sprintf( nameSpace, "SuperCam\\Player%d\\Static", GetPlayerID() );
+    sprintf(nameSpace, "SuperCam\\Player%d\\Static", GetPlayerID());
 
-    radDbgWatchAddFloat( &mFOVLag, "FOV Lag", nameSpace, NULL, NULL, 0.0f, 1.0f );
-    radDbgWatchAddFloat( &STATIC_CAM_MIN_FOV, "FOV Min", nameSpace, NULL, NULL, 0.0f, rmt::PI_BY2 );
+    radDbgWatchAddFloat(&mFOVLag, "FOV Lag", nameSpace, NULL, NULL, 0.0f, 1.0f);
+    radDbgWatchAddFloat(&STATIC_CAM_MIN_FOV, "FOV Min", nameSpace, NULL, NULL, 0.0f, rmt::PI_BY2);
 #endif
 }
 
@@ -279,11 +259,10 @@ void StaticCam::OnRegisterDebugControls()
 // Return:      void 
 //
 //=============================================================================
-void StaticCam::OnUnregisterDebugControls()
-{
+void StaticCam::OnUnregisterDebugControls() {
 #ifdef DEBUGWATCH
-    radDbgWatchDelete( &mFOVLag );
-    radDbgWatchDelete( &STATIC_CAM_MIN_FOV );
+    radDbgWatchDelete(&mFOVLag);
+    radDbgWatchDelete(&STATIC_CAM_MIN_FOV);
 #endif
 }
 
@@ -297,21 +276,21 @@ void StaticCam::OnUnregisterDebugControls()
 // Return:      float 
 //
 //=============================================================================
-float StaticCam::GetTargetSpeedModifier()
-{
+float StaticCam::GetTargetSpeedModifier() {
     rmt::Vector vel;
-    mTarget->GetVelocity( &vel );
+    mTarget->GetVelocity(&vel);
     float speed = vel.Magnitude();  //Square root!
 
     //TODO:I wish this was a const.
-    if ( speed < CharacterTune::sfMaxSpeed || rmt::Epsilon( speed, CharacterTune::sfMaxSpeed, 0.01f ) )
-    {
+    if (speed < CharacterTune::sfMaxSpeed ||
+        rmt::Epsilon(speed, CharacterTune::sfMaxSpeed, 0.01f)) {
         return 1.0f;
     }
 
-    float maxMod = CharacterTune::sfMaxSpeed + CharacterTune::sfDashBurstMax / CharacterTune::sfMaxSpeed;
-    float modifier = (speed - CharacterTune::sfMaxSpeed) / CharacterTune::sfDashBurstMax * maxMod;  
-    rAssert( modifier > 0.01f );
+    float maxMod =
+            CharacterTune::sfMaxSpeed + CharacterTune::sfDashBurstMax / CharacterTune::sfMaxSpeed;
+    float modifier = (speed - CharacterTune::sfMaxSpeed) / CharacterTune::sfDashBurstMax * maxMod;
+    rAssert(modifier > 0.01f);
 
     return modifier;
 }

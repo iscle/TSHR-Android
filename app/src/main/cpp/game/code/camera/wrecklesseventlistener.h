@@ -30,17 +30,17 @@ class Locator;
 //
 //=============================================================================
 
-class WrecklessEventListener : public EventListener
-{
+class WrecklessEventListener : public EventListener {
 public:
     WrecklessEventListener();
+
     virtual ~WrecklessEventListener();
 
-    void HandleEvent( EventEnum id, void* pEventData );
+    void HandleEvent(EventEnum id, void *pEventData);
 
-    void GetLastPosition( rmt::Vector* pos );
+    void GetLastPosition(rmt::Vector *pos);
 
-    void SetPlayerID( int playerID );
+    void SetPlayerID(int playerID);
 
 private:
 
@@ -48,8 +48,9 @@ private:
     int mPlayerID;
 
     //Prevent wasteful constructor creation.
-    WrecklessEventListener( const WrecklessEventListener& wrecklesseventlistener );
-    WrecklessEventListener& operator=( const WrecklessEventListener& wrecklesseventlistener );
+    WrecklessEventListener(const WrecklessEventListener &wrecklesseventlistener);
+
+    WrecklessEventListener &operator=(const WrecklessEventListener &wrecklesseventlistener);
 };
 
 //*****************************************************************************
@@ -63,13 +64,12 @@ private:
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* pos )
+// Parameters:  (rmt::Vector* pos)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WrecklessEventListener::GetLastPosition( rmt::Vector* pos )
-{
+inline void WrecklessEventListener::GetLastPosition(rmt::Vector *pos) {
     *pos = mLastPosition;
 }
 
@@ -78,13 +78,12 @@ inline void WrecklessEventListener::GetLastPosition( rmt::Vector* pos )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int playerID )
+// Parameters:  (int playerID)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void WrecklessEventListener::SetPlayerID( int playerID )
-{
+inline void WrecklessEventListener::SetPlayerID(int playerID) {
     mPlayerID = playerID;
 }
 

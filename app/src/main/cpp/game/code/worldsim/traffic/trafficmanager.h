@@ -28,7 +28,9 @@
 // Forward References
 //========================================
 class Vehicle;
+
 class Lane;
+
 class Character;
 
 
@@ -41,12 +43,14 @@ const bool DISABLETRAFFIC = false;
 //********************************************
 
 
-struct ITrafficSpawnController 
-{
-    virtual void SetMaxTraffic( int n ) = 0;
+struct ITrafficSpawnController {
+    virtual void SetMaxTraffic(int n) = 0;
+
     virtual void EnableTraffic() = 0;
+
     virtual void DisableTraffic() = 0;
-    virtual void ClearTrafficInSphere( const rmt::Sphere& s ) = 0;
+
+    virtual void ClearTrafficInSphere(const rmt::Sphere &s) = 0;
 };
 
 /*
@@ -121,12 +125,11 @@ Might have missed some.. but there you are.
 //=============================================================================
 
 class TrafficManager :
-    ITrafficSpawnController,
-    public EventListener    
-{
+        ITrafficSpawnController,
+        public EventListener {
 public:
 
-    static TrafficManager* mInstance;
+    static TrafficManager *mInstance;
 
     static const float FADE_RADIUS;
     static const float ADD_RADIUS;
@@ -137,54 +140,68 @@ public:
     static const unsigned int MILLISECONDS_BETWEEN_ADD;
     static const unsigned int MILLISECONDS_POPULATE_WORLD;
 
-    enum { 
+    enum {
         MAX_CHARS_TO_STOP_FOR = 10 // Max # characters traffic will brake for
     };
 
-    static ITrafficSpawnController* GetSpawnController();
-    static TrafficManager* GetInstance();
+    static ITrafficSpawnController *GetSpawnController();
+
+    static TrafficManager *GetInstance();
+
     static void DestroyInstance();
 
     ///////////////////////////////////
     // EVENTLISTENTER STUFF
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
     ///////////////////////////////////
 
     void Init();
+
     void InitDefaultModelGroups();
-    void Update( unsigned int milliseconds ); 
+
+    void Update(unsigned int milliseconds);
 
     void Cleanup();
 
-    void AddCharacterToStopFor( Character* character );
-    void RemoveCharacterToStopFor( Character* character );
+    void AddCharacterToStopFor(Character *character);
+
+    void RemoveCharacterToStopFor(Character *character);
+
     int GetNumCharsToStopFor();
-    Character* GetCharacterToStopFor( int i ) const;
+
+    Character *GetCharacterToStopFor(int i) const;
 
     // Given its pointer, find it in our static list of TrafficVehicles and
     // take it out of lane traffic and out of active list. Also invalidate 
     // TrafficVehicle-specific fields.
-    void RemoveTraffic( Vehicle* vehicle ); //Take this out of traffic.
-    void Deactivate( Vehicle* v );
+    void RemoveTraffic(Vehicle *vehicle); //Take this out of traffic.
+    void Deactivate(Vehicle *v);
 
-    void SetMaxTraffic( int n );
+    void SetMaxTraffic(int n);
+
     int GetMaxTraffic();
 
     void EnableTraffic();
+
     void DisableTraffic();
-    void ClearTrafficInSphere( const rmt::Sphere& s );
-    void ClearTrafficOutsideSphere( const rmt::Sphere& s );
+
+    void ClearTrafficInSphere(const rmt::Sphere &s);
+
+    void ClearTrafficOutsideSphere(const rmt::Sphere &s);
 
     void ClearOutOfSightTraffic();
 
-    TrafficModelGroup* GetTrafficModelGroup( int i );
-    void SetCurrTrafficModelGroup( int i );
+    TrafficModelGroup *GetTrafficModelGroup(int i);
+
+    void SetCurrTrafficModelGroup(int i);
 
     float GetDesiredTrafficSpeed();
-    void GenerateRandomColour( pddiColour& colour );
-    void SwapInTrafficHusk( Vehicle* vehicle ); // Remove traffic vehicle, swap in a husk...
 
-    bool IsVehicleTrafficVehicle( Vehicle* vehicle );
+    void GenerateRandomColour(pddiColour &colour);
+
+    void SwapInTrafficHusk(Vehicle *vehicle); // Remove traffic vehicle, swap in a husk...
+
+    bool IsVehicleTrafficVehicle(Vehicle *vehicle);
 
 //MEMBERS
 private:
@@ -200,13 +217,13 @@ private:
     int mNumTraffic; // value changes between 0 and MAX_TRAFFIC as vehicles are added/removed
 
     // keep repository of all the vehicles we'll ever need.
-    TrafficVehicle* mVehicles;
+    TrafficVehicle *mVehicles;
 
-    Character* mCharactersToStopFor[ MAX_CHARS_TO_STOP_FOR ];
+    Character *mCharactersToStopFor[MAX_CHARS_TO_STOP_FOR];
     int mNumCharsToStopFor;
 
     // keep list of intersections that will need to be updated in this loop
-    Intersection* mpIntersections[ MAX_INTERSECTIONS ]; 
+    Intersection *mpIntersections[MAX_INTERSECTIONS];
 
     unsigned int mMillisecondsBetweenRemove;
     unsigned int mMillisecondsBetweenAdd;
@@ -214,23 +231,21 @@ private:
 
     bool mTrafficEnabled;
 
-    TrafficModelGroup mTrafficModelGroups[ MAX_TRAFFIC_MODEL_GROUPS ];
+    TrafficModelGroup mTrafficModelGroups[MAX_TRAFFIC_MODEL_GROUPS];
     int mCurrTrafficModelGroup;
 
-    struct SwatchColour
-    {
+    struct SwatchColour {
         int red;
         int green;
         int blue;
     };
-    static SwatchColour sSwatchColours[ NUM_SWATCH_COLOURS ];
+    static SwatchColour sSwatchColours[NUM_SWATCH_COLOURS];
 
-    struct TrafficHornQueue
-    {
-        Vehicle* vehicle;
+    struct TrafficHornQueue {
+        Vehicle *vehicle;
         unsigned int delayInMilliseconds;
     };
-    SwapArray<TrafficHornQueue> mQueuedTrafficHorns;
+    SwapArray <TrafficHornQueue> mQueuedTrafficHorns;
     int mNumQueuedTrafficHorns;
 
 //METHODS
@@ -240,40 +255,45 @@ private:
 
     // Add a traffic vehicle to the lane and to active list and Initialize
     // some TrafficVehicle-specific fields
-    bool AddTraffic( Lane* lane, TrafficVehicle* tv );
+    bool AddTraffic(Lane *lane, TrafficVehicle *tv);
 
     // Given its index in our static list of TrafficVehicles, take vehicle out 
     // of lane traffic and out of active list. Also invalidate TrafficVehicle-
     // specific fields.
-    void RemoveTraffic( int vIndex );  
-    
-    void RemoveTrafficVehicle( TrafficVehicle* tv );
+    void RemoveTraffic(int vIndex);
 
-    TrafficVehicle* FindTrafficVehicle( Vehicle* vehicle );
-    TrafficVehicle* GetFreeTrafficVehicle();
-    Vehicle* InitRandomVehicle();
-    Vehicle* InitRandomHusk( Vehicle* v );
+    void RemoveTrafficVehicle(TrafficVehicle *tv);
+
+    TrafficVehicle *FindTrafficVehicle(Vehicle *vehicle);
+
+    TrafficVehicle *GetFreeTrafficVehicle();
+
+    Vehicle *InitRandomVehicle();
+
+    Vehicle *InitRandomHusk(Vehicle *v);
 
 
     // update the intersections to let cars go in turn (if NWAY)
-    void UpdateIntersection( 
-        unsigned int milliseconds, 
-        Vehicle* v, 
-        int& nIntersectionsUpdated ); 
+    void UpdateIntersection(
+            unsigned int milliseconds,
+            Vehicle *v,
+            int &nIntersectionsUpdated);
 
-    void SetVehicleFadeAlpha( Vehicle* v, const rmt::Vector& pPos );
+    void SetVehicleFadeAlpha(Vehicle *v, const rmt::Vector &pPos);
 
-    bool AttemptResurrection( TrafficVehicle* tv );
+    bool AttemptResurrection(TrafficVehicle *tv);
 
-    void UpdateQueuedTrafficHorns( unsigned int milliseconds );
+    void UpdateQueuedTrafficHorns(unsigned int milliseconds);
 
     // constructors/destructors we wish to hide so we can implement singleton
     TrafficManager();
+
     virtual ~TrafficManager();
 
     //Prevent wasteful constructor creation.
-    TrafficManager( const TrafficManager& trafficmanager );
-    TrafficManager& operator=( const TrafficManager& trafficmanager );
+    TrafficManager(const TrafficManager &trafficmanager);
+
+    TrafficManager &operator=(const TrafficManager &trafficmanager);
 };
 
 
@@ -282,29 +302,29 @@ private:
 // ************************************ INLINES *******************************************
 
 
-inline int TrafficManager::GetNumCharsToStopFor()
-{
+inline int TrafficManager::GetNumCharsToStopFor() {
     return mNumCharsToStopFor;
 }
-inline Character* TrafficManager::GetCharacterToStopFor( int i ) const
-{
-    rAssert( 0 <= i && i < MAX_CHARS_TO_STOP_FOR );
+
+inline Character *TrafficManager::GetCharacterToStopFor(int i) const {
+    rAssert(0 <= i && i < MAX_CHARS_TO_STOP_FOR);
     return mCharactersToStopFor[i];
 }
-inline TrafficModelGroup* TrafficManager::GetTrafficModelGroup( int i )
-{
-    rTuneAssert( 0 <= i && i < MAX_TRAFFIC_MODEL_GROUPS );
+
+inline TrafficModelGroup *TrafficManager::GetTrafficModelGroup(int i) {
+    rTuneAssert(0 <= i && i < MAX_TRAFFIC_MODEL_GROUPS);
     return &mTrafficModelGroups[i];
 }
-inline void TrafficManager::SetCurrTrafficModelGroup( int i )
-{
-    rTuneAssert( 0 <= i && i < MAX_TRAFFIC_MODEL_GROUPS );
+
+inline void TrafficManager::SetCurrTrafficModelGroup(int i) {
+    rTuneAssert(0 <= i && i < MAX_TRAFFIC_MODEL_GROUPS);
     mCurrTrafficModelGroup = i;
 }
-inline float TrafficManager::GetDesiredTrafficSpeed()
-{
+
+inline float TrafficManager::GetDesiredTrafficSpeed() {
     return mDesiredTrafficSpeedKph * KPH_2_MPS;
 }
+
 #endif //TRAFFICMANAGER_H
 
 

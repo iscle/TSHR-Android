@@ -26,19 +26,22 @@
 //
 //=============================================================================
 
-class TrackerCamData
-{
+class TrackerCamData {
 public:
     TrackerCamData();
+
     virtual ~TrackerCamData() {};
 
-    void SetMinFOV( float min );
+    void SetMinFOV(float min);
+
     float GetMinFOV() const;
 
-    void SetMaxFOV( float max );
+    void SetMaxFOV(float max);
+
     float GetMaxFOV() const;
 
-    void SetFOVLag( float lag );
+    void SetFOVLag(float lag);
+
     float GetFOVLag() const;
 
     float mMinFOV;
@@ -48,8 +51,9 @@ public:
 private:
 
     //Prevent wasteful constructor creation.
-    TrackerCamData( const TrackerCamData& trackercamdata );
-    TrackerCamData& operator=( const TrackerCamData& trackercamdata );
+    TrackerCamData(const TrackerCamData &trackercamdata);
+
+    TrackerCamData &operator=(const TrackerCamData &trackercamdata);
 };
 
 //*****************************************************************************
@@ -69,10 +73,9 @@ private:
 //
 //=============================================================================
 inline TrackerCamData::TrackerCamData() :
-    mMinFOV( 0.3487f ), //Fudge...
-    mMaxFOV( 1.75079f ), //Fudge...
-    mFOVLag( 0.05f )
-{
+        mMinFOV(0.3487f), //Fudge...
+        mMaxFOV(1.75079f), //Fudge...
+        mFOVLag(0.05f) {
 }
 
 //=============================================================================
@@ -80,13 +83,12 @@ inline TrackerCamData::TrackerCamData() :
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float min )
+// Parameters:  (float min)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void TrackerCamData::SetMinFOV( float min )
-{
+inline void TrackerCamData::SetMinFOV(float min) {
     mMinFOV = min;
 }
 
@@ -100,8 +102,7 @@ inline void TrackerCamData::SetMinFOV( float min )
 // Return:      float 
 //
 //=============================================================================
-inline float TrackerCamData::GetMinFOV() const
-{
+inline float TrackerCamData::GetMinFOV() const {
     return mMinFOV;
 }
 
@@ -110,13 +111,12 @@ inline float TrackerCamData::GetMinFOV() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float max )
+// Parameters:  (float max)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void TrackerCamData::SetMaxFOV( float max )
-{
+inline void TrackerCamData::SetMaxFOV(float max) {
     mMaxFOV = max;
 }
 
@@ -130,8 +130,7 @@ inline void TrackerCamData::SetMaxFOV( float max )
 // Return:      float 
 //
 //=============================================================================
-inline float TrackerCamData::GetMaxFOV() const
-{
+inline float TrackerCamData::GetMaxFOV() const {
     return mMaxFOV;
 }
 
@@ -140,13 +139,12 @@ inline float TrackerCamData::GetMaxFOV() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float lag )
+// Parameters:  (float lag)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void TrackerCamData::SetFOVLag( float lag )
-{
+inline void TrackerCamData::SetFOVLag(float lag) {
     mFOVLag = lag;
 }
 
@@ -160,8 +158,7 @@ inline void TrackerCamData::SetFOVLag( float lag )
 // Return:      float 
 //
 //=============================================================================
-inline float TrackerCamData::GetFOVLag() const
-{
+inline float TrackerCamData::GetFOVLag() const {
     return mFOVLag;
 }
 

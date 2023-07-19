@@ -29,21 +29,25 @@
 //
 //=============================================================================
 
-class BaseDamper : public ForceEffect
-{
+class BaseDamper : public ForceEffect {
 public:
     BaseDamper();
-	virtual ~BaseDamper();
+
+    virtual ~BaseDamper();
 
     void OnInit();
 
-    void SetCenterPoint( s8 degrees, u8 deadband ); //Where 0 is straight up.
+    void SetCenterPoint(s8 degrees, u8 deadband); //Where 0 is straight up.
 #ifdef RAD_WIN32
-    void SetDamperStrength( u16 strength );
+    void SetDamperStrength(u16 strength);
 #else
-    void SetDamperStrength( u8 strength );
+
+    void SetDamperStrength(u8 strength);
+
 #endif
-    void SetDamperCoefficient( s16 coeff );
+
+    void SetDamperCoefficient(s16 coeff);
+
 private:
 
 #ifdef RAD_WIN32
@@ -51,8 +55,9 @@ private:
 #endif
 
     //Prevent wasteful constructor creation.
-	BaseDamper( const BaseDamper& basedamper );
-	BaseDamper& operator=( const BaseDamper& basedamper );
+    BaseDamper(const BaseDamper &basedamper);
+
+    BaseDamper &operator=(const BaseDamper &basedamper);
 };
 
 

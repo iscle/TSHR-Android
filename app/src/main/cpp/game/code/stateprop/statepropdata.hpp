@@ -12,7 +12,9 @@
 //=============================================================================
 
 class CStateProp;
+
 class tAnimatedObjectFactory;
+
 class CStatePropDataLoader;
 
 //=============================================================================
@@ -20,16 +22,15 @@ class CStatePropDataLoader;
 //=============================================================================
 
 //State data
-struct StateData
-{
-    StatePropDataTypes::TransitionData          transitionData;
-	StatePropDataTypes::VisibilityData*         visibilityData;
-    StatePropDataTypes::FrameControllerData*    frameControllerData;
-    StatePropDataTypes::EventData*              eventData;
-	StatePropDataTypes::CallbackData*           callbackData;	
+struct StateData {
+    StatePropDataTypes::TransitionData transitionData;
+    StatePropDataTypes::VisibilityData *visibilityData;
+    StatePropDataTypes::FrameControllerData *frameControllerData;
+    StatePropDataTypes::EventData *eventData;
+    StatePropDataTypes::CallbackData *callbackData;
 
-	unsigned int            numEvents;
-	unsigned int            numCallbacks;
+    unsigned int numEvents;
+    unsigned int numCallbacks;
 };
 
 //=============================================================================
@@ -37,48 +38,51 @@ struct StateData
 // Prop
 //=============================================================================
 
-class CStatePropData : public tEntity
-{
+class CStatePropData : public tEntity {
 
 public:
 
-	friend class CStatePropDataLoader;
+    friend class CStatePropDataLoader;
 
-	CStatePropData();
+    CStatePropData();
+
     ~CStatePropData();
 
     // State Data =====================================================================================
     unsigned int GetNumberOfStates();
-    StateData GetStateData( unsigned int state );
 
-	//Transition Data ==================================================================================
-    StatePropDataTypes::TransitionData GetTransitionData( int state );
+    StateData GetStateData(unsigned int state);
+
+    //Transition Data ==================================================================================
+    StatePropDataTypes::TransitionData GetTransitionData(int state);
 
     //Visibility Data ==================================================================================
-    StatePropDataTypes::VisibilityData GetVisibilityData( int state , int index);
+    StatePropDataTypes::VisibilityData GetVisibilityData(int state, int index);
 
     //Frame Controller Data =============================================================================
-    StatePropDataTypes::FrameControllerData GetFrameControllerData( int state, int fc );
+    StatePropDataTypes::FrameControllerData GetFrameControllerData(int state, int fc);
 
-	//Event Data ========================================================================================
-    unsigned int GetNumberOfEvents( int state );
-    StatePropDataTypes::EventData GetEventData( int state , int eventindex );
+    //Event Data ========================================================================================
+    unsigned int GetNumberOfEvents(int state);
 
-	//Callback Data ======================================================================================
-    unsigned int GetNumberOfCallbacks( int state );
-    StatePropDataTypes::CallbackData GetCallbackData( int state , int eventindex );
+    StatePropDataTypes::EventData GetEventData(int state, int eventindex);
 
-    tAnimatedObjectFactory* GetAnimatedObjectFactory() { return m_ObjectFactory; }
+    //Callback Data ======================================================================================
+    unsigned int GetNumberOfCallbacks(int state);
+
+    StatePropDataTypes::CallbackData GetCallbackData(int state, int eventindex);
+
+    tAnimatedObjectFactory *GetAnimatedObjectFactory() { return m_ObjectFactory; }
 
 private:
 
-	//animated object factory
-	char m_FactoryName[64];
-	tAnimatedObjectFactory* m_ObjectFactory;
-	
+    //animated object factory
+    char m_FactoryName[64];
+    tAnimatedObjectFactory *m_ObjectFactory;
+
     //total number of states
-	unsigned int m_NumStates;
-    StateData** m_StateData;
+    unsigned int m_NumStates;
+    StateData **m_StateData;
 };
 
 
@@ -86,11 +90,11 @@ private:
 // Class Declarations
 // PropLoader
 //=============================================================================
-class CStatePropDataLoader : public tSimpleChunkHandler
-{
+class CStatePropDataLoader : public tSimpleChunkHandler {
 public:
     CStatePropDataLoader();
-    tEntity* LoadObject(tChunkFile* file, tEntityStore* store);
+
+    tEntity *LoadObject(tChunkFile *file, tEntityStore *store);
 
 protected:
     ~CStatePropDataLoader() {};

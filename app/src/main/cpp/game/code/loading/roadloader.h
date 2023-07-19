@@ -36,52 +36,52 @@ class RoadSegment;
 //=============================================================================
 
 
-class RoadLoader : 
-  public tSimpleChunkHandler,
-  public IWrappedLoader 
-
-{
+class RoadLoader :
+        public tSimpleChunkHandler,
+        public IWrappedLoader {
 public:
     RoadLoader();
+
     virtual ~RoadLoader();
 
 #ifndef TOOLS
-    typedef std::list< RoadSegment*, s2alloc<RoadSegment*> > RoadList;
+    typedef std::list<RoadSegment *, s2alloc < RoadSegment * >>
+    RoadList;
 #else
-    typedef std::list< RoadSegment*> RoadList;
+    typedef std::list<RoadSegment*> RoadList;
 #endif
 
     // P3D chunk loader.
-    virtual tLoadStatus Load(tChunkFile* f, tEntityStore* store);
+    virtual tLoadStatus Load(tChunkFile *f, tEntityStore *store);
 
     // P3D chunk id.
     virtual bool CheckChunkID(unsigned id);
 
-    
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   void SetRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
 
-   void ModRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
 
-   ///////////////////////////////////////////////////////////////////////
-   // tSimpleChunkHandler
-   ///////////////////////////////////////////////////////////////////////
-   virtual tEntity* LoadObject(tChunkFile* file, tEntityStore* store);
+    void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
 
+    ///////////////////////////////////////////////////////////////////////
+    // tSimpleChunkHandler
+    ///////////////////////////////////////////////////////////////////////
+    virtual tEntity *LoadObject(tChunkFile *file, tEntityStore *store);
 
 
 private:
 
-    RoadSegment* LoadRoadSegment( tChunkFile* f, unsigned int& numLanes );
+    RoadSegment *LoadRoadSegment(tChunkFile *f, unsigned int &numLanes);
 
     // No copying or assignment. Declare but don't define.
     //
-    RoadLoader( const RoadLoader& );
-    RoadLoader& operator= ( const RoadLoader& );
+    RoadLoader(const RoadLoader &);
+
+    RoadLoader &operator=(const RoadLoader &);
 };
 
 #endif //ROADLOADER_H

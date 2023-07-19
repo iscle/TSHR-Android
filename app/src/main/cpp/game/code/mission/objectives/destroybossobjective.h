@@ -24,6 +24,7 @@
 //========================================
 
 class Actor;
+
 class StatePropCollectible;
 
 //=============================================================================
@@ -32,28 +33,32 @@ class StatePropCollectible;
 //
 //=============================================================================
 
-class DestroyBossObjective : public MissionObjective
-{
+class DestroyBossObjective : public MissionObjective {
 public:
     DestroyBossObjective();
+
     virtual ~DestroyBossObjective();
 
-    void SetTarget( Actor* actor );
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    void SetTarget(Actor *actor);
+
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
 
 protected:
     virtual void OnInitialize();
-    virtual void OnFinalize();
-    virtual void OnUpdate( unsigned int elapsedTime );
 
-    Actor* m_Boss;
+    virtual void OnFinalize();
+
+    virtual void OnUpdate(unsigned int elapsedTime);
+
+    Actor *m_Boss;
 
 private:
 
     //Prevent wasteful constructor creation.
-    DestroyBossObjective( const DestroyBossObjective& objective );
-    DestroyBossObjective& operator=( const DestroyBossObjective& objective );
+    DestroyBossObjective(const DestroyBossObjective &objective);
+
+    DestroyBossObjective &operator=(const DestroyBossObjective &objective);
 };
 
 #endif //DESTROYOBJECTIVE_H

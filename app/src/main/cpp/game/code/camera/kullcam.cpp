@@ -60,11 +60,10 @@ float KULL_CAM_DIST = 0.1f;
 //
 //==============================================================================
 KullCam::KullCam() :
-    mRotation( 0.0f ), //Along the side
-    mElevation( 1.5707f ),
-    mMagnitude( 5.0f ),
-    mIgnoreDebugController( false )
-{
+        mRotation(0.0f), //Along the side
+        mElevation(1.5707f),
+        mMagnitude(5.0f),
+        mIgnoreDebugController(false) {
     mIm = InputManager::GetInstance();
 }
 
@@ -78,8 +77,7 @@ KullCam::KullCam() :
 // Return:      N/A.
 //
 //==============================================================================
-KullCam::~KullCam()
-{
+KullCam::~KullCam() {
 }
 
 //=============================================================================
@@ -87,76 +85,66 @@ KullCam::~KullCam()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void KullCam::Update( unsigned int milliseconds )
-{
-    rAssert( mTarget );
+void KullCam::Update(unsigned int milliseconds) {
+    rAssert(mTarget);
 
-    if ( GetFlag( (Flag)CUT ) )
-    {
+    if (GetFlag((Flag) CUT)) {
         //Reset the FOV.
-        SetFOV( SUPERCAM_FOV );//DEFAULT_FOV );
-        SetFlag( (Flag)CUT, false );
+        SetFOV(SUPERCAM_FOV);//DEFAULT_FOV);
+        SetFlag((Flag) CUT, false);
     }
-  
+
     //This is to adjust interpolation when we're running substeps.
     float timeMod = 1.0f;
-    
-    timeMod = (float)milliseconds / 16.0f;
- 
-    if( !mIgnoreDebugController )
-    {
-        float xAxis = mIm->GetValue( s_secondaryControllerID, InputManager::LeftStickX );
-        float yAxis = mIm->GetValue( s_secondaryControllerID, InputManager::LeftStickY );
-        float zAxis = mIm->GetValue( s_secondaryControllerID, InputManager::LeftStickY );
-        float zToggle = mIm->GetValue( s_secondaryControllerID, InputManager::AnalogR1 );
 
-        if ( rmt::Fabs( zToggle ) > STICK_DEAD_ZONE && rmt::Fabs( zToggle ) <= 1.0f )
-        {
+    timeMod = (float) milliseconds / 16.0f;
+
+    if (!mIgnoreDebugController) {
+        float xAxis = mIm->GetValue(s_secondaryControllerID, InputManager::LeftStickX);
+        float yAxis = mIm->GetValue(s_secondaryControllerID, InputManager::LeftStickY);
+        float zAxis = mIm->GetValue(s_secondaryControllerID, InputManager::LeftStickY);
+        float zToggle = mIm->GetValue(s_secondaryControllerID, InputManager::AnalogR1);
+
+        if (rmt::Fabs(zToggle) > STICK_DEAD_ZONE && rmt::Fabs(zToggle) <= 1.0f) {
             //zToggled
             yAxis = 0.0f;
-        }
-        else
-        {
+        } else {
             zAxis = 0.0f;
         }
 
 
-        mRotation += ( xAxis * KULL_CAM_INCREMENT * timeMod );
-        mElevation -= ( yAxis * KULL_CAM_INCREMENT * timeMod );
-        mMagnitude -= ( zAxis * KULL_CAM_DIST * timeMod );
+        mRotation += (xAxis * KULL_CAM_INCREMENT * timeMod);
+        mElevation -= (yAxis * KULL_CAM_INCREMENT * timeMod);
+        mMagnitude -= (zAxis * KULL_CAM_DIST * timeMod);
     }
 
-    if ( mElevation < 0.001f )
-    {
+    if (mElevation < 0.001f) {
         mElevation = 0.001f;
-    }
-    else if ( mElevation > rmt::PI - 0.05f )
-    {
+    } else if (mElevation > rmt::PI - 0.05f) {
         mElevation = rmt::PI - 0.05f;
     }
-    
-    if ( mMagnitude < 2.0f )
-    {
+
+    if (mMagnitude < 2.0f) {
         mMagnitude = 2.0f;
     }
 
     //This positions itself always relative to the target.
     rmt::Vector rod;
-    rmt::SphericalToCartesian( mMagnitude, mRotation, mElevation, &rod.x, &rod.z, &rod.y );
+    rmt::SphericalToCartesian(mMagnitude, mRotation, mElevation, &rod.x, &rod.z, &rod.y);
 
     rmt::Vector targetPos;
-    mTarget->GetPosition( &targetPos );
+    mTarget->GetPosition(&targetPos);
 
     rmt::Vector desiredPos, desiredTarget;
-    desiredPos.Add( rod, targetPos );
+    desiredPos.Add(rod, targetPos);
     desiredTarget = targetPos;
 
-    SetCameraValues( milliseconds, desiredPos, desiredTarget );    
+    SetCameraValues(milliseconds, desiredPos, desiredTarget);
 }
 
 //******************************************************************************
@@ -175,8 +163,7 @@ void KullCam::Update( unsigned int milliseconds )
 // Return:      void 
 //
 //=============================================================================
-void KullCam::OnRegisterDebugControls()
-{
+void KullCam::OnRegisterDebugControls() {
 #ifdef DEBUGWATCH
 #endif
 }
@@ -191,8 +178,7 @@ void KullCam::OnRegisterDebugControls()
 // Return:      void 
 //
 //=============================================================================
-void KullCam::OnUnregisterDebugControls()
-{
+void KullCam::OnUnregisterDebugControls() {
 #ifdef DEBUGWATCH
 #endif
 }

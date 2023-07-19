@@ -46,8 +46,7 @@
 // Return:      N/A.
 //
 //==============================================================================
-SoundFXFrontEndLogic::SoundFXFrontEndLogic()
-{
+SoundFXFrontEndLogic::SoundFXFrontEndLogic() {
 }
 
 //==============================================================================
@@ -60,8 +59,7 @@ SoundFXFrontEndLogic::SoundFXFrontEndLogic()
 // Return:      N/A.
 //
 //==============================================================================
-SoundFXFrontEndLogic::~SoundFXFrontEndLogic()
-{
+SoundFXFrontEndLogic::~SoundFXFrontEndLogic() {
 }
 
 //=============================================================================
@@ -74,14 +72,13 @@ SoundFXFrontEndLogic::~SoundFXFrontEndLogic()
 // Return:      void 
 //
 //=============================================================================
-void SoundFXFrontEndLogic::RegisterEventListeners()
-{
-    GetEventManager()->AddListener( this, EVENT_FE_MENU_SELECT );
-    GetEventManager()->AddListener( this, EVENT_FE_MENU_BACK );
-    GetEventManager()->AddListener( this, EVENT_FE_MENU_UPORDOWN );
-    GetEventManager()->AddListener( this, EVENT_FE_CHEAT_SUCCESS );
-    GetEventManager()->AddListener( this, EVENT_FE_CHEAT_FAILURE );
-    GetEventManager()->AddListener( this, EVENT_FE_CREDITS_NEW_LINE );
+void SoundFXFrontEndLogic::RegisterEventListeners() {
+    GetEventManager()->AddListener(this, EVENT_FE_MENU_SELECT);
+    GetEventManager()->AddListener(this, EVENT_FE_MENU_BACK);
+    GetEventManager()->AddListener(this, EVENT_FE_MENU_UPORDOWN);
+    GetEventManager()->AddListener(this, EVENT_FE_CHEAT_SUCCESS);
+    GetEventManager()->AddListener(this, EVENT_FE_CHEAT_FAILURE);
+    GetEventManager()->AddListener(this, EVENT_FE_CREDITS_NEW_LINE);
 }
 
 //=============================================================================
@@ -95,36 +92,34 @@ void SoundFXFrontEndLogic::RegisterEventListeners()
 // Return:      void 
 //
 //=============================================================================
-void SoundFXFrontEndLogic::HandleEvent( EventEnum id, void* pEventData )
-{
-    switch( id )
-    {
+void SoundFXFrontEndLogic::HandleEvent(EventEnum id, void *pEventData) {
+    switch (id) {
         case EVENT_FE_MENU_SELECT:
-            playSFXSound( "accept", true, false, NULL, GetSoundManager()->GetSfxVolume() );
+            playSFXSound("accept", true, false, NULL, GetSoundManager()->GetSfxVolume());
             break;
 
         case EVENT_FE_MENU_BACK:
-            playSFXSound( "back", true, false, NULL, GetSoundManager()->GetSfxVolume() );
+            playSFXSound("back", true, false, NULL, GetSoundManager()->GetSfxVolume());
             break;
 
         case EVENT_FE_MENU_UPORDOWN:
-            playSFXSound( "scroll", true, false, NULL, GetSoundManager()->GetSfxVolume() );
+            playSFXSound("scroll", true, false, NULL, GetSoundManager()->GetSfxVolume());
             break;
 
         case EVENT_FE_CHEAT_SUCCESS:
-            playSFXSound( "cheat_success", true, false, NULL, GetSoundManager()->GetSfxVolume() );
+            playSFXSound("cheat_success", true, false, NULL, GetSoundManager()->GetSfxVolume());
             break;
 
         case EVENT_FE_CHEAT_FAILURE:
-            playSFXSound( "cheat_fail", true, false, NULL, GetSoundManager()->GetSfxVolume() );
+            playSFXSound("cheat_fail", true, false, NULL, GetSoundManager()->GetSfxVolume());
             break;
 
         case EVENT_FE_CREDITS_NEW_LINE:
-            playCreditLine( reinterpret_cast<int>(pEventData) );
+            playCreditLine(reinterpret_cast<int>(pEventData));
             break;
-            
+
         default:
-            rAssertMsg( false, "Huh?  Unexpected sound FX event\n" );
+            rAssertMsg(false, "Huh?  Unexpected sound FX event\n");
             break;
     }
 }

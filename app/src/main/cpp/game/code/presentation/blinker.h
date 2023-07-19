@@ -21,6 +21,7 @@
 //========================================
 
 class Character;
+
 class tMultiController;
 
 //=============================================================================
@@ -29,33 +30,34 @@ class tMultiController;
 //
 //=============================================================================
 
-class Blinker
-{
+class Blinker {
 public:
     Blinker();
-	virtual ~Blinker();
 
-    void SetCharacter( Character* pCharacter );
+    virtual ~Blinker();
 
-    void Update( int elapsedTime );
+    void SetCharacter(Character *pCharacter);
+
+    void Update(int elapsedTime);
 
     void StartBlinking();
+
     void StopBlinking();
 
 private:
 
     //Prevent wasteful constructor creation.
-	Blinker( const Blinker& blinker );
-	Blinker& operator=( const Blinker& blinker );
+    Blinker(const Blinker &blinker);
 
-    Character*        mCharacter;
-    tMultiController* mController;
+    Blinker &operator=(const Blinker &blinker);
+
+    Character *mCharacter;
+    tMultiController *mController;
 
     int mTimeSinceBlink;
     int mTimeTarget;
 
-    enum BlinkState
-    {
+    enum BlinkState {
         STATE_INVALID,
         STATE_WAITING,
         STATE_BLINKING

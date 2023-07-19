@@ -27,8 +27,11 @@
 //===========================================================================
 
 class tMultiController;
+
 class AnimEntityDSG;
+
 class AnimCollisionEntityDSG;
+
 class StatePropDSG;
 
 //===========================================================================
@@ -54,55 +57,66 @@ class StatePropDSG;
 //===========================================================================
 
 
-class AnimEntityDSGManager : public EventListener
-{
-    public:
+class AnimEntityDSGManager : public EventListener {
+public:
 
-        // Static Methods (for creating, destroying and acquiring an instance 
-        // of the AnimEntityDSGManager)
-        static AnimEntityDSGManager* CreateInstance();
-        static AnimEntityDSGManager* GetInstance();
-        static void DestroyInstance();
+    // Static Methods (for creating, destroying and acquiring an instance
+    // of the AnimEntityDSGManager)
+    static AnimEntityDSGManager *CreateInstance();
 
-        void Add( AnimCollisionEntityDSG* );
-		void Add( AnimEntityDSG* );
-        void Add( StatePropDSG* );
-		// Add a multicontroller to the list of controllers that will get updated every frame
-		void Add( tMultiController* );
-		// Remove a multicontroller from the list of controllers
-		void Remove( tMultiController* );
-		void Remove( AnimEntityDSG* );
-        void Remove( AnimCollisionEntityDSG* );
-        void Remove( StatePropDSG* );
+    static AnimEntityDSGManager *GetInstance();
 
-		void RemoveAll();
-		void Update( unsigned int elapsedTime );
+    static void DestroyInstance();
 
-		// Inherited from EventListener
-		// Used to detect when the character walks into a trigger volume
-        virtual void HandleEvent( EventEnum id, void* pEventData );
+    void Add(AnimCollisionEntityDSG *);
 
-        SwapArray<AnimEntityDSG*> mpFloatingRightWayArrows;
-        SwapArray<AnimEntityDSG*> mpFloatingWrongWayArrows;
+    void Add(AnimEntityDSG *);
 
-    protected:
+    void Add(StatePropDSG *);
 
-    private:
-	
-		SwapArray< AnimEntityDSG* > mEntityList;
-        SwapArray< AnimCollisionEntityDSG* > mCollEntityList;
-		SwapArray< tMultiController* > mMultiControllerlist;
-        SwapArray< StatePropDSG* > mStatePropList;
+    // Add a multicontroller to the list of controllers that will get updated every frame
+    void Add(tMultiController *);
 
-		// Singleton, prevent access to ctors
+    // Remove a multicontroller from the list of controllers
+    void Remove(tMultiController *);
 
-		AnimEntityDSGManager();
-        virtual ~AnimEntityDSGManager();
+    void Remove(AnimEntityDSG *);
 
-		AnimEntityDSGManager( const AnimEntityDSGManager& );
-        AnimEntityDSGManager& operator=( const AnimEntityDSGManager& );
+    void Remove(AnimCollisionEntityDSG *);
 
-        static AnimEntityDSGManager* spInstance;
+    void Remove(StatePropDSG *);
+
+    void RemoveAll();
+
+    void Update(unsigned int elapsedTime);
+
+    // Inherited from EventListener
+    // Used to detect when the character walks into a trigger volume
+    virtual void HandleEvent(EventEnum id, void *pEventData);
+
+    SwapArray<AnimEntityDSG *> mpFloatingRightWayArrows;
+    SwapArray<AnimEntityDSG *> mpFloatingWrongWayArrows;
+
+protected:
+
+private:
+
+    SwapArray<AnimEntityDSG *> mEntityList;
+    SwapArray<AnimCollisionEntityDSG *> mCollEntityList;
+    SwapArray<tMultiController *> mMultiControllerlist;
+    SwapArray<StatePropDSG *> mStatePropList;
+
+    // Singleton, prevent access to ctors
+
+    AnimEntityDSGManager();
+
+    virtual ~AnimEntityDSGManager();
+
+    AnimEntityDSGManager(const AnimEntityDSGManager &);
+
+    AnimEntityDSGManager &operator=(const AnimEntityDSGManager &);
+
+    static AnimEntityDSGManager *spInstance;
 };
 
 
@@ -112,9 +126,8 @@ class AnimEntityDSGManager : public EventListener
 
 
 // A little syntactic sugar for getting at this singleton.
-inline AnimEntityDSGManager* GetAnimEntityDSGManager() 
-{ 
-   return( AnimEntityDSGManager::GetInstance() ); 
+inline AnimEntityDSGManager *GetAnimEntityDSGManager() {
+    return (AnimEntityDSGManager::GetInstance());
 }
 
 #endif

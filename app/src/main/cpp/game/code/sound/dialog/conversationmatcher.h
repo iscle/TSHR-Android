@@ -26,6 +26,7 @@
 // Forward References
 //========================================
 struct IDaSoundResource;
+
 class Conversation;
 
 //=============================================================================
@@ -34,22 +35,26 @@ class Conversation;
 //
 //=============================================================================
 
-class ConversationMatcher
-{
-    public:
-        ConversationMatcher();
-        virtual ~ConversationMatcher();
+class ConversationMatcher {
+public:
+    ConversationMatcher();
 
-        void AddNewLine( IDaSoundResource* resource );
-        bool AreAllConversationsComplete();
-        void AddConversationsToList( unsigned int level, unsigned int mission, SelectableDialogList& list );
+    virtual ~ConversationMatcher();
 
-    private:
-        //Prevent wasteful constructor creation.
-        ConversationMatcher( const ConversationMatcher& original );
-        ConversationMatcher& operator=( const ConversationMatcher& rhs );
+    void AddNewLine(IDaSoundResource *resource);
 
-        Conversation* m_conversationList;
+    bool AreAllConversationsComplete();
+
+    void
+    AddConversationsToList(unsigned int level, unsigned int mission, SelectableDialogList &list);
+
+private:
+    //Prevent wasteful constructor creation.
+    ConversationMatcher(const ConversationMatcher &original);
+
+    ConversationMatcher &operator=(const ConversationMatcher &rhs);
+
+    Conversation *m_conversationList;
 };
 
 

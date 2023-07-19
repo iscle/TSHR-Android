@@ -28,50 +28,51 @@
 //
 //=============================================================================
 class ConsoleFileHandler : public FileHandler,
-                           public IRadFileCompletionCallback
-{
-    public:
+                           public IRadFileCompletionCallback {
+public:
 
-        ConsoleFileHandler();
-        virtual ~ConsoleFileHandler();
+    ConsoleFileHandler();
 
-        //
-        // Implement FileHandler interface.
-        //
-        virtual void LoadFile( const char* filename, 
-                               FileHandler::LoadFileCallback* pCallback,
-                               void* pUserData,
-                               GameMemoryAllocator heap );
-        
-        virtual void LoadFileSync( const char* filename );
+    virtual ~ConsoleFileHandler();
 
-        //
-        // Implement IRadFileCompletionCallback interface.
-        //
-        virtual void OnFileOperationsComplete( void* pUserData );
+    //
+    // Implement FileHandler interface.
+    //
+    virtual void LoadFile(const char *filename,
+                          FileHandler::LoadFileCallback *pCallback,
+                          void *pUserData,
+                          GameMemoryAllocator heap);
 
-        virtual void AddRef() {FileHandler::AddRef();}
-        virtual void Release() {FileHandler::Release();}
+    virtual void LoadFileSync(const char *filename);
 
-    private:
+    //
+    // Implement IRadFileCompletionCallback interface.
+    //
+    virtual void OnFileOperationsComplete(void *pUserData);
 
-        // Prevent wasteful constructor creation.
-        ConsoleFileHandler( const ConsoleFileHandler& ConsoleFileHandler );
-        ConsoleFileHandler& operator=( const ConsoleFileHandler& ConsoleFileHandler );
+    virtual void AddRef() { FileHandler::AddRef(); }
 
-        IRadFile* mpConsoleFile;
+    virtual void Release() { FileHandler::Release(); }
 
-        enum AsyncLoadState
-        {
-            NONE,
-            OPENFILE,
-            READDATA,
-            DONE
-        };
+private:
 
-        AsyncLoadState mAsyncLoadState;
+    // Prevent wasteful constructor creation.
+    ConsoleFileHandler(const ConsoleFileHandler &ConsoleFileHandler);
 
-        char* mFileDataBuffer;
+    ConsoleFileHandler &operator=(const ConsoleFileHandler &ConsoleFileHandler);
+
+    IRadFile *mpConsoleFile;
+
+    enum AsyncLoadState {
+        NONE,
+        OPENFILE,
+        READDATA,
+        DONE
+    };
+
+    AsyncLoadState mAsyncLoadState;
+
+    char *mFileDataBuffer;
 };
 
 

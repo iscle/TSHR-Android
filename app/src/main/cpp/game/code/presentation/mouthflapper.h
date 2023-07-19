@@ -24,7 +24,9 @@
 //========================================
 
 class poser::Joint;
+
 class poser::Pose;
+
 class Character;
 
 
@@ -34,20 +36,32 @@ class Character;
 //              flapping
 //
 //=============================================================================
-class MouthFlapperDefaultSetting
-{
+class MouthFlapperDefaultSetting {
 public:
-    MouthFlapperDefaultSetting( const tName& name, const float minOpen, const float maxOpen, const float maxDeviation, const float minSpeed, const float maxSpeed );
-    MouthFlapperDefaultSetting( const MouthFlapperDefaultSetting& right );
-    MouthFlapperDefaultSetting& operator=( const MouthFlapperDefaultSetting& right );
-    void         AddToWatcher();
-    const float  GetMaxDeviation()   const;
-    const float  GetMaxOpen()        const;
-    const float  GetMaxSpeed()       const;
-    const float  GetMinOpen()        const;
-    const float  GetMinSpeed()       const;
-    const tName& GetName()           const;
-    void         RemoveFromWatcher();
+    MouthFlapperDefaultSetting(const tName &name, const float minOpen, const float maxOpen,
+                               const float maxDeviation, const float minSpeed,
+                               const float maxSpeed);
+
+    MouthFlapperDefaultSetting(const MouthFlapperDefaultSetting &right);
+
+    MouthFlapperDefaultSetting &operator=(const MouthFlapperDefaultSetting &right);
+
+    void AddToWatcher();
+
+    const float GetMaxDeviation() const;
+
+    const float GetMaxOpen() const;
+
+    const float GetMaxSpeed() const;
+
+    const float GetMinOpen() const;
+
+    const float GetMinSpeed() const;
+
+    const tName &GetName() const;
+
+    void RemoveFromWatcher();
+
 protected:
 private:
     tName name;
@@ -63,19 +77,23 @@ private:
 // Synopsis:    class for mouth flapping
 //
 //=============================================================================
-class MouthFlapper : public poser::PoseDriver
-{
+class MouthFlapper : public poser::PoseDriver {
 public:
     MouthFlapper();
+
     virtual ~MouthFlapper();
 
 #ifdef DEBUGWATCH
     static  void AddVariablesToWatcher();
 #endif DEBUGWATCH
-    virtual void Advance( float deltaTime );
-    void         GetDefaultSettings( const tName& name );
-    void         SetCharacter( Character* pCharacter );
-    virtual void Update( poser::Pose* pose );
+
+    virtual void Advance(float deltaTime);
+
+    void GetDefaultSettings(const tName &name);
+
+    void SetCharacter(Character *pCharacter);
+
+    virtual void Update(poser::Pose *pose);
 
 protected:
     static unsigned int GetNumberOfDefaultSettings();
@@ -83,14 +101,15 @@ protected:
 private:
 
     //Prevent wasteful constructor creation.
-    MouthFlapper( const MouthFlapper& mouthflapper );
-    MouthFlapper& operator=( const MouthFlapper& mouthflapper );
+    MouthFlapper(const MouthFlapper &mouthflapper);
+
+    MouthFlapper &operator=(const MouthFlapper &mouthflapper);
 
     void NeuSpeed();
 
     int mJointIndex;
-    poser::Joint* mJoint;
-    Character*    mCharacter;
+    poser::Joint *mJoint;
+    Character *mCharacter;
 
     float mCurrentdt;
     float mDirection;
@@ -100,7 +119,7 @@ private:
     float mMinOpen;
 
     MouthFlapperDefaultSetting mSetting;
-    bool  mGotDefaultSettings;
+    bool mGotDefaultSettings;
 };
 
 

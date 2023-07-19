@@ -15,7 +15,7 @@
 // System Includes
 //========================================
 // Foundation
-#include <raddebug.hpp> 
+#include <raddebug.hpp>
 
 //========================================
 // Project Includes
@@ -55,22 +55,20 @@
 //
 //==============================================================================
 FBMemoryPool::FBMemoryPool
-(
-    size_t size,
-    int blockCapacity,
-    GameMemoryAllocator allocator
-)
-:
-    mSize( size ),  
-    mBlockCapacity( blockCapacity ),
-    mGMAllocator( allocator ),
-    mpHeadOfFreeList( NULL ),
-    mCurrentAllocs( 0 ),
-    mCurrentBlock( 0 )
-{
+        (
+                size_t size,
+                int blockCapacity,
+                GameMemoryAllocator allocator
+        )
+        :
+        mSize(size),
+        mBlockCapacity(blockCapacity),
+        mGMAllocator(allocator),
+        mpHeadOfFreeList(NULL),
+        mCurrentAllocs(0),
+        mCurrentBlock(0) {
     int i;
-    for( i = 0; i < MAX_BLOCKS; ++i )
-    {
+    for (i = 0; i < MAX_BLOCKS; ++i) {
         mpBlockArray[mCurrentBlock] = NULL;
     }
 
@@ -93,9 +91,8 @@ FBMemoryPool::FBMemoryPool
 // Return:      N/A.
 //
 //==============================================================================
-FBMemoryPool::~FBMemoryPool()
-{
-    rAssertMsg( mCurrentAllocs == 0, "*** MEMORY LEAK ! ***\n" );
+FBMemoryPool::~FBMemoryPool() {
+    rAssertMsg(mCurrentAllocs == 0, "*** MEMORY LEAK ! ***\n");
 }
 
 
@@ -118,39 +115,34 @@ FBMemoryPool::~FBMemoryPool()
 //              NULL on failure
 //
 //==============================================================================
-void* FBMemoryPool::Allocate( size_t size )
-{
-    rAssert( size <= mSize );
+void *FBMemoryPool::Allocate(size_t size) {
+    rAssert(size <= mSize);
 
-    void* pMemory = NULL;
-    
+    void *pMemory = NULL;
+
     //
     // Allocate memory from our pool.
     //
-    if( mpHeadOfFreeList != NULL )
-    {
+    if (mpHeadOfFreeList != NULL) {
         //
         // Allocate from the free list.
         //
-        pMemory = static_cast<void*>( mpHeadOfFreeList );
+        pMemory = static_cast<void *>(mpHeadOfFreeList);
         mpHeadOfFreeList = mpHeadOfFreeList->mpNext;
-    }
-    else
-    {
+    } else {
         //
         // Need to allocate a new block of memory.
         //
-        if( mCurrentBlock == MAX_BLOCKS )
-        {
+        if (mCurrentBlock == MAX_BLOCKS) {
             //
             // Array to store blocks is full. 
             //
-            rTuneString( "FBMemoryPool - Max blocks exceeded, tune pool config.\n");
-            return( NULL );
+            rTuneString("FBMemoryPool - Max blocks exceeded, tune pool config.\n");
+            return (NULL);
         }
 
-        void* pNewBlock = ::operator new( (mBlockCapacity * mSize), mGMAllocator );
-        rAssert( pNewBlock != 0 );
+        void *pNewBlock = ::operator new((mBlockCapacity * mSize), mGMAllocator);
+        rAssert(pNewBlock != 0);
 
         //
         // Store the pointer so we can delete the block later.
@@ -162,30 +154,29 @@ void* FBMemoryPool::Allocate( size_t size )
         //
         // Make a linked list out of the block.
         //
-        for( int i = 0; i < mBlockCapacity - 1; ++i )
-        {
-            char* pCurrent = static_cast<char*>(pNewBlock) + (i * mSize);
-            MemoryPoolList* pList = reinterpret_cast<MemoryPoolList*>( pCurrent );
-            char* pNext = static_cast<char*>(pNewBlock) + ( (i + 1) * mSize);
-            pList->mpNext = reinterpret_cast<MemoryPoolList*>( pNext );
+        for (int i = 0; i < mBlockCapacity - 1; ++i) {
+            char *pCurrent = static_cast<char *>(pNewBlock) + (i * mSize);
+            MemoryPoolList *pList = reinterpret_cast<MemoryPoolList *>(pCurrent);
+            char *pNext = static_cast<char *>(pNewBlock) + ((i + 1) * mSize);
+            pList->mpNext = reinterpret_cast<MemoryPoolList *>(pNext);
         }
-        
+
         //
         // Mark the end of the list with a NULL.
         //
-        char* pLast = static_cast<char*>(pNewBlock) + ( (mBlockCapacity - 1) * mSize);
-        MemoryPoolList* pListEnd = reinterpret_cast<MemoryPoolList*>( pLast );
+        char *pLast = static_cast<char *>(pNewBlock) + ((mBlockCapacity - 1) * mSize);
+        MemoryPoolList *pListEnd = reinterpret_cast<MemoryPoolList *>(pLast);
         pListEnd->mpNext = NULL;
 
         //
         // Return this piece of memory.
         //
         pMemory = pNewBlock;
-        
+
         //
         // This is the new head of the free list.
         //
-        mpHeadOfFreeList = reinterpret_cast<MemoryPoolList*>( pNewBlock )->mpNext;
+        mpHeadOfFreeList = reinterpret_cast<MemoryPoolList *>(pNewBlock)->mpNext;
     }
 
     ++mCurrentAllocs;
@@ -194,15 +185,14 @@ void* FBMemoryPool::Allocate( size_t size )
 #ifndef RAD_RELEASE
 
     ++mTotalAllocs;
-    
-    if( mTotalAllocs > mPeakAllocs )
-    {
+
+    if (mTotalAllocs > mPeakAllocs) {
         mPeakAllocs = mTotalAllocs;
     }
 
 #endif // !RAD_RELEASE
-    
-    return( pMemory );
+
+    return (pMemory);
 }
 
 
@@ -219,22 +209,20 @@ void* FBMemoryPool::Allocate( size_t size )
 // Return:      None.
 //
 //==============================================================================
-void FBMemoryPool::Free( void* mem, size_t size )
-{
+void FBMemoryPool::Free(void *mem, size_t size) {
     //
     // Calling delete on a NULL pointer is "legal" so better handle it.
     //
-    if( mem == NULL )
-    {
+    if (mem == NULL) {
         return;
     }
 
-    rAssert( size <= mSize );
+    rAssert(size <= mSize);
 
     //
     // Return the memory to the free list.
     //
-    MemoryPoolList* pCarcass = static_cast<MemoryPoolList*>( mem );
+    MemoryPoolList *pCarcass = static_cast<MemoryPoolList *>(mem);
 
     pCarcass->mpNext = mpHeadOfFreeList;
     mpHeadOfFreeList = pCarcass;
@@ -244,14 +232,11 @@ void FBMemoryPool::Free( void* mem, size_t size )
     //
     // If there are no outstanding alloctions, free all the memory blocks.
     //
-    if( mCurrentAllocs == 0 )
-    {
+    if (mCurrentAllocs == 0) {
         int i;
-        for( i = 0; i < MAX_BLOCKS; ++i )
-        {
-            if( mpBlockArray[i] != NULL )
-            {
-                ::operator delete( mpBlockArray[i], mGMAllocator );
+        for (i = 0; i < MAX_BLOCKS; ++i) {
+            if (mpBlockArray[i] != NULL) {
+                ::operator delete(mpBlockArray[i], mGMAllocator);
                 mpBlockArray[i] = NULL;
             }
         }
@@ -263,15 +248,13 @@ void FBMemoryPool::Free( void* mem, size_t size )
 #ifndef RAD_RELEASE
 
     ++mTotalFrees;
-    
-    if( mCurrentAllocs == 0 )
-    {
+
+    if (mCurrentAllocs == 0) {
         this->DumpStats();
     }
 
 #endif // !RAD_RELEASE
 }
-
 
 
 //==============================================================================
@@ -286,28 +269,21 @@ void FBMemoryPool::Free( void* mem, size_t size )
 //              false otherwise
 //
 //==============================================================================
-bool FBMemoryPool::ChangeAllocator( GameMemoryAllocator allocator )
-{
-    if( mCurrentAllocs == 0 )
-    {
+bool FBMemoryPool::ChangeAllocator(GameMemoryAllocator allocator) {
+    if (mCurrentAllocs == 0) {
         mGMAllocator = allocator;
-        return( true );
-    }
-    else
-    {
-        rAssertMsg( false, "Failed to change allocators" );
-        return( false );
+        return (true);
+    } else {
+        rAssertMsg(false, "Failed to change allocators");
+        return (false);
     }
 }
 
-bool FBMemoryPool::OneOfOurs(void* mem)
-{
-    for( int i = 0; i < MAX_BLOCKS; ++i )
-    {
-        if( mpBlockArray[i] != NULL )
-        {
-            if((mem >= mpBlockArray[i]) && (mem < (((char*)mpBlockArray[i]) + (mBlockCapacity * mSize))))
-            {
+bool FBMemoryPool::OneOfOurs(void *mem) {
+    for (int i = 0; i < MAX_BLOCKS; ++i) {
+        if (mpBlockArray[i] != NULL) {
+            if ((mem >= mpBlockArray[i]) &&
+                (mem < (((char *) mpBlockArray[i]) + (mBlockCapacity * mSize)))) {
                 return true;
             }
         }
@@ -327,15 +303,14 @@ bool FBMemoryPool::OneOfOurs(void* mem)
 // Return:      None.
 //
 //==============================================================================
-void FBMemoryPool::DumpStats()
-{
-    rTunePrintf( "FBMemoryPool Stats: (Element Size: %d ; Block Capacity: %d)\n",
-                 mSize, mBlockCapacity );
-    rTunePrintf( "\tCurrent Allocs: %d\n", mCurrentAllocs );
+void FBMemoryPool::DumpStats() {
+    rTunePrintf("FBMemoryPool Stats: (Element Size: %d ; Block Capacity: %d)\n",
+                mSize, mBlockCapacity);
+    rTunePrintf("\tCurrent Allocs: %d\n", mCurrentAllocs);
 #ifndef RAD_RELEASE
-    rTunePrintf( "\tTotal Allocs: %d\n", mTotalAllocs );
-    rTunePrintf( "\tTotal Frees: %d\n", mTotalFrees );
-    rTunePrintf( "\tPeak Allocs: %d\n", mPeakAllocs );
+    rTunePrintf("\tTotal Allocs: %d\n", mTotalAllocs);
+    rTunePrintf("\tTotal Frees: %d\n", mTotalFrees);
+    rTunePrintf("\tPeak Allocs: %d\n", mPeakAllocs);
 #endif // !RAD_RELEASE
 }
 

@@ -22,11 +22,17 @@
 #include <render/Loaders/IWrappedLoader.h>
 
 class tMultiControllerLoader;
+
 class tCompositeDrawableLoader;
+
 class tBillboardQuadGroupLoader;
+
 class tSkeletonLoader;
+
 class tAnimationLoader;
+
 class tFrameControllerLoader;
+
 class LensFlareLoader;
 
 //========================================================================
@@ -34,41 +40,41 @@ class LensFlareLoader;
 // Synopsis:   The WorldSphereLoader; Synopsis by Inspection.
 //
 //========================================================================
-class WorldSphereLoader 
-: public tSimpleChunkHandler,
-  public IWrappedLoader 
-{
+class WorldSphereLoader
+        : public tSimpleChunkHandler,
+          public IWrappedLoader {
 public:
-   WorldSphereLoader();
-   virtual ~WorldSphereLoader();
- 
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   void SetRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    WorldSphereLoader();
 
-   void ModRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData );
+    virtual ~WorldSphereLoader();
 
-   ///////////////////////////////////////////////////////////////////////
-   // tSimpleChunkHandler
-   ///////////////////////////////////////////////////////////////////////
-   virtual tEntity* LoadObject(tChunkFile* file, tEntityStore* store);
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
+
+    void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
+
+    ///////////////////////////////////////////////////////////////////////
+    // tSimpleChunkHandler
+    ///////////////////////////////////////////////////////////////////////
+    virtual tEntity *LoadObject(tChunkFile *file, tEntityStore *store);
 
 protected:
-   tCompositeDrawableLoader*	mpCompDLoader;
-   tMultiControllerLoader*      mpMCLoader;
-   tFrameControllerLoader*		mpFCLoader;
-   tBillboardQuadGroupLoader*   mpBillBoardQuadLoader;
-   tAnimationLoader*			mpAnimLoader;
-   tSkeletonLoader*				mpSkelLoader;
-   LensFlareLoader*				mpLensFlareLoader;
-   ///////////////////////////////////////////////////////////////////////
-   // IWrappedLoader
-   ///////////////////////////////////////////////////////////////////////
-   //ChunkListenerCallback*  mpListenerCB;
-   //void* mpUserData;
+    tCompositeDrawableLoader *mpCompDLoader;
+    tMultiControllerLoader *mpMCLoader;
+    tFrameControllerLoader *mpFCLoader;
+    tBillboardQuadGroupLoader *mpBillBoardQuadLoader;
+    tAnimationLoader *mpAnimLoader;
+    tSkeletonLoader *mpSkelLoader;
+    LensFlareLoader *mpLensFlareLoader;
+    ///////////////////////////////////////////////////////////////////////
+    // IWrappedLoader
+    ///////////////////////////////////////////////////////////////////////
+    //ChunkListenerCallback*  mpListenerCB;
+    //void* mpUserData;
 private:
 };
 

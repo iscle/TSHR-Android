@@ -30,33 +30,45 @@
 //
 //=============================================================================
 
-class ZoneEventLocator : public EventLocator
-{
+class ZoneEventLocator : public EventLocator {
 public:
     ZoneEventLocator();
+
     virtual ~ZoneEventLocator();
 
     virtual LocatorType::Type GetDataType() const;
 
-    const char* const GetZone() const;
-    void SetZone( const char* zone );
-    void SetZoneSize( unsigned char size ); //This is to prevent fragmentation.
+    const char *const GetZone() const;
 
-    const char* const GetLoadZone(int i);
-    const char* const GetDumpZone(int i);
-    const char* const GetInterLoadZone(int i);
-    const char* const GetInterDumpZone(int i);
-    const char* const GetLWSActivates(int i);
-    const char* const GetLWSDeactivates(int i);
+    void SetZone(const char *zone);
+
+    void SetZoneSize(unsigned char size); //This is to prevent fragmentation.
+
+    const char *const GetLoadZone(int i);
+
+    const char *const GetDumpZone(int i);
+
+    const char *const GetInterLoadZone(int i);
+
+    const char *const GetInterDumpZone(int i);
+
+    const char *const GetLWSActivates(int i);
+
+    const char *const GetLWSDeactivates(int i);
 
     int GetNumLoadZones();
+
     int GetNumDumpZones();
+
     int GetNumLWSActivates();
+
     int GetNumLWSDeactivates();
 
     bool IsInteriorLoad(void) { return mInteriorLoad; }
+
     bool IsInteriorDump(void) { return mInteriorDump; }
-    const char* GetInteriorSection();
+
+    const char *GetInteriorSection();
 
 private:
 
@@ -69,12 +81,13 @@ private:
 
     bool mInteriorLoad;
     bool mInteriorDump;
-    char* mZone;
+    char *mZone;
 
 
     //Prevent wasteful constructor creation.
-    ZoneEventLocator( const ZoneEventLocator& zoneeventlocator );
-    ZoneEventLocator& operator=( const ZoneEventLocator& zoneeventlocator );
+    ZoneEventLocator(const ZoneEventLocator &zoneeventlocator);
+
+    ZoneEventLocator &operator=(const ZoneEventLocator &zoneeventlocator);
 };
 
 //*****************************************************************************
@@ -93,9 +106,8 @@ private:
 // Return:      inline 
 //
 //=============================================================================
-inline LocatorType::Type ZoneEventLocator::GetDataType() const
-{
-    return( LocatorType::DYNAMIC_ZONE );
+inline LocatorType::Type ZoneEventLocator::GetDataType() const {
+    return (LocatorType::DYNAMIC_ZONE);
 }
 
 #endif //ZONEEVENTLOCATOR_H

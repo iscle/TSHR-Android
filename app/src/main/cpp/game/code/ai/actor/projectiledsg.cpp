@@ -33,31 +33,25 @@
 // Member Functions
 //===========================================================================
 
-ProjectileDSG::ProjectileDSG():
-mHasHit( false )
-{
+ProjectileDSG::ProjectileDSG() :
+        mHasHit(false) {
 
 }
 
-ProjectileDSG::~ProjectileDSG()
-{
+ProjectileDSG::~ProjectileDSG() {
 
 }
 
 
-
-sim::Solving_Answer 
-ProjectileDSG::PreReactToCollision( sim::SimState* pCollidedObj, sim::Collision& inCollision )
-{
+sim::Solving_Answer
+ProjectileDSG::PreReactToCollision(sim::SimState *pCollidedObj, sim::Collision &inCollision) {
 
     return sim::Solving_Aborted;
 }
 
 
-
 sim::Solving_Answer
-ProjectileDSG::PostReactToCollision( rmt::Vector& impulse, sim::Collision& inCollision )
-{
+ProjectileDSG::PostReactToCollision(rmt::Vector &impulse, sim::Collision &inCollision) {
     // No point in computing expensive sim calculations, abort immediately
     return sim::Solving_Aborted;
 }

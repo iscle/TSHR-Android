@@ -49,14 +49,17 @@ private:
 */
 
 
-class RootMatrixDriver : public poser::PoseDriver
-{
+class RootMatrixDriver : public poser::PoseDriver {
 public:
-    RootMatrixDriver(rmt::Matrix* inRootMatrix) : mRootMatrix(inRootMatrix) {}
+    RootMatrixDriver(rmt::Matrix *inRootMatrix) : mRootMatrix(inRootMatrix) {}
+
     virtual int GetMinimumJointIndex() const { return 0; }
+
     virtual int GetPriority() const { return 0; }
+
     virtual void Advance(float dt) {}
-    virtual void Update(poser::Pose* pose);
+
+    virtual void Update(poser::Pose *pose);
 
     // move definition to cpp file
     /*
@@ -69,7 +72,7 @@ public:
     */
 
 private:
-    rmt::Matrix* mRootMatrix;
+    rmt::Matrix *mRootMatrix;
 };
 
 #endif // #ifndef _ROOTMATRIXDRIVER_H

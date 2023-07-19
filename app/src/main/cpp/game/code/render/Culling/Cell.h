@@ -6,6 +6,7 @@
 #include <render/culling/Vector3f.h>
 #include <render/culling/Vector3i.h>
 #include <render/culling/Bounds.h>
+
 //
 // Cell
 //
@@ -18,49 +19,65 @@
 // mRenderWeight  - Currently the number of vertices in the cell
 // mCentroid      - A Vector representing the centroid of the cell
 // 
-class Cell
-{
+class Cell {
 public:
-   Cell();
-   ~Cell();
+    Cell();
 
-   void AccVertexList( FixedArray<Vector3f>& irVertexList );
-   void AccVertexList( rmt::Vector*   ipVector, int iCount );
-   void AccVertexList( float*    ipVertex, int iCount );
+    ~Cell();
 
-   void AccVertex( Vector3f& irVertex );
-   void AccVertex( Vector3f& irVertex, int& irWeight );
-   void AccVertex( rmt::Vector& iVector );
-   void AccVertex( float* ipVertex);
-   void AccVertex( float iX, float iY, float iZ );
+    void AccVertexList(FixedArray <Vector3f> &irVertexList);
 
-   void GenerateCell();
+    void AccVertexList(rmt::Vector *ipVector, int iCount);
 
-   float*   Centroid();
-   float    Centroid( int iAxis );
-   void     Centroid( float* ipCentroid );
-   int      RenderWeight();
+    void AccVertexList(float *ipVertex, int iCount);
 
-   void     SetBounds( Bounds3f& irBounds );
-   float    MaxPlane( int iAxis );
-   float    MinPlane( int iAxis );
+    void AccVertex(Vector3f &irVertex);
 
-   void        SetBlockIndex( Vector3i& irBlockIndex );
-   int&        BlockIndex( int iAxis );
-   Vector3i&   BlockIndex();
+    void AccVertex(Vector3f &irVertex, int &irWeight);
 
-   //
-   // Debug checking
-   //
-   bool IsGenerated();
-   bool IsBoundsSet();
-   bool IsIndexSet();
+    void AccVertex(rmt::Vector &iVector);
+
+    void AccVertex(float *ipVertex);
+
+    void AccVertex(float iX, float iY, float iZ);
+
+    void GenerateCell();
+
+    float *Centroid();
+
+    float Centroid(int iAxis);
+
+    void Centroid(float *ipCentroid);
+
+    int RenderWeight();
+
+    void SetBounds(Bounds3f &irBounds);
+
+    float MaxPlane(int iAxis);
+
+    float MinPlane(int iAxis);
+
+    void SetBlockIndex(Vector3i &irBlockIndex);
+
+    int &BlockIndex(int iAxis);
+
+    Vector3i &BlockIndex();
+
+    //
+    // Debug checking
+    //
+    bool IsGenerated();
+
+    bool IsBoundsSet();
+
+    bool IsIndexSet();
+
 protected:
-   float mpCentroid[3];
-   int   mRenderWeight;
+    float mpCentroid[3];
+    int mRenderWeight;
 
-   Bounds3f mBounds;
-   Vector3i mBlockIndex;
+    Bounds3f mBounds;
+    Vector3i mBlockIndex;
 };
 
 #endif

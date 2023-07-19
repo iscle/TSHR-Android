@@ -30,7 +30,9 @@
 #include <atc/atcmanager.h>
 
 #ifndef RAD_RELEASE
+
 #include <memory/propstats.h>
+
 #endif
 
 
@@ -60,9 +62,8 @@
 //
 //========================================================================
 DynaPhysLoader::DynaPhysLoader() :
-tSimpleChunkHandler(SRR2::ChunkID::DYNA_PHYS_DSG)
-{
-    HeapMgr()->PushHeap( GMA_PERSISTENT );
+        tSimpleChunkHandler(SRR2::ChunkID::DYNA_PHYS_DSG) {
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
     mpCollObjLoader = new sim::CollisionObjectLoader();
     mpCollObjLoader->AddRef();
@@ -75,9 +76,10 @@ tSimpleChunkHandler(SRR2::ChunkID::DYNA_PHYS_DSG)
 
     HeapMgr()->PopHeap(GMA_PERSISTENT);
 
-    mpListenerCB  = NULL;
-    mUserData     = -1;
+    mpListenerCB = NULL;
+    mUserData = -1;
 }
+
 //========================================================================
 // DynaPhysLoader::
 //========================================================================
@@ -91,8 +93,7 @@ tSimpleChunkHandler(SRR2::ChunkID::DYNA_PHYS_DSG)
 // Constraints: None.
 //
 //========================================================================
-DynaPhysLoader::~DynaPhysLoader()
-{
+DynaPhysLoader::~DynaPhysLoader() {
     mpCollObjLoader->Release();
     mpPhysObjLoader->Release();
     mpCompDLoader->Release();
@@ -114,172 +115,156 @@ DynaPhysLoader::~DynaPhysLoader()
 // Constraints: None.
 //
 //========================================================================
-tEntity* DynaPhysLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
-    IEntityDSG::msDeletionsSafe=true;
+tEntity *DynaPhysLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
+    IEntityDSG::msDeletionsSafe = true;
     char objName[128];
     char name[128];
     f->GetPString(objName);
 
 #ifndef RAD_RELEASE
-    PropStats::StartTracking( objName );
+    PropStats::StartTracking(objName);
 #endif
 
     bool test = tName::MakeUID(objName) == tName::MakeUID("l1_streetlamp_Shape");
     static bool doTestOnce = true;
 
-	// Lets see if theis object has a shadow associated with it
-	const char* pShadowName = BlobbyShadowNames::FindShadowName( objName );
-	tDrawable* pShadow;
-	if ( pShadowName != NULL )
-	{
-		pShadow = p3d::find< tDrawable > ( pShadowName );
-	}
-	else
-	{
-		pShadow = NULL;
-	}
+    // Lets see if theis object has a shadow associated with it
+    const char *pShadowName = BlobbyShadowNames::FindShadowName(objName);
+    tDrawable *pShadow;
+    if (pShadowName != NULL) {
+        pShadow = p3d::find<tDrawable>(pShadowName);
+    } else {
+        pShadow = NULL;
+    }
 
     int instanceCount = 0;
 
     int version = f->GetLong();
     int HasAlpha = f->GetLong();
     //pDynaPhysDSG->SetName(name);
-    
-    sim::CollisionObject*   pCollObj    = NULL;
-    sim::PhysicsObject*     pPhysObj    = NULL;
-    tDrawable*              pDrawable   = NULL;
-    sim::SimState*          pSimState   = NULL;
-    CollisionAttributes*    pCollAttr   = NULL;
+
+    sim::CollisionObject *pCollObj = NULL;
+    sim::PhysicsObject *pPhysObj = NULL;
+    tDrawable *pDrawable = NULL;
+    sim::SimState *pSimState = NULL;
+    CollisionAttributes *pCollAttr = NULL;
     bool foundInstances = false;
 
-    InstDynaPhysDSG* pCurDynaPhysDSG = static_cast<InstDynaPhysDSG*>(GetAllWrappers()->GetGlobalEntity(tName::MakeUID(objName)));
+    InstDynaPhysDSG *pCurDynaPhysDSG = static_cast<InstDynaPhysDSG *>(GetAllWrappers()->GetGlobalEntity(
+            tName::MakeUID(objName)));
 
     //new InstDynaPhysDSG;
 
-    while(f->ChunksRemaining())
-    {      
+    while (f->ChunksRemaining()) {
         f->BeginChunk();
-        switch(f->GetCurrentID())
-        {
-        case SRR2::ChunkID::INSTANCES:
-            {
-                //Instances >> Scenegraph
+        switch (f->GetCurrentID()) {
+            case SRR2::ChunkID::INSTANCES: {
+                //Instances>> Scenegraph
                 f->BeginChunk();
-                //Scenegraph >> ScenegraphRoot
+                //Scenegraph>> ScenegraphRoot
                 f->BeginChunk();
-                //ScenegraphRoot >> ScenegraphBranch
+                //ScenegraphRoot>> ScenegraphBranch
                 f->BeginChunk();
-                //ScenegraphBranch >> ScenegraphTransform
+                //ScenegraphBranch>> ScenegraphTransform
                 f->BeginChunk();
 
                 foundInstances = true;
 
-                //ScenegraphTransform >> real ScenegraphTransform
+                //ScenegraphTransform>> real ScenegraphTransform
                 //f->BeginChunk();
 
-                for(;f->ChunksRemaining();)
-                {
+                for (; f->ChunksRemaining();) {
 
                     instanceCount++;
                     f->BeginChunk();
-                    
+
                     f->GetPString(name);
                     int numChild = f->GetLong();
 
                     rmt::Matrix matrix;
-                    f->GetData(&matrix,16,tFile::DWORD);
+                    f->GetData(&matrix, 16, tFile::DWORD);
 
-                    if(pCurDynaPhysDSG == 0)
-                    {
+                    if (pCurDynaPhysDSG == 0) {
                         pCurDynaPhysDSG = new InstDynaPhysDSG();
                         rAssert(pCurDynaPhysDSG);
                         pCurDynaPhysDSG->SetName(name);
-                        pCurDynaPhysDSG->mTranslucent = ( HasAlpha != 0 ) || pShadow;
-                        pSimState = sim::SimState::CreateSimState(pCollObj,pPhysObj);
+                        pCurDynaPhysDSG->mTranslucent = (HasAlpha != 0) || pShadow;
+                        pSimState = sim::SimState::CreateSimState(pCollObj, pPhysObj);
 
                         // I suppose this could have just as easily gone into LoadSetUp
                         pSimState->SetControl(sim::simAICtrl);
                         pSimState->SetTransform(matrix);
 
-                        pCurDynaPhysDSG->LoadSetUp(pSimState, pCollAttr, matrix, pDrawable, pShadow );
+                        pCurDynaPhysDSG->LoadSetUp(pSimState, pCollAttr, matrix, pDrawable,
+                                                   pShadow);
 
-                        mpListenerCB->OnChunkLoaded( pCurDynaPhysDSG, mUserData, _id );
+                        mpListenerCB->OnChunkLoaded(pCurDynaPhysDSG, mUserData, _id);
                         pCurDynaPhysDSG = 0;
-                    }
-                    else
-                    {
-                        InstDynaPhysDSG* clone = pCurDynaPhysDSG->Clone(name, matrix);
+                    } else {
+                        InstDynaPhysDSG *clone = pCurDynaPhysDSG->Clone(name, matrix);
                         mpListenerCB->OnChunkLoaded(clone, mUserData, _id);
                     }
                     f->EndChunk();
                 }
-                //ScenegraphBranch >> ScenegraphTransform
+                //ScenegraphBranch>> ScenegraphTransform
                 f->EndChunk();
-                //ScenegraphRoot >> ScenegraphBranch
+                //ScenegraphRoot>> ScenegraphBranch
                 f->EndChunk();
-                //Scenegraph >> ScenegraphRoot
+                //Scenegraph>> ScenegraphRoot
                 f->EndChunk();
-                //Instances >> Scenegraph
+                //Instances>> Scenegraph
                 f->EndChunk();
             }
-            break;
+                break;
 
-        case Pure3D::Mesh::MESH:
-            {
-                if(pCurDynaPhysDSG == 0)
-                {
-                    tGeometry* pGeo = (tGeometry*)((GeometryWrappedLoader*)GetAllWrappers()->mpLoader(AllWrappers::msGeometry))->LoadObject(f,store);
-                    if( pGeo )
-                    {
-                        tRefCounted::Assign(pDrawable,(tDrawable*)pGeo);
+            case Pure3D::Mesh::MESH: {
+                if (pCurDynaPhysDSG == 0) {
+                    tGeometry *pGeo = (tGeometry * )(
+                            (GeometryWrappedLoader *) GetAllWrappers()->mpLoader(
+                                    AllWrappers::msGeometry))->LoadObject(f, store);
+                    if (pGeo) {
+                        tRefCounted::Assign(pDrawable, (tDrawable *) pGeo);
                     }
                 }
             }
-            break;
+                break;
 
-        case P3D_COMPOSITE_DRAWABLE:
-            {
-                if(pCurDynaPhysDSG == 0)
-                {
-                    tCompositeDrawable* pCompD = static_cast<tCompositeDrawable*>( mpCompDLoader->LoadObject( f, store ) );
-                    if( store->TestCollision( pCompD->GetUID(), pCompD ) )
-                    {
-                        HandleCollision( pCompD );
+            case P3D_COMPOSITE_DRAWABLE: {
+                if (pCurDynaPhysDSG == 0) {
+                    tCompositeDrawable *pCompD = static_cast<tCompositeDrawable *>(mpCompDLoader->LoadObject(
+                            f, store));
+                    if (store->TestCollision(pCompD->GetUID(), pCompD)) {
+                        HandleCollision(pCompD);
                         pCompD = NULL;
-                    }
-                    else
-                    {
-                        store->Store( pCompD );
-                        tRefCounted::Assign(pDrawable,(tDrawable*)pCompD);
+                    } else {
+                        store->Store(pCompD);
+                        tRefCounted::Assign(pDrawable, (tDrawable *) pCompD);
                     }
                 }
             }
-            break;
+                break;
 
-        case Simulation::Physics::OBJECT:
-            {
-                if(pCurDynaPhysDSG == 0)
-                {
-                    tRefCounted::Assign(pPhysObj,(sim::PhysicsObject*)mpPhysObjLoader->LoadObject(f,store));
+            case Simulation::Physics::OBJECT: {
+                if (pCurDynaPhysDSG == 0) {
+                    tRefCounted::Assign(pPhysObj,
+                                        (sim::PhysicsObject *) mpPhysObjLoader->LoadObject(f,
+                                                                                           store));
                 }
             }
-            break;
+                break;
 
-        case Simulation::Collision::OBJECT:
-            {
-                if(pCurDynaPhysDSG == 0)
-                {
-                    tRefCounted::Assign(pCollObj,(sim::CollisionObject*)mpCollObjLoader->LoadObject(f, store));
+            case Simulation::Collision::OBJECT: {
+                if (pCurDynaPhysDSG == 0) {
+                    tRefCounted::Assign(pCollObj,
+                                        (sim::CollisionObject *) mpCollObjLoader->LoadObject(f,
+                                                                                             store));
                     // TBJ [7/9/2002]
                     // Added this to store collision objects in the inventory.
                     // A normal loader stores the top level chunk, in this case the StaticPhysDSG.
                     // Since we want the Collision Object in the inventory, we have to store it here.
                     //
-                    if ( pCollObj )
-                    {
-                        if( store->TestCollision( pCollObj->GetUID(), pCollObj ) )
-                        {
+                    if (pCollObj) {
+                        if (store->TestCollision(pCollObj->GetUID(), pCollObj)) {
                             HandleCollision(pCollObj);
                             // TBJ [7/9/2002]
                             // Don't know what to do with this code?  Doesn't seem right to assign to NULL if
@@ -288,23 +273,19 @@ tEntity* DynaPhysLoader::LoadObject(tChunkFile* f, tEntityStore* store)
                             //
                             //pCollObj = NULL;
                             //return LOAD_ERROR;
-                        }
-                        else
-                        {
+                        } else {
                             store->Store(pCollObj);
-                        }                
+                        }
                     }
                 }
             }
-            break;
+                break;
 
-        case SRR2::ChunkID::OBJECT_ATTRIBUTES:
-            {
-                if(pCurDynaPhysDSG == 0)
-                {
+            case SRR2::ChunkID::OBJECT_ATTRIBUTES: {
+                if (pCurDynaPhysDSG == 0) {
                     int classType = f->GetLong();
                     int physPropID = f->GetLong();
-                    char tempsound [64];
+                    char tempsound[64];
                     f->GetString(tempsound);
 
                     // MS10 GREG TODO: This isn't even being used and calling it is leaking memory.
@@ -312,22 +293,24 @@ tEntity* DynaPhysLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 
                     // we need to pass in volume for this thing to be able to set the mass properly in the PhysicsProperties
                     rAssert(pPhysObj);
-                    float volume = pPhysObj->GetVolume();    
+                    float volume = pPhysObj->GetVolume();
 
-                    tRefCounted::Assign(pCollAttr,GetATCManager()->CreateCollisionAttributes(classType, physPropID, volume));
+                    tRefCounted::Assign(pCollAttr,
+                                        GetATCManager()->CreateCollisionAttributes(classType,
+                                                                                   physPropID,
+                                                                                   volume));
                     pCollAttr->SetSound(tempsound);
                 }
             }
-            break;
+                break;
 
-        default:
-            break;
+            default:
+                break;
         } // switch
         f->EndChunk();
     } // while
 
-    if( foundInstances == false || (test && doTestOnce) )
-    {
+    if (foundInstances == false || (test && doTestOnce)) {
         doTestOnce = false;
         //This must be a global entity.
         rmt::Matrix matrix;
@@ -339,7 +322,7 @@ tEntity* DynaPhysLoader::LoadObject(tChunkFile* f, tEntityStore* store)
         pSimState = sim::SimState::CreateSimState(pCollObj, pPhysObj);
         pSimState->SetControl(sim::simAICtrl);
         pSimState->SetTransform(matrix);
-        pCurDynaPhysDSG->LoadSetUp(pSimState, pCollAttr, matrix, pDrawable, pShadow );
+        pCurDynaPhysDSG->LoadSetUp(pSimState, pCollAttr, matrix, pDrawable, pShadow);
         GetAllWrappers()->AddGlobalEntity(pCurDynaPhysDSG);
         instanceCount++;
     }
@@ -354,13 +337,14 @@ tEntity* DynaPhysLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     tRefCounted::Release(pCollAttr);
 
 #ifndef RAD_RELEASE
-    PropStats::StopTracking( objName, instanceCount );
+    PropStats::StopTracking(objName, instanceCount);
 #endif
 
 
-    IEntityDSG::msDeletionsSafe=false;
+    IEntityDSG::msDeletionsSafe = false;
     return NULL;
 }
+
 ///////////////////////////////////////////////////////////////////////
 // IWrappedLoader
 ///////////////////////////////////////////////////////////////////////
@@ -380,21 +364,19 @@ tEntity* DynaPhysLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 //
 //========================================================================
 void DynaPhysLoader::SetRegdListener
-(
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
-   //
-   // Follow protocol; notify old Listener, that it has been 
-   // "disconnected".
-   //
-   if( mpListenerCB != NULL )
-   {
-      mpListenerCB->OnChunkLoaded( NULL, iUserData, 0 );
-   }
-   mpListenerCB  = pListenerCB;
-   mUserData     = iUserData;
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
+    //
+    // Follow protocol; notify old Listener, that it has been
+    // "disconnected".
+    //
+    if (mpListenerCB != NULL) {
+        mpListenerCB->OnChunkLoaded(NULL, iUserData, 0);
+    }
+    mpListenerCB = pListenerCB;
+    mUserData = iUserData;
 }
 
 //========================================================================
@@ -411,19 +393,18 @@ void DynaPhysLoader::SetRegdListener
 //
 //========================================================================
 void DynaPhysLoader::ModRegdListener
-( 
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
 #if 0
-   char DebugBuf[255];
-   sprintf( DebugBuf, "GeometryWrappedLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB );
-   rDebugString( DebugBuf );
+    char DebugBuf[255];
+    sprintf(DebugBuf, "GeometryWrappedLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB);
+    rDebugString(DebugBuf);
 #endif
-   rAssert( pListenerCB == mpListenerCB );
+    rAssert(pListenerCB == mpListenerCB);
 
-   mUserData = iUserData;
+    mUserData = iUserData;
 }
 //************************************************************************
 //

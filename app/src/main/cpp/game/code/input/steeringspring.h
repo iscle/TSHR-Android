@@ -28,29 +28,35 @@
 //
 //=============================================================================
 
-class SteeringSpring : public ForceEffect
-{
+class SteeringSpring : public ForceEffect {
 public:
     SteeringSpring();
-	virtual ~SteeringSpring();
+
+    virtual ~SteeringSpring();
 
     void OnInit();
-    void SetCenterPoint( s8 degrees, u8 deadband ); //Where 0 is straight up.
+
+    void SetCenterPoint(s8 degrees, u8 deadband); //Where 0 is straight up.
 #ifdef RAD_WIN32
-    void SetSpringStrength( u16 strength );
+    void SetSpringStrength(u16 strength);
 #else
-    void SetSpringStrength( u8 strength );
+
+    void SetSpringStrength(u8 strength);
+
 #endif
-    void SetSpringCoefficient( s16 coeff );
+
+    void SetSpringCoefficient(s16 coeff);
 
 private:
 
 #ifdef RAD_WIN32
     DICONDITION m_conditon;
 #endif
+
     //Prevent wasteful constructor creation.
-	SteeringSpring( const SteeringSpring& steeringspring );
-	SteeringSpring& operator=( const SteeringSpring& steeringspring );
+    SteeringSpring(const SteeringSpring &steeringspring);
+
+    SteeringSpring &operator=(const SteeringSpring &steeringspring);
 };
 
 

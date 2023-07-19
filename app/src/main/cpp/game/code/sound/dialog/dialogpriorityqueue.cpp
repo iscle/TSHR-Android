@@ -65,11 +65,10 @@ static const unsigned int OPL_PROB = 64;
 //==============================================================================
 DialogPriorityQueue::DialogPriorityQueue() :
 #ifdef SOUND_DEBUG_INFO_ENABLED
-    m_debugPage( 3, GetSoundManager()->GetDebugDisplay() ),
+        m_debugPage(3, GetSoundManager()->GetDebugDisplay()),
 #endif
-    m_nowPlaying( NULL ),
-    m_permitQueueAdvance( true )
-{
+        m_nowPlaying(NULL),
+        m_permitQueueAdvance(true) {
 }
 
 //==============================================================================
@@ -82,8 +81,7 @@ DialogPriorityQueue::DialogPriorityQueue() :
 // Return:      N/A.
 //
 //==============================================================================
-DialogPriorityQueue::~DialogPriorityQueue()
-{
+DialogPriorityQueue::~DialogPriorityQueue() {
 }
 
 //=============================================================================
@@ -96,26 +94,23 @@ DialogPriorityQueue::~DialogPriorityQueue()
 // Return:      void 
 //
 //=============================================================================
-void DialogPriorityQueue::AddDialogToQueue( SelectableDialog& dialog, rmt::Vector* posn )
-{
+void DialogPriorityQueue::AddDialogToQueue(SelectableDialog &dialog, rmt::Vector *posn) {
     DialogPriority priority;
-    DialogQueueElement* queueElement;
+    DialogQueueElement *queueElement;
     unsigned int diceRoll;
 
     //
     // Check the priority on the dialog, and use it to find the appropriate
     // spot in the queue.
     //
-    priority = DialogQueueElement::CalculateDialogPriority( dialog );
+    priority = DialogQueueElement::CalculateDialogPriority(dialog);
 
-    if( priority == OccasionalPlayLine )
-    {
+    if (priority == OccasionalPlayLine) {
         //
         // Random play
         //
-        diceRoll = ( rand() % 100 );
-        if( diceRoll >= DialogQueueElement::CalculateDialogProbability( dialog ) )
-        {
+        diceRoll = (rand() % 100);
+        if (diceRoll >= DialogQueueElement::CalculateDialogProbability(dialog)) {
             return;
         }
     }
@@ -123,9 +118,11 @@ void DialogPriorityQueue::AddDialogToQueue( SelectableDialog& dialog, rmt::Vecto
     //
     // Ducking for dialog
     //
-    if( m_nowPlaying == NULL )
-    {
-        Sound::daSoundRenderingManager::GetInstance()->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_DIALOG, NULL, false );
+    if (m_nowPlaying == NULL) {
+        Sound::daSoundRenderingManager::GetInstance()->GetTuner()->ActivateSituationalDuck(NULL,
+                                                                                           Sound::DUCK_SIT_DIALOG,
+                                                                                           NULL,
+                                                                                           false);
         GetSoundManager()->MuteNISPlayers();
     }
 
@@ -134,19 +131,16 @@ void DialogPriorityQueue::AddDialogToQueue( SelectableDialog& dialog, rmt::Vecto
     // This can happen with collision events that get triggered zillions of
     // times
     //
-    if( ( m_nowPlaying == NULL )
-        || !( m_nowPlaying->DialogMatches( &dialog ) ) )
-    {
-        queueElement = new ( GMA_TEMP ) DialogQueueElement( &dialog );
+    if ((m_nowPlaying == NULL)
+        || !(m_nowPlaying->DialogMatches(&dialog))) {
+        queueElement = new(GMA_TEMP) DialogQueueElement(&dialog);
 
-        if( priority == MustPlayImmediately )
-        {
+        if (priority == MustPlayImmediately) {
             //
             // Special case.  Place this guy at the head of the queue and kill
             // whatever's playing right now.
             //
-            if( m_nowPlaying )
-            {
+            if (m_nowPlaying) {
                 //
                 // If we don't halt the dialog queue, the stop callback will advance
                 // it on us and we get two dialog lines
@@ -155,14 +149,13 @@ void DialogPriorityQueue::AddDialogToQueue( SelectableDialog& dialog, rmt::Vecto
 
                 m_nowPlaying->StopDialog();
 #ifdef DEBUG_QUEUE_REFCOUNT
-                rTunePrintf( "AddDialogToQueue %x: Count %d\n", m_nowPlaying, m_nowPlaying->GetRefCount() );
+                rTunePrintf("AddDialogToQueue %x: Count %d\n", m_nowPlaying, m_nowPlaying->GetRefCount());
 #endif
                 //
                 // One more check.  The StopDialog() above may already have made m_nowPlaying
                 // go away
                 //
-                if( m_nowPlaying != NULL )
-                {
+                if (m_nowPlaying != NULL) {
                     m_nowPlaying->Release();
                 }
 
@@ -170,14 +163,12 @@ void DialogPriorityQueue::AddDialogToQueue( SelectableDialog& dialog, rmt::Vecto
             }
 
             m_nowPlaying = queueElement;
-            playDialog( posn );
-        }
-        else
-        {
+            playDialog(posn);
+        } else {
             //
             // Stick it in the list
             //
-            queueElement->AddToQueue( &m_dialogQueue, posn );
+            queueElement->AddToQueue(&m_dialogQueue, posn);
         }
     }
 
@@ -200,12 +191,10 @@ void DialogPriorityQueue::AddDialogToQueue( SelectableDialog& dialog, rmt::Vecto
 // Return:      true if there was dialog to stop, false otherwise 
 //
 //=============================================================================
-bool DialogPriorityQueue::StopCurrentDialog()
-{
+bool DialogPriorityQueue::StopCurrentDialog() {
     bool dialogStopped = false;
 
-    if( m_nowPlaying )
-    {
+    if (m_nowPlaying) {
         //
         // Stop it and let the callback do the rest
         //
@@ -213,7 +202,7 @@ bool DialogPriorityQueue::StopCurrentDialog()
         dialogStopped = true;
     }
 
-    return( dialogStopped );
+    return (dialogStopped);
 }
 
 //=============================================================================
@@ -227,28 +216,25 @@ bool DialogPriorityQueue::StopCurrentDialog()
 // Return:      true if there was dialog to stop, false otherwise  
 //
 //=============================================================================
-bool DialogPriorityQueue::StopAllDialog()
-{
-    DialogQueueElement* current;
+bool DialogPriorityQueue::StopAllDialog() {
+    DialogQueueElement *current;
     bool dialogStopped = false;
 
     //
     // Just in case we're still in a paused state.  Stopping paused dialogue doesn't
     // seem to give us our stop callbacks
     //
-    UnpauseDialog(); 
+    UnpauseDialog();
 
     m_permitQueueAdvance = false;
 
-    while( !m_dialogQueue.empty() )
-    {
+    while (!m_dialogQueue.empty()) {
         current = m_dialogQueue.front();
         current->RemoveSelfFromList();
         current->Release();
     }
 
-    if( m_nowPlaying != NULL )
-    {
+    if (m_nowPlaying != NULL) {
         m_nowPlaying->StopDialog();
 
         //
@@ -256,15 +242,17 @@ bool DialogPriorityQueue::StopAllDialog()
         // Since the queue was emptied first, nothing else should replace
         // the currently playing dialog afterward.
         //
-        if( m_nowPlaying != NULL )
-        {
+        if (m_nowPlaying != NULL) {
 #ifdef DEBUG_QUEUE_REFCOUNT
-            rTunePrintf( "StopAllDialog %x: Count %d\n", m_nowPlaying, m_nowPlaying->GetRefCount() );
+            rTunePrintf("StopAllDialog %x: Count %d\n", m_nowPlaying, m_nowPlaying->GetRefCount());
 #endif
             m_nowPlaying->Release();
             m_nowPlaying = NULL;
 
-            Sound::daSoundRenderingManager::GetInstance()->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_DIALOG, NULL, true );
+            Sound::daSoundRenderingManager::GetInstance()->GetTuner()->ActivateSituationalDuck(NULL,
+                                                                                               Sound::DUCK_SIT_DIALOG,
+                                                                                               NULL,
+                                                                                               true);
             GetSoundManager()->UnmuteNISPlayers();
         }
 
@@ -277,10 +265,10 @@ bool DialogPriorityQueue::StopAllDialog()
     // Since we don't seem to get the OnPlaybackComplete callback for the queue
     // element, throw a couple of shutup events in case someone was mouth flapping
     //
-    GetEventManager()->TriggerEvent( EVENT_PC_SHUTUP );
-    GetEventManager()->TriggerEvent( EVENT_NPC_SHUTUP );
+    GetEventManager()->TriggerEvent(EVENT_PC_SHUTUP);
+    GetEventManager()->TriggerEvent(EVENT_NPC_SHUTUP);
 
-    return( dialogStopped );
+    return (dialogStopped);
 }
 
 //=============================================================================
@@ -293,8 +281,7 @@ bool DialogPriorityQueue::StopAllDialog()
 // Return:      void 
 //
 //=============================================================================
-void DialogPriorityQueue::PauseDialog()
-{
+void DialogPriorityQueue::PauseDialog() {
     m_player1.Pause();
     m_player2.Pause();
     m_positionalPlayer1.Pause();
@@ -311,22 +298,17 @@ void DialogPriorityQueue::PauseDialog()
 // Return:      void 
 //
 //=============================================================================
-void DialogPriorityQueue::UnpauseDialog()
-{
-    if( m_player1.IsPaused() )
-    {
+void DialogPriorityQueue::UnpauseDialog() {
+    if (m_player1.IsPaused()) {
         m_player1.Continue();
     }
-    if( m_player2.IsPaused() )
-    {
+    if (m_player2.IsPaused()) {
         m_player2.Continue();
     }
-    if( m_positionalPlayer1.IsPaused() )
-    {
+    if (m_positionalPlayer1.IsPaused()) {
         m_positionalPlayer1.Continue();
     }
-    if( m_positionalPlayer2.IsPaused() )
-    {
+    if (m_positionalPlayer2.IsPaused()) {
         m_positionalPlayer2.Continue();
     }
 }
@@ -342,8 +324,7 @@ void DialogPriorityQueue::UnpauseDialog()
 // Return:      void 
 //
 //=============================================================================
-void DialogPriorityQueue::OnDialogLineComplete()
-{
+void DialogPriorityQueue::OnDialogLineComplete() {
     //
     // TODO: Stop the mouth flapping and eye blinking
     //
@@ -360,30 +341,29 @@ void DialogPriorityQueue::OnDialogLineComplete()
 // Return:      void 
 //
 //=============================================================================
-void DialogPriorityQueue::OnDialogComplete()
-{
+void DialogPriorityQueue::OnDialogComplete() {
     //
     // TODO: Stop the mouth flapping and eye blinking
     //
-    
+
     //
     // Get rid of the currently playing element
     //
 #ifdef DEBUG_QUEUE_REFCOUNT
-    rTunePrintf( "OnDialogComplete %x: Count %d\n", m_nowPlaying, m_nowPlaying->GetRefCount() );
+    rTunePrintf("OnDialogComplete %x: Count %d\n", m_nowPlaying, m_nowPlaying->GetRefCount());
 #endif
     m_nowPlaying->Release();
-    if( !m_dialogQueue.empty() && m_permitQueueAdvance )
-    {
+    if (!m_dialogQueue.empty() && m_permitQueueAdvance) {
         m_nowPlaying = m_dialogQueue.front();
         m_nowPlaying->RemoveSelfFromList();
-        playDialog( m_nowPlaying->GetPosition() );
-    }
-    else
-    {
+        playDialog(m_nowPlaying->GetPosition());
+    } else {
         m_nowPlaying = NULL;
 
-        Sound::daSoundRenderingManager::GetInstance()->GetTuner()->ActivateSituationalDuck( NULL, Sound::DUCK_SIT_DIALOG, NULL, true );
+        Sound::daSoundRenderingManager::GetInstance()->GetTuner()->ActivateSituationalDuck(NULL,
+                                                                                           Sound::DUCK_SIT_DIALOG,
+                                                                                           NULL,
+                                                                                           true);
         GetSoundManager()->UnmuteNISPlayers();
     }
 }
@@ -398,8 +378,7 @@ void DialogPriorityQueue::OnDialogComplete()
 // Return:      void 
 //
 //=============================================================================
-void DialogPriorityQueue::ServiceOncePerFrame()
-{
+void DialogPriorityQueue::ServiceOncePerFrame() {
     DialogQueueElement::Service();
 
     //
@@ -433,13 +412,11 @@ void DialogPriorityQueue::ServiceOncePerFrame()
 // Return:      void 
 //
 //=============================================================================
-void DialogPriorityQueue::advanceQueue()
-{
-    if( ( m_nowPlaying == NULL ) && ( !m_dialogQueue.empty() ) && m_permitQueueAdvance )
-    {
+void DialogPriorityQueue::advanceQueue() {
+    if ((m_nowPlaying == NULL) && (!m_dialogQueue.empty()) && m_permitQueueAdvance) {
         m_nowPlaying = m_dialogQueue.front();
         m_nowPlaying->RemoveSelfFromList();
-        playDialog( m_nowPlaying->GetPosition() );
+        playDialog(m_nowPlaying->GetPosition());
     }
 }
 
@@ -454,14 +431,12 @@ void DialogPriorityQueue::advanceQueue()
 // Return:      void 
 //
 //=============================================================================
-void DialogPriorityQueue::playDialog( rmt::Vector* posn )
-{
-    IRadNameSpace* nameSpace;
-    IRefCount* nameSpaceObj;
-    positionalSoundSettings* parameters;
+void DialogPriorityQueue::playDialog(rmt::Vector *posn) {
+    IRadNameSpace *nameSpace;
+    IRefCount *nameSpaceObj;
+    positionalSoundSettings *parameters;
 
-    if( posn != NULL )
-    {
+    if (posn != NULL) {
         //
         // Before starting playback, set up the positional stuff
         //
@@ -469,30 +444,25 @@ void DialogPriorityQueue::playDialog( rmt::Vector* posn )
         // Get the positionalSoundSettings object for the wasp sound
         //
         nameSpace = Sound::daSoundRenderingManagerGet()->GetTuningNamespace();
-        rAssert( nameSpace != NULL );
-        nameSpaceObj = nameSpace->GetInstance( ::radMakeKey32( "posn_dialog_settings" ) );
-        if( nameSpaceObj != NULL )
-        {
-            parameters = reinterpret_cast<positionalSoundSettings*>( nameSpaceObj );
-            m_positionalPlayer1.SetParameters( parameters );
+        rAssert(nameSpace != NULL);
+        nameSpaceObj = nameSpace->GetInstance(::radMakeKey32("posn_dialog_settings"));
+        if (nameSpaceObj != NULL) {
+            parameters = reinterpret_cast<positionalSoundSettings *>(nameSpaceObj);
+            m_positionalPlayer1.SetParameters(parameters);
 
-            m_positionalPlayer1.SetPosition( posn->x, posn->y, posn->z );
+            m_positionalPlayer1.SetPosition(posn->x, posn->y, posn->z);
 
-            m_nowPlaying->PlayDialog( m_positionalPlayer1, m_positionalPlayer2, this, this );
-        }
-        else
-        {
-            rTuneAssertMsg( false, "No min/max for positional dialogue?  Bad, call Esan." );
+            m_nowPlaying->PlayDialog(m_positionalPlayer1, m_positionalPlayer2, this, this);
+        } else {
+            rTuneAssertMsg(false, "No min/max for positional dialogue?  Bad, call Esan.");
 
             //
             // Handle gracefully in release
             //
-            m_nowPlaying->PlayDialog( m_player1, m_player2, this, this );
+            m_nowPlaying->PlayDialog(m_player1, m_player2, this, this);
         }
-    }
-    else
-    {
-        m_nowPlaying->PlayDialog( m_player1, m_player2, this, this );
+    } else {
+        m_nowPlaying->PlayDialog(m_player1, m_player2, this, this);
     }
 }
 
@@ -506,31 +476,30 @@ void DialogPriorityQueue::playDialog( rmt::Vector* posn )
 // Return:      void 
 //
 //=============================================================================
-void DialogPriorityQueue::serviceDebugPage()
-{
+void DialogPriorityQueue::serviceDebugPage() {
 #ifdef SOUND_DEBUG_INFO_ENABLED
     int i;
     int queueLength;
     DialogQueueType::const_iterator iter;
 
-    if( m_nowPlaying != NULL )
+    if(m_nowPlaying != NULL)
     {
         //
         // For the debug page, nowPlaying is part of the queue
         //
         queueLength = m_dialogQueue.size() + 1;
-        m_debugPage.SetQueueLength( queueLength );
+        m_debugPage.SetQueueLength(queueLength);
 
-        m_nowPlaying->FillDebugInfo( m_debugPage, 0 );
+        m_nowPlaying->FillDebugInfo(m_debugPage, 0);
         i = 1;
-        for( iter = m_dialogQueue.begin(); iter != m_dialogQueue.end(); ++iter )
+        for(iter = m_dialogQueue.begin(); iter != m_dialogQueue.end(); ++iter)
         {
-            (*iter)->FillDebugInfo( m_debugPage, i++ );
+            (*iter)->FillDebugInfo(m_debugPage, i++);
         }
     }
     else
     {
-        m_debugPage.SetQueueLength( 0 );
+        m_debugPage.SetQueueLength(0);
     }
 #endif
 }

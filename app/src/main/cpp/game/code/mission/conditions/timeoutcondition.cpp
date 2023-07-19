@@ -59,12 +59,11 @@
 //
 //==============================================================================
 TimeOutCondition::TimeOutCondition() :
-    //mHitNRun( false ),
-    mDone( false )
-{
-    this->SetType( COND_TIME_OUT );
+//mHitNRun(false),
+        mDone(false) {
+    this->SetType(COND_TIME_OUT);
 
-    //GetEventManager()->AddListener( this, EVENT_HIT_AND_RUN_CAUGHT );
+    //GetEventManager()->AddListener(this, EVENT_HIT_AND_RUN_CAUGHT);
 }
 
 //==============================================================================
@@ -77,9 +76,8 @@ TimeOutCondition::TimeOutCondition() :
 // Return:      N/A.
 //
 //==============================================================================
-TimeOutCondition::~TimeOutCondition()
-{
-    //GetEventManager()->RemoveListener( this, EVENT_HIT_AND_RUN_CAUGHT );
+TimeOutCondition::~TimeOutCondition() {
+    //GetEventManager()->RemoveListener(this, EVENT_HIT_AND_RUN_CAUGHT);
 }
 
 //=============================================================================
@@ -87,25 +85,22 @@ TimeOutCondition::~TimeOutCondition()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void TimeOutCondition::Update( unsigned int elapsedTime )
-{
-    if ( !mDone )
-    {
-        Mission* mission = GetGameplayManager()->GetCurrentMission();
+void TimeOutCondition::Update(unsigned int elapsedTime) {
+    if (!mDone) {
+        Mission *mission = GetGameplayManager()->GetCurrentMission();
         int timeLeft = mission->GetMissionTimeLeftInSeconds();
-        if( timeLeft < 1 && !mission->IsComplete() &&
-            !GetInteriorManager()->IsEntering() && 
+        if (timeLeft < 1 && !mission->IsComplete() &&
+            !GetInteriorManager()->IsEntering() &&
             !GetInteriorManager()->IsExiting() &&
-            !GetHitnRunManager()->BustingPlayer() )
-        {
+            !GetHitnRunManager()->BustingPlayer()) {
             mDone = true;
 
-            //if ( mHitNRun )
+            //if (mHitNRun)
             //{
             //    //Not failed, start the action!
             //    GetHitnRunManager()->MaxHitnRunValue();
@@ -113,11 +108,11 @@ void TimeOutCondition::Update( unsigned int elapsedTime )
             //    GetHitnRunManager()->DisableMeterDecay();
 
             //    //Pre-emptive.
-            //    GetGuiSystem()->HandleMessage( GUI_MSG_HIDE_HUD_OVERLAY, HUD_TIMER );
+            //    GetGuiSystem()->HandleMessage(GUI_MSG_HIDE_HUD_OVERLAY, HUD_TIMER);
             //}
             //else 
             {
-                SetIsViolated( true );
+                SetIsViolated(true);
             }
         }
     }
@@ -134,15 +129,13 @@ void TimeOutCondition::Update( unsigned int elapsedTime )
 // Return:      True if close, false otherwise 
 //
 //=============================================================================
-bool TimeOutCondition::IsClose()
-{
-    return( GetGameplayManager()->GetCurrentMission()->GetMissionTimeLeftInSeconds() < 20 );
+bool TimeOutCondition::IsClose() {
+    return (GetGameplayManager()->GetCurrentMission()->GetMissionTimeLeftInSeconds() < 20);
 }
 
 
 //chuck hack hack to for gamble races.
-void TimeOutCondition::SetViolated(bool flag)
-{
+void TimeOutCondition::SetViolated(bool flag) {
     SetIsViolated(flag);
 }
 

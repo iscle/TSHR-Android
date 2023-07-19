@@ -37,13 +37,11 @@
 //
 //******************************************************************************
 
-FMVEvent::FMVEvent () : PresentationEvent ()
-{
+FMVEvent::FMVEvent() : PresentationEvent() {
 }
 
 
-FMVEvent::~FMVEvent ()
-{
+FMVEvent::~FMVEvent() {
 }
 
 
@@ -64,11 +62,10 @@ FMVEvent::~FMVEvent ()
 // Return:      AnimationPlayer
 //
 //=============================================================================
-AnimationPlayer* FMVEvent::GetPlayer()
-{
-    return( GetPresentationManager()->GetFMVPlayer() );
+AnimationPlayer *FMVEvent::GetPlayer() {
+    return (GetPresentationManager()->GetFMVPlayer());
 }
 
-FMVEvent::FMVEventData::FMVEventData() : AudioIndex( 0 ), Allocator( GMA_LEVEL_MOVIE ), KillMusic( false )
-{
+FMVEvent::FMVEventData::FMVEventData() : AudioIndex(0), Allocator(GMA_LEVEL_MOVIE),
+                                         KillMusic(false) {
 }

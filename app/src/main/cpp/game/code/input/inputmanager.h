@@ -22,18 +22,23 @@
 //========================================
 #include <data/gamedata.h>
 #include <input/controller.h>
+
 #ifdef RAD_WIN32
 #include <input/usercontrollerWin32.h>
 #include <input/FEMouse.h>
 #else
+
 #include <input/usercontroller.h>
+
 #endif
+
 #include <constants/maxplayers.h>
 
 //========================================
 // Forward References
 //========================================
 class UserController;
+
 class Mappable;
 
 //==============================================================================
@@ -42,8 +47,7 @@ class Mappable;
 //
 //==============================================================================
 class InputManager : public IRadControllerConnectionChangeCallback,
-                     public GameDataHandler
-{
+                     public GameDataHandler {
 public:
 #ifdef RAD_XBOX
     enum eButtonMap
@@ -189,8 +193,7 @@ public:
         AnalogR2,
     };
 #else //RAD_GAMECUBE
-    enum eButtonMap
-    {
+    enum eButtonMap {
         DPadLeft,
         DPadRight,
         DPadDown,
@@ -227,27 +230,35 @@ public:
 #endif
 
     // Static Methods for accessing this singleton.
-    static InputManager* CreateInstance( void );
-    static InputManager* GetInstance( void );
-    static void DestroyInstance( void );
+    static InputManager *CreateInstance(void);
+
+    static InputManager *GetInstance(void);
+
+    static void DestroyInstance(void);
 
     // set everything up
     void Init();
-    
+
     // per frame update
-    void Update ( unsigned int timeinms );
+    void Update(unsigned int timeinms);
 
     // various info 
-    bool IsControllerInPort( int portnum ) const;
-    static unsigned int GetMaxControllers( void ) { return Input::MaxControllers; }
-    const char* GetName() const { return "Game Controller System"; }
+    bool IsControllerInPort(int portnum) const;
 
-    void ToggleRumble( bool on );
-    void SetRumbleForDevice( int controllerId, bool bRumbleOn );
-    bool IsRumbleOnForDevice( int controllerId ) const;
-    void TriggerRumblePulse( int controllerId );
+    static unsigned int GetMaxControllers(void) { return Input::MaxControllers; }
 
-    void SetRumbleEnabled( bool isEnabled );
+    const char *GetName() const { return "Game Controller System"; }
+
+    void ToggleRumble(bool on);
+
+    void SetRumbleForDevice(int controllerId, bool bRumbleOn);
+
+    bool IsRumbleOnForDevice(int controllerId) const;
+
+    void TriggerRumblePulse(int controllerId);
+
+    void SetRumbleEnabled(bool isEnabled);
+
     bool IsRumbleEnabled() const;
 
 #ifdef RAD_WIN32
@@ -257,38 +268,47 @@ public:
 
     // Returns the value of the input point 'inputIndex' owned by the controller at
     // controllerIndex.
-    float GetValue( unsigned int controllerIndex, unsigned int inputIndex ) const;
+    float GetValue(unsigned int controllerIndex, unsigned int inputIndex) const;
 
     // Get a physical controller 
-    UserController* GetController( unsigned int controllerIndex );
+    UserController *GetController(unsigned int controllerIndex);
 
     // Associate this logical controller with the physical controller in slot "index"
-    int RegisterMappable( unsigned int index, Mappable *pMappable );
+    int RegisterMappable(unsigned int index, Mappable *pMappable);
 
     // Remove associations between a physical and logical controller
-    void UnregisterMappable( unsigned int index, int handle );
-    void UnregisterMappable( unsigned int index, Mappable *pMappable  );
-    void UnregisterMappable( Mappable *pMappable  );
+    void UnregisterMappable(unsigned int index, int handle);
+
+    void UnregisterMappable(unsigned int index, Mappable *pMappable);
+
+    void UnregisterMappable(Mappable *pMappable);
 
     // set the current game state for the input system (one of the enums in Input::Active state)
-    void SetGameState( Input::ActiveState state );
+    void SetGameState(Input::ActiveState state);
+
     Input::ActiveState GetGameState() const;
 
     // registration of controller ID to player ID
     //
-    void RegisterControllerID( int playerID, int controllerID );
-    void UnregisterControllerID( int playerID );
+    void RegisterControllerID(int playerID, int controllerID);
+
+    void UnregisterControllerID(int playerID);
+
     void UnregisterAllControllerID();
-    int  GetControllerIDforPlayer( int playerID ) const;
-    int  GetControllerPlayerIDforController( int controllerIndex ) const;
+
+    int GetControllerIDforPlayer(int playerID) const;
+
+    int GetControllerPlayerIDforController(int controllerIndex) const;
 
     // Implements GameDataHandler
     //
-    virtual void LoadData( const GameDataByte* dataBuffer, unsigned int numBytes );
-    virtual void SaveData( GameDataByte* dataBuffer, unsigned int numBytes );
+    virtual void LoadData(const GameDataByte *dataBuffer, unsigned int numBytes);
+
+    virtual void SaveData(GameDataByte *dataBuffer, unsigned int numBytes);
+
     virtual void ResetData();
 
-    void EnableReset( bool reset ) { mResetEnabled = reset; };
+    void EnableReset(bool reset) { mResetEnabled = reset; };
 
     bool IsProScanButtonsPressed() const { return m_isProScanButtonsPressed; }
 
@@ -303,33 +323,35 @@ public:
 
 private:
     InputManager();
+
     ~InputManager();
 
     // IRadControllerConnectionChangeCallback interface
     // called when someone plugs in or pulls out a controller
-    void OnControllerConnectionStatusChange( IRadController* pIController );
+    void OnControllerConnectionStatusChange(IRadController *pIController);
 
-    void ReleaseAllControllers( void );
-    void EnumerateControllers( void );
+    void ReleaseAllControllers(void);
 
-    static InputManager* spInstance;
+    void EnumerateControllers(void);
 
-    ref< IRadControllerSystem > mxIControllerSystem2;
+    static InputManager *spInstance;
 
-    UserController mControllerArray[ Input::MaxControllers ];
+    ref <IRadControllerSystem> mxIControllerSystem2;
+
+    UserController mControllerArray[Input::MaxControllers];
 
     unsigned mGameState;
-    bool mChangeGameState : 1;
-    bool mConnectStateChanged : 1;
-    bool mIsRumbleEnabled : 1;
-    bool mIsResetting : 1;
-    bool mResetEnabled : 1;
+    bool mChangeGameState: 1;
+    bool mConnectStateChanged: 1;
+    bool mIsRumbleEnabled: 1;
+    bool mIsResetting: 1;
+    bool mResetEnabled: 1;
 
-    int m_registeredControllerID[ MAX_PLAYERS ];
+    int m_registeredControllerID[MAX_PLAYERS];
 
     unsigned int mResetTimeout;
 
-    bool m_isProScanButtonsPressed : 1;
+    bool m_isProScanButtonsPressed: 1;
 
 #ifdef RAD_WIN32
     FEMouse* m_pFEMouse;
@@ -342,31 +364,26 @@ private:
 
 
 // A little syntactic sugar for getting at this singleton.
-inline InputManager* GetInputManager() { return( InputManager::GetInstance() ); }
+inline InputManager *GetInputManager() { return (InputManager::GetInstance()); }
 
 inline int
-InputManager::GetControllerIDforPlayer( int playerID ) const
-{
+InputManager::GetControllerIDforPlayer(int playerID) const {
     int controllerID;
-    rAssert( playerID >= 0 && playerID < MAX_PLAYERS );
-    
-    if ( playerID >= 0 && playerID < MAX_PLAYERS )
-    {
-        controllerID = m_registeredControllerID[ playerID ];
-    }
-    else
-    {
+    rAssert(playerID >= 0 && playerID < MAX_PLAYERS);
+
+    if (playerID >= 0 && playerID < MAX_PLAYERS) {
+        controllerID = m_registeredControllerID[playerID];
+    } else {
         // Return error code
-        controllerID =  -1;
+        controllerID = -1;
     }
-    #ifndef RAD_RELEASE
-        if( m_registeredControllerID[ playerID ] == -1 )
-        {
-           // too much spew, we are polling this constantly for controller unplugged
-		   // rTunePrintf( "*** WARNING: No controller ID registered for player %d!]\n",
-           //             playerID + 1 );
-        }
-    #endif
+#ifndef RAD_RELEASE
+    if (m_registeredControllerID[playerID] == -1) {
+        // too much spew, we are polling this constantly for controller unplugged
+        // rTunePrintf("*** WARNING: No controller ID registered for player %d!]\n",
+        //             playerID + 1);
+    }
+#endif
 
     return controllerID;
 }
@@ -376,18 +393,15 @@ InputManager::GetControllerIDforPlayer( int playerID ) const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int controllerIndex )
+// Parameters:  (int controllerIndex)
 //
 // Return:      int  
 //
 //=============================================================================
-inline int InputManager::GetControllerPlayerIDforController( int controllerIndex ) const
-{
+inline int InputManager::GetControllerPlayerIDforController(int controllerIndex) const {
     int i;
-    for ( i = 0; i < MAX_PLAYERS; ++i )
-    {
-        if ( m_registeredControllerID[ i ] == controllerIndex )
-        {
+    for (i = 0; i < MAX_PLAYERS; ++i) {
+        if (m_registeredControllerID[i] == controllerIndex) {
             return i;
         }
     }
@@ -405,8 +419,7 @@ inline int InputManager::GetControllerPlayerIDforController( int controllerIndex
 // Return:      bool  
 //
 //=============================================================================
-inline bool InputManager::IsRumbleEnabled() const
-{
+inline bool InputManager::IsRumbleEnabled() const {
     return mIsRumbleEnabled;
 }
 

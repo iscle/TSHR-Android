@@ -24,20 +24,19 @@
 // Forward References
 //========================================
 class Character;
+
 class InCarAction;
 
-namespace CharacterAi
-{
-    
-enum CharacterState
-{
-    NOSTATE,
-    LOCO,
-    INCAR,
-    GET_IN,
-    GET_OUT,
-    INSIM
-};
+namespace CharacterAi {
+
+    enum CharacterState {
+        NOSTATE,
+        LOCO,
+        INCAR,
+        GET_IN,
+        GET_OUT,
+        INSIM
+    };
 
 
 //=============================================================================
@@ -46,187 +45,213 @@ enum CharacterState
 //
 //=============================================================================
 
-class State
-{
-public:
-	State( Character* pCharacter );
-	virtual ~State( void );
+    class State {
+    public:
+        State(Character *pCharacter);
 
-	virtual void Enter( void ) = 0;
-	virtual void Exit( void ) = 0;
+        virtual ~State(void);
 
-    virtual void SequenceAction( void ) = 0;
-	virtual void Update( float timeins ) = 0;
-    
-	virtual CharacterState GetStateID( void ) const = 0;
+        virtual void Enter(void) = 0;
 
-    static void* operator new( size_t size ) { return( sMemoryPool.Allocate( size ) ); }
-    static void  operator delete( void* deadObject, size_t size ) { sMemoryPool.Free( deadObject, size ); }
+        virtual void Exit(void) = 0;
 
-    // Declared but not defined to prevent access.
-    static void* operator new[]( size_t size );
-    static void  operator delete[]( void* pMemory );
-protected:
+        virtual void SequenceAction(void) = 0;
 
-	Character* mpCharacter;
+        virtual void Update(float timeins) = 0;
 
-private:
-    //Prevent wasteful constructor creation.
-    State();
-	State( const State& state );
-    State& operator=( const State& state );
+        virtual CharacterState GetStateID(void) const = 0;
 
-    static FBMemoryPool sMemoryPool;
-};
+        static void *operator new(size_t size) { return (sMemoryPool.Allocate(size)); }
 
-class NoState
-:
-public State
-{
-public:
-    NoState(Character* c) : State(c) {}
-    virtual ~NoState( void ) {}
+        static void operator delete(void *deadObject, size_t size) {
+            sMemoryPool.Free(deadObject, size);
+        }
 
-    static CharacterState StateID( void ) { return NOSTATE; } 
-    virtual CharacterState GetStateID( void ) const { return StateID(); }
+        // Declared but not defined to prevent access.
+        static void *operator new[](size_t size);
 
-protected:
-    virtual void Enter( void ) {}
-    virtual void Exit( void ) {}
+        static void operator delete[](void *pMemory);
 
-    virtual void SequenceAction( void ) {}
-    virtual void Update( float timeins ) {}
-};
+    protected:
 
-class InCar
-:
-public State
-{
-public:
+        Character *mpCharacter;
 
-	InCar( Character* pCharacter );
-	virtual ~InCar( void );
+    private:
+        //Prevent wasteful constructor creation.
+        State();
 
-    static CharacterState StateID( void ) { return INCAR; } 
-    virtual CharacterState GetStateID( void ) const { return StateID(); }
+        State(const State &state);
 
-protected:
+        State &operator=(const State &state);
 
-    virtual void Enter( void );
-	virtual void Exit( void );
-
-    virtual void SequenceAction( void );
-	virtual void Update( float timeins );
-
-private:
-    InCarAction* m_InCarAction;
-
-    enum GetOutState 
-    {
-        GETOUT_NONE,
-        GETOUT_TRYING,
-        GETOUT_COMITTED
+        static FBMemoryPool sMemoryPool;
     };
 
-    bool mIsDriver : 1;
-    GetOutState m_GetOutState;
-};
+    class NoState
+            :
+                    public State {
+    public:
+        NoState(Character *c) : State(c) {}
 
-class Loco
-:
-public State
-{
-public:
+        virtual ~NoState(void) {}
 
-	Loco( Character* pCharacter );
-	virtual ~Loco( void );
+        static CharacterState StateID(void) { return NOSTATE; }
 
-    static CharacterState StateID( void ) { return LOCO; } 
-    virtual CharacterState GetStateID( void ) const { return StateID(); }
+        virtual CharacterState GetStateID(void) const { return StateID(); }
 
-protected:
-    unsigned mLastActionFrame;
+    protected:
+        virtual void Enter(void) {}
 
-    virtual void Enter( void );
-	virtual void Exit( void );
+        virtual void Exit(void) {}
 
-    virtual void SequenceAction( void );
-	virtual void Update( float timeins );
-};
+        virtual void SequenceAction(void) {}
 
-class InSim : public State
-{
-public:
+        virtual void Update(float timeins) {}
+    };
 
-    InSim( Character* pCharacter );
-    virtual ~InSim( void );
+    class InCar
+            :
+                    public State {
+    public:
 
-    static CharacterState StateID( void ) { return INSIM; } 
-    virtual CharacterState GetStateID( void ) const { return StateID(); }
+        InCar(Character *pCharacter);
 
-protected:
+        virtual ~InCar(void);
 
-    virtual void Enter( void );
-	virtual void Exit( void );
+        static CharacterState StateID(void) { return INCAR; }
 
-    virtual void SequenceAction( void );
-	virtual void Update( float timeins );
-};
+        virtual CharacterState GetStateID(void) const { return StateID(); }
+
+    protected:
+
+        virtual void Enter(void);
+
+        virtual void Exit(void);
+
+        virtual void SequenceAction(void);
+
+        virtual void Update(float timeins);
+
+    private:
+        InCarAction *m_InCarAction;
+
+        enum GetOutState {
+            GETOUT_NONE,
+            GETOUT_TRYING,
+            GETOUT_COMITTED
+        };
+
+        bool mIsDriver: 1;
+        GetOutState m_GetOutState;
+    };
+
+    class Loco
+            :
+                    public State {
+    public:
+
+        Loco(Character *pCharacter);
+
+        virtual ~Loco(void);
+
+        static CharacterState StateID(void) { return LOCO; }
+
+        virtual CharacterState GetStateID(void) const { return StateID(); }
+
+    protected:
+        unsigned mLastActionFrame;
+
+        virtual void Enter(void);
+
+        virtual void Exit(void);
+
+        virtual void SequenceAction(void);
+
+        virtual void Update(float timeins);
+    };
+
+    class InSim : public State {
+    public:
+
+        InSim(Character *pCharacter);
+
+        virtual ~InSim(void);
+
+        static CharacterState StateID(void) { return INSIM; }
+
+        virtual CharacterState GetStateID(void) const { return StateID(); }
+
+    protected:
+
+        virtual void Enter(void);
+
+        virtual void Exit(void);
+
+        virtual void SequenceAction(void);
+
+        virtual void Update(float timeins);
+    };
 
 
-class GetIn : public State, public EventListener
-{
-public:
+    class GetIn : public State, public EventListener {
+    public:
 
-	GetIn( Character* pCharacter );
-	virtual ~GetIn( void );
+        GetIn(Character *pCharacter);
 
-    static CharacterState StateID( void ) { return GET_IN; } 
-    virtual CharacterState GetStateID( void ) const { return StateID(); }
+        virtual ~GetIn(void);
 
-protected:
+        static CharacterState StateID(void) { return GET_IN; }
 
-    virtual void Enter( void );
-	virtual void Exit( void );
+        virtual CharacterState GetStateID(void) const { return StateID(); }
 
-    virtual void SequenceAction( void );
-	virtual void Update( float timeins );
+    protected:
 
-    void HandleEvent( EventEnum id, void* pUserData );
+        virtual void Enter(void);
 
-private:
-    void CalcGetInPath(int* nWaypoints, rmt::Vector* waypoints, bool* doingSlide, bool* jump);
+        virtual void Exit(void);
 
-    bool mObstructed : 1;
-    bool mFirst      : 1;
-    int  mCollisionFailure : 3;
-};
+        virtual void SequenceAction(void);
 
-class GetOut : public State, public EventListener
-{
-public:
+        virtual void Update(float timeins);
 
-	GetOut( Character* pCharacter );
-	virtual ~GetOut( void );
+        void HandleEvent(EventEnum id, void *pUserData);
 
-    static CharacterState StateID( void ) { return GET_OUT; } 
-    virtual CharacterState GetStateID( void ) const { return StateID(); }
+    private:
+        void CalcGetInPath(int *nWaypoints, rmt::Vector *waypoints, bool *doingSlide, bool *jump);
 
-protected:
-    void DoGetOut(void);
+        bool mObstructed: 1;
+        bool mFirst: 1;
+        int mCollisionFailure: 3;
+    };
 
-    virtual void Enter( void );
-	virtual void Exit( void );
+    class GetOut : public State, public EventListener {
+    public:
 
-    virtual void SequenceAction( void );
-	virtual void Update( float timeins );
+        GetOut(Character *pCharacter);
 
-    void HandleEvent( EventEnum id, void* pUserData );
+        virtual ~GetOut(void);
 
-    bool mObstructed : 1;
-    bool mFirst      : 1;
-    bool mPanic      : 1;
-};
+        static CharacterState StateID(void) { return GET_OUT; }
+
+        virtual CharacterState GetStateID(void) const { return StateID(); }
+
+    protected:
+        void DoGetOut(void);
+
+        virtual void Enter(void);
+
+        virtual void Exit(void);
+
+        virtual void SequenceAction(void);
+
+        virtual void Update(float timeins);
+
+        void HandleEvent(EventEnum id, void *pUserData);
+
+        bool mObstructed: 1;
+        bool mFirst: 1;
+        bool mPanic: 1;
+    };
 
 }; // end of namespace
 #endif //STATE_H

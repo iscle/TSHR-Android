@@ -118,8 +118,6 @@
 #include <mission/gameplaymanager.h>
 
 
-
-
 #include <radload/radload.hpp>
 
 #include <main/errorswin32.h>
@@ -136,7 +134,7 @@
 //******************************************************************************
 
 // Static pointer to instance of singleton.
-Win32Platform* Win32Platform::spInstance = NULL;
+Win32Platform *Win32Platform::spInstance = NULL;
 
 // Other static members.
 HINSTANCE Win32Platform::mhInstance = NULL;
@@ -145,7 +143,8 @@ HANDLE Win32Platform::mhMutex = NULL;
 bool Win32Platform::mShowCursor = true;
 
 //The Adlib font.  <sigh>
-unsigned char gFont[] = 
+unsigned char gFont[] =
+
 #include <font/defaultfont.h>
 
 //
@@ -173,14 +172,13 @@ static const char ApplicationName[] = "The Simpsons: Hit & Run";
 static const DWORD WndStyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
 
 // The gamma of the desktop.. needed to reset it on alt-tabs.
-static WORD DesktopGammaRamp[ 3 ][ 256 ] = { 0 };
+static WORD DesktopGammaRamp[3][256] = {0};
 
-void LoadMemP3DFile( unsigned char* buffer, unsigned int size, tEntityStore* store )
-{
-    tFileMem* file = new tFileMem(buffer,size);
+void LoadMemP3DFile(unsigned char *buffer, unsigned int size, tEntityStore *store) {
+    tFileMem *file = new tFileMem(buffer, size);
     file->AddRef();
     file->SetFilename("memfile.p3d");
-    p3d::loadManager->GetP3DHandler()->Load( file, p3d::inventory );
+    p3d::loadManager->GetP3DHandler()->Load(file, p3d::inventory);
     file->Release();
 }
 
@@ -203,14 +201,15 @@ void LoadMemP3DFile( unsigned char* buffer, unsigned int size, tEntityStore* sto
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-Win32Platform* Win32Platform::CreateInstance( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )
-{
-MEMTRACK_PUSH_GROUP( "Win32Platform" );
-    rAssert( spInstance == NULL );
+Win32Platform *
+Win32Platform::CreateInstance(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine,
+                              int nCmdShow) {
+    MEMTRACK_PUSH_GROUP("Win32Platform");
+    rAssert(spInstance == NULL);
 
-    spInstance = new(GMA_PERSISTENT) Win32Platform( hInstance, hPrevInstance, lpCmdLine, nCmdShow );
-    rAssert( spInstance );
-MEMTRACK_POP_GROUP( "Win32Platform" );
+    spInstance = new(GMA_PERSISTENT) Win32Platform(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+    rAssert(spInstance);
+    MEMTRACK_POP_GROUP("Win32Platform");
 
     return spInstance;
 }
@@ -228,9 +227,8 @@ MEMTRACK_POP_GROUP( "Win32Platform" );
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-Win32Platform* Win32Platform::GetInstance()
-{
-    rAssert( spInstance != NULL );
+Win32Platform *Win32Platform::GetInstance() {
+    rAssert(spInstance != NULL);
 
     return spInstance;
 }
@@ -247,14 +245,12 @@ Win32Platform* Win32Platform::GetInstance()
 // Return:      None.
 //
 //==============================================================================
-void Win32Platform::DestroyInstance()
-{
-    rAssert( spInstance != NULL );
+void Win32Platform::DestroyInstance() {
+    rAssert(spInstance != NULL);
 
-    delete( GMA_PERSISTENT, spInstance );
+    delete (GMA_PERSISTENT, spInstance);
     spInstance = NULL;
 }
-
 
 
 //==============================================================================
@@ -272,23 +268,18 @@ void Win32Platform::DestroyInstance()
 // Constraints: Must be initialized before the platform.
 //
 //==============================================================================
-bool Win32Platform::InitializeWindow( HINSTANCE hInstance ) 
-{
+bool Win32Platform::InitializeWindow(HINSTANCE hInstance) {
     // check to see if another instance is running...
     mhMutex = CreateMutex(NULL, 0, ApplicationName);
-    if (GetLastError() == ERROR_ALREADY_EXISTS)
-    {
+    if (GetLastError() == ERROR_ALREADY_EXISTS) {
         // simpsons is already running, so lets find the window and give it focus
         HWND hwnd = FindWindow(ApplicationName, NULL);
-        if (hwnd != NULL)
-        {
+        if (hwnd != NULL) {
             // if window is minimized, restore it
             WINDOWPLACEMENT wndpl;
-            if (GetWindowPlacement(hwnd, &wndpl) != 0)
-            {
+            if (GetWindowPlacement(hwnd, &wndpl) != 0) {
                 if ((wndpl.showCmd == SW_MINIMIZE) ||
-                    (wndpl.showCmd == SW_SHOWMINIMIZED))
-                {
+                    (wndpl.showCmd == SW_SHOWMINIMIZED)) {
                     ShowWindow(hwnd, SW_RESTORE);
                 }
             }
@@ -310,16 +301,16 @@ bool Win32Platform::InitializeWindow( HINSTANCE hInstance )
     Wndclass.cbClsExtra = 0;
     Wndclass.cbWndExtra = 0;
     Wndclass.hInstance = mhInstance;
-    Wndclass.hIcon = LoadIcon( mhInstance, "IDI_SIMPSONSICON" );
+    Wndclass.hIcon = LoadIcon(mhInstance, "IDI_SIMPSONSICON");
     Wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
-    Wndclass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-    Wndclass.lpszMenuName= NULL;
+    Wndclass.hbrBackground = (HBRUSH) GetStockObject(BLACK_BRUSH);
+    Wndclass.lpszMenuName = NULL;
     Wndclass.lpszClassName = ApplicationName;
     ::RegisterClass(&Wndclass);
 
     // Set up the window.
     int x, y;
-    TranslateResolution( StartingResolution, x, y );
+    TranslateResolution(StartingResolution, x, y);
 
     RECT clientRect;
     clientRect.left = 0;
@@ -331,35 +322,35 @@ bool Win32Platform::InitializeWindow( HINSTANCE hInstance )
     int nScreenWidth = GetSystemMetrics(SM_CXSCREEN);
     int nScreenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-    while (nScreenWidth > 1600 ) // probably multimonitor
+    while (nScreenWidth > 1600) // probably multimonitor
     {
         nScreenWidth /= 2;
     }
 
     // centre the window
-    clientRect.left = (nScreenWidth-x)/2;
-    clientRect.top  = (nScreenHeight-y)/2;
+    clientRect.left = (nScreenWidth - x) / 2;
+    clientRect.top = (nScreenHeight - y) / 2;
     clientRect.right += clientRect.left;
     clientRect.bottom += clientRect.top;
 
-    AdjustWindowRect(&clientRect,WndStyle,FALSE);
+    AdjustWindowRect(&clientRect, WndStyle, FALSE);
 
     // Create the game's main window.
     mhWnd = ::CreateWindow(ApplicationName,
-        ApplicationName,
-        WndStyle,
-        clientRect.left,
-        clientRect.top,
-        clientRect.right-clientRect.left, 
-        clientRect.bottom-clientRect.top,
-        NULL,
-        NULL,
-        mhInstance,
-        NULL);
+                           ApplicationName,
+                           WndStyle,
+                           clientRect.left,
+                           clientRect.top,
+                           clientRect.right - clientRect.left,
+                           clientRect.bottom - clientRect.top,
+                           NULL,
+                           NULL,
+                           mhInstance,
+                           NULL);
 
     rAssert(mhWnd != NULL);
 
-    ShowTheCursor( false );
+    ShowTheCursor(false);
 
     return true;
 }
@@ -378,8 +369,7 @@ bool Win32Platform::InitializeWindow( HINSTANCE hInstance )
 //              Consult their documentation before changing.
 //
 //==============================================================================
-void Win32Platform::InitializeFoundation() 
-{
+void Win32Platform::InitializeFoundation() {
     //
     // Initialize the memory heaps
     // obsolete now.. the heaps initialize memory.
@@ -390,29 +380,28 @@ void Win32Platform::InitializeFoundation()
     // Register an out-of-memory display handler in case something goes bad
     // while allocating the heaps
     //
-    ::radMemorySetOutOfMemoryCallback( PrintOutOfMemoryMessage, NULL );
+    ::radMemorySetOutOfMemoryCallback(PrintOutOfMemoryMessage, NULL);
 
     //
     // Initialize memory monitor by JamesCo. TM.
     //
-    if( CommandLineOptions::Get( CLO_MEMORY_MONITOR ) )
-    {
+    if (CommandLineOptions::Get(CLO_MEMORY_MONITOR)) {
         const int KB = 1024;
-        ::radMemoryMonitorInitialize( 64 * KB, GMA_DEBUG );
+        ::radMemoryMonitorInitialize(64 * KB, GMA_DEBUG);
     }
 
     // Setup the memory heaps
     //
-    HeapMgr()->PrepareHeapsStartup ();
+    HeapMgr()->PrepareHeapsStartup();
 
     // Seed the heap stack
     //
-    HeapMgr()->PushHeap (GMA_PERSISTENT);
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
     //
     // Initilalize the platform system
     // 
-    ::radPlatformInitialize( mhWnd, mhInstance, 0 );
+    ::radPlatformInitialize(mhWnd, mhInstance, 0);
 
     //
     // Initialize the timer system
@@ -422,37 +411,37 @@ void Win32Platform::InitializeFoundation()
     //
     // Initialize the debug communication system.
     //
-    ::radDbgComTargetInitialize( WinSocket, 
-        radDbgComDefaultPort, // Default
-        NULL,                 // Default
-        GMA_DEBUG );
+    ::radDbgComTargetInitialize(WinSocket,
+                                radDbgComDefaultPort, // Default
+                                NULL,                 // Default
+                                GMA_DEBUG);
 
 
     //
     // Initialize the Watcher.
     //
-    ::radDbgWatchInitialize( "SRR2",
-                             32 * 16384, // 2 * Default
-                             GMA_DEBUG );
+    ::radDbgWatchInitialize("SRR2",
+                            32 * 16384, // 2 * Default
+                            GMA_DEBUG);
 
     //
     // Initialize the file system.
     //
-    ::radFileInitialize( 50, // Default
-        32, // Default
-        GMA_PERSISTENT );
+    ::radFileInitialize(50, // Default
+                        32, // Default
+                        GMA_PERSISTENT);
 
     ::radLoadInitialize();
-    //radLoad->SetSyncLoading( true );	
+    //radLoad->SetSyncLoading(true);
 
-    ::radDriveMount( NULL, GMA_PERSISTENT);
+    ::radDriveMount(NULL, GMA_PERSISTENT);
 
     //
     // Initialize the new movie player
     //
-    ::radMovieInitialize2( GMA_PERSISTENT );
+    ::radMovieInitialize2(GMA_PERSISTENT);
 
-    HeapMgr()->PopHeap (GMA_PERSISTENT);
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
 
 //==============================================================================
@@ -466,13 +455,11 @@ void Win32Platform::InitializeFoundation()
 // Return:      
 //
 //==============================================================================
-void Win32Platform::InitializeMemory()
-{
+void Win32Platform::InitializeMemory() {
     //
     // Only do this once!
     //
-    if( gMemorySystemInitialized == true )
-    {
+    if (gMemorySystemInitialized == true) {
         return;
     }
 
@@ -500,16 +487,14 @@ void Win32Platform::InitializeMemory()
 // Return:      
 //
 //==============================================================================
-void Win32Platform::ShutdownMemory()
-{
-    if( gMemorySystemInitialized )
-    {
+void Win32Platform::ShutdownMemory() {
+    if (gMemorySystemInitialized) {
         gMemorySystemInitialized = false;
 
         // No shutdown the memory.  This leads to bad errors when destroying 
         // static variables sprinkled here and there.
         //::radMemoryTerminate();
-        
+
         ::radThreadTerminate();
     }
 }
@@ -524,9 +509,8 @@ void Win32Platform::ShutdownMemory()
 // Return:      None.
 //
 //==============================================================================
-void Win32Platform::InitializePlatform() 
-{
-    HeapMgr()->PushHeap (GMA_PERSISTENT);
+void Win32Platform::InitializePlatform() {
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
 
     //
     // Rendering is good.
@@ -536,17 +520,17 @@ void Win32Platform::InitializePlatform()
     //
     // Add anything here that needs to be before the drive is opened.
     //
-    DisplaySplashScreen( Error ); // blank screen
+    DisplaySplashScreen(Error); // blank screen
 
     //
     // Show the window on the screen.  Must be done before initializing the input manager.
     //
-    ShowWindow( mhWnd, mFullscreen ? SW_SHOWMAXIMIZED : SW_SHOW );
+    ShowWindow(mhWnd, mFullscreen ? SW_SHOWMAXIMIZED : SW_SHOW);
 
     //
     // Opening the drive is SLOW...
     //
-    InitializeFoundationDrive();    
+    InitializeFoundationDrive();
 
     //
     // Initialize the controller.
@@ -556,9 +540,9 @@ void Win32Platform::InitializePlatform()
     //
     // Register with the game config manager
     //
-    GetGameConfigManager()->RegisterConfig( this );
+    GetGameConfigManager()->RegisterConfig(this);
 
-    HeapMgr()->PopHeap (GMA_PERSISTENT);
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
 }
 
 
@@ -572,8 +556,7 @@ void Win32Platform::InitializePlatform()
 // Return:      None.
 //
 //==============================================================================
-void Win32Platform::ShutdownPlatform()
-{
+void Win32Platform::ShutdownPlatform() {
     ShutdownPure3D();
     ShutdownFoundation();
 }
@@ -588,17 +571,16 @@ void Win32Platform::ShutdownPlatform()
 // Return:      void 
 //
 //=============================================================================
-void Win32Platform::LaunchDashboard()
-{   
+void Win32Platform::LaunchDashboard() {
 
     {
         //chuck I copied and pasted from the other platform's implementations
 
         GetLoadingManager()->CancelPendingRequests();
-           //TODO: Make sure sounds shut down too.
-        GetSoundManager()->SetMasterVolume( 0.0f );
+        //TODO: Make sure sounds shut down too.
+        GetSoundManager()->SetMasterVolume(0.0f);
 
-       // DisplaySplashScreen( FadeToBlack );
+        // DisplaySplashScreen(FadeToBlack);
 
         GetPresentationManager()->StopAll();
 
@@ -612,10 +594,10 @@ void Win32Platform::LaunchDashboard()
 
         //Shouldnt need the early destruction of this singleton either
         //SoundManager::DestroyInstance();
-        
+
         //Dont want to shutdown platform early either.
         //ShutdownPlatform();
-        //rAssertMsg( false, "Doesn't make sense for win32." );
+        //rAssertMsg(false, "Doesn't make sense for win32.");
     }
 }
 
@@ -629,9 +611,8 @@ void Win32Platform::LaunchDashboard()
 // Return:      void 
 //
 //=============================================================================
-void Win32Platform::ResetMachine()
-{
-    rAssertMsg( false, "Doesn't make sense for win32." );
+void Win32Platform::ResetMachine() {
+    rAssertMsg(false, "Doesn't make sense for win32.");
 }
 
 //=============================================================================
@@ -639,30 +620,29 @@ void Win32Platform::ResetMachine()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( SplashScreen screenID, 
+// Parameters:  (SplashScreen screenID,
 //                const char* overlayText = NULL, 
 //                float fontScale = 1.0f, 
 //                float textPosX = 0.0f, 
 //                float textPosY = 0.0f,
 //                tColour textColour,
-//                int fadeFrames = 3 )
+//                int fadeFrames = 3)
 //
 // Return:      void 
 //
 //=============================================================================
-void Win32Platform::DisplaySplashScreen( SplashScreen screenID, 
-                                       const char* overlayText, 
-                                       float fontScale, 
-                                       float textPosX, 
-                                       float textPosY,
-                                       tColour textColour,
-                                       int fadeFrames )
-{
-    HeapMgr()->PushHeap( GMA_TEMP );
+void Win32Platform::DisplaySplashScreen(SplashScreen screenID,
+                                        const char *overlayText,
+                                        float fontScale,
+                                        float textPosX,
+                                        float textPosY,
+                                        tColour textColour,
+                                        int fadeFrames) {
+    HeapMgr()->PushHeap(GMA_TEMP);
 
     p3d::inventory->PushSection();
-    p3d::inventory->AddSection( WIN32_SECTION );
-    p3d::inventory->SelectSection( WIN32_SECTION );
+    p3d::inventory->AddSection(WIN32_SECTION);
+    p3d::inventory->SelectSection(WIN32_SECTION);
 
     P3D_UNICODE unicodeText[256];
 
@@ -675,22 +655,22 @@ void Win32Platform::DisplaySplashScreen( SplashScreen screenID,
 
 
     //CREATE THE FONT
-    tTextureFont* thisFont = NULL;
+    tTextureFont *thisFont = NULL;
 
     // Convert memory buffer into a texturefont.
     //
     //p3d::load(gFont, DEFAULTFONT_SIZE, GMA_TEMP);
-    LoadMemP3DFile( gFont, DEFAULTFONT_SIZE, p3d::inventory );
+    LoadMemP3DFile(gFont, DEFAULTFONT_SIZE, p3d::inventory);
 
     thisFont = p3d::find<tTextureFont>("adlibn_20");
-    rAssert( thisFont );
+    rAssert(thisFont);
 
     thisFont->AddRef();
-    tShader* fontShader = thisFont->GetShader();
-    //fontShader->SetInt( )
+    tShader *fontShader = thisFont->GetShader();
+    //fontShader->SetInt()
 
 
-    p3d::AsciiToUnicode( overlayText, unicodeText, 256 );
+    p3d::AsciiToUnicode(overlayText, unicodeText, 256);
 
     // Make the missing letter into somthing I can see
     //
@@ -698,42 +678,37 @@ void Win32Platform::DisplaySplashScreen( SplashScreen screenID,
 
     int a = 0;
 
-    do
-    {
+    do {
         p3d::pddi->SetColourWrite(true, true, true, true);
-        p3d::pddi->SetClearColour( pddiColour(0,0,0) );
+        p3d::pddi->SetClearColour(pddiColour(0, 0, 0));
         p3d::pddi->BeginFrame();
         p3d::pddi->Clear(PDDI_BUFFER_COLOUR);
 
         //This is for fading in the font and shaders.
         int bright = 255;
         if (a < fadeFrames) bright = (a * 255) / fadeFrames;
-        if ( bright > 255 ) bright = 255;
+        if (bright > 255) bright = 255;
         tColour c(bright, bright, bright, 255);
 
         //Display font
-        if (overlayText != NULL)
-        {
+        if (overlayText != NULL) {
             tColour colour = textColour;
-            colour.SetAlpha( bright );
+            colour.SetAlpha(bright);
 
-            thisFont->SetColour( colour );
+            thisFont->SetColour(colour);
 
             p3d::pddi->SetProjectionMode(PDDI_PROJECTION_ORTHOGRAPHIC);
             p3d::stack->Push();
             p3d::stack->LoadIdentity();
 
-            p3d::stack->Translate( textPosX, textPosY, 1.5f);
+            p3d::stack->Translate(textPosX, textPosY, 1.5f);
             float scaleSize = 1.0f / 480.0f;  //This is likely good for 528 also.
-            p3d::stack->Scale(scaleSize * fontScale, scaleSize* fontScale , 1.0f);
+            p3d::stack->Scale(scaleSize * fontScale, scaleSize * fontScale, 1.0f);
 
-            if ( textPosX != 0.0f || textPosY != 0.0f )
-            {
-                thisFont->DisplayText( unicodeText );
-            }
-            else
-            {
-                thisFont->DisplayText( unicodeText, 3 );
+            if (textPosX != 0.0f || textPosY != 0.0f) {
+                thisFont->DisplayText(unicodeText);
+            } else {
+                thisFont->DisplayText(unicodeText, 3);
             }
 
             p3d::stack->Pop();
@@ -756,7 +731,7 @@ void Win32Platform::DisplaySplashScreen( SplashScreen screenID,
     p3d::inventory->DeleteSection(WIN32_SECTION);
     p3d::inventory->PopSection();
 
-    HeapMgr()->PopHeap( GMA_TEMP );
+    HeapMgr()->PopHeap(GMA_TEMP);
 }
 
 
@@ -765,30 +740,28 @@ void Win32Platform::DisplaySplashScreen( SplashScreen screenID,
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const char* textureName, 
+// Parameters:  (const char* textureName,
 //                const char* overlayText = NULL, 
 //                float fontScale = 1.0f, 
 //                float textPosX = 0.0f, 
 //                float textPosY = 0.0f, 
 //                tColour textColour,
-//                int fadeFrames = 3 )
+//                int fadeFrames = 3)
 //
 // Return:      void 
 //
 //=============================================================================
-void Win32Platform::DisplaySplashScreen( const char* textureName,
-                                       const char* overlayText, 
-                                       float fontScale, 
-                                       float textPosX, 
-                                       float textPosY, 
-                                       tColour textColour,
-                                       int fadeFrames )
-{
+void Win32Platform::DisplaySplashScreen(const char *textureName,
+                                        const char *overlayText,
+                                        float fontScale,
+                                        float textPosX,
+                                        float textPosY,
+                                        tColour textColour,
+                                        int fadeFrames) {
 }
 
-void Win32Platform::OnControllerError(const char *msg)
-{
-    DisplaySplashScreen( Error, msg, 0.7f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
+void Win32Platform::OnControllerError(const char *msg) {
+    DisplaySplashScreen(Error, msg, 0.7f, 0.0f, 0.0f, tColour(255, 255, 255), 0);
     mErrorState = CTL_ERROR;
     mPauseForError = true;
 
@@ -800,29 +773,24 @@ void Win32Platform::OnControllerError(const char *msg)
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( radFileError error, const char* pDriveName, void* pUserData )
+// Parameters:  (radFileError error, const char* pDriveName, void* pUserData)
 //
 // Return:      bool 
 //
 //=============================================================================
-bool Win32Platform::OnDriveError( radFileError error, const char* pDriveName, void* pUserData )
-{
+bool Win32Platform::OnDriveError(radFileError error, const char *pDriveName, void *pUserData) {
     // First check if the error is related to loading/saving games.
     // We do this here because windows has one drive for all operations.
     // If the game data manager is using the drive, it handles the error.
-    GameDataManager* gm = GetGameDataManager();
-    if( gm->IsUsingDrive() )
-    {
-        return gm->OnDriveError( error, pDriveName, pUserData );
+    GameDataManager *gm = GetGameDataManager();
+    if (gm->IsUsingDrive()) {
+        return gm->OnDriveError(error, pDriveName, pUserData);
     }
 
-    switch ( error )
-    {
-    case Success:
-        {
-            if ( mErrorState != NONE )
-            {
-                DisplaySplashScreen( FadeToBlack );
+    switch (error) {
+        case Success: {
+            if (mErrorState != NONE) {
+                DisplaySplashScreen(FadeToBlack);
                 mErrorState = NONE;
                 mPauseForError = false;
             }
@@ -830,20 +798,17 @@ bool Win32Platform::OnDriveError( radFileError error, const char* pDriveName, vo
             return true;
             break;
         }
-    case FileNotFound:
-        {
-            rAssert( pUserData != NULL );
+        case FileNotFound: {
+            rAssert(pUserData != NULL);
 
-            radFileRequest* request = static_cast<radFileRequest*>( pUserData );
-            const char* fileName = request->GetFilename();
+            radFileRequest *request = static_cast<radFileRequest *>(pUserData);
+            const char *fileName = request->GetFilename();
 
             //Get rid of the slashes.
             unsigned int i;
             unsigned int lastIndex = 0;
-            for ( i = 0; i < strlen( fileName ); ++i )
-            {
-                if ( fileName[ i ] == '\\' )
-                {
+            for (i = 0; i < strlen(fileName); ++i) {
+                if (fileName[i] == '\\') {
                     lastIndex = i;
                 }
             }
@@ -851,39 +816,37 @@ bool Win32Platform::OnDriveError( radFileError error, const char* pDriveName, vo
             unsigned int adjustedIndex = lastIndex == 0 ? lastIndex : lastIndex + 1;
 
             char adjustedName[32];
-            strncpy( adjustedName, &fileName[adjustedIndex], ( strlen( fileName ) - lastIndex ) );
-            adjustedName[ strlen( fileName ) - lastIndex ] = '\0';
+            strncpy(adjustedName, &fileName[adjustedIndex], (strlen(fileName) - lastIndex));
+            adjustedName[strlen(fileName) - lastIndex] = '\0';
 
-            if( strcmp( fileName, GameConfigManager::ConfigFilename ) == 0 )
-            {
+            if (strcmp(fileName, GameConfigManager::ConfigFilename) == 0) {
                 return false;
             }
 
             char errorString[256];
-            sprintf( errorString, "%s:\n%s", ERROR_STRINGS[error], adjustedName );
-            DisplaySplashScreen( Error, errorString, 1.0f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
+            sprintf(errorString, "%s:\n%s", ERROR_STRINGS[error], adjustedName);
+            DisplaySplashScreen(Error, errorString, 1.0f, 0.0f, 0.0f, tColour(255, 255, 255), 0);
             mErrorState = P_ERROR;
             mPauseForError = true;
 
             return true;
         }
-    case NoMedia:
-    case MediaNotFormatted:
-    case MediaCorrupt:
-    case NoFreeSpace:
-    case HardwareFailure:
-        {
+        case NoMedia:
+        case MediaNotFormatted:
+        case MediaCorrupt:
+        case NoFreeSpace:
+        case HardwareFailure: {
             //This could be the wrong disc.
-            DisplaySplashScreen( Error, ERROR_STRINGS[error], 1.0f, 0.0f, 0.0f, tColour(255, 255, 255), 0 );
+            DisplaySplashScreen(Error, ERROR_STRINGS[error], 1.0f, 0.0f, 0.0f,
+                                tColour(255, 255, 255), 0);
             mErrorState = P_ERROR;
             mPauseForError = true;
 
             return true;
         }
-    default:
-        {
+        default: {
             //Others are not supported.
-            rAssert( false );
+            rAssert(false);
         }
     }
 
@@ -903,11 +866,9 @@ bool Win32Platform::OnDriveError( radFileError error, const char* pDriveName, vo
 // Notes:
 //=============================================================================
 
-bool Win32Platform::SetResolution( Resolution res, int bpp, bool fullscreen )
-{
+bool Win32Platform::SetResolution(Resolution res, int bpp, bool fullscreen) {
     // Check if resolution is supported.
-    if( !IsResolutionSupported( res, bpp ) )
-    {
+    if (!IsResolutionSupported(res, bpp)) {
         return false;
     }
 
@@ -937,8 +898,7 @@ bool Win32Platform::SetResolution( Resolution res, int bpp, bool fullscreen )
 // Notes:
 //=============================================================================
 
-Win32Platform::Resolution Win32Platform::GetResolution() const
-{
+Win32Platform::Resolution Win32Platform::GetResolution() const {
     return mResolution;
 }
 
@@ -954,8 +914,7 @@ Win32Platform::Resolution Win32Platform::GetResolution() const
 // Notes:
 //=============================================================================
 
-int Win32Platform::GetBPP() const
-{
+int Win32Platform::GetBPP() const {
     return mbpp;
 }
 
@@ -971,8 +930,7 @@ int Win32Platform::GetBPP() const
 // Notes:
 //=============================================================================
 
-bool Win32Platform::IsFullscreen() const
-{
+bool Win32Platform::IsFullscreen() const {
     return mFullscreen;
 }
 
@@ -988,8 +946,7 @@ bool Win32Platform::IsFullscreen() const
 // Notes:
 //=============================================================================
 
-const char* Win32Platform::GetConfigName() const
-{
+const char *Win32Platform::GetConfigName() const {
     return "System";
 }
 
@@ -1005,8 +962,7 @@ const char* Win32Platform::GetConfigName() const
 // Notes:
 //=============================================================================
 
-int Win32Platform::GetNumProperties() const
-{
+int Win32Platform::GetNumProperties() const {
     return 4;
 }
 
@@ -1022,16 +978,15 @@ int Win32Platform::GetNumProperties() const
 // Notes:
 //=============================================================================
 
-void Win32Platform::LoadDefaults()
-{
+void Win32Platform::LoadDefaults() {
 #ifdef RAD_DEBUG
-    SetResolution( StartingResolution, StartingBPP, !CommandLineOptions::Get( CLO_WINDOW_MODE ) );
+    SetResolution(StartingResolution, StartingBPP, !CommandLineOptions::Get(CLO_WINDOW_MODE));
 #else
-    SetResolution( StartingResolution, StartingBPP, true );
+    SetResolution(StartingResolution, StartingBPP, true);
 #endif
-    
 
-    GetRenderFlow()->SetGamma( 1.0f );
+
+    GetRenderFlow()->SetGamma(1.0f);
 }
 
 //=============================================================================
@@ -1046,74 +1001,47 @@ void Win32Platform::LoadDefaults()
 // Notes:
 //=============================================================================
 
-void Win32Platform::LoadConfig( ConfigString& config )
-{
-    char property[ ConfigString::MaxLength ];
-    char value[ ConfigString::MaxLength ];
+void Win32Platform::LoadConfig(ConfigString &config) {
+    char property[ConfigString::MaxLength];
+    char value[ConfigString::MaxLength];
 
-    while ( config.ReadProperty( property, value ) )
-    {
-        if( _stricmp( property, "display" ) == 0 )
-        {
-            if( _stricmp( value, "window" ) == 0 )
-            {
+    while (config.ReadProperty(property, value)) {
+        if (_stricmp(property, "display") == 0) {
+            if (_stricmp(value, "window") == 0) {
                 mFullscreen = false;
-            }
-            else if( _stricmp( value, "fullscreen" ) == 0 )
-            {
+            } else if (_stricmp(value, "fullscreen") == 0) {
                 mFullscreen = true;
             }
-        }
-        else if( _stricmp( property, "resolution" ) == 0 )
-        {
-            if( strcmp( value, "640x480" ) == 0 )
-            {
+        } else if (_stricmp(property, "resolution") == 0) {
+            if (strcmp(value, "640x480") == 0) {
                 mResolution = Res_640x480;
-            }
-            else if( strcmp( value, "800x600" ) == 0 )
-            {
+            } else if (strcmp(value, "800x600") == 0) {
                 mResolution = Res_800x600;
-            }
-            else if( strcmp( value, "1024x768" ) == 0 )
-            {
+            } else if (strcmp(value, "1024x768") == 0) {
                 mResolution = Res_1024x768;
-            }
-            else if( strcmp( value, "1152x864" ) == 0 )
-            {
+            } else if (strcmp(value, "1152x864") == 0) {
                 mResolution = Res_1152x864;
-            }
-            else if( strcmp( value, "1280x1024" ) == 0 )
-            {
+            } else if (strcmp(value, "1280x1024") == 0) {
                 mResolution = Res_1280x1024;
-            }
-            else if( strcmp( value, "1600x1200" ) == 0 )
-            {
+            } else if (strcmp(value, "1600x1200") == 0) {
                 mResolution = Res_1600x1200;
             }
-        }
-        else if( _stricmp( property, "bpp" ) == 0 )
-        {
-            if( strcmp( value, "16" ) == 0 )
-            {
+        } else if (_stricmp(property, "bpp") == 0) {
+            if (strcmp(value, "16") == 0) {
                 mbpp = 16;
-            }
-            else if( strcmp( value, "32" ) == 0 )
-            {
+            } else if (strcmp(value, "32") == 0) {
                 mbpp = 32;
             }
-        }
-        else if( _stricmp( property, "gamma" ) == 0 )
-        {
-            float val = (float) atof( value );
-            if( val > 0 )
-            {
-                GetRenderFlow()->SetGamma( val );
+        } else if (_stricmp(property, "gamma") == 0) {
+            float val = (float) atof(value);
+            if (val > 0) {
+                GetRenderFlow()->SetGamma(val);
             }
         }
     }
 
     // apply the new settings.
-    SetResolution( mResolution, mbpp, mFullscreen );
+    SetResolution(mResolution, mbpp, mFullscreen);
 }
 
 //=============================================================================
@@ -1128,56 +1056,47 @@ void Win32Platform::LoadConfig( ConfigString& config )
 // Notes:
 //=============================================================================
 
-void Win32Platform::SaveConfig( ConfigString& config )
-{
-    config.WriteProperty( "display", mFullscreen ? "fullscreen" : "window" );
+void Win32Platform::SaveConfig(ConfigString &config) {
+    config.WriteProperty("display", mFullscreen ? "fullscreen" : "window");
 
-    const char* res = "800x600";
-    switch( mResolution )
-    {
-        case Res_640x480:
-        {
+    const char *res = "800x600";
+    switch (mResolution) {
+        case Res_640x480: {
             res = "640x480";
             break;
         }
-        case Res_800x600:
-        {
+        case Res_800x600: {
             res = "800x600";
             break;
         }
-        case Res_1024x768:
-        {
+        case Res_1024x768: {
             res = "1024x768";
             break;
         }
-        case Res_1152x864:
-        {
+        case Res_1152x864: {
             res = "1152x864";
             break;
         }
-        case Res_1280x1024:
-        {
+        case Res_1280x1024: {
             res = "1280x1024";
             break;
         }
-        case Res_1600x1200:
-        {
+        case Res_1600x1200: {
             res = "1600x1200";
             break;
         }
-        default:
-        {
-            rAssert( false );
+        default: {
+            rAssert(false);
         }
     }
 
-    config.WriteProperty( "resolution", res );
+    config.WriteProperty("resolution", res);
 
-    config.WriteProperty( "bpp", mbpp == 16 ? "16" : "32" );
+    config.WriteProperty("bpp", mbpp == 16 ? "16" : "32");
 
     char gamma[20];
-    sprintf( gamma, "%f", GetRenderFlow()->GetGamma() );
-    config.WriteProperty( "gamma", gamma );
+    sprintf(gamma, "%f", GetRenderFlow()->GetGamma());
+    config.WriteProperty("gamma", gamma);
 }
 
 
@@ -1197,19 +1116,19 @@ void Win32Platform::SaveConfig( ConfigString& config )
 // Return:      N/A.
 //
 //==============================================================================
-Win32Platform::Win32Platform( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow ) :
-    mpPlatform( NULL ),
-    mpContext( NULL ),
-    mResolution( StartingResolution ),
-    mbpp( StartingBPP )
-{
+Win32Platform::Win32Platform(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine,
+                             int nCmdShow) :
+        mpPlatform(NULL),
+        mpContext(NULL),
+        mResolution(StartingResolution),
+        mbpp(StartingBPP) {
     mhInstance = hInstance;
     mFullscreen = false;
 
     mScreenWidth = GetSystemMetrics(SM_CXSCREEN);
     mScreenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-    while (mScreenWidth > 1600 ) // probably multimonitor
+    while (mScreenWidth > 1600) // probably multimonitor
     {
         mScreenWidth /= 2;
     }
@@ -1226,11 +1145,10 @@ Win32Platform::Win32Platform( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPST
 // Return:      N/A.
 //
 //==============================================================================
-Win32Platform::~Win32Platform()
-{
+Win32Platform::~Win32Platform() {
     HeapManager::DestroyInstance();
 
-    CloseHandle( mhMutex );
+    CloseHandle(mhMutex);
 }
 
 //==============================================================================
@@ -1246,25 +1164,24 @@ Win32Platform::~Win32Platform()
 //              Consult their documentation before changing.
 //
 //==============================================================================
-void Win32Platform::InitializeFoundationDrive() 
-{
+void Win32Platform::InitializeFoundationDrive() {
     //
     // Get the default drive and hold it open for the life of the game.
     // This is a costly operation so we only want to do it once.
     //
 
-    char defaultDrive[ radFileDrivenameMax + 1 ];
+    char defaultDrive[radFileDrivenameMax + 1];
 
-    ::radGetDefaultDrive( defaultDrive );
+    ::radGetDefaultDrive(defaultDrive);
 
-    ::radDriveOpenSync( &mpIRadDrive, 
-                        defaultDrive,
-                        NormalPriority, // Default
-                        GMA_PERSISTENT );
+    ::radDriveOpenSync(&mpIRadDrive,
+                       defaultDrive,
+                       NormalPriority, // Default
+                       GMA_PERSISTENT);
 
-    rAssert( mpIRadDrive != NULL );
+    rAssert(mpIRadDrive != NULL);
 
-    mpIRadDrive->RegisterErrorHandler( this, NULL );
+    mpIRadDrive->RegisterErrorHandler(this, NULL);
 }
 
 
@@ -1281,8 +1198,7 @@ void Win32Platform::InitializeFoundationDrive()
 //              they were initialized in.
 //
 //==============================================================================
-void Win32Platform::ShutdownFoundation()
-{
+void Win32Platform::ShutdownFoundation() {
     //
     // Release the drive we've held open since the begining.
     //
@@ -1293,12 +1209,11 @@ void Win32Platform::ShutdownFoundation()
     // Shutdown the systems in the reverse order.
     //
     ::radMovieTerminate2();
-    ::radDriveUnmount( NULL );
+    ::radDriveUnmount(NULL);
     ::radLoadTerminate();
     ::radFileTerminate();
     ::radDbgWatchTerminate();
-    if( CommandLineOptions::Get( CLO_MEMORY_MONITOR ) )
-    {
+    if (CommandLineOptions::Get(CLO_MEMORY_MONITOR)) {
         ::radMemoryMonitorTerminate();
     }
     ::radDbgComTargetTerminate();
@@ -1317,19 +1232,18 @@ void Win32Platform::ShutdownFoundation()
 // Return:      None.
 //
 //==============================================================================
-void Win32Platform::InitializePure3D() 
-{
-MEMTRACK_PUSH_GROUP( "Win32Platform" );
-    //    p3d::SetMemAllocator( p3d::ALLOC_DEFAULT, GMA_PERSISTENT );
-    //    p3d::SetMemAllocator( p3d::ALLOC_LOADED, GMA_LEVEL );
+void Win32Platform::InitializePure3D() {
+    MEMTRACK_PUSH_GROUP("Win32Platform");
+    //    p3d::SetMemAllocator(p3d::ALLOC_DEFAULT, GMA_PERSISTENT);
+    //    p3d::SetMemAllocator(p3d::ALLOC_LOADED, GMA_LEVEL);
 
     //
     // Initialise Pure3D platform object.
     // This call differs between different platforms.  The Win32 version,
     // for example requires the application instance to be passed in.
     //
-    mpPlatform = tPlatform::Create( mhInstance );
-    rAssert( mpPlatform != NULL );
+    mpPlatform = tPlatform::Create(mhInstance);
+    rAssert(mpPlatform != NULL);
 
     //
     // Initialize the d3d context.
@@ -1343,18 +1257,15 @@ MEMTRACK_PUSH_GROUP( "Win32Platform" );
     //
     //    p3d::InstallDefaultLoaders();
     P3DASSERT(p3d::context);
-    tP3DFileHandler* p3d = new(GMA_PERSISTENT) tP3DFileHandler;
+    tP3DFileHandler *p3d = new(GMA_PERSISTENT) tP3DFileHandler;
     //    p3d::loadManager->AddHandler(p3d, "p3d");
     p3d::context->GetLoadManager()->AddHandler(p3d, "p3d");
     p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tPNGHandler, "png");
 
-    if( CommandLineOptions::Get( CLO_FE_UNJOINED ) )
-    {
+    if (CommandLineOptions::Get(CLO_FE_UNJOINED)) {
         p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tBMPHandler, "bmp");
         p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tTargaHandler, "tga");
-    }
-    else
-    {
+    } else {
         p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tBMPHandler, "p3d");
         p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tPNGHandler, "p3d");
         p3d::context->GetLoadManager()->AddHandler(new(GMA_PERSISTENT) tTargaHandler, "p3d");
@@ -1362,115 +1273,117 @@ MEMTRACK_PUSH_GROUP( "Win32Platform" );
 
     //    p3d->AddHandler(new tGeometryLoader);
     //    GeometryWrappedLoader* pGWL = new GeometryWrappedLoader;
-    GeometryWrappedLoader* pGWL = 
-        (GeometryWrappedLoader*)GetAllWrappers()->mpLoader( AllWrappers::msGeometry );
-    pGWL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pGWL );
+    GeometryWrappedLoader *pGWL =
+            (GeometryWrappedLoader *) GetAllWrappers()->mpLoader(AllWrappers::msGeometry);
+    pGWL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pGWL);
 
-    StaticEntityLoader* pSEL = 
-        (StaticEntityLoader*)GetAllWrappers()->mpLoader( AllWrappers::msStaticEntity );
-    pSEL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pSEL );
+    StaticEntityLoader *pSEL =
+            (StaticEntityLoader *) GetAllWrappers()->mpLoader(AllWrappers::msStaticEntity);
+    pSEL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pSEL);
 
-    StaticPhysLoader* pSPL = 
-        (StaticPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msStaticPhys );
-    pSPL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pSPL );
+    StaticPhysLoader *pSPL =
+            (StaticPhysLoader *) GetAllWrappers()->mpLoader(AllWrappers::msStaticPhys);
+    pSPL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pSPL);
 
-    TreeDSGLoader* pTDL = 
-        (TreeDSGLoader*)GetAllWrappers()->mpLoader( AllWrappers::msTreeDSG );
-    pTDL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pTDL );
+    TreeDSGLoader *pTDL =
+            (TreeDSGLoader *) GetAllWrappers()->mpLoader(AllWrappers::msTreeDSG);
+    pTDL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pTDL);
 
-    FenceLoader* pFL = 
-        (FenceLoader*)GetAllWrappers()->mpLoader( AllWrappers::msFenceEntity );
-    pFL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pFL );
+    FenceLoader *pFL =
+            (FenceLoader *) GetAllWrappers()->mpLoader(AllWrappers::msFenceEntity);
+    pFL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pFL);
 
-    IntersectLoader* pIL = 
-        (IntersectLoader*)GetAllWrappers()->mpLoader( AllWrappers::msIntersectDSG );
-    pIL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pIL );
+    IntersectLoader *pIL =
+            (IntersectLoader *) GetAllWrappers()->mpLoader(AllWrappers::msIntersectDSG);
+    pIL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pIL);
 
-    AnimCollLoader* pACL = 
-        (AnimCollLoader*)GetAllWrappers()->mpLoader( AllWrappers::msAnimCollEntity );
-    pACL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pACL );
+    AnimCollLoader *pACL =
+            (AnimCollLoader *) GetAllWrappers()->mpLoader(AllWrappers::msAnimCollEntity);
+    pACL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pACL);
 
-    AnimDSGLoader* pAnimDSGLoader = 
-        (AnimDSGLoader*)GetAllWrappers()->mpLoader( AllWrappers::msAnimEntity );
-    pAnimDSGLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pAnimDSGLoader );
-
-
-    DynaPhysLoader* pDPL = 
-        (DynaPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msDynaPhys );
-    pDPL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pDPL );
-
-    InstStatPhysLoader* pISPL = 
-        (InstStatPhysLoader*)GetAllWrappers()->mpLoader( AllWrappers::msInstStatPhys );
-    pISPL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pISPL );
-
-    InstStatEntityLoader* pISEL = 
-        (InstStatEntityLoader*)GetAllWrappers()->mpLoader( AllWrappers::msInstStatEntity );
-    pISEL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pISEL );
-
-    LocatorLoader* pLL = 
-        (LocatorLoader*)GetAllWrappers()->mpLoader( AllWrappers::msLocator);
-    pLL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pLL );
-
-    RoadLoader* pRL = 
-        (RoadLoader*)GetAllWrappers()->mpLoader( AllWrappers::msRoadSegment);
-    pRL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pRL );
-
-    PathLoader* pPL = 
-        (PathLoader*)GetAllWrappers()->mpLoader( AllWrappers::msPathSegment);
-    pPL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pPL );
-
-    WorldSphereLoader* pWSL = 
-        (WorldSphereLoader*)GetAllWrappers()->mpLoader( AllWrappers::msWorldSphere);
-    pWSL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pWSL );
-
-    LensFlareLoader* pLSL = 
-        (LensFlareLoader*)GetAllWrappers()->mpLoader( AllWrappers::msLensFlare);
-    pLSL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pLSL );
-
-    BillboardWrappedLoader* pBWL = 
-        (BillboardWrappedLoader*)GetAllWrappers()->mpLoader( AllWrappers::msBillboard);
-    pBWL->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pBWL );
+    AnimDSGLoader *pAnimDSGLoader =
+            (AnimDSGLoader *) GetAllWrappers()->mpLoader(AllWrappers::msAnimEntity);
+    pAnimDSGLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pAnimDSGLoader);
 
 
-    InstParticleSystemLoader* pInstParticleSystemLoader = 
-        (InstParticleSystemLoader*) GetAllWrappers()->mpLoader( AllWrappers::msInstParticleSystem);
-    pInstParticleSystemLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pInstParticleSystemLoader );
+    DynaPhysLoader *pDPL =
+            (DynaPhysLoader *) GetAllWrappers()->mpLoader(AllWrappers::msDynaPhys);
+    pDPL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pDPL);
 
-    BreakableObjectLoader* pBreakableObjectLoader = 
-        (BreakableObjectLoader*) GetAllWrappers()->mpLoader( AllWrappers::msBreakableObject);
-    pBreakableObjectLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pBreakableObjectLoader );
+    InstStatPhysLoader *pISPL =
+            (InstStatPhysLoader *) GetAllWrappers()->mpLoader(AllWrappers::msInstStatPhys);
+    pISPL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pISPL);
 
-    AnimDynaPhysLoader*	pAnimDynaPhysLoader = 
-        (AnimDynaPhysLoader*) GetAllWrappers()->mpLoader( AllWrappers::msAnimDynaPhys);
-    pAnimDynaPhysLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pAnimDynaPhysLoader );
+    InstStatEntityLoader *pISEL =
+            (InstStatEntityLoader *) GetAllWrappers()->mpLoader(AllWrappers::msInstStatEntity);
+    pISEL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pISEL);
 
-    AnimDynaPhysWrapperLoader* pAnimWrapperLoader = 
-        (AnimDynaPhysWrapperLoader*) GetAllWrappers()->mpLoader( AllWrappers::msAnimDynaPhysWrapper);
-    pAnimWrapperLoader->SetRegdListener( GetRenderManager(), 0 );
-    p3d->AddHandler( pAnimWrapperLoader );
+    LocatorLoader *pLL =
+            (LocatorLoader *) GetAllWrappers()->mpLoader(AllWrappers::msLocator);
+    pLL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pLL);
+
+    RoadLoader *pRL =
+            (RoadLoader *) GetAllWrappers()->mpLoader(AllWrappers::msRoadSegment);
+    pRL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pRL);
+
+    PathLoader *pPL =
+            (PathLoader *) GetAllWrappers()->mpLoader(AllWrappers::msPathSegment);
+    pPL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pPL);
+
+    WorldSphereLoader *pWSL =
+            (WorldSphereLoader *) GetAllWrappers()->mpLoader(AllWrappers::msWorldSphere);
+    pWSL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pWSL);
+
+    LensFlareLoader *pLSL =
+            (LensFlareLoader *) GetAllWrappers()->mpLoader(AllWrappers::msLensFlare);
+    pLSL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pLSL);
+
+    BillboardWrappedLoader *pBWL =
+            (BillboardWrappedLoader *) GetAllWrappers()->mpLoader(AllWrappers::msBillboard);
+    pBWL->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pBWL);
+
+
+    InstParticleSystemLoader *pInstParticleSystemLoader =
+            (InstParticleSystemLoader *) GetAllWrappers()->mpLoader(
+                    AllWrappers::msInstParticleSystem);
+    pInstParticleSystemLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pInstParticleSystemLoader);
+
+    BreakableObjectLoader *pBreakableObjectLoader =
+            (BreakableObjectLoader *) GetAllWrappers()->mpLoader(AllWrappers::msBreakableObject);
+    pBreakableObjectLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pBreakableObjectLoader);
+
+    AnimDynaPhysLoader *pAnimDynaPhysLoader =
+            (AnimDynaPhysLoader *) GetAllWrappers()->mpLoader(AllWrappers::msAnimDynaPhys);
+    pAnimDynaPhysLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pAnimDynaPhysLoader);
+
+    AnimDynaPhysWrapperLoader *pAnimWrapperLoader =
+            (AnimDynaPhysWrapperLoader *) GetAllWrappers()->mpLoader(
+                    AllWrappers::msAnimDynaPhysWrapper);
+    pAnimWrapperLoader->SetRegdListener(GetRenderManager(), 0);
+    p3d->AddHandler(pAnimWrapperLoader);
 
     p3d->AddHandler(new(GMA_PERSISTENT) tTextureLoader);
-    p3d->AddHandler( new(GMA_PERSISTENT) tSetLoader );
+    p3d->AddHandler(new(GMA_PERSISTENT) tSetLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) tShaderLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) tCameraLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) tGameAttrLoader);
@@ -1506,19 +1419,19 @@ MEMTRACK_PUSH_GROUP( "Win32Platform" );
 
     //p3d->AddHandler(new p3d::tIgnoreLoader);
 
-    tSEQFileHandler* sequencerFileHandler = new(GMA_PERSISTENT) tSEQFileHandler;
+    tSEQFileHandler *sequencerFileHandler = new(GMA_PERSISTENT) tSEQFileHandler;
     p3d::loadManager->AddHandler(sequencerFileHandler, "seq");
 
     // sim lib
     sim::InstallSimLoaders();
 
-    p3d->AddHandler(new(GMA_PERSISTENT) CameraDataLoader, SRR2::ChunkID::FOLLOWCAM);    
-    p3d->AddHandler(new(GMA_PERSISTENT) CameraDataLoader, SRR2::ChunkID::WALKERCAM);    
-    p3d->AddHandler(new(GMA_PERSISTENT) IntersectionLoader);    
+    p3d->AddHandler(new(GMA_PERSISTENT) CameraDataLoader, SRR2::ChunkID::FOLLOWCAM);
+    p3d->AddHandler(new(GMA_PERSISTENT) CameraDataLoader, SRR2::ChunkID::WALKERCAM);
+    p3d->AddHandler(new(GMA_PERSISTENT) IntersectionLoader);
     //p3d->AddHandler(new(GMA_PERSISTENT) RoadLoader);    
-    p3d->AddHandler(new(GMA_PERSISTENT) RoadDataSegmentLoader);    
+    p3d->AddHandler(new(GMA_PERSISTENT) RoadDataSegmentLoader);
     p3d->AddHandler(new(GMA_PERSISTENT) CStatePropDataLoader);
-MEMTRACK_POP_GROUP( "Win32Platform" );
+    MEMTRACK_POP_GROUP("Win32Platform");
 }
 
 
@@ -1532,8 +1445,7 @@ MEMTRACK_POP_GROUP( "Win32Platform" );
 // Return:      None.
 //
 //==============================================================================
-void Win32Platform::ShutdownPure3D()
-{
+void Win32Platform::ShutdownPure3D() {
     //
     // Clean-up the Pure3D Inventory
     //
@@ -1543,18 +1455,16 @@ void Win32Platform::ShutdownPure3D()
     //
     // Clean-up the space taken by the Pure 3D context.
     //
-    if( mpContext != NULL )
-    {
-        mpPlatform->DestroyContext( mpContext );
+    if (mpContext != NULL) {
+        mpPlatform->DestroyContext(mpContext);
         mpContext = NULL;
     }
 
     //
     // Clean-up the space taken by the Pure 3D platform.
     //
-    if( mpPlatform != NULL )
-    {
-        tPlatform::Destroy( mpPlatform );
+    if (mpPlatform != NULL) {
+        tPlatform::Destroy(mpPlatform);
         mpPlatform = NULL;
     }
 }
@@ -1571,8 +1481,7 @@ void Win32Platform::ShutdownPure3D()
 //
 //==============================================================================
 
-void Win32Platform::InitializeContext()
-{
+void Win32Platform::InitializeContext() {
     tContextInitData init;
 
     //
@@ -1602,7 +1511,7 @@ void Win32Platform::InitializeContext()
     // dimensions of the window define the rendering area.  We'll define them
     // anyway for completeness sake.
     //
-    TranslateResolution( mResolution, init.xsize, init.ysize );
+    TranslateResolution(mResolution, init.xsize, init.ysize);
 
     //
     // Depth of the rendering buffer.  Again, this value only works in
@@ -1613,22 +1522,19 @@ void Win32Platform::InitializeContext()
 
     init.lockToVsync = false;
 
-    if( mpContext == NULL )
-    {
+    if (mpContext == NULL) {
         // Create the context
-        mpContext = mpPlatform->CreateContext( &init );
-        rAssert( mpContext != NULL );
+        mpContext = mpPlatform->CreateContext(&init);
+        rAssert(mpContext != NULL);
 
         //
         // Assign this context to the platform.
         //
-        mpPlatform->SetActiveContext( mpContext );
-        p3d::pddi->EnableZBuffer( true );
-    }
-    else
-    {
+        mpPlatform->SetActiveContext(mpContext);
+        p3d::pddi->EnableZBuffer(true);
+    } else {
         // Update the display settings.
-        mpContext->GetDisplay()->InitDisplay( &init );
+        mpContext->GetDisplay()->InitDisplay(&init);
     }
 }
 
@@ -1645,49 +1551,40 @@ void Win32Platform::InitializeContext()
 //
 //==============================================================================
 
-void Win32Platform::TranslateResolution( Resolution res, int&x, int&y )
-{
-    switch( res )
-    {
-        case Res_640x480:
-        {
+void Win32Platform::TranslateResolution(Resolution res, int &x, int &y) {
+    switch (res) {
+        case Res_640x480: {
             x = 640;
             y = 480;
             break;
         }
-        case Res_800x600:
-        {
+        case Res_800x600: {
             x = 800;
             y = 600;
             break;
         }
-        case Res_1024x768:
-        {
+        case Res_1024x768: {
             x = 1024;
             y = 768;
             break;
         }
-        case Res_1152x864:
-        {
+        case Res_1152x864: {
             x = 1152;
             y = 864;
             break;
         }
-        case Res_1280x1024:
-        {
+        case Res_1280x1024: {
             x = 1280;
             y = 1024;
             break;
         }
-        case Res_1600x1200:
-        {
+        case Res_1600x1200: {
             x = 1600;
             y = 1200;
             break;
         }
-        default:
-        {
-            rAssert( false );
+        default: {
+            rAssert(false);
         }
     }
 }
@@ -1703,25 +1600,22 @@ void Win32Platform::TranslateResolution( Resolution res, int&x, int&y )
 //
 //==============================================================================
 
-bool Win32Platform::IsResolutionSupported( Resolution res, int bpp ) const
-{
-    int x,y;
+bool Win32Platform::IsResolutionSupported(Resolution res, int bpp) const {
+    int x, y;
 
-    TranslateResolution( res, x, y );
+    TranslateResolution(res, x, y);
 
     // Get the display info for the device
-    pddiDisplayInfo* displays = NULL;
-    int num_adapters = mpContext->GetDevice()->GetDisplayInfo( &displays );
-    rAssert( num_adapters > 0 );
+    pddiDisplayInfo *displays = NULL;
+    int num_adapters = mpContext->GetDevice()->GetDisplayInfo(&displays);
+    rAssert(num_adapters > 0);
 
     // Go through the supported modes and see if we can do it.
     // Ignore the refresh rate - directx uses default.
-    for( int i = 0; i < displays[0].nDisplayModes; i++ )
-    {
-        if( displays[0].modeInfo[i].width == x &&
+    for (int i = 0; i < displays[0].nDisplayModes; i++) {
+        if (displays[0].modeInfo[i].width == x &&
             displays[0].modeInfo[i].height == y &&
-            displays[0].modeInfo[i].bpp == bpp )
-        {
+            displays[0].modeInfo[i].bpp == bpp) {
             return true;
         }
     }
@@ -1739,20 +1633,19 @@ bool Win32Platform::IsResolutionSupported( Resolution res, int bpp ) const
 // Return:      true if succeeded in creating a timer.
 //
 //==============================================================================
-BOOL Win32Platform::TrackMouseEvent( MOUSETRACKER* pMouseEventTracker ) 
-{
-    if ( !pMouseEventTracker || pMouseEventTracker->cbSize < sizeof(MOUSETRACKER) ) 
+BOOL Win32Platform::TrackMouseEvent(MOUSETRACKER *pMouseEventTracker) {
+    if (!pMouseEventTracker || pMouseEventTracker->cbSize < sizeof(MOUSETRACKER))
         return false;
 
-    if( !IsWindow( pMouseEventTracker->hwndTrack ) ) 
+    if (!IsWindow(pMouseEventTracker->hwndTrack))
         return false;
 
-    if( !(pMouseEventTracker->dwFlags & TIMER_LEAVE) )
+    if (!(pMouseEventTracker->dwFlags & TIMER_LEAVE))
         return false;
 
-    return SetTimer( pMouseEventTracker->hwndTrack, 
-                     pMouseEventTracker->dwFlags, 
-                     100, (TIMERPROC)TrackMouseTimerProc );
+    return SetTimer(pMouseEventTracker->hwndTrack,
+                    pMouseEventTracker->dwFlags,
+                    100, (TIMERPROC) TrackMouseTimerProc);
 }
 
 //=============================================================================
@@ -1767,33 +1660,30 @@ BOOL Win32Platform::TrackMouseEvent( MOUSETRACKER* pMouseEventTracker )
 // Notes:
 //=============================================================================
 
-void Win32Platform::ResizeWindow()
-{
+void Win32Platform::ResizeWindow() {
     // If fullscreen, no need to change the window size.
-    if( mFullscreen )
-    {
+    if (mFullscreen) {
         return;
     }
 
-    int x,y,cx,cy;
+    int x, y, cx, cy;
     RECT clientRect;
 
-    TranslateResolution( mResolution, cx, cy );
+    TranslateResolution(mResolution, cx, cy);
 
-    if( cx < mScreenWidth )     // if the window fits on the desktop
+    if (cx < mScreenWidth)     // if the window fits on the desktop
     {
-        x = ( mScreenWidth - cx ) / 2;
-        y = ( mScreenHeight - cy ) / 2;
+        x = (mScreenWidth - cx) / 2;
+        y = (mScreenHeight - cy) / 2;
 
         // Adjust the rectangle for the title bar and borders
         clientRect.left = x;
         clientRect.top = y;
-        clientRect.right = x+cx;
-        clientRect.bottom = y+cy;
-        
-        AdjustWindowRect(&clientRect,WndStyle,FALSE);
-    }
-    else    // if the window is bigger than the client area
+        clientRect.right = x + cx;
+        clientRect.bottom = y + cy;
+
+        AdjustWindowRect(&clientRect, WndStyle, FALSE);
+    } else    // if the window is bigger than the client area
     {
         clientRect.left = 0;
         clientRect.top = 0;
@@ -1801,14 +1691,14 @@ void Win32Platform::ResizeWindow()
         clientRect.bottom = cy;
     }
 
-    SetWindowPos( mhWnd, 
-                  HWND_TOP, 
-                  clientRect.left, 
-                  clientRect.top, 
-                  clientRect.right-clientRect.left,
-                  clientRect.bottom-clientRect.top,
-                  0 );
-    ShowWindow( mhWnd, SW_SHOW );
+    SetWindowPos(mhWnd,
+                 HWND_TOP,
+                 clientRect.left,
+                 clientRect.top,
+                 clientRect.right - clientRect.left,
+                 clientRect.bottom - clientRect.top,
+                 0);
+    ShowWindow(mhWnd, SW_SHOW);
 }
 
 //=============================================================================
@@ -1825,12 +1715,10 @@ void Win32Platform::ResizeWindow()
 // Notes:
 //=============================================================================
 
-void Win32Platform::ShowTheCursor( bool show )
-{
-    if( mShowCursor != show )
-    {        
+void Win32Platform::ShowTheCursor(bool show) {
+    if (mShowCursor != show) {
         mShowCursor = show;
-        ShowCursor( mShowCursor );
+        ShowCursor(mShowCursor);
     }
 }
 
@@ -1846,10 +1734,10 @@ void Win32Platform::ShowTheCursor( bool show )
 // Notes:
 //=============================================================================
 
-#if defined( PRINT_WINMESSAGES ) && defined( RAD_DEBUG )
-static const char* GetMessageName( UINT message )
+#if defined(PRINT_WINMESSAGES) && defined(RAD_DEBUG)
+static const char* GetMessageName(UINT message)
 {
-    switch ( message )
+    switch (message)
     {
     case 0x0000: return "WM_NULL";
     case 0x0001: return "WM_CREATE";
@@ -2069,26 +1957,21 @@ static const char* GetMessageName( UINT message )
 }
 #endif
 
-void Win32Platform::TrackMouseTimerProc( HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime ) 
-{
+void Win32Platform::TrackMouseTimerProc(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime) {
     RECT clientRect;
     POINT point;
 
-    GetClientRect( hWnd, &clientRect );
-    MapWindowPoints( hWnd, NULL, (LPPOINT)&clientRect, 2 );
-    GetCursorPos( &point );
-    if( !PtInRect( &clientRect, point ) || (WindowFromPoint(point) != hWnd ) ) 
-    {
-        if( !KillTimer( hWnd, idEvent ) ) 
-        {
-            rDebugPrintf( "Couldn't kill the timer" );
+    GetClientRect(hWnd, &clientRect);
+    MapWindowPoints(hWnd, NULL, (LPPOINT) & clientRect, 2);
+    GetCursorPos(&point);
+    if (!PtInRect(&clientRect, point) || (WindowFromPoint(point) != hWnd)) {
+        if (!KillTimer(hWnd, idEvent)) {
+            rDebugPrintf("Couldn't kill the timer");
         }
 
-        PostMessage( hWnd, WM_MOUSELEAVE, 0, 0 );
-    }
-    else
-    {
-        GetInputManager()->GetFEMouse()->getCursor()->SetVisible( true );
+        PostMessage(hWnd, WM_MOUSELEAVE, 0, 0);
+    } else {
+        GetInputManager()->GetFEMouse()->getCursor()->SetVisible(true);
     }
 }
 
@@ -2108,10 +1991,9 @@ void Win32Platform::TrackMouseTimerProc( HWND hWnd, UINT uMsg, UINT idEvent, DWO
 // Notes:
 //=============================================================================
 
-LRESULT Win32Platform::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-#if defined( PRINT_WINMESSAGES ) && defined( RAD_DEBUG )
-    rDebugPrintf( "Windows Message: 0x%08x (%s) [0x%08x, 0x%08x]\n", message, GetMessageName(message), wParam, lParam  ); 
+LRESULT Win32Platform::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+#if defined(PRINT_WINMESSAGES) && defined(RAD_DEBUG)
+    rDebugPrintf("Windows Message: 0x%08x (%s) [0x%08x, 0x%08x]\n", message, GetMessageName(message), wParam, lParam);
 #endif
     MOUSETRACKER mouseEventTracker;
     static bool bMouseInWindow; // A flag to poll if you want to check if the mouse is in the clientwindow.
@@ -2122,163 +2004,144 @@ LRESULT Win32Platform::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lP
     //
     p3d::platform->ProcessWindowsMessage(hwnd, message, wParam, lParam);
 
-    switch(message)
-    {
-    case WM_ACTIVATEAPP:
-        {
-            InputManager* pInputManager = GetInputManager();
+    switch (message) {
+        case WM_ACTIVATEAPP: {
+            InputManager *pInputManager = GetInputManager();
 
-            if( spInstance != NULL && spInstance->mpContext != NULL )
-            {
-                if( wParam ) // Window is being shown (in focus)
+            if (spInstance != NULL && spInstance->mpContext != NULL) {
+                if (wParam) // Window is being shown (in focus)
                 {
-                    RenderFlow* rf = GetRenderFlow();
+                    RenderFlow *rf = GetRenderFlow();
 
-                    rf->SetGamma( rf->GetGamma() );  
-                    if( pInputManager )
-                    {
+                    rf->SetGamma(rf->GetGamma());
+                    if (pInputManager) {
                         //GetInputManager()->SetRumbleForDevice(0, true);
                         //rDebugPrintf("Force Effects Started!!! \n");
                     }
-                }
-                else  // Window is being hidden (not in focus)
+                } else  // Window is being hidden (not in focus)
                 {
-                    SetDeviceGammaRamp( GetDC( GetDesktopWindow( ) ), DesktopGammaRamp );
-                    if( pInputManager )
-                    {
+                    SetDeviceGammaRamp(GetDC(GetDesktopWindow()), DesktopGammaRamp);
+                    if (pInputManager) {
                         //GetInputManager()->SetRumbleForDevice(0, false);
                         //rDebugPrintf("Force Effects Stopped!!! \n");
                     }
                 }
 
-                if( GetInputManager() != NULL )
-                {
-                    GetInputManager()->GetFEMouse()->SetInGameOverride( !wParam );
+                if (GetInputManager() != NULL) {
+                    GetInputManager()->GetFEMouse()->SetInGameOverride(!wParam);
                 }
             }
 
             break;
         }
 
-    case WM_SYSKEYDOWN:
-    case WM_SYSKEYUP:
-        {
+        case WM_SYSKEYDOWN:
+        case WM_SYSKEYUP: {
             //Ignore Alt and F10 keys.
-            switch(wParam) 
-            {
-            case VK_MENU:
-            	return 0;
-            case VK_F10:
-            	return 0;
-            default: break;
+            switch (wParam) {
+                case VK_MENU:
+                    return 0;
+                case VK_F10:
+                    return 0;
+                default:
+                    break;
             }
         }
-    case WM_SHOWWINDOW:
-        {
+        case WM_SHOWWINDOW: {
             break;
         }
 
-    case WM_CREATE:
-        {
-            GetDeviceGammaRamp( GetDC( GetDesktopWindow( ) ), DesktopGammaRamp );
+        case WM_CREATE: {
+            GetDeviceGammaRamp(GetDC(GetDesktopWindow()), DesktopGammaRamp);
             bMouseInWindow = false;
             break;
         }
 
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        break;   
-    case WM_MOUSELEAVE:
-        bMouseInWindow = false;
-        GetInputManager()->GetFEMouse()->getCursor()->SetVisible( false );
-        break;
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            break;
+        case WM_MOUSELEAVE:
+            bMouseInWindow = false;
+            GetInputManager()->GetFEMouse()->getCursor()->SetVisible(false);
+            break;
 
-    case WM_NCMOUSEMOVE: 
-        {
+        case WM_NCMOUSEMOVE: {
             POINT pPoint;
-            GetCursorPos( &pPoint );
+            GetCursorPos(&pPoint);
 
             // Convert the absolute screen coordinates from windows to client window absolute coordinates.
-            ScreenToClient( hwnd, &pPoint );
+            ScreenToClient(hwnd, &pPoint);
 
             RECT clientRect;
-            GetClientRect( hwnd, &clientRect );
+            GetClientRect(hwnd, &clientRect);
 
-            GetInputManager()->GetFEMouse()->Move( pPoint.x, pPoint.y, clientRect.right, clientRect.bottom );
+            GetInputManager()->GetFEMouse()->Move(pPoint.x, pPoint.y, clientRect.right,
+                                                  clientRect.bottom);
 
-            ShowTheCursor( true );
+            ShowTheCursor(true);
             break;
         }
-    case WM_MOUSEMOVE:  
-        {
+        case WM_MOUSEMOVE: {
             POINT pPoint;
             pPoint.x = LOWORD(lParam);
             pPoint.y = HIWORD(lParam);
 
             // For some reason beyond my comprehension WM_MOUSEMOVE seems to be getting called regardless if the
             // mouse moved or not. So let the FEMouse determine if we moved.
-            FEMouse* pFEMouse = GetInputManager()->GetFEMouse();
-            if( pFEMouse->DidWeMove( pPoint.x, pPoint.y ) )
-            {
+            FEMouse *pFEMouse = GetInputManager()->GetFEMouse();
+            if (pFEMouse->DidWeMove(pPoint.x, pPoint.y)) {
                 RECT clientRect;
-                GetClientRect( hwnd, &clientRect );
-                pFEMouse->Move( pPoint.x, pPoint.y, clientRect.right, clientRect.bottom );
+                GetClientRect(hwnd, &clientRect);
+                pFEMouse->Move(pPoint.x, pPoint.y, clientRect.right, clientRect.bottom);
             }
 
-            ShowTheCursor( false );
+            ShowTheCursor(false);
 
-            if( !bMouseInWindow ) 
-            {
+            if (!bMouseInWindow) {
                 bMouseInWindow = true;
                 mouseEventTracker.cbSize = sizeof(MOUSETRACKER);
                 mouseEventTracker.dwFlags = TIMER_LEAVE;
                 mouseEventTracker.hwndTrack = hwnd;
-                if( !TrackMouseEvent( &mouseEventTracker ) )
-                {
-                    rDebugPrintf( "TrackMouseEvent Failed" );
+                if (!TrackMouseEvent(&mouseEventTracker)) {
+                    rDebugPrintf("TrackMouseEvent Failed");
                 }
             }
 
             break;
         }
 
-    case WM_LBUTTONDOWN:
-        {
-            GetInputManager()->GetFEMouse()->ButtonDown( BUTTON_LEFT );
-    //        rDebugPrintf("LEFT MOUSE BUTTON PRESSED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n");
+        case WM_LBUTTONDOWN: {
+            GetInputManager()->GetFEMouse()->ButtonDown(BUTTON_LEFT);
+            //        rDebugPrintf("LEFT MOUSE BUTTON PRESSED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n");
             break;
         }
-    case WM_LBUTTONUP:
-        {
-            GetInputManager()->GetFEMouse()->ButtonUp( BUTTON_LEFT );
+        case WM_LBUTTONUP: {
+            GetInputManager()->GetFEMouse()->ButtonUp(BUTTON_LEFT);
             break;
         }
-    case WM_SYSCOMMAND:
-        {
-            switch (wParam)
-            {
-            case SC_SCREENSAVE:   // Screensaver Trying To Start?
-            case SC_MONITORPOWER: // Monitor Trying To Enter Powersave?
-                return 0;
+        case WM_SYSCOMMAND: {
+            switch (wParam) {
+                case SC_SCREENSAVE:   // Screensaver Trying To Start?
+                case SC_MONITORPOWER: // Monitor Trying To Enter Powersave?
+                    return 0;
             }
             break;
         }
 
-        // PDDI will sent this message to enable or disable rendering in response to an
-        // application level window event.  For example, if the user clicks away from
-        // the rendering window, or uses ALT-TAB to select another application, PDDI
-        // will tell sent a WM_PDDI_DRAW_ENABLE(0) message.  When the application
-        // regains focus, WM_PDDI_DRAW_ENABLE(1) will be sent.
-    case WM_PDDI_DRAW_ENABLE:
-        //GetApplication()->EnableRendering(wParam == 1);
-        break;
+            // PDDI will sent this message to enable or disable rendering in response to an
+            // application level window event.  For example, if the user clicks away from
+            // the rendering window, or uses ALT-TAB to select another application, PDDI
+            // will tell sent a WM_PDDI_DRAW_ENABLE(0) message.  When the application
+            // regains focus, WM_PDDI_DRAW_ENABLE(1) will be sent.
+        case WM_PDDI_DRAW_ENABLE:
+            //GetApplication()->EnableRendering(wParam == 1);
+            break;
 
-    case WM_CHAR:
-        {
+        case WM_CHAR: {
             break;
         }
-    default:
-        break;
+        default:
+            break;
     }
 
     return DefWindowProc(hwnd, message, wParam, lParam);

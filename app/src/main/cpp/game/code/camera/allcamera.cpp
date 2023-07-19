@@ -13,7 +13,7 @@
 #include <camera/supercamcontroller.cpp>
 #include <camera/supercammanager.cpp>
 #include <camera/trackercam.cpp>
-#include <camera/walkercam.cpp> 
+#include <camera/walkercam.cpp>
 #include <camera/wrecklesscam.cpp>
 #include <camera/wrecklesseventlistener.cpp>
 #include <camera/staticcam.cpp>

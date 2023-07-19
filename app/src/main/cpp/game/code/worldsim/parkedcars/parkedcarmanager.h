@@ -27,6 +27,7 @@
 // Forward References
 //========================================
 class Vehicle;
+
 class CarStartLocator;
 
 //=============================================================================
@@ -35,11 +36,9 @@ class CarStartLocator;
 //
 //=============================================================================
 
-class ParkedCarManager : public EventListener, public LoadingManager::ProcessRequestsCallback
-{
+class ParkedCarManager : public EventListener, public LoadingManager::ProcessRequestsCallback {
 public:
-    enum 
-    { 
+    enum {
         MAX_DIFFERENT_CARS = 5,
         MAX_CAR_NAME_LEN = 32,
         MAX_LOCATORS_PER_ZONE = 50,
@@ -47,74 +46,80 @@ public:
         NUM_TEST_PARKED_CARS = VehicleCentral::MAX_ACTIVE_VEHICLES - 6
     };
 
-    static ParkedCarManager& GetInstance();
+    static ParkedCarManager &GetInstance();
+
     static void DestroyInstance();
 
     //From EventListener
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
     //From LoadingManager
-    virtual void OnProcessRequestsComplete( void* pUserData );   
+    virtual void OnProcessRequestsComplete(void *pUserData);
 
     //Local
-    void AddCarType( const char* name );
-    void AddLocator( CarStartLocator* loc );
+    void AddCarType(const char *name);
 
-    void AddFreeCar( const char* name, CarStartLocator* loc );
+    void AddLocator(CarStartLocator *loc);
+
+    void AddFreeCar(const char *name, CarStartLocator *loc);
+
     void RemoveFreeCar();
-    void RemoveFreeCarIfClose( const rmt::Vector& position );
-    
+
+    void RemoveFreeCarIfClose(const rmt::Vector &position);
+
     //Chuck: release the parkcar instances so Gameplaymanager can free up the art
     void MDKParkedCars();
 
-    void EnableParkedCars() {mParkedCarsEnabled = true;}
-    void DisableParkedCars() {mParkedCarsEnabled = false;}
+    void EnableParkedCars() { mParkedCarsEnabled = true; }
+
+    void DisableParkedCars() { mParkedCarsEnabled = false; }
 
 private:
-    static ParkedCarManager* spInstance;
+    static ParkedCarManager *spInstance;
 
-    struct ParkedCarInfo
-    {
-        ParkedCarInfo() : 
-            mCar( NULL ), 
-            mHusk( NULL ),
-            mLoadedZoneUID( 0 )
-            //mActiveListIndex( -1 ) 
-        { mName[0] ='\0'; };
+    struct ParkedCarInfo {
+        ParkedCarInfo() :
+                mCar(NULL),
+                mHusk(NULL),
+                mLoadedZoneUID(0)
+        //mActiveListIndex(-1)
+        { mName[0] = '\0'; };
 
-        char mName[ MAX_CAR_NAME_LEN + 1];
-        Vehicle* mCar;
-        Vehicle* mHusk;
+        char mName[MAX_CAR_NAME_LEN + 1];
+        Vehicle *mCar;
+        Vehicle *mHusk;
         tUID mLoadedZoneUID;
         //int mActiveListIndex; 
     };
-    
+
     //Where all the parked cars are
-    ParkedCarInfo* mParkedCars;
+    ParkedCarInfo *mParkedCars;
     unsigned int mNumCarTypes;
     unsigned int mNumParkedCars;
 
     //For loading locators, we store all the locators loaded while a given UID is active.
-    CarStartLocator* mLocators[ MAX_LOCATORS_PER_ZONE ];
+    CarStartLocator *mLocators[MAX_LOCATORS_PER_ZONE];
     unsigned int mNumLocators;
     tUID mLoadingZoneUID;
 
     //Free "Moment" cars
     ParkedCarInfo mFreeCar;
-    CarStartLocator* mFreeCarLocator;
+    CarStartLocator *mFreeCarLocator;
 
     ParkedCarManager();
+
     virtual ~ParkedCarManager();
 
     void CreateFreeCar();
 
-    void FindParkedCarInfo( Vehicle* v, ParkedCarInfo*& info, bool& isFreeCar );
+    void FindParkedCarInfo(Vehicle *v, ParkedCarInfo *&info, bool &isFreeCar);
 
     bool mParkedCarsEnabled;   // little bool to disable these during street races
 
     //Prevent wasteful constructor creation.
-    ParkedCarManager( const ParkedCarManager& parkedcarmanager );
-    ParkedCarManager& operator=( const ParkedCarManager& parkedcarmanager );
+    ParkedCarManager(const ParkedCarManager &parkedcarmanager);
+
+    ParkedCarManager &operator=(const ParkedCarManager &parkedcarmanager);
 };
 
 //*****************************************************************************
@@ -122,6 +127,6 @@ private:
 //Inline Public Member Functions
 //
 //*****************************************************************************
-inline ParkedCarManager& GetPCM() { return ParkedCarManager::GetInstance(); };
+inline ParkedCarManager &GetPCM() { return ParkedCarManager::GetInstance(); };
 
 #endif //PARKEDCARMANAGER_H

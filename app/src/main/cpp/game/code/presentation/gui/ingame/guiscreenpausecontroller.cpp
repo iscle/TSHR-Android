@@ -54,23 +54,21 @@ const float CONTROLLER_IMAGE_CORRECTION_SCALE = 2.0f;
 //
 //===========================================================================
 CGuiScreenPauseController::CGuiScreenPauseController
-(
-	Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-)
-:   CGuiScreenController( pScreen, pParent )
-{
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        : CGuiScreenController(pScreen, pParent) {
 #ifndef RAD_WIN32
-    rAssert( pScreen != NULL );
-    Scrooby::Page* pPage = pScreen->GetPage( "ControllerImageS" );
-    rAssert( pPage != NULL );
-    Scrooby::Layer* foreground = pPage->GetLayer( "Foreground" );
-    rAssert( foreground != NULL );
+    rAssert(pScreen != NULL);
+    Scrooby::Page *pPage = pScreen->GetPage("ControllerImageS");
+    rAssert(pPage != NULL);
+    Scrooby::Layer *foreground = pPage->GetLayer("Foreground");
+    rAssert(foreground != NULL);
 
-    Scrooby::Sprite* controllerImage = foreground->GetSprite( "Controller" );
-    if( controllerImage != NULL )
-    {
-        controllerImage->ScaleAboutCenter( CONTROLLER_IMAGE_CORRECTION_SCALE );
+    Scrooby::Sprite *controllerImage = foreground->GetSprite("Controller");
+    if (controllerImage != NULL) {
+        controllerImage->ScaleAboutCenter(CONTROLLER_IMAGE_CORRECTION_SCALE);
     }
 #endif
 }
@@ -88,8 +86,7 @@ CGuiScreenPauseController::CGuiScreenPauseController
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenPauseController::~CGuiScreenPauseController()
-{
+CGuiScreenPauseController::~CGuiScreenPauseController() {
 }
 
 
@@ -106,34 +103,29 @@ CGuiScreenPauseController::~CGuiScreenPauseController()
 //
 //===========================================================================
 void CGuiScreenPauseController::HandleMessage
-(
-	eGuiMessage message, 
-	unsigned int param1,
-	unsigned int param2 
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        switch( message )
-        {
-            case GUI_MSG_CONTROLLER_START:
-            {
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        switch (message) {
+            case GUI_MSG_CONTROLLER_START: {
                 // resume game
-                m_pParent->HandleMessage( GUI_MSG_UNPAUSE_INGAME );
+                m_pParent->HandleMessage(GUI_MSG_UNPAUSE_INGAME);
 
                 break;
             }
 
-            default:
-            {
+            default: {
                 break;
             }
         }
     }
 
-	// Propogate the message up the hierarchy.
-	//
-	CGuiScreenController::HandleMessage( message, param1, param2 );
+    // Propogate the message up the hierarchy.
+    //
+    CGuiScreenController::HandleMessage(message, param1, param2);
 }
 
 
@@ -149,8 +141,7 @@ void CGuiScreenPauseController::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPauseController::InitIntro()
-{
+void CGuiScreenPauseController::InitIntro() {
     CGuiScreenController::InitIntro();
 }
 
@@ -167,8 +158,7 @@ void CGuiScreenPauseController::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPauseController::InitRunning()
-{
+void CGuiScreenPauseController::InitRunning() {
     CGuiScreenController::InitRunning();
 }
 
@@ -185,33 +175,31 @@ void CGuiScreenPauseController::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenPauseController::InitOutro()
-{
+void CGuiScreenPauseController::InitOutro() {
     CGuiScreenController::InitOutro();
 
     // apply vibration/rumble setting right away
     //
-    int controllerID = GetInputManager()->GetControllerIDforPlayer( 0 );
+    int controllerID = GetInputManager()->GetControllerIDforPlayer(0);
     bool vibrationOn = GetInputManager()->IsRumbleEnabled();
 
-    if ( GetGameplayManager()->GetGameType() == GameplayManager::GT_NORMAL &&
-         GetAvatarManager()->GetAvatarForPlayer( 0 )->GetVehicle() )
-    {
+    if (GetGameplayManager()->GetGameType() == GameplayManager::GT_NORMAL &&
+        GetAvatarManager()->GetAvatarForPlayer(0)->GetVehicle()) {
 #ifdef RAD_PS2
-        if ( GetInputManager()->GetController( Input::USB0 )->IsConnected() )
+        if (GetInputManager()->GetController(Input::USB0)->IsConnected())
         {
-            GetInputManager()->SetRumbleForDevice( Input::USB0, vibrationOn );
+            GetInputManager()->SetRumbleForDevice(Input::USB0, vibrationOn);
         }
-        else if ( GetInputManager()->GetController( Input::USB1 )->IsConnected() )
+        else if (GetInputManager()->GetController(Input::USB1)->IsConnected())
         {
-            GetInputManager()->SetRumbleForDevice( Input::USB1, vibrationOn );
+            GetInputManager()->SetRumbleForDevice(Input::USB1, vibrationOn);
         }
         else
         {
-            GetInputManager()->SetRumbleForDevice( controllerID, vibrationOn );
+            GetInputManager()->SetRumbleForDevice(controllerID, vibrationOn);
         }
 #else
-        GetInputManager()->SetRumbleForDevice( controllerID, vibrationOn );
+        GetInputManager()->SetRumbleForDevice(controllerID, vibrationOn);
 #endif
 
     }

@@ -28,37 +28,31 @@
 #include <worldsim/character/character.h>
 #include <debug/profiler.h>
 
-void PrepareString( char** string, unsigned char* lengthHolder, unsigned int length )
-{
-MEMTRACK_PUSH_GROUP( "ActionEventLocator" );
-    rAssert( !(*lengthHolder) );
-    
-    if ( *string )
-    {
-        rAssertMsg( false, "Why is someone changing this!  BAD! Get Cary!" );
+void PrepareString(char **string, unsigned char *lengthHolder, unsigned int length) {
+    MEMTRACK_PUSH_GROUP("ActionEventLocator");
+    rAssert(!(*lengthHolder));
+
+    if (*string) {
+        rAssertMsg(false, "Why is someone changing this!  BAD! Get Cary!");
         (*lengthHolder) = 0;
         delete[] *string;
         *string = NULL;
-    }
-    else
-    {
+    } else {
         (*lengthHolder) = length + 1;
     }
 
-    *string = new(GMA_LEVEL_OTHER) char[ (*lengthHolder) ];        
-MEMTRACK_POP_GROUP( "ActionEventLocator" );    
+    *string = new(GMA_LEVEL_OTHER) char[(*lengthHolder)];
+    MEMTRACK_POP_GROUP("ActionEventLocator");
 }
 
-void SetString( char** string, unsigned int length, const char* newString )
-{
-    rAssert( newString );
-    rAssert( length );
-    rAssert( *string );
+void SetString(char **string, unsigned int length, const char *newString) {
+    rAssert(newString);
+    rAssert(length);
+    rAssert(*string);
 
-    if ( *string )
-    {
+    if (*string) {
         unsigned int newLength = (length - 1) > strlen(newString) ? strlen(newString) : length - 1;
-        strncpy( *string, newString, newLength );
+        strncpy(*string, newString, newLength);
         (*string)[newLength] = '\0';
     }
 }
@@ -74,7 +68,8 @@ void SetString( char** string, unsigned int length, const char* newString )
 // Public Member Functions
 //
 //******************************************************************************
-static int AELcount=0;
+static int AELcount = 0;
+
 //==============================================================================
 // ActionEventLocator::ActionEventLocator
 //==============================================================================
@@ -86,16 +81,15 @@ static int AELcount=0;
 //
 //==============================================================================
 ActionEventLocator::ActionEventLocator() :
-    mObjNameSize( 0 ),
-    mJointNameSize( 0 ),
-    mActionNameSize( 0 ),
-    mShouldTransform( false ),
-    mObjName( NULL ),
-    mJointName( NULL ),
-    mActionName( NULL ),
-    mButton( CharacterController::DoAction )
-{
-    SetData( -1 );
+        mObjNameSize(0),
+        mJointNameSize(0),
+        mActionNameSize(0),
+        mShouldTransform(false),
+        mObjName(NULL),
+        mJointName(NULL),
+        mActionName(NULL),
+        mButton(CharacterController::DoAction) {
+    SetData(-1);
     AELcount++;
     mMatrix.Identity();
 }
@@ -110,35 +104,30 @@ ActionEventLocator::ActionEventLocator() :
 // Return:      N/A.
 //
 //==============================================================================
-ActionEventLocator::~ActionEventLocator()
-{
-    if ( mObjName )
-    {
-        delete [] mObjName;
+ActionEventLocator::~ActionEventLocator() {
+    if (mObjName) {
+        delete[] mObjName;
         mObjName = NULL;
     }
 
     mObjNameSize = 0;
     AELcount--;
-    if ( mJointName )
-    {
-        delete [] mJointName;
+    if (mJointName) {
+        delete[] mJointName;
         mJointName = NULL;
     }
 
     mJointNameSize = 0;
 
-    if ( mActionName )
-    {
-        delete [] mActionName;
+    if (mActionName) {
+        delete[] mActionName;
         mActionName = NULL;
     }
 
     mActionNameSize = 0;
 
-    int actionId = (int)this->GetData( );   
-    if ( actionId != -1 )
-    {
+    int actionId = (int) this->GetData();
+    if (actionId != -1) {
         actionId = -1;
         //The Action Button Manager will clean this out when the Dump Dyna or Destroy are called.
         //This sucks.
@@ -150,14 +139,13 @@ ActionEventLocator::~ActionEventLocator()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int size )
+// Parameters:  (unsigned int size)
 //
 // Return:      void 
 //
 //=============================================================================
-void ActionEventLocator::SetObjNameSize( unsigned char size )
-{
-    PrepareString( &mObjName, &mObjNameSize, size );
+void ActionEventLocator::SetObjNameSize(unsigned char size) {
+    PrepareString(&mObjName, &mObjNameSize, size);
 }
 
 //=============================================================================
@@ -165,14 +153,13 @@ void ActionEventLocator::SetObjNameSize( unsigned char size )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const char* name )
+// Parameters:  (const char* name)
 //
 // Return:      void 
 //
 //=============================================================================
-void ActionEventLocator::SetObjName( const char* name )
-{
-    SetString( &mObjName, mObjNameSize, name );
+void ActionEventLocator::SetObjName(const char *name) {
+    SetString(&mObjName, mObjNameSize, name);
 }
 
 //=============================================================================
@@ -180,14 +167,13 @@ void ActionEventLocator::SetObjName( const char* name )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int size )
+// Parameters:  (unsigned int size)
 //
 // Return:      void 
 //
 //=============================================================================
-void ActionEventLocator::SetJointNameSize( unsigned char size )
-{
-    PrepareString( &mJointName, &mJointNameSize, size );
+void ActionEventLocator::SetJointNameSize(unsigned char size) {
+    PrepareString(&mJointName, &mJointNameSize, size);
 }
 
 //=============================================================================
@@ -195,14 +181,13 @@ void ActionEventLocator::SetJointNameSize( unsigned char size )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const char* name )
+// Parameters:  (const char* name)
 //
 // Return:      void 
 //
 //=============================================================================
-void ActionEventLocator::SetJointName( const char* name )
-{
-    SetString( &mJointName, mJointNameSize, name );
+void ActionEventLocator::SetJointName(const char *name) {
+    SetString(&mJointName, mJointNameSize, name);
 }
 
 //=============================================================================
@@ -210,14 +195,13 @@ void ActionEventLocator::SetJointName( const char* name )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int size )
+// Parameters:  (unsigned int size)
 //
 // Return:      void 
 //
 //=============================================================================
-void ActionEventLocator::SetActionNameSize( unsigned char size )
-{
-    PrepareString( &mActionName, &mActionNameSize, size );
+void ActionEventLocator::SetActionNameSize(unsigned char size) {
+    PrepareString(&mActionName, &mActionNameSize, size);
 }
 
 //=============================================================================
@@ -225,49 +209,49 @@ void ActionEventLocator::SetActionNameSize( unsigned char size )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const char* name )
+// Parameters:  (const char* name)
 //
 // Return:      void 
 //
 //=============================================================================
-void ActionEventLocator::SetActionName( const char* name )
-{
-    SetString( &mActionName, mActionNameSize, name );
+void ActionEventLocator::SetActionName(const char *name) {
+    SetString(&mActionName, mActionNameSize, name);
 }
+
 /*
 ==============================================================================
 ActionEventLocator::AddToGame
 ==============================================================================
 Description:    Comment
 
-Parameters:     ( void )
+Parameters:     (void)
 
 Return:         bool 
 
 =============================================================================
 */
-bool ActionEventLocator::AddToGame( tEntityStore* store )
-{
-    return GetActionButtonManager()->AddActionEventLocator( this, store );
+bool ActionEventLocator::AddToGame(tEntityStore *store) {
+    return GetActionButtonManager()->AddActionEventLocator(this, store);
 }
+
 //=============================================================================
 // ActionEventLocator::Reset
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( void )
+// Parameters:  (void)
 //
 // Return:      void 
 //
 //=============================================================================
-void ActionEventLocator::Reset( void )
-{
+void ActionEventLocator::Reset(void) {
     // Get the index for the action ptr.
     //
-    int actionId = (int)this->GetData( );   
-    ActionButton::ButtonHandler* pActionButtonHandler = GetActionButtonManager()->GetActionByIndex( actionId );
-    rAssert( pActionButtonHandler );
-    pActionButtonHandler->Reset( );
+    int actionId = (int) this->GetData();
+    ActionButton::ButtonHandler *pActionButtonHandler = GetActionButtonManager()->GetActionByIndex(
+            actionId);
+    rAssert(pActionButtonHandler);
+    pActionButtonHandler->Reset();
 }
 //******************************************************************************
 //
@@ -280,56 +264,53 @@ void ActionEventLocator::Reset( void )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int playerID, bool bActive )
+// Parameters:  (unsigned int playerID, bool bActive)
 //
 // Return:      void 
 //
 //=============================================================================
-void ActionEventLocator::OnTrigger( unsigned int playerID )
-{
-BEGIN_PROFILE( "AEL On Trigger" );
-    if ( this->GetPlayerEntered() )
-    {
+void ActionEventLocator::OnTrigger(unsigned int playerID) {
+    BEGIN_PROFILE("AEL On Trigger");
+    if (this->GetPlayerEntered()) {
         // Get the index for the action ptr.
         //
-        int actionId = (int)this->GetData( );        
-        
+        int actionId = (int) this->GetData();
+
         // Trigger the enter context.
         //
         unsigned int playerId = GetPlayerID();
-        Character* pCharacter = GetCharacterManager( )->GetCharacter( playerId );
-        rAssert( pCharacter );
+        Character *pCharacter = GetCharacterManager()->GetCharacter(playerId);
+        rAssert(pCharacter);
 
-        ActionButton::ButtonHandler* pActionButtonHandler = GetActionButtonManager()->GetActionByIndex( actionId );
-        rAssert( pActionButtonHandler );
+        ActionButton::ButtonHandler *pActionButtonHandler = GetActionButtonManager()->GetActionByIndex(
+                actionId);
+        rAssert(pActionButtonHandler);
 
         // Entered an action volume.
         //
-        if(pActionButtonHandler->UsesActionButton())
-        {
-            pCharacter->AddActionButtonHandler( pActionButtonHandler );
+        if (pActionButtonHandler->UsesActionButton()) {
+            pCharacter->AddActionButtonHandler(pActionButtonHandler);
         }
 
-        GetActionButtonManager()->EnterActionTrigger( pCharacter, actionId );
-    }
-    else
-    {
+        GetActionButtonManager()->EnterActionTrigger(pCharacter, actionId);
+    } else {
         // Get the index for the action ptr.
         //
-        int actionId = (int)this->GetData( );
-        rAssert( actionId >= 0 );
-        
-        ActionButton::ButtonHandler* pActionButtonHandler = GetActionButtonManager()->GetActionByIndex( actionId );
-        rAssert( pActionButtonHandler );
+        int actionId = (int) this->GetData();
+        rAssert(actionId >= 0);
+
+        ActionButton::ButtonHandler *pActionButtonHandler = GetActionButtonManager()->GetActionByIndex(
+                actionId);
+        rAssert(pActionButtonHandler);
 
         // Trigger the exit context.
         //
         unsigned int playerId = GetPlayerID();
-        Character* pCharacter = GetCharacterManager( )->GetCharacter( playerId );      
-        
-        GetActionButtonManager()->ExitActionTrigger( pCharacter, actionId );
-        pCharacter->RemoveActionButtonHandler( pActionButtonHandler );
+        Character *pCharacter = GetCharacterManager()->GetCharacter(playerId);
+
+        GetActionButtonManager()->ExitActionTrigger(pCharacter, actionId);
+        pCharacter->RemoveActionButtonHandler(pActionButtonHandler);
     }
-END_PROFILE( "AEL On Trigger" );
+    END_PROFILE("AEL On Trigger");
 }
 

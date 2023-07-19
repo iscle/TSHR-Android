@@ -53,12 +53,11 @@
 //
 //===========================================================================
 CGuiScreenLevelEnd::CGuiScreenLevelEnd
-(
-	Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-)
-:   CGuiScreenLevelStats( pScreen, pParent, GUI_SCREEN_ID_LEVEL_END )
-{
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        : CGuiScreenLevelStats(pScreen, pParent, GUI_SCREEN_ID_LEVEL_END) {
 }
 
 
@@ -74,8 +73,7 @@ CGuiScreenLevelEnd::CGuiScreenLevelEnd
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenLevelEnd::~CGuiScreenLevelEnd()
-{
+CGuiScreenLevelEnd::~CGuiScreenLevelEnd() {
 }
 
 
@@ -92,36 +90,31 @@ CGuiScreenLevelEnd::~CGuiScreenLevelEnd()
 //
 //===========================================================================
 void CGuiScreenLevelEnd::HandleMessage
-(
-	eGuiMessage message,
-	unsigned int param1,
-	unsigned int param2
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        switch( message )
-        {
-            case GUI_MSG_CONTROLLER_SELECT:
-            {
-                m_pParent->HandleMessage( GUI_MSG_QUIT_INGAME_FOR_RELOAD,
-                                          GetGameplayManager()->GetCurrentLevelIndex() + 1,
-                                          0 );
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        switch (message) {
+            case GUI_MSG_CONTROLLER_SELECT: {
+                m_pParent->HandleMessage(GUI_MSG_QUIT_INGAME_FOR_RELOAD,
+                                         GetGameplayManager()->GetCurrentLevelIndex() + 1,
+                                         0);
 
-                GetEventManager()->TriggerEvent( EVENT_FE_MENU_SELECT );
+                GetEventManager()->TriggerEvent(EVENT_FE_MENU_SELECT);
 
                 break;
             }
-            default:
-            {
+            default: {
                 break;
             }
         }
     }
 
     // Propogate the message up the hierarchy.
-	//
-	CGuiScreen::HandleMessage( message, param1, param2 );
+    //
+    CGuiScreen::HandleMessage(message, param1, param2);
 }
 
 
@@ -137,18 +130,16 @@ void CGuiScreenLevelEnd::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenLevelEnd::InitIntro()
-{
+void CGuiScreenLevelEnd::InitIntro() {
     // set heading to "Level Complete"
     //
-    rAssert( m_levelStatsHeading != NULL );
-    m_levelStatsHeading->SetIndex( 1 );
+    rAssert(m_levelStatsHeading != NULL);
+    m_levelStatsHeading->SetIndex(1);
 
     // show "use mission select" info text
     //
-    if( m_useMissionSelect != NULL )
-    {
-        m_useMissionSelect->SetVisible( true );
+    if (m_useMissionSelect != NULL) {
+        m_useMissionSelect->SetVisible(true);
     }
 
     // update current level stats
@@ -158,7 +149,8 @@ void CGuiScreenLevelEnd::InitIntro()
     // load memory card info (in case user decides to save before advancing
     // to next level)
     //
-    GetMemoryCardManager()->LoadMemcardInfo( dynamic_cast<IMemoryCardInfoLoadCallback*>( m_pParent ) );
+    GetMemoryCardManager()->LoadMemcardInfo(
+            dynamic_cast<IMemoryCardInfoLoadCallback *>(m_pParent));
 }
 
 
@@ -174,8 +166,7 @@ void CGuiScreenLevelEnd::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenLevelEnd::InitRunning()
-{
+void CGuiScreenLevelEnd::InitRunning() {
 }
 
 
@@ -191,8 +182,7 @@ void CGuiScreenLevelEnd::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenLevelEnd::InitOutro()
-{
+void CGuiScreenLevelEnd::InitOutro() {
 }
 
 

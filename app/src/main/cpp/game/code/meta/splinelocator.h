@@ -23,6 +23,7 @@
 //========================================
 
 class RailCam;
+
 class SuperCam;
 
 //=============================================================================
@@ -31,38 +32,44 @@ class SuperCam;
 //
 //=============================================================================
 
-class SplineLocator : public TriggerLocator
-{
+class SplineLocator : public TriggerLocator {
 public:
     SplineLocator();
+
     virtual ~SplineLocator();
 
     virtual LocatorType::Type GetDataType() const;
 
-    RailCam* GetRailCam() const;
-    void SetRailCam( RailCam* spline );
-    void SetCarOnly( bool carOnly );
-    void SetOnFootOnly( bool onFootOnly );
-    void SetCutInOut( bool cut );
-    void SetReset( bool reset );
+    RailCam *GetRailCam() const;
 
-    bool TriggerAllowed( int playerID );
+    void SetRailCam(RailCam *spline);
+
+    void SetCarOnly(bool carOnly);
+
+    void SetOnFootOnly(bool onFootOnly);
+
+    void SetCutInOut(bool cut);
+
+    void SetReset(bool reset);
+
+    bool TriggerAllowed(int playerID);
 
 private:
-    RailCam* mRailCam;
-    int      mRailNum;
+    RailCam *mRailCam;
+    int mRailNum;
     unsigned int mTriggerCount;
-    SuperCam* mLastSuperCam;
+    SuperCam *mLastSuperCam;
     bool mCarOnly;
     bool mOnFootOnly;
     bool mCutInOut;
     bool mReset;
 
-    virtual void OnTrigger( unsigned int playerID );
+    virtual void OnTrigger(unsigned int playerID);
 
     //Prevent wasteful constructor creation.
-    SplineLocator( const SplineLocator& splinelocator );
-    SplineLocator& operator=( const SplineLocator& splinelocator );
+    SplineLocator(const SplineLocator &splinelocator);
+
+    SplineLocator &operator=(const SplineLocator &splinelocator);
 };
 
 //******************************************************************************
@@ -81,10 +88,10 @@ private:
 // Return:      inline 
 //
 //=============================================================================
-inline LocatorType::Type SplineLocator::GetDataType() const
-{
-    return( LocatorType::SPLINE );
+inline LocatorType::Type SplineLocator::GetDataType() const {
+    return (LocatorType::SPLINE);
 }
+
 //=============================================================================
 // SplineLocator::GetRailCam
 //=============================================================================
@@ -95,8 +102,7 @@ inline LocatorType::Type SplineLocator::GetDataType() const
 // Return:      inline 
 //
 //=============================================================================
-inline RailCam* SplineLocator::GetRailCam() const
-{
+inline RailCam *SplineLocator::GetRailCam() const {
     return mRailCam;
 }
 
@@ -105,13 +111,12 @@ inline RailCam* SplineLocator::GetRailCam() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool carOnly )
+// Parameters:  (bool carOnly)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SplineLocator::SetCarOnly( bool carOnly )
-{
+inline void SplineLocator::SetCarOnly(bool carOnly) {
     mCarOnly = carOnly;
 }
 
@@ -120,16 +125,14 @@ inline void SplineLocator::SetCarOnly( bool carOnly )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool onFootOnly )
+// Parameters:  (bool onFootOnly)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SplineLocator::SetOnFootOnly( bool onFootOnly )
-{
-    if ( onFootOnly == true )
-    {
-        rAssert( mCarOnly != true );
+inline void SplineLocator::SetOnFootOnly(bool onFootOnly) {
+    if (onFootOnly == true) {
+        rAssert(mCarOnly != true);
     }
 
     mOnFootOnly = onFootOnly;
@@ -140,13 +143,12 @@ inline void SplineLocator::SetOnFootOnly( bool onFootOnly )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool cut )
+// Parameters:  (bool cut)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SplineLocator::SetCutInOut( bool cut )
-{
+inline void SplineLocator::SetCutInOut(bool cut) {
     mCutInOut = cut;
 }
 
@@ -155,13 +157,12 @@ inline void SplineLocator::SetCutInOut( bool cut )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool reset )
+// Parameters:  (bool reset)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void SplineLocator::SetReset( bool reset )
-{
+inline void SplineLocator::SetReset(bool reset) {
     mReset = reset;
 }
 

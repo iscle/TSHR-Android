@@ -29,24 +29,26 @@ struct IRadSoundHalEffectEAX2Reverb;
 //
 //=============================================================================
 
-class Win32ReverbController : public ReverbController
-{
+class Win32ReverbController : public ReverbController {
 public:
     Win32ReverbController();
+
     virtual ~Win32ReverbController();
 
-    void SetReverbOn( reverbSettings* settings );
+    void SetReverbOn(reverbSettings *settings);
+
     void SetReverbOff();
 
 private:
     //Prevent wasteful constructor creation.
-    Win32ReverbController( const Win32ReverbController& original );
-    Win32ReverbController& operator=( const Win32ReverbController& rhs );
+    Win32ReverbController(const Win32ReverbController &original);
+
+    Win32ReverbController &operator=(const Win32ReverbController &rhs);
 
     //
     // Radsound's Win32 reverb interface
     //
-    IRadSoundHalEffectEAX2Reverb* m_reverbInterface;
+    IRadSoundHalEffectEAX2Reverb *m_reverbInterface;
 };
 
 

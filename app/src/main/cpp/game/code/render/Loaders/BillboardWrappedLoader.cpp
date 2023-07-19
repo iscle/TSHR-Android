@@ -48,10 +48,9 @@ bool BillboardWrappedLoader::mOverrideWrapper = false;
 // Constraints: None.
 //
 //========================================================================
-BillboardWrappedLoader::BillboardWrappedLoader()
-{
-   mpListenerCB  = NULL;
-   mUserData     = -1;
+BillboardWrappedLoader::BillboardWrappedLoader() {
+    mpListenerCB = NULL;
+    mUserData = -1;
 }
 
 //========================================================================
@@ -70,21 +69,19 @@ BillboardWrappedLoader::BillboardWrappedLoader()
 //
 //========================================================================
 void BillboardWrappedLoader::SetRegdListener
-(
-   ChunkListenerCallback* pListenerCB,
-   int iUserData
-)
-{
-   //
-   // Follow protocol; notify old Listener, that it has been
-   // "disconnected".
-   //
-   if( mpListenerCB != NULL )
-   {
-      mpListenerCB->OnChunkLoaded( NULL, iUserData, 0 );
-   }
-   mpListenerCB  = pListenerCB;
-   mUserData     = iUserData;
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
+    //
+    // Follow protocol; notify old Listener, that it has been
+    // "disconnected".
+    //
+    if (mpListenerCB != NULL) {
+        mpListenerCB->OnChunkLoaded(NULL, iUserData, 0);
+    }
+    mpListenerCB = pListenerCB;
+    mUserData = iUserData;
 }
 
 //========================================================================
@@ -101,19 +98,18 @@ void BillboardWrappedLoader::SetRegdListener
 //
 //========================================================================
 void BillboardWrappedLoader::ModRegdListener
-(
-   ChunkListenerCallback* pListenerCB,
-   int iUserData
-)
-{
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
 #if 0
-   char DebugBuf[255];
-   sprintf( DebugBuf, "BillboardWrappedLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB );
-   rDebugString( DebugBuf );
+    char DebugBuf[255];
+    sprintf(DebugBuf, "BillboardWrappedLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB);
+    rDebugString(DebugBuf);
 #endif
-   rAssert( pListenerCB == mpListenerCB );
+    rAssert(pListenerCB == mpListenerCB);
 
-   mUserData = iUserData;
+    mUserData = iUserData;
 }
 
 //************************************************************************
@@ -137,71 +133,64 @@ void BillboardWrappedLoader::ModRegdListener
 // Constraints: None.
 //
 //========================================================================
-tEntity* BillboardWrappedLoader::LoadObject
-(
-	tChunkFile* file,
-	tEntityStore* store
-)
-{
-    IEntityDSG::msDeletionsSafe=true;
-	tBillboardQuadGroup* pBQGroup = (tBillboardQuadGroup*)tBillboardQuadGroupLoader::LoadObject( file, store );
+tEntity *BillboardWrappedLoader::LoadObject
+        (
+                tChunkFile *file,
+                tEntityStore *store
+        ) {
+    IEntityDSG::msDeletionsSafe = true;
+    tBillboardQuadGroup *pBQGroup = (tBillboardQuadGroup *) tBillboardQuadGroupLoader::LoadObject(
+            file, store);
 
-	rAssert(pBQGroup);
+    rAssert(pBQGroup);
 
-	if ( mOverrideWrapper )
-	{
-	   return pBQGroup;
-	}
+    if (mOverrideWrapper) {
+        return pBQGroup;
+    }
 
-	// TBJ: Hack until Devin gets back.
-	// Just store the tBillboardQuadGroup in the inventory (ie, make it act like a regular
-	// loader).  The problem is that we will also create a StaticEntityDSG (at the origin?)
-	// but that is not a huge cost, and it will work for now.
-	//
-	tEntity* t = pBQGroup;
+    // TBJ: Hack until Devin gets back.
+    // Just store the tBillboardQuadGroup in the inventory (ie, make it act like a regular
+    // loader).  The problem is that we will also create a StaticEntityDSG (at the origin?)
+    // but that is not a huge cost, and it will work for now.
+    //
+    tEntity *t = pBQGroup;
 
-	if(!t)
-		return 0;
-  
-	if( store->TestCollision( t->GetUID(), t ) )
-	{
-		HandleCollision(t);
-	}
-	else
-	{
-		store->Store(t);
-	}
+    if (!t)
+        return 0;
 
-	// End hack.
-	//
-	StaticEntityDSG* pStaticEntity = new StaticEntityDSG;
-	pStaticEntity->SetName( pBQGroup->GetName() );
-	const char* name = pStaticEntity->GetName();
+    if (store->TestCollision(t->GetUID(), t)) {
+        HandleCollision(t);
+    } else {
+        store->Store(t);
+    }
 
-	// Billboards anre't always translucent
+    // End hack.
+    //
+    StaticEntityDSG *pStaticEntity = new StaticEntityDSG;
+    pStaticEntity->SetName(pBQGroup->GetName());
+    const char *name = pStaticEntity->GetName();
+
+    // Billboards anre't always translucent
     // This can happen when they are using alpha test to carve out the opaque sections
     // check the shader
-    tShader* shader = pBQGroup->GetShader();
-    if ( shader->mTranslucent )
-    {
+    tShader *shader = pBQGroup->GetShader();
+    if (shader->mTranslucent) {
         pStaticEntity->mTranslucent = true;
-    }
-    else
-    {
+    } else {
         pStaticEntity->mTranslucent = false;
     }
 
-	pStaticEntity->SetDrawable(pBQGroup);
+    pStaticEntity->SetDrawable(pBQGroup);
 
-	//
-	// _id is from SimpleChunkHandler; it is the chunk id;
-	// however, this should be treated like any other StaticEntity,
-	// so we change its return type _id
-	//
-	mpListenerCB->OnChunkLoaded( pStaticEntity, mUserData, SRR2::ChunkID::ENTITY_DSG );//_id );
+    //
+    // _id is from SimpleChunkHandler; it is the chunk id;
+    // however, this should be treated like any other StaticEntity,
+    // so we change its return type _id
+    //
+    mpListenerCB->OnChunkLoaded(pStaticEntity, mUserData, SRR2::ChunkID::ENTITY_DSG);//_id);
 
-    IEntityDSG::msDeletionsSafe=false;
-	return pStaticEntity;
+    IEntityDSG::msDeletionsSafe = false;
+    return pStaticEntity;
 }
 
 //************************************************************************

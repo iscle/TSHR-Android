@@ -25,8 +25,11 @@
 //========================================
 
 class TriggerLocator;
+
 class tEntity;
+
 class RailCam;
+
 class SplineLocator;
 
 //=============================================================================
@@ -35,22 +38,22 @@ class SplineLocator;
 //
 //=============================================================================
 
-class LocatorLoader 
-: public tSimpleChunkHandler,
-  public IWrappedLoader 
-{
+class LocatorLoader
+        : public tSimpleChunkHandler,
+          public IWrappedLoader {
 public:
     LocatorLoader();
+
     virtual ~LocatorLoader();
 
     //////////////////////////////////////////////////////////////////////
     // IWrappedLoader
     //////////////////////////////////////////////////////////////////////
-    void SetRegdListener( ChunkListenerCallback* pListenerCB,
-                          int   iUserData );
+    void SetRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
 
-    void ModRegdListener( ChunkListenerCallback* pListenerCB,
-                          int   iUserData );
+    void ModRegdListener(ChunkListenerCallback *pListenerCB,
+                         int iUserData);
 
 private:
 
@@ -59,19 +62,22 @@ private:
     //////////////////////////////////////////////////////////////////////
 
     //Prevent wasteful constructor creation.
-    LocatorLoader( const LocatorLoader& locatorloader );
-    LocatorLoader& operator=( const LocatorLoader& locatorloader );
+    LocatorLoader(const LocatorLoader &locatorloader);
+
+    LocatorLoader &operator=(const LocatorLoader &locatorloader);
 
     // P3D chunk loader.
-    virtual tEntity* LoadObject(tChunkFile* f, tEntityStore* store);
+    virtual tEntity *LoadObject(tChunkFile *f, tEntityStore *store);
 
-    void LoadTriggerLocator( tChunkFile* f, 
-                             tEntityStore* store, 
-                             TriggerLocator* locator );
-    bool LoadTriggerVolume( tChunkFile* f, 
-                            TriggerLocator* locator,
-                            bool addToTracker = true );
-    RailCam* LoadSpline( tChunkFile* f, SplineLocator* splineLoc );
+    void LoadTriggerLocator(tChunkFile *f,
+                            tEntityStore *store,
+                            TriggerLocator *locator);
+
+    bool LoadTriggerVolume(tChunkFile *f,
+                           TriggerLocator *locator,
+                           bool addToTracker = true);
+
+    RailCam *LoadSpline(tChunkFile *f, SplineLocator *splineLoc);
 
     static int msZoneNameCount;
 };

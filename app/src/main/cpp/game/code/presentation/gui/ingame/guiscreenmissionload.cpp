@@ -40,33 +40,33 @@
 // Global Data, Local Data, Local Classes
 //===========================================================================
 #ifndef PAL
-    // convert mission title string to all caps
-    //
-    #define MISSION_TITLE_ALL_CAPS
+// convert mission title string to all caps
+//
+#define MISSION_TITLE_ALL_CAPS
 #endif
 
 #define TRANSITION_IN_TIME 250.0f
 
-const    UnicodeChar EMPTY_MISSION_HINT = '*';
-const    float startDelayTimeMs                       = 500.0f;
-const    float DARKEN_ANIMATION_DELAY_BEFORE_STARTING = startDelayTimeMs;
-const    float DARKEN_ANIMATION_INTRO_TIME            = 1000.0f;
-int            g_BitmapPositionX;
-int            g_BitmapPositionY;
-int            g_BitmapSizeX;
-int            g_BitmapSizeY;
-int            g_TitlePositionX;
-int            g_TitlePositionY;
+const UnicodeChar EMPTY_MISSION_HINT = '*';
+const float startDelayTimeMs = 500.0f;
+const float DARKEN_ANIMATION_DELAY_BEFORE_STARTING = startDelayTimeMs;
+const float DARKEN_ANIMATION_INTRO_TIME = 1000.0f;
+int g_BitmapPositionX;
+int g_BitmapPositionY;
+int g_BitmapSizeX;
+int g_BitmapSizeY;
+int g_TitlePositionX;
+int g_TitlePositionY;
 
-int            g_BitmapPositionWagerX =   0;
-int            g_BitmapPositionWagerY = 200;
-int            g_BitmapSizeWagerX     =  20;
-int            g_BitmapSizeWagerY     =  20;
-int            g_TitlePositionWagerX  = 200;
-int            g_TitlePositionWagerY  = 370;
+int g_BitmapPositionWagerX = 0;
+int g_BitmapPositionWagerY = 200;
+int g_BitmapSizeWagerX = 20;
+int g_BitmapSizeWagerY = 20;
+int g_TitlePositionWagerX = 200;
+int g_TitlePositionWagerY = 370;
 
-GuiSFX::Show                     g_LoadCompletedShow( "LoadCompletedShow" );
-GuiSFX::ColorChange              g_LoadCompletedTransitionIn( "LoadCompletedTransitionIn" );
+GuiSFX::Show g_LoadCompletedShow("LoadCompletedShow");
+GuiSFX::ColorChange g_LoadCompletedTransitionIn("LoadCompletedTransitionIn");
 
 //===========================================================================
 // Public Member Functions
@@ -85,41 +85,39 @@ GuiSFX::ColorChange              g_LoadCompletedTransitionIn( "LoadCompletedTran
 //
 //===========================================================================
 CGuiScreenMissionLoad::CGuiScreenMissionLoad
-(
-	Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-):   
-    CGuiScreenMissionBase( pScreen, pParent, GUI_SCREEN_ID_MISSION_LOAD ),
-    m_LoadIsDone( true ),
-    m_loadingText( NULL ),
-    m_elapsedIdleTime( 0 )
-{
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        ) :
+        CGuiScreenMissionBase(pScreen, pParent, GUI_SCREEN_ID_MISSION_LOAD),
+        m_LoadIsDone(true),
+        m_loadingText(NULL),
+        m_elapsedIdleTime(0) {
     ExtractNormalPositions();
-    Scrooby::Group* loadCompleted = GetLoadCompletedGroup();
-    g_LoadCompletedShow.SetDrawable( loadCompleted );
+    Scrooby::Group *loadCompleted = GetLoadCompletedGroup();
+    g_LoadCompletedShow.SetDrawable(loadCompleted);
 
-    g_LoadCompletedTransitionIn.SetDrawable( loadCompleted );
-    g_LoadCompletedTransitionIn.SetStartColour( tColour( 255, 255, 255, 0   ) );
-    g_LoadCompletedTransitionIn.SetEndColour  ( tColour( 255, 255, 255, 255 ) );
-    g_LoadCompletedTransitionIn.SetTimeInterval( TRANSITION_IN_TIME );
+    g_LoadCompletedTransitionIn.SetDrawable(loadCompleted);
+    g_LoadCompletedTransitionIn.SetStartColour(tColour(255, 255, 255, 0));
+    g_LoadCompletedTransitionIn.SetEndColour(tColour(255, 255, 255, 255));
+    g_LoadCompletedTransitionIn.SetTimeInterval(TRANSITION_IN_TIME);
     g_LoadCompletedTransitionIn.Deactivate();
-    WATCH( g_LoadCompletedTransitionIn, GetWatcherName() );
+    WATCH(g_LoadCompletedTransitionIn, GetWatcherName());
 
-    g_LoadCompletedShow.        SetNextTransition( g_LoadCompletedTransitionIn  );
-    g_LoadCompletedTransitionIn.SetNextTransition( NULL                         );
+    g_LoadCompletedShow.SetNextTransition(g_LoadCompletedTransitionIn);
+    g_LoadCompletedTransitionIn.SetNextTransition(NULL);
 
-    AddTransition( g_LoadCompletedTransitionIn );
+    AddTransition(g_LoadCompletedTransitionIn);
 
     AddListeners();
 
     // get loading text
     //
-    Scrooby::Page* pPage = m_pScroobyScreen->GetPage( "LoadingText" );
-    if( pPage != NULL )
-    {
-        m_loadingText = pPage->GetText( "Loading" );
-        rAssert( m_loadingText != NULL );
-        m_loadingText->SetVisible( false ); // hide by default
+    Scrooby::Page *pPage = m_pScroobyScreen->GetPage("LoadingText");
+    if (pPage != NULL) {
+        m_loadingText = pPage->GetText("Loading");
+        rAssert(m_loadingText != NULL);
+        m_loadingText->SetVisible(false); // hide by default
     }
 }
 
@@ -136,8 +134,7 @@ CGuiScreenMissionLoad::CGuiScreenMissionLoad
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenMissionLoad::~CGuiScreenMissionLoad()
-{
+CGuiScreenMissionLoad::~CGuiScreenMissionLoad() {
     RemoveListeners();
     p3d::pddi->DrawSync();
 }
@@ -154,9 +151,8 @@ CGuiScreenMissionLoad::~CGuiScreenMissionLoad()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMissionLoad::AddListeners()
-{
-    GetEventManager()->AddListener( this, EVENT_GUI_MISSION_LOAD_COMPLETE );
+void CGuiScreenMissionLoad::AddListeners() {
+    GetEventManager()->AddListener(this, EVENT_GUI_MISSION_LOAD_COMPLETE);
 }
 
 //===========================================================================
@@ -172,16 +168,15 @@ void CGuiScreenMissionLoad::AddListeners()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMissionLoad::ExtractNormalPositions()
-{
+void CGuiScreenMissionLoad::ExtractNormalPositions() {
     // extract the position of the mission loading bitmap
-    Scrooby::Drawable* missionStartBitmap = GetMissionStartBitmap();
-    missionStartBitmap->GetOriginPosition(  g_BitmapPositionX, g_BitmapPositionY );
-    missionStartBitmap->GetBoundingBoxSize( g_BitmapSizeX,     g_BitmapSizeY     );
+    Scrooby::Drawable *missionStartBitmap = GetMissionStartBitmap();
+    missionStartBitmap->GetOriginPosition(g_BitmapPositionX, g_BitmapPositionY);
+    missionStartBitmap->GetBoundingBoxSize(g_BitmapSizeX, g_BitmapSizeY);
 
     // extract the position of the title
-    Scrooby::Text* text = GetTitleText();
-    text->GetOriginPosition( g_TitlePositionX, g_TitlePositionY );
+    Scrooby::Text *text = GetTitleText();
+    text->GetOriginPosition(g_TitlePositionX, g_TitlePositionY);
 }
 
 //===========================================================================
@@ -197,27 +192,23 @@ void CGuiScreenMissionLoad::ExtractNormalPositions()
 //
 //===========================================================================
 void
-CGuiScreenMissionLoad::HandleEvent( EventEnum id, void* pEventData )
-{
-    if( id == EVENT_GUI_MISSION_LOAD_COMPLETE )
-    {
+CGuiScreenMissionLoad::HandleEvent(EventEnum id, void *pEventData) {
+    if (id == EVENT_GUI_MISSION_LOAD_COMPLETE) {
         // mission load completed, show "Press Start" message
         //
         m_LoadIsDone = true;
         g_LoadCompletedShow.Activate();
 
-        Mission* currentMission = GetGameplayManager()->GetCurrentMission();
-        rAssert( currentMission != NULL );
-        if( currentMission->IsWagerMission() )
-        {
+        Mission *currentMission = GetGameplayManager()->GetCurrentMission();
+        rAssert(currentMission != NULL);
+        if (currentMission->IsWagerMission()) {
             this->UpdateGamblingInfo();
         }
 
         // hide loading text
         //
-        if( m_loadingText != NULL )
-        {
-            m_loadingText->SetVisible( false );
+        if (m_loadingText != NULL) {
+            m_loadingText->SetVisible(false);
         }
     }
 }
@@ -235,83 +226,71 @@ CGuiScreenMissionLoad::HandleEvent( EventEnum id, void* pEventData )
 //
 //===========================================================================
 void CGuiScreenMissionLoad::HandleMessage
-(
-	eGuiMessage message, 
-	unsigned int param1,
-	unsigned int param2 
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        switch( message )
-        {
-            case GUI_MSG_UPDATE:
-            {
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        switch (message) {
+            case GUI_MSG_UPDATE: {
                 m_elapsedIdleTime += param1;
 
-                if( m_loadingText != NULL && !m_LoadIsDone )
-                {
+                if (m_loadingText != NULL && !m_LoadIsDone) {
                     // blink loading text if idling here on this screen to satisfy
                     // TRC/TCR requirements
                     //
                     const unsigned int BLINKING_PERIOD = 250;
-                    bool isBlinked = GuiSFX::Blink( m_loadingText,
-                                                    static_cast<float>( m_elapsedIdleTime ),
-                                                    static_cast<float>( BLINKING_PERIOD ) );
-                    if( isBlinked )
-                    {
+                    bool isBlinked = GuiSFX::Blink(m_loadingText,
+                                                   static_cast<float>(m_elapsedIdleTime),
+                                                   static_cast<float>(BLINKING_PERIOD));
+                    if (isBlinked) {
                         m_elapsedIdleTime %= BLINKING_PERIOD;
                     }
                 }
 
                 break;
             }
-            case GUI_MSG_CONTROLLER_SELECT:
-            {
-                if( m_LoadIsDone && this->IsButtonVisible( BUTTON_ICON_ACCEPT ) )
-                {
-                    SetPlayAnimatedCamera( true );
+            case GUI_MSG_CONTROLLER_SELECT: {
+                if (m_LoadIsDone && this->IsButtonVisible(BUTTON_ICON_ACCEPT)) {
+                    SetPlayAnimatedCamera(true);
 
                     // resume game and start mission
                     //
-                    m_pParent->HandleMessage( GUI_MSG_RESUME_INGAME );
+                    m_pParent->HandleMessage(GUI_MSG_RESUME_INGAME);
 
                     // trigger this event ONLY for wager race missions
                     //
-                    Mission* currentMission = GetGameplayManager()->GetCurrentMission();
-                    rAssert( currentMission != NULL );
-                    if( currentMission->IsWagerMission() )
-                    {
-                        GetEventManager()->TriggerEvent( EVENT_ATTEMPT_TO_ENTER_GAMBLERACE );
+                    Mission *currentMission = GetGameplayManager()->GetCurrentMission();
+                    rAssert(currentMission != NULL);
+                    if (currentMission->IsWagerMission()) {
+                        GetEventManager()->TriggerEvent(EVENT_ATTEMPT_TO_ENTER_GAMBLERACE);
                     }
 
-                    GetEventManager()->TriggerEvent( EVENT_FE_CONTINUE );
-                    GetEventManager()->TriggerEvent( EVENT_MISSION_BRIEFING_ACCEPTED );
+                    GetEventManager()->TriggerEvent(EVENT_FE_CONTINUE);
+                    GetEventManager()->TriggerEvent(EVENT_MISSION_BRIEFING_ACCEPTED);
                 }
                 break;
             }
-            case GUI_MSG_CONTROLLER_BACK:
-            {
-                if( m_LoadIsDone && this->IsButtonVisible( BUTTON_ICON_BACK ) )
-                {
+            case GUI_MSG_CONTROLLER_BACK: {
+                if (m_LoadIsDone && this->IsButtonVisible(BUTTON_ICON_BACK)) {
                     // resume game and abort mission
                     //
-                    SetPlayAnimatedCamera( false );
-                    AnimatedCam::SetCamera( "" );
-                    m_pParent->HandleMessage( GUI_MSG_RESUME_INGAME, ON_HUD_ENTER_ABORT_MISSION );
-                    
+                    SetPlayAnimatedCamera(false);
+                    AnimatedCam::SetCamera("");
+                    m_pParent->HandleMessage(GUI_MSG_RESUME_INGAME, ON_HUD_ENTER_ABORT_MISSION);
+
                     GetEventManager()->TriggerEvent(EVENT_USER_CANCEL_MISSION_BRIEFING);
-                    GetEventManager()->TriggerEvent( EVENT_FE_CANCEL );
+                    GetEventManager()->TriggerEvent(EVENT_FE_CANCEL);
                 }
                 break;
             }
-            default:
-            {
+            default: {
                 break;
             }
         }
     }
-    CGuiScreenMissionBase::HandleMessage( message, param1, param2 );
+    CGuiScreenMissionBase::HandleMessage(message, param1, param2);
 }
 
 //===========================================================================
@@ -327,9 +306,8 @@ void CGuiScreenMissionLoad::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMissionLoad::InitializePermanentVariables()
-{
-    p3d::inventory->AddSection( "DynamicHud" );
+void CGuiScreenMissionLoad::InitializePermanentVariables() {
+    p3d::inventory->AddSection("DynamicHud");
 }
 
 //===========================================================================
@@ -344,44 +322,42 @@ void CGuiScreenMissionLoad::InitializePermanentVariables()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMissionLoad::InitIntro()
-{
+void CGuiScreenMissionLoad::InitIntro() {
     CGuiScreenMissionBase::InitIntro();
 
-    Scrooby::Text* missionTitle = GetTitleText();
-    rAssert( missionTitle != NULL );
+    Scrooby::Text *missionTitle = GetTitleText();
+    rAssert(missionTitle != NULL);
 
 #ifdef MISSION_TITLE_ALL_CAPS
     // convert mission title to all caps
     //
-    HeapMgr()->PushHeap( GMA_LEVEL_HUD );
+    HeapMgr()->PushHeap(GMA_LEVEL_HUD);
 
     UnicodeString unicodeString;
-    unicodeString.ReadUnicode( missionTitle->GetStringBuffer() );
-    p3d::UnicodeStrUpr( unicodeString.GetBuffer() );
+    unicodeString.ReadUnicode(missionTitle->GetStringBuffer());
+    p3d::UnicodeStrUpr(unicodeString.GetBuffer());
 
-    missionTitle->SetString( missionTitle->GetIndex(), unicodeString );
+    missionTitle->SetString(missionTitle->GetIndex(), unicodeString);
 
-    HeapMgr()->PopHeap( GMA_LEVEL_HUD );
+    HeapMgr()->PopHeap(GMA_LEVEL_HUD);
 #endif // MISSION_TITLE_ALL_CAPS
 
     //
     // Turn on the titles
     //
-    missionTitle->SetVisible( true );
-    GetMissionInfoText()->SetVisible( true );
+    missionTitle->SetVisible(true);
+    GetMissionInfoText()->SetVisible(true);
 
-    Scrooby::Group* loadCompleted = GetLoadCompletedGroup();
-    loadCompleted->SetVisible( false );
+    Scrooby::Group *loadCompleted = GetLoadCompletedGroup();
+    loadCompleted->SetVisible(false);
     m_LoadIsDone = false;
 
-    if( m_loadingText != NULL )
-    {
+    if (m_loadingText != NULL) {
         // hide loading text
         //
-        m_loadingText->SetVisible( false );
+        m_loadingText->SetVisible(false);
 
-        this->SetAlphaForLayers( 1.0f, m_foregroundLayers, m_numForegroundLayers );
+        this->SetAlphaForLayers(1.0f, m_foregroundLayers, m_numForegroundLayers);
     }
 
     m_elapsedIdleTime = 0;
@@ -389,20 +365,17 @@ void CGuiScreenMissionLoad::InitIntro()
     //
     // is this a normal mission or a wager mission
     //
-    Mission* currentMission = GetGameplayManager()->GetCurrentMission();
-    rAssert( currentMission != NULL );
-    if( currentMission->IsWagerMission() )
-    {
+    Mission *currentMission = GetGameplayManager()->GetCurrentMission();
+    rAssert(currentMission != NULL);
+    if (currentMission->IsWagerMission()) {
         InitPositionsWager();
-    }
-    else
-    {
+    } else {
         InitPositionsNormal();
     }
 
     // only show "cancel" button for wager missions
     //
-    this->SetButtonVisible( BUTTON_ICON_BACK, currentMission->IsWagerMission() );
+    this->SetButtonVisible(BUTTON_ICON_BACK, currentMission->IsWagerMission());
 }
 
 //===========================================================================
@@ -417,17 +390,15 @@ void CGuiScreenMissionLoad::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMissionLoad::InitOutro()
-{
+void CGuiScreenMissionLoad::InitOutro() {
     CGuiScreenMissionBase::InitOutro();
-    rWarning( m_LoadIsDone );
+    rWarning(m_LoadIsDone);
     m_LoadIsDone = false;
 
-    if( m_loadingText != NULL )
-    {
+    if (m_loadingText != NULL) {
         // hide loading text
         //
-        m_loadingText->SetVisible( false );
+        m_loadingText->SetVisible(false);
     }
 }
 
@@ -444,19 +415,18 @@ void CGuiScreenMissionLoad::InitOutro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMissionLoad::InitPositionsNormal()
-{
-    Scrooby::BoundedDrawable* missionStart = GetMissionStartBitmap();
-    missionStart->SetPosition       ( g_BitmapPositionX, g_BitmapPositionY );
-    missionStart->SetBoundingBoxSize( g_BitmapSizeX,     g_BitmapSizeY     );
+void CGuiScreenMissionLoad::InitPositionsNormal() {
+    Scrooby::BoundedDrawable *missionStart = GetMissionStartBitmap();
+    missionStart->SetPosition(g_BitmapPositionX, g_BitmapPositionY);
+    missionStart->SetBoundingBoxSize(g_BitmapSizeX, g_BitmapSizeY);
 
-    Scrooby::Text* title = GetTitleText();
+    Scrooby::Text *title = GetTitleText();
 #ifndef RAD_WIN32  // temp fix.
-    title->SetPosition( g_TitlePositionX, g_TitlePositionY );
+    title->SetPosition(g_TitlePositionX, g_TitlePositionY);
 #endif
 
-    Scrooby::Text* info = GetMissionInfoText();
-    info->SetHorizontalJustification( Scrooby::Center );
+    Scrooby::Text *info = GetMissionInfoText();
+    info->SetHorizontalJustification(Scrooby::Center);
 }
 
 //===========================================================================
@@ -472,21 +442,20 @@ void CGuiScreenMissionLoad::InitPositionsNormal()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMissionLoad::InitPositionsWager()
-{
-    Scrooby::BoundedDrawable* missionStart = GetMissionStartBitmap();
-    missionStart->SetPosition(        g_BitmapPositionWagerX, g_BitmapPositionWagerY );
-    missionStart->SetBoundingBoxSize( g_BitmapSizeWagerX,     g_BitmapSizeWagerY     );
+void CGuiScreenMissionLoad::InitPositionsWager() {
+    Scrooby::BoundedDrawable *missionStart = GetMissionStartBitmap();
+    missionStart->SetPosition(g_BitmapPositionWagerX, g_BitmapPositionWagerY);
+    missionStart->SetBoundingBoxSize(g_BitmapSizeWagerX, g_BitmapSizeWagerY);
 
-    Scrooby::Text* title = GetTitleText();
-    title->SetPosition( g_TitlePositionWagerX, g_TitlePositionWagerY );
+    Scrooby::Text *title = GetTitleText();
+    title->SetPosition(g_TitlePositionWagerX, g_TitlePositionWagerY);
 
     // turn on the flag bitmap
-    Scrooby::Drawable* flag = GetFlag();
-    flag->SetVisible( true );
+    Scrooby::Drawable *flag = GetFlag();
+    flag->SetVisible(true);
 
-    Scrooby::Text* info = GetMissionInfoText();
-    info->SetHorizontalJustification( Scrooby::Left );
+    Scrooby::Text *info = GetMissionInfoText();
+    info->SetHorizontalJustification(Scrooby::Left);
 }
 
 //===========================================================================
@@ -501,8 +470,7 @@ void CGuiScreenMissionLoad::InitPositionsWager()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenMissionLoad::RemoveListeners()
-{
+void CGuiScreenMissionLoad::RemoveListeners() {
 }
 
 //---------------------------------------------------------------------

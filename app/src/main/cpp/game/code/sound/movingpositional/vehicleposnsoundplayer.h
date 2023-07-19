@@ -29,47 +29,53 @@ class Vehicle;
 //
 //=============================================================================
 
-class VehiclePositionalSoundPlayer : public PositionCarrier
-{
-    public:
-        VehiclePositionalSoundPlayer( );
-        virtual ~VehiclePositionalSoundPlayer();
+class VehiclePositionalSoundPlayer : public PositionCarrier {
+public:
+    VehiclePositionalSoundPlayer();
 
-        bool IsActive() { return( m_vehicle != NULL ); }
-        void ActivateByName( const char* soundName, Vehicle* theCar );
-        virtual void Activate( positionalSoundSettings* soundSettings,
-                               const char* resourceName,
-                               Vehicle* theCar );
-        virtual void Deactivate();
+    virtual ~VehiclePositionalSoundPlayer();
 
-        bool UsesVehicle( Vehicle* car );
+    bool IsActive() { return (m_vehicle != NULL); }
 
-        virtual void ServiceOncePerFrame();
+    void ActivateByName(const char *soundName, Vehicle *theCar);
 
-        void TiePitchToVelocity( bool flag ) { m_tiePitchToVelocity = flag; }
+    virtual void Activate(positionalSoundSettings *soundSettings,
+                          const char *resourceName,
+                          Vehicle *theCar);
 
-        void BlowUp();
+    virtual void Deactivate();
 
-        //
-        // PositionCarrier functions
-        //
-        void GetPosition( radSoundVector& position );
-        void GetVelocity( radSoundVector& velocity );
+    bool UsesVehicle(Vehicle *car);
 
-    protected:
-        Vehicle* m_vehicle;
+    virtual void ServiceOncePerFrame();
 
-        PositionalSoundPlayer m_player;
+    void TiePitchToVelocity(bool flag) { m_tiePitchToVelocity = flag; }
 
-        bool m_tiePitchToVelocity;
+    void BlowUp();
+
+    //
+    // PositionCarrier functions
+    //
+    void GetPosition(radSoundVector &position);
+
+    void GetVelocity(radSoundVector &velocity);
+
+protected:
+    Vehicle *m_vehicle;
+
+    PositionalSoundPlayer m_player;
+
+    bool m_tiePitchToVelocity;
 
 
-    private:
-        //Prevent wasteful constructor creation.
-        VehiclePositionalSoundPlayer( const VehiclePositionalSoundPlayer& vehiclepositionalsoundplayer );
-        VehiclePositionalSoundPlayer& operator=( const VehiclePositionalSoundPlayer& vehiclepositionalsoundplayer );
+private:
+    //Prevent wasteful constructor creation.
+    VehiclePositionalSoundPlayer(const VehiclePositionalSoundPlayer &vehiclepositionalsoundplayer);
 
-        PositionalSoundPlayer m_explosionPlayer;
+    VehiclePositionalSoundPlayer &
+    operator=(const VehiclePositionalSoundPlayer &vehiclepositionalsoundplayer);
+
+    PositionalSoundPlayer m_explosionPlayer;
 };
 
 //*****************************************************************************

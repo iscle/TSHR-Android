@@ -28,13 +28,13 @@
 //
 //=============================================================================
 
-class FollowCamDataChunk
-{
+class FollowCamDataChunk {
 public:
     FollowCamDataChunk() {};
-    virtual ~FollowCamDataChunk() { SetName( NULL ); };
 
-    void SetName( const char* name ) { mName.SetText( name ); };
+    virtual ~FollowCamDataChunk() { SetName(NULL); };
+
+    void SetName(const char *name) { mName.SetText(name); };
 
     unsigned int mID;
 
@@ -45,12 +45,14 @@ public:
     rmt::Vector mTargetOffset;
 
     tName mName;
-    
-    FollowCamDataChunk& operator=( const FollowCamDataChunk& followcamdatachunk );
-    bool operator==( const FollowCamDataChunk& followcamdatachunk );
+
+    FollowCamDataChunk &operator=(const FollowCamDataChunk &followcamdatachunk);
+
+    bool operator==(const FollowCamDataChunk &followcamdatachunk);
+
 private:
     //Prevent wasteful constructor creation.
-    FollowCamDataChunk( const FollowCamDataChunk& followcamdatachunk );
+    FollowCamDataChunk(const FollowCamDataChunk &followcamdatachunk);
 };
 
 //=============================================================================
@@ -58,13 +60,13 @@ private:
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const FollowCamDataChunk& followcamdatachunk )
+// Parameters:  (const FollowCamDataChunk& followcamdatachunk)
 //
 // Return:      FollowCamDataChunk
 //
 //=============================================================================
-inline FollowCamDataChunk& FollowCamDataChunk::operator=( const FollowCamDataChunk& followcamdatachunk )
-{
+inline FollowCamDataChunk &
+FollowCamDataChunk::operator=(const FollowCamDataChunk &followcamdatachunk) {
     mID = followcamdatachunk.mID;
     mRotation = followcamdatachunk.mRotation;
     mElevation = followcamdatachunk.mElevation;
@@ -82,19 +84,18 @@ inline FollowCamDataChunk& FollowCamDataChunk::operator=( const FollowCamDataChu
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const FollowCamDataChunk& followcamdatachunk )
+// Parameters:  (const FollowCamDataChunk& followcamdatachunk)
 //
 // Return:      bool 
 //
 //=============================================================================
-inline bool FollowCamDataChunk::operator==( const FollowCamDataChunk& followcamdatachunk )
-{
-    return ( mID == followcamdatachunk.mID &&
-             mRotation == followcamdatachunk.mRotation &&
-             mElevation == followcamdatachunk.mElevation &&
-             mMagnitude == followcamdatachunk.mMagnitude &&
-             mTargetOffset == followcamdatachunk.mTargetOffset &&
-             mName == followcamdatachunk.mName );
+inline bool FollowCamDataChunk::operator==(const FollowCamDataChunk &followcamdatachunk) {
+    return (mID == followcamdatachunk.mID &&
+            mRotation == followcamdatachunk.mRotation &&
+            mElevation == followcamdatachunk.mElevation &&
+            mMagnitude == followcamdatachunk.mMagnitude &&
+            mTargetOffset == followcamdatachunk.mTargetOffset &&
+            mName == followcamdatachunk.mName);
 }
 
 #endif //FOLLOWCAMDATACHUNK_H

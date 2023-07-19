@@ -45,9 +45,8 @@
 //
 //******************************************************************************
 
-void SetDirtyCB( void* userData )
-{
-    FollowCam* fc = (FollowCam*)userData;
+void SetDirtyCB(void *userData) {
+    FollowCam *fc = (FollowCam *) userData;
 
     fc->SetDirty();
 }
@@ -93,22 +92,20 @@ const unsigned int FOLLOW_ID_OFFSET = 256;
 // Return:      N/A.
 //
 //==============================================================================
-FollowCam::FollowCam( FollowType type ) :
-    mNumTargets( 0 ),
-    mActiveTarget( 0 ),
-    mUnstableDelayTimeLeft( 0 ),
-    mQuickTurnTimeLeft( 0 ),
-    mFollowType( type ),
-    mXAxis( 0.0f )
-{
+FollowCam::FollowCam(FollowType type) :
+        mNumTargets(0),
+        mActiveTarget(0),
+        mUnstableDelayTimeLeft(0),
+        mQuickTurnTimeLeft(0),
+        mFollowType(type),
+        mXAxis(0.0f) {
     unsigned int i;
-    for ( i = 0; i < MAX_TARGETS; ++i )
-    {
-        mTargets[ i ] = NULL;
-    }    
+    for (i = 0; i < MAX_TARGETS; ++i) {
+        mTargets[i] = NULL;
+    }
 
-    mUnstablePosition.Set( 0.0f, 0.0f, 0.0f );
-    mUnstableTarget.Set( 0.0f, 0.0f, 0.0f );
+    mUnstablePosition.Set(0.0f, 0.0f, 0.0f);
+    mUnstableTarget.Set(0.0f, 0.0f, 0.0f);
 
     mRotationAngleXZ = mData.GetRotationXZ();
     mRotationAngleY = mData.GetRotationY();
@@ -117,10 +114,10 @@ FollowCam::FollowCam( FollowType type ) :
     mMagnitude = mData.GetMagnitude();
     mMagnitudeDelta = 0.0f;
 
-    mTargetPosition.Set( 0.0f, 0.0f, 0.0f );
-    mTargetPositionDelta.Set( 0.0f, 0.0f, 0.0f );
+    mTargetPosition.Set(0.0f, 0.0f, 0.0f);
+    mTargetPositionDelta.Set(0.0f, 0.0f, 0.0f);
 
-    mGroundOffset.Set( 0.0f, 0.0f, 0.0f );
+    mGroundOffset.Set(0.0f, 0.0f, 0.0f);
 }
 
 //==============================================================================
@@ -133,8 +130,7 @@ FollowCam::FollowCam( FollowType type ) :
 // Return:      N/A.
 //
 //==============================================================================
-FollowCam::~FollowCam()
-{
+FollowCam::~FollowCam() {
 }
 
 //=============================================================================
@@ -142,120 +138,108 @@ FollowCam::~FollowCam()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::Update( unsigned int milliseconds )
-{
+void FollowCam::Update(unsigned int milliseconds) {
     BEGIN_PROFILE("FollowCam::Update")
-    rAssert( mTargets[ mActiveTarget ] );
+    rAssert(mTargets[mActiveTarget]);
 
     //This is to adjust interpolation when we're running substeps.
-    float timeMod = (float)milliseconds / EXPECTED_FRAME_RATE;
+    float timeMod = (float) milliseconds / EXPECTED_FRAME_RATE;
 
-    rmt::Vector rod;    
-    ISuperCamTarget* target = mTargets[ mActiveTarget ];
+    rmt::Vector rod;
+    ISuperCamTarget *target = mTargets[mActiveTarget];
 
 #ifdef CUT_LOOK
 #if defined(RAD_GAMECUBE) || defined(RAD_XBOX)
-    float leftRight = mController->GetValue( SuperCamController::stickX );
+    float leftRight = mController->GetValue(SuperCamController::stickX);
 #elif defined(RAD_WIN32)
-    float left = mController->GetValue( SuperCamController::carLookLeft );
-    float right = mController->GetValue( SuperCamController::carLookRight );
-    float leftRight = ( right > left ) ? right : -left;
+    float left = mController->GetValue(SuperCamController::carLookLeft);
+    float right = mController->GetValue(SuperCamController::carLookRight);
+    float leftRight = (right> left) ? right : -left;
 #else //This is PS2
-    float leftRight = mController->GetValue( SuperCamController::r2 ) - mController->GetValue( SuperCamController::l2 );
+    float leftRight = mController->GetValue(SuperCamController::r2) - mController->GetValue(SuperCamController::l2);
 #endif
 
 #if defined(RAD_GAMECUBE) || defined(RAD_PS2) || defined(RAD_WIN32)
-    if ( mController->IsWheel() )
+    if (mController->IsWheel())
     {
         //This is a wheel.  No left right on wheels.
         leftRight = 0.0f;
     }
 #endif
 
-    if ( rmt::Fabs(leftRight) > 0.2f && !GetFlag( (Flag)UNSTABLE ) )
+    if (rmt::Fabs(leftRight)> 0.2f && !GetFlag((Flag)UNSTABLE))
     {
-        SetFlag( (Flag)LOOKING_SIDEWAYS, true );
-        SetFlag( (Flag)CUT, true );
+        SetFlag((Flag)LOOKING_SIDEWAYS, true);
+        SetFlag((Flag)CUT, true);
     } 
-    else if ( rmt::Fabs(leftRight) <= 0.2f && GetFlag( (Flag)LOOKING_SIDEWAYS ) )
+    else if (rmt::Fabs(leftRight) <= 0.2f && GetFlag((Flag)LOOKING_SIDEWAYS))
     {
-        SetFlag( (Flag)LOOKING_SIDEWAYS, false );
-        SetFlag( (Flag)CUT, true );
+        SetFlag((Flag)LOOKING_SIDEWAYS, false);
+        SetFlag((Flag)CUT, true);
     }
     else
 #endif
 
-    if ( GetFlag( (Flag)LOOK_BACK ) && 
-         !GetFlag( (Flag)LOOKING_BACK ) &&
-         !GetFlag( (Flag)UNSTABLE ) )
-    {
+    if (GetFlag((Flag) LOOK_BACK) &&
+        !GetFlag((Flag) LOOKING_BACK) &&
+        !GetFlag((Flag) UNSTABLE)) {
         //Turn on
-        SetFlag( (Flag)LOOKING_BACK, true );
-        SetFlag( (Flag)CUT, true );
-    }
-    else if ( GetFlag( (Flag)LOOKING_BACK ) &&
-              !GetFlag( (Flag)LOOK_BACK ) &&
-              !GetFlag( (Flag)UNSTABLE ) )
-    {
+        SetFlag((Flag) LOOKING_BACK, true);
+        SetFlag((Flag) CUT, true);
+    } else if (GetFlag((Flag) LOOKING_BACK) &&
+               !GetFlag((Flag) LOOK_BACK) &&
+               !GetFlag((Flag) UNSTABLE)) {
         //Turn off.
-        SetFlag( (Flag)LOOKING_BACK, false );
-        SetFlag( (Flag)CUT, true );
+        SetFlag((Flag) LOOKING_BACK, false);
+        SetFlag((Flag) CUT, true);
     }
 
-    if ( GetFlag( (Flag)CUT ) )
-    {
+    if (GetFlag((Flag) CUT)) {
         DoCameraCut();
     }
 
-    if ( GetFlag( (Flag)UNSTABLE ) )
-    {
-        UpdateUnstable( milliseconds );
+    if (GetFlag((Flag) UNSTABLE)) {
+        UpdateUnstable(milliseconds);
     }
 
     //---------  Test to see if the target is still unstable
 
-    if ( !GetFlag((Flag)FIRST_TIME) &&
-         !GetFlag((Flag)CUT) && 
-         ( target->IsUnstable() || target->IsQuickTurn() || target->IsAirborn() ) &&
-         !GetSuperCamManager()->GetSCC( GetPlayerID() )->IsCutCam()
-       )
-    {
-        if ( target->IsQuickTurn() )
-        {
+    if (!GetFlag((Flag) FIRST_TIME) &&
+        !GetFlag((Flag) CUT) &&
+        (target->IsUnstable() || target->IsQuickTurn() || target->IsAirborn()) &&
+        !GetSuperCamManager()->GetSCC(GetPlayerID())->IsCutCam()
+            ) {
+        if (target->IsQuickTurn()) {
             //Say that going unstable is due to quick turn, 
             //so when we come out of unstable, speed up interpolation.
-            SetFlag( (Flag)QUICK_TURN_ALERT, true );
+            SetFlag((Flag) QUICK_TURN_ALERT, true);
         }
 
-        if ( mUnstableDelayTimeLeft == 0 )
-        {
+        if (mUnstableDelayTimeLeft == 0) {
             //Going unstable anew
             InitUnstable();
         }
 
         //Reset the unstable clock.
         mUnstableDelayTimeLeft = mData.GetUnstableDelay();
-        SetFlag((Flag)UNSTABLE, true );
+        SetFlag((Flag) UNSTABLE, true);
     }
 
     BEGIN_PROFILE("Cam::Rod")
     //---------  Figure out the new rod thing.
-    if ( GetFlag( (Flag)UNSTABLE ) )
-    {
+    if (GetFlag((Flag) UNSTABLE)) {
         //Get the unstable rod.
         rod = mUnstablePosition;
 
         //Deal with collision 
-        //rAssert( mNumCollisions == 0 );
-    }
-    else
-    {
-        CalculateRod( &rod, milliseconds, timeMod );
+        //rAssert(mNumCollisions == 0);
+    } else {
+        CalculateRod(&rod, milliseconds, timeMod);
     }
     END_PROFILE("Cam::Rod")
 
@@ -263,35 +247,29 @@ void FollowCam::Update( unsigned int milliseconds )
 
     //---------  Get the position in space of the target to apply to desired values.
     rmt::Vector targetPos;
-    target->GetPosition( &targetPos );
+    target->GetPosition(&targetPos);
 
     //---------  Set the desired position of the camera
-    desiredPosition.Add( targetPos );
-   
+    desiredPosition.Add(targetPos);
+
     BEGIN_PROFILE("FollowCam::Target")
     //---------  Set the desired position of the camera target
     rmt::Vector desiredTarget;
-    GetTargetPosition( &desiredTarget );
+    GetTargetPosition(&desiredTarget);
 
-    if ( GetFlag( (Flag)UNSTABLE ) )
-    {
-        desiredTarget.Add( targetPos, mUnstableTarget );
+    if (GetFlag((Flag) UNSTABLE)) {
+        desiredTarget.Add(targetPos, mUnstableTarget);
+    } else {
+        CalculateTarget(&desiredTarget, milliseconds, timeMod);
     }
-    else
-    {
-        CalculateTarget( &desiredTarget, milliseconds, timeMod );
-    }
-    
+
     //TODO:  Connect this camera to the physics system.
     END_PROFILE("FollowCam::Target")
 
-    if ( GetCheatInputSystem()->IsCheatEnabled( CHEAT_ID_SPEED_CAM ) )
-    {
-        SetFOV( 1.608495f );
-    }
-    else
-    {
-        SetFOV( mData.GetFOV() );
+    if (GetCheatInputSystem()->IsCheatEnabled(CHEAT_ID_SPEED_CAM)) {
+        SetFOV(1.608495f);
+    } else {
+        SetFOV(mData.GetFOV());
     }
 
     bool stabilizingToggle = false;
@@ -299,107 +277,98 @@ void FollowCam::Update( unsigned int milliseconds )
     rmt::Vector lookFrom = targetPos;
     rmt::Vector lookTo = desiredPosition;
 
-    IntersectionList& iList = GetSuperCamManager()->GetSCC( GetPlayerID() )->GetIntersectionList();
+    IntersectionList &iList = GetSuperCamManager()->GetSCC(GetPlayerID())->GetIntersectionList();
 
-    if ( !iList.LineOfSight( lookFrom, lookTo, 0.01f, true ) )
-    {
+    if (!iList.LineOfSight(lookFrom, lookTo, 0.01f, true)) {
         bool badSituation = false;
 
-        if ( GetFlag( (Flag)LOOK_BACK ) )
-        {
+        if (GetFlag((Flag) LOOK_BACK)) {
             //Go somewhere else.
             rmt::Vector intersection;
-            if ( iList.TestIntersectionStatics( lookFrom, lookTo, &intersection ) )
-            {
+            if (iList.TestIntersectionStatics(lookFrom, lookTo, &intersection)) {
                 desiredPosition = intersection;
 
                 rmt::Vector localPos = desiredPosition;
-                localPos.Sub( targetPos );
+                localPos.Sub(targetPos);
 
-                rmt::CartesianToSpherical( localPos.x, localPos.z, localPos.y,
-                    &mMagnitude, &mRotationAngleXZ, &mRotationAngleY );
+                rmt::CartesianToSpherical(localPos.x, localPos.z, localPos.y,
+                                          &mMagnitude, &mRotationAngleXZ, &mRotationAngleY);
 
                 mRotationAngleXZDelta = 0.0f;
                 mRotationAngleYDelta = 0.0f;
-                mMagnitudeDelta = 0.0f; 
+                mMagnitudeDelta = 0.0f;
 
                 lookFrom = targetPos;
                 lookTo = desiredPosition;
 
-                if ( !iList.LineOfSight( lookFrom, lookTo, 0.01f, true ) )
-                {
+                if (!iList.LineOfSight(lookFrom, lookTo, 0.01f, true)) {
                     badSituation = true;
                 }
             }
-        }
-        else
-        {
-            SetFlag( (Flag)CUT, true );
+        } else {
+            SetFlag((Flag) CUT, true);
             DoCameraCut();
-            CalculateRod( &rod, milliseconds, timeMod );
+            CalculateRod(&rod, milliseconds, timeMod);
             desiredPosition = rod;
-            desiredPosition.Add( targetPos );
+            desiredPosition.Add(targetPos);
 
             lookFrom = targetPos;
             lookTo = desiredPosition;
 
-            if ( !iList.LineOfSight( lookFrom, lookTo, 0.01f, true ) )
-            {
+            if (!iList.LineOfSight(lookFrom, lookTo, 0.01f, true)) {
                 badSituation = true;
             }
 
-            SetFlag( (Flag)LOS_CORRECTED, true );
+            SetFlag((Flag) LOS_CORRECTED, true);
         }
 
-        if ( badSituation )
-        {
-            iList.TestIntersectionStatics( lookTo, lookFrom, &desiredPosition );
+        if (badSituation) {
+            iList.TestIntersectionStatics(lookTo, lookFrom, &desiredPosition);
 
             rmt::Vector distVec;
-            distVec.Sub( targetPos, desiredPosition );
+            distVec.Sub(targetPos, desiredPosition);
             float minDist = mData.GetMagnitude() - 2.0f; //Arbitrary?
-            if ( distVec.MagnitudeSqr() < ( minDist * minDist ) )
-            {
+            if (distVec.MagnitudeSqr() < (minDist * minDist)) {
                 desiredPosition = targetPos;
-                desiredPosition.Add( rmt::Vector( 0.0f, 6.0f, 0.0f ) );  //BAD!
+                desiredPosition.Add(rmt::Vector(0.0f, 6.0f, 0.0f));  //BAD!
 
 /*                rmt::Vector heading;
-                mTargets[ 0 ]->GetHeading( &heading );
+                mTargets[ 0 ]->GetHeading(&heading);
 
-                if ( GetFlag( (Flag)LOOKING_BACK ) )
+                if (GetFlag((Flag)LOOKING_BACK))
                 {
                     heading.x *= -1.0f;
                     heading.z *= -1.0f;
                 }
 
-                heading.Scale( 2.0f );
+                heading.Scale(2.0f);
 
-                desiredTarget.Add( desiredPosition, heading );
+                desiredTarget.Add(desiredPosition, heading);
 */
             }
         }
 
         //Better clear the unstable flag, just in case.
         //Clear the unstable flag.
-        SetFlag( (Flag)UNSTABLE, false );
+        SetFlag((Flag) UNSTABLE, false);
         stabilizingToggle = true;
         mUnstableDelayTimeLeft = 0;
     }
 
     //---------  Set the new camera values
     BEGIN_PROFILE("FollowCam::SetCameraValues")
-    SetCameraValues( milliseconds, desiredPosition, desiredTarget );
+    SetCameraValues(milliseconds, desiredPosition, desiredTarget);
     END_PROFILE("FollowCam::SetCameraValues")
 
-    SetFlag( (Flag)FIRST_TIME, false );
-    SetFlag( (Flag)LOOK_BACK, false );
-    SetFlag( (Flag)STABILIZING, stabilizingToggle );
-    SetFlag( (Flag)CUT, stabilizingToggle );
-    //SetFlag( (Flag)LOOKING_SIDEWAYS, false );
+    SetFlag((Flag) FIRST_TIME, false);
+    SetFlag((Flag) LOOK_BACK, false);
+    SetFlag((Flag) STABILIZING, stabilizingToggle);
+    SetFlag((Flag) CUT, stabilizingToggle);
+    //SetFlag((Flag)LOOKING_SIDEWAYS, false);
     END_PROFILE("FollowCam::Update")
 
     //Save the old position of the car in case we go unstable next update.
-    GetTargetPosition( &mOldTargetPos, false );
+    GetTargetPosition(&mOldTargetPos, false);
 }
 
 //=============================================================================
@@ -407,68 +376,61 @@ void FollowCam::Update( unsigned int milliseconds )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::UpdateForPhysics( unsigned int milliseconds )
-{
+void FollowCam::UpdateForPhysics(unsigned int milliseconds) {
     bool collision = false;
 
     //This is to correct for collisions.
     //Adjust for collision;
     rmt::Vector currentPosition, desiredPosition, delta;
-    GetPosition( &currentPosition );
+    GetPosition(&currentPosition);
 
     desiredPosition = currentPosition;
-    delta.Set( 0.0f, 0.0f, 0.0f );
+    delta.Set(0.0f, 0.0f, 0.0f);
 
     unsigned int i;
-    for ( i = 0; i < mNumCollisions; ++i )
-    {
+    for (i = 0; i < mNumCollisions; ++i) {
         rmt::Vector camHeading;
-        GetHeading( &camHeading );
+        GetHeading(&camHeading);
         camHeading.NormalizeSafe();
-        if ( camHeading.DotProduct( mCollisionOffset[ i ] ) >= -0.7f )
-        {
-            desiredPosition.Add( mCollisionOffset[ i ] );
-        }
-        else if ( !collision )
-        {
+        if (camHeading.DotProduct(mCollisionOffset[i]) >= -0.7f) {
+            desiredPosition.Add(mCollisionOffset[i]);
+        } else if (!collision) {
             rmt::Vector fakedCollision = camHeading;
             fakedCollision *= GetNearPlane() * 1.5f;
-            desiredPosition.Add( fakedCollision );
+            desiredPosition.Add(fakedCollision);
         }
 
         collision = true;
     }
-   
+
     float lag = mData.GetCollisionLag();
     lag *= milliseconds / 16.0f;
-    CLAMP_TO_ONE( lag );
+    CLAMP_TO_ONE(lag);
 
-    MotionCubic( &currentPosition.x, &delta.x, desiredPosition.x, lag );
-    MotionCubic( &currentPosition.y, &delta.y, desiredPosition.y, lag );
-    MotionCubic( &currentPosition.z, &delta.z, desiredPosition.z, lag );
+    MotionCubic(&currentPosition.x, &delta.x, desiredPosition.x, lag);
+    MotionCubic(&currentPosition.y, &delta.y, desiredPosition.y, lag);
+    MotionCubic(&currentPosition.z, &delta.z, desiredPosition.z, lag);
 
     //------- Check to see if we've intersected anything
-    if ( mGroundOffset.MagnitudeSqr() > 0.001f )
-    {
-        currentPosition.Add( mGroundOffset );
+    if (mGroundOffset.MagnitudeSqr() > 0.001f) {
+        currentPosition.Add(mGroundOffset);
         collision = true;
     }
 
     rmt::Vector targetPos;
-    GetTarget( &targetPos );
+    GetTarget(&targetPos);
 
-    SetCameraValues( 0, currentPosition, targetPos );  //0.0f, no extra transition please.
+    SetCameraValues(0, currentPosition, targetPos);  //0.0f, no extra transition please.
 
-    SetFlag((Flag)COLLIDING, collision );
+    SetFlag((Flag) COLLIDING, collision);
 
-    if ( collision )
-    {
-        mXAxis = mController->GetAxisValue( SuperCamController::stickX );
+    if (collision) {
+        mXAxis = mController->GetAxisValue(SuperCamController::stickX);
     }
 }
 
@@ -478,13 +440,12 @@ void FollowCam::UpdateForPhysics( unsigned int milliseconds )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned char* settings )
+// Parameters:  (unsigned char* settings)
 //
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::LoadSettings( unsigned char* settings )
-{
+void FollowCam::LoadSettings(unsigned char *settings) {
 }
 
 //=============================================================================
@@ -497,10 +458,9 @@ void FollowCam::LoadSettings( unsigned char* settings )
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::CopyToData()
-{
+void FollowCam::CopyToData() {
     // dlong: it's fun to misuse other people's code
-    mData.SetAspect( GetAspect() );
+    mData.SetAspect(GetAspect());
 }
 
 //=============================================================================
@@ -508,34 +468,33 @@ void FollowCam::CopyToData()
 //=============================================================================
 // Description: This selects the current active target.
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::SetTarget( ISuperCamTarget* target )
-{
-    rAssert( target );
+void FollowCam::SetTarget(ISuperCamTarget *target) {
+    rAssert(target);
 
-    mTargets[ 0 ] = target;
+    mTargets[0] = target;
     mNumTargets = 1;
 
     mActiveTarget = 0;//Set it to the first one.
-    
-    FollowCamDataChunk* fcD = SuperCamCentral::FindFCD( target->GetID() + static_cast<unsigned int>(mFollowType) * FOLLOW_ID_OFFSET );
-    
-    if ( fcD )
-    {
+
+    FollowCamDataChunk *fcD = SuperCamCentral::FindFCD(
+            target->GetID() + static_cast<unsigned int>(mFollowType) * FOLLOW_ID_OFFSET);
+
+    if (fcD) {
         //Load the data.
-        //mData.SetRotationXZ( fcD->mRotation );
-        mData.SetRotationY( fcD->mElevation );
-        mData.SetMagnitude( fcD->mMagnitude );
-        mData.SetTargetOffset( fcD->mTargetOffset );
+        //mData.SetRotationXZ(fcD->mRotation);
+        mData.SetRotationY(fcD->mElevation);
+        mData.SetMagnitude(fcD->mMagnitude);
+        mData.SetTargetOffset(fcD->mTargetOffset);
 
         return;
     }
-     
-    rDebugString( "There should have been camera data loaded!" );
+
+    rDebugString("There should have been camera data loaded!");
 }
 
 //=============================================================================
@@ -543,20 +502,18 @@ void FollowCam::SetTarget( ISuperCamTarget* target )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::AddTarget( ISuperCamTarget* target )
-{
-    rAssert( mNumTargets < MAX_TARGETS );
-    rAssert( target );
+void FollowCam::AddTarget(ISuperCamTarget *target) {
+    rAssert(mNumTargets < MAX_TARGETS);
+    rAssert(target);
 
-    if ( mNumTargets < MAX_TARGETS )
-    {
+    if (mNumTargets < MAX_TARGETS) {
         //Add the target
-        mTargets[ mNumTargets ] = target;
+        mTargets[mNumTargets] = target;
 
         ++mNumTargets;
     }
@@ -572,9 +529,8 @@ void FollowCam::AddTarget( ISuperCamTarget* target )
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::EnableShake()
-{
-    SetShaker( &mSineCosShaker );
+void FollowCam::EnableShake() {
+    SetShaker(&mSineCosShaker);
     SuperCam::EnableShake();
 }
 
@@ -588,8 +544,7 @@ void FollowCam::EnableShake()
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::DisableShake()
-{
+void FollowCam::DisableShake() {
     SuperCam::DisableShake();
 }
 
@@ -603,16 +558,15 @@ void FollowCam::DisableShake()
 // Return:      bool 
 //
 //=============================================================================
-bool FollowCam::ShouldReverse() const
-{
-    rAssert( mTargets[0] != NULL );
+bool FollowCam::ShouldReverse() const {
+    rAssert(mTargets[0] != NULL);
     rmt::Vector v;
-    mTargets[0]->GetVelocity( &v );
+    mTargets[0]->GetVelocity(&v);
 
     return !mTargets[0]->IsAirborn() &&
            !mTargets[0]->IsUnstable() &&
-           mTargets[0]->IsInReverse() && 
-           ((v.MagnitudeSqr() > MIN_REVERSE_VELOCITY ) || mNumCollisions > 0 );
+           mTargets[0]->IsInReverse() &&
+           ((v.MagnitudeSqr() > MIN_REVERSE_VELOCITY) || mNumCollisions > 0);
 }
 
 //******************************************************************************
@@ -631,43 +585,42 @@ bool FollowCam::ShouldReverse() const
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::OnRegisterDebugControls()
-{
+void FollowCam::OnRegisterDebugControls() {
 #ifdef DEBUGWATCH
     char nameSpace[256];
-    sprintf( nameSpace, "SuperCam\\Player%d\\Follow", GetPlayerID() );
+    sprintf(nameSpace, "SuperCam\\Player%d\\Follow", GetPlayerID());
 
-    radDbgWatchAddFloat( &mData.mRotationXZ, "Rotation XZ", nameSpace, &SetDirtyCB, this, 0.0f, rmt::PI_2 );
-    radDbgWatchAddFloat( &mData.mRotationY, "Rotation Y", nameSpace, &SetDirtyCB, this, 0.001f, rmt::PI_BY2 );
-    radDbgWatchAddFloat( &mData.mMagnitude, "Magnitude", nameSpace, &SetDirtyCB, this, 2.0f, 50.0f );
+    radDbgWatchAddFloat(&mData.mRotationXZ, "Rotation XZ", nameSpace, &SetDirtyCB, this, 0.0f, rmt::PI_2);
+    radDbgWatchAddFloat(&mData.mRotationY, "Rotation Y", nameSpace, &SetDirtyCB, this, 0.001f, rmt::PI_BY2);
+    radDbgWatchAddFloat(&mData.mMagnitude, "Magnitude", nameSpace, &SetDirtyCB, this, 2.0f, 50.0f);
 
-    radDbgWatchAddFloat( &mData.mCameraLagXZ, "Camera Lag XZ", nameSpace, &SetDirtyCB, this, 0.0f, 1.0f );
-    radDbgWatchAddFloat( &mData.mCameraLagY, "Camera Lag Y", nameSpace, &SetDirtyCB, this, 0.0f, 1.0f );
-    radDbgWatchAddFloat( &mData.mMagnitudeLag, "Magnitude Lag", nameSpace, &SetDirtyCB, this, 0.0f, 1.0f );
-    radDbgWatchAddFloat( &mData.mCollisionLag, "Collision Lag", nameSpace, &SetDirtyCB, this, 0.0f, 1.0f );
+    radDbgWatchAddFloat(&mData.mCameraLagXZ, "Camera Lag XZ", nameSpace, &SetDirtyCB, this, 0.0f, 1.0f);
+    radDbgWatchAddFloat(&mData.mCameraLagY, "Camera Lag Y", nameSpace, &SetDirtyCB, this, 0.0f, 1.0f);
+    radDbgWatchAddFloat(&mData.mMagnitudeLag, "Magnitude Lag", nameSpace, &SetDirtyCB, this, 0.0f, 1.0f);
+    radDbgWatchAddFloat(&mData.mCollisionLag, "Collision Lag", nameSpace, &SetDirtyCB, this, 0.0f, 1.0f);
 
-    radDbgWatchAddVector( &mData.mTargetOffset.x, "Target Offset", nameSpace, &SetDirtyCB, this, 0.0f, 100.0f );
+    radDbgWatchAddVector(&mData.mTargetOffset.x, "Target Offset", nameSpace, &SetDirtyCB, this, 0.0f, 100.0f);
 
-    radDbgWatchAddFloat( &mData.mTargetLagXZ, "Target Lag XZ", nameSpace, &SetDirtyCB, this, 0.0f, 1.0f );
-    radDbgWatchAddFloat( &mData.mTargetLagY, "Target Lag Y", nameSpace, &SetDirtyCB, this, 0.0f, 1.0f );
+    radDbgWatchAddFloat(&mData.mTargetLagXZ, "Target Lag XZ", nameSpace, &SetDirtyCB, this, 0.0f, 1.0f);
+    radDbgWatchAddFloat(&mData.mTargetLagY, "Target Lag Y", nameSpace, &SetDirtyCB, this, 0.0f, 1.0f);
 
-    radDbgWatchAddUnsignedInt( &mData.mUnstableDelay, "Unstable Delay", nameSpace, &SetDirtyCB, this, 0, 1000 );
+    radDbgWatchAddUnsignedInt(&mData.mUnstableDelay, "Unstable Delay", nameSpace, &SetDirtyCB, this, 0, 1000);
 
-    radDbgWatchAddUnsignedInt( &mData.mQuickTurnDelay, "Quick-turn Delay", nameSpace, &SetDirtyCB, this, 0, 1000 );
-    radDbgWatchAddFloat( &mData.mQuickTurnModifier, "Quick-turn Modifier", nameSpace, &SetDirtyCB, this, 0.0f, 1.0f );
+    radDbgWatchAddUnsignedInt(&mData.mQuickTurnDelay, "Quick-turn Delay", nameSpace, &SetDirtyCB, this, 0, 1000);
+    radDbgWatchAddFloat(&mData.mQuickTurnModifier, "Quick-turn Modifier", nameSpace, &SetDirtyCB, this, 0.0f, 1.0f);
 
-    radDbgWatchAddFloat( &MIN_REVERSE_VELOCITY, "Min reverse v", nameSpace, NULL, this, 10.0f, 300.0f );
+    radDbgWatchAddFloat(&MIN_REVERSE_VELOCITY, "Min reverse v", nameSpace, NULL, this, 10.0f, 300.0f);
 
-    radDbgWatchAddFloat( &CREEPY_TWIST, "Twist", nameSpace, NULL, NULL, 0.0f, rmt::PI_2 );
+    radDbgWatchAddFloat(&CREEPY_TWIST, "Twist", nameSpace, NULL, NULL, 0.0f, rmt::PI_2);
 
 #if defined(LOOK_TURN) || defined(CUT_LOOK)
-    radDbgWatchAddFloat( &LOOK_OFFSET_DIST, "Side/Up Look Dist", nameSpace, NULL, NULL, 0.0f, 20.0f );
-    radDbgWatchAddFloat( &LOOK_OFFSET_HEIGHT, "Side/Up Look height", nameSpace, NULL, NULL, 0.0f, 5.0f );
-    radDbgWatchAddFloat( &LOOK_OFFSET_BACK, "Side/Up Look pos Z", nameSpace, NULL, NULL, 0.0f, -5.0f );
+    radDbgWatchAddFloat(&LOOK_OFFSET_DIST, "Side/Up Look Dist", nameSpace, NULL, NULL, 0.0f, 20.0f);
+    radDbgWatchAddFloat(&LOOK_OFFSET_HEIGHT, "Side/Up Look height", nameSpace, NULL, NULL, 0.0f, 5.0f);
+    radDbgWatchAddFloat(&LOOK_OFFSET_BACK, "Side/Up Look pos Z", nameSpace, NULL, NULL, 0.0f, -5.0f);
 #endif
 
 #ifdef EXTRA_ROT
-    radDbgWatchAddFloat( &LOOK_ROT, "Side Look Rot", nameSpace, NULL, NULL, 0.01f, rmt::PI_BY2 );
+    radDbgWatchAddFloat(&LOOK_ROT, "Side Look Rot", nameSpace, NULL, NULL, 0.01f, rmt::PI_BY2);
 #endif
 
 #endif
@@ -683,40 +636,39 @@ void FollowCam::OnRegisterDebugControls()
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::OnUnregisterDebugControls()
-{
+void FollowCam::OnUnregisterDebugControls() {
 #ifdef DEBUGWATCH
-    radDbgWatchDelete( &mData.mRotationXZ );
-    radDbgWatchDelete( &mData.mRotationY );
-    radDbgWatchDelete( &mData.mMagnitude );
+    radDbgWatchDelete(&mData.mRotationXZ);
+    radDbgWatchDelete(&mData.mRotationY);
+    radDbgWatchDelete(&mData.mMagnitude);
 
-    radDbgWatchDelete( &mData.mCameraLagXZ );
-    radDbgWatchDelete( &mData.mCameraLagY );
-    radDbgWatchDelete( &mData.mMagnitudeLag );
-    radDbgWatchDelete( &mData.mCollisionLag );
+    radDbgWatchDelete(&mData.mCameraLagXZ);
+    radDbgWatchDelete(&mData.mCameraLagY);
+    radDbgWatchDelete(&mData.mMagnitudeLag);
+    radDbgWatchDelete(&mData.mCollisionLag);
 
-    radDbgWatchDelete( &mData.mTargetOffset.x );
+    radDbgWatchDelete(&mData.mTargetOffset.x);
 
-    radDbgWatchDelete( &mData.mTargetLagXZ );
-    radDbgWatchDelete( &mData.mTargetLagY );
+    radDbgWatchDelete(&mData.mTargetLagXZ);
+    radDbgWatchDelete(&mData.mTargetLagY);
 
-    radDbgWatchDelete( &mData.mUnstableDelay );
+    radDbgWatchDelete(&mData.mUnstableDelay);
 
-    radDbgWatchDelete( &mData.mQuickTurnDelay );
-    radDbgWatchDelete( &mData.mQuickTurnModifier );
+    radDbgWatchDelete(&mData.mQuickTurnDelay);
+    radDbgWatchDelete(&mData.mQuickTurnModifier);
 
-    radDbgWatchDelete( &MIN_REVERSE_VELOCITY );
+    radDbgWatchDelete(&MIN_REVERSE_VELOCITY);
 
-    radDbgWatchDelete( &CREEPY_TWIST );
+    radDbgWatchDelete(&CREEPY_TWIST);
 
 #if defined(LOOK_TURN) || defined(CUT_LOOK)
-    radDbgWatchDelete( &LOOK_OFFSET_DIST );
-    radDbgWatchDelete( &LOOK_OFFSET_HEIGHT );
-    radDbgWatchDelete( &LOOK_OFFSET_BACK );
+    radDbgWatchDelete(&LOOK_OFFSET_DIST);
+    radDbgWatchDelete(&LOOK_OFFSET_HEIGHT);
+    radDbgWatchDelete(&LOOK_OFFSET_BACK);
 #endif
 
 #ifdef EXTRA_ROT
-    radDbgWatchDelete( &LOOK_ROT );
+    radDbgWatchDelete(&LOOK_ROT);
 #endif
 #endif
 }
@@ -731,26 +683,25 @@ void FollowCam::OnUnregisterDebugControls()
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::DoCameraCut()
-{
-    SetFlag( (Flag)CUT, true );
-    
+void FollowCam::DoCameraCut() {
+    SetFlag((Flag) CUT, true);
+
     //We're doing a camera cut so let's set the position to the default.
     rmt::Matrix mat;
     rmt::Vector targetHeading, targetVUP;
-    mTargets[ mActiveTarget ]->GetHeading( &targetHeading );
-    mTargets[ mActiveTarget ]->GetVUP( &targetVUP );
+    mTargets[mActiveTarget]->GetHeading(&targetHeading);
+    mTargets[mActiveTarget]->GetVUP(&targetVUP);
     mat.Identity();
-    mat.FillHeading( targetHeading, targetVUP );
+    mat.FillHeading(targetHeading, targetVUP);
 
     rmt::Vector desiredRod;
-    GetDesiredRod( &desiredRod );
+    GetDesiredRod(&desiredRod);
 
     //Get the rod into the target's space
-    desiredRod.Transform( mat );
+    desiredRod.Transform(mat);
 
-    rmt::CartesianToSpherical( desiredRod.x, desiredRod.z, desiredRod.y,
-                               &mMagnitude, &mRotationAngleXZ, &mRotationAngleY );
+    rmt::CartesianToSpherical(desiredRod.x, desiredRod.z, desiredRod.y,
+                              &mMagnitude, &mRotationAngleXZ, &mRotationAngleY);
 
     //Also, reset the deltas.
     mRotationAngleXZDelta = 0.0f;
@@ -758,28 +709,28 @@ void FollowCam::DoCameraCut()
     mMagnitudeDelta = 0.0f;
 
 #ifdef CUT_LOOK
-    if ( GetFlag( (Flag)LOOKING_SIDEWAYS ) )
+    if (GetFlag((Flag)LOOKING_SIDEWAYS))
     {
-        GetTargetPosition( &mTargetPosition, false );
-        mTargetPosition.Add( rmt::Vector( 0.0f, LOOK_OFFSET_HEIGHT, 0.0f ) );
+        GetTargetPosition(&mTargetPosition, false);
+        mTargetPosition.Add(rmt::Vector(0.0f, LOOK_OFFSET_HEIGHT, 0.0f));
     }
     else
     {
-        //mTargetPosition.Set( 0.0f, 0.0f, 0.0f );
-        GetTargetPosition( &mTargetPosition );
+        //mTargetPosition.Set(0.0f, 0.0f, 0.0f);
+        GetTargetPosition(&mTargetPosition);
     }
 #else
-    //mTargetPosition.Set( 0.0f, 0.0f, 0.0f );
-    GetTargetPosition( &mTargetPosition );
-#endif   
+    //mTargetPosition.Set(0.0f, 0.0f, 0.0f);
+    GetTargetPosition(&mTargetPosition);
+#endif
 
-    mTargetPositionDelta.Set( 0.0f, 0.0f, 0.0f );
+    mTargetPositionDelta.Set(0.0f, 0.0f, 0.0f);
 
     //Reset the FOV and aspect ratio for this camera.
-    SetFOV( mData.GetFOV() );
-    SetAspect( mData.GetAspect() );
+    SetFOV(mData.GetFOV());
+    SetAspect(mData.GetAspect());
 
-    SetFlag( (Flag)UNSTABLE, false );
+    SetFlag((Flag) UNSTABLE, false);
 }
 
 //=============================================================================
@@ -792,27 +743,26 @@ void FollowCam::DoCameraCut()
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::InitUnstable()
-{
+void FollowCam::InitUnstable() {
     //First time unstable since recovered.
     //Set up the unstable rod
-    
-    rmt::Vector targetPosition;
-    //GetTargetPosition( &targetPosition, false );
-    targetPosition = mOldTargetPos;
-    
-    rmt::Vector camPosition;
-    GetPosition( &camPosition );
 
-    mUnstablePosition.Sub( camPosition, targetPosition );
+    rmt::Vector targetPosition;
+    //GetTargetPosition(&targetPosition, false);
+    targetPosition = mOldTargetPos;
+
+    rmt::Vector camPosition;
+    GetPosition(&camPosition);
+
+    mUnstablePosition.Sub(camPosition, targetPosition);
 
     rmt::Vector camTarget;
-    GetTarget( &camTarget );
+    GetTarget(&camTarget);
 
-    mUnstableTarget.Sub( camTarget, targetPosition );
+    mUnstableTarget.Sub(camTarget, targetPosition);
 
     //Set the unstable flag
-    SetFlag( (Flag)UNSTABLE, true );
+    SetFlag((Flag) UNSTABLE, true);
 }
 
 //=============================================================================
@@ -825,37 +775,34 @@ void FollowCam::InitUnstable()
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::UpdateUnstable( unsigned int milliseconds )
-{
+void FollowCam::UpdateUnstable(unsigned int milliseconds) {
     mUnstableDelayTimeLeft -= milliseconds;
 
-    if ( mUnstableDelayTimeLeft <= 0 )
-    {
+    if (mUnstableDelayTimeLeft <= 0) {
         //Finished being unstable.  Let the camera drift back to it's normal
         //position.  If this is a speed up camera situation, we should 
         //accelerate the rotation.
 
         mUnstableDelayTimeLeft = 0;
 
-        mUnstablePosition.Set( 0.0f, 0.0f, 0.0f );
-        mUnstableTarget.Set( 0.0f, 0.0f, 0.0f );
+        mUnstablePosition.Set(0.0f, 0.0f, 0.0f);
+        mUnstableTarget.Set(0.0f, 0.0f, 0.0f);
 
-        mTargetPositionDelta.Set( 0.0f, 0.0f, 0.0f );
+        mTargetPositionDelta.Set(0.0f, 0.0f, 0.0f);
 
         //Clear the unstable flag.
-        SetFlag( (Flag)UNSTABLE, false );
+        SetFlag((Flag) UNSTABLE, false);
 
-        if ( GetFlag( (Flag)QUICK_TURN_ALERT ) )
-        {
-            SetFlag( (Flag)QUICK_TURN_ALERT, false );
-            SetFlag( (Flag)QUICK_TURN, true );
+        if (GetFlag((Flag) QUICK_TURN_ALERT)) {
+            SetFlag((Flag) QUICK_TURN_ALERT, false);
+            SetFlag((Flag) QUICK_TURN, true);
 
             InitQuickTurn();
         }
 
         //This is to internally reset the state of the follow cam.  By doing
         //The unstable stuff we've hosed the "memory" of the rotations.
-        SetFlag( (Flag)STABILIZING, true );
+        SetFlag((Flag) STABILIZING, true);
     }
 }
 
@@ -869,8 +816,7 @@ void FollowCam::UpdateUnstable( unsigned int milliseconds )
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::InitQuickTurn()
-{
+void FollowCam::InitQuickTurn() {
     mQuickTurnTimeLeft = mData.GetQuickTurnDelay();
 }
 
@@ -879,19 +825,17 @@ void FollowCam::InitQuickTurn()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int milliseconds )
+// Parameters:  (unsigned int milliseconds)
 //
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::UpdateQuickTurn( unsigned int milliseconds )
-{
+void FollowCam::UpdateQuickTurn(unsigned int milliseconds) {
     mQuickTurnTimeLeft -= milliseconds;
 
-    if ( mQuickTurnTimeLeft <= 0 )
-    {
+    if (mQuickTurnTimeLeft <= 0) {
         //Done the quick turn, back to normal speed now.
-        SetFlag( (Flag)QUICK_TURN, false );
+        SetFlag((Flag) QUICK_TURN, false);
         mQuickTurnTimeLeft = 0;
     }
 }
@@ -901,23 +845,20 @@ void FollowCam::UpdateQuickTurn( unsigned int milliseconds )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* position, bool withOffset )
+// Parameters:  (rmt::Vector* position, bool withOffset)
 //
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::GetTargetPosition( rmt::Vector* position, 
-                                          bool withOffset )
-{
-    mTargets[ mActiveTarget ]->GetPosition( position );
+void FollowCam::GetTargetPosition(rmt::Vector *position,
+                                  bool withOffset) {
+    mTargets[mActiveTarget]->GetPosition(position);
 
-    if ( withOffset )
-    {
+    if (withOffset) {
         rmt::Vector offset;
-        mData.GetTargetOffset( &offset );
+        mData.GetTargetOffset(&offset);
 
-        if ( GetFlag( (Flag)LOOK_BACK ) )
-        {
+        if (GetFlag((Flag) LOOK_BACK)) {
             offset.x *= -1.0f;
             offset.z *= -1.0f;
         }
@@ -929,53 +870,52 @@ void FollowCam::GetTargetPosition( rmt::Vector* position,
         float lookLeftRight = 0.0f;
 
 #if defined(RAD_GAMECUBE) || defined(RAD_XBOX)
-        lookUp = mController->GetValue( SuperCamController::stickY );
-        lookLeftRight = mController->GetValue( SuperCamController::stickX );
+        lookUp = mController->GetValue(SuperCamController::stickY);
+        lookLeftRight = mController->GetValue(SuperCamController::stickX);
 #elif defined(RAD_WIN32)
-        lookUp = mController->GetValue( SuperCamController::carLookUp );
-        float left = mController->GetValue( SuperCamController::carLookLeft );
-        float right = mController->GetValue( SuperCamController::carLookRight );
-        lookLeftRight = ( right > left ) ? right : -left;
+        lookUp = mController->GetValue(SuperCamController::carLookUp);
+        float left = mController->GetValue(SuperCamController::carLookLeft);
+        float right = mController->GetValue(SuperCamController::carLookRight);
+        lookLeftRight = (right> left) ? right : -left;
 #else //This is PS2
-        lookUp = mController->GetValue( SuperCamController::lookToggle );
-        lookLeftRight = mController->GetValue( SuperCamController::r2 ) - mController->GetValue( SuperCamController::l2 );
+        lookUp = mController->GetValue(SuperCamController::lookToggle);
+        lookLeftRight = mController->GetValue(SuperCamController::r2) - mController->GetValue(SuperCamController::l2);
 #endif
 #else
 #if defined(RAD_GAMECUBE) || defined(RAD_XBOX)
-        lookUp = mController->GetValue( SuperCamController::stickY );
+        lookUp = mController->GetValue(SuperCamController::stickY);
 #elif defined(RAD_WIN32)
-        lookUp = mController->GetValue( SuperCamController::carLookUp );
+        lookUp = mController->GetValue(SuperCamController::carLookUp);
 #else //This is PS2
-        lookUp = mController->GetValue( SuperCamController::lookToggle );
+        lookUp = mController->GetValue(SuperCamController::lookToggle);
 #endif
 #endif
 
-#ifdef TURN_LOOK       
-        if ( GetCharacterSheetManager()->QueryInvertedCameraSetting() )
+#ifdef TURN_LOOK
+        if (GetCharacterSheetManager()->QueryInvertedCameraSetting())
         {
             //Invert this!
             lookLeftRight *= -1.0f;
         }
 
-        offset.x += ( LOOK_OFFSET_DIST * lookLeftRight );
+        offset.x += (LOOK_OFFSET_DIST * lookLeftRight);
 #endif
 
-        if ( lookUp > 0.2f )
-        {
-            offset.y += ( LOOK_OFFSET_DIST * 1.0f ); //Make it digital.
+        if (lookUp > 0.2f) {
+            offset.y += (LOOK_OFFSET_DIST * 1.0f); //Make it digital.
         }
 
         //Now put the offset in the target's space
         rmt::Matrix mat;
         rmt::Vector targetHeading, targetVUP;
-        mTargets[ mActiveTarget ]->GetHeading( &targetHeading );
-        mTargets[ mActiveTarget ]->GetVUP( &targetVUP );
+        mTargets[mActiveTarget]->GetHeading(&targetHeading);
+        mTargets[mActiveTarget]->GetVUP(&targetVUP);
         mat.Identity();
-        mat.FillHeading( targetHeading, targetVUP );
+        mat.FillHeading(targetHeading, targetVUP);
 
-        offset.Transform( mat );        
+        offset.Transform(mat);
 
-        (*position).Add( offset );
+        (*position).Add(offset);
     }
 
 }
@@ -986,37 +926,35 @@ void FollowCam::GetTargetPosition( rmt::Vector* position,
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* rod, unsigned int milliseconds, float timeMod )
+// Parameters:  (rmt::Vector* rod, unsigned int milliseconds, float timeMod)
 //
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::CalculateRod( rmt::Vector* rod, 
-                              unsigned int milliseconds, 
-                              float timeMod )
-{  
+void FollowCam::CalculateRod(rmt::Vector *rod,
+                             unsigned int milliseconds,
+                             float timeMod) {
     //Where is the camera in spherical coordinates?
 
     //This is the targets matrix and inverse matrix for rotation.
     rmt::Matrix mat;
     rmt::Vector targetHeading, targetVUP;
-    mTargets[ mActiveTarget ]->GetHeading( &targetHeading );
-    mTargets[ mActiveTarget ]->GetVUP( &targetVUP );
+    mTargets[mActiveTarget]->GetHeading(&targetHeading);
+    mTargets[mActiveTarget]->GetVUP(&targetVUP);
 
     //Never go upside down.
-    targetVUP.y = rmt::Fabs( targetVUP.y );
+    targetVUP.y = rmt::Fabs(targetVUP.y);
 
     mat.Identity();
-    mat.FillHeading( targetHeading, targetVUP );
+    mat.FillHeading(targetHeading, targetVUP);
 
     rmt::Vector desiredRod;
 
-    GetDesiredRod( &desiredRod );
-    desiredRod.Transform( mat );
+    GetDesiredRod(&desiredRod);
+    desiredRod.Transform(mat);
 
     //---------  Do the look back
-    if( GetFlag( (Flag)LOOK_BACK ) )
-    {
+    if (GetFlag((Flag) LOOK_BACK)) {
         //reverse the rod.
         desiredRod.x = -desiredRod.x;
         desiredRod.z = -desiredRod.z;
@@ -1025,33 +963,32 @@ void FollowCam::CalculateRod( rmt::Vector* rod,
 
     //This puts us in spherical space, also note the z and y switch.
     float desiredRotXZ, desiredRotY, desiredMag;
-    rmt::CartesianToSpherical( desiredRod.x, desiredRod.z, desiredRod.y, 
-                               &desiredMag, &desiredRotXZ, &desiredRotY );
+    rmt::CartesianToSpherical(desiredRod.x, desiredRod.z, desiredRod.y,
+                              &desiredMag, &desiredRotXZ, &desiredRotY);
 
 
 #ifdef EXTRA_ROT
-    float invertMod = GetSuperCamManager()->GetSCC( GetPlayerID() )->IsInvertedCameraEnabled() ? -1.0f : 1.0f;
+    float invertMod = GetSuperCamManager()->GetSCC(GetPlayerID())->IsInvertedCameraEnabled() ? -1.0f
+                                                                                             : 1.0f;
 #if defined(RAD_GAMECUBE) || defined(RAD_XBOX)
-    float leftRight = -mController->GetAxisValue( SuperCamController::stickX );
+    float leftRight = -mController->GetAxisValue(SuperCamController::stickX);
 #elif defined(RAD_WIN32)
-    float left = mController->GetValue( SuperCamController::carLookLeft );
-    float right = mController->GetValue( SuperCamController::carLookRight );
-    float leftRight = ( right > left ) ? -right : left;
+    float left = mController->GetValue(SuperCamController::carLookLeft);
+    float right = mController->GetValue(SuperCamController::carLookRight);
+    float leftRight = (right> left) ? -right : left;
 #else //This is PS2
-    float leftRight = mController->GetValue( SuperCamController::l2 ) - mController->GetValue( SuperCamController::r2 );
+    float leftRight = mController->GetValue(SuperCamController::l2) -
+                      mController->GetValue(SuperCamController::r2);
 #endif
 
-    if ( GetFlag( (Flag)LOS_CORRECTED ) && IsPushingStick() ) 
-    {
+    if (GetFlag((Flag) LOS_CORRECTED) && IsPushingStick()) {
         leftRight = 0.0f;
-    }
-    else
-    {
-        SetFlag( (Flag)LOS_CORRECTED, false );
+    } else {
+        SetFlag((Flag) LOS_CORRECTED, false);
     }
 
 #if defined(RAD_GAMECUBE) || defined(RAD_PS2) || defined(RAD_WIN32)
-    if ( mController->IsWheel() )
+    if (mController->IsWheel())
     {
         //This is a wheel.  No left right on wheels.
         //Or we are stopping the user from continuing to force the stick into a wall.
@@ -1059,12 +996,11 @@ void FollowCam::CalculateRod( rmt::Vector* rod,
     }
 #endif
 
-    if ( !GetFlag( (Flag)LOOK_BACK ) )
-    {
+    if (!GetFlag((Flag) LOOK_BACK)) {
 #ifdef RAD_WIN32 // this retarded move is thanks to vs.net optimization.
-        desiredRotXZ += ( invertMod * leftRight * rmt::PI_BY2 );
+        desiredRotXZ += (invertMod * leftRight * rmt::PI_BY2);
 #else
-        desiredRotXZ += ( invertMod * leftRight * LOOK_ROT );
+        desiredRotXZ += (invertMod * leftRight * LOOK_ROT);
 #endif
     }
 #endif
@@ -1072,76 +1008,69 @@ void FollowCam::CalculateRod( rmt::Vector* rod,
 
     //---------  Setup the desired angle and the current angle.
 
-    if ( !GetFlag((Flag)CUT) &&
-         (GetFlag( (Flag)FIRST_TIME ) || GetFlag( (Flag)STABILIZING ) || GetFlag((Flag)COLLIDING )) )
-    {
+    if (!GetFlag((Flag) CUT) &&
+        (GetFlag((Flag) FIRST_TIME) || GetFlag((Flag) STABILIZING) || GetFlag((Flag) COLLIDING))) {
         //Let's try to interpolate from it's current position.
         rmt::Vector position;
-        GetPosition( &position );
+        GetPosition(&position);
 
         rmt::Vector target;
-        if ( GetFlag( (Flag)FIRST_TIME ) )
-        {
-            mTargets[ mActiveTarget]->GetPosition( &target );
-        }
-        else
-        {
+        if (GetFlag((Flag) FIRST_TIME)) {
+            mTargets[mActiveTarget]->GetPosition(&target);
+        } else {
             //Use the old position since we're stabilizing from badness.
             target = mOldTargetPos;
         }
 
         rmt::Vector targToPos;
-        targToPos.Sub( position, target );
+        targToPos.Sub(position, target);
 
-        rmt::CartesianToSpherical( targToPos.x, targToPos.z, targToPos.y, &mMagnitude, &mRotationAngleXZ, &mRotationAngleY );
+        rmt::CartesianToSpherical(targToPos.x, targToPos.z, targToPos.y, &mMagnitude,
+                                  &mRotationAngleXZ, &mRotationAngleY);
         mMagnitudeDelta = 0.0f;
         mRotationAngleXZDelta = 0.0f;
         mRotationAngleYDelta = 0.0f;
     }
 
     //We only want to interpolate to a rotation via the fewest number of degrees.
-    AdjustAngles( &desiredRotXZ, &mRotationAngleXZ, &mRotationAngleXZDelta );
-    AdjustAngles( &desiredRotY, &mRotationAngleY, &mRotationAngleYDelta );       
+    AdjustAngles(&desiredRotXZ, &mRotationAngleXZ, &mRotationAngleXZDelta);
+    AdjustAngles(&desiredRotY, &mRotationAngleY, &mRotationAngleYDelta);
 
-    rmt::Clamp( desiredRotY, rmt::PI + rmt::PI_BY2, rmt::PI_BY2 );
+    rmt::Clamp(desiredRotY, rmt::PI + rmt::PI_BY2, rmt::PI_BY2);
 
     //---------  Interpolate to the desired position and target
 
     //This is the normal interpolation stage.
-    float cameraLagXZ   = mData.GetCameraLagXZ() * timeMod;
-    float cameraLagY    = mData.GetCameraLagY() * timeMod;
-    float magnitudeLag  = mData.GetMagnitudeLag() * timeMod;
+    float cameraLagXZ = mData.GetCameraLagXZ() * timeMod;
+    float cameraLagY = mData.GetCameraLagY() * timeMod;
+    float magnitudeLag = mData.GetMagnitudeLag() * timeMod;
 
-    UpdateQuickTurn( milliseconds );
+    UpdateQuickTurn(milliseconds);
 
-    if ( GetFlag( (Flag)QUICK_TURN ) )
-    {
+    if (GetFlag((Flag) QUICK_TURN)) {
         //Change the speed of interpolation to the adjusted value.
         cameraLagXZ *= mData.GetQuickTurnModifier();
         CLAMP_TO_ONE(cameraLagXZ);
     }
 
-    if ( GetFlag( (Flag)CUT ) )
-    {
+    if (GetFlag((Flag) CUT)) {
         cameraLagXZ = 1.0f;
         cameraLagY = 1.0f;
         magnitudeLag = 1.0f;
-    }
-    else
-    {
-        CLAMP_TO_ONE( cameraLagXZ );
-        CLAMP_TO_ONE( cameraLagY );
-        CLAMP_TO_ONE( magnitudeLag );
+    } else {
+        CLAMP_TO_ONE(cameraLagXZ);
+        CLAMP_TO_ONE(cameraLagY);
+        CLAMP_TO_ONE(magnitudeLag);
     }
 
-    MotionCubic( &mRotationAngleXZ, &mRotationAngleXZDelta, desiredRotXZ, cameraLagXZ );
-    MotionCubic( &mRotationAngleY, &mRotationAngleYDelta, desiredRotY, cameraLagY );
-    MotionCubic( &mMagnitude, &mMagnitudeDelta, desiredMag, magnitudeLag );
+    MotionCubic(&mRotationAngleXZ, &mRotationAngleXZDelta, desiredRotXZ, cameraLagXZ);
+    MotionCubic(&mRotationAngleY, &mRotationAngleYDelta, desiredRotY, cameraLagY);
+    MotionCubic(&mMagnitude, &mMagnitudeDelta, desiredMag, magnitudeLag);
 
     float x, y, z;
-    rmt::SphericalToCartesian( mMagnitude, mRotationAngleXZ, mRotationAngleY,
-                               &x, &z, &y );
-    rod->Set( x, y, z );
+    rmt::SphericalToCartesian(mMagnitude, mRotationAngleXZ, mRotationAngleY,
+                              &x, &z, &y);
+    rod->Set(x, y, z);
 }
 
 //=============================================================================
@@ -1149,48 +1078,46 @@ void FollowCam::CalculateRod( rmt::Vector* rod,
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* desiredTarget, 
+// Parameters:  (rmt::Vector* desiredTarget,
 //                unsigned int milliseconds, 
-//                float timeMod )
+//                float timeMod)
 //
 // Return:      void 
 //
 //=============================================================================
-void FollowCam::CalculateTarget( rmt::Vector* desiredTarget, 
-                                 unsigned int milliseconds, 
-                                 float timeMod )
-{
+void FollowCam::CalculateTarget(rmt::Vector *desiredTarget,
+                                unsigned int milliseconds,
+                                float timeMod) {
 #ifdef CUT_LOOK
-    if ( GetFlag( (Flag)LOOKING_SIDEWAYS ) )
+    if (GetFlag((Flag)LOOKING_SIDEWAYS))
     {
-        GetTargetPosition( &mTargetPosition, false );
-        mTargetPositionDelta.Set( 0.0f, 0.0f, 0.0f );
+        GetTargetPosition(&mTargetPosition, false);
+        mTargetPositionDelta.Set(0.0f, 0.0f, 0.0f);
         *desiredTarget = mTargetPosition;
-        desiredTarget->Add( rmt::Vector( 0.0f, LOOK_OFFSET_HEIGHT, 0.0f ) );
+        desiredTarget->Add(rmt::Vector(0.0f, LOOK_OFFSET_HEIGHT, 0.0f));
         return;
     }
 #endif
 
-    if ( !GetFlag((Flag)CUT) &&
-         (GetFlag( (Flag)FIRST_TIME ) || 
-          (GetFlag( (Flag)STABILIZING ))) )
-    {
-        GetTarget( &mTargetPosition );
-        mTargetPositionDelta.Set( 0.0f, 0.0f, 0.0f ); 
+    if (!GetFlag((Flag) CUT) &&
+        (GetFlag((Flag) FIRST_TIME) ||
+         (GetFlag((Flag) STABILIZING)))) {
+        GetTarget(&mTargetPosition);
+        mTargetPositionDelta.Set(0.0f, 0.0f, 0.0f);
     }
 
-    GetTargetPosition( desiredTarget );
+    GetTargetPosition(desiredTarget);
 
     //Here's the target position and interpolation.
-    float targetLagXZ   = mData.GetTargetLagXZ() * timeMod;
+    float targetLagXZ = mData.GetTargetLagXZ() * timeMod;
     CLAMP_TO_ONE(targetLagXZ);
 
-    float targetLagY    = mData.GetTargetLagY() * timeMod;
+    float targetLagY = mData.GetTargetLagY() * timeMod;
     CLAMP_TO_ONE(targetLagY);
 
-    MotionCubic( &mTargetPosition.x, &mTargetPositionDelta.x, desiredTarget->x, targetLagXZ );
-    MotionCubic( &mTargetPosition.y, &mTargetPositionDelta.y, desiredTarget->y, targetLagY );
-    MotionCubic( &mTargetPosition.z, &mTargetPositionDelta.z, desiredTarget->z, targetLagXZ );
+    MotionCubic(&mTargetPosition.x, &mTargetPositionDelta.x, desiredTarget->x, targetLagXZ);
+    MotionCubic(&mTargetPosition.y, &mTargetPositionDelta.y, desiredTarget->y, targetLagY);
+    MotionCubic(&mTargetPosition.z, &mTargetPositionDelta.z, desiredTarget->z, targetLagXZ);
 
 
     //Set the target position    
@@ -1202,42 +1129,41 @@ void FollowCam::CalculateTarget( rmt::Vector* desiredTarget,
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* rod)
+// Parameters:  (rmt::Vector* rod)
 //
 // Return:      bool - this says whether the rod is in world space or not.
 //
 //=============================================================================
-bool FollowCam::GetDesiredRod( rmt::Vector* rod)
-{
+bool FollowCam::GetDesiredRod(rmt::Vector *rod) {
 #ifdef CUT_LOOK
 
-    if ( !GetFlag( (Flag)LOOKING_SIDEWAYS ) )
+    if (!GetFlag((Flag)LOOKING_SIDEWAYS))
     {
         //No movement.
-        mData.GetRod( rod );
+        mData.GetRod(rod);
         return false;
     }
     else
     {
-        float invertMod = GetSuperCamManager()->GetSCC( GetPlayerID() )->IsInvertedCameraEnabled() ? -1.0f : 1.0f;
+        float invertMod = GetSuperCamManager()->GetSCC(GetPlayerID())->IsInvertedCameraEnabled() ? -1.0f : 1.0f;
 #if defined(RAD_GAMECUBE) || defined(RAD_XBOX)
-        float leftRight = mController->GetValue( SuperCamController::stickX );
+        float leftRight = mController->GetValue(SuperCamController::stickX);
 #elif defined(RAD_WIN32)
-        float left = mController->GetValue( SuperCamController::carLookLeft );
-        float right = mController->GetValue( SuperCamController::carLookRight );
-        float leftRight = ( right > left ) ? right : -left;
+        float left = mController->GetValue(SuperCamController::carLookLeft);
+        float right = mController->GetValue(SuperCamController::carLookRight);
+        float leftRight = (right> left) ? right : -left;
 #else //This is PS2
-        float leftRight = mController->GetValue( SuperCamController::r2 ) - mController->GetValue( SuperCamController::l2 );
+        float leftRight = mController->GetValue(SuperCamController::r2) - mController->GetValue(SuperCamController::l2);
 #endif
 
-        float dir = rmt::Sign( leftRight );
+        float dir = rmt::Sign(leftRight);
         //Look right so move left (I like it inverted here.)
-        rod->Set( dir * invertMod * LOOK_OFFSET_DIST, LOOK_OFFSET_HEIGHT, LOOK_OFFSET_BACK );
+        rod->Set(dir * invertMod * LOOK_OFFSET_DIST, LOOK_OFFSET_HEIGHT, LOOK_OFFSET_BACK);
         return false;
     }
 
 #endif
-    mData.GetRod( rod );
+    mData.GetRod(rod);
     return false;
 }
 
@@ -1251,19 +1177,19 @@ bool FollowCam::GetDesiredRod( rmt::Vector* rod)
 // Return:      bool 
 //
 //=============================================================================
-bool FollowCam::IsPushingStick()
-{
+bool FollowCam::IsPushingStick() {
 #if defined(RAD_XBOX) || defined(RAD_GAMECUBE)
-    float xAxis = mController->GetValue( SuperCamController::stickX );
+    float xAxis = mController->GetValue(SuperCamController::stickX);
 #elif defined(RAD_WIN32)
-    float left = mController->GetValue( SuperCamController::carLookLeft );
-    float right = mController->GetValue( SuperCamController::carLookRight );
-    float xAxis = ( right > left ) ? right : -left;
+    float left = mController->GetValue(SuperCamController::carLookLeft);
+    float right = mController->GetValue(SuperCamController::carLookRight);
+    float xAxis = (right> left) ? right : -left;
 #else
-    float xAxis = mController->GetValue( SuperCamController::l2 ) - mController->GetValue( SuperCamController::r2 );
+    float xAxis = mController->GetValue(SuperCamController::l2) -
+                  mController->GetValue(SuperCamController::r2);
 #endif
 
-    return ( !rmt::Epsilon( xAxis, 0.0f, 0.001f ) &&
-             rmt::Sign( xAxis ) == rmt::Sign( mXAxis ) );
+    return (!rmt::Epsilon(xAxis, 0.0f, 0.001f) &&
+            rmt::Sign(xAxis) == rmt::Sign(mXAxis));
 }
 

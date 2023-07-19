@@ -17,16 +17,15 @@
 #include <roads/geometry.h>
 
 class PathSegment;
+
 class Pedestrian;
 
 
-class Path
-{
+class Path {
 //MEMBERS
 public:
 
-    enum
-    {
+    enum {
         MAX_PEDESTRIANS = 3 // number of peds to allow on a single path
     };
 
@@ -34,22 +33,28 @@ public:
 //METHODS
 public:
     Path();
-    Path( bool isClosed, int nSegments );
+
+    Path(bool isClosed, int nSegments);
+
     ~Path();
 
 
-    PathSegment* GetPathSegmentByIndex( int index );
-    void AllocateSegments( int nSegments );
+    PathSegment *GetPathSegmentByIndex(int index);
+
+    void AllocateSegments(int nSegments);
 
 
-    
     //ACCESSORS
     bool IsFull() const;
+
     bool IsClosed() const;
-    void SetIsClosed( bool isClosed );
+
+    void SetIsClosed(bool isClosed);
+
     int GetNumPathSegments() const;
 
     bool AddPedestrian();
+
     bool RemovePedestrian();
 
 //MEMBERS
@@ -59,7 +64,7 @@ private:
     int mNumPeds;
 
     // pointer to dynamically allocated PathSegment array
-    PathSegment** mPathSegments;
+    PathSegment **mPathSegments;
 
 
 //METHODS:
@@ -72,18 +77,15 @@ private:
 // ********************************* INLINES *******************************
 
 
-inline bool Path::IsClosed() const
-{
+inline bool Path::IsClosed() const {
     return mIsClosed;
 }
 
-inline void Path::SetIsClosed( bool isClosed )
-{
+inline void Path::SetIsClosed(bool isClosed) {
     mIsClosed = isClosed;
 }
 
-inline int Path::GetNumPathSegments() const
-{
+inline int Path::GetNumPathSegments() const {
     return mNumPathSegments;
 }
 

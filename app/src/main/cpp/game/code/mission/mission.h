@@ -32,10 +32,15 @@
 //========================================
 
 class Vehicle;
+
 class CarStartLocator;
+
 class ZoneEventLocator;
+
 class BonusObjective;
+
 class StatePropCollectible;
+
 class AnimatedIcon;
 
 //=============================================================================
@@ -47,74 +52,84 @@ class AnimatedIcon;
 //
 //=============================================================================
 
-class Mission : public EventListener
-{
+class Mission : public EventListener {
 public:
 
-    enum { MAX_BONUS_OBJECTIVES = 3 };
+    enum {
+        MAX_BONUS_OBJECTIVES = 3
+    };
 
     Mission();
+
     ~Mission();
 
     // Gets the index in the text bible of the name of this mission
-    char* GetName() { return( &mcName[ 0 ] ); }
-    void SetName( char* name );
+    char *GetName() { return (&mcName[0]); }
+
+    void SetName(char *name);
 
     // Stages in this mission
-    void SetNumStages( int num ) { mNumMissionStages = num; }
-    int GetNumStages() { return( mNumMissionStages ); }
+    void SetNumStages(int num) { mNumMissionStages = num; }
 
-    MissionStage* GetStage( int index );
-    void SetStage( int index, MissionStage* stage );
+    int GetNumStages() { return (mNumMissionStages); }
 
-	
-    MissionStage* GetCurrentStage();
-    int GetCurrentStageIndex() const { return( mCurrentStage ); }
+    MissionStage *GetStage(int index);
+
+    void SetStage(int index, MissionStage *stage);
+
+
+    MissionStage *GetCurrentStage();
+
+    int GetCurrentStageIndex() const { return (mCurrentStage); }
 
     // loads and initializes all the stages
-	virtual void Initialize( GameMemoryAllocator heap );
+    virtual void Initialize(GameMemoryAllocator heap);
 
     // finalizes and dumps all the stages
-	virtual void Finalize();
+    virtual void Finalize();
 
 
     // These two methods finalize the current stage then move
     // to and initialize some other stage
-	void SetToStage( int index, bool resetting = false );
-	virtual void NextStage();
-	virtual void PrevStage();
+    void SetToStage(int index, bool resetting = false);
+
+    virtual void NextStage();
+
+    virtual void PrevStage();
 
     // Resets the current mission stage
-	void ResetStage();
+    void ResetStage();
 
     // fake event listener
-	virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
     // The GamePlayManager should call this for every frame
     // the mission is active
-	void Update( unsigned int elapsedTime );
-    
+    void Update(unsigned int elapsedTime);
+
     //
     // Adds a vehicle for this mission only
     //
-    //void AddVehicle( Vehicle* vehicle );
-    //Vehicle* GetVehicleByName( char* name );
+    //void AddVehicle(Vehicle* vehicle);
+    //Vehicle* GetVehicleByName(char* name);
 
     //
     // Accessors for the time left in the mission
     //
     int GetMissionTimeLeftInSeconds();
+
     int GetMissionTimeLeftInMilliSeconds();
 
     // Resets the entire mission. Use with caution!
-    void Reset( bool JumpStage = false );
+    void Reset(bool JumpStage = false);
+
     void ResetPlayer();
+
     void InitDynaLoad();
 
     bool DialogueCharactersTeleported();
 
-    enum MissionState
-    {
+    enum MissionState {
         STATE_WAITING,
         STATE_INPROGRESS,
         STATE_FAILED,
@@ -122,85 +137,111 @@ public:
         NUM_STATES
     };
 
-    MissionState GetState() { return( mState ); }
+    MissionState GetState() { return (mState); }
 
     // Returns true iff every stage in this mission is complete
-	bool IsComplete();
-    
+    bool IsComplete();
+
     //methods called from the missionscriptloader these shouldnt be called by any thing other missionscriptloader
     //since are for setup.
-    void SetVehicleRestart( CarStartLocator* loc ) { mVehicleRestart = loc; };
-    void SetPlayerRestart( Locator* loc ) { mPlayerRestart = loc; };
-    void SetRestartDynaload( const char* loadString, const char* interior = NULL ) ;
-    void LoadStreetRaceProps(const char* loadString );
-    void UnloadStreetRaceProps (const char* loadString);
+    void SetVehicleRestart(CarStartLocator *loc) { mVehicleRestart = loc; };
 
-    
+    void SetPlayerRestart(Locator *loc) { mPlayerRestart = loc; };
+
+    void SetRestartDynaload(const char *loadString, const char *interior = NULL);
+
+    void LoadStreetRaceProps(const char *loadString);
+
+    void UnloadStreetRaceProps(const char *loadString);
+
+
     //higher level methods for code use
     void InitStreetRacePropLoad();
+
     void InitStreetRacePropUnload();
-   
-   
+
 
     void SetSundayDrive() { mSundayDrive = true; };
+
     bool IsSundayDrive() const { return mSundayDrive; };
-    void SetResetToStage( int stage ) { mResetToStage = stage; };
+
+    void SetResetToStage(int stage) { mResetToStage = stage; };
+
     void SetBonusMission();
+
     bool IsBonusMission();
+
     bool IsRaceMission(); //determines if this mission is a special road race
     bool IsWagerMission();
 
-    void AddBonusObjective( BonusObjective* bo );
+    void AddBonusObjective(BonusObjective *bo);
+
     void StartBonusObjectives();
 
- 
-    void SetForcedCar( bool isForced );
+
+    void SetForcedCar(bool isForced);
+
     bool IsForcedCar() const { return mIsForcedCar; };
 
-    void SetMissionTime( int timeMilliseconds );
+    void SetMissionTime(int timeMilliseconds);
 
-    void CreateStatePropCollectible( const char* statepropname, const char* locator, int collisionattributes );
-    void AttachStatePropCollectible( const char* statepropname, const char* vehicleName, int collisionattributes );
+    void CreateStatePropCollectible(const char *statepropname, const char *locator,
+                                    int collisionattributes);
+
+    void AttachStatePropCollectible(const char *statepropname, const char *vehicleName,
+                                    int collisionattributes);
 
     bool GetSwappedCarsFlag();
+
     void SetSwappedCarsFlag(bool flag);
 
-    void SpecialCaseStageBackup( unsigned int num ) { mChangingStages = true; mJumpBackStage = true; mJumpBackBy = num; };
+    void SpecialCaseStageBackup(unsigned int num) {
+        mChangingStages = true;
+        mJumpBackStage = true;
+        mJumpBackBy = num;
+    };
 
-    void SetInitPedGroup( int initGroupId );
+    void SetInitPedGroup(int initGroupId);
 
-    void ShowHUD( bool isShowHUD );
+    void ShowHUD(bool isShowHUD);
+
     bool IsHUDVisible() const;
-    bool CanMDKCar(Vehicle* pVehicle,MissionStage* pStage);
 
-    void SetNumValidFailureHints( int numHints );
+    bool CanMDKCar(Vehicle *pVehicle, MissionStage *pStage);
+
+    void SetNumValidFailureHints(int numHints);
+
     int GetNumValidFailureHints() const;
-    CarStartLocator* GetVehicleRestart () { return mVehicleRestart;};
+
+    CarStartLocator *GetVehicleRestart() { return mVehicleRestart; };
 
     inline bool IsChangingStages() const { return mChangingStages; }
 
-    bool GetCarryOverOutOfCarCondition() { return mbCarryOverOutOfCarCondition;};
+    bool GetCarryOverOutOfCarCondition() { return mbCarryOverOutOfCarCondition; };
 
-    void SetCarryOverOutOfCarCondition(bool flag) { mbCarryOverOutOfCarCondition = flag;};
+    void SetCarryOverOutOfCarCondition(bool flag) { mbCarryOverOutOfCarCondition = flag; };
 
 public:
     bool mIsStreetRace1Or2;
 
 protected:
-    void SetCurrentStageIndex( int index ) { mCurrentStage = index; }
+    void SetCurrentStageIndex(int index) { mCurrentStage = index; }
 
-    virtual void DoUpdate( int elapsedTime );
+    virtual void DoUpdate(int elapsedTime);
+
 private:
 
-    bool UnlockStage( MissionStage* stage );
+    bool UnlockStage(MissionStage *stage);
+
     void SetupStageChange();
+
     void DoStageChange();
 
 
     static const int MAX_STAGES = 25;
 
     int mNumMissionStages;
-    MissionStage* mMissionStages[ MAX_STAGES ];
+    MissionStage *mMissionStages[MAX_STAGES];
     int mCurrentStage;
     int mResetMission;
 
@@ -210,7 +251,7 @@ private:
 
     bool mbComplete;
     bool mbIsLastStage;
-    
+
     int mMissionTimer;
 
     int mElapsedTimems;
@@ -220,25 +261,25 @@ private:
 
     // TODO greg
     // this is soon to be history
-    
+
     //static const int MAX_VEHICLES = 4;
     //int mNumVehicles;
     //Vehicle* mVehicles[ MAX_VEHICLES ];
 
-    CarStartLocator* mVehicleRestart;
-    Locator* mPlayerRestart;
-    ZoneEventLocator* mDynaloadLoc;
+    CarStartLocator *mVehicleRestart;
+    Locator *mPlayerRestart;
+    ZoneEventLocator *mDynaloadLoc;
 
-    ZoneEventLocator* mStreetRacePropsLoad;    //Chuck: adding  these so we can load and unload street race barriers.
-    ZoneEventLocator* mStreetRacePropsUnload;
+    ZoneEventLocator *mStreetRacePropsLoad;    //Chuck: adding  these so we can load and unload street race barriers.
+    ZoneEventLocator *mStreetRacePropsUnload;
 
 
     int mResetToStage;
 
-    bool mSundayDrive  : 1;
-    bool mBonusMisison : 1;
+    bool mSundayDrive: 1;
+    bool mBonusMisison: 1;
 
-    BonusObjective* mBonusObjectives[ MAX_BONUS_OBJECTIVES ];
+    BonusObjective *mBonusObjectives[MAX_BONUS_OBJECTIVES];
     unsigned int mNumBonusObjectives;
 
     bool mIsForcedCar;
@@ -255,7 +296,6 @@ private:
     bool mbCarryOverOutOfCarCondition;
 
 
-
     //Flag to trigger the patty and selma screen after street race
     bool mbTriggerPattyAndSelmaScreen;
 
@@ -270,12 +310,12 @@ private:
     char mJumpBackBy;
 
     int mNumStatePropCollectibles;
-    StatePropCollectible** mStatePropCollectibles;
+    StatePropCollectible **mStatePropCollectibles;
 
-    AnimatedIcon* mDoorStars;
+    AnimatedIcon *mDoorStars;
     int mInitPedGroupId;
 
-    bool mShowHUD : 1;
+    bool mShowHUD: 1;
 
     int mNumValidFailureHints;
 
@@ -286,14 +326,13 @@ private:
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( char* name )
+// Parameters:  (char* name)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void Mission::SetName( char* name ) 
-{ 
-    strcpy( &mcName[ 0 ], name ); 
+inline void Mission::SetName(char *name) {
+    strcpy(&mcName[0], name);
 }
 
 //=============================================================================
@@ -301,15 +340,14 @@ inline void Mission::SetName( char* name )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int index, MissionStage* stage )
+// Parameters:  (int index, MissionStage* stage)
 //
 // Return:      inline 
 //
 //=============================================================================
-inline void Mission::SetStage( int index, MissionStage* stage )
-{ 
-    rTuneAssertMsg( index < MAX_STAGES, "Too many stages, get Cary to increase the max!\n" );
-    mMissionStages[ index ] = stage; 
+inline void Mission::SetStage(int index, MissionStage *stage) {
+    rTuneAssertMsg(index < MAX_STAGES, "Too many stages, get Cary to increase the max!\n");
+    mMissionStages[index] = stage;
 }
 
 //=============================================================================
@@ -317,20 +355,16 @@ inline void Mission::SetStage( int index, MissionStage* stage )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( int index )
+// Parameters:  (int index)
 //
 // Return:      inline 
 //
 //=============================================================================
-inline MissionStage* Mission::GetStage( int index )
-{ 
-    if( index >= 0 && index < mNumMissionStages )
-    {
-        return( mMissionStages[ index ] );
-    }
-    else
-    {
-        return( NULL );
+inline MissionStage *Mission::GetStage(int index) {
+    if (index >= 0 && index < mNumMissionStages) {
+        return (mMissionStages[index]);
+    } else {
+        return (NULL);
     }
 }
 
@@ -344,18 +378,15 @@ inline MissionStage* Mission::GetStage( int index )
 // Return:      inline 
 //
 //=============================================================================
-inline bool Mission::IsHUDVisible() const
-{
+inline bool Mission::IsHUDVisible() const {
     return mShowHUD;
 }
 
-inline void Mission::SetNumValidFailureHints( int numHints )
-{
+inline void Mission::SetNumValidFailureHints(int numHints) {
     mNumValidFailureHints = numHints;
 }
 
-inline int Mission::GetNumValidFailureHints() const
-{
+inline int Mission::GetNumValidFailureHints() const {
     return mNumValidFailureHints;
 }
 

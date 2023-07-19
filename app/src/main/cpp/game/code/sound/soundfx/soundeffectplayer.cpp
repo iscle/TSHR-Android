@@ -31,7 +31,9 @@
 #elif RAD_PS2
 #include <sound/soundfx/ps2reverbcontroller.h>
 #else
+
 #include <sound/soundfx/gcreverbcontroller.h>
+
 #endif
 
 #include <memory/srrmemory.h>
@@ -59,13 +61,11 @@
 //
 //==============================================================================
 SoundEffectPlayer::SoundEffectPlayer() :
-    m_reverbController( NULL ),
-    m_currentState( FXSTATE_INVALID )
-{
+        m_reverbController(NULL),
+        m_currentState(FXSTATE_INVALID) {
     unsigned int i;
 
-    for( i = 0; i < FXSTATE_MAX_STATES; i++ )
-    {
+    for (i = 0; i < FXSTATE_MAX_STATES; i++) {
         m_logicObjects[i] = NULL;
     }
 
@@ -82,14 +82,11 @@ SoundEffectPlayer::SoundEffectPlayer() :
 // Return:      N/A.
 //
 //==============================================================================
-SoundEffectPlayer::~SoundEffectPlayer()
-{
+SoundEffectPlayer::~SoundEffectPlayer() {
     unsigned int i;
 
-    for( i = 0; i < FXSTATE_MAX_STATES; i++ )
-    {
-        if( m_logicObjects[i] != NULL )
-        {
+    for (i = 0; i < FXSTATE_MAX_STATES; i++) {
+        if (m_logicObjects[i] != NULL) {
             delete m_logicObjects[i];
         }
     }
@@ -107,24 +104,20 @@ SoundEffectPlayer::~SoundEffectPlayer()
 // Return:      void 
 //
 //=============================================================================
-void SoundEffectPlayer::ServiceOncePerFrame( unsigned int elapsedTime )
-{
-    if( m_currentState != FXSTATE_INVALID )
-    {
-        m_logicObjects[m_currentState]->ServiceOncePerFrame( elapsedTime );
+void SoundEffectPlayer::ServiceOncePerFrame(unsigned int elapsedTime) {
+    if (m_currentState != FXSTATE_INVALID) {
+        m_logicObjects[m_currentState]->ServiceOncePerFrame(elapsedTime);
     }
 
-    m_reverbController->ServiceOncePerFrame( elapsedTime );
+    m_reverbController->ServiceOncePerFrame(elapsedTime);
 }
 
-void SoundEffectPlayer::OnPauseStart()
-{
+void SoundEffectPlayer::OnPauseStart() {
     m_reverbController->PauseReverb();
 }
 
-void SoundEffectPlayer::OnPauseEnd()
-{
-    m_reverbController->UnpauseReverb(); 
+void SoundEffectPlayer::OnPauseEnd() {
+    m_reverbController->UnpauseReverb();
 }
 
 //=============================================================================
@@ -138,24 +131,20 @@ void SoundEffectPlayer::OnPauseEnd()
 // Return:      void 
 //
 //=============================================================================
-void SoundEffectPlayer::PlayCarOptionStinger( float trim )
-{
-    playStinger( "car_stinger", trim );
+void SoundEffectPlayer::PlayCarOptionStinger(float trim) {
+    playStinger("car_stinger", trim);
 }
 
-void SoundEffectPlayer::PlayDialogOptionStinger( float trim )
-{
-    playStinger( "dialog_stinger", trim );
+void SoundEffectPlayer::PlayDialogOptionStinger(float trim) {
+    playStinger("dialog_stinger", trim);
 }
 
-void SoundEffectPlayer::PlayMusicOptionStinger( float trim )
-{
-    playStinger( "music_stinger", trim );
+void SoundEffectPlayer::PlayMusicOptionStinger(float trim) {
+    playStinger("music_stinger", trim);
 }
 
-void SoundEffectPlayer::PlaySfxOptionStinger( float trim )
-{
-    playStinger( "sfx_stinger", trim );
+void SoundEffectPlayer::PlaySfxOptionStinger(float trim) {
+    playStinger("sfx_stinger", trim);
 }
 
 //******************************************************************************
@@ -174,8 +163,7 @@ void SoundEffectPlayer::PlaySfxOptionStinger( float trim )
 // Return:      void 
 //
 //=============================================================================
-void SoundEffectPlayer::initialize()
-{
+void SoundEffectPlayer::initialize() {
     m_logicObjects[FXSTATE_FRONTEND] = new(GMA_PERSISTENT) SoundFXFrontEndLogic();
     m_logicObjects[FXSTATE_GAMEPLAY] = new(GMA_PERSISTENT) SoundFXGameplayLogic();
     m_logicObjects[FXSTATE_PAUSED] = new(GMA_PERSISTENT) SoundFXPauseLogic();
@@ -201,12 +189,10 @@ void SoundEffectPlayer::initialize()
 // Return:      void 
 //
 //=============================================================================
-void SoundEffectPlayer::setSFXState( SFXState newState )
-{
-    rAssert( newState < FXSTATE_MAX_STATES );
-    
-    if( m_currentState != FXSTATE_INVALID )
-    {
+void SoundEffectPlayer::setSFXState(SFXState newState) {
+    rAssert(newState < FXSTATE_MAX_STATES);
+
+    if (m_currentState != FXSTATE_INVALID) {
         m_logicObjects[m_currentState]->UnregisterEventListeners();
     }
 
@@ -224,8 +210,7 @@ void SoundEffectPlayer::setSFXState( SFXState newState )
 // Return:      void 
 //
 //=============================================================================
-void SoundEffectPlayer::doCleanup()
-{
+void SoundEffectPlayer::doCleanup() {
     m_logicObjects[m_currentState]->Cleanup();
 
     m_reverbController->SetReverbOff();
@@ -242,8 +227,7 @@ void SoundEffectPlayer::doCleanup()
 // Return:      void 
 //
 //=============================================================================
-void SoundEffectPlayer::playStinger( const char* stingerName, float trim )
-{
-    m_stingerPlayer.PlaySound( stingerName );
-    m_stingerPlayer.SetTrim( trim );
+void SoundEffectPlayer::playStinger(const char *stingerName, float trim) {
+    m_stingerPlayer.PlaySound(stingerName);
+    m_stingerPlayer.SetTrim(trim);
 }

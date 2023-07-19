@@ -15,11 +15,12 @@
 #ifdef WORLD_BUILDER
 #include "../meta/locatorevents.h"
 #else
+
 #include <meta/locatorevents.h>
+
 #endif
 
-enum EventEnum
-{   
+enum EventEnum {
     // The next two "events" must appear in consecutive order.
     //
     EVENT_LOCATOR,
@@ -48,7 +49,7 @@ enum EventEnum
     EVENT_VEHICLE_DESTROYED,
     EVENT_VEHICLE_DESTROYED_BY_USER,
     EVENT_VEHICLE_DESTROYED_SYNC_SOUND,
-    EVENT_VEHICLE_DAMAGED,    
+    EVENT_VEHICLE_DAMAGED,
     EVENT_VEHICLE_SUSPENSION_BOTTOMED_OUT,
     EVENT_USER_VEHICLE_ADDED_TO_WORLD,
     EVENT_USER_VEHICLE_REMOVED_FROM_WORLD,
@@ -119,8 +120,8 @@ enum EventEnum
     EVENT_MISSION_CHARACTER_RESET,
     EVENT_LEVEL_START,
 
-	//Chuck: Attempting to Enter Gamble Race, and other Gamble Race Events
-	EVENT_ATTEMPT_TO_ENTER_GAMBLERACE,
+    //Chuck: Attempting to Enter Gamble Race, and other Gamble Race Events
+    EVENT_ATTEMPT_TO_ENTER_GAMBLERACE,
     EVENT_ENTER_GAMBLERACE_SUCCESS,
     EVENT_ENTER_GAMBLERACE_FAILURE,
     EVENT_GAMBLERACE_SUCCESS,
@@ -135,10 +136,8 @@ enum EventEnum
 
     EVENT_OUTOFCAR_CONDITION_ACTIVE,
     EVENT_OUTOFCAR_CONDITION_INACTIVE,
-    
 
 
-    
     EVENT_KICK_NPC,
 
     // Sound events
@@ -311,8 +310,8 @@ enum EventEnum
     EVENT_CONVERSATION_SKIP,
     EVENT_CONVERSATION_DONE,
     EVENT_CONVERSATION_DONE_AND_FINISHED, // the letter box screen listens for EVENT_CONVERSATION_DONE,
-                                          // and will then trigger EVENT_CONVERSATION_DONE_AND_FINISHED
-                                          // at its discretion
+    // and will then trigger EVENT_CONVERSATION_DONE_AND_FINISHED
+    // at its discretion
 
     EVENT_IN_GAMEPLAY_CONVERSATION,
 
@@ -322,16 +321,16 @@ enum EventEnum
     EVENT_PC_SHUTUP,
     EVENT_NPC_TALK,
     EVENT_NPC_SHUTUP,
-    
+
     EVENT_OBJECT_KICKED,
-   
+
     //NPC Events
     EVENT_TALK_TO_NPC,
 
     //Camera shake events
     EVENT_CAMERA_SHAKE,
     EVENT_RUMBLE_COLLISION,
-    
+
     EVENT_BONUS_MISSION_DIALOGUE,
 
     //This is the dumping of Dynaload sections in worldrenderlayer.
@@ -366,12 +365,12 @@ enum EventEnum
     //Teleport pads
     EVENT_ENTERED_TELEPORT_PAD,
     EVENT_EXITED_TELEPORT_PAD,
-    EVENT_TAKING_TELEPORT,    
+    EVENT_TAKING_TELEPORT,
 
     EVENT_LOSE_COLLECTIBLE,
 
     // Nitro
-    EVENT_COLLECTED_NITRO,    
+    EVENT_COLLECTED_NITRO,
     EVENT_USE_NITRO,
 
     EVENT_CHARACTER_POS_RESET,

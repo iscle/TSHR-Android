@@ -46,9 +46,8 @@
 //
 //==============================================================================
 SoundDebugPage::SoundDebugPage() :
-    m_pageNum( 0 ),
-    m_displayMaster( NULL )
-{
+        m_pageNum(0),
+        m_displayMaster(NULL) {
     //
     // Presumably, we're saving full initialization for later.
     //
@@ -57,7 +56,7 @@ SoundDebugPage::SoundDebugPage() :
     //
     // Don't want to build these in release, so make it die horribly.
     //
-    rReleaseAssertMsg( false, "Oops, shouldn't be storing sound debug info in release" );
+    rReleaseAssertMsg(false, "Oops, shouldn't be storing sound debug info in release");
 #endif
 }
 
@@ -71,21 +70,20 @@ SoundDebugPage::SoundDebugPage() :
 // Return:      N/A.
 //
 //==============================================================================
-SoundDebugPage::SoundDebugPage( unsigned int pageNum, SoundDebugDisplay* master ) :
-m_pageNum( pageNum ),
-m_displayMaster( master )
-{
+SoundDebugPage::SoundDebugPage(unsigned int pageNum, SoundDebugDisplay *master) :
+        m_pageNum(pageNum),
+        m_displayMaster(master) {
 #ifndef SOUND_DEBUG_INFO_ENABLED
     //
     // Don't want to build these in release, so make it die horribly.
     //
-    rReleaseAssertMsg( false, "Oops, shouldn't be storing sound debug info in release" );
+    rReleaseAssertMsg(false, "Oops, shouldn't be storing sound debug info in release");
 #endif
 
     //
     // Tell debug display master about our existence
     //
-    master->RegisterPage( this );
+    master->RegisterPage(this);
 }
 
 //==============================================================================
@@ -98,9 +96,8 @@ m_displayMaster( master )
 // Return:      N/A.
 //
 //==============================================================================
-SoundDebugPage::~SoundDebugPage()
-{
-    m_displayMaster->DeregisterPage( this );
+SoundDebugPage::~SoundDebugPage() {
+    m_displayMaster->DeregisterPage(this);
 }
 
 //=============================================================================
@@ -108,17 +105,16 @@ SoundDebugPage::~SoundDebugPage()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int pageNum, SoundDebugDisplay* master )
+// Parameters:  (unsigned int pageNum, SoundDebugDisplay* master)
 //
 // Return:      void 
 //
 //=============================================================================
-void SoundDebugPage::LazyInitialization( unsigned int pageNum, SoundDebugDisplay* master )
-{
+void SoundDebugPage::LazyInitialization(unsigned int pageNum, SoundDebugDisplay *master) {
     m_pageNum = pageNum;
     m_displayMaster = master;
 
-    m_displayMaster->RegisterPage( this );
+    m_displayMaster->RegisterPage(this);
 }
 
 //=============================================================================
@@ -135,21 +131,18 @@ void SoundDebugPage::LazyInitialization( unsigned int pageNum, SoundDebugDisplay
 // Return:      void 
 //
 //=============================================================================
-void SoundDebugPage::Render( int leftPosn, int topPosn, tColour& colour, bool dumpToWindow )
-{
+void SoundDebugPage::Render(int leftPosn, int topPosn, tColour &colour, bool dumpToWindow) {
     int i;
     char lineBuffer[255];
     int numLines = getNumLines();
 
-    for( i = 0; i < numLines; i++ )
-    {
-        fillLineBuffer( i, lineBuffer );
+    for (i = 0; i < numLines; i++) {
+        fillLineBuffer(i, lineBuffer);
 
-        p3d::pddi->DrawString( lineBuffer, leftPosn, topPosn + (i * 20), colour );
+        p3d::pddi->DrawString(lineBuffer, leftPosn, topPosn + (i * 20), colour);
 
-        if ( dumpToWindow )
-        {
-            rDebugString( lineBuffer );
+        if (dumpToWindow) {
+            rDebugString(lineBuffer);
         }
     }
 }

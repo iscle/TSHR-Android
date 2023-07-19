@@ -46,10 +46,9 @@
 //
 //==============================================================================
 PositionCondition::PositionCondition() :
-    mRequiredPosition( 1 ),
-    mNumOthersFinished( 0 )
-{
-    this->SetType( COND_POSITION );
+        mRequiredPosition(1),
+        mNumOthersFinished(0) {
+    this->SetType(COND_POSITION);
 }
 
 //==============================================================================
@@ -62,8 +61,7 @@ PositionCondition::PositionCondition() :
 // Return:      N/A.
 //
 //==============================================================================
-PositionCondition::~PositionCondition()
-{
+PositionCondition::~PositionCondition() {
 }
 
 //=============================================================================
@@ -71,24 +69,21 @@ PositionCondition::~PositionCondition()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void PositionCondition::HandleEvent( EventEnum id, void* pEventData )
-{
-    if ( id == EVENT_WAYAI_AT_DESTINATION )
-    {
+void PositionCondition::HandleEvent(EventEnum id, void *pEventData) {
+    if (id == EVENT_WAYAI_AT_DESTINATION) {
         mNumOthersFinished++;
 
-        if ( mNumOthersFinished >= mRequiredPosition )
-        {
-            SetIsViolated( true );
+        if (mNumOthersFinished >= mRequiredPosition) {
+            SetIsViolated(true);
         }
     }
 
-    MissionCondition::HandleEvent( id, pEventData );
+    MissionCondition::HandleEvent(id, pEventData);
 }
 
 //******************************************************************************
@@ -107,11 +102,10 @@ void PositionCondition::HandleEvent( EventEnum id, void* pEventData )
 // Return:      void 
 //
 //=============================================================================
-void PositionCondition::OnInitialize()
-{
-    
+void PositionCondition::OnInitialize() {
+
     mNumOthersFinished = 0;
-    GetEventManager()->AddListener( this, EVENT_WAYAI_AT_DESTINATION );
+    GetEventManager()->AddListener(this, EVENT_WAYAI_AT_DESTINATION);
 }
 
 //=============================================================================
@@ -124,7 +118,6 @@ void PositionCondition::OnInitialize()
 // Return:      void 
 //
 //=============================================================================
-void PositionCondition::OnFinalize()
-{
-    GetEventManager()->RemoveListener( this, EVENT_WAYAI_AT_DESTINATION );
+void PositionCondition::OnFinalize() {
+    GetEventManager()->RemoveListener(this, EVENT_WAYAI_AT_DESTINATION);
 }

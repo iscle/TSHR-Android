@@ -37,102 +37,113 @@ namespace Sound {
 // Prototypes
 //=============================================================================
 
-class daSoundAllocatedResource;
+    class daSoundAllocatedResource;
 
-class daSoundFileInstance
-{
-public:
+    class daSoundFileInstance {
+    public:
 
-    inline void * operator new ( size_t size, radMemoryAllocator allocator );
-    inline void operator delete( void * pMem );
-    
-    inline void AddRef( void );
-    inline void Release( void );
+        inline void *operator new(size_t size, radMemoryAllocator allocator);
 
-    // Constructor and destructor
-    daSoundFileInstance( IDaSoundResource* pResource, unsigned int fileIndex );
-    ~daSoundFileInstance( );
+        inline void operator delete(void *pMem);
 
-    void Load( IRadSoundHalMemoryRegion* pRegion );
-    bool UpdateLoading( void );
-    void UnLoad( void );
+        inline void AddRef(void);
 
-    inline IDaSoundResource::Type GetType( void );
+        inline void Release(void);
 
-    inline IRadSoundClip* GetSoundClip( void );
-    void CreateFileDataSource( IRadSoundRsdFileDataSource** );
+        // Constructor and destructor
+        daSoundFileInstance(IDaSoundResource *pResource, unsigned int fileIndex);
 
-    // Internal state
-    enum State { Loading, Loaded, UnLoaded };
-    
-    inline State GetState( void );
-    
-    inline void GetFileName( char * pFileName, unsigned int maxChars );
-    
-protected:
+        ~daSoundFileInstance();
 
-private:
+        void Load(IRadSoundHalMemoryRegion *pRegion);
 
-    unsigned int m_FileIndex;
-    unsigned int m_RefCount;
+        bool UpdateLoading(void);
 
-    // Store the resource
-    IDaSoundResource * m_pResource;
+        void UnLoad(void);
 
-    // Store the actual allocated resource based on the attached
-    IDaSoundResource::Type m_Type;
+        inline IDaSoundResource::Type GetType(void);
 
-    IRadSoundClip*  m_pSoundClip;
+        inline IRadSoundClip *GetSoundClip(void);
 
-    State m_State;
-};
+        void CreateFileDataSource(IRadSoundRsdFileDataSource **);
+
+        // Internal state
+        enum State {
+            Loading, Loaded, UnLoaded
+        };
+
+        inline State GetState(void);
+
+        inline void GetFileName(char *pFileName, unsigned int maxChars);
+
+    protected:
+
+    private:
+
+        unsigned int m_FileIndex;
+        unsigned int m_RefCount;
+
+        // Store the resource
+        IDaSoundResource *m_pResource;
+
+        // Store the actual allocated resource based on the attached
+        IDaSoundResource::Type m_Type;
+
+        IRadSoundClip *m_pSoundClip;
+
+        State m_State;
+    };
 
 //
 // The resource library stores a giant array of resources, and provides helpfull
 // ways to get at the information.  Notices that there is no
 // way to remove a resource file from this library.
 //
-class daSoundAllocatedResource : public IRefCount
-{
+    class daSoundAllocatedResource : public IRefCount {
 
-public:
-    
-    inline void AddRef( void );
-    inline void Release( void );
-    
-    inline void * operator new ( size_t size, radMemoryAllocator allocator );
-    inline void operator delete( void * pMem );    
+    public:
 
-    //
-    // Constructor and destructor
-    //
-    daSoundAllocatedResource( );
-    ~daSoundAllocatedResource( );
+        inline void AddRef(void);
 
-    //
-    // IDaSoundAllocatedResource
-    //
-    void Initialize( IDaSoundResource* pResource );
-    inline IDaSoundResource* GetResource( void );
-    unsigned int ChooseNextInstance( void );
+        inline void Release(void);
 
-    daSoundFileInstance* GetFileInstance( unsigned int index );
+        inline void *operator new(size_t size, radMemoryAllocator allocator);
 
-protected:
-    void ApplyResourceSettings_Internal( unsigned int index );
+        inline void operator delete(void *pMem);
 
-private:
-    // Store the attached resource
-    IDaSoundResource*               m_pResource;
-    
-    unsigned int m_RefCount;
+        //
+        // Constructor and destructor
+        //
+        daSoundAllocatedResource();
 
-    // Store the file instances
-    daSoundFileInstance*            m_pFileInstance[ DASound_MaxNumSoundResourceFiles ];
+        ~daSoundAllocatedResource();
 
-    // Dynamic loading region
-    daSoundDynaLoadRegion*         m_pDynaLoadRegion[ DASound_MaxNumSoundResourceFiles ];
-};
+        //
+        // IDaSoundAllocatedResource
+        //
+        void Initialize(IDaSoundResource *pResource);
+
+        inline IDaSoundResource *GetResource(void);
+
+        unsigned int ChooseNextInstance(void);
+
+        daSoundFileInstance *GetFileInstance(unsigned int index);
+
+    protected:
+        void ApplyResourceSettings_Internal(unsigned int index);
+
+    private:
+        // Store the attached resource
+        IDaSoundResource *m_pResource;
+
+        unsigned int m_RefCount;
+
+        // Store the file instances
+        daSoundFileInstance *m_pFileInstance[DASound_MaxNumSoundResourceFiles];
+
+        // Dynamic loading region
+        daSoundDynaLoadRegion *m_pDynaLoadRegion[DASound_MaxNumSoundResourceFiles];
+    };
 
 //=============================================================================
 // Function:    daSoundFileInstance::GetType
@@ -141,10 +152,9 @@ private:
 //
 //-----------------------------------------------------------------------------
 
-inline IDaSoundResource::Type daSoundFileInstance::GetType( void )
-{
-    return m_Type;
-}
+    inline IDaSoundResource::Type daSoundFileInstance::GetType(void) {
+        return m_Type;
+    }
 
 
 //=============================================================================
@@ -157,13 +167,12 @@ inline IDaSoundResource::Type daSoundFileInstance::GetType( void )
 //
 //-----------------------------------------------------------------------------
 
-inline IRadSoundClip* daSoundFileInstance::GetSoundClip( void )
-{
-    rAssert( IDaSoundResource::CLIP == GetType( ) );
-    rAssert( Loaded == m_State );
+    inline IRadSoundClip *daSoundFileInstance::GetSoundClip(void) {
+        rAssert(IDaSoundResource::CLIP == GetType());
+        rAssert(Loaded == m_State);
 
-    return m_pSoundClip;
-}
+        return m_pSoundClip;
+    }
 
 
 //=============================================================================
@@ -173,77 +182,64 @@ inline IRadSoundClip* daSoundFileInstance::GetSoundClip( void )
 //
 //-----------------------------------------------------------------------------
 
-IDaSoundResource* daSoundAllocatedResource::GetResource( void )
-{
-    return m_pResource;
-}
-
-inline daSoundFileInstance::State daSoundFileInstance::GetState( void )
-{
-    return m_State;
-}
-
-inline void daSoundFileInstance::GetFileName( char * pBuffer, unsigned int max )
-{
-    m_pResource->GetFileKeyAt( m_FileIndex, pBuffer, max );
-}
-
-
-inline void daSoundFileInstance::AddRef( void )
-{
-    m_RefCount++;
-}
-
-inline void daSoundFileInstance::Release( void )
-{
-    rAssert( m_RefCount > 0 );
-    
-    m_RefCount--;
-    
-    if( 0 == m_RefCount )
-    {
-        delete this;
+    IDaSoundResource *daSoundAllocatedResource::GetResource(void) {
+        return m_pResource;
     }
-}
 
-
-inline void * daSoundFileInstance::operator new ( size_t size, radMemoryAllocator allocator )
-{
-    return radMemoryAlloc( allocator, size );
-}
-
-inline void daSoundFileInstance::operator delete( void * pMem )
-{
-    return radMemoryFree( pMem );
-}
-
-inline void daSoundAllocatedResource::AddRef( void )
-{
-    m_RefCount++;
-}
-
-inline void daSoundAllocatedResource::Release( void )
-{   
-    rAssert( m_RefCount > 0 );
-    
-    m_RefCount--;
-    
-    if( 0 == m_RefCount )
-    {
-        delete this;
+    inline daSoundFileInstance::State daSoundFileInstance::GetState(void) {
+        return m_State;
     }
-}
 
-inline void * daSoundAllocatedResource::operator new ( size_t size, radMemoryAllocator allocator )
-{
-    return radMemoryAlloc( allocator, size );
-}
+    inline void daSoundFileInstance::GetFileName(char *pBuffer, unsigned int max) {
+        m_pResource->GetFileKeyAt(m_FileIndex, pBuffer, max);
+    }
 
-inline void daSoundAllocatedResource::operator delete( void * pMem )
-{
-    return radMemoryFree( pMem );
-}
-                
+
+    inline void daSoundFileInstance::AddRef(void) {
+        m_RefCount++;
+    }
+
+    inline void daSoundFileInstance::Release(void) {
+        rAssert(m_RefCount > 0);
+
+        m_RefCount--;
+
+        if (0 == m_RefCount) {
+            delete this;
+        }
+    }
+
+
+    inline void *daSoundFileInstance::operator new(size_t size, radMemoryAllocator allocator) {
+        return radMemoryAlloc(allocator, size);
+    }
+
+    inline void daSoundFileInstance::operator delete(void *pMem) {
+        return radMemoryFree(pMem);
+    }
+
+    inline void daSoundAllocatedResource::AddRef(void) {
+        m_RefCount++;
+    }
+
+    inline void daSoundAllocatedResource::Release(void) {
+        rAssert(m_RefCount > 0);
+
+        m_RefCount--;
+
+        if (0 == m_RefCount) {
+            delete this;
+        }
+    }
+
+    inline void *daSoundAllocatedResource::operator new(size_t size, radMemoryAllocator allocator) {
+        return radMemoryAlloc(allocator, size);
+    }
+
+    inline void daSoundAllocatedResource::operator delete(void *pMem) {
+        return radMemoryFree(pMem);
+    }
+
 } // Sound Namespace
 #endif //_SOUNDALLOCATEDRESOURCE_HPP
 

@@ -54,29 +54,28 @@
 // Return:
 //
 //===========================================================================
-BreakableObjectLoader::BreakableObjectLoader() 
-: tSimpleChunkHandler(SRR2::ChunkID::BREAKABLE_OBJECT)
-{
+BreakableObjectLoader::BreakableObjectLoader()
+        : tSimpleChunkHandler(SRR2::ChunkID::BREAKABLE_OBJECT) {
     mpListenerCB = NULL;
     mUserData = -1;
 
-    mpFactoryLoader = new (GMA_PERSISTENT)tAnimatedObjectFactoryLoader;
- 	mpAnimObjectLoader = new (GMA_PERSISTENT)tAnimatedObjectLoader;
+    mpFactoryLoader = new(GMA_PERSISTENT)tAnimatedObjectFactoryLoader;
+    mpAnimObjectLoader = new(GMA_PERSISTENT)tAnimatedObjectLoader;
 
-    mpControllerLoader = new (GMA_PERSISTENT)tFrameControllerLoader;
+    mpControllerLoader = new(GMA_PERSISTENT)tFrameControllerLoader;
 
-	mpCompDrawLoader = new (GMA_PERSISTENT)tCompositeDrawableLoader;
-	mpP3DGeoLoader = new (GMA_PERSISTENT)tGeometryLoader;
+    mpCompDrawLoader = new(GMA_PERSISTENT)tCompositeDrawableLoader;
+    mpP3DGeoLoader = new(GMA_PERSISTENT)tGeometryLoader;
 
-    mpSkelLoader = new (GMA_PERSISTENT)tSkeletonLoader;
-    mpAnimLoader = new (GMA_PERSISTENT)tAnimationLoader;
+    mpSkelLoader = new(GMA_PERSISTENT)tSkeletonLoader;
+    mpAnimLoader = new(GMA_PERSISTENT)tAnimationLoader;
 
-    mpParticleSystemLoader = new (GMA_PERSISTENT)tParticleSystemLoader;
-    mpParticleSystemFactoryLoader = new (GMA_PERSISTENT)tParticleSystemFactoryLoader;
-
+    mpParticleSystemLoader = new(GMA_PERSISTENT)tParticleSystemLoader;
+    mpParticleSystemFactoryLoader = new(GMA_PERSISTENT)tParticleSystemFactoryLoader;
 
 
 }
+
 //===========================================================================
 // BreakableObjectLoader::~BreakableObjectLoader
 //===========================================================================
@@ -90,15 +89,14 @@ BreakableObjectLoader::BreakableObjectLoader()
 // Return:
 //
 //===========================================================================
-BreakableObjectLoader::~BreakableObjectLoader()
-{
+BreakableObjectLoader::~BreakableObjectLoader() {
     mpFactoryLoader->ReleaseVerified();
- 	mpAnimObjectLoader->ReleaseVerified();
+    mpAnimObjectLoader->ReleaseVerified();
 
     mpControllerLoader->ReleaseVerified();
 
-	mpCompDrawLoader->ReleaseVerified();
-	mpP3DGeoLoader->ReleaseVerified();
+    mpCompDrawLoader->ReleaseVerified();
+    mpP3DGeoLoader->ReleaseVerified();
 
     mpSkelLoader->ReleaseVerified();
     mpAnimLoader->ReleaseVerified();
@@ -124,19 +122,17 @@ BreakableObjectLoader::~BreakableObjectLoader()
 //
 //===========================================================================
 
-void BreakableObjectLoader::SetRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData )
-{
-	//
-	// Follow protocol; notify old Listener, that it has been 
-	// "disconnected".
-	//
-	if( mpListenerCB != NULL )
-	{
-	  mpListenerCB->OnChunkLoaded( NULL, iUserData, 0 );
-	}
-	mpListenerCB  = pListenerCB;
-	mUserData     = iUserData;
+void BreakableObjectLoader::SetRegdListener(ChunkListenerCallback *pListenerCB,
+                                            int iUserData) {
+    //
+    // Follow protocol; notify old Listener, that it has been
+    // "disconnected".
+    //
+    if (mpListenerCB != NULL) {
+        mpListenerCB->OnChunkLoaded(NULL, iUserData, 0);
+    }
+    mpListenerCB = pListenerCB;
+    mUserData = iUserData;
 }
 //===========================================================================
 // BreakableObjectLoader::SetRegdListener
@@ -154,11 +150,10 @@ void BreakableObjectLoader::SetRegdListener( ChunkListenerCallback* pListenerCB,
 //
 //===========================================================================
 
-void BreakableObjectLoader::ModRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData )
-{
-	rAssert( pListenerCB == mpListenerCB );
-	mUserData = iUserData;
+void BreakableObjectLoader::ModRegdListener(ChunkListenerCallback *pListenerCB,
+                                            int iUserData) {
+    rAssert(pListenerCB == mpListenerCB);
+    mUserData = iUserData;
 }
 //===========================================================================
 // BreakableObjectLoader::LoadObject
@@ -179,145 +174,124 @@ void BreakableObjectLoader::ModRegdListener( ChunkListenerCallback* pListenerCB,
 //
 //===========================================================================
 
-tEntity* BreakableObjectLoader::LoadObject(tChunkFile* file, tEntityStore* store)
-{
-    IEntityDSG::msDeletionsSafe=true;
-MEMTRACK_PUSH_GROUP( "Breakables" );
+tEntity *BreakableObjectLoader::LoadObject(tChunkFile *file, tEntityStore *store) {
+    IEntityDSG::msDeletionsSafe = true;
+    MEMTRACK_PUSH_GROUP("Breakables");
 
 
-    tAnimatedObjectFactory* pFactory = NULL;
-    tAnimatedObjectFrameController* pController = NULL;
+    tAnimatedObjectFactory *pFactory = NULL;
+    tAnimatedObjectFrameController *pController = NULL;
 
 
     unsigned long id = file->GetLong();
-    BreakablesEnum::BreakableID type = BreakablesEnum::BreakableID( id );
-    if ( GetBreakablesManager()->IsLoaded( type ) )
-    {
-        GetBreakablesManager()->AddToZoneList( type );
-        MEMTRACK_POP_GROUP( "Breakables" );
+    BreakablesEnum::BreakableID type = BreakablesEnum::BreakableID(id);
+    if (GetBreakablesManager()->IsLoaded(type)) {
+        GetBreakablesManager()->AddToZoneList(type);
+        MEMTRACK_POP_GROUP("Breakables");
         return NULL;
     }
 
-    int maxInstances = static_cast<int>( file->GetLong() );
+    int maxInstances = static_cast<int>(file->GetLong());
 
-    while( file->ChunksRemaining() )
-    {
+    while (file->ChunksRemaining()) {
         file->BeginChunk();
-        switch( file->GetCurrentID() )
-        {
-        case Pure3D::AnimatedObject::FACTORY:
-            {
-                rAssert( pFactory == NULL );
-                tEntity* entity = mpFactoryLoader->LoadObject( file, store );
-                pFactory = static_cast<tAnimatedObjectFactory*> (entity);
-                rAssert( dynamic_cast< tAnimatedObjectFactory* >(entity) != NULL );
+        switch (file->GetCurrentID()) {
+            case Pure3D::AnimatedObject::FACTORY: {
+                rAssert(pFactory == NULL);
+                tEntity *entity = mpFactoryLoader->LoadObject(file, store);
+                pFactory = static_cast<tAnimatedObjectFactory *>(entity);
+                rAssert(dynamic_cast<tAnimatedObjectFactory *>(entity) != NULL);
             }
-            break;
-        case Pure3D::ParticleSystem::SYSTEM_FACTORY:
-            {
-                tEntity* pParticleSystemFactory = mpParticleSystemFactoryLoader->LoadObject( file, store );
-                rAssert( pParticleSystemFactory != NULL );
-                bool collision = store->TestCollision( pParticleSystemFactory->GetUID(), pParticleSystemFactory );
-                if( !collision )
-                {
-                    store->Store( pParticleSystemFactory );
-                }
-                else
-                {
-                    HandleCollision( pParticleSystemFactory );
+                break;
+            case Pure3D::ParticleSystem::SYSTEM_FACTORY: {
+                tEntity *pParticleSystemFactory = mpParticleSystemFactoryLoader->LoadObject(file,
+                                                                                            store);
+                rAssert(pParticleSystemFactory != NULL);
+                bool collision = store->TestCollision(pParticleSystemFactory->GetUID(),
+                                                      pParticleSystemFactory);
+                if (!collision) {
+                    store->Store(pParticleSystemFactory);
+                } else {
+                    HandleCollision(pParticleSystemFactory);
                 }
 
             }
-            break;
-        case Pure3D::ParticleSystem::SYSTEM:
-            {
-                tEntity* pParticleSystem = mpParticleSystemLoader->LoadObject( file, store );
-                rAssert( pParticleSystem != NULL );
-                bool collision = store->TestCollision( pParticleSystem->GetUID(), pParticleSystem );
-                if( !collision )
-                {
-                    store->Store( pParticleSystem );
+                break;
+            case Pure3D::ParticleSystem::SYSTEM: {
+                tEntity *pParticleSystem = mpParticleSystemLoader->LoadObject(file, store);
+                rAssert(pParticleSystem != NULL);
+                bool collision = store->TestCollision(pParticleSystem->GetUID(), pParticleSystem);
+                if (!collision) {
+                    store->Store(pParticleSystem);
+                } else {
+                    HandleCollision(pParticleSystem);
                 }
-                else
-                {
-                    HandleCollision( pParticleSystem );
-                }
-                
-            }
-            break;
-        case Pure3D::Animation::FrameControllerData::FRAME_CONTROLLER:
-            if ( pController == NULL )
-            {
-                tEntity* pFC = mpControllerLoader->LoadObject( file, store ) ;
-				pController = static_cast< tAnimatedObjectFrameController* > ( pFC );
-                store->Store( pFC );
-            }
-            break;
-		case Pure3D::AnimatedObject::OBJECT:
-			{
-				tEntity* pEntity = mpAnimObjectLoader->LoadObject( file, store );
-				rAssert( pEntity != NULL );
-				store->Store( pEntity );
-			}
-			break;
-		case P3D_COMPOSITE_DRAWABLE:
-			{
-				tEntity* entity = mpCompDrawLoader->LoadObject( file, store );
-                tCompositeDrawable* pCompDraw = static_cast< tCompositeDrawable* >( entity );
-                rAssert( dynamic_cast< tCompositeDrawable* >(entity) != NULL );
-                rAssert( pCompDraw != NULL );
-				store->Store( pCompDraw );
-			}
-			break;
-		case Pure3D::Mesh::MESH:
-			{
-				tEntity* pGeo = mpP3DGeoLoader->LoadObject( file, store );
-                bool collision = store->TestCollision( pGeo->GetUID(), pGeo );
-                if( !collision )
-                {
-                    store->Store( pGeo );
-                }
-                else
-                {
-                    HandleCollision( pGeo );
-                }
-			}
-			break;
-        case P3D_SKELETON:
-            {
-                tEntity* pSkel = mpSkelLoader->LoadObject( file, store );
-                rAssert( pSkel != NULL );
-                store->Store( pSkel );
-            }
-            break;
-        case Pure3D::Animation::AnimationData::ANIMATION:
-            {
-                tEntity* pAnim = mpAnimLoader->LoadObject( file, store );
-                rAssert( pAnim != NULL );
-                store->Store( pAnim );
-            }
-            break;
-        case P3D_MULTI_CONTROLLER:
-            break;
 
-        default:
-            int currchunk = file->GetCurrentID();
-			rAssertMsg(false, "Error-Unknown chunk in breakable object");
+            }
+                break;
+            case Pure3D::Animation::FrameControllerData::FRAME_CONTROLLER:
+                if (pController == NULL) {
+                    tEntity *pFC = mpControllerLoader->LoadObject(file, store);
+                    pController = static_cast<tAnimatedObjectFrameController *>(pFC);
+                    store->Store(pFC);
+                }
+                break;
+            case Pure3D::AnimatedObject::OBJECT: {
+                tEntity *pEntity = mpAnimObjectLoader->LoadObject(file, store);
+                rAssert(pEntity != NULL);
+                store->Store(pEntity);
+            }
+                break;
+            case P3D_COMPOSITE_DRAWABLE: {
+                tEntity *entity = mpCompDrawLoader->LoadObject(file, store);
+                tCompositeDrawable *pCompDraw = static_cast<tCompositeDrawable *>(entity);
+                rAssert(dynamic_cast<tCompositeDrawable *>(entity) != NULL);
+                rAssert(pCompDraw != NULL);
+                store->Store(pCompDraw);
+            }
+                break;
+            case Pure3D::Mesh::MESH: {
+                tEntity *pGeo = mpP3DGeoLoader->LoadObject(file, store);
+                bool collision = store->TestCollision(pGeo->GetUID(), pGeo);
+                if (!collision) {
+                    store->Store(pGeo);
+                } else {
+                    HandleCollision(pGeo);
+                }
+            }
+                break;
+            case P3D_SKELETON: {
+                tEntity *pSkel = mpSkelLoader->LoadObject(file, store);
+                rAssert(pSkel != NULL);
+                store->Store(pSkel);
+            }
+                break;
+            case Pure3D::Animation::AnimationData::ANIMATION: {
+                tEntity *pAnim = mpAnimLoader->LoadObject(file, store);
+                rAssert(pAnim != NULL);
+                store->Store(pAnim);
+            }
+                break;
+            case P3D_MULTI_CONTROLLER:
+                break;
 
-            break;
+            default:
+                int currchunk = file->GetCurrentID();
+                rAssertMsg(false, "Error-Unknown chunk in breakable object");
+
+                break;
         }
         file->EndChunk();
     }
 
-    BreakablesManager::GetInstance()->AllocateBreakables( type, pFactory, pController, maxInstances );
-    
-	if ( pFactory != NULL )
-	{
-		pFactory->ReleaseVerified();
-	}
+    BreakablesManager::GetInstance()->AllocateBreakables(type, pFactory, pController, maxInstances);
 
-MEMTRACK_POP_GROUP("Breakables");
-		
-    IEntityDSG::msDeletionsSafe=false;
+    if (pFactory != NULL) {
+        pFactory->ReleaseVerified();
+    }
+
+    MEMTRACK_POP_GROUP("Breakables");
+
+    IEntityDSG::msDeletionsSafe = false;
     return NULL;
 }

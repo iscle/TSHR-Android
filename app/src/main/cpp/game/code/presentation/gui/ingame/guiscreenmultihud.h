@@ -36,54 +36,62 @@ class CHudMap;
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenMultiHud : public CGuiScreen
-{
+class CGuiScreenMultiHud : public CGuiScreen {
 public:
-    CGuiScreenMultiHud( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenMultiHud(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenMultiHud();
 
-    CGuiScreenMultiHud( Scrooby::Screen* pScreen, CGuiEntity* pParent,
-                        eGuiWindowID id, int numActivePlayers );
+    CGuiScreenMultiHud(Scrooby::Screen *pScreen, CGuiEntity *pParent,
+                       eGuiWindowID id, int numActivePlayers);
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    virtual CHudMap* GetHudMap( unsigned int playerID ) const;
+    virtual CHudMap *GetHudMap(unsigned int playerID) const;
 
     void TutorialBitmapShow();
+
     void TutorialBitmapHide();
+
     void TutorialBitmapInitOutro();
-    void SetTutorialMessage( int index );
+
+    void SetTutorialMessage(int index);
+
     void ShowLetterBox();
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
 
-    void RetrieveElements( Scrooby::Page* pPage );
-    void UpdateElements( unsigned int elapsedTime );
-    void UpdateTutorialMode( const float deltaT );
+    void InitRunning();
+
+    void InitOutro();
+
+    void RetrieveElements(Scrooby::Page *pPage);
+
+    void UpdateElements(unsigned int elapsedTime);
+
+    void UpdateTutorialMode(const float deltaT);
 
     int m_numActivePlayers;
 
-    NumericText<Scrooby::Text> m_speedDigital[ MAX_PLAYERS ];
+    NumericText <Scrooby::Text> m_speedDigital[MAX_PLAYERS];
 
     static const int MAX_TUTORIAL_MESSAGE_LENGTH = 256;
 
-    ImageSlider m_gasMeter[ MAX_PLAYERS ];
-    CHudMap* m_hudMap[ MAX_PLAYERS ];
-    Scrooby::Group*  m_tutorialWalkie;
-    Scrooby::Sprite* m_tutorialMessage;
-    bool m_TutorialBitmapVisible : 1;
-    bool m_isStartButtonPressed : 1;
+    ImageSlider m_gasMeter[MAX_PLAYERS];
+    CHudMap *m_hudMap[MAX_PLAYERS];
+    Scrooby::Group *m_tutorialWalkie;
+    Scrooby::Sprite *m_tutorialMessage;
+    bool m_TutorialBitmapVisible: 1;
+    bool m_isStartButtonPressed: 1;
     float m_TutorialBitmapTimeShown;
     GuiSFX::UnderdampedTranslator m_TutorialBitmapTransitionIn;
     GuiSFX::Translator m_TutorialBitmapSteadyState;
     GuiSFX::Translator m_TutorialBitmapTransitionOut;
     GuiSFX::Translator m_TurorialBitmapStayOut;
-    Scrooby::Page*     m_LetterboxPage;
+    Scrooby::Page *m_LetterboxPage;
 
 };
 

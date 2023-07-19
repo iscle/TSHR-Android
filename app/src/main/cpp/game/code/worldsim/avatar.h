@@ -24,9 +24,13 @@
 // Forward References
 //========================================
 class Character;
+
 class Vehicle;
+
 class VehicleController;
+
 struct AvatarInputManager;
+
 class tCamera;
 
 //=============================================================================
@@ -35,71 +39,86 @@ class tCamera;
 //
 //=============================================================================
 
-class Avatar : public ICheatEnteredCallback
-{
+class Avatar : public ICheatEnteredCallback {
 // METHODS:
 public:
     Avatar();
+
     ~Avatar();
 
-    void Destroy( void );
+    void Destroy(void);
 
-    int GetControllerId( void ) const;
-    void SetControllerId ( int id );
+    int GetControllerId(void) const;
 
-    void SetPlayerId( int id ) { mPlayerId = id; }
+    void SetControllerId(int id);
+
+    void SetPlayerId(int id) { mPlayerId = id; }
+
     int GetPlayerId() const { return mPlayerId; }
 
-    Character* GetCharacter( void ) const;
-    void SetCharacter( Character* pCharacter );
+    Character *GetCharacter(void) const;
 
-    Vehicle* GetVehicle( void ) const;
-    void SetVehicle( Vehicle* pVehicle );
+    void SetCharacter(Character *pCharacter);
 
-    void GetIntoVehicleStart( Vehicle* pVehicle );
-    void GetIntoVehicleEnd( Vehicle* pVehicle );
-    void GetOutOfVehicleStart( Vehicle* pVehicle );
-    void GetOutOfVehicleEnd( Vehicle* pVehicle );
-    
-    void SetInCarController( void );
-    void SetOutOfCarController( void );
-    void SetCameraTargetToCharacter( bool cut = false );
-    void SetCameraTargetToVehicle( bool cut = false );
-    
-    void SetCamera( tCamera* pCamera );
+    Vehicle *GetVehicle(void) const;
 
-    const void GetPosition( rmt::Vector& pos ) const;
-    const void GetHeading( rmt::Vector& irHeading ) const;
+    void SetVehicle(Vehicle *pVehicle);
+
+    void GetIntoVehicleStart(Vehicle *pVehicle);
+
+    void GetIntoVehicleEnd(Vehicle *pVehicle);
+
+    void GetOutOfVehicleStart(Vehicle *pVehicle);
+
+    void GetOutOfVehicleEnd(Vehicle *pVehicle);
+
+    void SetInCarController(void);
+
+    void SetOutOfCarController(void);
+
+    void SetCameraTargetToCharacter(bool cut = false);
+
+    void SetCameraTargetToVehicle(bool cut = false);
+
+    void SetCamera(tCamera *pCamera);
+
+    const void GetPosition(rmt::Vector &pos) const;
+
+    const void GetHeading(rmt::Vector &irHeading) const;
 
     // *** //
-    const void GetNormalizedHeadingSafe( rmt::Vector& heading ) const;
-    const void GetVelocity( rmt::Vector& vel ) const;
+    const void GetNormalizedHeadingSafe(rmt::Vector &heading) const;
+
+    const void GetVelocity(rmt::Vector &vel) const;
+
     const float GetSpeedMps() const;
     // *** //
 
-    bool IsInCar( void ) const;
+    bool IsInCar(void) const;
 
     void PreSubstepUpdate();
+
     void Update(float dt);
+
     void PreCollisionPrep();
 
-    void OnCheatEntered( eCheatID cheatID, bool isEnabled );
+    void OnCheatEntered(eCheatID cheatID, bool isEnabled);
 
-    void GetLastPathInfo( 
-        RoadManager::PathElement& elem, 
-        RoadSegment*& seg,
-        float& segT,
-        float& roadT );
+    void GetLastPathInfo(
+            RoadManager::PathElement &elem,
+            RoadSegment *&seg,
+            float &segT,
+            float &roadT);
 
     void GetRaceInfo(
-        float& distToCurrCollectible,
-        int& currCollectible,
-        int& numLapsCompleted );
+            float &distToCurrCollectible,
+            int &currCollectible,
+            int &numLapsCompleted);
 
     void SetRaceInfo(
-        float distToCurrCollectible,
-        int currCollectible,
-        int numLapsCompleted );
+            float distToCurrCollectible,
+            int currCollectible,
+            int numLapsCompleted);
 
 //MEMBERS
 public:
@@ -110,7 +129,7 @@ private:
     ///////////////// PATH INFO /////////////////////
     bool mHasBeenUpdatedThisFrame;
     RoadManager::PathElement mLastPathElement;
-    RoadSegment* mLastRoadSegment;
+    RoadSegment *mLastRoadSegment;
     float mLastRoadSegmentT;
     float mLastRoadT;
 
@@ -124,8 +143,9 @@ private:
 
     //Prevent wasteful constructor creation.
     //
-	Avatar( const Avatar& avatar );
-    Avatar& operator=( const Avatar& avatar );
+    Avatar(const Avatar &avatar);
+
+    Avatar &operator=(const Avatar &avatar);
 
     // Data.
     //
@@ -134,12 +154,12 @@ private:
 
     int mPlayerId;
 
-    Character* mpCharacter;
+    Character *mpCharacter;
 
     // NULL if not in any vehicle, when IsInCar, this is set to that car
-    Vehicle* mpVehicle; 
+    Vehicle *mpVehicle;
 
-    AvatarInputManager* mpAvatarInputManager;
+    AvatarInputManager *mpAvatarInputManager;
 
     static bool s_displayCoordinates;
 
@@ -152,7 +172,6 @@ private:
     float mSecondsOffOrOnRoad;
     */
 };
-
 
 
 #endif //AVATAR_H

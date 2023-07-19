@@ -57,11 +57,10 @@
 //
 //=============================================================================
 GetInObjective::GetInObjective() :
-    mHUDID( -1 ),
-    mAnimatedIcon( NULL ),
-    mStrict(false),
-    mVehicleUID(0)
-{
+        mHUDID(-1),
+        mAnimatedIcon(NULL),
+        mStrict(false),
+        mVehicleUID(0) {
 }
 
 //=============================================================================
@@ -74,8 +73,7 @@ GetInObjective::GetInObjective() :
 // Return:      N/A.
 //
 //=============================================================================
-GetInObjective::~GetInObjective()
-{
+GetInObjective::~GetInObjective() {
 }
 
 //=============================================================================
@@ -88,50 +86,46 @@ GetInObjective::~GetInObjective()
 // Return:      void 
 //
 //=============================================================================
-void GetInObjective::OnInitialize()
-{
-MEMTRACK_PUSH_GROUP( "Mission - GetInObjective" );
+void GetInObjective::OnInitialize() {
+    MEMTRACK_PUSH_GROUP("Mission - GetInObjective");
 
-    GameplayManager* gpm = GetGameplayManager();
+    GameplayManager *gpm = GetGameplayManager();
 
     // TC: No need to do this anymore since phone booths are now disabled
     //     all thoughout missionmode.
     //
 //    gpm->DisablePhoneBooths();
 
-    Vehicle* vehicle = NULL;
-    if(mStrict)
-    {
+    Vehicle *vehicle = NULL;
+    if (mStrict) {
         vehicle = GetVehicleCentral()->GetVehicleByUID(mVehicleUID);
-    }
-    else
-    {
+    } else {
         vehicle = gpm->GetCurrentVehicle();
     }
 
     rAssert(vehicle);
-    if(!vehicle)
-    {
+    if (!vehicle) {
         //fail
         return;
     }
 
     rmt::Vector pos = vehicle->GetPosition();
 
-//    RegisterPosition( pos, mHUDID, true, HudMapIcon::ICON_PLAYER_CAR, this );
+//    RegisterPosition(pos, mHUDID, true, HudMapIcon::ICON_PLAYER_CAR, this);
 
     //========================= SET UP THE ICON
 
-    rAssert( mAnimatedIcon == NULL );
+    rAssert(mAnimatedIcon == NULL);
 
     GameMemoryAllocator gma = gpm->GetCurrentMissionHeap();
     mAnimatedIcon = new(gma) AnimatedIcon();
- 
-    //TODO put in the actual name...
-    mAnimatedIcon->Init( ARROW, pos );
-    mAnimatedIcon->ScaleByCameraDistance( MIN_ARROW_SCALE, MAX_ARROW_SCALE, MIN_ARROW_SCALE_DIST, MAX_ARROW_SCALE_DIST );
 
-MEMTRACK_POP_GROUP("Mission - GetInObjective");
+    //TODO put in the actual name...
+    mAnimatedIcon->Init(ARROW, pos);
+    mAnimatedIcon->ScaleByCameraDistance(MIN_ARROW_SCALE, MAX_ARROW_SCALE, MIN_ARROW_SCALE_DIST,
+                                         MAX_ARROW_SCALE_DIST);
+
+    MEMTRACK_POP_GROUP("Mission - GetInObjective");
 }
 
 //=============================================================================
@@ -144,16 +138,13 @@ MEMTRACK_POP_GROUP("Mission - GetInObjective");
 // Return:      void 
 //
 //=============================================================================
-void GetInObjective::OnFinalize()
-{
-//    UnregisterPosition( mHUDID );
+void GetInObjective::OnFinalize() {
+//    UnregisterPosition(mHUDID);
 
-    rAssert( mAnimatedIcon );
-
+    rAssert(mAnimatedIcon);
 
 
-    if ( mAnimatedIcon )
-    {
+    if (mAnimatedIcon) {
         delete mAnimatedIcon;
         mAnimatedIcon = NULL;
     }
@@ -169,69 +160,57 @@ void GetInObjective::OnFinalize()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void GetInObjective::OnUpdate( unsigned int elapsedTime )
-{
-    Vehicle* vehicle = NULL;
-    if(mStrict)
-    {
+void GetInObjective::OnUpdate(unsigned int elapsedTime) {
+    Vehicle *vehicle = NULL;
+    if (mStrict) {
         vehicle = GetVehicleCentral()->GetVehicleByUID(mVehicleUID);
-    }
-    else
-    {
+    } else {
         vehicle = GetGameplayManager()->GetCurrentVehicle();
     }
 
     rAssert(vehicle);
-    if(!vehicle)
-    {
+    if (!vehicle) {
         //fail???
         return;
     }
 
     //Update the position of the bv...
     rmt::Vector carPos;
-    vehicle->GetPosition( &carPos );
+    vehicle->GetPosition(&carPos);
 
     rmt::Box3D bbox;
-    vehicle->GetBoundingBox( &bbox );
+    vehicle->GetBoundingBox(&bbox);
     carPos.y = bbox.high.y;
 
-    mAnimatedIcon->Move( carPos );
-    mAnimatedIcon->Update( elapsedTime );
+    mAnimatedIcon->Move(carPos);
+    mAnimatedIcon->Update(elapsedTime);
 
-    if(mStrict)
-    {
-        if ( GetAvatarManager()->GetAvatarForPlayer( 0 )->GetVehicle() == vehicle  &&
-            GetCharacterManager()->GetCharacter( 0 )->GetStateManager()->GetState() == CharacterAi::INCAR )
-        {
-            SetFinished( true );
+    if (mStrict) {
+        if (GetAvatarManager()->GetAvatarForPlayer(0)->GetVehicle() == vehicle &&
+            GetCharacterManager()->GetCharacter(0)->GetStateManager()->GetState() ==
+            CharacterAi::INCAR) {
+            SetFinished(true);
         }
-    }
-    else
-    {
-        if ( GetAvatarManager()->GetAvatarForPlayer( 0 )->GetVehicle() &&
-            GetCharacterManager()->GetCharacter( 0 )->GetStateManager()->GetState() == CharacterAi::INCAR )
-        {
-            SetFinished( true );
+    } else {
+        if (GetAvatarManager()->GetAvatarForPlayer(0)->GetVehicle() &&
+            GetCharacterManager()->GetCharacter(0)->GetStateManager()->GetState() ==
+            CharacterAi::INCAR) {
+            SetFinished(true);
         }
     }
 }
 
-void GetInObjective::SetStrict( const char* name )
-{
+void GetInObjective::SetStrict(const char *name) {
     mVehicleUID = tEntity::MakeUID(name);
-    Vehicle* vehicle = GetVehicleCentral()->GetVehicleByUID(mVehicleUID);
-    if(vehicle)
-    {
+    Vehicle *vehicle = GetVehicleCentral()->GetVehicleByUID(mVehicleUID);
+    if (vehicle) {
         mStrict = true;
-    }
-    else
-    {
+    } else {
         mStrict = false;
         mVehicleUID = 0;
     }
@@ -242,29 +221,24 @@ void GetInObjective::SetStrict( const char* name )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* currentLoc )
+// Parameters:  (rmt::Vector* currentLoc)
 //
 // Return:      void 
 //
 //=============================================================================
-void GetInObjective::GetPosition( rmt::Vector* currentLoc )
-{
-    Vehicle* vehicle = NULL;
-    if(mStrict)
-    {
+void GetInObjective::GetPosition(rmt::Vector *currentLoc) {
+    Vehicle *vehicle = NULL;
+    if (mStrict) {
         vehicle = GetVehicleCentral()->GetVehicleByUID(mVehicleUID);
-    }
-    else
-    {
+    } else {
         vehicle = GetGameplayManager()->GetCurrentVehicle();
     }
-    rAssert( vehicle );
-    if(!vehicle)
-    {
+    rAssert(vehicle);
+    if (!vehicle) {
         return;
     }
 
-    vehicle->GetPosition( currentLoc );
+    vehicle->GetPosition(currentLoc);
 }
 
 //=============================================================================
@@ -272,29 +246,24 @@ void GetInObjective::GetPosition( rmt::Vector* currentLoc )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector* heading )
+// Parameters:  (rmt::Vector* heading)
 //
 // Return:      void 
 //
 //=============================================================================
-void GetInObjective::GetHeading( rmt::Vector* heading )
-{
-    Vehicle* vehicle = NULL;
-    if(mStrict)
-    {
+void GetInObjective::GetHeading(rmt::Vector *heading) {
+    Vehicle *vehicle = NULL;
+    if (mStrict) {
         vehicle = GetVehicleCentral()->GetVehicleByUID(mVehicleUID);
-    }
-    else
-    {
+    } else {
         vehicle = GetGameplayManager()->GetCurrentVehicle();
     }
-    rAssert( vehicle );
-    if(!vehicle)
-    {
+    rAssert(vehicle);
+    if (!vehicle) {
         return;
     }
 
-    vehicle->GetHeading( heading );
+    vehicle->GetHeading(heading);
 }
 
 

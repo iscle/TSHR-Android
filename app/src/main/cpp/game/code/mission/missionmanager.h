@@ -33,98 +33,108 @@ class AnimatedIcon;
 //=============================================================================
 
 class MissionManager : public GameplayManager,
-                       public LoadingManager::ProcessRequestsCallback
-{
-    public:
+                       public LoadingManager::ProcessRequestsCallback {
+public:
 
-        enum LoadingStateEnum {
-            STATE_INVALID,
-            STATE_LEVEL,
-            STATE_MISSION_LOAD,
-            STATE_MISSION_LOADING,
-            STATE_MISSION_INIT,
-            STATE_MISSION_INITING,
-            STATE_MISSION_DYNALOAD,
-            STATE_WAIT_FOR_DYNALOAD,
-            STATE_MISSION_START,
-            NUM_STATES
-        };
-
+    enum LoadingStateEnum {
+        STATE_INVALID,
+        STATE_LEVEL,
+        STATE_MISSION_LOAD,
+        STATE_MISSION_LOADING,
+        STATE_MISSION_INIT,
+        STATE_MISSION_INITING,
+        STATE_MISSION_DYNALOAD,
+        STATE_WAIT_FOR_DYNALOAD,
+        STATE_MISSION_START,
+        NUM_STATES
+    };
 
 
-        static MissionManager* GetInstance();
-        static MissionManager* CreateInstance();
-        static void DestroyInstance();
+    static MissionManager *GetInstance();
 
-        virtual void Initialize();
-        virtual void Finalize();
-        virtual void Reset();
+    static MissionManager *CreateInstance();
 
-        virtual void LoadLevelData();
-        virtual void InitLevelData();
-        virtual void CleanMissionData();
+    static void DestroyInstance();
 
-        virtual void OnProcessRequestsComplete( void* pUserData );
+    virtual void Initialize();
 
-        virtual void Update( int elapsedTime );
+    virtual void Finalize();
 
-        virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void Reset();
 
-        virtual void PerformLoading();
+    virtual void LoadLevelData();
 
-        virtual bool IsSundayDrive() { return GetCurrentMission() ? GetCurrentMission()->IsSundayDrive() : true; };
+    virtual void InitLevelData();
 
-        virtual void RestartCurrentMission();
-        virtual void RestartToMission( RenderEnums::MissionEnum mission );
-        virtual void AbortCurrentMission();
+    virtual void CleanMissionData();
 
-        void PutEffectHere( const rmt::Vector& pos );
-        bool InResetState(){ return mResetting; };
+    virtual void OnProcessRequestsComplete(void *pUserData);
 
-        LoadingStateEnum GetLoadingState () {   return mLoadingState; };
+    virtual void Update(int elapsedTime);
 
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
-        
+    virtual void PerformLoading();
+
+    virtual bool IsSundayDrive() {
+        return GetCurrentMission() ? GetCurrentMission()->IsSundayDrive() : true;
+    };
+
+    virtual void RestartCurrentMission();
+
+    virtual void RestartToMission(RenderEnums::MissionEnum mission);
+
+    virtual void AbortCurrentMission();
+
+    void PutEffectHere(const rmt::Vector &pos);
+
+    bool InResetState() { return mResetting; };
+
+    LoadingStateEnum GetLoadingState() { return mLoadingState; };
+
 
 protected:
-        MissionManager();
-        ~MissionManager();
+    MissionManager();
 
-        virtual void LoadMission();
-    private:    
-        //Prevent wasteful constructor creation.
-        MissionManager( const MissionManager& missionManager  );
-        MissionManager& operator=( const MissionManager& missionManager );
+    ~MissionManager();
 
-        // Pointer to the one and only instance of this singleton.
-        static MissionManager* spInstance;        
+    virtual void LoadMission();
+
+private:
+    //Prevent wasteful constructor creation.
+    MissionManager(const MissionManager &missionManager);
+
+    MissionManager &operator=(const MissionManager &missionManager);
+
+    // Pointer to the one and only instance of this singleton.
+    static MissionManager *spInstance;
 
 
-        LoadingStateEnum mLoadingState;
+    LoadingStateEnum mLoadingState;
 
-        enum MissionStateEnum {
-            MISSION_INVALID,
-            MISSION_LOADING,
-            MISSION_INIT,
-            MISSION_SUSPEND,
-            MISSION_RUNNING,
-            MISSION_NUM_STATES
-        };
+    enum MissionStateEnum {
+        MISSION_INVALID,
+        MISSION_LOADING,
+        MISSION_INIT,
+        MISSION_SUSPEND,
+        MISSION_RUNNING,
+        MISSION_NUM_STATES
+    };
 
-        MissionStateEnum mMissionState;
+    MissionStateEnum mMissionState;
 
-        char mLastFileName[256];
+    char mLastFileName[256];
 
-        bool mIsSundayDrive;
+    bool mIsSundayDrive;
 
-        bool mResetting;
+    bool mResetting;
 
-        //HACK
-        bool mHAHACK;
+    //HACK
+    bool mHAHACK;
 
-        AnimatedIcon* mCollectionEffect;
+    AnimatedIcon *mCollectionEffect;
 };
 
-inline MissionManager* GetMissionManager() { return( MissionManager::GetInstance() ); }
+inline MissionManager *GetMissionManager() { return (MissionManager::GetInstance()); }
 
 #endif //MISSIONMANAGER_H

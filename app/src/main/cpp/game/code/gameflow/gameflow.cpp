@@ -49,7 +49,7 @@
 //
 // Static pointer to instance of this singleton.
 //
-GameFlow* GameFlow::spInstance = NULL;
+GameFlow *GameFlow::spInstance = NULL;
 
 
 //******************************************************************************
@@ -71,15 +71,14 @@ GameFlow* GameFlow::spInstance = NULL;
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-GameFlow* GameFlow::CreateInstance()
-{
-MEMTRACK_PUSH_GROUP( "GameFlow" );
-    rAssert( spInstance == NULL );
+GameFlow *GameFlow::CreateInstance() {
+    MEMTRACK_PUSH_GROUP("GameFlow");
+    rAssert(spInstance == NULL);
 
     spInstance = new(GMA_PERSISTENT) GameFlow;
-    rAssert( spInstance );
-MEMTRACK_POP_GROUP( "GameFlow" );
-    
+    rAssert(spInstance);
+    MEMTRACK_POP_GROUP("GameFlow");
+
     return spInstance;
 }
 
@@ -95,10 +94,9 @@ MEMTRACK_POP_GROUP( "GameFlow" );
 // Return:      Pointer to the created gameflow controller.
 //
 //==============================================================================
-GameFlow* GameFlow::GetInstance()
-{
-    //rAssert( spInstance != NULL );
-    
+GameFlow *GameFlow::GetInstance() {
+    //rAssert(spInstance != NULL);
+
     return spInstance;
 }
 
@@ -114,11 +112,10 @@ GameFlow* GameFlow::GetInstance()
 // Return:      None.
 //
 //==============================================================================
-void GameFlow::DestroyInstance()
-{
-    rAssert( spInstance != NULL );
+void GameFlow::DestroyInstance() {
+    rAssert(spInstance != NULL);
 
-    delete( GMA_PERSISTENT, spInstance );
+    delete (GMA_PERSISTENT, spInstance);
     spInstance = NULL;
 }
 
@@ -137,20 +134,19 @@ void GameFlow::DestroyInstance()
 // Return:      None.
 //
 //==============================================================================
-void GameFlow::PushContext( ContextEnum context )
-{
+void GameFlow::PushContext(ContextEnum context) {
     //
     // Really bad news if this assert triggers.  There's already a context
     // change in the queue when this one was requested.
     //
     // This assert cannot be ignored, you must fix the problem.
     //
-    rAssert( mCurrentContext == mNextContext );
+    rAssert(mCurrentContext == mNextContext);
 
-MEMTRACK_PUSH_GROUP( "GameFlow" );
+    MEMTRACK_PUSH_GROUP("GameFlow");
     mNextContext = context;
-    mContextStack.push( context );
-MEMTRACK_POP_GROUP( "GameFlow" );
+    mContextStack.push(context);
+    MEMTRACK_POP_GROUP("GameFlow");
 }
 
 
@@ -170,9 +166,8 @@ MEMTRACK_POP_GROUP( "GameFlow" );
 // Return:      None.
 //
 //==============================================================================
-void GameFlow::PopContext()
-{
-    rAssert( mContextStack.size() > 1 );
+void GameFlow::PopContext() {
+    rAssert(mContextStack.size() > 1);
 
     //
     // Really bad news if this assert triggers.  There's already a context
@@ -180,7 +175,7 @@ void GameFlow::PopContext()
     //
     // This assert cannot be ignored, you must fix the problem.
     //
-    rAssert( mCurrentContext == mNextContext );
+    rAssert(mCurrentContext == mNextContext);
 
     mContextStack.pop();
     mNextContext = mContextStack.top();
@@ -201,14 +196,12 @@ void GameFlow::PopContext()
 // Return:      None.
 //
 //==============================================================================
-void GameFlow::SetContext( ContextEnum context )
-{
-    while( !mContextStack.empty() )
-    {
+void GameFlow::SetContext(ContextEnum context) {
+    while (!mContextStack.empty()) {
         mContextStack.pop();
     }
 
-    this->PushContext( context );
+    this->PushContext(context);
 }
 
 
@@ -225,47 +218,42 @@ void GameFlow::SetContext( ContextEnum context )
 // Return:      None.
 //
 //==============================================================================
-void GameFlow::OnTimerDone( unsigned int elapsedtime, void* pUserData )
-{
+void GameFlow::OnTimerDone(unsigned int elapsedtime, void *pUserData) {
     //////////////////////////////////////////////////
     // Debugging stuff.
     //////////////////////////////////////////////////
 
-    bool printMemory = CommandLineOptions::Get( CLO_PRINT_MEMORY );
-    if( printMemory )
-    {
+    bool printMemory = CommandLineOptions::Get(CLO_PRINT_MEMORY);
+    if (printMemory) {
         static int accumulatedTime = 0;
         const int printTimeIntervalMs = 3000;
         accumulatedTime += elapsedtime;
-        if( accumulatedTime > printTimeIntervalMs )
-        {
+        if (accumulatedTime > printTimeIntervalMs) {
             accumulatedTime %= printTimeIntervalMs;
             Memory::PrintMemoryStatsToTty();
         }
     }
 
-    #ifndef RAD_RELEASE
+#ifndef RAD_RELEASE
 
     // HACK to prevent elapsedtime from being ridiculously huge.  
     // This is so that when we set breakpoints we don't have really huge 
     // elapsedtime values screwing us up.
-    if( elapsedtime > 1000 )
-    {
+    if (elapsedtime > 1000) {
         elapsedtime = 20;
     }
-    
-    #endif
+
+#endif
 
     //////////////////////////////////////////////////
     // Switch contexts if appropriate.
     //////////////////////////////////////////////////
 
     // If current and next contexts are different...
-    if( mCurrentContext != mNextContext )
-    {
-        mpContexts[mCurrentContext]->Stop( mNextContext );
-        mpContexts[mNextContext]->Start( mCurrentContext );
-        
+    if (mCurrentContext != mNextContext) {
+        mpContexts[mCurrentContext]->Stop(mNextContext);
+        mpContexts[mNextContext]->Start(mCurrentContext);
+
         mCurrentContext = mNextContext;
     }
 
@@ -274,8 +262,7 @@ void GameFlow::OnTimerDone( unsigned int elapsedtime, void* pUserData )
     //////////////////////////////////////////////////
 
     // If current context is exit, then stop the game.
-    if( mCurrentContext == CONTEXT_EXIT )
-    {
+    if (mCurrentContext == CONTEXT_EXIT) {
         GetGame()->Stop();
         return;
     }
@@ -283,14 +270,14 @@ void GameFlow::OnTimerDone( unsigned int elapsedtime, void* pUserData )
     //////////////////////////////////////////////////
     // Update managers and controllers.
     //////////////////////////////////////////////////
-    
+
     //
     // Run the once-per-frame sound update
     //
-    SoundManager::GetInstance()->UpdateOncePerFrame( elapsedtime, mCurrentContext );
+    SoundManager::GetInstance()->UpdateOncePerFrame(elapsedtime, mCurrentContext);
 
     // Update the current context.
-    mpContexts[mCurrentContext]->Update( elapsedtime );
+    mpContexts[mCurrentContext]->Update(elapsedtime);
 }
 
 
@@ -313,41 +300,39 @@ void GameFlow::OnTimerDone( unsigned int elapsedtime, void* pUserData )
 // Return:      N/A.
 //
 //==============================================================================// 
-GameFlow::GameFlow() : 
-    mpITimer( NULL ), 
-    mCurrentContext( CONTEXT_ENTRY ), 
-    mNextContext( CONTEXT_ENTRY )
-{
+GameFlow::GameFlow() :
+        mpITimer(NULL),
+        mCurrentContext(CONTEXT_ENTRY),
+        mNextContext(CONTEXT_ENTRY) {
     //
     // Initialize members.
     //
     int i = CONTEXT_ENTRY;
-    for( ; i < NUM_CONTEXTS; ++i )
-    {
+    for (; i < NUM_CONTEXTS; ++i) {
         mpContexts[i] = NULL;
     }
 
     //
     // Create the context controllers.
     //
-    mpContexts[CONTEXT_ENTRY]               = GetEntryContext();
-    mpContexts[CONTEXT_BOOTUP]              = GetBootupContext();
-    mpContexts[CONTEXT_FRONTEND]            = GetFrontEndContext();
-    mpContexts[CONTEXT_LOADING_DEMO]        = GetLoadingDemoContext();
-    mpContexts[CONTEXT_DEMO]                = GetDemoContext();
+    mpContexts[CONTEXT_ENTRY] = GetEntryContext();
+    mpContexts[CONTEXT_BOOTUP] = GetBootupContext();
+    mpContexts[CONTEXT_FRONTEND] = GetFrontEndContext();
+    mpContexts[CONTEXT_LOADING_DEMO] = GetLoadingDemoContext();
+    mpContexts[CONTEXT_DEMO] = GetDemoContext();
     mpContexts[CONTEXT_LOADING_SUPERSPRINT] = GetLoadingSuperSprintContext();
-    mpContexts[CONTEXT_SUPERSPRINT]         = GetSPCTX();
-    mpContexts[CONTEXT_SUPERSPRINT_FE]      = GetSuperSprintFEContext();
-    mpContexts[CONTEXT_LOADING_GAMEPLAY]    = GetLoadingGameplayContext();
-    mpContexts[CONTEXT_GAMEPLAY]            = GetGameplayContext();
-    mpContexts[CONTEXT_PAUSE]               = GetPauseContext();
-    mpContexts[CONTEXT_EXIT]                = GetExitContext();
-    
+    mpContexts[CONTEXT_SUPERSPRINT] = GetSPCTX();
+    mpContexts[CONTEXT_SUPERSPRINT_FE] = GetSuperSprintFEContext();
+    mpContexts[CONTEXT_LOADING_GAMEPLAY] = GetLoadingGameplayContext();
+    mpContexts[CONTEXT_GAMEPLAY] = GetGameplayContext();
+    mpContexts[CONTEXT_PAUSE] = GetPauseContext();
+    mpContexts[CONTEXT_EXIT] = GetExitContext();
+
     //
     // Since we're starting with the entry context, call its Start function
     // for the sake of symmetry and to allow memory tagging to work properly
     //
-    mpContexts[mCurrentContext]->Start( mCurrentContext );
+    mpContexts[mCurrentContext]->Start(mCurrentContext);
 }
 
 //==============================================================================
@@ -361,15 +346,13 @@ GameFlow::GameFlow() :
 // Return:      N/A.
 //
 //==============================================================================// 
-GameFlow::~GameFlow()
-{
+GameFlow::~GameFlow() {
     //
     // Release the context controllers.
     //
     int i = CONTEXT_ENTRY;
-    for( ; i < NUM_CONTEXTS; ++i )
-    {
-        rAssert( mpContexts[i] != NULL );
+    for (; i < NUM_CONTEXTS; ++i) {
+        rAssert(mpContexts[i] != NULL);
         mpContexts[i]->DestroyInstance();
     }
 }

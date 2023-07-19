@@ -28,6 +28,7 @@
 //========================================
 
 class Intersection;
+
 class Road;
 
 
@@ -38,17 +39,14 @@ class Road;
 //=============================================================================
 
 class VehicleAI : public AiVehicleController,
-                  public IHudMapIconLocator
-{
+                  public IHudMapIconLocator {
 public:
-    enum VehicleAITypeEnum
-    {
+    enum VehicleAITypeEnum {
         AI_WAYPOINT,
         AI_CHASE,
         NUM_AI_TYPES
     };
-    enum VehicleAIState
-    {
+    enum VehicleAIState {
         STATE_WAITING,
         STATE_WAITING_FOR_PLAYER,
         STATE_ACCEL,
@@ -72,13 +70,13 @@ public:
     static const int CATCHUP_MAX_SHORTCUTSKILL_MOD;
 
 
-    VehicleAI( 
-        Vehicle* pVehicle, 
-        VehicleAITypeEnum type, 
-        bool enableSegmentOptimization=true,
-        int minShortcutSkill=DEFAULT_MIN_SHORTCUT_SKILL,
-        int maxShortcutSkill=DEFAULT_MAX_SHORTCUT_SKILL,
-        bool useMultiplier=true );
+    VehicleAI(
+            Vehicle *pVehicle,
+            VehicleAITypeEnum type,
+            bool enableSegmentOptimization = true,
+            int minShortcutSkill = DEFAULT_MIN_SHORTCUT_SKILL,
+            int maxShortcutSkill = DEFAULT_MAX_SHORTCUT_SKILL,
+            bool useMultiplier = true);
 
     virtual ~VehicleAI();
 
@@ -87,122 +85,125 @@ public:
     // and Finalize once at the end. Reset when you need to just reset states
     //
     virtual void Initialize();
+
     virtual void Finalize();
+
     virtual void Reset();
 
     void ResetControllerValues();
 
-    void SetMinShortcutSkill( int skill );
+    void SetMinShortcutSkill(int skill);
+
     int GetMinShortcutSkill();
-    void SetMaxShortcutSkill( int skill );
+
+    void SetMaxShortcutSkill(int skill);
+
     int GetMaxShortcutSkill();
 
     int GetShortcutSkillMod();
 
-    void SetActive( bool bIsActive );
+    void SetActive(bool bIsActive);
 
     //
     // Call this bad mofo every frame
     //
-    virtual void Update( float timeins );
+    virtual void Update(float timeins);
 
     VehicleAITypeEnum GetType();
 
-    virtual void GetPosition( rmt::Vector* currentLoc );
-    virtual void GetHeading( rmt::Vector* heading );
-    virtual void EnterLimbo ();
-    virtual void ExitLimbo ();
+    virtual void GetPosition(rmt::Vector *currentLoc);
+
+    virtual void GetHeading(rmt::Vector *heading);
+
+    virtual void EnterLimbo();
+
+    virtual void ExitLimbo();
+
     VehicleAIState GetState();
 
     int GetHUDIndex() const { return mHudIndex; };
 
-    void GetDestination( rmt::Vector& pos );
-    void GetNextDestination( rmt::Vector& pos );
+    void GetDestination(rmt::Vector &pos);
 
-    static bool FindClosestPathElement( 
-        rmt::Vector& pos, 
-        RoadManager::PathElement& elem, 
-        RoadSegment*& seg, 
-        float& segT,
-        float& roadT,
-        bool considerShortcuts );
+    void GetNextDestination(rmt::Vector &pos);
 
-    void GetLastPathInfo( 
-        RoadManager::PathElement& elem,
-        RoadSegment*& seg, 
-        float& segT,
-        float& roadT );
+    static bool FindClosestPathElement(
+            rmt::Vector &pos,
+            RoadManager::PathElement &elem,
+            RoadSegment *&seg,
+            float &segT,
+            float &roadT,
+            bool considerShortcuts);
 
-    void GetRacePathInfo( 
-        RoadManager::PathElement& elem,
-        RoadSegment*& seg, 
-        float& segT,
-        float& roadT );
+    void GetLastPathInfo(
+            RoadManager::PathElement &elem,
+            RoadSegment *&seg,
+            float &segT,
+            float &roadT);
+
+    void GetRacePathInfo(
+            RoadManager::PathElement &elem,
+            RoadSegment *&seg,
+            float &segT,
+            float &roadT);
 
     float GetDesiredSpeedKmh();
 
-    void SetUseMultiplier( bool use );
+    void SetUseMultiplier(bool use);
 
 
-    struct RaceCatchupParams
-    {
+    struct RaceCatchupParams {
         float DistMaxCatchup; // dist at which catchup is 1
         float FractionPlayerSpeedMinCatchup; // fraction of player vehicle's speed to use as target speed when catchup is -1
         float FractionPlayerSpeedMidCatchup; // fraction of player vehicle's speed to use as target speed when catchup is 0
         float FractionPlayerSpeedMaxCatchup; // fraction of player vehicle's speed to use as target speed when catchup is 1
     };
-    struct EvadeCatchupParams
-    {
+    struct EvadeCatchupParams {
         float DistPlayerTooNear;  // dist at which catchup is 1
         float DistPlayerFarEnough; // dist at which catchup is 0
     };
-    struct TargetCatchupParams
-    {
+    struct TargetCatchupParams {
         float DistPlayerNearEnough; // dist at which catchup is 0
         float DistPlayerTooFar; // dist at which catchup is -1
     };
-    struct CatchupParams
-    {
+    struct CatchupParams {
         RaceCatchupParams Race;
         EvadeCatchupParams Evade;
         TargetCatchupParams Target;
     };
 
-    void SetRaceCatchupParams( const RaceCatchupParams& raceParams );
-    void SetEvadeCatchupParams( const EvadeCatchupParams& evadeParams );
-    void SetTargetCatchupParams( const TargetCatchupParams& targetParams );
+    void SetRaceCatchupParams(const RaceCatchupParams &raceParams);
 
+    void SetEvadeCatchupParams(const EvadeCatchupParams &evadeParams);
+
+    void SetTargetCatchupParams(const TargetCatchupParams &targetParams);
 
 
 public:
-    class Segment
-    {
+    class Segment {
     public: // MEMBERS
         rmt::Vector mStart;
         rmt::Vector mEnd;
         float mLength;
-        RoadSegment* mpSegment;
+        RoadSegment *mpSegment;
         int mType;  // 0 = normal roadsegment, 
-                    // 1 = first tweening segment, 
-                    // 2 = second tweening segment
+        // 1 = first tweening segment,
+        // 2 = second tweening segment
     public: // METHODS
 
-        void InitZero()
-        {
-            mStart.Set( 0.0f, 0.0f, 0.0f );
-            mEnd.Set( 0.0f, 0.0f, 0.0f );
+        void InitZero() {
+            mStart.Set(0.0f, 0.0f, 0.0f);
+            mEnd.Set(0.0f, 0.0f, 0.0f);
             mLength = 0.0f;
             mpSegment = NULL;
             mType = 0;
         }
 
-        Segment() 
-        {
+        Segment() {
             InitZero();
         }
 
-        Segment& operator=( const Segment& src )
-        {
+        Segment &operator=(const Segment &src) {
             mStart = src.mStart;
             mEnd = src.mEnd;
             mLength = src.mLength;
@@ -211,16 +212,15 @@ public:
             return (*this);
         }
 
-        void SelfVerify()
-        {
-        #ifdef RAD_DEBUG
-            rAssert( !rmt::IsNan(mStart.x) && !rmt::IsNan(mStart.y) && !rmt::IsNan(mStart.y) );
-            rAssert( !rmt::IsNan(mEnd.x) && !rmt::IsNan(mEnd.y) && !rmt::IsNan(mEnd.y) );
-            rAssert( !rmt::IsNan(mLength) );
-            rAssert( !rmt::Epsilon( mLength, 0.0f, 0.001f ) );
-            rAssert( mpSegment != NULL );
-            rAssert( mType == 0 || mType == 1 || mType == 2 );
-        #endif
+        void SelfVerify() {
+#ifdef RAD_DEBUG
+            rAssert(!rmt::IsNan(mStart.x) && !rmt::IsNan(mStart.y) && !rmt::IsNan(mStart.y));
+            rAssert(!rmt::IsNan(mEnd.x) && !rmt::IsNan(mEnd.y) && !rmt::IsNan(mEnd.y));
+            rAssert(!rmt::IsNan(mLength));
+            rAssert(!rmt::Epsilon(mLength, 0.0f, 0.001f));
+            rAssert(mpSegment != NULL);
+            rAssert(mType == 0 || mType == 1 || mType == 2);
+#endif
         }
 
     };
@@ -230,50 +230,63 @@ public:
     // for optimization purposes..
     static const int MAX_SEGMENTS = 20;
     int mNumSegments;
-    Segment mSegments[ MAX_SEGMENTS ];
+    Segment mSegments[MAX_SEGMENTS];
 
 
 protected:
 
 
-    void SetState( VehicleAIState state );
+    void SetState(VehicleAIState state);
 
-    void DriveTowards( rmt::Vector* dest, float &distToTarget, 
-                       float& steering  );
+    void DriveTowards(rmt::Vector *dest, float &distToTarget,
+                      float &steering);
 
-    void SetDestination( rmt::Vector& pos );
-    void SetNextDestination( rmt::Vector& pos );
+    void SetDestination(rmt::Vector &pos);
 
-    void CheckState( float timeins );
-    virtual void DoCatchUp( float timeins );
+    void SetNextDestination(rmt::Vector &pos);
+
+    void CheckState(float timeins);
+
+    virtual void DoCatchUp(float timeins);
+
     void DoSteering();
+
     void FollowRoad();
-    void EvadeTraffic( Vehicle* exceptThisOne );
+
+    void EvadeTraffic(Vehicle *exceptThisOne);
 
     // TODO:
     // Remove this after the new pathfinding stuff goes in (no need for it anymore)
-    //virtual bool DetermineNextRoad( const Road** pRoad ) = 0;
-    //bool FindNextRoad( const Road** pRoad, rmt::Vector& nextDestination );
+    //virtual bool DetermineNextRoad(const Road** pRoad) = 0;
+    //bool FindNextRoad(const Road** pRoad, rmt::Vector& nextDestination);
 
     virtual bool MustRepopulateSegments();
-    virtual bool TestReachedTarget( const rmt::Vector& start, const rmt::Vector& end ) = 0;
+
+    virtual bool TestReachedTarget(const rmt::Vector &start, const rmt::Vector &end) = 0;
 
     void UpdateSegments();
-    void FindClosestSegment( const rmt::Vector& pos, int& closestIndex, float& closestDistSqr, rmt::Vector& closestPt );
+
+    void FindClosestSegment(const rmt::Vector &pos, int &closestIndex, float &closestDistSqr,
+                            rmt::Vector &closestPt);
+
     void ResetSegments();
-    void ShiftSegments( int numShifts, int first=0 );
+
+    void ShiftSegments(int numShifts, int first = 0);
+
     void FillSegments();
-    void GetPosAheadAlongRoad( float t, float lookAheadDist, int i, rmt::Vector* lookAheadPos );
+
+    void GetPosAheadAlongRoad(float t, float lookAheadDist, int i, rmt::Vector *lookAheadPos);
 
     int DetermineShortcutSkill();
 
     virtual void UpdateSelf();
-    virtual void GetClosestPathElementToTarget( 
-        rmt::Vector& targetPos,
-        RoadManager::PathElement& elem,
-        RoadSegment*& seg,
-        float& segT,
-        float& roadT ) = 0;
+
+    virtual void GetClosestPathElementToTarget(
+            rmt::Vector &targetPos,
+            RoadManager::PathElement &elem,
+            RoadSegment *&seg,
+            float &segT,
+            float &roadT) = 0;
 
     void FillPathElements();
 
@@ -285,18 +298,18 @@ protected:
     float mSecondsOutOfControl;
     rmt::Vector mOutOfControlNormal;
 
-    SwapArray<RoadManager::PathElement> mPathElements;
+    SwapArray <RoadManager::PathElement> mPathElements;
     int mCurrPathElement;
 
     // path info stuff
     RoadManager::PathElement mLastPathElement;
-    RoadSegment* mLastRoadSegment; // the last (or current) road we're on
+    RoadSegment *mLastRoadSegment; // the last (or current) road we're on
     float mLastRoadSegmentT;
     float mLastRoadT;
 
     // race position stuff
     RoadManager::PathElement mRacePathElement;
-    RoadSegment* mRaceRoadSegment;
+    RoadSegment *mRaceRoadSegment;
     float mRaceRoadSegmentT;
     float mRaceRoadT;
 
@@ -311,8 +324,9 @@ protected:
 private:
 
     //Prevent wasteful constructor creation.
-    VehicleAI( const VehicleAI& vehicleai );
-    VehicleAI& operator=( const VehicleAI& vehicleai );
+    VehicleAI(const VehicleAI &vehicleai);
+
+    VehicleAI &operator=(const VehicleAI &vehicleai);
 
     virtual int RegisterHudMapIcon() = 0;
 
@@ -343,49 +357,44 @@ private:
     float mSecondsLeftToGetBackOnPath;
     float mReverseTime;
 
-    bool mEvadeVehicles             : 1;
-    bool mEvadeStatics              : 1;
-    bool mEvading                   : 1;
-    bool mEnableSegmentOptimization : 1;
+    bool mEvadeVehicles: 1;
+    bool mEvadeStatics: 1;
+    bool mEvading: 1;
+    bool mEnableSegmentOptimization: 1;
 
     // to use AGAINST_TRAFFIC_COST_MULTIPLIER in pathfinding or to not use it...
     // if we use it, we pretty much guarantee we won't drive on the wrong side
     // of the road (good for avoiding traffic). There are some cases where we 
     // may not want to use it, such as for ChaseAI, or for when it's a street race.
     // We should expose the ability to turn it on/off at will...
-    bool mUseMultiplier             : 1; 
+    bool mUseMultiplier: 1;
 };
 
-inline float VehicleAI::GetDesiredSpeedKmh()
-{
+inline float VehicleAI::GetDesiredSpeedKmh() {
     return mDesiredSpeedKmh;
 }
 
-inline VehicleAI::VehicleAIState VehicleAI::GetState() 
-{ 
-    return mState; 
+inline VehicleAI::VehicleAIState VehicleAI::GetState() {
+    return mState;
 }
 
-inline void VehicleAI::SetState( VehicleAIState state ) 
-{ 
-    mState = state; 
+inline void VehicleAI::SetState(VehicleAIState state) {
+    mState = state;
 }
 
-inline void VehicleAI::GetDestination( rmt::Vector& pos )
-{
+inline void VehicleAI::GetDestination(rmt::Vector &pos) {
     pos = mDestination;
 }
-inline void VehicleAI::GetNextDestination( rmt::Vector& pos )
-{
+
+inline void VehicleAI::GetNextDestination(rmt::Vector &pos) {
     pos = mNextDestination;
 }
 
-inline VehicleAI::VehicleAITypeEnum VehicleAI::GetType()
-{
+inline VehicleAI::VehicleAITypeEnum VehicleAI::GetType() {
     return mType;
 }
-inline void VehicleAI::SetUseMultiplier( bool use )
-{
+
+inline void VehicleAI::SetUseMultiplier(bool use) {
     mUseMultiplier = use;
 }
 

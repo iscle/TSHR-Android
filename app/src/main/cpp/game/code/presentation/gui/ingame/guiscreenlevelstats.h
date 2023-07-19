@@ -28,26 +28,27 @@
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenLevelStats : public CGuiScreen
-{
+class CGuiScreenLevelStats : public CGuiScreen {
 public:
-    CGuiScreenLevelStats( Scrooby::Screen* pScreen, CGuiEntity* pParent,
-                          eGuiWindowID windowID = GUI_SCREEN_ID_LEVEL_STATS );
+    CGuiScreenLevelStats(Scrooby::Screen *pScreen, CGuiEntity *pParent,
+                         eGuiWindowID windowID = GUI_SCREEN_ID_LEVEL_STATS);
+
     virtual ~CGuiScreenLevelStats();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
     void UpdateLevelStats();
 
-    enum eLevelStats
-    {
+    enum eLevelStats {
         STAT_STORY_MISSIONS,
         STAT_BONUS_MISSIONS,
         STAT_STREET_RACES,
@@ -61,10 +62,10 @@ protected:
         NUM_LEVEL_STATS
     };
 
-    Scrooby::Text* m_levelStatsHeading;
-    Scrooby::Text* m_levelStats[ NUM_LEVEL_STATS ];
+    Scrooby::Text *m_levelStatsHeading;
+    Scrooby::Text *m_levelStats[NUM_LEVEL_STATS];
 
-    Scrooby::Text* m_useMissionSelect;
+    Scrooby::Text *m_useMissionSelect;
 
 };
 

@@ -41,12 +41,10 @@
 // Return:      NONE
 //
 //===========================================================================
-void Upcase( char* string )
-{
-    size_t length = ::strlen( string );
+void Upcase(char *string) {
+    size_t length = ::strlen(string);
     size_t i;
-    for( i = 0; i < length; ++i )
-    {
-        string[ i ] = toupper( string[ i ] );
+    for (i = 0; i < length; ++i) {
+        string[i] = toupper(string[i]);
     }
 }

@@ -45,15 +45,11 @@
 // Return:      N/A.
 //
 //==============================================================================
-WorldObject::WorldObject( tDrawable* drawable )
-{
-    if( drawable != NULL )
-    {
+WorldObject::WorldObject(tDrawable *drawable) {
+    if (drawable != NULL) {
         mDrawable = drawable;
         mDrawable->AddRef();
-    }
-    else
-    {
+    } else {
         mDrawable = NULL;
     }
 
@@ -70,10 +66,8 @@ WorldObject::WorldObject( tDrawable* drawable )
 // Return:      N/A.
 //
 //==============================================================================
-WorldObject::~WorldObject()
-{
-    if( mDrawable != NULL )
-    {
+WorldObject::~WorldObject() {
+    if (mDrawable != NULL) {
         mDrawable->Release();
     }
 }
@@ -83,14 +77,13 @@ WorldObject::~WorldObject()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::Vector &position )
+// Parameters:  (rmt::Vector &position)
 //
 // Return:      void 
 //
 //=============================================================================
-void WorldObject::SetPosition( rmt::Vector &position )
-{
-    mTransform.FillTranslate( position );
+void WorldObject::SetPosition(rmt::Vector &position) {
+    mTransform.FillTranslate(position);
 }
 
 //=============================================================================
@@ -103,12 +96,10 @@ void WorldObject::SetPosition( rmt::Vector &position )
 // Return:      void 
 //
 //=============================================================================
-void WorldObject::Display()
-{
+void WorldObject::Display() {
     BEGIN_PROFILE("WorldObject::Display")
-    if( mDrawable != NULL )
-    {
-        p3d::stack->PushMultiply( mTransform );
+    if (mDrawable != NULL) {
+        p3d::stack->PushMultiply(mTransform);
 
         mDrawable->Display();
 

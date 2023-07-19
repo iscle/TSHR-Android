@@ -37,23 +37,21 @@ extern bool gMemorySystemInitialized;
 // Enable memory monitor in tune and debug
 //
 #ifndef TOOLS
-    #ifndef RAD_MW
-        #ifndef RAD_RELEASE
-            //#define MEMORYTRACKER_ENABLED
-        #endif // RAD_RELEASE
-    #endif // RAD_MW
+#ifndef RAD_MW
+#ifndef RAD_RELEASE
+//#define MEMORYTRACKER_ENABLED
+#endif // RAD_RELEASE
+#endif // RAD_MW
 #endif // TOOLS
-
-
 
 
 //
 // Override built-in new.
 //
-void* operator new( size_t size )
+void *operator new(size_t size)
 #ifdef RAD_PS2
 #ifndef RAD_MW
-throw( std::bad_alloc )
+throw(std::bad_alloc)
 #endif
 #endif
 ;
@@ -61,7 +59,7 @@ throw( std::bad_alloc )
 //
 // Override built-in delete.
 //
-void  operator delete( void* pMemory )
+void operator delete(void *pMemory)
 #ifdef RAD_PS2
 #ifndef RAD_MW
 throw()
@@ -72,10 +70,10 @@ throw()
 //
 // Override built-in array new.
 //
-void* operator new[]( size_t size )
+void *operator new[](size_t size)
 #ifdef RAD_PS2
 #ifndef RAD_MW
-throw( std::bad_alloc )
+throw(std::bad_alloc)
 #endif
 #endif
 ;
@@ -83,7 +81,7 @@ throw( std::bad_alloc )
 //
 // Override built-in array delete.
 //
-void  operator delete[]( void* pMemory )
+void operator delete[](void *pMemory)
 #ifdef RAD_PS2
 #ifndef RAD_MW
 throw()
@@ -92,7 +90,7 @@ throw()
 ;
 
 #ifdef RAD_PS2
-    #define CORRAL_SMALL_ALLOCS   
+#define CORRAL_SMALL_ALLOCS
 #endif
 
 // #define USE_CHAR_GAG_HEAP
@@ -100,13 +98,12 @@ throw()
 //
 // Enumeration of the available memory heaps.
 //
-enum GameMemoryAllocator
-{                                              // 
+enum GameMemoryAllocator {                                              //
     GMA_DEFAULT = RADMEMORY_ALLOC_DEFAULT,     //    0         
     GMA_TEMP = RADMEMORY_ALLOC_TEMP,           //    1         
-#ifdef RAD_GAMECUBE                                            
+#ifdef RAD_GAMECUBE
     GMA_GC_VMM = RADMEMORY_ALLOC_VMM,          //    2         
-#endif                                                         
+#endif
     GMA_PERSISTENT = 3,                        //    3         
     GMA_LEVEL,                                 //    4          
     GMA_LEVEL_MOVIE,                           //    5         
@@ -121,7 +118,7 @@ enum GameMemoryAllocator
     GMA_MUSIC,                                 //    14        
     GMA_AUDIO_PERSISTENT,                      //    15        
     GMA_SMALL_ALLOC,                           //    16
-#ifdef RAD_XBOX                                
+#ifdef RAD_XBOX
     GMA_XBOX_SOUND_MEMORY,                     //    17           
 #endif
 #ifdef USE_CHAR_GAG_HEAP
@@ -137,64 +134,81 @@ enum GameMemoryAllocator
     NUM_GAME_MEMORY_ALLOCATORS
 };
 
-extern const char* HeapNames[];
+extern const char *HeapNames[];
 
-void* operator new( size_t size, GameMemoryAllocator allocator );
-void  operator delete( void* pMemory, GameMemoryAllocator allocator );
+void *operator new(size_t size, GameMemoryAllocator allocator);
 
-void* operator new[]( size_t size, GameMemoryAllocator allocator );
-void  operator delete[]( void* pMemory, GameMemoryAllocator allocator );
+void operator delete(void *pMemory, GameMemoryAllocator allocator);
 
-void* FindFreeMemory( GameMemoryAllocator allocator, size_t size );  //Use with caution.  This is meant to be temporary.
-void  LockPersistentHeap();
-void  PrintOutOfMemoryMessage( void* userData, radMemoryAllocator heap, const unsigned int size );
-void  SetupAllocatorSearch( GameMemoryAllocator allocator );
+void *operator new[](size_t size, GameMemoryAllocator allocator);
+
+void operator delete[](void *pMemory, GameMemoryAllocator allocator);
+
+void *FindFreeMemory(GameMemoryAllocator allocator,
+                     size_t size);  //Use with caution.  This is meant to be temporary.
+void LockPersistentHeap();
+
+void PrintOutOfMemoryMessage(void *userData, radMemoryAllocator heap, const unsigned int size);
+
+void SetupAllocatorSearch(GameMemoryAllocator allocator);
 
 
 // These are for the global heap stack.  This stack maintains where unrouted allocations
 // should go.  This way we are able to trap virtually every allocation.
 //
 
-class HeapStack
-{
+class HeapStack {
 public:
-    HeapStack (GameMemoryAllocator defaultAllocator);
-    virtual ~HeapStack ();
+    HeapStack(GameMemoryAllocator defaultAllocator);
 
-    void Push (GameMemoryAllocator alloc);
-    void Pop  (GameMemoryAllocator alloc);
-    void Pop  ();
-    void SetTop (GameMemoryAllocator alloc);
-    GameMemoryAllocator Top () const;
+    virtual ~HeapStack();
+
+    void Push(GameMemoryAllocator alloc);
+
+    void Pop(GameMemoryAllocator alloc);
+
+    void Pop();
+
+    void SetTop(GameMemoryAllocator alloc);
+
+    GameMemoryAllocator Top() const;
 
 #ifndef RAD_REALEASE
-    void Dump ();
+
+    void Dump();
+
 #endif
 
 private:
-    GameMemoryAllocator* m_Stack;
+    GameMemoryAllocator *m_Stack;
     int m_CurPos;
     int m_Size;
 
-    enum { STACKSIZE = 48 };
+    enum {
+        STACKSIZE = 48
+    };
 
     // Disable
-    HeapStack (const HeapStack&);
+    HeapStack(const HeapStack &);
 };
 
 
-class HeapActivityTracker : public IRadMemoryActivityCallback
-{
+class HeapActivityTracker : public IRadMemoryActivityCallback {
 public:
-    HeapActivityTracker ();
+    HeapActivityTracker();
 
-    void EnableHeapAllocs (GameMemoryAllocator alloc, bool enable) { m_AllocsEnabled[alloc] = enable; }
-    void EnableHeapFrees (GameMemoryAllocator alloc, bool enable) { m_FreesEnabled[alloc] = enable; }
-    bool AllocsAllowed (GameMemoryAllocator alloc) const { return m_AllocsEnabled[alloc]; }
-    bool FreesAllowed (GameMemoryAllocator alloc) const { return m_FreesEnabled[alloc]; }
+    void
+    EnableHeapAllocs(GameMemoryAllocator alloc, bool enable) { m_AllocsEnabled[alloc] = enable; }
 
-    void MemoryAllocated (radMemoryAllocator allocator, void* address, unsigned int size);
-    void MemoryFreed (radMemoryAllocator allocator, void* address);
+    void EnableHeapFrees(GameMemoryAllocator alloc, bool enable) { m_FreesEnabled[alloc] = enable; }
+
+    bool AllocsAllowed(GameMemoryAllocator alloc) const { return m_AllocsEnabled[alloc]; }
+
+    bool FreesAllowed(GameMemoryAllocator alloc) const { return m_FreesEnabled[alloc]; }
+
+    void MemoryAllocated(radMemoryAllocator allocator, void *address, unsigned int size);
+
+    void MemoryFreed(radMemoryAllocator allocator, void *address);
 
 private:
     bool m_AllocsEnabled[NUM_GAME_MEMORY_ALLOCATORS];
@@ -205,33 +219,43 @@ private:
 extern HeapActivityTracker g_HeapActivityTracker;
 
 
-class HeapManager : public IRadMemorySetAllocatorCallback
-{
+class HeapManager : public IRadMemorySetAllocatorCallback {
 public:
     friend class HeapActivityTracker;
 
-    static HeapManager* GetInstance ();
+    static HeapManager *GetInstance();
+
     static bool IsCreated();
+
     static void DestroyInstance();
 
-    void PrepareHeapsStartup ();
-    void PrepareHeapsFeCleanup ();
-    void PrepareHeapsFeSetup   ();
-    void PrepareHeapsInGame ();
-    void PrepareHeapsSuperSprint ();
+    void PrepareHeapsStartup();
 
-    int GetLoadedUsageFE ();
-    int GetLoadedUsageInGame ();
-    int GetLoadedUsageSuperSprint ();
-    int GetLoadedUsage( GameMemoryAllocator allocator );
+    void PrepareHeapsFeCleanup();
 
-    void PushHeap (GameMemoryAllocator alloc);
-    void PopHeap  (GameMemoryAllocator alloc);
-    GameMemoryAllocator GetCurrentHeap () const;
+    void PrepareHeapsFeSetup();
+
+    void PrepareHeapsInGame();
+
+    void PrepareHeapsSuperSprint();
+
+    int GetLoadedUsageFE();
+
+    int GetLoadedUsageInGame();
+
+    int GetLoadedUsageSuperSprint();
+
+    int GetLoadedUsage(GameMemoryAllocator allocator);
+
+    void PushHeap(GameMemoryAllocator alloc);
+
+    void PopHeap(GameMemoryAllocator alloc);
+
+    GameMemoryAllocator GetCurrentHeap() const;
 
 #ifdef MEMORYTRACKER_ENABLED
-    void PushGroup( const char* name );
-    void PopGroup ( const char* name );
+    void PushGroup(const char* name);
+    void PopGroup (const char* name);
     const char* GetCurrentGroupID () const;
 
     void PushFlag (const char* name);
@@ -240,11 +264,13 @@ public:
 
     // From IRadMemorySetAllocatorCallback
     //
-    radMemoryAllocator GetCurrentAllocator ();
-    radMemoryAllocator SetCurrentAllocator ( radMemoryAllocator allocator );
+    radMemoryAllocator GetCurrentAllocator();
 
-    void DumpHeapStats ( bool text = false );
-    void DumpArtStats ();
+    radMemoryAllocator SetCurrentAllocator(radMemoryAllocator allocator);
+
+    void DumpHeapStats(bool text = false);
+
+    void DumpArtStats();
 
 #ifndef RAD_RELEASE
     static bool s_bSpecialRoute;
@@ -253,32 +279,40 @@ public:
     void ResetArtStats();
 
 private:
-    HeapManager (GameMemoryAllocator defaultAllocator);
-    HeapManager (const HeapManager&);
-    virtual ~HeapManager ();
+    HeapManager(GameMemoryAllocator defaultAllocator);
 
-    void DestroyHeap (IRadMemoryHeap*& heap, bool justTest = false );
-    GameMemoryAllocator GetHeapID (const IRadMemoryHeap* heap);
-    static float GetFudgeFactor ();
-    int GetHeapUsage ( IRadMemoryAllocator* allocator );
-    int GetSoundMemoryHeapUsage ();
+    HeapManager(const HeapManager &);
 
-    static IRadThreadLocalStorage* s_Instance;    // We maintain a separate heap stack for each thread
+    virtual ~HeapManager();
+
+    void DestroyHeap(IRadMemoryHeap *&heap, bool justTest = false);
+
+    GameMemoryAllocator GetHeapID(const IRadMemoryHeap *heap);
+
+    static float GetFudgeFactor();
+
+    int GetHeapUsage(IRadMemoryAllocator *allocator);
+
+    int GetSoundMemoryHeapUsage();
+
+    static IRadThreadLocalStorage *s_Instance;    // We maintain a separate heap stack for each thread
 
 #ifdef MEMORYTRACKER_ENABLED
-public:  //HACK for the GC, sorry.
-    enum { MAXSTRING = 128 };
-private:
-    typedef struct MemoryIDString { char id[MAXSTRING]; };
-    typedef std::vector< MemoryIDString, s2alloc<MemoryIDString> > MemoryIDVector;
-    typedef std::stack< MemoryIDString, MemoryIDVector > MemoryIDStack;
+    public:  //HACK for the GC, sorry.
+        enum { MAXSTRING = 128 };
+    private:
+        typedef struct MemoryIDString { char id[MAXSTRING]; };
+        typedef std::vector<MemoryIDString, s2alloc<MemoryIDString>> MemoryIDVector;
+        typedef std::stack<MemoryIDString, MemoryIDVector> MemoryIDStack;
 
-    MemoryIDStack m_GroupIDStack;
-    MemoryIDStack m_FlagStack;
+        MemoryIDStack m_GroupIDStack;
+        MemoryIDStack m_FlagStack;
 #endif
 
     HeapStack m_HeapStack;
-    enum { MB = 1048576, KB = 1024 };
+    enum {
+        MB = 1048576, KB = 1024
+    };
 
 #ifndef FINAL
     int mLowestFPS, mHighestTris, mFPSLWTris, mHWTriFPS;
@@ -286,27 +320,27 @@ private:
 
 };
 
-HeapManager* HeapMgr ();
+HeapManager *HeapMgr();
 
 #ifndef MEMORYTRACKER_ENABLED
 
-    // Push and Pop Group Name
-    #define MEMTRACK_PUSH_GROUP( string )
-    #define MEMTRACK_POP_GROUP(  string )
+// Push and Pop Group Name
+#define MEMTRACK_PUSH_GROUP(string)
+#define MEMTRACK_POP_GROUP(string)
 
-    // Push and Pop Flag Name    
-    #define MEMTRACK_PUSH_FLAG( string )
-    #define MEMTRACK_POP_FLAG(  string )
+// Push and Pop Flag Name
+#define MEMTRACK_PUSH_FLAG(string)
+#define MEMTRACK_POP_FLAG(string)
 
 #else
 
-    // Push and Pop Group Name
-    #define MEMTRACK_PUSH_GROUP( string ) HeapMgr()->PushGroup( string )
-    #define MEMTRACK_POP_GROUP(  string ) HeapMgr()->PopGroup(  string )
+// Push and Pop Group Name
+#define MEMTRACK_PUSH_GROUP(string) HeapMgr()->PushGroup(string)
+#define MEMTRACK_POP_GROUP(string) HeapMgr()->PopGroup(string)
 
-    // Push and Pop Flag Name    
-    #define MEMTRACK_PUSH_FLAG( string )  HeapMgr()->PushFlag( string )
-    #define MEMTRACK_POP_FLAG(  string )  HeapMgr()->PopFlag(  string )
+// Push and Pop Flag Name
+#define MEMTRACK_PUSH_FLAG(string)  HeapMgr()->PushFlag(string)
+#define MEMTRACK_POP_FLAG(string)  HeapMgr()->PopFlag(string)
 
 #endif // !MEMORYTRACKER_ENABLED
 

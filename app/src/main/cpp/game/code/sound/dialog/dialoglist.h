@@ -26,7 +26,9 @@
 //========================================
 struct IRadNameSpace;
 struct IDaSoundResource;
+
 class SelectableDialog;
+
 class Character;
 
 //=============================================================================
@@ -35,73 +37,80 @@ class Character;
 //
 //=============================================================================
 
-class DialogList
-{
-    public:
-        DialogList();
-        virtual ~DialogList();
+class DialogList {
+public:
+    DialogList();
 
-        void OrganizeDialog( IRadNameSpace* namespaceObj );
-        
-        SelectableDialog* FindDialogForEvent( EventEnum id, Character* character1, Character* character2, 
-                                              tUID charUID1, tUID charUID2, radKey32 convKey, bool isVillain );
+    virtual ~DialogList();
 
-        static Character* GetStinkySkinPointer( tUID charUID );
+    void OrganizeDialog(IRadNameSpace *namespaceObj);
 
-    private:
-        //Prevent wasteful constructor creation.
-        DialogList( const DialogList& original );
-        DialogList& operator=( const DialogList& rhs );
+    SelectableDialog *FindDialogForEvent(EventEnum id, Character *character1, Character *character2,
+                                         tUID charUID1, tUID charUID2, radKey32 convKey,
+                                         bool isVillain);
 
-        //
-        // Sound file naming convention tests
-        //
-        bool isIndividualLine( IDaSoundResource* resource );
-        bool isConversationLine( IDaSoundResource* resource );
+    static Character *GetStinkySkinPointer(tUID charUID);
 
-        bool hasConversationPrefix( const char* name ) 
-            { return( ( name[0] == 'C' ) && ( name[1] == '_' ) ); }
-        bool hasOneLinerPrefix( const char* name );
-        unsigned int underscoreCount( const char* name );
+private:
+    //Prevent wasteful constructor creation.
+    DialogList(const DialogList &original);
 
-        SelectableDialog* searchDialogList( EventEnum id, tUID characterUID1, tUID characterUID2,
-                                            SelectableDialogList& list, radKey32 convName, bool isVillain,
-                                            bool fuzzyPedMatch );
+    DialogList &operator=(const DialogList &rhs);
 
-        SelectableDialog* searchDialogList( EventEnum id, tUID characterUID1, tUID characterUID2,
-                                            SelectableDialogList& list, radKey32 convName, bool isVillain );
+    //
+    // Sound file naming convention tests
+    //
+    bool isIndividualLine(IDaSoundResource *resource);
 
-        SelectableDialog* searchDialogList( EventEnum id, Character* character1,
-                                            Character* character2, SelectableDialogList& list,
-                                            radKey32 convName, bool isVillain );
+    bool isConversationLine(IDaSoundResource *resource);
 
-        bool characterMatches( tUID characterUID, SelectableDialog* dialog, bool fuzzyPedMatch );
+    bool hasConversationPrefix(const char *name) { return ((name[0] == 'C') && (name[1] == '_')); }
 
-        tUID getPuppetUID( Character* characterPtr );
+    bool hasOneLinerPrefix(const char *name);
 
-        static void dumpDialogCoverage( void* userData );
+    unsigned int underscoreCount(const char *name);
 
-        //
-        // List of level/mission dialogs
-        //
-        SelectableDialogList m_missionLists[GameplayManager::MAX_LEVELS][GameplayManager::MAX_MISSIONS+1];
+    SelectableDialog *searchDialogList(EventEnum id, tUID characterUID1, tUID characterUID2,
+                                       SelectableDialogList &list, radKey32 convName,
+                                       bool isVillain,
+                                       bool fuzzyPedMatch);
 
-        //
-        // Generic dialog list
-        //
-        SelectableDialogList m_genericDialogList;
+    SelectableDialog *searchDialogList(EventEnum id, tUID characterUID1, tUID characterUID2,
+                                       SelectableDialogList &list, radKey32 convName,
+                                       bool isVillain);
 
-        static radKey32 s_introKey;
-        static radKey32 s_aztecKey;
-        static tUID s_milhouseKey;
-        static tUID s_nelsonKey;
-        static tUID s_raceZombie1;
-        static tUID s_raceZombie2;
+    SelectableDialog *searchDialogList(EventEnum id, Character *character1,
+                                       Character *character2, SelectableDialogList &list,
+                                       radKey32 convName, bool isVillain);
 
-        //
-        // Debug flag
-        //
-        static bool s_showDialogSpew;
+    bool characterMatches(tUID characterUID, SelectableDialog *dialog, bool fuzzyPedMatch);
+
+    tUID getPuppetUID(Character *characterPtr);
+
+    static void dumpDialogCoverage(void *userData);
+
+    //
+    // List of level/mission dialogs
+    //
+    SelectableDialogList m_missionLists[GameplayManager::MAX_LEVELS][
+            GameplayManager::MAX_MISSIONS + 1];
+
+    //
+    // Generic dialog list
+    //
+    SelectableDialogList m_genericDialogList;
+
+    static radKey32 s_introKey;
+    static radKey32 s_aztecKey;
+    static tUID s_milhouseKey;
+    static tUID s_nelsonKey;
+    static tUID s_raceZombie1;
+    static tUID s_raceZombie2;
+
+    //
+    // Debug flag
+    //
+    static bool s_showDialogSpew;
 };
 
 

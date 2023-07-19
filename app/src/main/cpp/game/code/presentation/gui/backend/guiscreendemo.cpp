@@ -48,25 +48,24 @@
 //
 //===========================================================================
 CGuiScreenDemo::CGuiScreenDemo
-(
-	Scrooby::Screen* pScreen,
-	CGuiEntity* pParent
-)
-:   CGuiScreen( pScreen, pParent, GUI_SCREEN_ID_DEMO ),
-    m_demoText( NULL ),
-    m_elapsedTime( 0 )
-{
+        (
+                Scrooby::Screen *pScreen,
+                CGuiEntity *pParent
+        )
+        : CGuiScreen(pScreen, pParent, GUI_SCREEN_ID_DEMO),
+          m_demoText(NULL),
+          m_elapsedTime(0) {
     // Retrieve the Scrooby drawing elements.
     //
-    Scrooby::Page* pPage;
-	pPage = m_pScroobyScreen->GetPage( "Demo" );
-	rAssert( pPage );
+    Scrooby::Page *pPage;
+    pPage = m_pScroobyScreen->GetPage("Demo");
+    rAssert(pPage);
 
-    Scrooby::Layer* foreground = pPage->GetLayer( "Foreground" );
-    rAssert( foreground != NULL );
+    Scrooby::Layer *foreground = pPage->GetLayer("Foreground");
+    rAssert(foreground != NULL);
 
-    m_demoText = foreground->GetText( "Demo" );
-    rAssert( m_demoText );
+    m_demoText = foreground->GetText("Demo");
+    rAssert(m_demoText);
 }
 
 
@@ -82,8 +81,7 @@ CGuiScreenDemo::CGuiScreenDemo
 // Return:      N/A.
 //
 //===========================================================================
-CGuiScreenDemo::~CGuiScreenDemo()
-{
+CGuiScreenDemo::~CGuiScreenDemo() {
 }
 
 
@@ -100,26 +98,21 @@ CGuiScreenDemo::~CGuiScreenDemo()
 //
 //===========================================================================
 void CGuiScreenDemo::HandleMessage
-(
-	eGuiMessage message, 
-	unsigned int param1,
-	unsigned int param2 
-)
-{
-    if( m_state == GUI_WINDOW_STATE_RUNNING )
-    {
-        switch( message )
-        {
-            case GUI_MSG_UPDATE:
-            {
+        (
+                eGuiMessage message,
+                unsigned int param1,
+                unsigned int param2
+        ) {
+    if (m_state == GUI_WINDOW_STATE_RUNNING) {
+        switch (message) {
+            case GUI_MSG_UPDATE: {
                 m_elapsedTime += param1;
 
                 const unsigned int BLINK_PERIOD = 250;
-                bool blinked = GuiSFX::Blink( m_demoText,
-                                              (float)m_elapsedTime,
-                                              (float)BLINK_PERIOD );
-                if( blinked )
-                {
+                bool blinked = GuiSFX::Blink(m_demoText,
+                                             (float) m_elapsedTime,
+                                             (float) BLINK_PERIOD);
+                if (blinked) {
                     m_elapsedTime %= BLINK_PERIOD;
                 }
 
@@ -129,24 +122,22 @@ void CGuiScreenDemo::HandleMessage
             case GUI_MSG_CONTROLLER_CONNECT:
             case GUI_MSG_CONTROLLER_DISCONNECT:
             case GUI_MSG_CONTROLLER_START:
-            case GUI_MSG_CONTROLLER_SELECT:
-            {
+            case GUI_MSG_CONTROLLER_SELECT: {
                 GetDemoContext()->EndDemo();
-//                m_pParent->HandleMessage( GUI_MSG_QUIT_DEMO );
+//                m_pParent->HandleMessage(GUI_MSG_QUIT_DEMO);
 
                 break;
             }
 
-            default:
-            {
+            default: {
                 break;
             }
         }
     }
 
-	// Propogate the message up the hierarchy.
-	//
-	CGuiScreen::HandleMessage( message, param1, param2 );
+    // Propogate the message up the hierarchy.
+    //
+    CGuiScreen::HandleMessage(message, param1, param2);
 }
 
 
@@ -162,10 +153,9 @@ void CGuiScreenDemo::HandleMessage
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenDemo::InitIntro()
-{
-    rAssert( m_demoText );
-    m_demoText->SetVisible( true );
+void CGuiScreenDemo::InitIntro() {
+    rAssert(m_demoText);
+    m_demoText->SetVisible(true);
 
     m_elapsedTime = 0;
 }
@@ -182,8 +172,7 @@ void CGuiScreenDemo::InitIntro()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenDemo::InitRunning()
-{
+void CGuiScreenDemo::InitRunning() {
 }
 
 
@@ -199,8 +188,7 @@ void CGuiScreenDemo::InitRunning()
 // Return:      N/A.
 //
 //===========================================================================
-void CGuiScreenDemo::InitOutro()
-{
+void CGuiScreenDemo::InitOutro() {
 }
 
 

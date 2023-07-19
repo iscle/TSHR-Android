@@ -46,8 +46,7 @@
 // Return:      N/A.
 //
 //==============================================================================
-FOVLocator::FOVLocator()
-{
+FOVLocator::FOVLocator() {
     RegisterDebugData();
 }
 
@@ -61,8 +60,7 @@ FOVLocator::FOVLocator()
 // Return:      N/A.
 //
 //==============================================================================
-FOVLocator::~FOVLocator()
-{
+FOVLocator::~FOVLocator() {
     UnRegisterDebugData();
 }
 
@@ -76,12 +74,11 @@ FOVLocator::~FOVLocator()
 // Return:      void 
 //
 //=============================================================================
-void FOVLocator::RegisterDebugData()
-{
+void FOVLocator::RegisterDebugData() {
 #ifdef DEBUGWATCH
-    radDbgWatchAddFloat( &mFOV, "FOV", "FOV Override", NULL, NULL, 0.01f, rmt::PI );
-    radDbgWatchAddFloat( &mTime, "Max Transition Time (seconds)", "FOV Override", NULL, NULL, 0.0f, 5.0f );
-    radDbgWatchAddFloat( &mRate, "Transition Rate", "FOV Override", NULL, NULL, 0.0f, 1.0f );
+    radDbgWatchAddFloat(&mFOV, "FOV", "FOV Override", NULL, NULL, 0.01f, rmt::PI);
+    radDbgWatchAddFloat(&mTime, "Max Transition Time (seconds)", "FOV Override", NULL, NULL, 0.0f, 5.0f);
+    radDbgWatchAddFloat(&mRate, "Transition Rate", "FOV Override", NULL, NULL, 0.0f, 1.0f);
 #endif
 }
 
@@ -95,12 +92,11 @@ void FOVLocator::RegisterDebugData()
 // Return:      void 
 //
 //=============================================================================
-void FOVLocator::UnRegisterDebugData()
-{
+void FOVLocator::UnRegisterDebugData() {
 #ifdef DEBUGWATCH
-    radDbgWatchDelete( &mFOV );
-    radDbgWatchDelete( &mTime );
-    radDbgWatchDelete( &mRate );
+    radDbgWatchDelete(&mFOV);
+    radDbgWatchDelete(&mTime);
+    radDbgWatchDelete(&mRate);
 #endif
 }
 
@@ -110,16 +106,12 @@ void FOVLocator::UnRegisterDebugData()
 //
 //******************************************************************************
 
-void FOVLocator::OnTrigger( unsigned int playerID )
-{
-BEGIN_PROFILE( "FOVL OnTrigger" );
-    if ( GetPlayerEntered() )
-    {
-        SuperCamManager::GetInstance()->GetSCC( playerID )->RegisterFOVLocator( this );
+void FOVLocator::OnTrigger(unsigned int playerID) {
+    BEGIN_PROFILE("FOVL OnTrigger");
+    if (GetPlayerEntered()) {
+        SuperCamManager::GetInstance()->GetSCC(playerID)->RegisterFOVLocator(this);
+    } else {
+        SuperCamManager::GetInstance()->GetSCC(playerID)->UnregisterFOVLocator();
     }
-    else
-    {
-        SuperCamManager::GetInstance()->GetSCC( playerID )->UnregisterFOVLocator();
-    }
-END_PROFILE( "FOVL OnTrigger" );
+    END_PROFILE("FOVL OnTrigger");
 }

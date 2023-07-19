@@ -49,11 +49,10 @@
 //
 //==============================================================================
 ConsoleFileHandler::ConsoleFileHandler()
-    :
-    mpConsoleFile( 0 ),
-    mAsyncLoadState( NONE ),
-    mFileDataBuffer( 0 )
-{
+        :
+        mpConsoleFile(0),
+        mAsyncLoadState(NONE),
+        mFileDataBuffer(0) {
 }
 
 //==============================================================================
@@ -66,8 +65,7 @@ ConsoleFileHandler::ConsoleFileHandler()
 // Return:      N/A.
 //
 //==============================================================================
-ConsoleFileHandler::~ConsoleFileHandler()
-{
+ConsoleFileHandler::~ConsoleFileHandler() {
 }
 
 
@@ -84,16 +82,15 @@ ConsoleFileHandler::~ConsoleFileHandler()
 // Return:      None.
 //
 //==============================================================================
-void ConsoleFileHandler::LoadFile 
-(
-    const char* filename, 
-    FileHandler::LoadFileCallback* pCallback,
-    void* pUserData,
-    GameMemoryAllocator heap
-)
-{
-    rAssert( filename );
-    rAssert( pCallback );
+void ConsoleFileHandler::LoadFile
+        (
+                const char *filename,
+                FileHandler::LoadFileCallback *pCallback,
+                void *pUserData,
+                GameMemoryAllocator heap
+        ) {
+    rAssert(filename);
+    rAssert(pCallback);
 
     mpCallback = pCallback;
 
@@ -101,18 +98,18 @@ void ConsoleFileHandler::LoadFile
     //
     mAsyncLoadState = OPENFILE;
 
-    radFileOpen( &mpConsoleFile,
-                 filename,
-                 false,
-                 OpenExisting,
-                 NormalPriority,
-                 0,
-                 GMA_TEMP );
+    radFileOpen(&mpConsoleFile,
+                filename,
+                false,
+                OpenExisting,
+                NormalPriority,
+                0,
+                GMA_TEMP);
 
-    rAssert( mpConsoleFile != 0 );
-    
-    mpConsoleFile->AddCompletionCallback( this, 
-                                          reinterpret_cast<void*>(pUserData) );
+    rAssert(mpConsoleFile != 0);
+
+    mpConsoleFile->AddCompletionCallback(this,
+                                         reinterpret_cast<void *>(pUserData));
 }
 
 
@@ -128,51 +125,46 @@ void ConsoleFileHandler::LoadFile
 // Return:      None.
 //
 //==============================================================================
-void ConsoleFileHandler::OnFileOperationsComplete( void* pUserData )
-{
-    switch( mAsyncLoadState )
-    {
-        case OPENFILE:
-        {
-            
-MEMTRACK_PUSH_GROUP( "ConsoleFileHandler" );
+void ConsoleFileHandler::OnFileOperationsComplete(void *pUserData) {
+    switch (mAsyncLoadState) {
+        case OPENFILE: {
+
+            MEMTRACK_PUSH_GROUP("ConsoleFileHandler");
             unsigned int length = mpConsoleFile->GetSize();
             mFileDataBuffer = new(GMA_TEMP) char[length + 1];
-            
-            mpConsoleFile->ReadAsync( mFileDataBuffer, length );
-            mpConsoleFile->AddCompletionCallback( this, (void*)pUserData );
-            
+
+            mpConsoleFile->ReadAsync(mFileDataBuffer, length);
+            mpConsoleFile->AddCompletionCallback(this, (void *) pUserData);
+
             mAsyncLoadState = READDATA;
-MEMTRACK_POP_GROUP("ConsoleFileHandler");
+            MEMTRACK_POP_GROUP("ConsoleFileHandler");
         }
-        break;
-        
-        case READDATA:
-        {
+            break;
+
+        case READDATA: {
             unsigned int length = mpConsoleFile->GetSize();
             mFileDataBuffer[length] = '\0';
 
-            GetConsole()->Evaluate( mFileDataBuffer, mpConsoleFile->GetFilename() );
+            GetConsole()->Evaluate(mFileDataBuffer, mpConsoleFile->GetFilename());
 
 
-            delete[]( GMA_TEMP, mFileDataBuffer );
+            delete[](GMA_TEMP, mFileDataBuffer);
             mFileDataBuffer = 0;
-            
+
             mpConsoleFile->Release();
             mpConsoleFile = 0;
-            
+
             mAsyncLoadState = DONE;
 
             //
             // Percolate the callback up to the client. This must be done last!!!
             //
-            mpCallback->OnLoadFileComplete( pUserData );
+            mpCallback->OnLoadFileComplete(pUserData);
         }
-        break;
+            break;
 
-        default:
-        {
-            rAssert( 0 );
+        default: {
+            rAssert(0);
         }
     }
 }
@@ -189,39 +181,38 @@ MEMTRACK_POP_GROUP("ConsoleFileHandler");
 // Return:      None.
 //
 //==============================================================================
-void ConsoleFileHandler::LoadFileSync( const char* filename )
-{
-MEMTRACK_PUSH_GROUP( "ConsoleFileHandler" );
-    rAssert( filename );
+void ConsoleFileHandler::LoadFileSync(const char *filename) {
+    MEMTRACK_PUSH_GROUP("ConsoleFileHandler");
+    rAssert(filename);
 
-    radFileOpen( &mpConsoleFile,
-                 filename,
-                 false,
-                 OpenExisting,
-                 NormalPriority,
-                 0,
-                 GMA_TEMP );
+    radFileOpen(&mpConsoleFile,
+                filename,
+                false,
+                OpenExisting,
+                NormalPriority,
+                0,
+                GMA_TEMP);
 
-    rAssert( mpConsoleFile != 0 );
+    rAssert(mpConsoleFile != 0);
 
     mpConsoleFile->WaitForCompletion();
 
     unsigned int length = mpConsoleFile->GetSize();
     mFileDataBuffer = new(GMA_TEMP) char[length + 1];
-    
-    mpConsoleFile->ReadAsync( mFileDataBuffer, length );
+
+    mpConsoleFile->ReadAsync(mFileDataBuffer, length);
     mpConsoleFile->WaitForCompletion();
 
     mFileDataBuffer[length] = '\0';
 
-    GetConsole()->Evaluate( mFileDataBuffer, filename );
+    GetConsole()->Evaluate(mFileDataBuffer, filename);
 
-    delete[]( GMA_TEMP, mFileDataBuffer );
+    delete[](GMA_TEMP, mFileDataBuffer);
     mFileDataBuffer = 0;
-    
+
     mpConsoleFile->Release();
     mpConsoleFile = 0;
-MEMTRACK_POP_GROUP("ConsoleFileHandler");
+    MEMTRACK_POP_GROUP("ConsoleFileHandler");
 }
 
 //******************************************************************************

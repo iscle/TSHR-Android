@@ -31,8 +31,9 @@
 // Public Member Functions : FenceEntityDSG Interface
 //
 //************************************************************************
-FenceEntityDSG::FenceEntityDSG( void ){}
-FenceEntityDSG::~FenceEntityDSG( void ){}
+FenceEntityDSG::FenceEntityDSG(void) {}
+
+FenceEntityDSG::~FenceEntityDSG(void) {}
 
 ///////////////////////////////////////////////////////////////////////
 // Drawable
@@ -50,12 +51,11 @@ FenceEntityDSG::~FenceEntityDSG( void ){}
 // Constraints: None.
 //
 //========================================================================
-void FenceEntityDSG::Display()
-{
+void FenceEntityDSG::Display() {
 #ifndef RAD_RELEASE
-    if(IS_DRAW_LONG) return;
+    if (IS_DRAW_LONG) return;
     //rAssert(false);
-    pddiPrimStream* stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 2);
+    pddiPrimStream *stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 2);
 
     tColour colour(0, 0, 255);
 
@@ -66,6 +66,7 @@ void FenceEntityDSG::Display()
     p3d::pddi->EndPrims(stream);
 #endif
 }
+
 //========================================================================
 // FenceEntityDSG::
 //========================================================================
@@ -79,26 +80,8 @@ void FenceEntityDSG::Display()
 // Constraints: None.
 //
 //========================================================================
-void FenceEntityDSG::DisplayBoundingBox(tColour colour)
-{
-   rAssert(false);
-}
-//========================================================================
-// FenceEntityDSG::
-//========================================================================
-//
-// Description: 
-//
-// Parameters:  None.
-//
-// Return:      None.
-//
-// Constraints: None.
-//
-//========================================================================
-void FenceEntityDSG::DisplayBoundingSphere(tColour colour)
-{
-   rAssert(false);
+void FenceEntityDSG::DisplayBoundingBox(tColour colour) {
+    rAssert(false);
 }
 
 //========================================================================
@@ -114,17 +97,10 @@ void FenceEntityDSG::DisplayBoundingSphere(tColour colour)
 // Constraints: None.
 //
 //========================================================================
-void FenceEntityDSG::GetBoundingBox(rmt::Box3D* box)
-{
-   Bounds3f bounds;
-
-   bounds.mMin.SetTo(mStartPoint);
-   bounds.mMax.SetTo(mStartPoint);
-   bounds.Accumulate(mEndPoint);
-   
-   box->low    = (bounds.mMin);
-   box->high   = (bounds.mMax);
+void FenceEntityDSG::DisplayBoundingSphere(tColour colour) {
+    rAssert(false);
 }
+
 //========================================================================
 // FenceEntityDSG::
 //========================================================================
@@ -138,16 +114,39 @@ void FenceEntityDSG::GetBoundingBox(rmt::Box3D* box)
 // Constraints: None.
 //
 //========================================================================
-void FenceEntityDSG::GetBoundingSphere(rmt::Sphere* sphere)
-{
-   rmt::Vector tmp(mStartPoint);
-   tmp += mEndPoint;
-   tmp /= 2.0f;
+void FenceEntityDSG::GetBoundingBox(rmt::Box3D *box) {
+    Bounds3f bounds;
 
-   sphere->centre = tmp;
+    bounds.mMin.SetTo(mStartPoint);
+    bounds.mMax.SetTo(mStartPoint);
+    bounds.Accumulate(mEndPoint);
 
-   tmp.Sub(mStartPoint,tmp);
-   sphere->radius = tmp.Magnitude();
+    box->low = (bounds.mMin);
+    box->high = (bounds.mMax);
+}
+
+//========================================================================
+// FenceEntityDSG::
+//========================================================================
+//
+// Description: 
+//
+// Parameters:  None.
+//
+// Return:      None.
+//
+// Constraints: None.
+//
+//========================================================================
+void FenceEntityDSG::GetBoundingSphere(rmt::Sphere *sphere) {
+    rmt::Vector tmp(mStartPoint);
+    tmp += mEndPoint;
+    tmp /= 2.0f;
+
+    sphere->centre = tmp;
+
+    tmp.Sub(mStartPoint, tmp);
+    sphere->radius = tmp.Magnitude();
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -166,10 +165,10 @@ void FenceEntityDSG::GetBoundingSphere(rmt::Sphere* sphere)
 // Constraints: None.
 //
 //========================================================================
-rmt::Vector*       FenceEntityDSG::pPosition()
-{
-   return &mStartPoint;
+rmt::Vector *FenceEntityDSG::pPosition() {
+    return &mStartPoint;
 }
+
 //========================================================================
 // FenceEntityDSG::
 //========================================================================
@@ -183,10 +182,10 @@ rmt::Vector*       FenceEntityDSG::pPosition()
 // Constraints: None.
 //
 //========================================================================
-const rmt::Vector& FenceEntityDSG::rPosition()
-{
-   return mStartPoint;
+const rmt::Vector &FenceEntityDSG::rPosition() {
+    return mStartPoint;
 }
+
 //========================================================================
 // FenceEntityDSG::
 //========================================================================
@@ -200,23 +199,22 @@ const rmt::Vector& FenceEntityDSG::rPosition()
 // Constraints: None.
 //
 //========================================================================
-void FenceEntityDSG::GetPosition( rmt::Vector* ipPosn )
-{
-   *ipPosn = mStartPoint;
+void FenceEntityDSG::GetPosition(rmt::Vector *ipPosn) {
+    *ipPosn = mStartPoint;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // override these methods so we can stub them out
-sim::Solving_Answer FenceEntityDSG::PreReactToCollision( sim::SimState* pCollidedObj, sim::Collision& inCollision )
-{
-   //Greg, do the stuff you need here
-   return sim::Solving_Continue;
+sim::Solving_Answer
+FenceEntityDSG::PreReactToCollision(sim::SimState *pCollidedObj, sim::Collision &inCollision) {
+    //Greg, do the stuff you need here
+    return sim::Solving_Continue;
 }
 
 
-sim::Solving_Answer FenceEntityDSG::PostReactToCollision(rmt::Vector& impulse, sim::Collision& inCollision)
-{
-   
+sim::Solving_Answer
+FenceEntityDSG::PostReactToCollision(rmt::Vector &impulse, sim::Collision &inCollision) {
+
     // subclass-specific shit here
 
     return CollisionEntityDSG::PostReactToCollision(impulse, inCollision);

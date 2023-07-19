@@ -30,36 +30,38 @@ class CGuiMenu;
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenMiniPause : public CGuiScreen
-{
+class CGuiScreenMiniPause : public CGuiScreen {
 public:
-    CGuiScreenMiniPause( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenMiniPause(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenMiniPause();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    virtual CGuiMenu* HasMenu() { return m_pMenu; }
+    virtual CGuiMenu *HasMenu() { return m_pMenu; }
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
     void ResumeGame();
+
     void QuitGame();
 
-    enum eMenuItem
-    {
+    enum eMenuItem {
         MENU_ITEM_CONTINUE,
         MENU_ITEM_QUIT,
 
         NUM_MENU_ITEMS
     };
 
-    CGuiMenu* m_pMenu;
+    CGuiMenu *m_pMenu;
 
 };
 

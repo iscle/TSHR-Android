@@ -55,12 +55,19 @@
 //========================================
 
 class MusicPlayer;
+
 class DialogCoordinator;
+
 class SoundDebugDisplay;
+
 class MovingSoundManager;
+
 class Vehicle;
+
 class Character;
+
 class SoundEffectPlayer;
+
 struct IRadSoundClip;
 struct IRadSoundClipPlayer;
 
@@ -70,18 +77,15 @@ struct IRadSoundClipPlayer;
 //
 //=============================================================================
 
-struct NISSoundLoadedCallback
-{
+struct NISSoundLoadedCallback {
     virtual void NISSoundLoaded() = 0;
 };
 
-struct NISSoundPlaybackCompleteCallback
-{
+struct NISSoundPlaybackCompleteCallback {
     virtual void NISSoundPlaybackComplete() = 0;
 };
 
-enum SoundMode
-{
+enum SoundMode {
     SOUND_MONO,
     SOUND_STEREO,
     SOUND_SURROUND
@@ -94,284 +98,317 @@ enum SoundMode
 //=============================================================================
 
 class SoundManager : public EventListener,
-                     #ifdef RAD_WIN32
-                     public GameConfigHandler,  //ziemek: this is ugly..doh
-                     #endif
-                     public GameDataHandler
-{
-    public:
-        //
-        // Singleton accessors
-        //
-        static SoundManager* CreateInstance( bool muteSound, bool noMusic, 
-                                             bool noEffects, bool noDialogue );
-        static SoundManager* GetInstance();
-        static void DestroyInstance();
+#ifdef RAD_WIN32
+        public GameConfigHandler,  //ziemek: this is ugly..doh
+#endif
+                     public GameDataHandler {
+public:
+    //
+    // Singleton accessors
+    //
+    static SoundManager *CreateInstance(bool muteSound, bool noMusic,
+                                        bool noEffects, bool noDialogue);
 
-        //
-        // EventListener interface
-        //
-        void HandleEvent( EventEnum id, void* pEventData );
-        
-        //
-        // All-purpose sound file loading.  Coordinates the sound system
-        // with the loading system
-        //
-        void LoadSoundFile( const char* filename, SoundFileHandler* callbackObj );
+    static SoundManager *GetInstance();
 
-        //
-        // Update routines.
-        //
-        void Update();
-        // This one is for expensive stuff like positional sound calculations
-        // that we can get away with doing once per frame
-        void UpdateOncePerFrame( unsigned int elapsedTime, 
-                                 ContextEnum context, 
-                                 bool useContext = true,
-                                 bool isPausedForErrors = false );
-        
-        // Prepare to load level sounds
-        void QueueLevelSoundLoads();
+    static void DestroyInstance();
 
-        // Load the sounds associated with a car
-        void LoadCarSound( Vehicle* theCar, bool unloadOtherCars );
+    //
+    // EventListener interface
+    //
+    void HandleEvent(EventEnum id, void *pEventData);
 
-        // Called when bootup context starts and ends
-        void OnBootupStart();
-        void OnBootupComplete();
+    //
+    // All-purpose sound file loading.  Coordinates the sound system
+    // with the loading system
+    //
+    void LoadSoundFile(const char *filename, SoundFileHandler *callbackObj);
 
-        // Called when front end starts and ends
-        void OnFrontEndStart();
-        void OnFrontEndEnd();
-        
-        // Called when gameplay starts and ends
-        void OnGameplayStart();
-        void OnGameplayEnd( bool goingToFE );
+    //
+    // Update routines.
+    //
+    void Update();
 
-        // Called when pause menu starts and ends (ends going back to gameplay,
-        // not loading)
-        void OnPauseStart();
-        void OnPauseEnd();
+    // This one is for expensive stuff like positional sound calculations
+    // that we can get away with doing once per frame
+    void UpdateOncePerFrame(unsigned int elapsedTime,
+                            ContextEnum context,
+                            bool useContext = true,
+                            bool isPausedForErrors = false);
 
-        // Called for pseudo-pause stuff like clothing and phone booth
-        //
-        void OnStoreScreenStart( bool playMusic = true );
-        void OnStoreScreenEnd();
+    // Prepare to load level sounds
+    void QueueLevelSoundLoads();
 
-        // Called when we want to kill everything but music (e.g. loading,
-        // minigame standings)
-        void DuckEverythingButMusicBegin( bool playMuzak = false );
-        void DuckEverythingButMusicEnd( bool playMuzak = false );
+    // Load the sounds associated with a car
+    void LoadCarSound(Vehicle *theCar, bool unloadOtherCars);
 
-        // Called when mission briefing screen starts and ends
-        void OnMissionBriefingStart();
-        void OnMissionBriefingEnd();
+    // Called when bootup context starts and ends
+    void OnBootupStart();
 
-        // Called when in-game credits start
-        //
-        void DuckForInGameCredits();
+    void OnBootupComplete();
 
-        // Call these before and after FMVs
-        void StopForMovie();
-        void ResumeAfterMovie();
-        bool IsStoppedForMovie();
+    // Called when front end starts and ends
+    void OnFrontEndStart();
 
-        // Hack!  Need to mute gags during conversations
-        void MuteNISPlayers();
-        void UnmuteNISPlayers();
+    void OnFrontEndEnd();
 
-        //
-        // Supersprint
-        //
-        void RestartSupersprintMusic();
+    // Called when gameplay starts and ends
+    void OnGameplayStart();
 
-        // Surround sound control
-        void SetSoundMode( SoundMode mode );
-        SoundMode GetSoundMode();
+    void OnGameplayEnd(bool goingToFE);
 
-        // Function for getting that funky beat.  Values from 0.0f to 4.0f, assuming
-        // that Marc doesn't write any waltzes
-        float GetBeatValue();
+    // Called when pause menu starts and ends (ends going back to gameplay,
+    // not loading)
+    void OnPauseStart();
 
-        // Special case dialog handling
-        static bool IsFoodCharacter( Character* theGuy );
-        
-        //
-        // Volume controls.  Values range from 0.0f to 1.0f
-        //
-        void SetMasterVolume( float volume );
-        float GetMasterVolume();
-        
-        void SetSfxVolume( float volume );
-        float GetSfxVolume();
+    void OnPauseEnd();
 
-        void SetCarVolume( float volume );
-        float GetCarVolume();
-        
-        void SetMusicVolume( float volume );
-        float GetMusicVolume();
-        
-        void SetAmbienceVolume( float volume );
-        float GetAmbienceVolume();
-        
-        void SetDialogueVolume( float volume );
-        float GetDialogueVolume();
+    // Called for pseudo-pause stuff like clothing and phone booth
+    //
+    void OnStoreScreenStart(bool playMusic = true);
 
-        float GetCalculatedAmbienceVolume();
+    void OnStoreScreenEnd();
 
-        //
-        // Option menu stinger stuff
-        //
-        void PlayCarOptionMenuStinger();
-        void PlayDialogueOptionMenuStinger();
-        void PlayMusicOptionMenuStinger();
-        void PlaySfxOptionMenuStinger();
+    // Called when we want to kill everything but music (e.g. loading,
+    // minigame standings)
+    void DuckEverythingButMusicBegin(bool playMuzak = false);
 
-        //
-        // Ducking stuff
-        //
-        void ResetDucking();
+    void DuckEverythingButMusicEnd(bool playMuzak = false);
 
-        //
-        // NIS Interface
-        //
-        void LoadNISSound( radKey32 NISSoundID, NISSoundLoadedCallback* callback = NULL );
-        void PlayNISSound( radKey32 NISSoundID, rmt::Box3D* boundingBox, NISSoundPlaybackCompleteCallback* callback = NULL );
-        void StopAndDumpNISSound( radKey32 NISSoundID );
+    // Called when mission briefing screen starts and ends
+    void OnMissionBriefingStart();
 
-        //
-        // Language interface
-        //
-        void SetDialogueLanguage( Scrooby::XLLanguage language );
+    void OnMissionBriefingEnd();
 
-        //
-        // Sound debug functions
-        //
-        void DebugRender();
-        
-        //
-        // TODO: move these functions, they're not intended for use outside
-        // of the sound system
-        //
-        SoundLoader* GetSoundLoader() { return( m_soundLoader ); }
-        SoundDebugDisplay* GetDebugDisplay() { return( m_debugDisplay ); }
+    // Called when in-game credits start
+    //
+    void DuckForInGameCredits();
 
-        //
-        // This should NOT be called outside the sound system.  Unfortunately,
-        // to keep things clean, what I should do is split the MusicPlayer class
-        // and move a low-level controller into the soundrenderer layer.  I don't
-        // have time for this.  Things to do for the next round.
-        //
-        void SetMusicVolumeWithoutTuner( float volume );
-        void SetAmbienceVolumeWithoutTuner( float volume );
+    // Call these before and after FMVs
+    void StopForMovie();
 
-        // Implements GameDataHandler
-        //
-        virtual void LoadData( const GameDataByte* dataBuffer, unsigned int numBytes );
-        virtual void SaveData( GameDataByte* dataBuffer, unsigned int numBytes );
-        virtual void ResetData();
+    void ResumeAfterMovie();
 
-        #ifdef RAD_WIN32
-        // Implementation of the GameConfigHandler interface
-        virtual const char* GetConfigName() const;
-        virtual int GetNumProperties() const;
-        virtual void LoadDefaults();
-        virtual void LoadConfig( ConfigString& config );
-        virtual void SaveConfig( ConfigString& config );
-        #endif
+    bool IsStoppedForMovie();
 
-        DialogCoordinator* m_dialogCoordinator;
-        
-    protected:
-        //
-        // Hide the SoundManager constructor and destructor so everyone
-        // is forced to use singleton accessors
-        //
-        SoundManager( bool noSound, bool noMusic, bool noEffects, bool noDialogue );
-        ~SoundManager();
+    // Hack!  Need to mute gags during conversations
+    void MuteNISPlayers();
 
-        void initialize();
+    void UnmuteNISPlayers();
 
-    private:
-        //Prevent wasteful constructor creation.
-        SoundManager( const SoundManager& original );
-        SoundManager& operator=( const SoundManager& rhs );
+    //
+    // Supersprint
+    //
+    void RestartSupersprintMusic();
 
-        //
-        // Hack!
-        //
-        void prepareStartupSounds();
-        void playStartupAcceptSound();
-        void playStartupScrollSound();
-        void dumpStartupSounds();
+    // Surround sound control
+    void SetSoundMode(SoundMode mode);
 
-        // Pointer to the one and only instance of this singleton.
-        static SoundManager* spInstance;
+    SoundMode GetSoundMode();
 
-        struct SoundSettings
-        {
-            float musicVolume;
-            float sfxVolume;
-            float carVolume;
-            float dialogVolume;
-            bool isSurround;
-        };
-        
-        // Sound loading subsystem
-        SoundLoader* m_soundLoader;
+    // Function for getting that funky beat.  Values from 0.0f to 4.0f, assuming
+    // that Marc doesn't write any waltzes
+    float GetBeatValue();
 
-        // Avatar sound subsystem
-        AvatarSoundPlayer m_avatarSoundPlayer;
+    // Special case dialog handling
+    static bool IsFoodCharacter(Character *theGuy);
 
-        // Music player subsystem
-        MusicPlayer* m_musicPlayer;
+    //
+    // Volume controls.  Values range from 0.0f to 1.0f
+    //
+    void SetMasterVolume(float volume);
 
-        // Sound effect subsystem
-        SoundEffectPlayer* m_soundFXPlayer;
-        
-        // Dialog subsystem
+    float GetMasterVolume();
+
+    void SetSfxVolume(float volume);
+
+    float GetSfxVolume();
+
+    void SetCarVolume(float volume);
+
+    float GetCarVolume();
+
+    void SetMusicVolume(float volume);
+
+    float GetMusicVolume();
+
+    void SetAmbienceVolume(float volume);
+
+    float GetAmbienceVolume();
+
+    void SetDialogueVolume(float volume);
+
+    float GetDialogueVolume();
+
+    float GetCalculatedAmbienceVolume();
+
+    //
+    // Option menu stinger stuff
+    //
+    void PlayCarOptionMenuStinger();
+
+    void PlayDialogueOptionMenuStinger();
+
+    void PlayMusicOptionMenuStinger();
+
+    void PlaySfxOptionMenuStinger();
+
+    //
+    // Ducking stuff
+    //
+    void ResetDucking();
+
+    //
+    // NIS Interface
+    //
+    void LoadNISSound(radKey32 NISSoundID, NISSoundLoadedCallback *callback = NULL);
+
+    void PlayNISSound(radKey32 NISSoundID, rmt::Box3D *boundingBox,
+                      NISSoundPlaybackCompleteCallback *callback = NULL);
+
+    void StopAndDumpNISSound(radKey32 NISSoundID);
+
+    //
+    // Language interface
+    //
+    void SetDialogueLanguage(Scrooby::XLLanguage language);
+
+    //
+    // Sound debug functions
+    //
+    void DebugRender();
+
+    //
+    // TODO: move these functions, they're not intended for use outside
+    // of the sound system
+    //
+    SoundLoader *GetSoundLoader() { return (m_soundLoader); }
+
+    SoundDebugDisplay *GetDebugDisplay() { return (m_debugDisplay); }
+
+    //
+    // This should NOT be called outside the sound system.  Unfortunately,
+    // to keep things clean, what I should do is split the MusicPlayer class
+    // and move a low-level controller into the soundrenderer layer.  I don't
+    // have time for this.  Things to do for the next round.
+    //
+    void SetMusicVolumeWithoutTuner(float volume);
+
+    void SetAmbienceVolumeWithoutTuner(float volume);
+
+    // Implements GameDataHandler
+    //
+    virtual void LoadData(const GameDataByte *dataBuffer, unsigned int numBytes);
+
+    virtual void SaveData(GameDataByte *dataBuffer, unsigned int numBytes);
+
+    virtual void ResetData();
+
+#ifdef RAD_WIN32
+    // Implementation of the GameConfigHandler interface
+    virtual const char* GetConfigName() const;
+    virtual int GetNumProperties() const;
+    virtual void LoadDefaults();
+    virtual void LoadConfig(ConfigString& config);
+    virtual void SaveConfig(ConfigString& config);
+#endif
+
+    DialogCoordinator *m_dialogCoordinator;
+
+protected:
+    //
+    // Hide the SoundManager constructor and destructor so everyone
+    // is forced to use singleton accessors
+    //
+    SoundManager(bool noSound, bool noMusic, bool noEffects, bool noDialogue);
+
+    ~SoundManager();
+
+    void initialize();
+
+private:
+    //Prevent wasteful constructor creation.
+    SoundManager(const SoundManager &original);
+
+    SoundManager &operator=(const SoundManager &rhs);
+
+    //
+    // Hack!
+    //
+    void prepareStartupSounds();
+
+    void playStartupAcceptSound();
+
+    void playStartupScrollSound();
+
+    void dumpStartupSounds();
+
+    // Pointer to the one and only instance of this singleton.
+    static SoundManager *spInstance;
+
+    struct SoundSettings {
+        float musicVolume;
+        float sfxVolume;
+        float carVolume;
+        float dialogVolume;
+        bool isSurround;
+    };
+
+    // Sound loading subsystem
+    SoundLoader *m_soundLoader;
+
+    // Avatar sound subsystem
+    AvatarSoundPlayer m_avatarSoundPlayer;
+
+    // Music player subsystem
+    MusicPlayer *m_musicPlayer;
+
+    // Sound effect subsystem
+    SoundEffectPlayer *m_soundFXPlayer;
+
+    // Dialog subsystem
 
 
-        // NIS subsystem
-        NISSoundPlayer* m_NISPlayer;
-        
-        // RadSound listener update
-        Listener m_listener;
+    // NIS subsystem
+    NISSoundPlayer *m_NISPlayer;
 
-        // AI Vehicle sound subsystem
-        MovingSoundManager* m_movingSoundManager;
+    // RadSound listener update
+    Listener m_listener;
 
-        // Sound debug display subsystem
-        SoundDebugDisplay* m_debugDisplay;
-        
-        // Mute options
-        bool m_isMuted;
+    // AI Vehicle sound subsystem
+    MovingSoundManager *m_movingSoundManager;
 
-        bool m_noMusic;
-        bool m_noEffects;
-        bool m_noDialogue;
+    // Sound debug display subsystem
+    SoundDebugDisplay *m_debugDisplay;
 
-        // Pointer to sound rendering interface
-        Sound::daSoundRenderingManager* m_pSoundRenderMgr;
-        
-        // [ps] avoid hammering on pause.
-        bool m_stoppedForMovie;
+    // Mute options
+    bool m_isMuted;
 
-        //
-        // Hack for stinky pre-script-loading menu sounds
-        //
-        IRadSoundClip* m_selectSoundClip;
-        IRadSoundClip* m_scrollSoundClip;
+    bool m_noMusic;
+    bool m_noEffects;
+    bool m_noDialogue;
 
-        IRadSoundClipPlayer* m_selectSoundClipPlayer;
-        IRadSoundClipPlayer* m_scrollSoundClipPlayer;
+    // Pointer to sound rendering interface
+    Sound::daSoundRenderingManager *m_pSoundRenderMgr;
 
-        
-        SoundMode m_soundMode;
+    // [ps] avoid hammering on pause.
+    bool m_stoppedForMovie;
+
+    //
+    // Hack for stinky pre-script-loading menu sounds
+    //
+    IRadSoundClip *m_selectSoundClip;
+    IRadSoundClip *m_scrollSoundClip;
+
+    IRadSoundClipPlayer *m_selectSoundClipPlayer;
+    IRadSoundClipPlayer *m_scrollSoundClipPlayer;
+
+
+    SoundMode m_soundMode;
 };
 
 // A little syntactic sugar for getting at this singleton.
-inline SoundManager* GetSoundManager() { return( SoundManager::GetInstance() ); }
+inline SoundManager *GetSoundManager() { return (SoundManager::GetInstance()); }
 
 #endif //SOUNDMANAGER_H
 

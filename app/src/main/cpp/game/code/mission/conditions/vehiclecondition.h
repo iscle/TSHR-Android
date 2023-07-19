@@ -30,26 +30,29 @@ class Vehicle;
 //
 //=============================================================================
 
-class VehicleCondition : public MissionCondition
-{
+class VehicleCondition : public MissionCondition {
 public:
     VehicleCondition();
+
     virtual ~VehicleCondition();
 
-    Vehicle* GetVehicle();
-    void SetVehicle( Vehicle* vehicle );
+    Vehicle *GetVehicle();
+
+    void SetVehicle(Vehicle *vehicle);
 
 protected:
     virtual void OnInitialize() {};
+
     virtual void OnFinalize() {};
 
 private:
 
     //Prevent wasteful constructor creation.
-    VehicleCondition( const VehicleCondition& vehiclecondition );
-    VehicleCondition& operator=( const VehicleCondition& vehiclecondition );
+    VehicleCondition(const VehicleCondition &vehiclecondition);
 
-    Vehicle* mpVehicle;
+    VehicleCondition &operator=(const VehicleCondition &vehiclecondition);
+
+    Vehicle *mpVehicle;
 };
 
 //=============================================================================
@@ -57,13 +60,12 @@ private:
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( Vehicle* vehicle )
+// Parameters:  (Vehicle* vehicle)
 //
 // Return:      inline 
 //
 //=============================================================================
-inline void VehicleCondition::SetVehicle( Vehicle* vehicle )
-{
+inline void VehicleCondition::SetVehicle(Vehicle *vehicle) {
     mpVehicle = vehicle;
 }
 
@@ -77,8 +79,7 @@ inline void VehicleCondition::SetVehicle( Vehicle* vehicle )
 // Return:      inline 
 //
 //=============================================================================
-inline Vehicle* VehicleCondition::GetVehicle()
-{
+inline Vehicle *VehicleCondition::GetVehicle() {
     return mpVehicle;
 }
 

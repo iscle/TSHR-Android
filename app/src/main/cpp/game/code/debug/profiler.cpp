@@ -75,12 +75,12 @@ bool Profiler::sEnableCollection = false;
 //==============================================================================
 Profiler* Profiler::CreateInstance()
 {
-MEMTRACK_PUSH_GROUP( "Profiler" );
-    rAssert( spInstance == NULL );
+MEMTRACK_PUSH_GROUP("Profiler");
+    rAssert(spInstance == NULL);
 
     spInstance = new(GMA_DEBUG) Profiler;
-    rAssert( spInstance );
-MEMTRACK_POP_GROUP( "Profiler" );
+    rAssert(spInstance);
+MEMTRACK_POP_GROUP("Profiler");
     
     return spInstance;
 }
@@ -100,7 +100,7 @@ MEMTRACK_POP_GROUP( "Profiler" );
 //==============================================================================
 Profiler* Profiler::GetInstance()
 {
-    rAssert( spInstance != NULL );
+    rAssert(spInstance != NULL);
     
     return spInstance;
 }
@@ -119,9 +119,9 @@ Profiler* Profiler::GetInstance()
 //==============================================================================
 void Profiler::DestroyInstance()
 {
-    rAssert( spInstance != NULL );
+    rAssert(spInstance != NULL);
 
-    delete( GMA_DEBUG, spInstance );
+    delete(GMA_DEBUG, spInstance);
     spInstance = NULL;
 }
 
@@ -157,7 +157,7 @@ void Profiler::Init()
 //==============================================================================
 Profiler::ProfileSample *Profiler::AllocSample(void)
 {
-    if (mNextSampleAllocIndex >= NUM_SAMPLES) return NULL;
+    if (mNextSampleAllocIndex>= NUM_SAMPLES) return NULL;
 
     return &mSamples[mNextSampleAllocIndex++];
 }            
@@ -175,7 +175,7 @@ Profiler::ProfileSample *Profiler::AllocSample(void)
 //==============================================================================
 Profiler::ProfileSampleHistory *Profiler::AllocHistory(void)
 {
-    if (mNextHistoryAllocIndex >= NUM_SAMPLES) return NULL;
+    if (mNextHistoryAllocIndex>= NUM_SAMPLES) return NULL;
 
     return &mHistory[mNextHistoryAllocIndex++];
 }            
@@ -194,7 +194,7 @@ Profiler::ProfileSampleHistory *Profiler::AllocHistory(void)
 void Profiler::BeginFrame()
 {
     int i;
-    for( i = 0; i < NUM_SAMPLES; ++i ) 
+    for(i = 0; i <NUM_SAMPLES; ++i)
     {
         mSamples[i].bValid = false;
     }
@@ -229,47 +229,47 @@ void Profiler::EndFrame()
 {
     unsigned int i = 0;
 
-    if( !sEnableCollection )
+    if(!sEnableCollection)
     {
         return;
     }
 
     mEndProfile = ((float)radTimeGetMicroseconds()) / 1000.0F;
 
-    while( i < mNextSampleAllocIndex)
+    while(i <mNextSampleAllocIndex)
     {
         if (!mSamples[i].bValid) continue;
         float sampleTime, percentTime;
             
-        rAssertMsg(!mSamples[i].isOpen, "ProfileEnd() called without a ProfileBegin()" );
+        rAssertMsg(!mSamples[i].isOpen, "ProfileEnd() called without a ProfileBegin()");
 
         sampleTime = mSamples[i].fAccumulator - mSamples[i].fChildrenSampleTime;
 
         float profileTime = mEndProfile - mStartProfile;
 
-        if( profileTime < 0.001F )
+        if(profileTime <0.001F)
         {
             percentTime = 0.0f;
         }
         else
         {
-            percentTime = ( sampleTime / profileTime ) * 100.0f;
-            rAssert( percentTime <= 100.0f );
+            percentTime = (sampleTime / profileTime) * 100.0f;
+            rAssert(percentTime <= 100.0f);
         }
 
         //
         // Add new measurement into the history and get the ave, min, and max
         //
-//        this->StoreProfileHistory( mSamples[i].szName, 
+//        this->StoreProfileHistory(mSamples[i].szName,
 //                                   percentTime, 
 //                                   mEndProfile - mStartProfile, 
 //                                   mSamples[i].uiSampleTime,    // single sample
-//                                   mSamples[i].uiAccumulator ); // total sample
-        this->StoreProfileHistory( mSamples[i].uid, 
+//                                   mSamples[i].uiAccumulator); // total sample
+        this->StoreProfileHistory(mSamples[i].uid,
                                    percentTime, 
                                    profileTime, 
                                    mSamples[i].fSampleTime,    // single sample
-                                   mSamples[i].fAccumulator ); // total sample
+                                   mSamples[i].fAccumulator); // total sample
         i++;
     }
 }
@@ -286,18 +286,18 @@ void Profiler::EndFrame()
 // Return:      
 //
 //==============================================================================
-void Profiler::BeginProfile( const char* name )
+void Profiler::BeginProfile(const char* name)
 {
     int i;
     tUID nameUID;
 
-    if( !sEnableCollection )
+    if(!sEnableCollection)
     {
         return;
     }
 
     i = 0;
-    nameUID = tEntity::MakeUID( name );
+    nameUID = tEntity::MakeUID(name);
 
     // If the sample is alread open this frame it will be in the store
     ProfileSample *sample = mOpenSampleStore->Find(nameUID);
@@ -306,7 +306,7 @@ void Profiler::BeginProfile( const char* name )
     if (sample == NULL)
     {
         sample = AllocSample();
-        rAssertMsg(sample != NULL, "Exceeded Maximum Available Profile Samples." );
+        rAssertMsg(sample != NULL, "Exceeded Maximum Available Profile Samples.");
         
         sample->bValid              = true;
         sample->uid                 = nameUID;
@@ -333,7 +333,7 @@ void Profiler::BeginProfile( const char* name )
     unsigned sampleIndex = sample - mSamples;
 
     // Add this sample to the open stack
-    rAssertMsg(mOpenStackTop < (MAX_PROFILER_DEPTH - 1), "Profiler error: Too many levels deep.");
+    rAssertMsg(mOpenStackTop <(MAX_PROFILER_DEPTH - 1), "Profiler error: Too many levels deep.");
     ++mOpenStackTop;
     mOpenStack[mOpenStackTop] = sampleIndex;
 }
@@ -350,16 +350,16 @@ void Profiler::BeginProfile( const char* name )
 // Return:      
 //  
 //==============================================================================
-void Profiler::EndProfile( const char* name )
+void Profiler::EndProfile(const char* name)
 {
     tUID nameUID;
 
-    if( !sEnableCollection )
+    if(!sEnableCollection)
     {
         return;
     }
 
-    nameUID = tEntity::MakeUID( name );
+    nameUID = tEntity::MakeUID(name);
  
     ProfileSample *sample = mOpenSampleStore->Find(nameUID);
     rAssertMsg(sample != NULL, "Profiler error: Ending a section that isn't open.");
@@ -377,7 +377,7 @@ void Profiler::EndProfile( const char* name )
     mOpenStackTop--;
 
     // Only update the parent if there is one
-    if (mOpenStackTop > 0)
+    if (mOpenStackTop> 0)
     {
         unsigned int parentIndex = mOpenStack[mOpenStackTop];
         mSamples[parentIndex].fChildrenSampleTime += duration;
@@ -402,7 +402,7 @@ void Profiler::Render(void)
     const int LEFT = 10;
     const int TOP = 45;
     
-    if( !sDisplay )
+    if(!sDisplay)
     {
         return;
     }
@@ -410,7 +410,7 @@ void Profiler::Render(void)
     //int i = mScrollCount * NUM_VISIBLE_LINES;
     unsigned int i = sPage * NUM_VISIBLE_LINES;
 
-    if( sDumpToOutput )
+    if(sDumpToOutput)
     {
         i = 0;
     }
@@ -429,103 +429,103 @@ void Profiler::Render(void)
 //    tColour SHADOW_COLOUR(0,0,0);
     tColour stringColour = tColour(sRed, sGreen, sBlue);
 /*    
-    p3d::pddi->DrawString( fps, 
+    p3d::pddi->DrawString(fps,
                            LEFT + sLeftOffset + SHADOW_OFFSET, 
                            TOP + sTopOffset + SHADOW_OFFSET, 
-                           SHADOW_COLOUR );
+                           SHADOW_COLOUR);
     
-    p3d::pddi->DrawString( "-------------------------------------------------------------------",
+    p3d::pddi->DrawString("-------------------------------------------------------------------",
                            LEFT + sLeftOffset + SHADOW_OFFSET,
                            20 + TOP + sTopOffset + SHADOW_OFFSET,
                            SHADOW_COLOUR);
 
-    p3d::pddi->DrawString( "Ave(%)\t| Single\t| #\t| Total\t| Profile Name\n", 
+    p3d::pddi->DrawString("Ave(%)\t| Single\t| #\t| Total\t| Profile Name\n",
                            LEFT + sLeftOffset + SHADOW_OFFSET, 
                            40 + TOP + sTopOffset + SHADOW_OFFSET,
-                           SHADOW_COLOUR );
+                           SHADOW_COLOUR);
     
-    p3d::pddi->DrawString( "-------------------------------------------------------------------",
+    p3d::pddi->DrawString("-------------------------------------------------------------------",
                            LEFT + sLeftOffset + SHADOW_OFFSET, 
                            60 + TOP + sTopOffset + SHADOW_OFFSET,
                            SHADOW_COLOUR);
 */
     
     
-    p3d::pddi->DrawString( fps,
+    p3d::pddi->DrawString(fps,
                            LEFT + sLeftOffset, 
                            TOP + sTopOffset,
                            stringColour);
     
-    p3d::pddi->DrawString( "-------------------------------------------------------------------",
+    p3d::pddi->DrawString("-------------------------------------------------------------------",
                            LEFT + sLeftOffset, 
                            20 + TOP + sTopOffset,
-                           stringColour );
+                           stringColour);
 
-    p3d::pddi->DrawString( "Ave(%)\t| Single\t| #\t| Total\t| Profile Name\n", 
+    p3d::pddi->DrawString("Ave(%)\t| Single\t| #\t| Total\t| Profile Name\n",
                            LEFT + sLeftOffset, 
                            40 + TOP + sTopOffset,
-                           stringColour );
+                           stringColour);
 
-    p3d::pddi->DrawString( "-------------------------------------------------------------------",
+    p3d::pddi->DrawString("-------------------------------------------------------------------",
                            LEFT + sLeftOffset, 
                            60 + TOP + sTopOffset,
-                           stringColour );
+                           stringColour);
 
-    if( sDumpToOutput )
+    if(sDumpToOutput)
     {
-        rTuneString( "-------------------------------------------------------------------------------\n" );    
-        rTuneString( "Ave(%)\t| Single\t| #\t| Total\t| Profile Name\n" ); 
-        rTuneString( "-------------------------------------------------------------------------------\n" );    
+        rTuneString("-------------------------------------------------------------------------------\n");
+        rTuneString("Ave(%)\t| Single\t| #\t| Total\t| Profile Name\n");
+        rTuneString("-------------------------------------------------------------------------------\n");
     }
 
-    while( (i < mNextSampleAllocIndex) && mSamples[i].bValid ) 
+    while((i <mNextSampleAllocIndex) && mSamples[i].bValid)
     {		
         unsigned int indent = 0;
         float aveTime, minTime, maxTime, sampleAve, totalTime;
         char line[256], name[256], indentedName[256];
         char ave[32], min[32], max[32], num[32], sample[32], total[32]; 
 
-//        this->GetProfileHistory( mSamples[i].szName, &aveTime, &minTime, &maxTime, &sampleAve, &totalTime);
-        this->GetProfileHistory( mSamples[i].uid, &aveTime, &minTime, &maxTime, &sampleAve, &totalTime);
+//        this->GetProfileHistory(mSamples[i].szName, &aveTime, &minTime, &maxTime, &sampleAve, &totalTime);
+        this->GetProfileHistory(mSamples[i].uid, &aveTime, &minTime, &maxTime, &sampleAve, &totalTime);
 
 
         // Format the data
-        sprintf( ave,   "%3.2f", aveTime );
-        sprintf( min,   "%3.2f", minTime );
-        sprintf( max,   "%3.2f", maxTime );
-        sprintf( sample,"%3.2f", sampleAve );
-        sprintf( num,   "%3d",   mSamples[i].iProfileInstances );
-        sprintf( total, "%3.2f", totalTime );
+        sprintf(ave,   "%3.2f", aveTime);
+        sprintf(min,   "%3.2f", minTime);
+        sprintf(max,   "%3.2f", maxTime);
+        sprintf(sample,"%3.2f", sampleAve);
+        sprintf(num,   "%3d",   mSamples[i].iProfileInstances);
+        sprintf(total, "%3.2f", totalTime);
 
 
-        strcpy( indentedName, mSamples[i].szName );
+        strcpy(indentedName, mSamples[i].szName);
       
         
-        for( indent=0; indent<mSamples[i].iNumParents; indent++ ) 
+        for(indent=0; indent<mSamples[i].iNumParents; indent++)
         {
-            sprintf( name, "   %s", indentedName );
-            strcpy( indentedName, name );
+            sprintf(name, "   %s", indentedName);
+            strcpy(indentedName, name);
         }
         sprintf(line,"%5s\t| %5s\t|%2s\t| %5s\t| %s ", ave, sample, num, total, indentedName);
 
-//        p3d::pddi->DrawString( line,
+//        p3d::pddi->DrawString(line,
 //                               LEFT + sLeftOffset + SHADOW_OFFSET, 
 //                               80 + TOP + ((i % NUM_VISIBLE_LINES)*20) + sTopOffset + SHADOW_OFFSET, 
 //                               SHADOW_COLOUR);
         
-        p3d::pddi->DrawString( line,
+        p3d::pddi->DrawString(line,
                                LEFT + sLeftOffset, 
                                80 + TOP + ((i % NUM_VISIBLE_LINES)*20) + sTopOffset, 
                                stringColour);
 
-        if( sDumpToOutput )
+        if(sDumpToOutput)
         {
-            rTunePrintf( "%s\n", line );
+            rTunePrintf("%s\n", line);
         }
 
         i++;
 
-        if( i >= (unsigned int) (( sPage + 1 ) * NUM_VISIBLE_LINES ))
+        if(i>= (unsigned int) ((sPage + 1) * NUM_VISIBLE_LINES))
         {
             break;
         }
@@ -554,7 +554,7 @@ void Profiler::NextPage()
 {
     ++sPage;
 
-    if( sPage == NUM_VISIBLE_PANES )
+    if(sPage == NUM_VISIBLE_PANES)
     {
         sPage = 0;
     }
@@ -579,24 +579,24 @@ void Profiler::NextPage()
 //
 //==============================================================================// 
 Profiler::Profiler() :
-    mOpenStackTop( -1 ),
-    mStartProfile( 0.0F ),
-    mEndProfile( 0.0F ),
-    mFrameRate( 0.0f ),
-    mFrameRateAdjusted( 0.0f ),
-    mDisplayTime( 0.0F ),
-    mNextHistoryAllocIndex( 0 )
+    mOpenStackTop(-1),
+    mStartProfile(0.0F),
+    mEndProfile(0.0F),
+    mFrameRate(0.0f),
+    mFrameRateAdjusted(0.0f),
+    mDisplayTime(0.0F),
+    mNextHistoryAllocIndex(0)
 {
     int i;
-    for( i = 0; i < NUM_SAMPLES; ++i ) 
+    for(i = 0; i <NUM_SAMPLES; ++i)
     {
       mSamples[i].bValid = false;
       mSamples[i].iNumParents = 0;
     }
 
-MEMTRACK_PUSH_GROUP( "Profiler" );
+MEMTRACK_PUSH_GROUP("Profiler");
 
-    HeapMgr()->PushHeap( GMA_DEBUG );
+    HeapMgr()->PushHeap(GMA_DEBUG);
 
     mOpenSampleStore  = new HashTable<ProfileSample>(NUM_SAMPLES * 2, 100, NUM_SAMPLES * 2);
     mOpenHistoryStore = new HashTable<ProfileSampleHistory>(NUM_SAMPLES * 2, 100, NUM_SAMPLES * 2);
@@ -604,18 +604,18 @@ MEMTRACK_PUSH_GROUP( "Profiler" );
     mOpenSampleStore->AddRef();
     mOpenHistoryStore->AddRef();
 
-    HeapMgr()->PopHeap( GMA_DEBUG );
+    HeapMgr()->PopHeap(GMA_DEBUG);
 
-MEMTRACK_POP_GROUP( "Profiler" );
+MEMTRACK_POP_GROUP("Profiler");
 
-    radDbgWatchAddBoolean( &sDisplay, "Display", "Profiler", 0, 0 );
-    radDbgWatchAddInt( &sPage, "Select Page", "Profiler", 0, 0, 0, NUM_VISIBLE_PANES );    
-    radDbgWatchAddInt( &sLeftOffset, "Left Position", "Profiler", 0, 0, -1000, 1000 );
-    radDbgWatchAddInt( &sTopOffset, "Top Position", "Profiler", 0, 0, -1000, 1000 );
-    radDbgWatchAddInt( &sRed, "Text Colour - Red", "Profiler", 0, 0, 0, 255 );
-    radDbgWatchAddInt( &sGreen, "Text Colour - Green", "Profiler", 0, 0, 0, 255 );
-    radDbgWatchAddInt( &sBlue, "Text Colour - Blue", "Profiler", 0, 0, 0, 255 );
-    radDbgWatchAddBoolean( &sDumpToOutput, "Dump to Output Window", "Profiler", 0, 0 );
+    radDbgWatchAddBoolean(&sDisplay, "Display", "Profiler", 0, 0);
+    radDbgWatchAddInt(&sPage, "Select Page", "Profiler", 0, 0, 0, NUM_VISIBLE_PANES);
+    radDbgWatchAddInt(&sLeftOffset, "Left Position", "Profiler", 0, 0, -1000, 1000);
+    radDbgWatchAddInt(&sTopOffset, "Top Position", "Profiler", 0, 0, -1000, 1000);
+    radDbgWatchAddInt(&sRed, "Text Colour - Red", "Profiler", 0, 0, 0, 255);
+    radDbgWatchAddInt(&sGreen, "Text Colour - Green", "Profiler", 0, 0, 0, 255);
+    radDbgWatchAddInt(&sBlue, "Text Colour - Blue", "Profiler", 0, 0, 0, 255);
+    radDbgWatchAddBoolean(&sDumpToOutput, "Dump to Output Window", "Profiler", 0, 0);
 }
 
 
@@ -647,7 +647,7 @@ Profiler::~Profiler()
 //
 //==============================================================================
 void Profiler::StoreProfileHistory
-( 
+(
 //    char* name, 
     tUID nameUID, 
     float percent, 
@@ -659,7 +659,7 @@ void Profiler::StoreProfileHistory
     float oldRatio;
     float newRatio = 0.8f * (elapsedTime / 1000.0f);
 
-    if( newRatio > 1.0f ) 
+    if(newRatio> 1.0f)
     {
         newRatio = 1.0f;
     }
@@ -672,7 +672,7 @@ void Profiler::StoreProfileHistory
     //
     float adjustedTime = 0.0F;
 
-    if( elapsedTime >= mDisplayTime )
+    if(elapsedTime>= mDisplayTime)
     {
         adjustedTime = elapsedTime - mDisplayTime;
     }
@@ -700,12 +700,12 @@ void Profiler::StoreProfileHistory
         history->fSampleAve   = (history->fSampleAve * oldRatio)   + (sampleTime * newRatio);
         history->fSampleTotal = (history->fSampleTotal * oldRatio) + (totalTime * newRatio);
      
-        if( percent < history->fMin ) history->fMin = percent;
+        if(percent <history->fMin) history->fMin = percent;
         else                          history->fMin = (history->fMin * oldRatio) + (percent * newRatio);
 
-        if( history->fMin < 0.0f ) history->fMin = 0.0f;
+        if(history->fMin <0.0f) history->fMin = 0.0f;
 
-        if( percent > history->fMax ) history->fMax = percent;
+        if(percent> history->fMax) history->fMax = percent;
         else                          history->fMax = (history->fMax * oldRatio) + (percent * newRatio);
     }
 
@@ -724,7 +724,7 @@ void Profiler::StoreProfileHistory
 //
 //==============================================================================
 void Profiler::GetProfileHistory
-( 
+(
 //    char* name, 
     tUID nameUID, 
     float* ave, 

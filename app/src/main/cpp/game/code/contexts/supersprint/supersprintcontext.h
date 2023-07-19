@@ -27,29 +27,33 @@
 //
 //=============================================================================
 
-class SuperSprintContext : public PlayingContext
-{
+class SuperSprintContext : public PlayingContext {
 public:
     // Static Methods for accessing this singleton.
-    static SuperSprintContext* GetInstance();
+    static SuperSprintContext *GetInstance();
 
 protected:
-    virtual void OnStart( ContextEnum previousContext );
-    virtual void OnStop( ContextEnum nextContext );
-    virtual void OnUpdate( unsigned int elapsedTime );
+    virtual void OnStart(ContextEnum previousContext);
+
+    virtual void OnStop(ContextEnum nextContext);
+
+    virtual void OnUpdate(unsigned int elapsedTime);
 
     virtual void OnSuspend();
+
     virtual void OnResume();
 
 private:
-    static SuperSprintContext* spInstance;
+    static SuperSprintContext *spInstance;
 
     SuperSprintContext();
+
     virtual ~SuperSprintContext();
 
     //Prevent wasteful constructor creation.
-    SuperSprintContext( const SuperSprintContext& supersprintcontext );
-    SuperSprintContext& operator=( const SuperSprintContext& supersprintcontext );
+    SuperSprintContext(const SuperSprintContext &supersprintcontext);
+
+    SuperSprintContext &operator=(const SuperSprintContext &supersprintcontext);
 };
 
 //*****************************************************************************
@@ -58,6 +62,6 @@ private:
 //
 //*****************************************************************************
 
-inline SuperSprintContext* GetSPCTX() { return SuperSprintContext::GetInstance(); };
+inline SuperSprintContext *GetSPCTX() { return SuperSprintContext::GetInstance(); };
 
 #endif //SUPERSPRINTCONTEXT_H

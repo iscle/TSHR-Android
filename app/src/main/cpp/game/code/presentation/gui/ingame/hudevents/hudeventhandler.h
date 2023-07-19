@@ -21,8 +21,7 @@
 // Forward References
 //===========================================================================
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Group;
 }
 
@@ -30,27 +29,29 @@ namespace Scrooby
 // Interface Definitions
 //===========================================================================
 
-class HudEventHandler
-{
+class HudEventHandler {
 public:
-    HudEventHandler( Scrooby::Group* drawableGroup );
+    HudEventHandler(Scrooby::Group *drawableGroup);
+
     virtual ~HudEventHandler();
 
     virtual void Start() = 0;
+
     virtual void Stop() = 0;
-    virtual void Update( float elapsedTime ) = 0;
+
+    virtual void Update(float elapsedTime) = 0;
 
     bool IsActive() const;
 
 protected:
     void OnStart();
+
     void OnStop();
 
-    Scrooby::Group* m_drawableGroup;
+    Scrooby::Group *m_drawableGroup;
     float m_elapsedTime;
 
-    enum eState
-    {
+    enum eState {
         STATE_IDLE,
         STATE_RUNNING,
 
@@ -61,9 +62,8 @@ protected:
 
 };
 
-inline bool HudEventHandler::IsActive() const
-{
-    return( m_currentState != STATE_IDLE );
+inline bool HudEventHandler::IsActive() const {
+    return (m_currentState != STATE_IDLE);
 }
 
 #endif // HUDEVENTHANDLER_H

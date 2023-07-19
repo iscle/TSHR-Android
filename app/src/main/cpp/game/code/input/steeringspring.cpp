@@ -44,8 +44,7 @@
 // Return:      N/A.
 //
 //==============================================================================
-SteeringSpring::SteeringSpring()
-{
+SteeringSpring::SteeringSpring() {
     //Setup the respective force effect structures.
 #ifdef RAD_WIN32
     m_conditon.lOffset              = 0;
@@ -67,15 +66,15 @@ SteeringSpring::SteeringSpring()
     mForceEffect.lpvTypeSpecificParams   = &m_conditon;
     mForceEffect.dwStartDelay            = 0;
 #else
-    mForceEffect.type                           = LG_TYPE_SPRING;
-    mForceEffect.duration                       = LG_DURATION_INFINITE;
-    mForceEffect.startDelay                     = 0;
-    mForceEffect.p.condition[0].offset            = 0;
-    mForceEffect.p.condition[0].deadband          = 0;
-    mForceEffect.p.condition[0].saturationNeg     = 127;
-    mForceEffect.p.condition[0].saturationPos     = 127;
-    mForceEffect.p.condition[0].coefficientNeg    = 127;
-    mForceEffect.p.condition[0].coefficientPos    = 127;
+    mForceEffect.type = LG_TYPE_SPRING;
+    mForceEffect.duration = LG_DURATION_INFINITE;
+    mForceEffect.startDelay = 0;
+    mForceEffect.p.condition[0].offset = 0;
+    mForceEffect.p.condition[0].deadband = 0;
+    mForceEffect.p.condition[0].saturationNeg = 127;
+    mForceEffect.p.condition[0].saturationPos = 127;
+    mForceEffect.p.condition[0].coefficientNeg = 127;
+    mForceEffect.p.condition[0].coefficientPos = 127;
 #endif
 }
 
@@ -89,8 +88,7 @@ SteeringSpring::SteeringSpring()
 // Return:      N/A.
 //
 //==============================================================================
-SteeringSpring::~SteeringSpring()
-{
+SteeringSpring::~SteeringSpring() {
 }
 
 //=============================================================================
@@ -103,8 +101,7 @@ SteeringSpring::~SteeringSpring()
 // Return:      void 
 //
 //=============================================================================
-void SteeringSpring::OnInit()
-{
+void SteeringSpring::OnInit() {
 }
 
 //=============================================================================
@@ -112,19 +109,18 @@ void SteeringSpring::OnInit()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( s8 point, u8 deadband  )
+// Parameters:  (s8 point, u8 deadband)
 //
 // Return:      void 
 //
 //=============================================================================
-void SteeringSpring::SetCenterPoint( s8 point, u8 deadband  )
-{
+void SteeringSpring::SetCenterPoint(s8 point, u8 deadband) {
 #ifdef RAD_WIN32
     m_conditon.lOffset                            = point;
     m_conditon.lDeadBand                          = deadband;
 #else
-    mForceEffect.p.condition[0].offset            = point;
-    mForceEffect.p.condition[0].deadband          = deadband;
+    mForceEffect.p.condition[0].offset = point;
+    mForceEffect.p.condition[0].deadband = deadband;
 #endif
     mEffectDirty = true;
 }
@@ -134,23 +130,24 @@ void SteeringSpring::SetCenterPoint( s8 point, u8 deadband  )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( u8 strength )
+// Parameters:  (u8 strength)
 //
 // Return:      void 
 //
 //=============================================================================
 #ifdef RAD_WIN32
-void SteeringSpring::SetSpringStrength( u16 strength )
+void SteeringSpring::SetSpringStrength(u16 strength)
 #else
-void SteeringSpring::SetSpringStrength( u8 strength )
+
+void SteeringSpring::SetSpringStrength(u8 strength)
 #endif
 {
 #ifdef RAD_WIN32
     m_conditon.dwPositiveSaturation               = strength;
     m_conditon.dwNegativeSaturation               = strength;
 #else
-    mForceEffect.p.condition[0].saturationNeg     = strength;
-    mForceEffect.p.condition[0].saturationPos     = strength;
+    mForceEffect.p.condition[0].saturationNeg = strength;
+    mForceEffect.p.condition[0].saturationPos = strength;
 #endif
 
     mEffectDirty = true;
@@ -161,19 +158,18 @@ void SteeringSpring::SetSpringStrength( u8 strength )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( s16 coeff )
+// Parameters:  (s16 coeff)
 //
 // Return:      void 
 //
 //=============================================================================
-void SteeringSpring::SetSpringCoefficient( s16 coeff )
-{
+void SteeringSpring::SetSpringCoefficient(s16 coeff) {
 #ifdef RAD_WIN32
     m_conditon.lPositiveCoefficient               = coeff;
-    m_conditon.lNegativeCoefficient               = coeff; 
+    m_conditon.lNegativeCoefficient               = coeff;
 #else
-    mForceEffect.p.condition[0].coefficientNeg    = coeff;
-    mForceEffect.p.condition[0].coefficientPos    = coeff;
+    mForceEffect.p.condition[0].coefficientNeg = coeff;
+    mForceEffect.p.condition[0].coefficientPos = coeff;
 #endif
 
     mEffectDirty = true;

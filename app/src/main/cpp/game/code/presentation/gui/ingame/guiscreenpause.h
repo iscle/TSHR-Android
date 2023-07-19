@@ -32,41 +32,45 @@ class CGuiMenu;
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenPause : public CGuiScreen
-{
+class CGuiScreenPause : public CGuiScreen {
 public:
-    CGuiScreenPause( Scrooby::Screen* pScreen,
-                     CGuiEntity* pParent,
-                     eGuiWindowID id );
+    CGuiScreenPause(Scrooby::Screen *pScreen,
+                    CGuiEntity *pParent,
+                    eGuiWindowID id);
+
     virtual ~CGuiScreenPause();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
-    virtual CGuiMenu* HasMenu() { return m_pMenu; }
+    virtual CGuiMenu *HasMenu() { return m_pMenu; }
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
 
-    void HandleResumeGame( unsigned int param1 = 0,
-                           unsigned int param2 = 0 );
+    void InitRunning();
+
+    void InitOutro();
+
+    void HandleResumeGame(unsigned int param1 = 0,
+                          unsigned int param2 = 0);
+
     void HandleQuitGame();
+
 #ifdef RAD_WIN32
     void HandleQuitToSystem();
 #endif
-    #ifdef DEBUGWATCH
-        virtual const char* GetWatcherName() const;
-    #endif
+#ifdef DEBUGWATCH
+    virtual const char* GetWatcherName() const;
+#endif
 
 
-    CGuiMenu* m_pMenu;
-    Scrooby::Group* m_MissionObjectiveBox;
-    Scrooby::Text* m_pressStart;
-    Scrooby::Text* m_missionObjective;
-    Scrooby::Sprite* m_objectiveIcon;
+    CGuiMenu *m_pMenu;
+    Scrooby::Group *m_MissionObjectiveBox;
+    Scrooby::Text *m_pressStart;
+    Scrooby::Text *m_missionObjective;
+    Scrooby::Sprite *m_objectiveIcon;
 
 private:
 /*
@@ -74,7 +78,7 @@ private:
     void ShowNextCard();
 */
 
-    Scrooby::Sprite* m_collectedCards[ NUM_CARDS_PER_LEVEL ];
+    Scrooby::Sprite *m_collectedCards[NUM_CARDS_PER_LEVEL];
     int m_numVisibleCards;
     unsigned int m_elapsedTime;
 

@@ -29,8 +29,8 @@
 //
 // Initialially the list is empty
 //
-SoundRenderingPlayerCallback* radLinkedClass< SoundRenderingPlayerCallback >::s_pLinkedClassHead = NULL;
-SoundRenderingPlayerCallback* radLinkedClass< SoundRenderingPlayerCallback >::s_pLinkedClassTail = NULL;
+SoundRenderingPlayerCallback *radLinkedClass<SoundRenderingPlayerCallback>::s_pLinkedClassHead = NULL;
+SoundRenderingPlayerCallback *radLinkedClass<SoundRenderingPlayerCallback>::s_pLinkedClassTail = NULL;
 
 //******************************************************************************
 //
@@ -48,11 +48,11 @@ SoundRenderingPlayerCallback* radLinkedClass< SoundRenderingPlayerCallback >::s_
 // Return:      N/A.
 //
 //==============================================================================
-SoundRenderingPlayerCallback::SoundRenderingPlayerCallback( SimpsonsSoundPlayer& playerObj,
-                                                            SimpsonsSoundPlayerCallback* callbackObj ) :
-    m_callbackObj( callbackObj ),
-    m_playerObj( &playerObj )
-{
+SoundRenderingPlayerCallback::SoundRenderingPlayerCallback(SimpsonsSoundPlayer &playerObj,
+                                                           SimpsonsSoundPlayerCallback *callbackObj)
+        :
+        m_callbackObj(callbackObj),
+        m_playerObj(&playerObj) {
 }
 
 //==============================================================================
@@ -65,8 +65,7 @@ SoundRenderingPlayerCallback::SoundRenderingPlayerCallback( SimpsonsSoundPlayer&
 // Return:      N/A.
 //
 //==============================================================================
-SoundRenderingPlayerCallback::~SoundRenderingPlayerCallback()
-{
+SoundRenderingPlayerCallback::~SoundRenderingPlayerCallback() {
 }
 
 //=============================================================================
@@ -81,8 +80,7 @@ SoundRenderingPlayerCallback::~SoundRenderingPlayerCallback()
 // Return:      void 
 //
 //=============================================================================
-void SoundRenderingPlayerCallback::CancelGameCallbackAndRelease()
-{
+void SoundRenderingPlayerCallback::CancelGameCallbackAndRelease() {
     m_callbackObj = NULL;
     m_playerObj = NULL;
     Release();
@@ -102,13 +100,11 @@ void SoundRenderingPlayerCallback::CancelGameCallbackAndRelease()
 // Return:      void 
 //
 //=============================================================================
-void SoundRenderingPlayerCallback::OnSoundReady( void* pData )
-{
+void SoundRenderingPlayerCallback::OnSoundReady(void *pData) {
     //
     // Let the client know that the sound is ready for immediate playback
     //
-    if( m_callbackObj != NULL )
-    {
+    if (m_callbackObj != NULL) {
         m_callbackObj->OnSoundReady();
     }
 }
@@ -124,9 +120,8 @@ void SoundRenderingPlayerCallback::OnSoundReady( void* pData )
 // Return:      void 
 //
 //=============================================================================
-void SoundRenderingPlayerCallback::OnSoundDone( void* pData )
-{
-    SimpsonsSoundPlayerCallback* callbackObj = m_callbackObj;
+void SoundRenderingPlayerCallback::OnSoundDone(void *pData) {
+    SimpsonsSoundPlayerCallback *callbackObj = m_callbackObj;
 
     //
     // AddRef so that none of the callback stuff below can wipe us out until
@@ -140,16 +135,14 @@ void SoundRenderingPlayerCallback::OnSoundDone( void* pData )
     // a copy of the client callback, since the player might ask us to
     // wipe it out
     //
-    if( m_playerObj != NULL )
-    {
+    if (m_playerObj != NULL) {
         m_playerObj->OnPlaybackComplete();
     }
 
     //
     // Now the client, who can reuse the same player now
     //
-    if( callbackObj != NULL )
-    {
+    if (callbackObj != NULL) {
         callbackObj->OnPlaybackComplete();
     }
 
@@ -169,9 +162,9 @@ void SoundRenderingPlayerCallback::OnSoundDone( void* pData )
 // Return:      void 
 //
 //=============================================================================
-void SoundRenderingPlayerCallback::CompletionCheck()
-{
-    rAssertMsg( GetLinkedClassHead() == NULL, "GAAAAAK!!  Sound renderer players are still running when they're not supposed to be!\n" );
+void SoundRenderingPlayerCallback::CompletionCheck() {
+    rAssertMsg(GetLinkedClassHead() == NULL,
+               "GAAAAAK!!  Sound renderer players are still running when they're not supposed to be!\n");
 }
 
 //******************************************************************************

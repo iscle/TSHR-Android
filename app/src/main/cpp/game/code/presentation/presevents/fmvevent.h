@@ -28,34 +28,37 @@
 //
 //=============================================================================
 
-class FMVEvent : public PresentationEvent
-{
-    public:
-        FMVEvent ();
-        virtual ~FMVEvent ();
+class FMVEvent : public PresentationEvent {
+public:
+    FMVEvent();
 
-        AnimationPlayer* GetPlayer();
-        void SetAudioIndex(unsigned int idx) { mData.AudioIndex = idx; }
-        void SetAllocator( GameMemoryAllocator Alloc ) { mData.Allocator = Alloc; }
-        void KillMusic() { mData.KillMusic = true; }
+    virtual ~FMVEvent();
 
-        struct FMVEventData
-        {
-            FMVEventData();
-            unsigned int AudioIndex;
-            GameMemoryAllocator Allocator;
-            bool KillMusic;
-        };
+    AnimationPlayer *GetPlayer();
 
-        static const unsigned int AUDIO_INDEX_ENGLISH = 0;
-        static const unsigned int AUDIO_INDEX_FRENCH = 1;
-        static const unsigned int AUDIO_INDEX_GERMAN = 2;
-        static const unsigned int AUDIO_INDEX_SPANISH = 3;
+    void SetAudioIndex(unsigned int idx) { mData.AudioIndex = idx; }
 
-    protected:
-        void* GetUserData () { return reinterpret_cast<void*>(&mData); }
+    void SetAllocator(GameMemoryAllocator Alloc) { mData.Allocator = Alloc; }
 
-        FMVEventData mData;
+    void KillMusic() { mData.KillMusic = true; }
+
+    struct FMVEventData {
+        FMVEventData();
+
+        unsigned int AudioIndex;
+        GameMemoryAllocator Allocator;
+        bool KillMusic;
+    };
+
+    static const unsigned int AUDIO_INDEX_ENGLISH = 0;
+    static const unsigned int AUDIO_INDEX_FRENCH = 1;
+    static const unsigned int AUDIO_INDEX_GERMAN = 2;
+    static const unsigned int AUDIO_INDEX_SPANISH = 3;
+
+protected:
+    void *GetUserData() { return reinterpret_cast<void *>(&mData); }
+
+    FMVEventData mData;
 };
 
 #endif //FMVEVENT_H

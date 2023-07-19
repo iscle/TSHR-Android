@@ -47,13 +47,12 @@
 // Return:      N/A.
 //
 //==============================================================================
-Conversation::Conversation( DialogLine& line ) :
-    PlayableDialog( line.GetLevel(), line.GetMission(), line.GetEvent() ),
-    m_maxOrderNumber( line.GetConversationPosition() ),
-    m_dialogList( NULL ),
-    m_currentLine( NULL )
-{
-    line.AddToDialogList( reinterpret_cast<SelectableDialog**>(&m_dialogList) );
+Conversation::Conversation(DialogLine &line) :
+        PlayableDialog(line.GetLevel(), line.GetMission(), line.GetEvent()),
+        m_maxOrderNumber(line.GetConversationPosition()),
+        m_dialogList(NULL),
+        m_currentLine(NULL) {
+    line.AddToDialogList(reinterpret_cast<SelectableDialog **>(&m_dialogList));
 }
 
 //==============================================================================
@@ -66,8 +65,7 @@ Conversation::Conversation( DialogLine& line ) :
 // Return:      N/A.
 //
 //==============================================================================
-Conversation::~Conversation()
-{
+Conversation::~Conversation() {
 }
 
 //=============================================================================
@@ -80,30 +78,29 @@ Conversation::~Conversation()
 // Return:      true if it fits in this conversation, false otherwise
 //
 //=============================================================================
-bool Conversation::LineFits( DialogLine& line )
-{
+bool Conversation::LineFits(DialogLine &line) {
     bool matches;
-    DialogLine* existingLine = m_dialogList;
+    DialogLine *existingLine = m_dialogList;
 
-    rAssert( existingLine != NULL );
+    rAssert(existingLine != NULL);
 
     //
     // If the new line matches one dialog line in this conversation, it should
     // match them all
     //
-    matches = ( line.GetLevel() == existingLine->GetLevel() )
-              && ( line.GetMission() == existingLine->GetMission() )
-              && ( line.GetEvent() == existingLine->GetEvent() )
-              && ( line.GetConversationName() == existingLine->GetConversationName() );
+    matches = (line.GetLevel() == existingLine->GetLevel())
+              && (line.GetMission() == existingLine->GetMission())
+              && (line.GetEvent() == existingLine->GetEvent())
+              && (line.GetConversationName() == existingLine->GetConversationName());
 
 #ifdef RAD_DEBUG
-    if( matches )
+    if(matches)
     {
-        rAssert( line.GetConversationPosition() != existingLine->GetConversationPosition() );
+        rAssert(line.GetConversationPosition() != existingLine->GetConversationPosition());
     }
 #endif
 
-    return( matches );
+    return (matches);
 }
 
 //=============================================================================
@@ -116,30 +113,25 @@ bool Conversation::LineFits( DialogLine& line )
 // Return:      void 
 //
 //=============================================================================
-void Conversation::AddToConversation( DialogLine& line )
-{
+void Conversation::AddToConversation(DialogLine &line) {
     int position = line.GetConversationPosition();
-    DialogLine* listObj;
-    DialogLine* nextListObj;
+    DialogLine *listObj;
+    DialogLine *nextListObj;
 
-    if( ( m_dialogList == NULL ) 
-        || ( position < m_dialogList->GetConversationPosition() ) )
-    {
-        line.AddToDialogList( reinterpret_cast<SelectableDialog**>(&m_dialogList) );
-    }
-    else
-    {
+    if ((m_dialogList == NULL)
+        || (position < m_dialogList->GetConversationPosition())) {
+        line.AddToDialogList(reinterpret_cast<SelectableDialog **>(&m_dialogList));
+    } else {
         listObj = m_dialogList;
         // ARGH!  Stinky downcast!  I hate this!
-        nextListObj = reinterpret_cast<DialogLine*>(listObj->GetNextInList());
-        while( ( nextListObj != NULL ) 
-               && ( nextListObj->GetConversationPosition() < position ) )
-        {
+        nextListObj = reinterpret_cast<DialogLine *>(listObj->GetNextInList());
+        while ((nextListObj != NULL)
+               && (nextListObj->GetConversationPosition() < position)) {
             listObj = nextListObj;
-            nextListObj = reinterpret_cast<DialogLine*>(listObj->GetNextInList());
+            nextListObj = reinterpret_cast<DialogLine *>(listObj->GetNextInList());
         }
 
-        line.AddToDialogList( listObj );
+        line.AddToDialogList(listObj);
     }
 }
 
@@ -154,26 +146,23 @@ void Conversation::AddToConversation( DialogLine& line )
 // Return:      true if conversation valid and complete, false otherwise
 //
 //=============================================================================
-bool Conversation::IsComplete()
-{
+bool Conversation::IsComplete() {
     bool complete = true;
     int nextPosition = 1;
-    DialogLine* nextDialogLine = m_dialogList;
+    DialogLine *nextDialogLine = m_dialogList;
 
-    while( nextDialogLine != NULL )
-    {
-        if( nextDialogLine->GetConversationPosition() != nextPosition )
-        {
+    while (nextDialogLine != NULL) {
+        if (nextDialogLine->GetConversationPosition() != nextPosition) {
             complete = false;
             break;
         }
 
         // Stinky downcast!
-        nextDialogLine = reinterpret_cast<DialogLine*>(nextDialogLine->GetNextInList());
+        nextDialogLine = reinterpret_cast<DialogLine *>(nextDialogLine->GetNextInList());
         ++nextPosition;
     }
 
-    return( complete );
+    return (complete);
 }
 
 //=============================================================================
@@ -188,26 +177,23 @@ bool Conversation::IsComplete()
 // Return:      void 
 //
 //=============================================================================
-void Conversation::PlayLine( unsigned int lineIndex, 
-                             SimpsonsSoundPlayer& player,
-                             SimpsonsSoundPlayerCallback* callback )
-{
-    DialogLine* currentDialog = findDialogLineByIndex( lineIndex );
+void Conversation::PlayLine(unsigned int lineIndex,
+                            SimpsonsSoundPlayer &player,
+                            SimpsonsSoundPlayerCallback *callback) {
+    DialogLine *currentDialog = findDialogLineByIndex(lineIndex);
 
-    currentDialog->PlayLine( 0, player, callback );
+    currentDialog->PlayLine(0, player, callback);
 }
 
-void Conversation::QueueLine( unsigned int lineIndex, SimpsonsSoundPlayer& player )
-{
-    m_currentLine = findDialogLineByIndex( lineIndex );
+void Conversation::QueueLine(unsigned int lineIndex, SimpsonsSoundPlayer &player) {
+    m_currentLine = findDialogLineByIndex(lineIndex);
 
-    m_currentLine->QueueLine( 0, player );
+    m_currentLine->QueueLine(0, player);
 }
 
-void Conversation::PlayQueuedLine( SimpsonsSoundPlayer& player,
-                                   SimpsonsSoundPlayerCallback* callback )
-{
-    m_currentLine->PlayQueuedLine( player, callback );
+void Conversation::PlayQueuedLine(SimpsonsSoundPlayer &player,
+                                  SimpsonsSoundPlayerCallback *callback) {
+    m_currentLine->PlayQueuedLine(player, callback);
 }
 
 //=============================================================================
@@ -221,18 +207,16 @@ void Conversation::PlayQueuedLine( SimpsonsSoundPlayer& player,
 // Return:      number of dialog lines
 //
 //=============================================================================
-unsigned int Conversation::GetNumDialogLines() const
-{
+unsigned int Conversation::GetNumDialogLines() const {
     unsigned int lineCount = 0;
-    DialogLine* lineObj = m_dialogList;
+    DialogLine *lineObj = m_dialogList;
 
-    while( lineObj != NULL )
-    {
+    while (lineObj != NULL) {
         ++lineCount;
-        lineObj = static_cast<DialogLine*>(lineObj->GetNextInList());
+        lineObj = static_cast<DialogLine *>(lineObj->GetNextInList());
     }
 
-    return( lineCount );
+    return (lineCount);
 }
 
 //=============================================================================
@@ -243,26 +227,23 @@ unsigned int Conversation::GetNumDialogLines() const
 //
 // Parameters:  characterObj - character to match
 //
-// Return:      true if >=1 dialog line comes from the given character,
+// Return:      true if>=1 dialog line comes from the given character,
 //              false otherwise
 //
 //=============================================================================
-bool Conversation::UsesCharacter( tUID characterUID )
-{
+bool Conversation::UsesCharacter(tUID characterUID) {
     bool match = false;
-    DialogLine* lineObj = m_dialogList;
+    DialogLine *lineObj = m_dialogList;
 
-    while( lineObj != NULL )
-    {
-        if( lineObj->UsesCharacter( characterUID ) )
-        {
+    while (lineObj != NULL) {
+        if (lineObj->UsesCharacter(characterUID)) {
             match = true;
             break;
         }
-        lineObj = static_cast<DialogLine*>(lineObj->GetNextInList());
+        lineObj = static_cast<DialogLine *>(lineObj->GetNextInList());
     }
 
-    return( match );
+    return (match);
 }
 
 //=============================================================================
@@ -275,12 +256,11 @@ bool Conversation::UsesCharacter( tUID characterUID )
 // Return:      false 
 //
 //=============================================================================
-bool Conversation::IsVillainLine()
-{
+bool Conversation::IsVillainLine() {
     //
     // No conversations are villain one-liners
     //
-    return( false );
+    return (false);
 }
 
 //=============================================================================
@@ -293,25 +273,20 @@ bool Conversation::IsVillainLine()
 // Return:      tUID of character associated with dialog line
 //
 //=============================================================================
-tUID Conversation::GetDialogLineCharacterUID( unsigned int lineNum )
-{
+tUID Conversation::GetDialogLineCharacterUID(unsigned int lineNum) {
     unsigned int lineCount = lineNum;
-    DialogLine* lineObj = m_dialogList;
+    DialogLine *lineObj = m_dialogList;
 
-    rAssert( lineNum > 0 );
+    rAssert(lineNum > 0);
 
-    while( ( --lineCount > 0 ) && ( lineObj != NULL ) )
-    {
-        lineObj = static_cast<DialogLine*>(lineObj->GetNextInList());
+    while ((--lineCount > 0) && (lineObj != NULL)) {
+        lineObj = static_cast<DialogLine *>(lineObj->GetNextInList());
     }
 
-    if( lineObj != NULL )
-    {
-        return( lineObj->GetCharacterUID() );
-    }
-    else
-    {
-        return( 0 );
+    if (lineObj != NULL) {
+        return (lineObj->GetCharacterUID());
+    } else {
+        return (0);
     }
 }
 
@@ -327,11 +302,10 @@ tUID Conversation::GetDialogLineCharacterUID( unsigned int lineNum )
 // Return:      radKey32 representing conversation name field
 //
 //=============================================================================
-radKey32 Conversation::GetConversationName()
-{
-    rAssert( m_dialogList != NULL );
+radKey32 Conversation::GetConversationName() {
+    rAssert(m_dialogList != NULL);
 
-    return( m_dialogList->GetConversationName() );
+    return (m_dialogList->GetConversationName());
 }
 
 //=============================================================================
@@ -346,18 +320,17 @@ radKey32 Conversation::GetConversationName()
 // Return:      void 
 //
 //=============================================================================
-void Conversation::AddMatchingDialog( SelectableDialog& newDialog, SelectableDialogList& list )
-{
-    HeapMgr()->PushHeap( GMA_AUDIO_PERSISTENT );
+void Conversation::AddMatchingDialog(SelectableDialog &newDialog, SelectableDialogList &list) {
+    HeapMgr()->PushHeap(GMA_AUDIO_PERSISTENT);
 
-    DialogSelectionGroup* group = new DialogSelectionGroup( *this, newDialog );
+    DialogSelectionGroup *group = new DialogSelectionGroup(*this, newDialog);
 
-    rAssert( group != NULL );
+    rAssert(group != NULL);
 
-    list.remove( this );
-    list.push_back( group );
+    list.remove(this);
+    list.push_back(group);
 
-    HeapMgr()->PopHeap( GMA_AUDIO_PERSISTENT );
+    HeapMgr()->PopHeap(GMA_AUDIO_PERSISTENT);
 }
 
 //=============================================================================
@@ -370,16 +343,14 @@ void Conversation::AddMatchingDialog( SelectableDialog& newDialog, SelectableDia
 // Return:      void 
 //
 //=============================================================================
-void Conversation::PrintDialogLineNames()
-{
+void Conversation::PrintDialogLineNames() {
 #ifndef RAD_RELEASE
-    DialogLine* currentDialog = m_dialogList;
+    DialogLine *currentDialog = m_dialogList;
 
-    rDebugString( "Conversation contents:\n" );
-    while( currentDialog != NULL )
-    {
+    rDebugString("Conversation contents:\n");
+    while (currentDialog != NULL) {
         currentDialog->PrintResourceName();
-        currentDialog = static_cast<DialogLine*>(currentDialog->GetNextInList());
+        currentDialog = static_cast<DialogLine *>(currentDialog->GetNextInList());
     }
 #endif
 }
@@ -390,19 +361,17 @@ void Conversation::PrintDialogLineNames()
 //
 //******************************************************************************
 
-DialogLine* Conversation::findDialogLineByIndex( unsigned int lineIndex )
-{
+DialogLine *Conversation::findDialogLineByIndex(unsigned int lineIndex) {
     unsigned int lineCount = lineIndex;
-    DialogLine* currentDialog = m_dialogList;
+    DialogLine *currentDialog = m_dialogList;
 
-    rAssert( currentDialog != NULL );
-    
-    while( lineCount > 0 )
-    {
-        currentDialog = static_cast<DialogLine*>(currentDialog->GetNextInList());
-        rAssert( currentDialog != NULL );
+    rAssert(currentDialog != NULL);
+
+    while (lineCount > 0) {
+        currentDialog = static_cast<DialogLine *>(currentDialog->GetNextInList());
+        rAssert(currentDialog != NULL);
         --lineCount;
     }
 
-    return( currentDialog );
+    return (currentDialog);
 }

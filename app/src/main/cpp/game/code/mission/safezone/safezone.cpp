@@ -32,38 +32,31 @@
 
 
 //Default 
-SafeZone::SafeZone ( )
-{
+SafeZone::SafeZone() {
     mLocator = NULL;
     mRadius = 1;
 };
 
-SafeZone::~SafeZone ()
-{
+SafeZone::~SafeZone() {
 
 };
 
 //Use this Constructor 
-SafeZone::SafeZone(CarStartLocator* locator,unsigned int radius)
-{
+SafeZone::SafeZone(CarStartLocator *locator, unsigned int radius) {
     mLocator = locator;
     mRadius = radius;
 };
 
 
 //pass in  a vector and it will return true if its in the safzones radius, else false
-bool SafeZone::InsideZone( rmt::Vector vector)
-{
+bool SafeZone::InsideZone(rmt::Vector vector) {
     rmt::Vector temp;
 
-    mLocator->GetLocation( &temp );
-    
-    if ((rmt::Sqr(vector.x -temp.x) + rmt::Sqr(vector.z- temp.z) )<= rmt::Sqr (mRadius) )
-    {
+    mLocator->GetLocation(&temp);
+
+    if ((rmt::Sqr(vector.x - temp.x) + rmt::Sqr(vector.z - temp.z)) <= rmt::Sqr(mRadius)) {
         return true;
-    }
-    else
-    {
+    } else {
         return false;
     }
 
@@ -72,18 +65,16 @@ bool SafeZone::InsideZone( rmt::Vector vector)
 
 
 //returns a position of the safezone
-rmt::Vector SafeZone::GetPosition ()
-{
+rmt::Vector SafeZone::GetPosition() {
 
-        rmt::Vector temp;
-        mLocator->GetLocation( &temp );
-        return temp;
+    rmt::Vector temp;
+    mLocator->GetLocation(&temp);
+    return temp;
 };
 
 
 //returns the radius of the safezone
-unsigned int SafeZone::GetRadius()
-{
+unsigned int SafeZone::GetRadius() {
     return mRadius;
 };
 

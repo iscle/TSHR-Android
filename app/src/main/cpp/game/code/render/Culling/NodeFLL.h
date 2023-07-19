@@ -39,9 +39,9 @@ public:
     //
     // Returns Head Node
     //
-    NodeFLL* PlaceLowestFirst( NodeFLL* ipNode )
+    NodeFLL* PlaceLowestFirst(NodeFLL* ipNode)
     {
-        if(ipNode->mpData->Rank() < mpData->Rank())
+        if(ipNode->mpData->Rank() <mpData->Rank())
         {
             //add prev to this node
             ipNode->mpNext = this;
@@ -66,9 +66,9 @@ public:
     //
     // Returns Head Node
     //
-    NodeFLL* PlaceHighestFirst( NodeFLL* ipNode )
+    NodeFLL* PlaceHighestFirst(NodeFLL* ipNode)
     {
-        if(ipNode->mpData->Rank() > mpData->Rank())
+        if(ipNode->mpData->Rank()> mpData->Rank())
         {
             //add prev to this node
             ipNode->mpNext = this;

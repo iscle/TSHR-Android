@@ -12,59 +12,59 @@
 #include <input/virtualinputs.hpp>
 #include <input/inputmanager.h>
 
-static const char* szVirtualInputs[] =
-{
-    "MoveUp",
-    "MoveDown",
-    "MoveLeft",
-    "MoveRight",
-    "Attack",
-    "Jump",
-    "Sprint",
-    "DoAction",
+static const char *szVirtualInputs[] =
+        {
+                "MoveUp",
+                "MoveDown",
+                "MoveLeft",
+                "MoveRight",
+                "Attack",
+                "Jump",
+                "Sprint",
+                "DoAction",
 
-    "Accelerate",
-    "Reverse",
-    "SteerLeft",
-    "SteerRight",
-    "GetOutCar",
-    "HandBrake",
-    "Horn",
-    "ResetCar",
+                "Accelerate",
+                "Reverse",
+                "SteerLeft",
+                "SteerRight",
+                "GetOutCar",
+                "HandBrake",
+                "Horn",
+                "ResetCar",
 
-    "CameraLeft",
-    "CameraRight",
-    "CameraMoveIn",
-    "CameraMoveOut",
-    "CameraZoom",
-    "CameraLookUp",
-    "CameraCarLeft",
-    "CameraCarRight",
-    "CameraCarLookUp",
-    "CameraCarLookBack",
-    "CameraToggle",
-                            
-    "feBack",               // Do not allow the user to configure any fe buttons!
-    "feMoveUp",             // These are standard, unconfigurable
-    "feMoveDown",
-    "feMoveLeft",
-    "feMoveRight",
-    "feSelect",
-    "feFunction1",
-    "feFunction2",
-    "feMouseLeft",
-    "feMouseRight",
-    "feMouseUp",
-    "feMouseDown",
+                "CameraLeft",
+                "CameraRight",
+                "CameraMoveIn",
+                "CameraMoveOut",
+                "CameraZoom",
+                "CameraLookUp",
+                "CameraCarLeft",
+                "CameraCarRight",
+                "CameraCarLookUp",
+                "CameraCarLookBack",
+                "CameraToggle",
 
-    "P1_KBD_Start",
-    "P1_KBD_Gas",
-    "P1_KBD_Brake",
-    "P1_KBD_EBrake",
-    "P1_KBD_Nitro",
-    "P1_KBD_Left",
-    "P1_KBD_Right"
-};
+                "feBack",               // Do not allow the user to configure any fe buttons!
+                "feMoveUp",             // These are standard, unconfigurable
+                "feMoveDown",
+                "feMoveLeft",
+                "feMoveRight",
+                "feSelect",
+                "feFunction1",
+                "feFunction2",
+                "feMouseLeft",
+                "feMouseRight",
+                "feMouseUp",
+                "feMouseDown",
+
+                "P1_KBD_Start",
+                "P1_KBD_Gas",
+                "P1_KBD_Brake",
+                "P1_KBD_EBrake",
+                "P1_KBD_Nitro",
+                "P1_KBD_Left",
+                "P1_KBD_Right"
+        };
 
 //==============================================================================
 // VirtualInputs::GetName
@@ -78,11 +78,10 @@ static const char* szVirtualInputs[] =
 //
 //==============================================================================
 
-const char* VirtualInputs::GetName( int VirtualInput )
-{
-    rAssert( VirtualInput >= 0 && VirtualInput < GetNumber() );
+const char *VirtualInputs::GetName(int VirtualInput) {
+    rAssert(VirtualInput >= 0 && VirtualInput < GetNumber());
 
-    return szVirtualInputs[ VirtualInput ];
+    return szVirtualInputs[VirtualInput];
 }
 
 //==============================================================================
@@ -97,12 +96,10 @@ const char* VirtualInputs::GetName( int VirtualInput )
 //
 //==============================================================================
 
-eMapType VirtualInputs::GetType( int VirtualInput )
-{
-    rAssert( VirtualInput >= 0 && VirtualInput < GetNumber() );
+eMapType VirtualInputs::GetType(int VirtualInput) {
+    rAssert(VirtualInput >= 0 && VirtualInput < GetNumber());
 
-    switch( VirtualInput )
-    {
+    switch (VirtualInput) {
         case InputManager::MoveUp:
         case InputManager::MoveDown:
         case InputManager::MoveLeft:
@@ -145,17 +142,14 @@ eMapType VirtualInputs::GetType( int VirtualInput )
         case InputManager::feMouseUp:
         case InputManager::feMouseDown:
             return MAP_FRONTEND;
-        default:
-            {
-                if ( VirtualInput >= InputManager::P1_KBD_Start && VirtualInput <= InputManager::P1_KBD_Right )
-                {
-                    return MAP_FRONTEND;
-                }
-                else
-                {
-                    return MAP_CHARACTER;
-                }
+        default: {
+            if (VirtualInput >= InputManager::P1_KBD_Start &&
+                VirtualInput <= InputManager::P1_KBD_Right) {
+                return MAP_FRONTEND;
+            } else {
+                return MAP_CHARACTER;
             }
+        }
     }
 }
 //==============================================================================
@@ -170,9 +164,8 @@ eMapType VirtualInputs::GetType( int VirtualInput )
 //
 //==============================================================================
 
-int VirtualInputs::GetNumber()
-{
-    static int NumVirtualInputs = sizeof( szVirtualInputs ) / sizeof( szVirtualInputs[0] );
+int VirtualInputs::GetNumber() {
+    static int NumVirtualInputs = sizeof(szVirtualInputs) / sizeof(szVirtualInputs[0]);
 
     return NumVirtualInputs;
 }

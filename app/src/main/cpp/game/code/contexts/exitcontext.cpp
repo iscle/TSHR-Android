@@ -68,7 +68,7 @@
 //******************************************************************************
 
 // Static pointer to instance of singleton.
-ExitContext* ExitContext::spInstance = NULL;
+ExitContext *ExitContext::spInstance = NULL;
 
 //******************************************************************************
 //
@@ -90,14 +90,12 @@ ExitContext* ExitContext::spInstance = NULL;
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-ExitContext* ExitContext::GetInstance()
-{
-    if( spInstance == NULL )
-    {
+ExitContext *ExitContext::GetInstance() {
+    if (spInstance == NULL) {
         spInstance = new(GMA_PERSISTENT) ExitContext;
-        rAssert( spInstance );
+        rAssert(spInstance);
     }
-    
+
     return spInstance;
 }
 
@@ -122,21 +120,19 @@ ExitContext* ExitContext::GetInstance()
 //        checking and handling of special cases.
 //
 //==============================================================================
-void ExitContext::OnStart( ContextEnum previousContext )
-{
-    MEMTRACK_PUSH_FLAG( "Exit" );
+void ExitContext::OnStart(ContextEnum previousContext) {
+    MEMTRACK_PUSH_FLAG("Exit");
 
-    if( previousContext == CONTEXT_GAMEPLAY || previousContext == CONTEXT_LOADING_GAMEPLAY )
-    {
+    if (previousContext == CONTEXT_GAMEPLAY || previousContext == CONTEXT_LOADING_GAMEPLAY) {
         // My precious little hack... my preciouss.
-        GameFlow::GetInstance()->GetContext( CONTEXT_PAUSE )->Start( CONTEXT_GAMEPLAY );
-        GameFlow::GetInstance()->GetContext( CONTEXT_PAUSE )->Stop( CONTEXT_EXIT );
+        GameFlow::GetInstance()->GetContext(CONTEXT_PAUSE)->Start(CONTEXT_GAMEPLAY);
+        GameFlow::GetInstance()->GetContext(CONTEXT_PAUSE)->Stop(CONTEXT_EXIT);
     }
 
     GetLoadingManager()->CancelPendingRequests();
     p3d::loadManager->CancelAll();
 
-    GetSoundManager()->OnGameplayEnd( false );
+    GetSoundManager()->OnGameplayEnd(false);
 }
 
 
@@ -151,12 +147,11 @@ void ExitContext::OnStart( ContextEnum previousContext )
 // Return:      
 //
 //==============================================================================
-void ExitContext::OnStop( ContextEnum nextContext )
-{
-    MEMTRACK_POP_FLAG( "" );
+void ExitContext::OnStop(ContextEnum nextContext) {
+    MEMTRACK_POP_FLAG("");
     GetGame()->Stop();
 
-    rAssertMsg( false, "No happen should." );
+    rAssertMsg(false, "No happen should.");
 }
 
 
@@ -171,8 +166,7 @@ void ExitContext::OnStop( ContextEnum nextContext )
 // Return:      
 //
 //==============================================================================
-void ExitContext::OnUpdate( unsigned int elapsedTime )
-{
+void ExitContext::OnUpdate(unsigned int elapsedTime) {
 }
 
 
@@ -187,8 +181,7 @@ void ExitContext::OnUpdate( unsigned int elapsedTime )
 // Return:      
 //
 //==============================================================================
-void ExitContext::OnSuspend()
-{
+void ExitContext::OnSuspend() {
 }
 
 
@@ -203,8 +196,7 @@ void ExitContext::OnSuspend()
 // Return:      
 //
 //==============================================================================
-void ExitContext::OnResume()
-{
+void ExitContext::OnResume() {
 }
 
 
@@ -219,8 +211,7 @@ void ExitContext::OnResume()
 // Return:      
 //
 //==============================================================================
-void ExitContext::OnHandleEvent( EventEnum id, void* pEventData )
-{
+void ExitContext::OnHandleEvent(EventEnum id, void *pEventData) {
 }
 
 
@@ -243,8 +234,7 @@ void ExitContext::OnHandleEvent( EventEnum id, void* pEventData )
 // Return:      
 //
 //==============================================================================// 
-ExitContext::ExitContext()
-{
+ExitContext::ExitContext() {
 }
 
 
@@ -259,8 +249,7 @@ ExitContext::ExitContext()
 // Return:      
 //
 //==============================================================================// 
-ExitContext::~ExitContext()
-{
+ExitContext::~ExitContext() {
     spInstance = NULL;
 }
 

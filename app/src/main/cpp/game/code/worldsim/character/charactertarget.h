@@ -31,41 +31,54 @@ class Character;
 //=============================================================================
 
 class CharacterTarget
-:
-public ISuperCamTarget, public IHudMapIconLocator
-{
+        :
+                public ISuperCamTarget, public IHudMapIconLocator {
 public:
-    CharacterTarget( Character* pCharacter );
+    CharacterTarget(Character *pCharacter);
+
     ~CharacterTarget();
-    
-    virtual void GetPosition( rmt::Vector* position );
-    virtual void GetHeading( rmt::Vector* heading );
-    virtual void GetVUP( rmt::Vector* vup );
-    virtual void GetVelocity( rmt::Vector* velocity );
+
+    virtual void GetPosition(rmt::Vector *position);
+
+    virtual void GetHeading(rmt::Vector *heading);
+
+    virtual void GetVUP(rmt::Vector *vup);
+
+    virtual void GetVelocity(rmt::Vector *velocity);
+
     virtual unsigned int GetID();
+
     virtual bool IsCar() const;
+
     virtual bool IsAirborn();
-    virtual bool IsUnstable(); 
+
+    virtual bool IsUnstable();
+
     virtual bool IsQuickTurn();
+
     virtual bool IsInReverse();
-    virtual void GetFirstPersonPosition( rmt::Vector* position );
-    virtual void GetTerrainIntersect( rmt::Vector& pos, rmt::Vector& normal ) const;
+
+    virtual void GetFirstPersonPosition(rmt::Vector *position);
+
+    virtual void GetTerrainIntersect(rmt::Vector &pos, rmt::Vector &normal) const;
 
 
-
-    //This is only for debugging, so in the implementation go ahead and 
+    //This is only for debugging, so in the implementation go ahead and
     //make this return NULL in release.
-    virtual const char* const GetName();
+    virtual const char *const GetName();
 
-    void SetID( CharacterEnum::WalkerID id );
+    void SetID(CharacterEnum::WalkerID id);
+
 private:
 
     //Prevent wasteful constructor creation.
-    CharacterTarget( void );
-	CharacterTarget( const CharacterTarget& charactertarget );
-    CharacterTarget& operator=( const CharacterTarget& charactertarget );
+    CharacterTarget(void);
 
-    Character* mpCharacter;
+    CharacterTarget(const CharacterTarget &charactertarget);
+
+    CharacterTarget &operator=(const CharacterTarget &charactertarget);
+
+    Character *mpCharacter;
     CharacterEnum::WalkerID mWalkerID;
 };
 

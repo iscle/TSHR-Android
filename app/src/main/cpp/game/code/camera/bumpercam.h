@@ -29,40 +29,43 @@ class ISuperCamTarget;
 //
 //=============================================================================
 
-class BumperCam : public SuperCam
-{
+class BumperCam : public SuperCam {
 public:
 
-    enum BumperFlag
-    {
+    enum BumperFlag {
         READY = SUPERCAM_END   //This is to carry on from the supercam flags
     };
-    
+
     BumperCam();
+
     virtual ~BumperCam();
 
-   //Update: Called when you want the super cam to update its state.
-    virtual void Update( unsigned int milliseconds );
-    virtual void UpdateForPhysics( unsigned int milliseconds );
+    //Update: Called when you want the super cam to update its state.
+    virtual void Update(unsigned int milliseconds);
+
+    virtual void UpdateForPhysics(unsigned int milliseconds);
 
     //Returns the name of the super cam.  
     //This can be used in the FE or debug info
-    virtual const char* const GetName() const;
+    virtual const char *const GetName() const;
 
     //This loads the off-line created settings for the camera.  
     //It is passed in as a byte stream of some data of known size.
-    virtual void LoadSettings( unsigned char* settings ); 
- 
+    virtual void LoadSettings(unsigned char *settings);
+
     virtual Type GetType();
 
     //These are for favourable support of this command
-    virtual void SetTarget( ISuperCamTarget* target ); 
-    virtual void AddTarget( ISuperCamTarget* target );
-    
+    virtual void SetTarget(ISuperCamTarget *target);
+
+    virtual void AddTarget(ISuperCamTarget *target);
+
     unsigned int GetNumTargets() const;
 
     //Support for colliding with the world.
-    void SetCollisionOffset( const rmt::Vector* offset, unsigned int numCollisions, const rmt::Vector& groundOffset );
+    void SetCollisionOffset(const rmt::Vector *offset, unsigned int numCollisions,
+                            const rmt::Vector &groundOffset);
+
     float GetCollisionRadius() const { return GetNearPlane(); };
 
 private:
@@ -70,16 +73,18 @@ private:
     //These functions are to allow real-time control of the settings of 
     //the supercam.
     virtual void OnRegisterDebugControls();
+
     virtual void OnUnregisterDebugControls();
 
     BumperCamData mData;
-    ISuperCamTarget* mTarget;
+    ISuperCamTarget *mTarget;
 
     rmt::Vector mGroundOffset;
 
     //Prevent wasteful constructor creation.
-    BumperCam( const BumperCam& bumpercam );
-    BumperCam& operator=( const BumperCam& bumpercam );
+    BumperCam(const BumperCam &bumpercam);
+
+    BumperCam &operator=(const BumperCam &bumpercam);
 };
 
 //*****************************************************************************
@@ -98,8 +103,7 @@ private:
 // Return:      const char* const 
 //
 //=============================================================================
-inline const char* const BumperCam::GetName() const
-{
+inline const char *const BumperCam::GetName() const {
     return "BUMPER_CAM";
 }
 
@@ -113,8 +117,7 @@ inline const char* const BumperCam::GetName() const
 // Return:      Type 
 //
 //=============================================================================
-inline SuperCam::Type BumperCam::GetType()
-{
+inline SuperCam::Type BumperCam::GetType() {
     return BUMPER_CAM;
 }
 
@@ -123,13 +126,12 @@ inline SuperCam::Type BumperCam::GetType()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void BumperCam::SetTarget( ISuperCamTarget* target )
-{
+inline void BumperCam::SetTarget(ISuperCamTarget *target) {
     mTarget = target;
 }
 
@@ -138,14 +140,13 @@ inline void BumperCam::SetTarget( ISuperCamTarget* target )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void BumperCam::AddTarget( ISuperCamTarget* target )
-{
-    rAssertMsg( false, "Only call SetTarget on the BumperCam" );
+inline void BumperCam::AddTarget(ISuperCamTarget *target) {
+    rAssertMsg(false, "Only call SetTarget on the BumperCam");
 }
 
 //=============================================================================
@@ -158,10 +159,8 @@ inline void BumperCam::AddTarget( ISuperCamTarget* target )
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int BumperCam::GetNumTargets() const
-{
-    if ( mTarget )
-    {
+inline unsigned int BumperCam::GetNumTargets() const {
+    if (mTarget) {
         return 1;
     }
 

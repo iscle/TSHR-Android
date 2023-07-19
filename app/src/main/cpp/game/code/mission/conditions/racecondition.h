@@ -28,26 +28,29 @@
 //
 //=============================================================================
 
-class RaceCondition : public VehicleCondition
-{
+class RaceCondition : public VehicleCondition {
 public:
     RaceCondition();
+
     virtual ~RaceCondition();
 
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
     bool IsChaseCondition();
+
     bool IsClose();
 
 protected:
     virtual void OnInitialize();
+
     virtual void OnFinalize();
 
 private:
 
     //Prevent wasteful constructor creation.
-    RaceCondition( const RaceCondition& racecondition );
-    RaceCondition& operator=( const RaceCondition& racecondition );
+    RaceCondition(const RaceCondition &racecondition);
+
+    RaceCondition &operator=(const RaceCondition &racecondition);
 
     int m_playerWaypointsRemaining;
     int m_aiWaypointsRemaining;

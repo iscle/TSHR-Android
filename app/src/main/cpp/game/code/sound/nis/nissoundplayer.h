@@ -35,41 +35,48 @@ struct NISSoundPlaybackCompleteCallback;
 //
 //=============================================================================
 
-class NISPlayerGroup : public SimpsonsSoundPlayerCallback
-{
-    public:
-        NISPlayerGroup();
-        virtual ~NISPlayerGroup();
+class NISPlayerGroup : public SimpsonsSoundPlayerCallback {
+public:
+    NISPlayerGroup();
 
-        void LoadSound( radKey32 soundID, NISSoundLoadedCallback* callback );
-        void PlaySound( rmt::Box3D* box, NISSoundPlaybackCompleteCallback* callback );
-        void StopAndDumpSound();
-        void Pause() { m_player.Pause(); }
-        void Continue();
+    virtual ~NISPlayerGroup();
 
-        bool IsSoundIDLoaded( radKey32 soundID );
-        bool IsFree() { return( m_soundID == 0 ); }
+    void LoadSound(radKey32 soundID, NISSoundLoadedCallback *callback);
 
-        //
-        // SimpsonsSoundPlayerCallback interface functions
-        //
-        void OnSoundReady();
-        void OnPlaybackComplete();
+    void PlaySound(rmt::Box3D *box, NISSoundPlaybackCompleteCallback *callback);
 
-    protected:
-    private:
-        //Prevent wasteful constructor creation.
-        NISPlayerGroup( const NISPlayerGroup& original );
-        NISPlayerGroup& operator=( const NISPlayerGroup& rhs );
+    void StopAndDumpSound();
 
-        PositionalSoundPlayer m_player;
+    void Pause() { m_player.Pause(); }
 
-        radKey32 m_soundID;
+    void Continue();
 
-        NISSoundLoadedCallback* m_loadCallback;
-        NISSoundPlaybackCompleteCallback* m_playCallback;
+    bool IsSoundIDLoaded(radKey32 soundID);
 
-        bool m_soundQueued;
+    bool IsFree() { return (m_soundID == 0); }
+
+    //
+    // SimpsonsSoundPlayerCallback interface functions
+    //
+    void OnSoundReady();
+
+    void OnPlaybackComplete();
+
+protected:
+private:
+    //Prevent wasteful constructor creation.
+    NISPlayerGroup(const NISPlayerGroup &original);
+
+    NISPlayerGroup &operator=(const NISPlayerGroup &rhs);
+
+    PositionalSoundPlayer m_player;
+
+    radKey32 m_soundID;
+
+    NISSoundLoadedCallback *m_loadCallback;
+    NISSoundPlaybackCompleteCallback *m_playCallback;
+
+    bool m_soundQueued;
 };
 
 //=============================================================================
@@ -78,36 +85,41 @@ class NISPlayerGroup : public SimpsonsSoundPlayerCallback
 //
 //=============================================================================
 
-class NISSoundPlayer : public EventListener
-{
-    public:
-        NISSoundPlayer();
-        virtual ~NISSoundPlayer();
+class NISSoundPlayer : public EventListener {
+public:
+    NISSoundPlayer();
 
-        void LoadNISSound( radKey32 NISSoundID, NISSoundLoadedCallback* callback );
-        void PlayNISSound( radKey32 NISSoundID, rmt::Box3D* box, NISSoundPlaybackCompleteCallback* callback );
-        void StopAndDumpNISSound( radKey32 NISSoundID );
+    virtual ~NISSoundPlayer();
 
-        void PauseAllNISPlayers();
-        void ContinueAllNISPlayers();
+    void LoadNISSound(radKey32 NISSoundID, NISSoundLoadedCallback *callback);
 
-        //
-        // EventListener functions
-        //
-        void HandleEvent( EventEnum id, void* pEventData );
+    void
+    PlayNISSound(radKey32 NISSoundID, rmt::Box3D *box, NISSoundPlaybackCompleteCallback *callback);
 
-    private:
-        //Prevent wasteful constructor creation.
-        NISSoundPlayer( const NISSoundPlayer& original );
-        NISSoundPlayer& operator=( const NISSoundPlayer& rhs );
+    void StopAndDumpNISSound(radKey32 NISSoundID);
 
-        void loadFEGag( radKey32 gagKey );
+    void PauseAllNISPlayers();
 
-        static const unsigned int NUM_NIS_PLAYERS = 6;
+    void ContinueAllNISPlayers();
 
-        NISPlayerGroup m_NISPlayers[NUM_NIS_PLAYERS];
+    //
+    // EventListener functions
+    //
+    void HandleEvent(EventEnum id, void *pEventData);
 
-        radKey32 m_currentFEGag;
+private:
+    //Prevent wasteful constructor creation.
+    NISSoundPlayer(const NISSoundPlayer &original);
+
+    NISSoundPlayer &operator=(const NISSoundPlayer &rhs);
+
+    void loadFEGag(radKey32 gagKey);
+
+    static const unsigned int NUM_NIS_PLAYERS = 6;
+
+    NISPlayerGroup m_NISPlayers[NUM_NIS_PLAYERS];
+
+    radKey32 m_currentFEGag;
 };
 
 

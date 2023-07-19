@@ -15,6 +15,6 @@
 
 #ifdef RAD_PS2
 #include <input/rumbleps2.cpp>
-#elif defined( RAD_GAMECUBE )
+#elif defined(RAD_GAMECUBE)
 #include <input/rumblegc.cpp>
 #endif

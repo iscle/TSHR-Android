@@ -49,12 +49,12 @@
 // Return:
 //
 //===========================================================================
-InstParticleSystemLoader::InstParticleSystemLoader() 
-: tSimpleChunkHandler(SRR2::ChunkID::INST_PARTICLE_SYSTEM)
-{
+InstParticleSystemLoader::InstParticleSystemLoader()
+        : tSimpleChunkHandler(SRR2::ChunkID::INST_PARTICLE_SYSTEM) {
     mpListenerCB = NULL;
     mUserData = -1;
 }
+
 //===========================================================================
 // InstParticleSystemLoader::~InstParticleSystemLoader
 //===========================================================================
@@ -68,8 +68,7 @@ InstParticleSystemLoader::InstParticleSystemLoader()
 // Return:
 //
 //===========================================================================
-InstParticleSystemLoader::~InstParticleSystemLoader()
-{
+InstParticleSystemLoader::~InstParticleSystemLoader() {
 
 }
 
@@ -89,19 +88,17 @@ InstParticleSystemLoader::~InstParticleSystemLoader()
 //
 //===========================================================================
 
-void InstParticleSystemLoader::SetRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData )
-{
-	//
-	// Follow protocol; notify old Listener, that it has been 
-	// "disconnected".
-	//
-	if( mpListenerCB != NULL )
-	{
-	  mpListenerCB->OnChunkLoaded( NULL, iUserData, 0 );
-	}
-	mpListenerCB  = pListenerCB;
-	mUserData     = iUserData;
+void InstParticleSystemLoader::SetRegdListener(ChunkListenerCallback *pListenerCB,
+                                               int iUserData) {
+    //
+    // Follow protocol; notify old Listener, that it has been
+    // "disconnected".
+    //
+    if (mpListenerCB != NULL) {
+        mpListenerCB->OnChunkLoaded(NULL, iUserData, 0);
+    }
+    mpListenerCB = pListenerCB;
+    mUserData = iUserData;
 }
 //===========================================================================
 // InstParticleSystemLoader::SetRegdListener
@@ -119,11 +116,10 @@ void InstParticleSystemLoader::SetRegdListener( ChunkListenerCallback* pListener
 //
 //===========================================================================
 
-void InstParticleSystemLoader::ModRegdListener( ChunkListenerCallback* pListenerCB,
-                         int   iUserData )
-{
-	rAssert( pListenerCB == mpListenerCB );
-	mUserData = iUserData;
+void InstParticleSystemLoader::ModRegdListener(ChunkListenerCallback *pListenerCB,
+                                               int iUserData) {
+    rAssert(pListenerCB == mpListenerCB);
+    mUserData = iUserData;
 }
 //===========================================================================
 // InstParticleSystemLoader::LoadObject
@@ -144,86 +140,75 @@ void InstParticleSystemLoader::ModRegdListener( ChunkListenerCallback* pListener
 //
 //===========================================================================
 
-tEntity* InstParticleSystemLoader::LoadObject(tChunkFile* file, tEntityStore* store)
-{
-    IEntityDSG::msDeletionsSafe=true;
-MEMTRACK_PUSH_GROUP( "Particle Systems" );
+tEntity *InstParticleSystemLoader::LoadObject(tChunkFile *file, tEntityStore *store) {
+    IEntityDSG::msDeletionsSafe = true;
+    MEMTRACK_PUSH_GROUP("Particle Systems");
 
-    tParticleSystemFactoryLoader* pFactoryLoader = new (GMA_TEMP) tParticleSystemFactoryLoader;
-    tParticleSystemFactory* pFactory = NULL;
-    tFrameControllerLoader* pControllerLoader = new (GMA_TEMP) tFrameControllerLoader;
-    tEffectController* pController = NULL;
+    tParticleSystemFactoryLoader *pFactoryLoader = new(GMA_TEMP) tParticleSystemFactoryLoader;
+    tParticleSystemFactory *pFactory = NULL;
+    tFrameControllerLoader *pControllerLoader = new(GMA_TEMP) tFrameControllerLoader;
+    tEffectController *pController = NULL;
 
     unsigned long id = file->GetLong();
     ParticleEnum::ParticleID type = ParticleEnum::ParticleID(id);
 
-    int maxInstances = static_cast<int>( file->GetLong() );
+    int maxInstances = static_cast<int>(file->GetLong());
 
-    while( file->ChunksRemaining() )
-    {
+    while (file->ChunksRemaining()) {
         file->BeginChunk();
-        switch( file->GetCurrentID() )
-        {
-        case Pure3D::ParticleSystem::SYSTEM_FACTORY:
-        {
+        switch (file->GetCurrentID()) {
+            case Pure3D::ParticleSystem::SYSTEM_FACTORY: {
 
-            pFactory = static_cast<tParticleSystemFactory*> (pFactoryLoader->LoadObject( file, store ) );
-            bool collision = store->TestCollision( pFactory->GetUID(), pFactory );
-            if( !collision )
-            {
-                store->Store( pFactory );
+                pFactory = static_cast<tParticleSystemFactory *>(pFactoryLoader->LoadObject(file,
+                                                                                            store));
+                bool collision = store->TestCollision(pFactory->GetUID(), pFactory);
+                if (!collision) {
+                    store->Store(pFactory);
+                } else {
+                    pFactory->Release();
+                    pFactory = 0;
+                }
+                break;
             }
-            else
-            {
-                pFactory->Release();
-                pFactory = 0;
-            }
-            break;
-        }
-        case Pure3D::Animation::FrameControllerData::FRAME_CONTROLLER:
-        {                  
-            if ( pController == NULL )
-            {
-                tFrameController* pfc = (tFrameController*)pControllerLoader->LoadObject(file,store);
-                pController = static_cast<tEffectController*>(pfc);
-                if ( pController != NULL )
-                {
-                    bool collision = store->TestCollision( pController->GetUID(), pController );
-                    if( !collision )
-                    {
-                        store->Store( pController );
-                    }
-                    else
-                    {
-                        pController->Release();
-                        pController = 0;
+            case Pure3D::Animation::FrameControllerData::FRAME_CONTROLLER: {
+                if (pController == NULL) {
+                    tFrameController *pfc = (tFrameController *) pControllerLoader->LoadObject(file,
+                                                                                               store);
+                    pController = static_cast<tEffectController *>(pfc);
+                    if (pController != NULL) {
+                        bool collision = store->TestCollision(pController->GetUID(), pController);
+                        if (!collision) {
+                            store->Store(pController);
+                        } else {
+                            pController->Release();
+                            pController = 0;
+                        }
                     }
                 }
+                break;
             }
-            break;
-        }
-		// Textures, shaders
-        default:
-            unsigned int fileId = file->GetCurrentID();
-            tChunkHandler* pChunkHandler = p3d::loadManager->GetP3DHandler()->GetHandler( file->GetCurrentID() );
-            if ( pChunkHandler != NULL )
-                tLoadStatus status = pChunkHandler->Load( file, store );
+                // Textures, shaders
+            default:
+                unsigned int fileId = file->GetCurrentID();
+                tChunkHandler *pChunkHandler = p3d::loadManager->GetP3DHandler()->GetHandler(
+                        file->GetCurrentID());
+                if (pChunkHandler != NULL)
+                    tLoadStatus status = pChunkHandler->Load(file, store);
 
-            break;
+                break;
         }
         file->EndChunk();
     }
 
-    if(pFactory)
-    {
-        ParticleManager::GetInstance()->InitializeSystem( type, pFactory, pController, maxInstances );
+    if (pFactory) {
+        ParticleManager::GetInstance()->InitializeSystem(type, pFactory, pController, maxInstances);
     }
-    
+
     pFactoryLoader->ReleaseVerified();
     pControllerLoader->ReleaseVerified();
 
-MEMTRACK_POP_GROUP( "Particle Systems" );
+    MEMTRACK_POP_GROUP("Particle Systems");
 
-    IEntityDSG::msDeletionsSafe=false;
+    IEntityDSG::msDeletionsSafe = false;
     return NULL;
 }

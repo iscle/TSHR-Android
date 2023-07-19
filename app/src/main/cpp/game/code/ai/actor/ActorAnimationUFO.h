@@ -41,27 +41,31 @@
 // Constraints:
 //
 //===========================================================================
-class ActorAnimationUFO : public ActorAnimation
-{
-    public:
-        ActorAnimationUFO();
-        virtual ~ActorAnimationUFO();
+class ActorAnimationUFO : public ActorAnimation {
+public:
+    ActorAnimationUFO();
 
-        virtual void SetState( int state ){}
-        // Apply animation, return true/false indicating whether or not the returned animation is different
-        // from the given one
-        virtual bool Update( const rmt::Matrix& currTransform, rmt::Matrix* newTransform, float deltaTime, tCompositeDrawable* = NULL );
+    virtual ~ActorAnimationUFO();
 
-        int m_NumUpdates;
-        
-    protected:
+    virtual void SetState(int state) {}
 
-    private:
-        // These methods defined as private and not implemented ensure that
-        // clients will not be able to use them.  For example, we will
-        // disallow ActorAnimationUFO from being copied and assigned.
-        ActorAnimationUFO( const ActorAnimationUFO& );
-        ActorAnimationUFO& operator=( const ActorAnimationUFO& );
+    // Apply animation, return true/false indicating whether or not the returned animation is different
+    // from the given one
+    virtual bool
+    Update(const rmt::Matrix &currTransform, rmt::Matrix *newTransform, float deltaTime,
+           tCompositeDrawable * = NULL);
+
+    int m_NumUpdates;
+
+protected:
+
+private:
+    // These methods defined as private and not implemented ensure that
+    // clients will not be able to use them.  For example, we will
+    // disallow ActorAnimationUFO from being copied and assigned.
+    ActorAnimationUFO(const ActorAnimationUFO &);
+
+    ActorAnimationUFO &operator=(const ActorAnimationUFO &);
 
 
 };

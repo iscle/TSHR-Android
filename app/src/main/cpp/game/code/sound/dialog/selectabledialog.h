@@ -25,6 +25,7 @@
 // Forward References
 //========================================
 class SimpsonsSoundPlayer;
+
 struct SimpsonsSoundPlayerCallback;
 
 //=============================================================================
@@ -33,84 +34,98 @@ struct SimpsonsSoundPlayerCallback;
 //
 //=============================================================================
 
-class SelectableDialog
-{
-    public:
-        SelectableDialog();
-        SelectableDialog( unsigned int level, unsigned int mission, EventEnum event );
-        virtual ~SelectableDialog();
+class SelectableDialog {
+public:
+    SelectableDialog();
 
-        static const int NO_MISSION = 0;
-        static const int NO_LEVEL = 0;
+    SelectableDialog(unsigned int level, unsigned int mission, EventEnum event);
 
-        bool IsLevelSpecific() { return( m_levelNum != NO_LEVEL ); }
+    virtual ~SelectableDialog();
 
-        virtual unsigned int GetMission() const;
-        virtual unsigned int GetLevel() const;
-        virtual EventEnum GetEvent() const;
-        
-        virtual bool UsesCharacter( Character* characterObj ) 
-            { return( UsesCharacter( characterObj->GetUID() ) ); }
-        virtual bool UsesCharacter( tUID characterUID ) = 0;
+    static const int NO_MISSION = 0;
+    static const int NO_LEVEL = 0;
 
-        virtual tUID GetDialogLineCharacterUID( unsigned int lineNum ) = 0;
+    bool IsLevelSpecific() { return (m_levelNum != NO_LEVEL); }
 
-        virtual bool IsVillainLine() = 0;
+    virtual unsigned int GetMission() const;
 
-        void AddToDialogList( SelectableDialog** list );
-        void AddToDialogList( SelectableDialog* listObj );
-        SelectableDialog* GetNextInList() const { return( m_nextListObject ); }
-        void RemoveNextFromList();
+    virtual unsigned int GetLevel() const;
 
-        virtual void AddMatchingDialog( SelectableDialog& newDialog, SelectableDialogList& list ) = 0;
+    virtual EventEnum GetEvent() const;
 
-        virtual void PlayLine( unsigned int lineIndex,
-                               SimpsonsSoundPlayer& player,
-                               SimpsonsSoundPlayerCallback* callback ) = 0;
-        virtual void QueueLine( unsigned int lineIndex,
-                                SimpsonsSoundPlayer& player ) = 0;
-        virtual void PlayQueuedLine( SimpsonsSoundPlayer& player,
-                                     SimpsonsSoundPlayerCallback* callback ) = 0;
+    virtual bool UsesCharacter(Character *characterObj) {
+        return (UsesCharacter(characterObj->GetUID()));
+    }
 
-        virtual unsigned int GetNumDialogLines() const = 0;
+    virtual bool UsesCharacter(tUID characterUID) = 0;
 
-        virtual radKey32 GetConversationName() = 0;
+    virtual tUID GetDialogLineCharacterUID(unsigned int lineNum) = 0;
 
-#ifndef RAD_RELEASE
-        void MarkAsPlayed();
-        void PrintPlayedStatus();
-#endif
+    virtual bool IsVillainLine() = 0;
 
-    protected:
-        //
-        // Level, mission, and event values.  Since these aren't really used
-        // in DialogSelectionGroup and Conversation objects, they should
-        // probably be separated out of this object someday if we want to
-        // save a few bytes and clean up the design a bit.
-        //
+    void AddToDialogList(SelectableDialog **list);
 
-        //
-        // Level and mission number for this line.  Set to NO_MISSION or
-        // NO_LEVEL if not applicable.
-        //
-        int m_missionNum;
-        int m_levelNum;
+    void AddToDialogList(SelectableDialog *listObj);
 
-        //
-        // Event that this dialog is played in response to
-        //
-        EventEnum m_event;
+    SelectableDialog *GetNextInList() const { return (m_nextListObject); }
 
-    private:
-        //Prevent wasteful constructor creation.
-        SelectableDialog( const SelectableDialog& original );
-        SelectableDialog& operator=( const SelectableDialog& rhs );
+    void RemoveNextFromList();
+
+    virtual void AddMatchingDialog(SelectableDialog &newDialog, SelectableDialogList &list) = 0;
+
+    virtual void PlayLine(unsigned int lineIndex,
+                          SimpsonsSoundPlayer &player,
+                          SimpsonsSoundPlayerCallback *callback) = 0;
+
+    virtual void QueueLine(unsigned int lineIndex,
+                           SimpsonsSoundPlayer &player) = 0;
+
+    virtual void PlayQueuedLine(SimpsonsSoundPlayer &player,
+                                SimpsonsSoundPlayerCallback *callback) = 0;
+
+    virtual unsigned int GetNumDialogLines() const = 0;
+
+    virtual radKey32 GetConversationName() = 0;
 
 #ifndef RAD_RELEASE
-        bool m_hasBeenPlayed;
+
+    void MarkAsPlayed();
+
+    void PrintPlayedStatus();
+
 #endif
 
-        SelectableDialog* m_nextListObject;
+protected:
+    //
+    // Level, mission, and event values.  Since these aren't really used
+    // in DialogSelectionGroup and Conversation objects, they should
+    // probably be separated out of this object someday if we want to
+    // save a few bytes and clean up the design a bit.
+    //
+
+    //
+    // Level and mission number for this line.  Set to NO_MISSION or
+    // NO_LEVEL if not applicable.
+    //
+    int m_missionNum;
+    int m_levelNum;
+
+    //
+    // Event that this dialog is played in response to
+    //
+    EventEnum m_event;
+
+private:
+    //Prevent wasteful constructor creation.
+    SelectableDialog(const SelectableDialog &original);
+
+    SelectableDialog &operator=(const SelectableDialog &rhs);
+
+#ifndef RAD_RELEASE
+    bool m_hasBeenPlayed;
+#endif
+
+    SelectableDialog *m_nextListObject;
 };
 
 

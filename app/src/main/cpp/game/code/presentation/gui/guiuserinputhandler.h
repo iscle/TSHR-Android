@@ -31,12 +31,10 @@ class CGuiSystem;
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-namespace GuiInput
-{
+namespace GuiInput {
     // Definition of control points for an abstracted player controller
     //
-    enum eGuiInput
-    {
+    enum eGuiInput {
         UNKNOWN = -1,
 
         Left,
@@ -78,64 +76,80 @@ namespace GuiInput
     };
 };
 
-class CGuiUserInputHandler : public Mappable
-{
+class CGuiUserInputHandler : public Mappable {
 public:
 
-    CGuiUserInputHandler( void );
-    virtual ~CGuiUserInputHandler( void );
+    CGuiUserInputHandler(void);
 
-    void Left( int controllerId = 0 );
-    void Right( int controllerId = 0 );
-    void Up( int controllerId = 0 );
-    void Down( int controllerId = 0 );
-    void Start( int controllerId = 0 );
-    void Select( int controllerId = 0 );
-    void Back( int controllerId = 0 );
-    void AuxX( int controllerId = 0 );
-    void AuxY( int controllerId = 0 );
-    void L1( int controllerId = 0 );
-    void R1( int controllerId = 0 );
+    virtual ~CGuiUserInputHandler(void);
+
+    void Left(int controllerId = 0);
+
+    void Right(int controllerId = 0);
+
+    void Up(int controllerId = 0);
+
+    void Down(int controllerId = 0);
+
+    void Start(int controllerId = 0);
+
+    void Select(int controllerId = 0);
+
+    void Back(int controllerId = 0);
+
+    void AuxX(int controllerId = 0);
+
+    void AuxY(int controllerId = 0);
+
+    void L1(int controllerId = 0);
+
+    void R1(int controllerId = 0);
 
     // Mappable interface declarations
     //
-    virtual void OnButton( int controllerId, int buttonId, const IButton* pButton );
-	virtual void OnButtonUp( int controllerId, int buttonId, const IButton* pButton );
-	virtual void OnButtonDown( int controllerId, int buttonId, const IButton* pButton );
+    virtual void OnButton(int controllerId, int buttonId, const IButton *pButton);
+
+    virtual void OnButtonUp(int controllerId, int buttonId, const IButton *pButton);
+
+    virtual void OnButtonDown(int controllerId, int buttonId, const IButton *pButton);
 
     // Mappable interface declarations.
     // Dispatch a message when controller is disconnected.
     //
-	virtual void OnControllerDisconnect( int id );
+    virtual void OnControllerDisconnect(int id);
 
     // Mappable interface declarations.
     // Dispatch a message when controller is connected.
     //
-	virtual void OnControllerConnect( int id );
+    virtual void OnControllerConnect(int id);
 
     // Mappable interface declarations
     //
-    virtual void LoadControllerMappings( unsigned int controllerId );
+    virtual void LoadControllerMappings(unsigned int controllerId);
 
     // Update repeated input states
-    void Update( unsigned int elapsedTime, unsigned int controllerId );
-    
+    void Update(unsigned int elapsedTime, unsigned int controllerId);
+
     bool IsXAxisOnLeft() const;
+
     bool IsXAxisOnRight() const;
+
     bool IsYAxisOnUp() const;
+
     bool IsYAxisOnDown() const;
 
-    void EnableStartToSelectMapping( bool isEnabled ) { m_isStartToSelectMappingEnabled = isEnabled; }
+    void EnableStartToSelectMapping(bool isEnabled) { m_isStartToSelectMappingEnabled = isEnabled; }
 
 private:
     // Disallow object copying or assigning until we know we need it
     //
-    CGuiUserInputHandler( const CGuiUserInputHandler& original );
-    CGuiUserInputHandler& operator=( const CGuiUserInputHandler& rhs );
+    CGuiUserInputHandler(const CGuiUserInputHandler &original);
+
+    CGuiUserInputHandler &operator=(const CGuiUserInputHandler &rhs);
 
     void ResetRepeatableButtons();
 
-    int m_buttonDownDuration[ GuiInput::NUM_DPAD_INPUTS ];
+    int m_buttonDownDuration[GuiInput::NUM_DPAD_INPUTS];
 
     float m_XAxisValue;
     float m_YAxisValue;
@@ -155,7 +169,7 @@ private:
     int m_DownDuration;
 #endif
 
-    bool m_isStartToSelectMappingEnabled : 1;
+    bool m_isStartToSelectMappingEnabled: 1;
 
 };
 

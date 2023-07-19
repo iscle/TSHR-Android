@@ -26,25 +26,24 @@
 //===========================================================================
 
 const Scrooby::XLLanguage SRR2_LANGUAGE[] =
-{
-    Scrooby::XL_ENGLISH,
-    Scrooby::XL_FRENCH,
-    Scrooby::XL_GERMAN,
+        {
+                Scrooby::XL_ENGLISH,
+                Scrooby::XL_FRENCH,
+                Scrooby::XL_GERMAN,
 //    Scrooby::XL_ITALIAN,
-    Scrooby::XL_SPANISH,
+                Scrooby::XL_SPANISH,
 
-    Scrooby::XL_LAST_LANGUAGE
-};
+                Scrooby::XL_LAST_LANGUAGE
+        };
 
 const int NUM_SRR2_LANGUAGES =
-    sizeof( SRR2_LANGUAGE ) / sizeof( SRR2_LANGUAGE[ 0 ] ) - 1;
+        sizeof(SRR2_LANGUAGE) / sizeof(SRR2_LANGUAGE[0]) - 1;
 
 //===========================================================================
 // Forward References
 //===========================================================================
 
-namespace Scrooby
-{
+namespace Scrooby {
     class TextBible;
 }
 
@@ -52,35 +51,36 @@ namespace Scrooby
 // Interface Definitions
 //===========================================================================
 
-class CGuiTextBible
-{
+class CGuiTextBible {
 public:
     CGuiTextBible();
+
     virtual ~CGuiTextBible();
 
     // update reference to Scrooby text bible
     //
-    void SetTextBible( const char* textBible );
+    void SetTextBible(const char *textBible);
 
     // get localized text for string ID
     //
-    static P3D_UNICODE* GetLocalizedText( const char* stringID );
+    static P3D_UNICODE *GetLocalizedText(const char *stringID);
 
     // get/set current locale language
     //
-    static void SetCurrentLanguage( const Scrooby::XLLanguage language );
+    static void SetCurrentLanguage(const Scrooby::XLLanguage language);
+
     static Scrooby::XLLanguage GetCurrentLanguage();
+
     static bool IsTextBibleLoaded();
 
 private:
-    static Scrooby::TextBible* s_textBible;
+    static Scrooby::TextBible *s_textBible;
     static Scrooby::XLLanguage s_currentLanguage;
 
 };
 
-inline P3D_UNICODE* GetTextBibleString( const char* stringID )
-{
-    return CGuiTextBible::GetLocalizedText( stringID );
+inline P3D_UNICODE *GetTextBibleString(const char *stringID) {
+    return CGuiTextBible::GetLocalizedText(stringID);
 }
 
 #endif // GUITEXTBIBLE_H

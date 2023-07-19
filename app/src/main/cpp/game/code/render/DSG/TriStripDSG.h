@@ -36,108 +36,106 @@
 //
 //===========================================================================
 
-class TriStripDSG : public StaticEntityDSG
-{
+class TriStripDSG : public StaticEntityDSG {
 public:
-    
-	// Ctor, input the number of vertices to preallocate
-    TriStripDSG( int maxVertices );
+
+    // Ctor, input the number of vertices to preallocate
+    TriStripDSG(int maxVertices);
+
     virtual ~TriStripDSG();
 
-    virtual void SetShader(tShader* pShader, int i)
-    {
+    virtual void SetShader(tShader *pShader, int i) {
     }
 
     // Format of the vertices stored in the buffer, 24 bytes per vertex (assuming no padding)
-    struct Vertex
-    {
+    struct Vertex {
         pddiVector vertex;
         pddiColour colour;
         pddiVector2 uv;
     };
 
-    virtual void GetBoundingBox( rmt::Box3D* box )
-    {
-        *box = mBoundingBox;                
+    virtual void GetBoundingBox(rmt::Box3D *box) {
+        *box = mBoundingBox;
     }
-	virtual void GetBoundingSphere( rmt::Sphere* sphere )
-	{
-		*sphere = mBoundingBox.GetBoundingSphere();
-	}
-    virtual void GetPosition(rmt::Vector *ipPosn)
-    {
+
+    virtual void GetBoundingSphere(rmt::Sphere *sphere) {
+        *sphere = mBoundingBox.GetBoundingSphere();
+    }
+
+    virtual void GetPosition(rmt::Vector *ipPosn) {
         *ipPosn = mPosition;
     }
-    virtual rmt::Vector* pPosition()
-    {
+
+    virtual rmt::Vector *pPosition() {
         return &mPosition;
     }
-    virtual const rmt::Vector& rPosition()
-    {
+
+    virtual const rmt::Vector &rPosition() {
         return mPosition;
     }
-	// Obsolete function?
-    virtual void RenderUpdate()
-    {
-       rAssert( false ); 
+
+    // Obsolete function?
+    virtual void RenderUpdate() {
+        rAssert(false);
     }
-	// Draw the strip using a pddiPrimStream
-	virtual void Display();
 
-	// Draw the strips bounding box
-	virtual void DisplayBoundingBox( tColour colour = tColour( 255, 0, 0 ) );
+    // Draw the strip using a pddiPrimStream
+    virtual void Display();
 
-	// Eliminate all vertices (well, really just sets the current vertex back to zero
-	// no deallocations take place
-	void Clear();
+    // Draw the strips bounding box
+    virtual void DisplayBoundingBox(tColour colour = tColour(255, 0, 0));
 
-	// Add a new vertex, seperate component format
-    void AddVertex( const pddiVector& vertex, pddiColour colour, const pddiVector2& uv );
+    // Eliminate all vertices (well, really just sets the current vertex back to zero
+    // no deallocations take place
+    void Clear();
 
-	// Add a new vertex, TriStripDSG::Vertex format
-	void AddVertex( const Vertex& vertex );
+    // Add a new vertex, seperate component format
+    void AddVertex(const pddiVector &vertex, pddiColour colour, const pddiVector2 &uv);
 
-	void SetVertex( int index, const pddiVector& vertex, pddiColour colour, const pddiVector2& uv );
+    // Add a new vertex, TriStripDSG::Vertex format
+    void AddVertex(const Vertex &vertex);
 
-	void SetShader( tShader* pShader );
-	tShader* GetShader() const { return mpShader; }
-	void SetColour( int index, tColour colour )
-	{
-		rAssert( index >= 0 && index < mNumVertices );
-		mpVertices[ index ].colour = colour;
-	}
-	
-	// Retrieve the vertex at the specified index
-	const Vertex& GetVertex( int index ) const;
-	
+    void SetVertex(int index, const pddiVector &vertex, pddiColour colour, const pddiVector2 &uv);
 
-	// Number of vertices in the vertex buffer
-	inline int Size()const { return mNumVertices; }
+    void SetShader(tShader *pShader);
 
-	// Can we insert more vertices in the list
-    inline bool IsSpaceLeft() const
-    {
+    tShader *GetShader() const { return mpShader; }
+
+    void SetColour(int index, tColour colour) {
+        rAssert(index >= 0 && index < mNumVertices);
+        mpVertices[index].colour = colour;
+    }
+
+    // Retrieve the vertex at the specified index
+    const Vertex &GetVertex(int index) const;
+
+
+    // Number of vertices in the vertex buffer
+    inline int Size() const { return mNumVertices; }
+
+    // Can we insert more vertices in the list
+    inline bool IsSpaceLeft() const {
         return mNumVertices < mMaxVertices;
     }
 
 private:
-    
-	// Disable default constructor
-	TriStripDSG();
 
-	tShader* mpShader;
+    // Disable default constructor
+    TriStripDSG();
 
-	// Vertex buffer
-    Vertex* mpVertices;
+    tShader *mpShader;
 
-	// Encloses all vertices in the strip, extended when new vertices added
+    // Vertex buffer
+    Vertex *mpVertices;
+
+    // Encloses all vertices in the strip, extended when new vertices added
     rmt::Box3D mBoundingBox;
-	// Center of the bounding box
+    // Center of the bounding box
     rmt::Vector mPosition;
 
-	// Size of vertex buffer, all or none of these may actually hold valid vertices
+    // Size of vertex buffer, all or none of these may actually hold valid vertices
     int mMaxVertices;
-	// Number of vertices that are valid, number to render on Display()
+    // Number of vertices that are valid, number to render on Display()
     int mNumVertices;
 
 };

@@ -25,6 +25,7 @@
 //========================================
 
 class Locator;
+
 class AnimatedIcon;
 
 //=============================================================================
@@ -33,40 +34,45 @@ class AnimatedIcon;
 //
 //=============================================================================
 
-class GoToObjective : public MissionObjective
-{
+class GoToObjective : public MissionObjective {
 public:
     GoToObjective();
-    virtual ~GoToObjective();
-    
-    Locator* GetDestinationLocator() { return( mDestinationLocator ); }
-    void SetDestinationLocator( Locator* pLocator ) { mDestinationLocator = pLocator; }
 
-    void SetDestinationNames( char* locatorname, char* p3dname, float scale );
-    void SetCollectEffectName( char* name );
+    virtual ~GoToObjective();
+
+    Locator *GetDestinationLocator() { return (mDestinationLocator); }
+
+    void SetDestinationLocator(Locator *pLocator) { mDestinationLocator = pLocator; }
+
+    void SetDestinationNames(char *locatorname, char *p3dname, float scale);
+
+    void SetCollectEffectName(char *name);
+
     void SetGotoDialogOff() { mGotoDialogOn = false; }
 
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
     void SetMustActionTrigger() { mActionTrigger = true; };
 
 protected:
     virtual void OnInitialize();
+
     virtual void OnFinalize();
-    virtual void OnUpdate( unsigned int elapsedTime );
+
+    virtual void OnUpdate(unsigned int elapsedTime);
 
     PathStruct mArrowPath;
-    char mDestinationLocatorName[ 32 ];
-	char mDestinationDrawableName[ 32 ];
+    char mDestinationLocatorName[32];
+    char mDestinationDrawableName[32];
     char mEffectName[32];
 
-    Locator* mDestinationLocator;
-	AnimatedIcon* mAnimatedIcon;
+    Locator *mDestinationLocator;
+    AnimatedIcon *mAnimatedIcon;
     float mScaleFactor;
 
     int mHudMapIconID;
 
-    AnimatedIcon* mCollectEffect;
+    AnimatedIcon *mCollectEffect;
     bool mWaitingForEffect;
 
     bool mGotoDialogOn;
@@ -74,9 +80,9 @@ protected:
     bool mActionTrigger;
     LocatorEvent::Event mOldEvent;
     int mOldData;
-   
+
 private:
-    
+
 };
 
 #endif //GOTOOBJECTIVE_H

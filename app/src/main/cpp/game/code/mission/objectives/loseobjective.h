@@ -23,6 +23,7 @@
 //========================================
 
 class Vehicle;
+
 class AnimatedIcon;
 
 //=============================================================================
@@ -31,31 +32,36 @@ class AnimatedIcon;
 //
 //=============================================================================
 
-class LoseObjective : public MissionObjective
-{
+class LoseObjective : public MissionObjective {
 public:
     LoseObjective();
+
     virtual ~LoseObjective();
 
-    Vehicle* GetTargetVehicle() { return mTargetVehicle; }
-    void SetTargetVehicle(Vehicle* pVehicle) { mTargetVehicle = pVehicle; }
+    Vehicle *GetTargetVehicle() { return mTargetVehicle; }
 
-    void SetDistance( float dist ) { mDistance = dist; }
+    void SetTargetVehicle(Vehicle *pVehicle) { mTargetVehicle = pVehicle; }
+
+    void SetDistance(float dist) { mDistance = dist; }
+
     float GetDistance() { return mDistance; }
 
 protected:
     virtual void OnInitialize();
+
     virtual void OnFinalize();
-    virtual void OnUpdate( unsigned int elapsedTime );
+
+    virtual void OnUpdate(unsigned int elapsedTime);
 
 private:
     float mDistance;
-    Vehicle* mTargetVehicle;
-    AnimatedIcon* mAnimatedIcon;
+    Vehicle *mTargetVehicle;
+    AnimatedIcon *mAnimatedIcon;
 
     //Prevent wasteful constructor creation.
-    LoseObjective( const LoseObjective& loseobjective );
-    LoseObjective& operator=( const LoseObjective& loseobjective );
+    LoseObjective(const LoseObjective &loseobjective);
+
+    LoseObjective &operator=(const LoseObjective &loseobjective);
 };
 
 

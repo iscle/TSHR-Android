@@ -27,26 +27,28 @@
 //
 //=============================================================================
 
-class KeepBarrelCondition : public MissionCondition
-{
+class KeepBarrelCondition : public MissionCondition {
 public:
-        KeepBarrelCondition();
-        virtual ~KeepBarrelCondition();
+    KeepBarrelCondition();
 
-        virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual ~KeepBarrelCondition();
 
-        void JumpBackBy( unsigned int num ) { mJumpBackBy = num; };
+    virtual void HandleEvent(EventEnum id, void *pEventData);
+
+    void JumpBackBy(unsigned int num) { mJumpBackBy = num; };
 
 protected:
     virtual void OnInitialize();
+
     virtual void OnFinalize();
 
 private:
     unsigned int mJumpBackBy;
 
     //Prevent wasteful constructor creation.
-    KeepBarrelCondition( const KeepBarrelCondition& keepbarrelcondition );
-    KeepBarrelCondition& operator=( const KeepBarrelCondition& keepbarrelcondition );
+    KeepBarrelCondition(const KeepBarrelCondition &keepbarrelcondition);
+
+    KeepBarrelCondition &operator=(const KeepBarrelCondition &keepbarrelcondition);
 };
 
 //*****************************************************************************

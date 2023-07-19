@@ -9,7 +9,7 @@
 //              + Stolen from Darwin and Tailored to RenderFlow from GameFlow -- Devin [4/17/2002]
 //
 //=============================================================================
- 
+
 //========================================
 // System Includes
 //========================================
@@ -42,7 +42,7 @@
 //
 // Static pointer to instance of this singleton.
 //
-RenderFlow* RenderFlow::spInstance = NULL;
+RenderFlow *RenderFlow::spInstance = NULL;
 
 bool RenderFlow::sDrawStatsOverlay = false;
 
@@ -66,16 +66,15 @@ bool RenderFlow::sDrawStatsOverlay = false;
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-RenderFlow* RenderFlow::CreateInstance()
-{
-   rAssert( spInstance == NULL );
-   spInstance = new(GMA_PERSISTENT) RenderFlow();
+RenderFlow *RenderFlow::CreateInstance() {
+    rAssert(spInstance == NULL);
+    spInstance = new(GMA_PERSISTENT) RenderFlow();
 
-   HeapMgr()->PushHeap(GMA_PERSISTENT);
-   BillboardQuadManager::CreateInstance();
-   HeapMgr()->PopHeap(GMA_PERSISTENT);
+    HeapMgr()->PushHeap(GMA_PERSISTENT);
+    BillboardQuadManager::CreateInstance();
+    HeapMgr()->PopHeap(GMA_PERSISTENT);
 
-   return spInstance;
+    return spInstance;
 }
 
 //==============================================================================
@@ -91,11 +90,10 @@ RenderFlow* RenderFlow::CreateInstance()
 // Constraints: This is a singleton so only one instance is allowed.
 //
 //==============================================================================
-RenderFlow* RenderFlow::GetInstance()
-{
-   rAssert( spInstance != NULL );
-   
-   return spInstance;
+RenderFlow *RenderFlow::GetInstance() {
+    rAssert(spInstance != NULL);
+
+    return spInstance;
 }
 
 
@@ -110,12 +108,11 @@ RenderFlow* RenderFlow::GetInstance()
 // Return:      None.
 //
 //==============================================================================
-void RenderFlow::DestroyInstance()
-{
+void RenderFlow::DestroyInstance() {
     //
     // Make sure this doesn't get called twice.
     //
-    rAssert( spInstance != NULL );
+    rAssert(spInstance != NULL);
     delete spInstance;
     spInstance = NULL;
 }
@@ -134,32 +131,30 @@ void RenderFlow::DestroyInstance()
 // Constraints: None.
 //
 //========================================================================
-void RenderFlow::DoAllRegistration()
-{
+void RenderFlow::DoAllRegistration() {
 #ifdef RAD_DEBUG
-   sDrawStatsOverlay = false;
+    sDrawStatsOverlay = false;
 #else
-   sDrawStatsOverlay = false;
+    sDrawStatsOverlay = false;
 #endif
 
-   if ( CommandLineOptions::Get( CLO_FPS ) )
-   {
-       sDrawStatsOverlay = true;
-   }
+    if (CommandLineOptions::Get(CLO_FPS)) {
+        sDrawStatsOverlay = true;
+    }
 
-   p3d::pddi->EnableStatsOverlay(sDrawStatsOverlay);
+    p3d::pddi->EnableStatsOverlay(sDrawStatsOverlay);
 
 #ifndef RAD_PS2
-   p3d::pddi->SetCullMode(PDDI_CULL_NONE);
+    p3d::pddi->SetCullMode(PDDI_CULL_NONE);
 #endif
 
 #ifdef RAD_PS2
     pddiExtPS2Control* ps2Control = (pddiExtPS2Control*)p3d::pddi->GetExtension(PDDI_EXT_PS2_CONTROL);
 
-  ps2Control->DisableTexCache( false );
+  ps2Control->DisableTexCache(false);
 
 //	pddiExtPS2Control* ps2Control = (pddiExtPS2Control*) p3d::pddi->GetExtension(PDDI_EXT_PS2_CONTROL);
-//	ps2Control->ForceMFIFOSync( true );
+//	ps2Control->ForceMFIFOSync(true);
 #endif
 
 #if (defined(RAD_XBOX))
@@ -167,26 +162,29 @@ void RenderFlow::DoAllRegistration()
 #endif
 #if (defined(RAD_XBOX) && defined(DEBUGWATCH))
     mpDebugXBoxGamma = (pddiExtGammaControl*)p3d::pddi->GetExtension(PDDI_EXT_GAMMACONTROL);
-    mpDebugXBoxGamma->GetGamma( &mDebugGammaR, &mDebugGammaG, &mDebugGammaB );
+    mpDebugXBoxGamma->GetGamma(&mDebugGammaR, &mDebugGammaG, &mDebugGammaB);
 #endif
 
 #ifdef RAD_WIN32
     mpGammaControl = (pddiExtGammaControl*)p3d::pddi->GetExtension(PDDI_EXT_GAMMACONTROL);
 
     float r,g,b;
-    mpGammaControl->GetGamma( &r, &g, &b );
-    mpGammaControl->SetGamma( r, r, r );    // We will only deal with one degree.
+    mpGammaControl->GetGamma(&r, &g, &b);
+    mpGammaControl->SetGamma(r, r, r);    // We will only deal with one degree.
 
-    mGamma = r;     
+    mGamma = r;
 #endif
-   ParticleSystemRandomData::SetUp();
+    ParticleSystemRandomData::SetUp();
 
-   GetEventManager()->AddListener(GetRenderManager(),(EventEnum)(EVENT_LOCATOR+LocatorEvent::DYNAMIC_ZONE));
-   GetEventManager()->AddListener(GetRenderManager(), EVENT_FIRST_DYNAMIC_ZONE_START );
-   GetEventManager()->AddListener(GetRenderManager(), EVENT_ALL_DYNAMIC_ZONES_DUMPED );
-   GetEventManager()->AddListener(GetRenderManager(),(EventEnum)(EVENT_LOCATOR+LocatorEvent::OCCLUSION_ZONE));
-   GetEventManager()->AddListener(GetRenderManager(), static_cast<EventEnum>( EVENT_LOCATOR + LocatorEvent::LIGHT_CHANGE ) );
-   GetEventManager()->AddListener(GetRenderManager(), EVENT_MISSION_RESET );
+    GetEventManager()->AddListener(GetRenderManager(),
+                                   (EventEnum)(EVENT_LOCATOR + LocatorEvent::DYNAMIC_ZONE));
+    GetEventManager()->AddListener(GetRenderManager(), EVENT_FIRST_DYNAMIC_ZONE_START);
+    GetEventManager()->AddListener(GetRenderManager(), EVENT_ALL_DYNAMIC_ZONES_DUMPED);
+    GetEventManager()->AddListener(GetRenderManager(),
+                                   (EventEnum)(EVENT_LOCATOR + LocatorEvent::OCCLUSION_ZONE));
+    GetEventManager()->AddListener(GetRenderManager(), static_cast<EventEnum>(EVENT_LOCATOR +
+                                                                              LocatorEvent::LIGHT_CHANGE));
+    GetEventManager()->AddListener(GetRenderManager(), EVENT_MISSION_RESET);
 }
 
 
@@ -203,42 +201,40 @@ void RenderFlow::DoAllRegistration()
 // Return:      None.
 //
 //==============================================================================
-void RenderFlow::OnTimerDone( unsigned int iElapsedTime, void* pUserData )
-{
+void RenderFlow::OnTimerDone(unsigned int iElapsedTime, void *pUserData) {
     //////////////////////////////////////////////////
     // Debugging stuff.
     //////////////////////////////////////////////////
 
 #if (defined(RAD_XBOX) && defined(DEBUGWATCH))
     if(mpDebugXBoxGamma != NULL)
-        mpDebugXBoxGamma->SetGamma( mDebugGammaR, mDebugGammaG, mDebugGammaB );
+        mpDebugXBoxGamma->SetGamma(mDebugGammaR, mDebugGammaG, mDebugGammaB);
 #endif
-    #ifndef RAD_RELEASE
+#ifndef RAD_RELEASE
 
     // HACK to prevent iElapsedTime from being ridiculously huge.  
     // This is so that when we set breakpoints we don't have really huge 
     // elapsedtime values screwing us up.
-    if( iElapsedTime > 1000 )
-    {
+    if (iElapsedTime > 1000) {
         iElapsedTime = 20;
     }
-    
-    #endif
-BEGIN_PROFILE("RenderFlow");
+
+#endif
+    BEGIN_PROFILE("RenderFlow");
 
 #ifdef DEBUGWATCH
     unsigned int t0 = radTimeGetMicroseconds();
 #endif
-    mpRenderManager->ContextUpdate( iElapsedTime );
+    mpRenderManager->ContextUpdate(iElapsedTime);
 #ifdef DEBUGWATCH
     mDebugRenderTime = radTimeGetMicroseconds() - t0;
 
-    if( p3d::pddi->IsStatsOverlayEnabled() != sDrawStatsOverlay )
+    if(p3d::pddi->IsStatsOverlayEnabled() != sDrawStatsOverlay)
     {
-        p3d::pddi->EnableStatsOverlay( sDrawStatsOverlay );
+        p3d::pddi->EnableStatsOverlay(sDrawStatsOverlay);
     }
 #endif
-END_PROFILE("RenderFlow");
+    END_PROFILE("RenderFlow");
 
 }
 
@@ -255,20 +251,20 @@ END_PROFILE("RenderFlow");
 //
 //==============================================================================
 
-void RenderFlow::SetGamma( float gamma )
+void RenderFlow::SetGamma(float gamma)
 {
-    if( mpGammaControl == NULL )
+    if(mpGammaControl == NULL)
     {
         return;
     }
 
-    if( gamma < 0 )
+    if(gamma <0)
     {
         gamma = 0;
     }
 
     mGamma = gamma;
-    mpGammaControl->SetGamma( mGamma, mGamma, mGamma );
+    mpGammaControl->SetGamma(mGamma, mGamma, mGamma);
 }
 
 //==============================================================================
@@ -309,39 +305,38 @@ float RenderFlow::GetGamma() const
 // Return:      N/A.
 //
 //==============================================================================// 
-RenderFlow::RenderFlow() : 
-    mpITimer( NULL ) 
-{
+RenderFlow::RenderFlow() :
+        mpITimer(NULL) {
 #ifdef DEBUGWATCH
-   radDbgWatchAddUnsignedInt( &mDebugRenderTime, "Debug Render Flow micros", "RenderFlow", NULL, NULL );
-   radDbgWatchAddBoolean( &sDrawStatsOverlay, "Draw Stats Overlay", "RenderFlow" );
-   radDbgWatchAddFloat( &mDebugGammaR, "Xbox R Gamma", "RenderFlow", NULL, NULL, 0.0f, 2.0f );
-   radDbgWatchAddFloat( &mDebugGammaG, "Xbox G Gamma", "RenderFlow", NULL, NULL, 0.0f, 2.0f );
-   radDbgWatchAddFloat( &mDebugGammaB, "Xbox B Gamma", "RenderFlow", NULL, NULL, 0.0f, 2.0f );
+    radDbgWatchAddUnsignedInt(&mDebugRenderTime, "Debug Render Flow micros", "RenderFlow", NULL, NULL);
+    radDbgWatchAddBoolean(&sDrawStatsOverlay, "Draw Stats Overlay", "RenderFlow");
+    radDbgWatchAddFloat(&mDebugGammaR, "Xbox R Gamma", "RenderFlow", NULL, NULL, 0.0f, 2.0f);
+    radDbgWatchAddFloat(&mDebugGammaG, "Xbox G Gamma", "RenderFlow", NULL, NULL, 0.0f, 2.0f);
+    radDbgWatchAddFloat(&mDebugGammaB, "Xbox B Gamma", "RenderFlow", NULL, NULL, 0.0f, 2.0f);
 
-    mpDebugXBoxGamma = NULL;
+     mpDebugXBoxGamma = NULL;
 #endif
 #ifdef RAD_WIN32
     mpGammaControl = NULL;
     mGamma = 0.0f;
 #endif
-   // 
-   // Only 1 unique RenderManager/etc should exist for the lifetime of 
-   // RenderFlow [4/17/2002]
-   // 
-   mpRenderManager   = RenderManager::CreateInstance();
-   mpDSGFactory      = DSGFactory::CreateInstance();
-   mpLoadWrappers    = AllWrappers::CreateInstance();
-   mpIntersectManager= IntersectManager::CreateInstance();
-   
-    ParticleManager* pParticleManager = ParticleManager::CreateInstance();
-    rAssert( pParticleManager != NULL );
+    //
+    // Only 1 unique RenderManager/etc should exist for the lifetime of
+    // RenderFlow [4/17/2002]
+    //
+    mpRenderManager = RenderManager::CreateInstance();
+    mpDSGFactory = DSGFactory::CreateInstance();
+    mpLoadWrappers = AllWrappers::CreateInstance();
+    mpIntersectManager = IntersectManager::CreateInstance();
 
-    BreakablesManager* pBreakablesManager = BreakablesManager::CreateInstance();
-    rAssert( pBreakablesManager != NULL );
+    ParticleManager *pParticleManager = ParticleManager::CreateInstance();
+    rAssert(pParticleManager != NULL);
 
-	AnimEntityDSGManager* pAnimEntityDSGManager = AnimEntityDSGManager::CreateInstance();
-	rAssert( pAnimEntityDSGManager != NULL );
+    BreakablesManager *pBreakablesManager = BreakablesManager::CreateInstance();
+    rAssert(pBreakablesManager != NULL);
+
+    AnimEntityDSGManager *pAnimEntityDSGManager = AnimEntityDSGManager::CreateInstance();
+    rAssert(pAnimEntityDSGManager != NULL);
 
 }
 
@@ -356,29 +351,28 @@ RenderFlow::RenderFlow() :
 // Return:      N/A.
 //
 //==============================================================================// 
-RenderFlow::~RenderFlow()
-{
+RenderFlow::~RenderFlow() {
     ParticleManager::DestroyInstance();
     BreakablesManager::DestroyInstance();
-	AnimEntityDSGManager::DestroyInstance();
+    AnimEntityDSGManager::DestroyInstance();
 
-   //
-   //DebugWatch Stuff
-   //
+    //
+    //DebugWatch Stuff
+    //
 #ifdef DEBUGWATCH
-   radDbgWatchDelete(&mDebugRenderTime);
-   radDbgWatchDelete(&sDrawStatsOverlay);
-   radDbgWatchDelete( &mDebugGammaR );
-   radDbgWatchDelete( &mDebugGammaG );
-   radDbgWatchDelete( &mDebugGammaB );
+    radDbgWatchDelete(&mDebugRenderTime);
+    radDbgWatchDelete(&sDrawStatsOverlay);
+    radDbgWatchDelete(&mDebugGammaR);
+    radDbgWatchDelete(&mDebugGammaG);
+    radDbgWatchDelete(&mDebugGammaB);
 #endif
 
-   //
-   // Kill lifetime Singletons
-   //
-   RenderManager::DestroyInstance();
-   AllWrappers::DestroyInstance();
-   DSGFactory::DestroyInstance();
-   IntersectManager::DestroyInstance();
+    //
+    // Kill lifetime Singletons
+    //
+    RenderManager::DestroyInstance();
+    AllWrappers::DestroyInstance();
+    DSGFactory::DestroyInstance();
+    IntersectManager::DestroyInstance();
 }
 

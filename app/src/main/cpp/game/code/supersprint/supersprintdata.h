@@ -24,6 +24,7 @@
 //========================================
 
 class Vehicle;
+
 class WaypointAI;
 
 //=============================================================================
@@ -32,10 +33,8 @@ class WaypointAI;
 //
 //=============================================================================
 
-namespace SuperSprintData
-{
-    enum 
-    {
+namespace SuperSprintData {
+    enum {
 #ifdef RAD_PS2
         NUM_PLAYERS = 4,
 #else
@@ -49,50 +48,46 @@ namespace SuperSprintData
         MAX_CHARACTER_NAME_LEN = 32
     };
 
-    struct CarData
-    {
-        enum State
-        {
+    struct CarData {
+        enum State {
             WAITING,
             SELECTING,
             SELECTED
         };
 
-        CarData() : 
-            mVehicle( NULL ), 
-            mVehicleAI( NULL ), 
-            mState( WAITING ),
-            mActiveListIndex( -1 ),
-            mIsHuman(false)
-        {
-            mCarName[ 0 ] = '\0';
+        CarData() :
+                mVehicle(NULL),
+                mVehicleAI(NULL),
+                mState(WAITING),
+                mActiveListIndex(-1),
+                mIsHuman(false) {
+            mCarName[0] = '\0';
         };
 
-        Vehicle*        mVehicle;
-        WaypointAI*      mVehicleAI;
-        State           mState;
-        char            mCarName[ 16 ];
-        int             mActiveListIndex;
-        bool            mIsHuman;
+        Vehicle *mVehicle;
+        WaypointAI *mVehicleAI;
+        State mState;
+        char mCarName[16];
+        int mActiveListIndex;
+        bool mIsHuman;
     };
 
-    struct PlayerData
-    {
-        PlayerData() : 
-            mLapTime( 0 ), 
-            mBestLap( 0xffffffff ), 
-            mRaceTime( 0 ), 
-            mNumLaps( 0 ), 
-            mPosition( 0 ),
-            mPoints( 0 ),
-            mWins( 0 ),
-            mNextCheckPoint( 0 ), 
-            mBestTimeEntry( -1 ),
-            mBestLapEntry( -1 ),
-            mRacing( false ),
-            mCheated( false ),
-            mCharacterIndex( -1 ),
-            mDistToCheckpoint( 10000000.0f ) { mCharacterName[0] = '\0'; };
+    struct PlayerData {
+        PlayerData() :
+                mLapTime(0),
+                mBestLap(0xffffffff),
+                mRaceTime(0),
+                mNumLaps(0),
+                mPosition(0),
+                mPoints(0),
+                mWins(0),
+                mNextCheckPoint(0),
+                mBestTimeEntry(-1),
+                mBestLapEntry(-1),
+                mRacing(false),
+                mCheated(false),
+                mCharacterIndex(-1),
+                mDistToCheckpoint(10000000.0f) { mCharacterName[0] = '\0'; };
 
         unsigned int mLapTime;
         unsigned int mBestLap;
@@ -111,34 +106,34 @@ namespace SuperSprintData
         float mDistToCheckpoint;
     };
 
-    struct DisplayNames
-    {
-        const char* name;
-        const char* text;
+    struct DisplayNames {
+        const char *name;
+        const char *text;
     };
 
     extern const DisplayNames VEHICLE_NAMES[];
     extern const unsigned int NUM_NAMES;
 
-    extern const char* CHARACTER_NAMES[];
+    extern const char *CHARACTER_NAMES[];
     extern const unsigned int NUM_CHARACTER_NAMES;
 
-    const tColour PLAYER_COLOURS[] = 
-    {
-        tColour( 213, 74, 33 ),
-        tColour( 36, 232, 255 ),
-        tColour( 246, 255, 5 ),
-        tColour( 35, 209, 14 ),
+    const tColour PLAYER_COLOURS[] =
+            {
+                    tColour(213, 74, 33),
+                    tColour(36, 232, 255),
+                    tColour(246, 255, 5),
+                    tColour(35, 209, 14),
 
-        tColour( 0, 0, 0 ) // dummy terminator
-    };
+                    tColour(0, 0, 0) // dummy terminator
+            };
 
-    struct HighScore
-    {
+    struct HighScore {
         char name[4];
         unsigned int carNum;
         unsigned int score;
-        enum { NUM_HIGH_SCORE = 10 };
+        enum {
+            NUM_HIGH_SCORE = 10
+        };
     };
 };
 

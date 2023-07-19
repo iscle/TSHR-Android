@@ -23,20 +23,30 @@ struct IRadMemoryAllocator;
 //           FTech Memory Monitor.
 //
 //==============================================================================
-namespace Memory
-{
-    void   InitializeMemoryUtilities();
-    float  GetFreeMemoryEntropy( IRadMemoryAllocator* allocator );
+namespace Memory {
+    void InitializeMemoryUtilities();
+
+    float GetFreeMemoryEntropy(IRadMemoryAllocator *allocator);
+
     size_t GetFreeMemoryProfile();
+
     size_t GetLargestFreeBlock();
-    size_t GetLargestFreeBlock( IRadMemoryAllocator* allocator );
-    void   GetLargestNFreeBlocks( IRadMemoryAllocator* allocator, const int n, size_t blocks[] );
+
+    size_t GetLargestFreeBlock(IRadMemoryAllocator *allocator);
+
+    void GetLargestNFreeBlocks(IRadMemoryAllocator *allocator, const int n, size_t blocks[]);
+
     size_t GetMaxFreeMemory();
+
     size_t GetTotalMemoryFree();
+
     size_t GetTotalMemoryFreeLowWaterMark();
+
     size_t GetTotalMemoryUnavailable();
+
     size_t GetTotalMemoryUsed();
-    void   PrintMemoryStatsToTty();
+
+    void PrintMemoryStatsToTty();
 }
 
 #endif //MEMORYTAGGER_H

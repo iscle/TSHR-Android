@@ -56,24 +56,24 @@
 //
 //========================================================================
 AnimCollLoader::AnimCollLoader() :
-tSimpleChunkHandler(SRR2::ChunkID::ANIM_COLL_DSG)
-{
-MEMTRACK_PUSH_GROUP( "AnimCollLoader" );
+        tSimpleChunkHandler(SRR2::ChunkID::ANIM_COLL_DSG) {
+    MEMTRACK_PUSH_GROUP("AnimCollLoader");
     mpCompDLoader = new(GMA_PERSISTENT) tCompositeDrawableLoader;
     mpCompDLoader->AddRef();
 
-    mpFCLoader    = new(GMA_PERSISTENT) tFrameControllerLoader;
+    mpFCLoader = new(GMA_PERSISTENT) tFrameControllerLoader;
     mpFCLoader->AddRef();
-    
-    mpCollObjLoader = new (GMA_PERSISTENT) sim::CollisionObjectLoader;
+
+    mpCollObjLoader = new(GMA_PERSISTENT) sim::CollisionObjectLoader;
     mpCollObjLoader->AddRef();
 
-    mpMultiControllerLoader = new (GMA_PERSISTENT) tMultiControllerLoader;
+    mpMultiControllerLoader = new(GMA_PERSISTENT) tMultiControllerLoader;
     mpMultiControllerLoader->AddRef();
-    mpListenerCB  = NULL;
-    mUserData     = -1;
-MEMTRACK_POP_GROUP( "AnimCollLoader" );
+    mpListenerCB = NULL;
+    mUserData = -1;
+    MEMTRACK_POP_GROUP("AnimCollLoader");
 }
+
 //========================================================================
 // AnimCollLoader::
 //========================================================================
@@ -87,13 +87,13 @@ MEMTRACK_POP_GROUP( "AnimCollLoader" );
 // Constraints: None.
 //
 //========================================================================
-AnimCollLoader::~AnimCollLoader()
-{
+AnimCollLoader::~AnimCollLoader() {
     mpCompDLoader->Release();
     mpFCLoader->Release();
     mpCollObjLoader->Release();
-    tRefCounted::Release( mpMultiControllerLoader );
+    tRefCounted::Release(mpMultiControllerLoader);
 }
+
 ///////////////////////////////////////////////////////////////////////
 // tSimpleChunkHandler
 ///////////////////////////////////////////////////////////////////////
@@ -110,9 +110,8 @@ AnimCollLoader::~AnimCollLoader()
 // Constraints: None.
 //
 //========================================================================
-tEntity* AnimCollLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
-    IEntityDSG::msDeletionsSafe=true;
+tEntity *AnimCollLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
+    IEntityDSG::msDeletionsSafe = true;
     char name[255];
     f->GetPString(name);
 
@@ -122,85 +121,76 @@ tEntity* AnimCollLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     AnimCollisionEntityDSG *pAnimCollDSG = new AnimCollisionEntityDSG;
     pAnimCollDSG->SetName(name);
 
-    if(HasAlpha)
-    {
+    if (HasAlpha) {
         pAnimCollDSG->mTranslucent = true;
     }
-    
-    tCompositeDrawable* pCompD = NULL;
-    tMultiController* pAnimFC = NULL;
-    sim::CollisionObject* pCollObject = NULL;
-    while(f->ChunksRemaining())
-    {    
+
+    tCompositeDrawable *pCompD = NULL;
+    tMultiController *pAnimFC = NULL;
+    sim::CollisionObject *pCollObject = NULL;
+    while (f->ChunksRemaining()) {
         // Use this for tEntity's that have dependencies with other objects.
         // ie, they need to be in the inventory.
         //
-        tEntity* pStoreMe = 0;
+        tEntity *pStoreMe = 0;
         f->BeginChunk();
-        switch(f->GetCurrentID())
-        {
-            case P3D_COMPOSITE_DRAWABLE:
-            {
-                pCompD = (tCompositeDrawable*)mpCompDLoader->LoadObject(f,store);
+        switch (f->GetCurrentID()) {
+            case P3D_COMPOSITE_DRAWABLE: {
+                pCompD = (tCompositeDrawable *) mpCompDLoader->LoadObject(f, store);
                 pStoreMe = pCompD;
                 break;
             }
-			case Pure3D::BillboardObject::QUAD_GROUP:
-			{
+            case Pure3D::BillboardObject::QUAD_GROUP: {
 
-				BillboardWrappedLoader::OverrideLoader( true );
-                BillboardWrappedLoader* pBBQLoader = static_cast<BillboardWrappedLoader*>(AllWrappers::GetInstance()->mpLoader(AllWrappers::msBillboard));
-                tBillboardQuadGroup* pGroup = static_cast<tBillboardQuadGroup*>( pBBQLoader->LoadObject(f, store) );
-				rAssert( pGroup != NULL );
-				store->Store( pGroup );	
-				BillboardWrappedLoader::OverrideLoader( false );
-				break;
-			}
-            case P3D_MULTI_CONTROLLER:
-            {
-                pAnimFC = (tMultiController*)mpMultiControllerLoader->LoadObject(f,store);
+                BillboardWrappedLoader::OverrideLoader(true);
+                BillboardWrappedLoader *pBBQLoader = static_cast<BillboardWrappedLoader *>(AllWrappers::GetInstance()->mpLoader(
+                        AllWrappers::msBillboard));
+                tBillboardQuadGroup *pGroup = static_cast<tBillboardQuadGroup *>(pBBQLoader->LoadObject(
+                        f, store));
+                rAssert(pGroup != NULL);
+                store->Store(pGroup);
+                BillboardWrappedLoader::OverrideLoader(false);
                 break;
             }
-            case Pure3D::Animation::FrameControllerData::FRAME_CONTROLLER:
-            {
-                pStoreMe = mpFCLoader->LoadObject(f,store);
+            case P3D_MULTI_CONTROLLER: {
+                pAnimFC = (tMultiController *) mpMultiControllerLoader->LoadObject(f, store);
                 break;
             }
-            case Simulation::Collision::OBJECT:
-                {
-                    pCollObject = (sim::CollisionObject*)mpCollObjLoader->LoadObject(f, store );
-                    break;
-                }
+            case Pure3D::Animation::FrameControllerData::FRAME_CONTROLLER: {
+                pStoreMe = mpFCLoader->LoadObject(f, store);
+                break;
+            }
+            case Simulation::Collision::OBJECT: {
+                pCollObject = (sim::CollisionObject *) mpCollObjLoader->LoadObject(f, store);
+                break;
+            }
             default:
                 break;
         } // switch
         // This tEntity needs to be found in the inventory for another object.
         //
-        if ( pStoreMe != 0 )
-        {
-            if( store->TestCollision( pStoreMe->GetUID(), pStoreMe ) )
-            {
-                HandleCollision( pStoreMe );
-            }
-            else
-            {
-                store->Store( pStoreMe );
+        if (pStoreMe != 0) {
+            if (store->TestCollision(pStoreMe->GetUID(), pStoreMe)) {
+                HandleCollision(pStoreMe);
+            } else {
+                store->Store(pStoreMe);
             }
         }
         f->EndChunk();
     } // while
 
-    pAnimCollDSG->LoadSetUp(pCompD,pAnimFC,pCollObject,store);
+    pAnimCollDSG->LoadSetUp(pCompD, pAnimFC, pCollObject, store);
 
-    mpListenerCB->OnChunkLoaded( pAnimCollDSG, mUserData, _id );
+    mpListenerCB->OnChunkLoaded(pAnimCollDSG, mUserData, _id);
 
-    IEntityDSG::msDeletionsSafe=false;
+    IEntityDSG::msDeletionsSafe = false;
     //
     // Spin Pure3D async loading.
     //
     //p3d::loadManager->SwitchTask();
     return pAnimCollDSG;
 }
+
 ///////////////////////////////////////////////////////////////////////
 // IWrappedLoader
 ///////////////////////////////////////////////////////////////////////
@@ -220,21 +210,19 @@ tEntity* AnimCollLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 //
 //========================================================================
 void AnimCollLoader::SetRegdListener
-(
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
-   //
-   // Follow protocol; notify old Listener, that it has been 
-   // "disconnected".
-   //
-   if( mpListenerCB != NULL )
-   {
-      mpListenerCB->OnChunkLoaded( NULL, iUserData, 0 );
-   }
-   mpListenerCB  = pListenerCB;
-   mUserData     = iUserData;
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
+    //
+    // Follow protocol; notify old Listener, that it has been
+    // "disconnected".
+    //
+    if (mpListenerCB != NULL) {
+        mpListenerCB->OnChunkLoaded(NULL, iUserData, 0);
+    }
+    mpListenerCB = pListenerCB;
+    mUserData = iUserData;
 }
 
 //========================================================================
@@ -251,19 +239,18 @@ void AnimCollLoader::SetRegdListener
 //
 //========================================================================
 void AnimCollLoader::ModRegdListener
-( 
-   ChunkListenerCallback* pListenerCB,
-   int iUserData 
-)
-{
+        (
+                ChunkListenerCallback *pListenerCB,
+                int iUserData
+        ) {
 #if 0
-   char DebugBuf[255];
-   sprintf( DebugBuf, "AnimCollLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB );
-   rDebugString( DebugBuf );
+    char DebugBuf[255];
+    sprintf(DebugBuf, "AnimCollLoader::ModRegdListener: pListenerCB %X vs mpListenerCB %X\n", pListenerCB, mpListenerCB);
+    rDebugString(DebugBuf);
 #endif
-   rAssert( pListenerCB == mpListenerCB );
+    rAssert(pListenerCB == mpListenerCB);
 
-   mUserData = iUserData;
+    mUserData = iUserData;
 }
 //************************************************************************
 //

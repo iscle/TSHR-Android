@@ -29,8 +29,7 @@
 //===========================================================================
 
 class tSprite;
-namespace Scrooby
-{
+namespace Scrooby {
     class Group;
 }
 
@@ -40,43 +39,46 @@ const int NUM_LOADING_OVERLAYS = 2;
 // Interface Definitions
 //===========================================================================
 class CGuiScreenLoading : public CGuiScreen,
-                          public LoadingManager::ProcessRequestsCallback
-{
+                          public LoadingManager::ProcessRequestsCallback {
 public:
-    CGuiScreenLoading( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenLoading(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenLoading();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
     void LoadResources();
-    virtual void OnProcessRequestsComplete( void* pUserData );
+
+    virtual void OnProcessRequestsComplete(void *pUserData);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
+
+    void InitRunning();
+
+    void InitOutro();
 
 private:
     unsigned int m_elapsedTime;
     unsigned int m_elapsedSpiralTime;
 
-    Scrooby::Group* m_loadingBarGroup;
+    Scrooby::Group *m_loadingBarGroup;
     Slider m_loadingBar;
     float m_currentMemoryUsage;     // in percent
     int m_startingMemoryAvailable;  // in bytes
     unsigned int m_elapsedFireTime;
 
-    Scrooby::Sprite* m_loadingImage;
-    Scrooby::Sprite* m_loadingOverlays[ NUM_LOADING_OVERLAYS ];
-    bool m_isSpirallingDone : 1;
+    Scrooby::Sprite *m_loadingImage;
+    Scrooby::Sprite *m_loadingOverlays[NUM_LOADING_OVERLAYS];
+    bool m_isSpirallingDone: 1;
 
-    tSprite* m_loadingImageSprite;
-    char m_loadingImageName[ 32 ];
+    tSprite *m_loadingImageSprite;
+    char m_loadingImageName[32];
 
-    Scrooby::Layer* m_explosionLayer;
-    Scrooby::Polygon* m_explosion;
+    Scrooby::Layer *m_explosionLayer;
+    Scrooby::Polygon *m_explosion;
     unsigned int m_elapsedExplosionTime;
 
 };

@@ -16,7 +16,9 @@
 // Nested Includes
 //========================================
 #ifndef WORLD_BUILDER
+
 #include <meta/locator.h>
+
 #else
 #include "locator.h"
 #endif
@@ -32,29 +34,33 @@ class TriggerVolume;
 //
 //=============================================================================
 
-class TriggerLocator : public Locator
-{
+class TriggerLocator : public Locator {
 public:
     TriggerLocator();
+
     virtual ~TriggerLocator();
 
-    void            SetNumTriggers( unsigned int num, int allocID = 0 );
-    unsigned int    GetNumTriggers();
-    void            AddTriggerVolume( TriggerVolume* volume );
-    TriggerVolume*  GetTriggerVolume( unsigned int i );
+    void SetNumTriggers(unsigned int num, int allocID = 0);
 
-    void Trigger( unsigned int playerID, bool bActive );
+    unsigned int GetNumTriggers();
+
+    void AddTriggerVolume(TriggerVolume *volume);
+
+    TriggerVolume *GetTriggerVolume(unsigned int i);
+
+    void Trigger(unsigned int playerID, bool bActive);
 
     unsigned int GetPlayerID();
-    bool         GetPlayerEntered();
-    // Only for use with fake trigger for first dynamic load.
-    void         SetPlayerEntered( bool always = true );
 
-    unsigned int IsPlayerTracked( int playerID ) const;
+    bool GetPlayerEntered();
+
+    // Only for use with fake trigger for first dynamic load.
+    void SetPlayerEntered(bool always = true);
+
+    unsigned int IsPlayerTracked(int playerID) const;
 
 protected:
-    virtual void OnTrigger( unsigned int playerID )
-    {
+    virtual void OnTrigger(unsigned int playerID) {
         // HEY! Don't call pure virtual functions from either a constructor
         // or destructor unless you know the vtable has a valid entry
         // I'm changing this from pure virtual to having an empty implementation 
@@ -62,16 +68,17 @@ protected:
     };
 
 private:
-    TriggerVolume** mTriggerVolumes;
+    TriggerVolume **mTriggerVolumes;
     unsigned short mNumTriggers;
     unsigned short mMaxNumTriggers;
 
     bool mPlayerEntered; // If the last player entered or left
-    int  mPlayerID; // The ID of the last player to trigger this locator
+    int mPlayerID; // The ID of the last player to trigger this locator
 
     //Prevent wasteful constructor creation.
-    TriggerLocator( const TriggerLocator& triggerlocator );
-    TriggerLocator& operator=( const TriggerLocator& triggerlocator );
+    TriggerLocator(const TriggerLocator &triggerlocator);
+
+    TriggerLocator &operator=(const TriggerLocator &triggerlocator);
 };
 
 
@@ -91,8 +98,7 @@ private:
 // Return:      unsigned int
 //
 //=============================================================================
-inline unsigned int TriggerLocator::GetNumTriggers()
-{
+inline unsigned int TriggerLocator::GetNumTriggers() {
     return mNumTriggers;
 }
 
@@ -101,16 +107,15 @@ inline unsigned int TriggerLocator::GetNumTriggers()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int playerID, bool bActive )
+// Parameters:  (unsigned int playerID, bool bActive)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void TriggerLocator::Trigger( unsigned int playerID, bool bActive )
-{
+inline void TriggerLocator::Trigger(unsigned int playerID, bool bActive) {
     mPlayerID = playerID;
     mPlayerEntered = bActive;
-    OnTrigger( playerID );    
+    OnTrigger(playerID);
 }
 
 //=============================================================================
@@ -123,8 +128,7 @@ inline void TriggerLocator::Trigger( unsigned int playerID, bool bActive )
 // Return:      inline 
 //
 //=============================================================================
-inline unsigned int TriggerLocator::GetPlayerID()
-{
+inline unsigned int TriggerLocator::GetPlayerID() {
     return mPlayerID;
 }
 
@@ -138,8 +142,7 @@ inline unsigned int TriggerLocator::GetPlayerID()
 // Return:      bool 
 //
 //=============================================================================
-inline bool TriggerLocator::GetPlayerEntered()
-{
+inline bool TriggerLocator::GetPlayerEntered() {
     return mPlayerEntered;
 }
 
@@ -154,8 +157,7 @@ inline bool TriggerLocator::GetPlayerEntered()
 // Return:      None. 
 //
 //=============================================================================
-inline void TriggerLocator::SetPlayerEntered( bool always )
-{
+inline void TriggerLocator::SetPlayerEntered(bool always) {
     mPlayerEntered = always;
 }
 

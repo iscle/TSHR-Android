@@ -47,13 +47,12 @@
 //
 //==============================================================================
 ZoneEventLocator::ZoneEventLocator() :
-    mZoneSize( 0 ),
-    mInteriorSection( 0 ),
-    mInteriorLoad(false),
-    mInteriorDump(false),
-    mZone( NULL )
-{
-    SetEventType( LocatorEvent::DYNAMIC_ZONE );
+        mZoneSize(0),
+        mInteriorSection(0),
+        mInteriorLoad(false),
+        mInteriorDump(false),
+        mZone(NULL) {
+    SetEventType(LocatorEvent::DYNAMIC_ZONE);
 }
 
 //==============================================================================
@@ -66,10 +65,8 @@ ZoneEventLocator::ZoneEventLocator() :
 // Return:      N/A.
 //
 //==============================================================================
-ZoneEventLocator::~ZoneEventLocator()
-{
-    if ( mZone )
-    {
+ZoneEventLocator::~ZoneEventLocator() {
+    if (mZone) {
         delete[] mZone;
         mZone = NULL;
         mZoneSize = 0;
@@ -86,10 +83,10 @@ ZoneEventLocator::~ZoneEventLocator()
 // Return:      const 
 //
 //=============================================================================
-const char* const ZoneEventLocator::GetZone() const
-{
+const char *const ZoneEventLocator::GetZone() const {
     return mZone;
 }
+
 //=============================================================================
 // ZoneEventLocator::GetZone
 //=============================================================================
@@ -100,10 +97,10 @@ const char* const ZoneEventLocator::GetZone() const
 // Return:      const 
 //
 //=============================================================================
-int ZoneEventLocator::GetNumLoadZones()
-{
+int ZoneEventLocator::GetNumLoadZones() {
     return mLoadZones.mUseSize;
 }
+
 //=============================================================================
 // ZoneEventLocator::GetZone
 //=============================================================================
@@ -114,8 +111,7 @@ int ZoneEventLocator::GetNumLoadZones()
 // Return:      const 
 //
 //=============================================================================
-int ZoneEventLocator::GetNumDumpZones()
-{
+int ZoneEventLocator::GetNumDumpZones() {
     return mDumpZones.mUseSize;
 }
 
@@ -129,10 +125,10 @@ int ZoneEventLocator::GetNumDumpZones()
 // Return:      const 
 //
 //=============================================================================
-int ZoneEventLocator::GetNumLWSActivates()
-{
+int ZoneEventLocator::GetNumLWSActivates() {
     return mLWSActivates.mUseSize;
 }
+
 //=============================================================================
 // ZoneEventLocator::GetZone
 //=============================================================================
@@ -143,10 +139,10 @@ int ZoneEventLocator::GetNumLWSActivates()
 // Return:      const 
 //
 //=============================================================================
-int ZoneEventLocator::GetNumLWSDeactivates()
-{
+int ZoneEventLocator::GetNumLWSDeactivates() {
     return mLWSDeactivates.mUseSize;
 }
+
 //=============================================================================
 // ZoneEventLocator::GetZone
 //=============================================================================
@@ -157,10 +153,10 @@ int ZoneEventLocator::GetNumLWSDeactivates()
 // Return:      const 
 //
 //=============================================================================
-const char* const ZoneEventLocator::GetLoadZone(int i) 
-{
+const char *const ZoneEventLocator::GetLoadZone(int i) {
     return &(mZone[mLoadZones[i]]);
 }
+
 //=============================================================================
 // ZoneEventLocator::GetZone
 //=============================================================================
@@ -171,10 +167,10 @@ const char* const ZoneEventLocator::GetLoadZone(int i)
 // Return:      const 
 //
 //=============================================================================
-const char* const ZoneEventLocator::GetDumpZone(int i) 
-{
+const char *const ZoneEventLocator::GetDumpZone(int i) {
     return &(mZone[mDumpZones[i]]);
 }
+
 //=============================================================================
 // ZoneEventLocator::GetZone
 //=============================================================================
@@ -185,10 +181,10 @@ const char* const ZoneEventLocator::GetDumpZone(int i)
 // Return:      const 
 //
 //=============================================================================
-const char* const ZoneEventLocator::GetLWSActivates(int i) 
-{
+const char *const ZoneEventLocator::GetLWSActivates(int i) {
     return &(mZone[mLWSActivates[i]]);
 }
+
 //=============================================================================
 // ZoneEventLocator::GetZone
 //=============================================================================
@@ -199,16 +195,14 @@ const char* const ZoneEventLocator::GetLWSActivates(int i)
 // Return:      const 
 //
 //=============================================================================
-const char* const ZoneEventLocator::GetLWSDeactivates(int i) 
-{
+const char *const ZoneEventLocator::GetLWSDeactivates(int i) {
     return &(mZone[mLWSDeactivates[i]]);
 }
 
 //=============================================================================
 // ZoneEventLocator::GetInteriorSection
 //=============================================================================
-const char* ZoneEventLocator::GetInteriorSection()
-{
+const char *ZoneEventLocator::GetInteriorSection() {
     return &(mZone[mInteriorSection]);
 }
 
@@ -217,77 +211,74 @@ const char* ZoneEventLocator::GetInteriorSection()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const char* zone )
+// Parameters:  (const char* zone)
 //
 // Return:      void 
 //
 //=============================================================================
-void ZoneEventLocator::SetZone( const char* zone )
-{
+void ZoneEventLocator::SetZone(const char *zone) {
     int zoneStrLength;
 
-    rAssert( mZoneSize );
-    rAssert( strlen(zone) + 1 <= mZoneSize );
+    rAssert(mZoneSize);
+    rAssert(strlen(zone) + 1 <= mZoneSize);
 
     zoneStrLength = strlen(zone);
 
-    strncpy( mZone, zone, zoneStrLength );
+    strncpy(mZone, zone, zoneStrLength);
     mZone[zoneStrLength] = '\0';
 
-    mLoadZones.Allocate(mZoneSize/6);
-    mDumpZones.Allocate(mZoneSize/6);
-    
-    mLWSDeactivates.Allocate(mZoneSize/6);
-    mLWSActivates.Allocate(mZoneSize/6);
+    mLoadZones.Allocate(mZoneSize / 6);
+    mDumpZones.Allocate(mZoneSize / 6);
+
+    mLWSDeactivates.Allocate(mZoneSize / 6);
+    mLWSActivates.Allocate(mZoneSize / 6);
 
     int i, startPosn;
-    for(startPosn=0,i=0; i<zoneStrLength; i++)
-    {
-        switch(mZone[i])
-        {
-        case ';':
-            mLoadZones.Add(startPosn);
-            mZone[i]='\0';
-            i++;
-            startPosn = i;
-            break;
-        case ':':
-            mDumpZones.Add(startPosn);
-            mZone[i]='\0';
-            i++;
-            startPosn = i;
-            break;
-        case '@':
-            mInteriorLoad = true;
-            mInteriorSection = startPosn;
-            mLoadZones.Add(startPosn);
-            mZone[i]='\0';
-            i++;
-            startPosn = i;
-            break;
-        case '$':
-            mInteriorDump = true;
-            mDumpZones.Add(startPosn);
-            mZone[i]='\0';
-            i++;
-            startPosn = i;
-            break;
-        case '&':
-            mLWSDeactivates.Add(startPosn);
-            mZone[i]='\0';
-            i++;
-            startPosn = i;
-            break;
-        case '*':
-            mLWSActivates.Add(startPosn);
-            mZone[i]='\0';
-            i++;
-            startPosn = i;
-            break;
-        case '\0':
-            break;
-        default:
-            break;
+    for (startPosn = 0, i = 0; i < zoneStrLength; i++) {
+        switch (mZone[i]) {
+            case ';':
+                mLoadZones.Add(startPosn);
+                mZone[i] = '\0';
+                i++;
+                startPosn = i;
+                break;
+            case ':':
+                mDumpZones.Add(startPosn);
+                mZone[i] = '\0';
+                i++;
+                startPosn = i;
+                break;
+            case '@':
+                mInteriorLoad = true;
+                mInteriorSection = startPosn;
+                mLoadZones.Add(startPosn);
+                mZone[i] = '\0';
+                i++;
+                startPosn = i;
+                break;
+            case '$':
+                mInteriorDump = true;
+                mDumpZones.Add(startPosn);
+                mZone[i] = '\0';
+                i++;
+                startPosn = i;
+                break;
+            case '&':
+                mLWSDeactivates.Add(startPosn);
+                mZone[i] = '\0';
+                i++;
+                startPosn = i;
+                break;
+            case '*':
+                mLWSActivates.Add(startPosn);
+                mZone[i] = '\0';
+                i++;
+                startPosn = i;
+                break;
+            case '\0':
+                break;
+            default:
+                break;
         }
     }
 }
@@ -297,30 +288,26 @@ void ZoneEventLocator::SetZone( const char* zone )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned char size )
+// Parameters:  (unsigned char size)
 //
 // Return:      void 
 //
 //=============================================================================
-void ZoneEventLocator::SetZoneSize( unsigned char size )
-{
-    MEMTRACK_PUSH_GROUP( "ZoneEventLocator" );
-    rAssert( !mZoneSize );
-    
-    if ( mZone )
-    {
-        rAssertMsg( false, "Why is someone changing this!  BAD! Get Cary!" );
+void ZoneEventLocator::SetZoneSize(unsigned char size) {
+    MEMTRACK_PUSH_GROUP("ZoneEventLocator");
+    rAssert(!mZoneSize);
+
+    if (mZone) {
+        rAssertMsg(false, "Why is someone changing this!  BAD! Get Cary!");
         mZoneSize = 0;
         delete[] mZone;
         mZone = NULL;
-    }
-    else
-    {
+    } else {
         mZoneSize = size + 1;
     }
 
-    mZone = new(GMA_LEVEL_OTHER) char[ mZoneSize ];        
-    MEMTRACK_POP_GROUP( "ZoneEventLocator" );
+    mZone = new(GMA_LEVEL_OTHER) char[mZoneSize];
+    MEMTRACK_POP_GROUP("ZoneEventLocator");
 }
 
 //******************************************************************************

@@ -30,24 +30,25 @@ class tAnimation;
 //
 //=============================================================================
 
-class CameraPlayer : public SimpleAnimationPlayer
-{
-    public:
-        CameraPlayer();
-        virtual ~CameraPlayer();
+class CameraPlayer : public SimpleAnimationPlayer {
+public:
+    CameraPlayer();
 
-        virtual void ClearData();
-        
-    protected:
-        virtual void DoLoaded();
+    virtual ~CameraPlayer();
 
-    private:
+    virtual void ClearData();
 
-        //Prevent wasteful constructor creation.
-        CameraPlayer( const CameraPlayer& cameraPlayer );
-        CameraPlayer& operator=( const CameraPlayer& cameraPlayer );
+protected:
+    virtual void DoLoaded();
 
-        tAnimation* mpAnimation;
+private:
+
+    //Prevent wasteful constructor creation.
+    CameraPlayer(const CameraPlayer &cameraPlayer);
+
+    CameraPlayer &operator=(const CameraPlayer &cameraPlayer);
+
+    tAnimation *mpAnimation;
 };
 
 

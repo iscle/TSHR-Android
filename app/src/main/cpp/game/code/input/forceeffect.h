@@ -48,34 +48,38 @@ typedef unsigned int u32;
 //
 //=============================================================================
 
-class ForceEffect
-{
+class ForceEffect {
 public:
     ForceEffect();
+
     virtual ~ForceEffect();
 
 #ifdef RAD_WIN32
-    void SetForceID( u8 forceID ) { m_index = forceID; }
+    void SetForceID(u8 forceID) { m_index = forceID; }
     u8   GetForceID() const { return m_index; }
-    
+
 #endif
 
-    void Init( IRadControllerOutputPoint* outputPoint );
-    bool IsInit() const { return ( mOutputPoint != NULL ); };
+    void Init(IRadControllerOutputPoint *outputPoint);
+
+    bool IsInit() const { return (mOutputPoint != NULL); };
 
     void Start();
+
     void Stop();
 
 #ifdef RAD_WIN32
     virtual void Update(unsigned timeins = 0);
     void ShutDownEffects();
-    void SetResetTime( DWORD dwMilliSeconds );
+    void SetResetTime(DWORD dwMilliSeconds);
 #else
+
     void Update();
+
 #endif
 
 protected:
-    IRadControllerOutputPoint* mOutputPoint;
+    IRadControllerOutputPoint *mOutputPoint;
 #ifdef RAD_WIN32
     DIEFFECT      mForceEffect;
     DWORD         m_rgdwAxes[2];
@@ -91,8 +95,9 @@ protected:
     virtual void OnInit() = 0;
 
     //Prevent wasteful constructor creation.
-    ForceEffect( const ForceEffect& forceeffect );
-    ForceEffect& operator=( const ForceEffect& forceeffect );
+    ForceEffect(const ForceEffect &forceeffect);
+
+    ForceEffect &operator=(const ForceEffect &forceeffect);
 };
 
 //*****************************************************************************

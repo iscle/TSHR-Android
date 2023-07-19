@@ -48,25 +48,25 @@
 //
 //===========================================================================
 
-namespace ActionButton
-{
+namespace ActionButton {
 
-class AutomaticDoor : public AnimSwitch
-{
+    class AutomaticDoor : public AnimSwitch {
     public:
-        AutomaticDoor( ActionEventLocator* pActionEventLocator );
+        AutomaticDoor(ActionEventLocator *pActionEventLocator);
+
         virtual ~AutomaticDoor();
 
-        static ButtonHandler* NewAction( ActionEventLocator* pActionEventLocator )
-        {
-            return new AutomaticDoor( pActionEventLocator );  
-        }  
+        static ButtonHandler *NewAction(ActionEventLocator *pActionEventLocator) {
+            return new AutomaticDoor(pActionEventLocator);
+        }
 
     protected:
 
-        virtual void OnEnter( Character* pCharacter );
-        virtual void OnExit( Character* pCharacter );
-        virtual bool OnButtonPressed( Character* pCharacter, Sequencer* pSeq )  { return false; }
+        virtual void OnEnter(Character *pCharacter);
+
+        virtual void OnExit(Character *pCharacter);
+
+        virtual bool OnButtonPressed(Character *pCharacter, Sequencer *pSeq) { return false; }
 
     protected:
         // Number of characters currently residing in the trigger volume
@@ -76,10 +76,11 @@ class AutomaticDoor : public AnimSwitch
         // These methods defined as private and not implemented ensure that
         // clients will not be able to use them.  For example, we will
         // disallow AutomaticDoor from being copied and assigned.
-        AutomaticDoor( const AutomaticDoor& );
-        AutomaticDoor& operator=( const AutomaticDoor& );
+        AutomaticDoor(const AutomaticDoor &);
 
-};
+        AutomaticDoor &operator=(const AutomaticDoor &);
+
+    };
 
 };
 #endif

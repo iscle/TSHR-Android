@@ -55,11 +55,10 @@ const float STAT_PHYS_MASS_IMPULSE_PARTICLE_BIAS = 10.0f;
 // Constraints: None.
 //
 //========================================================================
-StaticPhysDSG::StaticPhysDSG() : 
-mpShadow( NULL ),
-mpShadowMatrix( NULL )
-{
-   mpSimStateObj = NULL;
+StaticPhysDSG::StaticPhysDSG() :
+        mpShadow(NULL),
+        mpShadowMatrix(NULL) {
+    mpSimStateObj = NULL;
 }
 
 //========================================================================
@@ -75,25 +74,22 @@ mpShadowMatrix( NULL )
 // Constraints: None.
 //
 //========================================================================
-StaticPhysDSG::~StaticPhysDSG()
-{
-BEGIN_PROFILE( "StaticPhysDSG Destroy" );
-   if(mpSimStateObj != NULL)
-   {
-      mpSimStateObj->Release();
-   }
-    if (mpShadow)
-    {
+StaticPhysDSG::~StaticPhysDSG() {
+    BEGIN_PROFILE("StaticPhysDSG Destroy");
+    if (mpSimStateObj != NULL) {
+        mpSimStateObj->Release();
+    }
+    if (mpShadow) {
         mpShadow->Release();
         mpShadow = 0;
     }
-    if (mpShadowMatrix != NULL )
-    {
+    if (mpShadowMatrix != NULL) {
         delete mpShadowMatrix;
         mpShadowMatrix = NULL;
     }
-END_PROFILE( "StaticPhysDSG Destroy" );
+    END_PROFILE("StaticPhysDSG Destroy");
 }
+
 //========================================================================
 // StaticPhysDSG::
 //========================================================================
@@ -107,15 +103,15 @@ END_PROFILE( "StaticPhysDSG Destroy" );
 // Constraints: None.
 //
 //========================================================================
-void StaticPhysDSG::OnSetSimState( sim::SimState* ipSimState )
-{
-    tRefCounted::Assign( mpSimStateObj, ipSimState );
-    
+void StaticPhysDSG::OnSetSimState(sim::SimState *ipSimState) {
+    tRefCounted::Assign(mpSimStateObj, ipSimState);
+
     //mpSimStateObj->mAIRefIndex = StaticPhysDSG::GetAIRef();
     mpSimStateObj->mAIRefIndex = this->GetAIRef();
 
     SetInternalState();
 }
+
 //========================================================================
 // StaticPhysDSG::
 //========================================================================
@@ -129,10 +125,10 @@ void StaticPhysDSG::OnSetSimState( sim::SimState* ipSimState )
 // Constraints: None.
 //
 //========================================================================
-sim::SimState* StaticPhysDSG::GetSimState() const
-{
-   return mpSimStateObj;
+sim::SimState *StaticPhysDSG::GetSimState() const {
+    return mpSimStateObj;
 }
+
 ///////////////////////////////////////////////////////////////////////
 // Drawable
 ///////////////////////////////////////////////////////////////////////
@@ -149,18 +145,18 @@ sim::SimState* StaticPhysDSG::GetSimState() const
 // Constraints: None.
 //
 //========================================================================
-void StaticPhysDSG::Display()
-{
-    if(IS_DRAW_LONG) return;
+void StaticPhysDSG::Display() {
+    if (IS_DRAW_LONG) return;
 #ifdef PROFILER_ENABLED
     char profileName[] = "  StaticPhysDSG Display";
 #endif
-   DSG_BEGIN_PROFILE(profileName)
-   //Currently unsupported. Contact Devin.
-   //rAssert(false);
-   //Do nothing, but allow inst stat phys to render their pGeo's
-   DSG_END_PROFILE(profileName)
+    DSG_BEGIN_PROFILE(profileName)
+    //Currently unsupported. Contact Devin.
+    //rAssert(false);
+    //Do nothing, but allow inst stat phys to render their pGeo's
+    DSG_END_PROFILE(profileName)
 }
+
 //========================================================================
 // StaticPhysDSG::
 //========================================================================
@@ -174,64 +170,64 @@ void StaticPhysDSG::Display()
 // Constraints: None.
 //
 //========================================================================
-void StaticPhysDSG::DisplayBoundingBox(tColour colour)
-{
+void StaticPhysDSG::DisplayBoundingBox(tColour colour) {
 #ifndef RAD_RELEASE
-   //Currently unsupported. Contact Devin.
-   //rAssert(false);
-   pddiPrimStream* stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
-   stream->Colour(colour);
-   stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
-   stream->Colour(colour);
-   stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.low.z);
-   stream->Colour(colour);
-   stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.low.z);
-   stream->Colour(colour);
-   stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.low.z);
-   stream->Colour(colour);
-   stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
-   p3d::pddi->EndPrims(stream);
+    //Currently unsupported. Contact Devin.
+    //rAssert(false);
+    pddiPrimStream *stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
+    p3d::pddi->EndPrims(stream);
 
-   stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
-   stream->Colour(colour);
-   stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
-   stream->Colour(colour);
-   stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
-   stream->Colour(colour);
-   stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.high.z);
-   stream->Colour(colour);
-   stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.high.z);
-   stream->Colour(colour);
-   stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
-   p3d::pddi->EndPrims(stream);
+    stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
+    p3d::pddi->EndPrims(stream);
 
-   stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
-   stream->Colour(colour);
-   stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
-   stream->Colour(colour);
-   stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.high.z);
-   stream->Colour(colour);
-   stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.low.z);
-   stream->Colour(colour);
-   stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.low.z);
-   stream->Colour(colour);
-   stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
-   p3d::pddi->EndPrims(stream);
+    stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.low.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.high.x, mBBox.high.y, mBBox.high.z);
+    p3d::pddi->EndPrims(stream);
 
-   stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
-   stream->Colour(colour);
-   stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
-   stream->Colour(colour);
-   stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.high.z);
-   stream->Colour(colour);
-   stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
-   stream->Colour(colour);
-   stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.low.z);
-   stream->Colour(colour);
-   stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
-   p3d::pddi->EndPrims(stream);
+    stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINESTRIP, PDDI_V_C, 5);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.high.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.low.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.low.z);
+    stream->Colour(colour);
+    stream->Coord(mBBox.low.x, mBBox.high.y, mBBox.high.z);
+    p3d::pddi->EndPrims(stream);
 #endif
 }
+
 //========================================================================
 // StaticPhysDSG::
 //========================================================================
@@ -245,11 +241,11 @@ void StaticPhysDSG::DisplayBoundingBox(tColour colour)
 // Constraints: None.
 //
 //========================================================================
-void StaticPhysDSG::DisplayBoundingSphere(tColour colour)
-{
-   //Currently unsupported. Contact Devin.
-   rAssert(false);
+void StaticPhysDSG::DisplayBoundingSphere(tColour colour) {
+    //Currently unsupported. Contact Devin.
+    rAssert(false);
 }
+
 //========================================================================
 // StaticPhysDSG::
 //========================================================================
@@ -263,10 +259,10 @@ void StaticPhysDSG::DisplayBoundingSphere(tColour colour)
 // Constraints: None.
 //
 //========================================================================
-void StaticPhysDSG::GetBoundingBox(rmt::Box3D* box)
-{
-   (*box) = mBBox;
+void StaticPhysDSG::GetBoundingBox(rmt::Box3D *box) {
+    (*box) = mBBox;
 }
+
 //========================================================================
 // StaticPhysDSG::
 //========================================================================
@@ -280,9 +276,8 @@ void StaticPhysDSG::GetBoundingBox(rmt::Box3D* box)
 // Constraints: None.
 //
 //========================================================================
-void StaticPhysDSG::GetBoundingSphere(rmt::Sphere* sphere)
-{
-   (*sphere) = mSphere;
+void StaticPhysDSG::GetBoundingSphere(rmt::Sphere *sphere) {
+    (*sphere) = mSphere;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -301,10 +296,10 @@ void StaticPhysDSG::GetBoundingSphere(rmt::Sphere* sphere)
 // Constraints: None.
 //
 //========================================================================
-rmt::Vector* StaticPhysDSG::pPosition()
-{
-   return &mPosn;
+rmt::Vector *StaticPhysDSG::pPosition() {
+    return &mPosn;
 }
+
 //========================================================================
 // StaticPhysDSG::
 //========================================================================
@@ -318,10 +313,10 @@ rmt::Vector* StaticPhysDSG::pPosition()
 // Constraints: None.
 //
 //========================================================================
-const rmt::Vector& StaticPhysDSG::rPosition()
-{
-   return mPosn;
+const rmt::Vector &StaticPhysDSG::rPosition() {
+    return mPosn;
 }
+
 //========================================================================
 // StaticPhysDSG::
 //========================================================================
@@ -335,9 +330,8 @@ const rmt::Vector& StaticPhysDSG::rPosition()
 // Constraints: None.
 //
 //========================================================================
-void StaticPhysDSG::GetPosition( rmt::Vector* ipPosn )
-{
-   *ipPosn = mPosn;
+void StaticPhysDSG::GetPosition(rmt::Vector *ipPosn) {
+    *ipPosn = mPosn;
 }
 //========================================================================
 // StaticPhysDSG::
@@ -355,9 +349,8 @@ void StaticPhysDSG::GetPosition( rmt::Vector* ipPosn )
 
 
 
-void StaticPhysDSG::RenderUpdate()
-{
-   //do Nothing
+void StaticPhysDSG::RenderUpdate() {
+    //do Nothing
 }
 
 
@@ -366,23 +359,19 @@ void StaticPhysDSG::RenderUpdate()
 // Protected Member Functions : StaticPhysDSG 
 //
 //************************************************************************
-void StaticPhysDSG::SetInternalState()
-{
-   mPosn = mpSimStateObj->GetCollisionObject()->GetCollisionVolume()->mPosition;
-   
-   mBBox.low   = mPosn;
-   mBBox.high  = mPosn;
-   mBBox.high += mpSimStateObj->GetCollisionObject()->GetCollisionVolume()->mBoxSize;
-   mBBox.low  -= mpSimStateObj->GetCollisionObject()->GetCollisionVolume()->mBoxSize;
+void StaticPhysDSG::SetInternalState() {
+    mPosn = mpSimStateObj->GetCollisionObject()->GetCollisionVolume()->mPosition;
 
-   mSphere.centre.Sub(mBBox.high,mBBox.low);
-   mSphere.centre *= 0.5f;
-   mSphere.centre.Add(mBBox.low);
-   mSphere.radius = mpSimStateObj->GetCollisionObject()->GetCollisionVolume()->mSphereRadius;
+    mBBox.low = mPosn;
+    mBBox.high = mPosn;
+    mBBox.high += mpSimStateObj->GetCollisionObject()->GetCollisionVolume()->mBoxSize;
+    mBBox.low -= mpSimStateObj->GetCollisionObject()->GetCollisionVolume()->mBoxSize;
+
+    mSphere.centre.Sub(mBBox.high, mBBox.low);
+    mSphere.centre *= 0.5f;
+    mSphere.centre.Add(mBBox.low);
+    mSphere.radius = mpSimStateObj->GetCollisionObject()->GetCollisionVolume()->mSphereRadius;
 }
-
-
-
 
 
 //=============================================================================
@@ -390,13 +379,13 @@ void StaticPhysDSG::SetInternalState()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( sim::SimState* pCollidedObj, sim::Collision& inCollision )
+// Parameters:  (sim::SimState* pCollidedObj, sim::Collision& inCollision)
 //
 // Return:      sim
 //
 //=============================================================================
-sim::Solving_Answer StaticPhysDSG::PreReactToCollision( sim::SimState* pCollidedObj, sim::Collision& inCollision )
-{
+sim::Solving_Answer
+StaticPhysDSG::PreReactToCollision(sim::SimState *pCollidedObj, sim::Collision &inCollision) {
     return sim::Solving_Continue;
 }
 
@@ -406,29 +395,26 @@ sim::Solving_Answer StaticPhysDSG::PreReactToCollision( sim::SimState* pCollided
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( sim::SimState* pCollidedObj, sim::Collision& inCollision )
+// Parameters:  (sim::SimState* pCollidedObj, sim::Collision& inCollision)
 //
 // Return:      sim
 //
 //=============================================================================
-sim::Solving_Answer StaticPhysDSG::PostReactToCollision(rmt::Vector& impulse, sim::Collision& inCollision)
-{
-    
+sim::Solving_Answer
+StaticPhysDSG::PostReactToCollision(rmt::Vector &impulse, sim::Collision &inCollision) {
+
     // subclass-specific shit here
 
     // If it is a breakable object and has an assicated particle animation with it (it should)
     // play the associated particle effect, if the impulse magnitude is greater than a certain threshold
 
-    if ( mpCollisionAttributes != NULL )
-    {
+    if (mpCollisionAttributes != NULL) {
         float threshold = STAT_PHYS_MASS_IMPULSE_PARTICLE_BIAS * mpCollisionAttributes->GetMass();
-        if( impulse.MagnitudeSqr() > (threshold*threshold) )
-        {
-            if (mpCollisionAttributes->GetParticle() != ParticleEnum::eNull )
-            {
+        if (impulse.MagnitudeSqr() > (threshold * threshold)) {
+            if (mpCollisionAttributes->GetParticle() != ParticleEnum::eNull) {
                 ParticleAttributes attr;
                 attr.mType = mpCollisionAttributes->GetParticle();
-                GetParticleManager()->Add( attr, inCollision.GetPositionA() );          
+                GetParticleManager()->Add(attr, inCollision.GetPositionA());
             }
         }
     }
@@ -436,113 +422,99 @@ sim::Solving_Answer StaticPhysDSG::PostReactToCollision(rmt::Vector& impulse, si
 }
 
 
+void StaticPhysDSG::SetShadow(tDrawable *ipShadow) {
+    tRefCounted::Assign(mpShadow, ipShadow);
 
-void StaticPhysDSG::SetShadow( tDrawable* ipShadow )
-{
-    tRefCounted::Assign( mpShadow, ipShadow );
-
-	if ( ipShadow != NULL )
-	{
-		// Hang onto the shadow drawable
-		rAssert( mpShadowMatrix == NULL );
-		mpShadowMatrix = CreateShadowMatrix( rPosition() );
-	}
+    if (ipShadow != NULL) {
+        // Hang onto the shadow drawable
+        rAssert(mpShadowMatrix == NULL);
+        mpShadowMatrix = CreateShadowMatrix(rPosition());
+    }
 
 }
 
-rmt::Matrix* StaticPhysDSG::CreateShadowMatrix( const rmt::Vector& objectPosition )
-{
-    rmt::Matrix* pResult;
+rmt::Matrix *StaticPhysDSG::CreateShadowMatrix(const rmt::Vector &objectPosition) {
+    rmt::Matrix *pResult;
     rmt::Matrix shadowMat;
-    if ( ComputeShadowMatrix( objectPosition, &shadowMat ) )
-    {
-        HeapMgr()->PushHeap( GMA_LEVEL_OTHER );
+    if (ComputeShadowMatrix(objectPosition, &shadowMat)) {
+        HeapMgr()->PushHeap(GMA_LEVEL_OTHER);
         pResult = new rmt::Matrix();
-        HeapMgr()->PopHeap( GMA_LEVEL_OTHER);
+        HeapMgr()->PopHeap(GMA_LEVEL_OTHER);
         *pResult = shadowMat;
 
-    }
-    else
-    {
-        pResult = NULL ;
+    } else {
+        pResult = NULL;
     }
     return pResult;
 }
-    
-void StaticPhysDSG::RecomputeShadowPosition( float height_radius_bias )
-{
-    if ( mpShadowMatrix )
-    {
+
+void StaticPhysDSG::RecomputeShadowPosition(float height_radius_bias) {
+    if (mpShadowMatrix) {
         rmt::Vector position;
-        GetPosition( &position );
-        ComputeShadowMatrix( position, mpShadowMatrix );
+        GetPosition(&position);
+        ComputeShadowMatrix(position, mpShadowMatrix);
     }
 }
 
-void StaticPhysDSG::RecomputeShadowPositionNoIntersect( float height, const rmt::Vector& normal, float height_radius_bias, float scale )
-{
-    if ( mpShadowMatrix )
-    {
+void StaticPhysDSG::RecomputeShadowPositionNoIntersect(float height, const rmt::Vector &normal,
+                                                       float height_radius_bias, float scale) {
+    if (mpShadowMatrix) {
         rmt::Vector position;
-        GetPosition( &position );
-        rmt::Vector shadowPosition( position.x, height, position.z );
+        GetPosition(&position);
+        rmt::Vector shadowPosition(position.x, height, position.z);
 
 
-	    mpShadowMatrix->Identity();
-	    mpShadowMatrix->FillTranslate( shadowPosition );
-        rmt::Vector worldRight( 1,0,0 );
+        mpShadowMatrix->Identity();
+        mpShadowMatrix->FillTranslate(shadowPosition);
+        rmt::Vector worldRight(1, 0, 0);
         rmt::Vector forward;
-        forward.CrossProduct( worldRight, normal );
-	    mpShadowMatrix->FillHeading( forward, normal );
+        forward.CrossProduct(worldRight, normal);
+        mpShadowMatrix->FillHeading(forward, normal);
 /*
-        if ( height_radius_bias != 1.0f )
+        if (height_radius_bias != 1.0f)
         {
             // scale = (objheight - groundY) * bias
-            float matrixScale = 1.0f - ( position.y - shadowPosition.y ) * height_radius_bias;
+            float matrixScale = 1.0f - (position.y - shadowPosition.y) * height_radius_bias;
             matrixScale *= scale;
-            if ( matrixScale < 0.0f )
+            if (matrixScale <0.0f)
             {
                 matrixScale = 0.0f;
             }
-            mpShadowMatrix->FillScale( matrixScale );
+            mpShadowMatrix->FillScale(matrixScale);
         }*/
     }
 }
 
-void StaticPhysDSG::DisplaySimpleShadow()
-{
+void StaticPhysDSG::DisplaySimpleShadow() {
     p3d::pddi->SetZWrite(false);
     BEGIN_PROFILE("DisplaySimpleShadow")
-	rAssert( mpShadow != NULL );
+    rAssert(mpShadow != NULL);
 
-	// Translate the shadow towards the camera slightly, instead of moving it off the
-	//ground in the direction of the the ground normal. Hopefully this will cause less distortion of the shadow.
-	
-    if ( mpShadow != NULL && mpShadowMatrix != NULL )
-    {
+    // Translate the shadow towards the camera slightly, instead of moving it off the
+    //ground in the direction of the the ground normal. Hopefully this will cause less distortion of the shadow.
 
-	// Create a camera that pushes the shadow a meter towards
-	// the camera
-	rmt::Vector camPos;
-	p3d::context->GetView()->GetCamera()->GetWorldPosition( &camPos );
-	camPos.Sub( mpShadowMatrix->Row(3) );
-	camPos.Normalize();
-    // Distance to raise the object 
-    const float Z_FIGHTING_OFFSET = 1.0f;
-    camPos.Scale( Z_FIGHTING_OFFSET );
-	
-	// Final shadow transform = position/orientation * tocamera translation
-	rmt::Matrix shadowTransform( *mpShadowMatrix );
-	shadowTransform.Row( 3 ).Add( camPos );
+    if (mpShadow != NULL && mpShadowMatrix != NULL) {
 
-	// Display
-	p3d::stack->PushMultiply( shadowTransform );
-	mpShadow->Display();
-    p3d::stack->Pop();
-    }
-    else
-    {
-        mpShadowMatrix = CreateShadowMatrix( rPosition() );
+        // Create a camera that pushes the shadow a meter towards
+        // the camera
+        rmt::Vector camPos;
+        p3d::context->GetView()->GetCamera()->GetWorldPosition(&camPos);
+        camPos.Sub(mpShadowMatrix->Row(3));
+        camPos.Normalize();
+        // Distance to raise the object
+        const float Z_FIGHTING_OFFSET = 1.0f;
+        camPos.Scale(Z_FIGHTING_OFFSET);
+
+        // Final shadow transform = position/orientation * tocamera translation
+        rmt::Matrix shadowTransform(*mpShadowMatrix);
+        shadowTransform.Row(3).Add(camPos);
+
+        // Display
+        p3d::stack->PushMultiply(shadowTransform);
+        mpShadow->Display();
+        p3d::stack->Pop();
+    } else {
+        mpShadowMatrix = CreateShadowMatrix(rPosition());
     }
     END_PROFILE("DisplaySimpleShadow")
     p3d::pddi->SetZWrite(true);
@@ -556,39 +528,37 @@ void StaticPhysDSG::DisplaySimpleShadow()
 //************************************************************************
 
 
-bool 
-StaticPhysDSG::ComputeShadowMatrix( const rmt::Vector& in_position, rmt::Matrix* out_pMatrix )
-{
-   	// Determine where our shadow casting object intersects the ground plane
-	rmt::Vector groundNormal(0,1,0);
-	rmt::Vector groundPlaneIntersectionPoint;
+bool
+StaticPhysDSG::ComputeShadowMatrix(const rmt::Vector &in_position, rmt::Matrix *out_pMatrix) {
+    // Determine where our shadow casting object intersects the ground plane
+    rmt::Vector groundNormal(0, 1, 0);
+    rmt::Vector groundPlaneIntersectionPoint;
 
-	const float INTERSECT_TEST_RADIUS = 10.0f;
-	bool foundPlane;
-	rmt::Vector deepestIntersectPos, deepestIntersectNormal;
+    const float INTERSECT_TEST_RADIUS = 10.0f;
+    bool foundPlane;
+    rmt::Vector deepestIntersectPos, deepestIntersectNormal;
 
     // Get rid of the fact that FindIntersection doesn't want a const value
-	// and I'm above casting away constness
+    // and I'm above casting away constness
 
     rmt::Vector searchPosition = in_position;
     searchPosition.y += 10.0f;
 
-	GetIntersectManager()->FindIntersection( searchPosition, 
-											foundPlane,
-											groundNormal,
-											groundPlaneIntersectionPoint );
+    GetIntersectManager()->FindIntersection(searchPosition,
+                                            foundPlane,
+                                            groundNormal,
+                                            groundPlaneIntersectionPoint);
 
-    if ( foundPlane )
-    {
-	    out_pMatrix->Identity();
-	    out_pMatrix->FillTranslate( groundPlaneIntersectionPoint );
-        rmt::Vector worldRight( 1,0,0 );
+    if (foundPlane) {
+        out_pMatrix->Identity();
+        out_pMatrix->FillTranslate(groundPlaneIntersectionPoint);
+        rmt::Vector worldRight(1, 0, 0);
         rmt::Vector forward;
-        forward.CrossProduct( worldRight, groundNormal );
-	    out_pMatrix->FillHeading( forward, groundNormal );
+        forward.CrossProduct(worldRight, groundNormal);
+        out_pMatrix->FillHeading(forward, groundNormal);
 
     }
     return foundPlane;
-    
+
 }
 

@@ -18,18 +18,16 @@
 #include <roads/roadsegmentdata.h>
 
 RoadSegment::RoadSegment()
-:
-mRoad( NULL ),
-mSegmentIndex( 0 )
-{
+        :
+        mRoad(NULL),
+        mSegmentIndex(0) {
 }
 
-RoadSegment::~RoadSegment( void )
-{
+RoadSegment::~RoadSegment(void) {
 }
 
 /*
-void RoadSegment::Init( RoadSegmentData* rsd, rmt::Matrix& hierarchy, float scaleAlongFacing )
+void RoadSegment::Init(RoadSegmentData* rsd, rmt::Matrix& hierarchy, float scaleAlongFacing)
 {
     ////////////////////////////////////////////////////////////////
     // Transform segment data based on given matrix & scale-along-facing
@@ -37,23 +35,23 @@ void RoadSegment::Init( RoadSegmentData* rsd, rmt::Matrix& hierarchy, float scal
     rmt::Vector vector;
 
     // First, do the corners and the edgenormals
-    for( int i=0; i<4; i++ )
+    for(int i=0; i<4; i++)
     {
         // transform the corner
-        vector = rsd->GetCorner( i );
+        vector = rsd->GetCorner(i);
         vector.z *= scaleAlongFacing;
-        vector.Transform( hierarchy );
+        vector.Transform(hierarchy);
         mCorners[ i ] = vector;
 
         // transform the edge normals
-        vector = rsd->GetEdgeNormal( i );
-        vector.Rotate( hierarchy );
+        vector = rsd->GetEdgeNormal(i);
+        vector.Rotate(hierarchy);
         mEdgeNormals[ i ] = vector;
     }
 
     // Now, transform the segment normal
     vector = rsd->GetSegmentNormal();
-    vector.Rotate( hierarchy );
+    vector.Rotate(hierarchy);
     mNormal = vector;
 
     // Now, calculate and store segment length
@@ -63,11 +61,11 @@ void RoadSegment::Init( RoadSegmentData* rsd, rmt::Matrix& hierarchy, float scal
 
     // Now, calculate and store the bounding sphere
     rmt::Box3D box;
-    GetBoundingBox( &box ); // find the box on the fly (based on extents of corners)
+    GetBoundingBox(&box); // find the box on the fly (based on extents of corners)
 
     // compute & store the bounding sphere based on bbox
     rmt::Vector vectorBetween;
-    vectorBetween = ( box.high - box.low ) * 0.5f;
+    vectorBetween = (box.high - box.low) * 0.5f;
     mSphere.centre = box.low + vectorBetween;
     mSphere.radius = vectorBetween.Magnitude(); // *** SQUARE ROOT! ***
 
@@ -84,30 +82,30 @@ void RoadSegment::Init( RoadSegmentData* rsd, rmt::Matrix& hierarchy, float scal
 
     // Calculate a turn radius.
     //
-    float fCosTheta = mEdgeNormals[0].DotProduct( mEdgeNormals[1] );
-    if ( fCosTheta < 0.0f )
+    float fCosTheta = mEdgeNormals[0].DotProduct(mEdgeNormals[1]);
+    if (fCosTheta <0.0f)
     {
         fCosTheta = 0.0f - fCosTheta;
     }
-    if ( fCosTheta < 0.001f ) //Clamp me.
+    if (fCosTheta <0.001f) //Clamp me.
     {
         fCosTheta = 0.0f;
     }
 
     rmt::Vector temp;
-    temp.Sub( mCorners[0], mCorners[1] );
-    float fInteriorEdgeLength = temp.Magnitude( );
-    temp.Sub( mCorners[2], mCorners[3] );
-    float fExteriorEdgeLength = temp.Magnitude( );
+    temp.Sub(mCorners[0], mCorners[1]);
+    float fInteriorEdgeLength = temp.Magnitude();
+    temp.Sub(mCorners[2], mCorners[3]);
+    float fExteriorEdgeLength = temp.Magnitude();
 
-    if ( fCosTheta != 0.0f )
+    if (fCosTheta != 0.0f)
     {
         // take the shortest length.
-        float length = ( fInteriorEdgeLength < fExteriorEdgeLength )? fInteriorEdgeLength : fExteriorEdgeLength;
+        float length = (fInteriorEdgeLength <fExteriorEdgeLength)? fInteriorEdgeLength : fExteriorEdgeLength;
         length = length / 2.0f;
         mfRadius = length / fCosTheta;
-        mfAngle = rmt::PI_BY2 - rmt::ACos( fCosTheta );
-        //rmt::RadianToDeg( mfAngle );
+        mfAngle = rmt::PI_BY2 - rmt::ACos(fCosTheta);
+        //rmt::RadianToDeg(mfAngle);
     }
     else
     {
@@ -118,21 +116,19 @@ void RoadSegment::Init( RoadSegmentData* rsd, rmt::Matrix& hierarchy, float scal
     }
 }
 */
-void RoadSegment::Init( RoadSegmentData* rsd, rmt::Matrix& hierarchy, float scaleAlongFacing )
-{
+void RoadSegment::Init(RoadSegmentData *rsd, rmt::Matrix &hierarchy, float scaleAlongFacing) {
     ////////////////////////////////////////////////////////////////
     // Transform segment data based on given matrix & scale-along-facing
     //
     rmt::Vector vector;
 
     // store the unmodified values
-    for( int i=0; i<4; i++ )
-    {
-        vector = rsd->GetCorner( i );
-        mCorners[ i ] = vector;
+    for (int i = 0; i < 4; i++) {
+        vector = rsd->GetCorner(i);
+        mCorners[i] = vector;
 
-        vector = rsd->GetEdgeNormal( i );
-        mEdgeNormals[ i ] = vector;
+        vector = rsd->GetEdgeNormal(i);
+        mEdgeNormals[i] = vector;
     }
 
 
@@ -145,37 +141,34 @@ void RoadSegment::Init( RoadSegmentData* rsd, rmt::Matrix& hierarchy, float scal
     //
     // Now, Calculate the width of the leading edge of the segment.
     float fWidth = ((mCorners[0] + mCorners[3]) * 0.5f).Magnitude();
-    mfLaneWidth = fWidth / (float)rsd->GetNumLanes();
+    mfLaneWidth = fWidth / (float) rsd->GetNumLanes();
 
     // Calculate a turn radius.
     //
-    float fCosTheta = mEdgeNormals[0].DotProduct( mEdgeNormals[1] );
-    if ( fCosTheta < 0.0f )
-    {
+    float fCosTheta = mEdgeNormals[0].DotProduct(mEdgeNormals[1]);
+    if (fCosTheta < 0.0f) {
         fCosTheta = 0.0f - fCosTheta;
     }
-    if ( fCosTheta < 0.001f ) //Clamp me.
+    if (fCosTheta < 0.001f) //Clamp me.
     {
         fCosTheta = 0.0f;
     }
 
     rmt::Vector temp;
-    temp.Sub( mCorners[0], mCorners[1] );
-    float fInteriorEdgeLength = temp.Magnitude( );
-    temp.Sub( mCorners[2], mCorners[3] );
-    float fExteriorEdgeLength = temp.Magnitude( );
+    temp.Sub(mCorners[0], mCorners[1]);
+    float fInteriorEdgeLength = temp.Magnitude();
+    temp.Sub(mCorners[2], mCorners[3]);
+    float fExteriorEdgeLength = temp.Magnitude();
 
-    if ( fCosTheta != 0.0f )
-    {
+    if (fCosTheta != 0.0f) {
         // take the shortest length.
-        float length = ( fInteriorEdgeLength < fExteriorEdgeLength )? fInteriorEdgeLength : fExteriorEdgeLength;
+        float length = (fInteriorEdgeLength < fExteriorEdgeLength) ? fInteriorEdgeLength
+                                                                   : fExteriorEdgeLength;
         length = length / 2.0f;
         mfRadius = length / fCosTheta;
-        mfAngle = rmt::PI_BY2 - rmt::ACos( fCosTheta );
-        //rmt::RadianToDeg( mfAngle );
-    }
-    else
-    {
+        mfAngle = rmt::PI_BY2 - rmt::ACos(fCosTheta);
+        //rmt::RadianToDeg(mfAngle);
+    } else {
         // Not a curved segment.
         //
         mfRadius = 0.0f;
@@ -186,23 +179,22 @@ void RoadSegment::Init( RoadSegmentData* rsd, rmt::Matrix& hierarchy, float scal
 
 
     // Ok, so first, transform the corners and the edgenormals
-    for( int i=0; i<4; i++ )
-    {
+    for (int i = 0; i < 4; i++) {
         // transform the corner
-        vector = rsd->GetCorner( i );
+        vector = rsd->GetCorner(i);
         vector.z *= scaleAlongFacing;
-        vector.Transform( hierarchy );
-        mCorners[ i ] = vector;
+        vector.Transform(hierarchy);
+        mCorners[i] = vector;
 
         // transform the edge normals
-        vector = rsd->GetEdgeNormal( i );
-        vector.Rotate( hierarchy );
-        mEdgeNormals[ i ] = vector;
+        vector = rsd->GetEdgeNormal(i);
+        vector.Rotate(hierarchy);
+        mEdgeNormals[i] = vector;
     }
 
     // Now, transform the segment normal
     vector = rsd->GetSegmentNormal();
-    vector.Rotate( hierarchy );
+    vector.Rotate(hierarchy);
     mNormal = vector;
 
     // Now, calculate and store segment length
@@ -212,11 +204,11 @@ void RoadSegment::Init( RoadSegmentData* rsd, rmt::Matrix& hierarchy, float scal
 
     // Now, calculate and store the bounding sphere
     rmt::Box3D box;
-    GetBoundingBox( &box ); // find the box on the fly (based on extents of corners)
+    GetBoundingBox(&box); // find the box on the fly (based on extents of corners)
 
     // compute & store the bounding sphere based on bbox
     rmt::Vector vectorBetween;
-    vectorBetween = ( box.high - box.low ) * 0.5f;
+    vectorBetween = (box.high - box.low) * 0.5f;
     mSphere.centre = box.low + vectorBetween;
     mSphere.radius = vectorBetween.Magnitude(); // *** SQUARE ROOT! ***
 
@@ -224,59 +216,45 @@ void RoadSegment::Init( RoadSegmentData* rsd, rmt::Matrix& hierarchy, float scal
 }
 
 
-void RoadSegment::GetBoundingBox(rmt::Box3D* box)
-{
+void RoadSegment::GetBoundingBox(rmt::Box3D *box) {
     // get axis-aligned bounding box from vertices...
     unsigned int numVertices = 4;
     rmt::Vector vertex;
     unsigned int i = 0;
-    for ( i = 0; i < numVertices; i++ )
-    {
+    for (i = 0; i < numVertices; i++) {
         vertex = mCorners[i];
-        if ( 0 == i )
-        {
+        if (0 == i) {
             // This is the first time.
             // Initialize to some value.
             //
             box->low = box->high = vertex;
-        }
-        else
-        {
-            if ( box->low.x > vertex.x )
-            {
+        } else {
+            if (box->low.x > vertex.x) {
                 box->low.x = vertex.x;
             }
-            if ( box->low.y > vertex.y )
-            {
+            if (box->low.y > vertex.y) {
                 box->low.y = vertex.y;
             }
-            if ( box->low.z > vertex.z )
-            {
+            if (box->low.z > vertex.z) {
                 box->low.z = vertex.z;
             }
 
-            if ( box->high.x < vertex.x )
-            {
+            if (box->high.x < vertex.x) {
                 box->high.x = vertex.x;
             }
-            if ( box->high.y < vertex.y )
-            {
+            if (box->high.y < vertex.y) {
                 box->high.y = vertex.y;
             }
-            if ( box->high.z < vertex.z )
-            {
+            if (box->high.z < vertex.z) {
                 box->high.z = vertex.z;
             }
         }
     }
-}    
-
-void RoadSegment::GetBoundingSphere(rmt::Sphere* sphere)
-{
-    *sphere = mSphere;
 }
 
-
+void RoadSegment::GetBoundingSphere(rmt::Sphere *sphere) {
+    *sphere = mSphere;
+}
 
 
 /*
@@ -295,7 +273,7 @@ Constraints:    The RoadSegment must be convex and have 4 sides.
                 The RoadSegment must have a non zero area.
                 The point must lie within the sector. *****  What if it doesn't?
 
-Parameters:     ( float fPointX, float fPointZ )
+Parameters:     (float fPointX, float fPointZ)
 
 Return:         A scalar from 0 to 1.
                 0 if point lies on the leading edge.
@@ -304,162 +282,158 @@ Return:         A scalar from 0 to 1.
 
 =============================================================================
 */
-float RoadSegment::CalculateUnitDistIntoRoadSegment( float fPointX, float fPointZ )
-{
-	rmt::Vector VLP, VTP;
-	float fDotL, fDotT;
+float RoadSegment::CalculateUnitDistIntoRoadSegment(float fPointX, float fPointZ) {
+    rmt::Vector VLP, VTP;
+    float fDotL, fDotT;
 
     // Get and cache the leading edge top corner
     // and the trailing edge bottom corner.
     //
-    rmt::Vector vertices[ 2 ];
-    GetCorner( 0, vertices[ 0 ] );
-    GetCorner( 2, vertices[ 1 ] );
+    rmt::Vector vertices[2];
+    GetCorner(0, vertices[0]);
+    GetCorner(2, vertices[1]);
 
     // Get and cache the leading edge normal
     // and the trailing edge normal.
     //
-    rmt::Vector unitNormals[ 2 ];
-    GetEdgeNormal( 0, unitNormals[ 0 ] );
-    GetEdgeNormal( 2, unitNormals[ 1 ] );
+    rmt::Vector unitNormals[2];
+    GetEdgeNormal(0, unitNormals[0]);
+    GetEdgeNormal(2, unitNormals[1]);
 
     //for this to work, the normals must both point into
     //the volume...
     //so, I need to reverse the second edge normal
     unitNormals[1] *= -1;
 
-	// Compute vector from point on Leading Edge to P:
-	//
-	VLP.x = fPointX - vertices[0].x;
-	VLP.y = 0.0f;
-	VLP.z = fPointZ - vertices[0].z;
+    // Compute vector from point on Leading Edge to P:
+    //
+    VLP.x = fPointX - vertices[0].x;
+    VLP.y = 0.0f;
+    VLP.z = fPointZ - vertices[0].z;
 
-	// Compute vector from point on Trailing Edge to P:
-	//
-	VTP.x = fPointX - vertices[1].x;
-	VTP.y = 0.0f;
-	VTP.z = fPointZ - vertices[1].z;
+    // Compute vector from point on Trailing Edge to P:
+    //
+    VTP.x = fPointX - vertices[1].x;
+    VTP.y = 0.0f;
+    VTP.z = fPointZ - vertices[1].z;
 
-	// Compute (VLP dot Leading Edge Normal):
-	//
-	fDotL = VLP.x*unitNormals[0].x + VLP.z*unitNormals[0].z;
+    // Compute (VLP dot Leading Edge Normal):
+    //
+    fDotL = VLP.x * unitNormals[0].x + VLP.z * unitNormals[0].z;
 
-	// Compute (VTP dot Trailing Edge Normal):
-	//
-	fDotT = VTP.x*unitNormals[1].x + VTP.z*unitNormals[1].z;
+    // Compute (VTP dot Trailing Edge Normal):
+    //
+    fDotT = VTP.x * unitNormals[1].x + VTP.z * unitNormals[1].z;
 
-	// Compute unit distance into sector and return it:
-	//
-	return ( fDotL / (fDotL + fDotT) );
+    // Compute unit distance into sector and return it:
+    //
+    return (fDotL / (fDotL + fDotT));
 }
 
-float RoadSegment::CalculateUnitHeightInRoadSegment( float fPointX, float fPointZ )
-{
-	rmt::Vector VLP, VTP;
-	float fDotL, fDotT;
+float RoadSegment::CalculateUnitHeightInRoadSegment(float fPointX, float fPointZ) {
+    rmt::Vector VLP, VTP;
+    float fDotL, fDotT;
 
     // Get and cache the leading edge top corner
     // and the trailing edge bottom corner.
     //
-    rmt::Vector vertices[ 2 ];
-    GetCorner( 0, vertices[ 0 ] );
-    GetCorner( 2, vertices[ 1 ] );
+    rmt::Vector vertices[2];
+    GetCorner(0, vertices[0]);
+    GetCorner(2, vertices[1]);
 
     // Get and cache the leading edge normal
     // and the trailing edge normal.
     //
-    rmt::Vector unitNormals[ 2 ];
-    GetEdgeNormal( 1, unitNormals[ 0 ] );
-    GetEdgeNormal( 3, unitNormals[ 1 ] );
+    rmt::Vector unitNormals[2];
+    GetEdgeNormal(1, unitNormals[0]);
+    GetEdgeNormal(3, unitNormals[1]);
 
-	// Compute vector from point on Leading Edge to P:
-	//
-	VLP.x = fPointX - vertices[0].x;
-	VLP.y = 0.0f;
-	VLP.z = fPointZ - vertices[0].z;
+    // Compute vector from point on Leading Edge to P:
+    //
+    VLP.x = fPointX - vertices[0].x;
+    VLP.y = 0.0f;
+    VLP.z = fPointZ - vertices[0].z;
 
-	// Compute vector from point on Trailing Edge to P:
-	//
-	VTP.x = fPointX - vertices[1].x;
-	VTP.y = 0.0f;
-	VTP.z = fPointZ - vertices[1].z;
+    // Compute vector from point on Trailing Edge to P:
+    //
+    VTP.x = fPointX - vertices[1].x;
+    VTP.y = 0.0f;
+    VTP.z = fPointZ - vertices[1].z;
 
-	// Compute (VLP dot Leading Edge Normal):
-	//
-	fDotL = VLP.x*unitNormals[0].x + VLP.z*unitNormals[0].z;
+    // Compute (VLP dot Leading Edge Normal):
+    //
+    fDotL = VLP.x * unitNormals[0].x + VLP.z * unitNormals[0].z;
 
-	// Compute (VTP dot Trailing Edge Normal):
-	//
-	fDotT = VTP.x*unitNormals[1].x + VTP.z*unitNormals[1].z;
+    // Compute (VTP dot Trailing Edge Normal):
+    //
+    fDotT = VTP.x * unitNormals[1].x + VTP.z * unitNormals[1].z;
 
-	// Compute unit distance into sector and return it:
-	//
-	return ( fDotL / (fDotL + fDotT) );
+    // Compute unit distance into sector and return it:
+    //
+    return (fDotL / (fDotL + fDotT));
 }
 
 
 /*
-float RoadSegment::CalculateYHeight( float fPointX, float fPointZ )
+float RoadSegment::CalculateYHeight(float fPointX, float fPointZ)
 {
     // Get and cache the leading edge top corner
     // and the trailing edge bottom corner.
     //
     rmt::Vector vertices[ 2 ];
-    GetCorner( 0, vertices[ 0 ] );
-    GetCorner( 2, vertices[ 1 ] );
+    GetCorner(0, vertices[ 0 ]);
+    GetCorner(2, vertices[ 1 ]);
 
-	float fDistance = CalculateUnitDistIntoRoadSegment( fPointX, fPointZ );
-	float y = LERP( fDistance, vertices[ 0 ].y, vertices[ 1 ].y );
+	float fDistance = CalculateUnitDistIntoRoadSegment(fPointX, fPointZ);
+	float y = LERP(fDistance, vertices[ 0 ].y, vertices[ 1 ].y);
 	return y;
 }
 */
 
-void RoadSegment::GetPosition( float t, float w, rmt::Vector* pos )
-{
+void RoadSegment::GetPosition(float t, float w, rmt::Vector *pos) {
     // Get and cache the corners.
     //
-    rmt::Vector vertices[ 4 ];
-    GetCorner( 0, vertices[ 0 ] );
-    GetCorner( 1, vertices[ 1 ] );
-    GetCorner( 2, vertices[ 2 ] );
-    GetCorner( 3, vertices[ 3 ] );
+    rmt::Vector vertices[4];
+    GetCorner(0, vertices[0]);
+    GetCorner(1, vertices[1]);
+    GetCorner(2, vertices[2]);
+    GetCorner(3, vertices[3]);
 
     rmt::Vector position;
 
     // Interpolate the Normal vector across the Segment.
     //
     rmt::Vector leadingEdge;
-    leadingEdge.Sub( vertices[ 3 ], vertices[ 0 ] );
+    leadingEdge.Sub(vertices[3], vertices[0]);
     rmt::Vector leadingPoint = leadingEdge;
-    leadingPoint.Scale( w );
-    leadingPoint.Add( vertices[ 0 ] );
+    leadingPoint.Scale(w);
+    leadingPoint.Add(vertices[0]);
 
     rmt::Vector trailingEdge;
-    trailingEdge.Sub( vertices[ 2 ], vertices[ 1 ] );
+    trailingEdge.Sub(vertices[2], vertices[1]);
     rmt::Vector trailingPoint = trailingEdge;
-    trailingPoint.Scale( w );
-    trailingPoint.Add( vertices[ 1 ] );
+    trailingPoint.Scale(w);
+    trailingPoint.Add(vertices[1]);
 
-    position.Sub( trailingPoint, leadingPoint );
-    position.Scale( t );
-    position.Add( leadingPoint );
+    position.Sub(trailingPoint, leadingPoint);
+    position.Scale(t);
+    position.Add(leadingPoint);
     *pos = position;
 }
 
 
-void RoadSegment::GetLaneLocation( float t, int index, rmt::Vector& position, rmt::Vector& facing )
-{
+void RoadSegment::GetLaneLocation(float t, int index, rmt::Vector &position, rmt::Vector &facing) {
     //
     // Get the world space point and facing at time 't'.
     //
     // Interpolate the facing.
     //
-    rmt::Vector facingNormals[ 2 ];
-    GetEdgeNormal( 0, facingNormals[ 0 ] );
-    GetEdgeNormal( 2, facingNormals[ 1 ] );
-    facing.x = LERP( t, facingNormals[ 0 ].x, facingNormals[ 1 ].x );
-    facing.y = LERP( t, facingNormals[ 0 ].y, facingNormals[ 1 ].y );
-    facing.z = LERP( t, facingNormals[ 0 ].z, facingNormals[ 1 ].z );
+    rmt::Vector facingNormals[2];
+    GetEdgeNormal(0, facingNormals[0]);
+    GetEdgeNormal(2, facingNormals[1]);
+    facing.x = LERP(t, facingNormals[0].x, facingNormals[1].x);
+    facing.y = LERP(t, facingNormals[0].y, facingNormals[1].y);
+    facing.z = LERP(t, facingNormals[0].z, facingNormals[1].z);
 
     // [Dusit: July 6th, 2003]
     // NOTE: 
@@ -469,17 +443,17 @@ void RoadSegment::GetLaneLocation( float t, int index, rmt::Vector& position, rm
     // each lane is as wide  as the other lanes at any given point along 
     // the length of the segment
     //
-    float edgeT = ((float)(index<<1) + 1.0f) / ((float)(GetNumLanes()<<1));
+    float edgeT = ((float) (index << 1) + 1.0f) / ((float) (GetNumLanes() << 1));
 
     // find start & end points of the lane
     rmt::Vector vec0, vec1, vec2, vec3;
 
-    GetCorner( 0, vec0 );
-    GetCorner( 1, vec1 );
-    GetCorner( 2, vec2 );
-    GetCorner( 3, vec3 );
+    GetCorner(0, vec0);
+    GetCorner(1, vec1);
+    GetCorner(2, vec2);
+    GetCorner(3, vec3);
 
-    // lane indices go from 0 to n, right to left ( n <=== 0 )
+    // lane indices go from 0 to n, right to left (n <=== 0)
     rmt::Vector bottomEdgeDir = vec0 - vec3; // points frm 3 to 0
     rmt::Vector topEdgeDir = vec1 - vec2; // points frm 2 to 1
 
@@ -497,17 +471,17 @@ void RoadSegment::GetLaneLocation( float t, int index, rmt::Vector& position, rm
     // Get and cache the corners.
     //
     rmt::Vector vertices[ 4 ];
-    GetCorner( 0, vertices[ 0 ] );
-    GetCorner( 1, vertices[ 1 ] );
-    GetCorner( 2, vertices[ 2 ] );
-    GetCorner( 3, vertices[ 3 ] );
+    GetCorner(0, vertices[ 0 ]);
+    GetCorner(1, vertices[ 1 ]);
+    GetCorner(2, vertices[ 2 ]);
+    GetCorner(3, vertices[ 3 ]);
 
     //There is an assumption here that the road does not get wider or thinner 
     //across its length...
     // Scale unnormalized vector by normalized center of desired lane.
-    //  ( ( index * fLaneWidth ) + ( fLaneWidth / 2.0f ) ) / roadWidth;
+    //  ((index * fLaneWidth) + (fLaneWidth / 2.0f)) / roadWidth;
     //
-    float fCentreOfLane = ( index * mfLaneWidth ) + ( mfLaneWidth / 2.0f );
+    float fCentreOfLane = (index * mfLaneWidth) + (mfLaneWidth / 2.0f);
 
     //I call this parametric variable w;
     float w = fCentreOfLane / GetRoadWidth();
@@ -515,26 +489,26 @@ void RoadSegment::GetLaneLocation( float t, int index, rmt::Vector& position, rm
     // Interpolate the Normal vector across the Segment.
     //
     rmt::Vector leadingEdge;
-    leadingEdge.Sub( vertices[ 0 ], vertices[ 3 ] );
+    leadingEdge.Sub(vertices[ 0 ], vertices[ 3 ]);
     rmt::Vector leadingPoint = leadingEdge;
-    leadingPoint.Scale( w );
-    leadingPoint.Add( vertices[ 3 ] );
+    leadingPoint.Scale(w);
+    leadingPoint.Add(vertices[ 3 ]);
 
 
     rmt::Vector trailingEdge;
-    trailingEdge.Sub( vertices[ 1 ], vertices[ 2 ] );
+    trailingEdge.Sub(vertices[ 1 ], vertices[ 2 ]);
     rmt::Vector trailingPoint = trailingEdge;
-    trailingPoint.Scale( w );
-    trailingPoint.Add( vertices[ 2 ] );
+    trailingPoint.Scale(w);
+    trailingPoint.Add(vertices[ 2 ]);
 
     //This gives the point between the leading and trailing point by parameter t. 
-    position.x = LERP( t, leadingPoint.x, trailingPoint.x );
-    position.y = LERP( t, leadingPoint.y, trailingPoint.y );
-    position.z = LERP( t, leadingPoint.z, trailingPoint.z );
+    position.x = LERP(t, leadingPoint.x, trailingPoint.x);
+    position.y = LERP(t, leadingPoint.y, trailingPoint.y);
+    position.z = LERP(t, leadingPoint.z, trailingPoint.z);
     */
 
 
-} 
+}
 
 
 /*
@@ -548,42 +522,41 @@ void RoadSegment::GetLaneLocation( float t, int index, rmt::Vector& position, rm
 //
 //                This function returns the join vertex and facing in world space.
 //
-//Parameters:     ( rmt::Vector& position, rmt::Vector& facing )
+//Parameters:     (rmt::Vector& position, rmt::Vector& facing)
 //
 //Return:         void 
 //
 //=============================================================================
-void RoadSegment::GetJoinPoint( rmt::Vector& position, rmt::Vector& facing )
+void RoadSegment::GetJoinPoint(rmt::Vector& position, rmt::Vector& facing)
 {
     // All segments are joined at the left top corner.
     //
-    position = GetRoadSegmentData( )->GetCorner( 1 );
+    position = GetRoadSegmentData()->GetCorner(1);
 
-    facing = GetRoadSegmentData( )->GetEdgeNormal( 2 );
-    facing.Scale( -1.0f );
+    facing = GetRoadSegmentData()->GetEdgeNormal(2);
+    facing.Scale(-1.0f);
 }
 */
 
-void RoadSegment::GetCorner( int index, rmt::Vector& out )
-{
-    rAssert( 0 <= index && index < 4 );
-    out = mCorners[ index ];
+void RoadSegment::GetCorner(int index, rmt::Vector &out) {
+    rAssert(0 <= index && index < 4);
+    out = mCorners[index];
 }
-void RoadSegment::GetEdgeNormal( int index, rmt::Vector& out )
-{
-    rAssert( 0 <= index && index < 4 );
-    out = mEdgeNormals[ index ];
+
+void RoadSegment::GetEdgeNormal(int index, rmt::Vector &out) {
+    rAssert(0 <= index && index < 4);
+    out = mEdgeNormals[index];
 }
-void RoadSegment::GetSegmentNormal( rmt::Vector& out )
-{
+
+void RoadSegment::GetSegmentNormal(rmt::Vector &out) {
     out = mNormal;
 }
-unsigned int RoadSegment::GetNumLanes( void )
-{
+
+unsigned int RoadSegment::GetNumLanes(void) {
     return GetRoad()->GetNumLanes();
 }
-float RoadSegment::GetLaneLength( unsigned int lane )
-{
+
+float RoadSegment::GetLaneLength(unsigned int lane) {
     // [Dusit: July 6th, 2003]
     // NOTE: 
     // This is the CORRECT way to produce the lane length value when
@@ -597,17 +570,17 @@ float RoadSegment::GetLaneLength( unsigned int lane )
     // this). So we continue using the old way because we're never off 
     // by more than 5 centimeters anyway.
     // 
-    float edgeT = ((float)(lane<<1) + 1.0f) / ((float)(GetNumLanes()<<1));
+    float edgeT = ((float) (lane << 1) + 1.0f) / ((float) (GetNumLanes() << 1));
 
     // find start & end points of the lane
     rmt::Vector vec0, vec1, vec2, vec3;
 
-    GetCorner( 0, vec0 );
-    GetCorner( 1, vec1 );
-    GetCorner( 2, vec2 );
-    GetCorner( 3, vec3 );
+    GetCorner(0, vec0);
+    GetCorner(1, vec1);
+    GetCorner(2, vec2);
+    GetCorner(3, vec3);
 
-    // lane indices go from 0 to n, right to left ( n <=== 0 )
+    // lane indices go from 0 to n, right to left (n <=== 0)
     rmt::Vector bottomEdgeDir = vec0 - vec3; // points frm 3 to 0
     rmt::Vector topEdgeDir = vec1 - vec2; // points frm 2 to 1
 
@@ -623,13 +596,13 @@ float RoadSegment::GetLaneLength( unsigned int lane )
     // TODO:
     // Because we can't assume that a lane is constant-width, this
     // code is totally bogus... 
-    if ( mfAngle > 0.0f )
+    if (mfAngle> 0.0f)
     {
         // 2*PI*r for a circle.
         // Theta*r for arc of theta degrees.
         //
         float fLaneOffset = mfLaneWidth * lane + mfLaneWidth;
-        computedLength = 2.0f * mfAngle * ( mfRadius + fLaneOffset );
+        computedLength = 2.0f * mfAngle * (mfRadius + fLaneOffset);
     }
     else
     {
@@ -638,13 +611,12 @@ float RoadSegment::GetLaneLength( unsigned int lane )
         computedLength = mfSegmentLength;
     }
 
-    //rAssert( rmt::Epsilon( computedLength, expectedLength, 0.01f ) );
+    //rAssert(rmt::Epsilon(computedLength, expectedLength, 0.01f));
     return computedLength;
     */
 }
 
-float RoadSegment::GetRoadWidth()
-{
+float RoadSegment::GetRoadWidth() {
     return mRoad->GetNumLanes() * mfLaneWidth;
 }
 
@@ -656,76 +628,76 @@ float RoadSegment::GetRoadWidth()
 /////////////////////////////////////////////////////////////////
 // 
 TransformRoadSegment::TransformRoadSegment() :
-    RoadSegment( NULL )
+    RoadSegment(NULL)
 {
     mTransform.Identity();
     mfScaleAlongFacing = 0.0f;
 }
 
-TransformRoadSegment::TransformRoadSegment( 
+TransformRoadSegment::TransformRoadSegment(
     const RoadSegmentData* pRoadSegmentData, 
-    rmt::Matrix& transform ) 
+    rmt::Matrix& transform)
     :
-    RoadSegment( pRoadSegmentData )
+    RoadSegment(pRoadSegmentData)
 {
     mTransform = transform;
 }
 
-TransformRoadSegment::TransformRoadSegment( 
+TransformRoadSegment::TransformRoadSegment(
     const RoadSegmentData* pRoadSegmentData, 
     rmt::Matrix& transform,
-    float fScaleAlongFacing ) 
+    float fScaleAlongFacing)
     :
-    RoadSegment( pRoadSegmentData ),
-    mfScaleAlongFacing( fScaleAlongFacing )
+    RoadSegment(pRoadSegmentData),
+    mfScaleAlongFacing(fScaleAlongFacing)
 {
     mTransform = transform;
 }
 
-TransformRoadSegment::TransformRoadSegment( 
+TransformRoadSegment::TransformRoadSegment(
     const RoadSegmentData* pRoadSegmentData, 
     const rmt::Vector& facing, 
-    const rmt::Vector& position )
+    const rmt::Vector& position)
     :
-    RoadSegment( pRoadSegmentData )
+    RoadSegment(pRoadSegmentData)
 {
-	rmt::Vector sApproximateUp( 0.0f, 1.0f, 0.0f );
+	rmt::Vector sApproximateUp(0.0f, 1.0f, 0.0f);
 
-    mTransform.Identity( );
-    mTransform.FillHeading( facing, sApproximateUp );
-    mTransform.FillTranslate( position );
+    mTransform.Identity();
+    mTransform.FillHeading(facing, sApproximateUp);
+    mTransform.FillTranslate(position);
 }
 
-TransformRoadSegment::TransformRoadSegment( 
+TransformRoadSegment::TransformRoadSegment(
     const RoadSegmentData* pRoadSegmentData, 
     const rmt::Vector& facing, 
     const rmt::Vector& position, 
-    float fScaleAlongFacing )
+    float fScaleAlongFacing)
     :
-    RoadSegment( pRoadSegmentData ),
-    mfScaleAlongFacing( fScaleAlongFacing )
+    RoadSegment(pRoadSegmentData),
+    mfScaleAlongFacing(fScaleAlongFacing)
 {
-	rmt::Vector sApproximateUp( 0.0f, 1.0f, 0.0f );
+	rmt::Vector sApproximateUp(0.0f, 1.0f, 0.0f);
 
-    mTransform.Identity( );
-    mTransform.FillHeading( facing, sApproximateUp );
-    mTransform.FillTranslate( position );
+    mTransform.Identity();
+    mTransform.FillHeading(facing, sApproximateUp);
+    mTransform.FillTranslate(position);
 }
-void TransformRoadSegment::GetCorner( int index, rmt::Vector& out ) const
+void TransformRoadSegment::GetCorner(int index, rmt::Vector& out) const
 {
-    out = GetRoadSegmentData( )->GetCorner( index );
+    out = GetRoadSegmentData()->GetCorner(index);
     out.z *= mfScaleAlongFacing;
-    out.Transform( mTransform );
+    out.Transform(mTransform);
 }
-void TransformRoadSegment::GetEdgeNormal( int index, rmt::Vector& out ) const
+void TransformRoadSegment::GetEdgeNormal(int index, rmt::Vector& out) const
 {
-    out = GetRoadSegmentData( )->GetEdgeNormal( index );
-    out.Rotate( mTransform );
+    out = GetRoadSegmentData()->GetEdgeNormal(index);
+    out.Rotate(mTransform);
 }
-void TransformRoadSegment::GetSegmentNormal( rmt::Vector& out ) const
+void TransformRoadSegment::GetSegmentNormal(rmt::Vector& out) const
 {
-    out = GetRoadSegmentData( )->GetSegmentNormal( );
-    out.Rotate( mTransform );
+    out = GetRoadSegmentData()->GetSegmentNormal();
+    out.Rotate(mTransform);
 }
 
 //==============================================================================
@@ -738,53 +710,53 @@ void TransformRoadSegment::GetSegmentNormal( rmt::Vector& out ) const
 //
 //                This function returns the join vertex and facing in world space.
 //
-//Parameters:     ( rmt::Vector& position, rmt::Vector& facing )
+//Parameters:     (rmt::Vector& position, rmt::Vector& facing)
 //
 //Return:         void 
 //
 //=============================================================================
-void TransformRoadSegment::GetJoinPoint( rmt::Vector& position, rmt::Vector& facing ) const
+void TransformRoadSegment::GetJoinPoint(rmt::Vector& position, rmt::Vector& facing) const
 {
     // All segments are joined at the left top corner.
     //
-    facing = GetRoadSegmentData( )->GetEdgeNormal( 2 );
-    facing.Scale( -1.0f );
-    facing.Rotate( mTransform );
+    facing = GetRoadSegmentData()->GetEdgeNormal(2);
+    facing.Scale(-1.0f);
+    facing.Rotate(mTransform);
     
-    position = GetRoadSegmentData( )->GetCorner( 1 );
+    position = GetRoadSegmentData()->GetCorner(1);
     position.z *= mfScaleAlongFacing;
-    position.Transform( mTransform );
+    position.Transform(mTransform);
 }
 void TransformRoadSegment::GetBoundingBox(rmt::Box3D* box)
 {
-    GetRoadSegmentData()->GetBoundingBox( *box );
+    GetRoadSegmentData()->GetBoundingBox(*box);
     (*box).high.z *= mfScaleAlongFacing;
-    (*box).high.Transform( mTransform );
-    (*box).low.Transform( mTransform );
+    (*box).high.Transform(mTransform);
+    (*box).low.Transform(mTransform);
 }
 void TransformRoadSegment::GetBoundingSphere(rmt::Sphere* sphere)
 {
-    GetRoadSegmentData( )->GetBoundingSphere( *sphere );
+    GetRoadSegmentData()->GetBoundingSphere(*sphere);
     (*sphere).radius *= mfScaleAlongFacing;
-    (*sphere).centre.Transform( mTransform );
+    (*sphere).centre.Transform(mTransform);
 }
 
-void TransformRoadSegment::GetBoundingBox( rmt::Box3D& out ) const
+void TransformRoadSegment::GetBoundingBox(rmt::Box3D& out) const
 {
-    GetRoadSegmentData( )->GetBoundingBox( out );
+    GetRoadSegmentData()->GetBoundingBox(out);
     out.high.z *= mfScaleAlongFacing;
-    out.high.Transform( mTransform );
-    out.low.Transform( mTransform );
+    out.high.Transform(mTransform);
+    out.low.Transform(mTransform);
 }
 
-void TransformRoadSegment::GetBoundingSphere( rmt::Sphere& out ) const
+void TransformRoadSegment::GetBoundingSphere(rmt::Sphere& out) const
 {
-    out = GetRoadSegmentData( )->GetBoundingSphere( );
+    out = GetRoadSegmentData()->GetBoundingSphere();
     out.radius *= mfScaleAlongFacing;
-    out.centre.Transform( mTransform );
+    out.centre.Transform(mTransform);
 }
 
-void TransformRoadSegment::GetTransform( rmt::Matrix &out ) const
+void TransformRoadSegment::GetTransform(rmt::Matrix &out) const
 {
     out = mTransform;
 }

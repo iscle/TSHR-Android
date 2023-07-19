@@ -15,68 +15,68 @@
 //
 // The Purpose of the class is to provide a black box abstraction
 // of the various processes involved in the creation of a runtime
-// spatial tree from a set of inputs ( posn & weighting )
+// spatial tree from a set of inputs (posn & weighting)
 //
 // Support for Fruit (automatic queuing of fruit/payload and adding 
 // to generated tree) will be added in sub classes
 //
 //////////////////////////////////////////////////////////////////////
-class SpatialTreeFactory
-{
+class SpatialTreeFactory {
 public:
-   SpatialTreeFactory();
-   ~SpatialTreeFactory();
+    SpatialTreeFactory();
 
-   void Clear();
+    ~SpatialTreeFactory();
 
-   void Reset( int inSeedMax );
+    void Clear();
 
-   void Seed( Vector3f& irPosn, int iWeight );
+    void Reset(int inSeedMax);
 
-   void Generate( Vector3f& irGranularity );
+    void Seed(Vector3f &irPosn, int iWeight);
 
-   void ExtractTree( SpatialTree** oppRuntimeTree );   
+    void Generate(Vector3f &irGranularity);
+
+    void ExtractTree(SpatialTree **oppRuntimeTree);
 
 protected:
-   
-   bool TreeGenerated();
 
-   ////////////////////////////////////////////////////////////
-   // Data neccessary for the entire tree creation lifecycle
-   ////////////////////////////////////////////////////////////
-   SpatialTree*                mpRuntimeTree;
-   SpatialTreeIter             mTreeWalker;
+    bool TreeGenerated();
 
-   UseArray<Vector3f>          mSeedPosns;
-   UseArray<int>               mSeedWeights;
+    ////////////////////////////////////////////////////////////
+    // Data neccessary for the entire tree creation lifecycle
+    ////////////////////////////////////////////////////////////
+    SpatialTree *mpRuntimeTree;
+    SpatialTreeIter mTreeWalker;
+
+    UseArray <Vector3f> mSeedPosns;
+    UseArray<int> mSeedWeights;
 };
+
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-SpatialTreeFactory::SpatialTreeFactory()
-{
-   mpRuntimeTree = NULL;
+SpatialTreeFactory::SpatialTreeFactory() {
+    mpRuntimeTree = NULL;
 }
+
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-SpatialTreeFactory::~SpatialTreeFactory()
-{
+SpatialTreeFactory::~SpatialTreeFactory() {
 }
+
 //////////////////////////////////////////////////////////////////////
 // Removes all state-based allocations (ie the allocations neccessary
 // for the creation of a Tree)
 //////////////////////////////////////////////////////////////////////
-void SpatialTreeFactory::Clear()
-{
-   if( mpRuntimeTree != NULL )
-   {
-      delete mpRuntimeTree;
-      mpRuntimeTree = NULL;
-   }
+void SpatialTreeFactory::Clear() {
+    if (mpRuntimeTree != NULL) {
+        delete mpRuntimeTree;
+        mpRuntimeTree = NULL;
+    }
 
-   mTreeWalker.Clear();
-   mSeedPosns.Clear();
-   mSeedWeights.Clear();
+    mTreeWalker.Clear();
+    mSeedPosns.Clear();
+    mSeedWeights.Clear();
 }
+
 //////////////////////////////////////////////////////////////////////
 // Initialise the factory for the creation of a new runtime tree of 
 // the same type (T). Where each spatial node within the final tree
@@ -86,24 +86,24 @@ void SpatialTreeFactory::Clear()
 // (see Seed)
 //
 //////////////////////////////////////////////////////////////////////
-void SpatialTreeFactory::Reset( int inSeedMax )
-{
-   Clear();
+void SpatialTreeFactory::Reset(int inSeedMax) {
+    Clear();
 
-   mSeedPosns.Allocate(    inSeedMax );
-   mSeedWeights.Allocate(  inSeedMax );
+    mSeedPosns.Allocate(inSeedMax);
+    mSeedWeights.Allocate(inSeedMax);
 }
+
 //////////////////////////////////////////////////////////////////////
 // Declare a position and a weight which will influence the placement
 // of Axis Aligned Planes and the general Topology of the RuntimeTree
 //////////////////////////////////////////////////////////////////////
-void SpatialTreeFactory::Seed( Vector3f& irPosn, int iWeight )
-{
-   rAssert( !TreeGenerated() );
+void SpatialTreeFactory::Seed(Vector3f &irPosn, int iWeight) {
+    rAssert(!TreeGenerated());
 
-   mSeedPosns.Add(   irPosn  );
-   mSeedWeights.Add( iWeight );
+    mSeedPosns.Add(irPosn);
+    mSeedWeights.Add(iWeight);
 }
+
 //////////////////////////////////////////////////////////////////////
 // This call:
 //    -finalises the Seed'ing,
@@ -112,70 +112,70 @@ void SpatialTreeFactory::Seed( Vector3f& irPosn, int iWeight )
 // Calls to AttachFruit can still be made up until the Tree is 
 // extracted.
 //////////////////////////////////////////////////////////////////////
-void SpatialTreeFactory::Generate( Vector3f& irGranularity )
-{
-   rAssert( !TreeGenerated() );
+void SpatialTreeFactory::Generate(Vector3f &irGranularity) {
+    rAssert(!TreeGenerated());
 
-   Bounds3f    WorldBounds;
-   Vector3i    ArrayDims;
-   CellBlock   CellMatrix;
-   OctTreeNode RootNode;
+    Bounds3f WorldBounds;
+    Vector3i ArrayDims;
+    CellBlock CellMatrix;
+    OctTreeNode RootNode;
 
-   FixedArray<Cell>     DataCellsArray;
+    FixedArray <Cell> DataCellsArray;
 
-   //
-   // Although it'd be 'nice' to have UseArray Inherit 
-   // from FixedArray, it'd be vtable badness in inner loop atomics
-   // and extra overhead. 
-   //
-   // This alternative is still safe, cheap, and only a little sticky
-   //
-   FixedArray<Vector3f> seedPosnsFacade;
-   FixedArray<int>      seedWeightsFacade;
+    //
+    // Although it'd be 'nice' to have UseArray Inherit
+    // from FixedArray, it'd be vtable badness in inner loop atomics
+    // and extra overhead.
+    //
+    // This alternative is still safe, cheap, and only a little sticky
+    //
+    FixedArray <Vector3f> seedPosnsFacade;
+    FixedArray<int> seedWeightsFacade;
 
-   seedPosnsFacade.mpData = mSeedPosns.mpData;
-   seedPosnsFacade.mSize  = mSeedPosns.mUseSize;
+    seedPosnsFacade.mpData = mSeedPosns.mpData;
+    seedPosnsFacade.mSize = mSeedPosns.mUseSize;
 
-   seedWeightsFacade.mpData = mSeedWeights.mpData;
-   seedWeightsFacade.mSize  = mSeedWeights.mUseSize;
+    seedWeightsFacade.mpData = mSeedWeights.mpData;
+    seedWeightsFacade.mSize = mSeedWeights.mUseSize;
 
-   ///////////////////////////////////////////////////////////////////////
-   CellMatrix.Init( seedPosnsFacade, seedWeightsFacade, irGranularity );
-   
-   CellMatrix.GenerateCells();
+    ///////////////////////////////////////////////////////////////////////
+    CellMatrix.Init(seedPosnsFacade, seedWeightsFacade, irGranularity);
 
-   ////////////////////////////////////////////////////////////////////
-   CellMatrix.ExtractNonEmptyCells(   DataCellsArray );
-   CellMatrix.ExtractDims(    ArrayDims );
-   CellMatrix.ExtractBounds(  WorldBounds );
+    CellMatrix.GenerateCells();
 
-   ////////////////////////////////////////////////////////////////////
-   CoordSubList RootList( DataCellsArray.mpData, DataCellsArray.mSize, ArrayDims );
+    ////////////////////////////////////////////////////////////////////
+    CellMatrix.ExtractNonEmptyCells(DataCellsArray);
+    CellMatrix.ExtractDims(ArrayDims);
+    CellMatrix.ExtractBounds(WorldBounds);
 
-   BoxPts DebugBBox;
-   DebugBBox.SetTo( WorldBounds );
+    ////////////////////////////////////////////////////////////////////
+    CoordSubList RootList(DataCellsArray.mpData, DataCellsArray.mSize, ArrayDims);
 
-   //   RootNode.GrowTreeHeuristic( -1, &RootList, irCellGranularity, 12, 1 );
-   //Debug
-//   RootNode.GrowTreeHeuristicDebug( -1, &RootList, irGranularity, 12, 1, DebugBBox );
-   RootNode.GrowTreeHeuristicDebug( -1, &RootList, irGranularity, 32, 1, DebugBBox );
+    BoxPts DebugBBox;
+    DebugBBox.SetTo(WorldBounds);
 
-   mpRuntimeTree = new SpatialTree;
-   mpRuntimeTree->Generate( &RootNode, WorldBounds );
+    //   RootNode.GrowTreeHeuristic(-1, &RootList, irCellGranularity, 12, 1);
+    //Debug
+//   RootNode.GrowTreeHeuristicDebug(-1, &RootList, irGranularity, 12, 1, DebugBBox);
+    RootNode.GrowTreeHeuristicDebug(-1, &RootList, irGranularity, 32, 1, DebugBBox);
 
-   mTreeWalker.SetToRoot( *mpRuntimeTree );
+    mpRuntimeTree = new SpatialTree;
+    mpRuntimeTree->Generate(&RootNode, WorldBounds);
+
+    mTreeWalker.SetToRoot(*mpRuntimeTree);
 
 
-   ////////////////////////////////////////////////////////////////////
-   mSeedPosns.mpData = seedPosnsFacade.mpData;
-   mSeedPosns.mUseSize = seedPosnsFacade.mSize;
+    ////////////////////////////////////////////////////////////////////
+    mSeedPosns.mpData = seedPosnsFacade.mpData;
+    mSeedPosns.mUseSize = seedPosnsFacade.mSize;
 
-   mSeedWeights.mpData = seedWeightsFacade.mpData;
-   mSeedWeights.mUseSize = seedWeightsFacade.mSize;
+    mSeedWeights.mpData = seedWeightsFacade.mpData;
+    mSeedWeights.mUseSize = seedWeightsFacade.mSize;
 
-   seedPosnsFacade.mpData = NULL;
-   seedWeightsFacade.mpData = NULL;
+    seedPosnsFacade.mpData = NULL;
+    seedWeightsFacade.mpData = NULL;
 }
+
 //////////////////////////////////////////////////////////////////////
 // Once the Tree is extracted, SpatialTreeFactory divorces
 // all responsability for said data; and removes internal 
@@ -184,24 +184,23 @@ void SpatialTreeFactory::Generate( Vector3f& irGranularity )
 // When the Factory is deleted, it deletes any data it has 
 // maintained reference to.
 //////////////////////////////////////////////////////////////////////
-void SpatialTreeFactory::ExtractTree( SpatialTree** oppRuntimeTree )
-{
-   rAssert( TreeGenerated() );
+void SpatialTreeFactory::ExtractTree(SpatialTree **oppRuntimeTree) {
+    rAssert(TreeGenerated());
 
-   *oppRuntimeTree = mpRuntimeTree;
-   mpRuntimeTree = NULL;
+    *oppRuntimeTree = mpRuntimeTree;
+    mpRuntimeTree = NULL;
 
-   Clear();
+    Clear();
 }
+
 //////////////////////////////////////////////////////////////////////
 // mpRuntimeTree should only be non-null between the calls to 
 // Generate and ExtractTree (or, more specifically, Clear)
 //////////////////////////////////////////////////////////////////////
-bool SpatialTreeFactory::TreeGenerated()
-{
-   if( mpRuntimeTree == NULL )
-      return false;
-   return true;
+bool SpatialTreeFactory::TreeGenerated() {
+    if (mpRuntimeTree == NULL)
+        return false;
+    return true;
 }
 
 

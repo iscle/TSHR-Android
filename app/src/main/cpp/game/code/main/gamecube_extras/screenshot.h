@@ -26,13 +26,14 @@ extern "C" {
 #endif
 
 // access to the memory allocator of choice
-typedef void*(*SCREENSHOTAllocator)   ( u32 size      );
-typedef void (*SCREENSHOTDeallocator) ( void* block   );
+typedef void *(*SCREENSHOTAllocator)(u32 size);
+
+typedef void (*SCREENSHOTDeallocator)(void *block);
 
 
-void SCREENSHOTService( void* bufferXFB, 
-						SCREENSHOTAllocator allocator, 
-						SCREENSHOTDeallocator deallocator );
+void SCREENSHOTService(void *bufferXFB,
+                       SCREENSHOTAllocator allocator,
+                       SCREENSHOTDeallocator deallocator);
 
 
 #ifdef __cplusplus
@@ -40,4 +41,4 @@ void SCREENSHOTService( void* bufferXFB,
 #endif
 
 
-#endif	// __SCREENSHOT_H__
+#endif    // __SCREENSHOT_H__

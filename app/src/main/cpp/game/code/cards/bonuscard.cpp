@@ -38,16 +38,15 @@
 //
 //===========================================================================
 BonusCard::BonusCard
-(
-    unsigned int ID,
-    unsigned int level,
-    unsigned int levelID,
-    tUID cardName,
-    const eQuoteID* quotes,
-    int numQuotes
-)
-:   Card( ID, level, levelID, cardName, quotes, numQuotes )
-{
+        (
+                unsigned int ID,
+                unsigned int level,
+                unsigned int levelID,
+                tUID cardName,
+                const eQuoteID *quotes,
+                int numQuotes
+        )
+        : Card(ID, level, levelID, cardName, quotes, numQuotes) {
 }
 
 //===========================================================================
@@ -62,8 +61,7 @@ BonusCard::BonusCard
 // Return:      
 //
 //===========================================================================
-BonusCard::~BonusCard()
-{
+BonusCard::~BonusCard() {
 }
 
 //===========================================================================

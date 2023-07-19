@@ -51,9 +51,8 @@
 // Return:      AnimationPlayer
 //
 //=============================================================================
-AnimationPlayer* TransitionEvent::GetPlayer()
-{
-    return( GetPresentationManager()->GetTransPlayer() );
+AnimationPlayer *TransitionEvent::GetPlayer() {
+    return (GetPresentationManager()->GetTransPlayer());
 }
 
 //=============================================================================
@@ -66,11 +65,10 @@ AnimationPlayer* TransitionEvent::GetPlayer()
 // Return:      void 
 //
 //=============================================================================
-void TransitionEvent::Start()
-{
-    TransitionPlayer* player = GetPresentationManager()->GetTransPlayer();
+void TransitionEvent::Start() {
+    TransitionPlayer *player = GetPresentationManager()->GetTransPlayer();
 
-    player->SetTransition( &transInfo );
+    player->SetTransition(&transInfo);
 
     player->Play();
 }

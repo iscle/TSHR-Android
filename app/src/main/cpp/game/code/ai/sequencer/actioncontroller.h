@@ -18,38 +18,38 @@
 //---------------------------------------------------------------------
 
 // CLOSER #include "architecture/ctype.hpp"
-#include <ai\sequencer\sequencer.h>
+#include <ai/sequencer/sequencer.h>
 
 //---------------------------------------------------------------------
 // Structure and class
 //---------------------------------------------------------------------
 
-class ActionController
-{
+class ActionController {
 public:
 
-	ActionController();
-	virtual ~ActionController();
+    ActionController();
 
-	Sequencer* GetCurrentSequencer() const
-		{ return m_pCurrentSequencer; }
-	Sequencer* GetNextSequencer() const
-		{ return m_pNextSequencer; }
+    virtual ~ActionController();
 
-	// clears ALL sequencers
-	void Clear();
+    Sequencer *GetCurrentSequencer() const { return m_pCurrentSequencer; }
 
-	bool IsBusy() const
-		{ return (m_pCurrentSequencer->IsBusy() || m_pNextSequencer->IsBusy()); }
+    Sequencer *GetNextSequencer() const { return m_pNextSequencer; }
 
-	// main entries
-	void WakeUp(float time);
-	void DoSimulation(float time);
-	void Update(float time);
+    // clears ALL sequencers
+    void Clear();
 
-    template <class T> T* SequenceSingleAction(T* t)
-    {
-        Sequencer* pSeq = GetNextSequencer();
+    bool IsBusy() const { return (m_pCurrentSequencer->IsBusy() || m_pNextSequencer->IsBusy()); }
+
+    // main entries
+    void WakeUp(float time);
+
+    void DoSimulation(float time);
+
+    void Update(float time);
+
+    template<class T>
+    T *SequenceSingleAction(T *t) {
+        Sequencer *pSeq = GetNextSequencer();
         pSeq->BeginSequence();
         pSeq->AddAction(t);
         pSeq->EndSequence();
@@ -58,9 +58,9 @@ public:
 
 private:
 
-	Sequencer* m_pCurrentSequencer;
-	Sequencer* m_pNextSequencer;
-	Sequencer m_Sequencers[2];
+    Sequencer *m_pCurrentSequencer;
+    Sequencer *m_pNextSequencer;
+    Sequencer m_Sequencers[2];
 };
 
 #endif // HC_SEQUENCER_ACTIONCONTROLLER_HPP

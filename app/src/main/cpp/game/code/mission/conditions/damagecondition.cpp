@@ -51,11 +51,10 @@ const static float CLOSE_DAMAGE_THRESHOLD = 0.1f; // was .2
 //
 //==============================================================================
 DamageCondition::DamageCondition() :
-    mMinValue( 0.0f ),
-    mLastVehicleDamage( 1.0f ),
-    mbCarDestroyed(false)
-{
-    this->SetType( COND_VEHICLE_DAMAGE );
+        mMinValue(0.0f),
+        mLastVehicleDamage(1.0f),
+        mbCarDestroyed(false) {
+    this->SetType(COND_VEHICLE_DAMAGE);
 }
 
 //==============================================================================
@@ -68,8 +67,7 @@ DamageCondition::DamageCondition() :
 // Return:      N/A.
 //
 //==============================================================================
-DamageCondition::~DamageCondition()
-{
+DamageCondition::~DamageCondition() {
 }
 
 //=============================================================================
@@ -82,19 +80,17 @@ DamageCondition::~DamageCondition()
 // Return:      void 
 //
 //=============================================================================
-void DamageCondition::OnInitialize()
-{
+void DamageCondition::OnInitialize() {
 
-    GetEventManager()->AddListener( this, EVENT_VEHICLE_DAMAGED );
-    GetEventManager()->AddListener( this, EVENT_VEHICLE_DESTROYED );
-    GetEventManager()->AddListener( this, EVENT_ENTERING_PLAYER_CAR );
-    GetEventManager()->AddListener( this, EVENT_ENTERING_TRAFFIC_CAR );
-    GetEventManager()->AddListener( this, EVENT_GETINTOVEHICLE_END );
-    GetEventManager()->AddListener( this, EVENT_CAR_EXPLOSION_DONE );
+    GetEventManager()->AddListener(this, EVENT_VEHICLE_DAMAGED);
+    GetEventManager()->AddListener(this, EVENT_VEHICLE_DESTROYED);
+    GetEventManager()->AddListener(this, EVENT_ENTERING_PLAYER_CAR);
+    GetEventManager()->AddListener(this, EVENT_ENTERING_TRAFFIC_CAR);
+    GetEventManager()->AddListener(this, EVENT_GETINTOVEHICLE_END);
+    GetEventManager()->AddListener(this, EVENT_CAR_EXPLOSION_DONE);
 
     //chuck: update our vehicle pointer incase the user has switched cars
-    if (GetGameplayManager()->GetCurrentVehicle() != NULL)
-    {
+    if (GetGameplayManager()->GetCurrentVehicle() != NULL) {
         SetVehicle(GetGameplayManager()->GetCurrentVehicle());
     }
 
@@ -111,8 +107,7 @@ void DamageCondition::OnInitialize()
 // Return:      void 
 //
 //=============================================================================
-void DamageCondition::OnFinalize()
-{
+void DamageCondition::OnFinalize() {
     GetEventManager()->RemoveAll(this);
 }
 
@@ -121,58 +116,50 @@ void DamageCondition::OnFinalize()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( EventEnum id, void* pEventData )
+// Parameters:  (EventEnum id, void* pEventData)
 //
 // Return:      void 
 //
 //=============================================================================
-void DamageCondition::HandleEvent( EventEnum id, void* pEventData )
-{
-    switch( id )
-    {
+void DamageCondition::HandleEvent(EventEnum id, void *pEventData) {
+    switch (id) {
 
-    case EVENT_VEHICLE_DESTROYED:
-    case EVENT_VEHICLE_DAMAGED:
-        {
-            Vehicle* pVehicle =  reinterpret_cast<Vehicle*>(pEventData);
+        case EVENT_VEHICLE_DESTROYED:
+        case EVENT_VEHICLE_DAMAGED: {
+            Vehicle *pVehicle = reinterpret_cast<Vehicle *>(pEventData);
 
-            if( pVehicle == GetVehicle())
-            {
+            if (pVehicle == GetVehicle()) {
                 mLastVehicleDamage = pVehicle->GetVehicleLifePercentage(pVehicle->mHitPoints);
-                if( mLastVehicleDamage <= mMinValue )
-                {
+                if (mLastVehicleDamage <= mMinValue) {
                     //flag that our car is destroyed and wait for explosion to play
                     mbCarDestroyed = true;
                 }
             }
             break;
         }
-    case EVENT_CAR_EXPLOSION_DONE:
-        {
-            if (mbCarDestroyed == true)
-            {
+        case EVENT_CAR_EXPLOSION_DONE: {
+            if (mbCarDestroyed == true) {
                 //explosion is done playing signal failure condition.
-                SetIsViolated (true);
+                SetIsViolated(true);
             }
             break;
         }
 
-    case EVENT_ENTERING_PLAYER_CAR:
-    case EVENT_ENTERING_TRAFFIC_CAR:
-    case EVENT_GETINTOVEHICLE_END:
-        //chuck: we should update our vehicle pointer incase user decides to switch cars during a this stage.
+        case EVENT_ENTERING_PLAYER_CAR:
+        case EVENT_ENTERING_TRAFFIC_CAR:
+        case EVENT_GETINTOVEHICLE_END:
+            //chuck: we should update our vehicle pointer incase user decides to switch cars during a this stage.
         {
             this->SetVehicle(GetGameplayManager()->GetCurrentVehicle());
             break;
         }
 
-    default:
-        {
+        default: {
             break;
         }
     }
 
-    MissionCondition::HandleEvent( id, pEventData );
+    MissionCondition::HandleEvent(id, pEventData);
 }
 
 //=============================================================================
@@ -186,12 +173,11 @@ void DamageCondition::HandleEvent( EventEnum id, void* pEventData )
 // Return:      True if close, false otherwise 
 //
 //=============================================================================
-bool DamageCondition::IsClose()
-{
+bool DamageCondition::IsClose() {
     //
     // Smashing stuff is exciting
     //
-    return( true );
+    return (true);
 }
 
 //******************************************************************************

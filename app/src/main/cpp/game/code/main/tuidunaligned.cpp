@@ -43,10 +43,9 @@
 // Constraints: none
 //
 //==============================================================================
-tUidUnaligned::tUidUnaligned():
-    u0( 0 ),
-    u1( 1 )
-{
+tUidUnaligned::tUidUnaligned() :
+        u0(0),
+        u1(1) {
 }
 
 //==============================================================================
@@ -61,10 +60,9 @@ tUidUnaligned::tUidUnaligned():
 // Constraints: none
 //
 //==============================================================================
-tUidUnaligned::tUidUnaligned( const tUidUnaligned& right ):
-    u0( right.u0 ),
-    u1( right.u1 )
-{
+tUidUnaligned::tUidUnaligned(const tUidUnaligned &right) :
+        u0(right.u0),
+        u1(right.u1) {
 }
 
 //==============================================================================
@@ -80,9 +78,9 @@ tUidUnaligned::tUidUnaligned( const tUidUnaligned& right ):
 // Constraints: none
 //
 //==============================================================================
-//tUidUnaligned::tUidUnaligned( const radInt64 right )
+//tUidUnaligned::tUidUnaligned(const radInt64 right)
 //{
-//    const unsigned int* r = reinterpret_cast< const unsigned int* >( &right );
+//    const unsigned int* r = reinterpret_cast<const unsigned int*>(&right);
 //    u0 = r[ 0 ];
 //    u1 = r[ 1 ];
 //}
@@ -102,7 +100,7 @@ tUidUnaligned::tUidUnaligned( const tUidUnaligned& right ):
 //tUidUnaligned::operator radInt64()
 //{
 //    radInt64 returnMe;
-//    unsigned int* r = reinterpret_cast< unsigned int* >( &returnMe );
+//    unsigned int* r = reinterpret_cast<unsigned int*>(&returnMe);
 //    r[ 0 ] = u0;
 //    r[ 1 ] = u1;
 //    return returnMe;
@@ -120,9 +118,8 @@ tUidUnaligned::tUidUnaligned( const tUidUnaligned& right ):
 // Constraints: none
 //
 //=============================================================================
-bool tUidUnaligned::operator !=( const tUidUnaligned  right ) const
-{
-    return ! operator==( right );
+bool tUidUnaligned::operator!=(const tUidUnaligned right) const {
+    return !operator==(right);
 }
 
 //=============================================================================
@@ -137,9 +134,8 @@ bool tUidUnaligned::operator !=( const tUidUnaligned  right ) const
 // Constraints: none
 //
 //=============================================================================
-bool tUidUnaligned::operator ==( const tUidUnaligned  right ) const
-{
-    bool returnMe = ( ( u0 == right.u0 ) && ( u1 == right.u1 ) );
+bool tUidUnaligned::operator==(const tUidUnaligned right) const {
+    bool returnMe = ((u0 == right.u0) && (u1 == right.u1));
     return returnMe;
 }
 
@@ -155,16 +151,15 @@ bool tUidUnaligned::operator ==( const tUidUnaligned  right ) const
 // Constraints: none
 //
 //=============================================================================
-bool tUidUnaligned::operator <( const tUidUnaligned  right ) const
-{
+bool tUidUnaligned::operator<(const tUidUnaligned right) const {
     radInt64 thisOne;
-    unsigned int* t = reinterpret_cast< unsigned int* >( &thisOne );
-    t[ 0 ] = u0;
-    t[ 1 ] = u1;
+    unsigned int *t = reinterpret_cast<unsigned int *>(&thisOne);
+    t[0] = u0;
+    t[1] = u1;
     radInt64 rightOne;
-    unsigned int* r = reinterpret_cast< unsigned int* >( &rightOne );
-    r[ 0 ] = right.u0;
-    r[ 1 ] = right.u1;
+    unsigned int *r = reinterpret_cast<unsigned int *>(&rightOne);
+    r[0] = right.u0;
+    r[1] = right.u1;
     return thisOne < rightOne;
 }
 
@@ -180,7 +175,7 @@ bool tUidUnaligned::operator <( const tUidUnaligned  right ) const
 // Constraints: none
 //
 //=============================================================================
-//tUidUnaligned& tUidUnaligned::operator=( const tUidUnaligned&  right )
+//tUidUnaligned& tUidUnaligned::operator=(const tUidUnaligned&  right)
 //{
 //}
 
@@ -196,16 +191,15 @@ bool tUidUnaligned::operator <( const tUidUnaligned  right ) const
 // Constraints: none
 //
 //=============================================================================
-tUidUnaligned tUidUnaligned::operator^( const tUidUnaligned  right ) const
-{
+tUidUnaligned tUidUnaligned::operator^(const tUidUnaligned right) const {
     radInt64 thisOne;
-    unsigned int* t = reinterpret_cast< unsigned int* >( &thisOne );
-    t[ 0 ] = u0;
-    t[ 1 ] = u1;
+    unsigned int *t = reinterpret_cast<unsigned int *>(&thisOne);
+    t[0] = u0;
+    t[1] = u1;
     radInt64 rightOne;
-    unsigned int* r = reinterpret_cast< unsigned int* >( &rightOne );
-    r[ 0 ] = right.u0;
-    r[ 1 ] = right.u1;
+    unsigned int *r = reinterpret_cast<unsigned int *>(&rightOne);
+    r[0] = right.u0;
+    r[1] = right.u1;
     return thisOne ^ rightOne;
 }
 
@@ -221,14 +215,13 @@ tUidUnaligned tUidUnaligned::operator^( const tUidUnaligned  right ) const
 // Constraints: none
 //
 //=============================================================================
-tUidUnaligned tUidUnaligned::operator*=( const radInt64 right )
-{
+tUidUnaligned tUidUnaligned::operator*=(const radInt64 right) {
     radInt64 thisOne;
-    unsigned int* t = reinterpret_cast< unsigned int* >( &thisOne );
-    t[ 0 ] = u0;
-    t[ 1 ] = u1;
+    unsigned int *t = reinterpret_cast<unsigned int *>(&thisOne);
+    t[0] = u0;
+    t[1] = u1;
     thisOne *= right;
-    ( *this ) = thisOne;
+    (*this) = thisOne;
     return *this;
 }
 
@@ -244,8 +237,7 @@ tUidUnaligned tUidUnaligned::operator*=( const radInt64 right )
 // Constraints: none
 //
 //=============================================================================
-tUidUnaligned tUidUnaligned::operator&( const tUidUnaligned  right ) const
-{
+tUidUnaligned tUidUnaligned::operator&(const tUidUnaligned right) const {
     unsigned int r0 = u0 & right.u0;
     unsigned int r1 = u1 & right.u1;
     tUidUnaligned returnMe;
@@ -255,12 +247,11 @@ tUidUnaligned tUidUnaligned::operator&( const tUidUnaligned  right ) const
 }
 
 
-tUidUnaligned tUidUnaligned::operator >>( const int bits ) const
-{
+tUidUnaligned tUidUnaligned::operator>>(const int bits) const {
     radInt64 returnMe;
-    unsigned int* t = reinterpret_cast< unsigned int* >( &returnMe );
-    t[ 0 ] = u0;
-    t[ 1 ] = u1;
-    returnMe = returnMe >> bits;   
+    unsigned int *t = reinterpret_cast<unsigned int *>(&returnMe);
+    t[0] = u0;
+    t[1] = u1;
+    returnMe = returnMe >> bits;
     return returnMe;
 }

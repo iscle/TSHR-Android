@@ -28,50 +28,51 @@
 //
 //=============================================================================
 class IconFileHandler : public FileHandler,
-                        public IRadFileCompletionCallback
-{
-    public:
+                        public IRadFileCompletionCallback {
+public:
 
-        IconFileHandler();
-        virtual ~IconFileHandler();
+    IconFileHandler();
 
-        //
-        // Implement FileHandler interface.
-        //
-        virtual void LoadFile( const char* filename, 
-                               FileHandler::LoadFileCallback* pCallback,
-                               void* pUserData,
-                               GameMemoryAllocator heap );
+    virtual ~IconFileHandler();
 
-        virtual void LoadFileSync( const char* filename );
+    //
+    // Implement FileHandler interface.
+    //
+    virtual void LoadFile(const char *filename,
+                          FileHandler::LoadFileCallback *pCallback,
+                          void *pUserData,
+                          GameMemoryAllocator heap);
 
-        //
-        // Implement IRadFileCompletionCallback interface.
-        //
-        virtual void OnFileOperationsComplete( void* pUserData );
+    virtual void LoadFileSync(const char *filename);
 
-        virtual void AddRef() {FileHandler::AddRef();}
-        virtual void Release() {FileHandler::Release();}
+    //
+    // Implement IRadFileCompletionCallback interface.
+    //
+    virtual void OnFileOperationsComplete(void *pUserData);
 
-    private:
+    virtual void AddRef() { FileHandler::AddRef(); }
 
-        // Prevent wasteful constructor creation.
-        IconFileHandler( const IconFileHandler& iconFileHandler );
-        IconFileHandler& operator=( const IconFileHandler& iconFileHandler );
+    virtual void Release() { FileHandler::Release(); }
 
-        IRadFile* mpIconFile;
-        char* mFileDataBuffer;
-        GameMemoryAllocator mHeap;
+private:
 
-        enum AsyncLoadState
-        {
-            NONE,
-            OPENFILE,
-            READDATA,
-            DONE
-        };
+    // Prevent wasteful constructor creation.
+    IconFileHandler(const IconFileHandler &iconFileHandler);
 
-        AsyncLoadState mAsyncLoadState;
+    IconFileHandler &operator=(const IconFileHandler &iconFileHandler);
+
+    IRadFile *mpIconFile;
+    char *mFileDataBuffer;
+    GameMemoryAllocator mHeap;
+
+    enum AsyncLoadState {
+        NONE,
+        OPENFILE,
+        READDATA,
+        DONE
+    };
+
+    AsyncLoadState mAsyncLoadState;
 
 };
 

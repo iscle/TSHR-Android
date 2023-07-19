@@ -57,112 +57,93 @@
 // Constraints: The client is responsible for deleting the returned file handler.
 //
 //==============================================================================
-FileHandler* FileHandlerFactory::CreateFileHandler
-( 
-    FileHandlerEnum handlerType,
-    const char* sectionName
-)
-{
-MEMTRACK_PUSH_GROUP( "FileHandler Factory" );
+FileHandler *FileHandlerFactory::CreateFileHandler
+        (
+                FileHandlerEnum handlerType,
+                const char *sectionName
+        ) {
+    MEMTRACK_PUSH_GROUP("FileHandler Factory");
 
-    FileHandler* pHandler = NULL;
+    FileHandler *pHandler = NULL;
 
     HeapMgr()->PushHeap(GMA_TEMP);
 
-    switch( handlerType )
-    {
-        case FILEHANDLER_PURE3D:
-        {
+    switch (handlerType) {
+        case FILEHANDLER_PURE3D: {
             pHandler = new P3DFileHandler();
-            
-            if( sectionName != 0 )
-            {
-                static_cast<P3DFileHandler*>(pHandler)->SetSectionName( sectionName );
-            }
-            else
-            {
-                static_cast<P3DFileHandler*>(pHandler)->SetSectionName( "Default" );
+
+            if (sectionName != 0) {
+                static_cast<P3DFileHandler *>(pHandler)->SetSectionName(sectionName);
+            } else {
+                static_cast<P3DFileHandler *>(pHandler)->SetSectionName("Default");
             }
 
             break;
         }
 
-        case FILEHANDLER_LEVEL:
-        {
+        case FILEHANDLER_LEVEL: {
             pHandler = new P3DFileHandler();
-            if( sectionName != 0 )
-            {
-                static_cast<P3DFileHandler*>(pHandler)->SetSectionName( sectionName );
-            }
-            else
-            {
-                static_cast<P3DFileHandler*>(pHandler)->SetSectionName( "Level" );
+            if (sectionName != 0) {
+                static_cast<P3DFileHandler *>(pHandler)->SetSectionName(sectionName);
+            } else {
+                static_cast<P3DFileHandler *>(pHandler)->SetSectionName("Level");
             }
             break;
         }
-        case FILEHANDLER_MISSION:
-        {
+        case FILEHANDLER_MISSION: {
             pHandler = new P3DFileHandler();
-            static_cast<P3DFileHandler*>(pHandler)->SetSectionName( "Mission" );
-    
-            break;
-        }
-        case FILEHANDLER_ANIMATION:
-        {
-            pHandler = new P3DFileHandler();
-            static_cast<P3DFileHandler*>(pHandler)->SetSectionName( sectionName );
+            static_cast<P3DFileHandler *>(pHandler)->SetSectionName("Mission");
 
             break;
         }
-        case FILEHANDLER_CHOREO:
-        {
+        case FILEHANDLER_ANIMATION: {
+            pHandler = new P3DFileHandler();
+            static_cast<P3DFileHandler *>(pHandler)->SetSectionName(sectionName);
+
+            break;
+        }
+        case FILEHANDLER_CHOREO: {
             pHandler = new ChoreoFileHandler();
-            static_cast<ChoreoFileHandler*>(pHandler)->SetSectionName( sectionName );
+            static_cast<ChoreoFileHandler *>(pHandler)->SetSectionName(sectionName);
 
             break;
         }
-        case FILEHANDLER_CONSOLE:
-        {
+        case FILEHANDLER_CONSOLE: {
             pHandler = new ConsoleFileHandler();
 
             break;
         }
-        case FILEHANDLER_SCROOBY:
-        {
+        case FILEHANDLER_SCROOBY: {
             pHandler = new ScroobyFileHandler();
-            static_cast<ScroobyFileHandler*>(pHandler)->SetSectionName( sectionName );
+            static_cast<ScroobyFileHandler *>(pHandler)->SetSectionName(sectionName);
 
             break;
         }
-        case FILEHANDLER_SOUND:
-        {
+        case FILEHANDLER_SOUND: {
             pHandler = new SoundFileHandler();
 
             break;
         }
-        case FILEHANDLER_TEMP:
-        {
+        case FILEHANDLER_TEMP: {
             pHandler = new P3DFileHandler();
-            static_cast<P3DFileHandler*>(pHandler)->SetSectionName( "Temp" );
+            static_cast<P3DFileHandler *>(pHandler)->SetSectionName("Temp");
 
             break;
         }
-        case FILEHANDLER_ICON:
-        {
+        case FILEHANDLER_ICON: {
             pHandler = new IconFileHandler();
 
             break;
         }
-        default:
-        {
-            rAssert( 0 );
+        default: {
+            rAssert(0);
         }
     }
 
     HeapMgr()->PopHeap(GMA_TEMP);
 
-MEMTRACK_POP_GROUP("FileHandler Factory");
-    return( pHandler );
+    MEMTRACK_POP_GROUP("FileHandler Factory");
+    return (pHandler);
 }
 
 

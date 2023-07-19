@@ -27,22 +27,26 @@
 //
 //=============================================================================
 
-class WheelRumble : public ForceEffect
-{
+class WheelRumble : public ForceEffect {
 public:
     WheelRumble();
+
     virtual ~WheelRumble();
 
     void OnInit();
 
 #ifdef RAD_WIN32
-    void SetMagDir( u16 mag, u16 dir );
+    void SetMagDir(u16 mag, u16 dir);
 #else
-    void SetMagDir( u8 mag, u16 dir );
-#endif
-    void SetPPO( u16 per, u16 phas, s16 offset );
 
-    void SetRumbleType( u8 type );
+    void SetMagDir(u8 mag, u16 dir);
+
+#endif
+
+    void SetPPO(u16 per, u16 phas, s16 offset);
+
+    void SetRumbleType(u8 type);
+
 #ifdef RAD_WIN32
     void Update(unsigned timeins = 0);
 #endif
@@ -53,9 +57,11 @@ private:
     DIPERIODIC m_diPeriodic;
     DIENVELOPE m_diEnvelope;
 #endif
+
     //Prevent wasteful constructor creation.
-    WheelRumble( const WheelRumble& wheelrumble );
-    WheelRumble& operator=( const WheelRumble& wheelrumble );
+    WheelRumble(const WheelRumble &wheelrumble);
+
+    WheelRumble &operator=(const WheelRumble &wheelrumble);
 };
 
 //*****************************************************************************

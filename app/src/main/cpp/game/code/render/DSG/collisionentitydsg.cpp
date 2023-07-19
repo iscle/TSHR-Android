@@ -50,36 +50,35 @@
 //
 //******************************************************************************
 
-struct BreakablePair
-{
-    const char* name;
+struct BreakablePair {
+    const char *name;
     BreakablesEnum::BreakableID id;
 };
 
-const BreakablePair s_BreakableList[] = 
-{
-    { "eHydrantBreaking", BreakablesEnum::eHydrantBreaking },
-    { "eOakTreeBreaking", BreakablesEnum::eOakTreeBreaking },
-    { "ePineTreeBreaking", BreakablesEnum::ePineTreeBreaking },
-    { "eBigBarrierBreaking", BreakablesEnum::eBigBarrierBreaking },
-    { "eRailCrossBreaking", BreakablesEnum::eRailCrossBreaking },
-    { "eSpaceNeedleBreaking", BreakablesEnum::eSpaceNeedleBreaking },
-    { "eTomaccoBreaking", BreakablesEnum::eTommacoPlantsBreaking },
-    { "eCypressTreeBreaking", BreakablesEnum::eCypressTreeBreaking },
-    { "eDeadTreeBreaking", BreakablesEnum::eDeadTreeBreaking },
-    { "eKrustyGlassBreaking", BreakablesEnum::eKrustyGlassBreaking },
-    { "eSkeletonBreaking", BreakablesEnum::eSkeletonBreaking },
-    { "eWillow", BreakablesEnum::eWillow },
-    { "eGlobeLight", BreakablesEnum::eGlobeLight },
-    { "eTreeMorn", BreakablesEnum::eTreeMorn },
-    { "ePalmTreeSmall", BreakablesEnum::ePalmTreeSmall },
-    { "ePalmTreeLarge", BreakablesEnum::ePalmTreeLarge },
-    { "eStopsign", BreakablesEnum::eStopsign },
-    { "ePumpkin", BreakablesEnum::ePumpkin },
-    { "ePumpkinMed", BreakablesEnum::ePumpkinMed },
-    { "ePumpkinSmall", BreakablesEnum::ePumpkinSmall },
-    { "eCasinoJump", BreakablesEnum::eCasinoJump }
-};
+const BreakablePair s_BreakableList[] =
+        {
+                {"eHydrantBreaking",     BreakablesEnum::eHydrantBreaking},
+                {"eOakTreeBreaking",     BreakablesEnum::eOakTreeBreaking},
+                {"ePineTreeBreaking",    BreakablesEnum::ePineTreeBreaking},
+                {"eBigBarrierBreaking",  BreakablesEnum::eBigBarrierBreaking},
+                {"eRailCrossBreaking",   BreakablesEnum::eRailCrossBreaking},
+                {"eSpaceNeedleBreaking", BreakablesEnum::eSpaceNeedleBreaking},
+                {"eTomaccoBreaking",     BreakablesEnum::eTommacoPlantsBreaking},
+                {"eCypressTreeBreaking", BreakablesEnum::eCypressTreeBreaking},
+                {"eDeadTreeBreaking",    BreakablesEnum::eDeadTreeBreaking},
+                {"eKrustyGlassBreaking", BreakablesEnum::eKrustyGlassBreaking},
+                {"eSkeletonBreaking",    BreakablesEnum::eSkeletonBreaking},
+                {"eWillow",              BreakablesEnum::eWillow},
+                {"eGlobeLight",          BreakablesEnum::eGlobeLight},
+                {"eTreeMorn",            BreakablesEnum::eTreeMorn},
+                {"ePalmTreeSmall",       BreakablesEnum::ePalmTreeSmall},
+                {"ePalmTreeLarge",       BreakablesEnum::ePalmTreeLarge},
+                {"eStopsign",            BreakablesEnum::eStopsign},
+                {"ePumpkin",             BreakablesEnum::ePumpkin},
+                {"ePumpkinMed",          BreakablesEnum::ePumpkinMed},
+                {"ePumpkinSmall",        BreakablesEnum::ePumpkinSmall},
+                {"eCasinoJump",          BreakablesEnum::eCasinoJump}
+        };
 
 const int NUM_BREAKABLES = sizeof(s_BreakableList) / sizeof(s_BreakableList[0]);
 
@@ -94,13 +93,12 @@ const int NUM_BREAKABLES = sizeof(s_BreakableList) / sizeof(s_BreakableList[0]);
 //
 //==============================================================================
 CollisionEntityDSG::CollisionEntityDSG()
-:
-mPersistentObjectID( -1 ),
-mpCollisionAttributes( 0 ),
-mWasParticleEffectTriggered( false ),
-mRenderLayer( RenderEnums::LevelSlot )
-{
-    lastUpdate = 0xffffffff; 
+        :
+        mPersistentObjectID(-1),
+        mpCollisionAttributes(0),
+        mWasParticleEffectTriggered(false),
+        mRenderLayer(RenderEnums::LevelSlot) {
+    lastUpdate = 0xffffffff;
 }
 
 //==============================================================================
@@ -113,15 +111,13 @@ mRenderLayer( RenderEnums::LevelSlot )
 // Return:      N/A.
 //
 //==============================================================================
-CollisionEntityDSG::~CollisionEntityDSG()
-{
-BEGIN_PROFILE( "CollisionEntityDSG Destroy" );
-    if ( mpCollisionAttributes )
-    {
-        mpCollisionAttributes->Release( );
+CollisionEntityDSG::~CollisionEntityDSG() {
+    BEGIN_PROFILE("CollisionEntityDSG Destroy");
+    if (mpCollisionAttributes) {
+        mpCollisionAttributes->Release();
         mpCollisionAttributes = 0;
     }
-END_PROFILE( "CollisionEntityDSG Destroy" );
+    END_PROFILE("CollisionEntityDSG Destroy");
 }
 
 /*
@@ -130,19 +126,17 @@ CollisionEntityDSG::SetSimState
 ==============================================================================
 Description:    Comment
 
-Parameters:     ( sim::SimState* ipCollObj )
+Parameters:     (sim::SimState* ipCollObj)
 
 Return:         void 
 
 =============================================================================
 */
-void CollisionEntityDSG::SetSimState( sim::SimState* ipCollObj )
-{
-    if ( ipCollObj )
-    {
+void CollisionEntityDSG::SetSimState(sim::SimState *ipCollObj) {
+    if (ipCollObj) {
         ipCollObj->mAIRefPointer = this;
     }
-    OnSetSimState( ipCollObj );
+    OnSetSimState(ipCollObj);
 }
 
 /*
@@ -151,16 +145,16 @@ CollisionEntityDSG::SetCollisionAttributes
 ==============================================================================
 Description:    Comment
 
-Parameters:     ( CollisionAttributes* pCollisionAttributes )
+Parameters:     (CollisionAttributes* pCollisionAttributes)
 
 Return:         void 
 
 =============================================================================
 */
-void CollisionEntityDSG::SetCollisionAttributes( CollisionAttributes* pCollisionAttributes )
-{
-    tRefCounted::Assign( mpCollisionAttributes, pCollisionAttributes );
+void CollisionEntityDSG::SetCollisionAttributes(CollisionAttributes *pCollisionAttributes) {
+    tRefCounted::Assign(mpCollisionAttributes, pCollisionAttributes);
 }
+
 /*
 ==============================================================================
 CollisionEntityDSG::SetRenderLayer
@@ -176,8 +170,7 @@ Return:         void
 
 =============================================================================
 */
-void CollisionEntityDSG::SetRenderLayer( RenderEnums::LayerEnum renderLayer )
-{
+void CollisionEntityDSG::SetRenderLayer(RenderEnums::LayerEnum renderLayer) {
     mRenderLayer = renderLayer;
 }
 
@@ -191,17 +184,17 @@ void CollisionEntityDSG::SetRenderLayer( RenderEnums::LayerEnum renderLayer )
 // Return:      sim
 //
 //=============================================================================
-sim::Solving_Answer CollisionEntityDSG::PostReactToCollision(rmt::Vector& impulse, sim::Collision& inCollision)
-{
+sim::Solving_Answer
+CollisionEntityDSG::PostReactToCollision(rmt::Vector &impulse, sim::Collision &inCollision) {
     // generic handling of collision
     //
     // fire off a sound event at appropriate intensity
 
-    sim::CollisionObject* collObjA = inCollision.mCollisionObjectA;
-    sim::CollisionObject* collObjB = inCollision.mCollisionObjectB;
-    
-    sim::SimState* simStateA = collObjA->GetSimState();
-    sim::SimState* simStateB = collObjB->GetSimState();
+    sim::CollisionObject *collObjA = inCollision.mCollisionObjectA;
+    sim::CollisionObject *collObjB = inCollision.mCollisionObjectB;
+
+    sim::SimState *simStateA = collObjA->GetSimState();
+    sim::SimState *simStateB = collObjB->GetSimState();
 
     //
     // SOUND EVENT HERE?
@@ -218,24 +211,20 @@ sim::Solving_Answer CollisionEntityDSG::PostReactToCollision(rmt::Vector& impuls
     const float maxIntensity = 100000.0f;
 
     float soundScale = impulseMagnitude / maxIntensity;
-    if(soundScale > 1.0f)
-    {
+    if (soundScale > 1.0f) {
         soundScale = 1.0f;
     }
-    if(soundScale < 0.0f)
-    {
+    if (soundScale < 0.0f) {
         rAssert(0);
     }
 
-    SoundCollisionData soundData( soundScale, 
-                                  static_cast<CollisionEntityDSG*>(simStateA->mAIRefPointer),
-                                  static_cast<CollisionEntityDSG*>(simStateB->mAIRefPointer) );
-    GetEventManager()->TriggerEvent( EVENT_COLLISION, &soundData );
+    SoundCollisionData soundData(soundScale,
+                                 static_cast<CollisionEntityDSG *>(simStateA->mAIRefPointer),
+                                 static_cast<CollisionEntityDSG *>(simStateB->mAIRefPointer));
+    GetEventManager()->TriggerEvent(EVENT_COLLISION, &soundData);
 
     return sim::Solving_Continue;
 }
-
-
 
 
 /*
@@ -244,76 +233,55 @@ CollisionEntityDSG::GetCollisionAttributes
 ==============================================================================
 Description:    Comment
 
-Parameters:     ( void )
+Parameters:     (void)
 
 Return:         CollisionAttributes
 
 =============================================================================
 */
-CollisionAttributes* CollisionEntityDSG::GetCollisionAttributes( void ) const
-{
+CollisionAttributes *CollisionEntityDSG::GetCollisionAttributes(void) const {
     return mpCollisionAttributes;
 }
 
 
-
-CollisionAttributes::CollisionAttributes ()
-: mBreakableID( BreakablesEnum::eNull )
-{
+CollisionAttributes::CollisionAttributes()
+        : mBreakableID(BreakablesEnum::eNull) {
     memset(mp_Sound, 0, sizeof(mp_Sound));
     memset(mp_Animation, 0, sizeof(mp_Animation));
-    mp_Particle=ParticleEnum::eNull;
-    mMass=0.0;
-    mFriction=0.0;
-    mElasticity=0.0;
-    mClasstypeid =WTF;
+    mp_Particle = ParticleEnum::eNull;
+    mMass = 0.0;
+    mFriction = 0.0;
+    mElasticity = 0.0;
+    mClasstypeid = WTF;
 
     mPhizProp = 0;
 }
 
 
-CollisionAttributes::CollisionAttributes(char* p_sound,char* p_particle,char* p_animation,float friction, float mass,float elasticity,unsigned int classtypeid, float volume)
-{
+CollisionAttributes::CollisionAttributes(char *p_sound, char *p_particle, char *p_animation,
+                                         float friction, float mass, float elasticity,
+                                         unsigned int classtypeid, float volume) {
     // if the item creates a specific particle effect when hit
     // get it from p_particle string
-    if ( strcmp( p_particle,"eGarbage" )==0)
-    {
+    if (strcmp(p_particle, "eGarbage") == 0) {
         mp_Particle = ParticleEnum::eGarbage;
-    }
-    else if ( strcmp( p_particle, "eShrub" )==0 )
-	{
-		mp_Particle = ParticleEnum::eShrub;
-	}
-	else if ( strcmp( p_particle, "eOakTreeLeaves" )==0 )
-	{
-		mp_Particle = ParticleEnum::eOakTreeLeaves;
-	}
-	else if ( strcmp( p_particle, "eMail" )==0 )
-	{
-		mp_Particle = ParticleEnum::eMail;
-	}
-	else if ( strcmp( p_particle, "ePineTreeNeedles" )==0)
-	{
-		mp_Particle = ParticleEnum::ePineTreeNeedles;
-	}
-	else if ( strcmp( p_particle, "eStars" ) == 0)
-	{
-		mp_Particle = ParticleEnum::eStars;
-	}
-    else if(strcmp( p_particle, "eParkingMeter" ) == 0)
-    {
-        mp_Particle = ParticleEnum::eParkingMeter ;
-    }
-    else if(strcmp( p_particle, "eCarExplosion" ) == 0)
-    {
-        mp_Particle = ParticleEnum::eCarExplosion ;
-    }
-    else if(strcmp( p_particle, "ePopsicles" ) == 0)
-    {
-        mp_Particle = ParticleEnum::ePopsicles ;
-    }
-    else
-    {
+    } else if (strcmp(p_particle, "eShrub") == 0) {
+        mp_Particle = ParticleEnum::eShrub;
+    } else if (strcmp(p_particle, "eOakTreeLeaves") == 0) {
+        mp_Particle = ParticleEnum::eOakTreeLeaves;
+    } else if (strcmp(p_particle, "eMail") == 0) {
+        mp_Particle = ParticleEnum::eMail;
+    } else if (strcmp(p_particle, "ePineTreeNeedles") == 0) {
+        mp_Particle = ParticleEnum::ePineTreeNeedles;
+    } else if (strcmp(p_particle, "eStars") == 0) {
+        mp_Particle = ParticleEnum::eStars;
+    } else if (strcmp(p_particle, "eParkingMeter") == 0) {
+        mp_Particle = ParticleEnum::eParkingMeter;
+    } else if (strcmp(p_particle, "eCarExplosion") == 0) {
+        mp_Particle = ParticleEnum::eCarExplosion;
+    } else if (strcmp(p_particle, "ePopsicles") == 0) {
+        mp_Particle = ParticleEnum::ePopsicles;
+    } else {
         mp_Particle = ParticleEnum::eNull;
     }
 
@@ -321,76 +289,62 @@ CollisionAttributes::CollisionAttributes(char* p_sound,char* p_particle,char* p_
     // p_animation
 
     mBreakableID = BreakablesEnum::eNull;
-    for ( int i = 0 ; i < NUM_BREAKABLES ; i++ )
-    {
-        if ( strcmp( p_animation, s_BreakableList[i].name ) == 0 )
-        {
+    for (int i = 0; i < NUM_BREAKABLES; i++) {
+        if (strcmp(p_animation, s_BreakableList[i].name) == 0) {
             mBreakableID = s_BreakableList[i].id;
             break;
         }
     }
-   // mp_Particle=p_particle;
-    strcpy(mp_Animation,p_animation);
+    // mp_Particle=p_particle;
+    strcpy(mp_Animation, p_animation);
     strcpy(mp_Sound, p_sound);
-    mMass=mass;
+    mMass = mass;
     //mMass = 1000.0f;
-    switch (classtypeid)
-    {
-        case 0:
-            {
-                mClasstypeid = WTF;
-                break;
-            }
-        case 1:
-            {
-                mClasstypeid = GROUND;
-                break;
-            }
-        case 2:
-            {
-                mClasstypeid = PROP_STATIC;
-                break;
-            }
-        case 3:
-            {
-                mClasstypeid = PROP_MOVEABLE;
-                break;
-            }
-        case 4:
-            {
-                mClasstypeid = PROP_BREAKABLE;
-                break;
-            }
-        case 5:
-            {
-                mClasstypeid = ANIMATED_BV;
-                break;
-            }
-        case 6:
-            {
-                mClasstypeid = DRAWABLE;
-                break;
-            }
-        case 7:
-            {
-                mClasstypeid = STATIC;
-                break;
-            }
-        case 8:
-            {
-                mClasstypeid = PROP_DRAWABLE;
-                break;
-            }
-        case 10:
-            {    
-            
-                mClasstypeid = PROP_ONETIME_MOVEABLE;
-                break;
-            }
-        default:
-            {
-                printf("ERROR: Unknown ClasstypeID \n");
-            }
+    switch (classtypeid) {
+        case 0: {
+            mClasstypeid = WTF;
+            break;
+        }
+        case 1: {
+            mClasstypeid = GROUND;
+            break;
+        }
+        case 2: {
+            mClasstypeid = PROP_STATIC;
+            break;
+        }
+        case 3: {
+            mClasstypeid = PROP_MOVEABLE;
+            break;
+        }
+        case 4: {
+            mClasstypeid = PROP_BREAKABLE;
+            break;
+        }
+        case 5: {
+            mClasstypeid = ANIMATED_BV;
+            break;
+        }
+        case 6: {
+            mClasstypeid = DRAWABLE;
+            break;
+        }
+        case 7: {
+            mClasstypeid = STATIC;
+            break;
+        }
+        case 8: {
+            mClasstypeid = PROP_DRAWABLE;
+            break;
+        }
+        case 10: {
+
+            mClasstypeid = PROP_ONETIME_MOVEABLE;
+            break;
+        }
+        default: {
+            printf("ERROR: Unknown ClasstypeID \n");
+        }
     }
 
 
@@ -405,203 +359,167 @@ CollisionAttributes::CollisionAttributes(char* p_sound,char* p_particle,char* p_
 
     MEMTRACK_POP_GROUP("PhysicsProperties");
 
-    
-    if(volume > 0.0f)
-    {
-        if(mClasstypeid == PROP_MOVEABLE || mClasstypeid == PROP_BREAKABLE || mClasstypeid == PROP_ONETIME_MOVEABLE)
-        {   
+
+    if (volume > 0.0f) {
+        if (mClasstypeid == PROP_MOVEABLE || mClasstypeid == PROP_BREAKABLE ||
+            mClasstypeid == PROP_ONETIME_MOVEABLE) {
             float density = mMass / volume;
             mPhizProp->SetDensityCGS(density);
-        }
-        else
-        {
+        } else {
             rAssert(0); // shouldn't be setting volume (mass) on this thing
         }
     }
-    
-        
-    
-    
-    if(friction > 0.0f && friction < 3.5f)  // changed from friction >= 0.0f - don't think we ever want somethign with 0.0 friction
+
+
+    if (friction > 0.0f && friction <
+                           3.5f)  // changed from friction>= 0.0f - don't think we ever want somethign with 0.0 friction
     {
         mFriction = friction;
         mPhizProp->SetFrictCoeffCGS(friction);  // good    
-    }
-    else
-    {
+    } else {
         mFriction = 1.2f;
         mPhizProp->SetFrictCoeffCGS(1.2f);  // good    
-        
+
     }
-    
-    if(elasticity >= 1.0f && elasticity <= 2.0f)
-    {
-        mElasticity = elasticity;    
+
+    if (elasticity >= 1.0f && elasticity <= 2.0f) {
+        mElasticity = elasticity;
         mPhizProp->SetRestCoeffCGS(elasticity);       // 1.0 to 2.0        
-    }
-    else
-    {
+    } else {
         mElasticity = 1.5f;
         mPhizProp->SetRestCoeffCGS(1.5f);       // 1.0 to 2.0                
-    }      
-    
+    }
+
     mPhizProp->SetTangRestCoeffCGS(0.0f);   // leave this one at 0
-    
-    
+
+
 }
 
 
-CollisionAttributes::~CollisionAttributes()
-{
-    if ( mPhizProp != NULL )
-    {
+CollisionAttributes::~CollisionAttributes() {
+    if (mPhizProp != NULL) {
         mPhizProp->Release();
     }
 }
 
-char* CollisionAttributes::GetAnimation()
-{
+char *CollisionAttributes::GetAnimation() {
     return mp_Animation;
 }
-BreakablesEnum::BreakableID CollisionAttributes::GetBreakable()
-{
+
+BreakablesEnum::BreakableID CollisionAttributes::GetBreakable() {
     return mBreakableID;
 }
-ParticleEnum::ParticleID CollisionAttributes::GetParticle()
-{
+
+ParticleEnum::ParticleID CollisionAttributes::GetParticle() {
     return mp_Particle;
 }
 
-char* CollisionAttributes::GetSound()
-{
+char *CollisionAttributes::GetSound() {
     return mp_Sound;
 }
 
 
-float CollisionAttributes::GetFriction()
-{
+float CollisionAttributes::GetFriction() {
     return mFriction;
 }
 
-float CollisionAttributes::GetMass()
-{
+float CollisionAttributes::GetMass() {
     return mMass;
 }
 
-float CollisionAttributes::GetElasticity()
-{
+float CollisionAttributes::GetElasticity() {
     return mElasticity;
 }
 
-unsigned int CollisionAttributes::GetClasstypeid ()
-{
+unsigned int CollisionAttributes::GetClasstypeid() {
     return mClasstypeid;
 }
 
-void CollisionAttributes::SetAnimation(char* p_animation)
-{
+void CollisionAttributes::SetAnimation(char *p_animation) {
     //mp_Animation=p_animation;
-    strcpy(mp_Animation,p_animation);
-    
+    strcpy(mp_Animation, p_animation);
+
 }
-void CollisionAttributes::SetBreakable( BreakablesEnum::BreakableID id )
-{
+
+void CollisionAttributes::SetBreakable(BreakablesEnum::BreakableID id) {
     mBreakableID = id;
 }
-void CollisionAttributes::SetParticle(ParticleEnum::ParticleID p_particle)
-{
-    mp_Particle=p_particle;
+
+void CollisionAttributes::SetParticle(ParticleEnum::ParticleID p_particle) {
+    mp_Particle = p_particle;
 }
 
-void CollisionAttributes::SetSound(char* p_sound)
-{
+void CollisionAttributes::SetSound(char *p_sound) {
     //mp_Sound=p_sound;    
-    strcpy(mp_Sound,p_sound);
+    strcpy(mp_Sound, p_sound);
 
 }
 
-void CollisionAttributes::SetMass(const float mass)
-{
-    mMass=mass;
+void CollisionAttributes::SetMass(const float mass) {
+    mMass = mass;
 }
 
-void CollisionAttributes::SetFriction(const float friction)
-{
-    mFriction=friction;
+void CollisionAttributes::SetFriction(const float friction) {
+    mFriction = friction;
 }
 
-void CollisionAttributes::SetElasticity(const float elasticity)
-{
-    mElasticity=elasticity;
+void CollisionAttributes::SetElasticity(const float elasticity) {
+    mElasticity = elasticity;
 }
 
-void CollisionAttributes::SetClasstypeid(unsigned int classtypeid)
-{
-      switch (classtypeid)
-    {
-        case 0:
-            {
-                mClasstypeid = WTF;
-                break;
-            }
-        case 1:
-            {
-                mClasstypeid = GROUND;
-                break;
-            }
-        case 2:
-            {
-                mClasstypeid = PROP_STATIC;
-                break;
-            }
-        case 3:
-            {
-                mClasstypeid = PROP_MOVEABLE;
-                //mClasstypeid = PROP_ONETIME_MOVEABLE;
-                break;
-            }
-        case 4:
-            {
-                mClasstypeid = PROP_BREAKABLE;
-                break;
-            }
-        case 5:
-            {
-                mClasstypeid = ANIMATED_BV;
-                break;
-            }
-        case 6:
-            {
-                mClasstypeid = DRAWABLE;
-                break;
-            }
-        case 7:
-            {
-                mClasstypeid = STATIC;
-                break;
-            }
-        case 8:
-            {
-                mClasstypeid = PROP_DRAWABLE;
-                break;
-            }
-        case 9:
-            {
-                mClasstypeid = PROP_ANIM_BREAKABLE;
-                break;
-            }
-        case 10:
-            {
-                mClasstypeid = PROP_ONETIME_MOVEABLE;
-                //mClasstypeid = PROP_MOVEABLE;
-                
-                break;
-            }
+void CollisionAttributes::SetClasstypeid(unsigned int classtypeid) {
+    switch (classtypeid) {
+        case 0: {
+            mClasstypeid = WTF;
+            break;
+        }
+        case 1: {
+            mClasstypeid = GROUND;
+            break;
+        }
+        case 2: {
+            mClasstypeid = PROP_STATIC;
+            break;
+        }
+        case 3: {
+            mClasstypeid = PROP_MOVEABLE;
+            //mClasstypeid = PROP_ONETIME_MOVEABLE;
+            break;
+        }
+        case 4: {
+            mClasstypeid = PROP_BREAKABLE;
+            break;
+        }
+        case 5: {
+            mClasstypeid = ANIMATED_BV;
+            break;
+        }
+        case 6: {
+            mClasstypeid = DRAWABLE;
+            break;
+        }
+        case 7: {
+            mClasstypeid = STATIC;
+            break;
+        }
+        case 8: {
+            mClasstypeid = PROP_DRAWABLE;
+            break;
+        }
+        case 9: {
+            mClasstypeid = PROP_ANIM_BREAKABLE;
+            break;
+        }
+        case 10: {
+            mClasstypeid = PROP_ONETIME_MOVEABLE;
+            //mClasstypeid = PROP_MOVEABLE;
 
-        default:
-            {
-                printf("ERROR: Unknown ClasstypeID \n");
-            }
+            break;
+        }
+
+        default: {
+            printf("ERROR: Unknown ClasstypeID \n");
+        }
     }
 }
 

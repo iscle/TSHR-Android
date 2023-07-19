@@ -47,18 +47,17 @@
 // Return:      N/A.
 //
 //=============================================================================
-HasPresentationInfo::HasPresentationInfo():
-    mConversationCamName   ( "unknown" ),  
-    mConversationCamNpcName( "npc_near" ),
-    mConversationCamPcName ( "pc_near" ),
-    mPcIsChild( false ),
-    mNpcIsChild( false ),
-    mGoToPattyAndSelmaScreenWhenDone( false )
-{
-    CLASSTRACKER_CREATE( HasPresentationInfo );
-    mAmbientPcAnimations.reserve( TYPICAL_NUM_ANIMATIONS );
-    mAmbientNpcAnimations.reserve( TYPICAL_NUM_ANIMATIONS );
-    mCamerasForLinesOfDialog.reserve( TYPICAL_NUM_LINES );
+HasPresentationInfo::HasPresentationInfo() :
+        mConversationCamName("unknown"),
+        mConversationCamNpcName("npc_near"),
+        mConversationCamPcName("pc_near"),
+        mPcIsChild(false),
+        mNpcIsChild(false),
+        mGoToPattyAndSelmaScreenWhenDone(false) {
+    CLASSTRACKER_CREATE(HasPresentationInfo);
+    mAmbientPcAnimations.reserve(TYPICAL_NUM_ANIMATIONS);
+    mAmbientNpcAnimations.reserve(TYPICAL_NUM_ANIMATIONS);
+    mCamerasForLinesOfDialog.reserve(TYPICAL_NUM_LINES);
 }
 
 
@@ -72,9 +71,8 @@ HasPresentationInfo::HasPresentationInfo():
 // Return:      N/A.
 //
 //=============================================================================
-HasPresentationInfo::~HasPresentationInfo()
-{
-    CLASSTRACKER_DESTROY( HasPresentationInfo );
+HasPresentationInfo::~HasPresentationInfo() {
+    CLASSTRACKER_DESTROY(HasPresentationInfo);
 }
 
 //=============================================================================
@@ -89,18 +87,15 @@ HasPresentationInfo::~HasPresentationInfo()
 // Return:      void
 //
 //=============================================================================
-void HasPresentationInfo::AddAmbientCharacterAnimation( const unsigned int character, const tName& animationName )
-{
-    HeapMgr()->PushHeap( GMA_LEVEL_OTHER );
-    rAssertMsg( character < 2, "There is only code for the PC and 1 NPC" );
+void HasPresentationInfo::AddAmbientCharacterAnimation(const unsigned int character,
+                                                       const tName &animationName) {
+    HeapMgr()->PushHeap(GMA_LEVEL_OTHER);
+    rAssertMsg(character < 2, "There is only code for the PC and 1 NPC");
     const unsigned int index = character % 2;
-    if( index == 0 )
-    {
-        mAmbientPcAnimations.push_back( animationName );
-    }
-    else
-    {
-        mAmbientNpcAnimations.push_back( animationName );
+    if (index == 0) {
+        mAmbientPcAnimations.push_back(animationName);
+    } else {
+        mAmbientNpcAnimations.push_back(animationName);
     }
     HeapMgr()->PopHeap(GMA_LEVEL_OTHER);
 }
@@ -116,14 +111,11 @@ void HasPresentationInfo::AddAmbientCharacterAnimation( const unsigned int chara
 // Return:      void
 //
 //=============================================================================
-void HasPresentationInfo::AmbientCharacterAnimationSetRandom( const unsigned int character, const bool random )
-{
-    if( character == 0 )
-    {
+void HasPresentationInfo::AmbientCharacterAnimationSetRandom(const unsigned int character,
+                                                             const bool random) {
+    if (character == 0) {
         mAmbientPcAnimationsRandom = random;
-    }
-    else
-    {
+    } else {
         mAmbientNpcAnimationsRandom = random;
     }
 }
@@ -139,19 +131,13 @@ void HasPresentationInfo::AmbientCharacterAnimationSetRandom( const unsigned int
 // Return:      void
 //
 //=============================================================================
-void HasPresentationInfo::CharacterIsChild( const int index )
-{
-    if( index == 0 )
-    {
+void HasPresentationInfo::CharacterIsChild(const int index) {
+    if (index == 0) {
         mPcIsChild = true;
-    }
-    else if( index == 1 )
-    {
+    } else if (index == 1) {
         mNpcIsChild = true;
-    }
-    else
-    {
-        rAssertMsg( false, "character index out of range" );
+    } else {
+        rAssertMsg(false, "character index out of range");
     }
 }
 
@@ -165,10 +151,9 @@ void HasPresentationInfo::CharacterIsChild( const int index )
 // Return:      void
 //
 //=============================================================================
-void HasPresentationInfo::ClearAmbientAnimations()
-{
-    mAmbientPcAnimations.erase(  mAmbientPcAnimations.begin(),  mAmbientPcAnimations.end()  );
-    mAmbientNpcAnimations.erase( mAmbientNpcAnimations.begin(), mAmbientNpcAnimations.end() );
+void HasPresentationInfo::ClearAmbientAnimations() {
+    mAmbientPcAnimations.erase(mAmbientPcAnimations.begin(), mAmbientPcAnimations.end());
+    mAmbientNpcAnimations.erase(mAmbientNpcAnimations.begin(), mAmbientNpcAnimations.end());
 }
 
 //=============================================================================
@@ -182,8 +167,7 @@ void HasPresentationInfo::ClearAmbientAnimations()
 // Return:      void
 //
 //=============================================================================
-void HasPresentationInfo::GoToPattyAndSelmaScreenWhenDone()
-{
+void HasPresentationInfo::GoToPattyAndSelmaScreenWhenDone() {
     mGoToPattyAndSelmaScreenWhenDone = true;
 }
 
@@ -197,11 +181,9 @@ void HasPresentationInfo::GoToPattyAndSelmaScreenWhenDone()
 // Return:      void
 //
 //=============================================================================
-void HasPresentationInfo::OnStageCompleteSuccessful() const
-{
-    if( mGoToPattyAndSelmaScreenWhenDone )
-    {
-        GetEventManager()->TriggerEvent( EVENT_GUI_TRIGGER_PATTY_AND_SELMA_SCREEN );
+void HasPresentationInfo::OnStageCompleteSuccessful() const {
+    if (mGoToPattyAndSelmaScreenWhenDone) {
+        GetEventManager()->TriggerEvent(EVENT_GUI_TRIGGER_PATTY_AND_SELMA_SCREEN);
     }
 }
 
@@ -215,31 +197,30 @@ void HasPresentationInfo::OnStageCompleteSuccessful() const
 // Return:      void
 //
 //=============================================================================
-void HasPresentationInfo::Reset()
-{
-    PresentationManager* pm = PresentationManager::GetInstance();
+void HasPresentationInfo::Reset() {
+    PresentationManager *pm = PresentationManager::GetInstance();
 
     //
     // Set Up the Conversation cameras
     //
-    ConversationCam::SetNpcIsChild( mNpcIsChild );
-    ConversationCam::SetPcIsChild( mPcIsChild );
-    ConversationCam::SetNpcCameraByName( mConversationCamNpcName );
-    ConversationCam::SetPcCameraByName( mConversationCamPcName );
+    ConversationCam::SetNpcIsChild(mNpcIsChild);
+    ConversationCam::SetPcIsChild(mPcIsChild);
+    ConversationCam::SetNpcCameraByName(mConversationCamNpcName);
+    ConversationCam::SetPcCameraByName(mConversationCamPcName);
     size_t size = mCamerasForLinesOfDialog.size();
-    rAssert( size < 10 );
-    pm->SetCamerasForLineOfDialog( mCamerasForLinesOfDialog );
-    ConversationCam::SetCamBestSide( mBestSideLocator );
+    rAssert(size < 10);
+    pm->SetCamerasForLineOfDialog(mCamerasForLinesOfDialog);
+    ConversationCam::SetCamBestSide(mBestSideLocator);
 
     //
     // Set up the Ambient Animations
-    PresentationAnimator* paPc  = pm->GetAnimatorPc();
-    PresentationAnimator* paNpc = pm->GetAnimatorNpc();
+    PresentationAnimator *paPc = pm->GetAnimatorPc();
+    PresentationAnimator *paNpc = pm->GetAnimatorNpc();
     size = mAmbientPcAnimations.size();
-    paPc-> AddAmbientAnimations( mAmbientPcAnimations );
-    paNpc->AddAmbientAnimations( mAmbientNpcAnimations );
-    paPc->SetRandomSelection( mAmbientPcAnimationsRandom );
-    paNpc->SetRandomSelection( mAmbientNpcAnimationsRandom );
+    paPc->AddAmbientAnimations(mAmbientPcAnimations);
+    paNpc->AddAmbientAnimations(mAmbientNpcAnimations);
+    paPc->SetRandomSelection(mAmbientPcAnimationsRandom);
+    paNpc->SetRandomSelection(mAmbientNpcAnimationsRandom);
 
 }
 
@@ -253,14 +234,13 @@ void HasPresentationInfo::Reset()
 // Return:      void
 //
 //=============================================================================
-void HasPresentationInfo::SetCameraForDialogLine( const unsigned int dialogLine, const tName& camera )
-{
+void
+HasPresentationInfo::SetCameraForDialogLine(const unsigned int dialogLine, const tName &camera) {
     size_t currentSize = mCamerasForLinesOfDialog.size();
-    if( currentSize < dialogLine + 1 )
-    {
-        mCamerasForLinesOfDialog.resize( dialogLine + 1, tName( "NONE" ) );
+    if (currentSize < dialogLine + 1) {
+        mCamerasForLinesOfDialog.resize(dialogLine + 1, tName("NONE"));
     }
-    mCamerasForLinesOfDialog[ dialogLine ] = camera;
+    mCamerasForLinesOfDialog[dialogLine] = camera;
 }
 
 //=============================================================================
@@ -272,10 +252,10 @@ void HasPresentationInfo::SetCameraForDialogLine( const unsigned int dialogLine,
 // Return:      void
 //
 //=============================================================================
-void HasPresentationInfo::SetConversationCamName( const tName& name )
-{
+void HasPresentationInfo::SetConversationCamName(const tName &name) {
     mConversationCamName = name;
 }
+
 //=============================================================================
 // HasPresentationInfo::SetConversationCamPcName
 //=============================================================================
@@ -286,10 +266,10 @@ void HasPresentationInfo::SetConversationCamName( const tName& name )
 // Return:      void
 //
 //=============================================================================
-void HasPresentationInfo::SetConversationCamPcName ( const tName& name )
-{
+void HasPresentationInfo::SetConversationCamPcName(const tName &name) {
     mConversationCamPcName = name;
 }
+
 //=============================================================================
 // HasPresentationInfo::SetConversationCamNpcName
 //=============================================================================
@@ -300,8 +280,7 @@ void HasPresentationInfo::SetConversationCamPcName ( const tName& name )
 // Return:      void
 //
 //=============================================================================
-void HasPresentationInfo::SetConversationCamNpcName( const tName& name )
-{
+void HasPresentationInfo::SetConversationCamNpcName(const tName &name) {
     mConversationCamNpcName = name;
 }
 
@@ -314,7 +293,6 @@ void HasPresentationInfo::SetConversationCamNpcName( const tName& name )
 // Return:      void
 //
 //=============================================================================
-void HasPresentationInfo::SetBestSideLocator( const tName& name )
-{
+void HasPresentationInfo::SetBestSideLocator(const tName &name) {
     mBestSideLocator = name;
 }

@@ -46,8 +46,7 @@
 // Return:      N/A.
 //
 //==============================================================================
-EventLocator::EventLocator()
-{
+EventLocator::EventLocator() {
     mMatrix.Identity();
 }
 
@@ -61,8 +60,7 @@ EventLocator::EventLocator()
 // Return:      N/A.
 //
 //==============================================================================
-EventLocator::~EventLocator()
-{
+EventLocator::~EventLocator() {
 }
 
 //******************************************************************************
@@ -76,13 +74,12 @@ EventLocator::~EventLocator()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int playerID )
+// Parameters:  (unsigned int playerID)
 //
 // Return:      void 
 //
 //=============================================================================
-void EventLocator::OnTrigger( unsigned int playerID )
-{
+void EventLocator::OnTrigger(unsigned int playerID) {
     //This will fire an event off that uses the data field
-    GetEventManager()->TriggerEvent( (EventEnum)( EVENT_LOCATOR + mEventType ), (void*)this );
+    GetEventManager()->TriggerEvent((EventEnum)(EVENT_LOCATOR + mEventType), (void *) this);
 }

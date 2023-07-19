@@ -17,7 +17,7 @@
 #define SLIDER_H
 
 #ifndef NULL
-    #define NULL 0
+#define NULL 0
 #endif
 
 //===========================================================================
@@ -28,19 +28,17 @@
 // Forward References
 //===========================================================================
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Polygon;
+
     class Sprite;
 }
 
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-struct Slider
-{
-    enum eSliderType
-    {
+struct Slider {
+    enum eSliderType {
         HORIZONTAL_SLIDER_LEFT,
         HORIZONTAL_SLIDER_ABOUT_CENTER,
         HORIZONTAL_SLIDER_RIGHT,
@@ -54,8 +52,7 @@ struct Slider
 
     eSliderType m_type;
 
-    enum eVertex
-    {
+    enum eVertex {
         VERTEX_BOTTOM_LEFT,
         VERTEX_TOP_LEFT,
         VERTEX_TOP_RIGHT,
@@ -64,11 +61,11 @@ struct Slider
         NUM_VERTICES
     };
 
-    Scrooby::Polygon* m_pPolygon;
+    Scrooby::Polygon *m_pPolygon;
     float m_value;
 
     // optional image to tag onto the end of the slider
-    Scrooby::Sprite* m_pImage;
+    Scrooby::Sprite *m_pImage;
 
     // bottom-left and top-right vertex co-ordinates
     int x0;
@@ -76,18 +73,20 @@ struct Slider
     int x1;
     int y1;
 
-    Slider( eSliderType type = HORIZONTAL_SLIDER_LEFT );
-    void SetScroobyPolygon( Scrooby::Polygon* pPolygon, Scrooby::Sprite* pImage = NULL );
-    virtual void SetValue( float value );
+    Slider(eSliderType type = HORIZONTAL_SLIDER_LEFT);
+
+    void SetScroobyPolygon(Scrooby::Polygon *pPolygon, Scrooby::Sprite *pImage = NULL);
+
+    virtual void SetValue(float value);
 
 };
 
-struct ImageSlider : public Slider
-{
-    ImageSlider( eSliderType type = HORIZONTAL_SLIDER_LEFT );
+struct ImageSlider : public Slider {
+    ImageSlider(eSliderType type = HORIZONTAL_SLIDER_LEFT);
 
-    void SetScroobyImage( Scrooby::Sprite* pImage );
-    virtual void SetValue( float value, bool resetTransformation = true );
+    void SetScroobyImage(Scrooby::Sprite *pImage);
+
+    virtual void SetValue(float value, bool resetTransformation = true);
 
 };
 

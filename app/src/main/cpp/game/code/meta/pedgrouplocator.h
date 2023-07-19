@@ -33,13 +33,14 @@
 //
 //=============================================================================
 
-class PedGroupLocator : public EventLocator
-{
+class PedGroupLocator : public EventLocator {
 public:
-    PedGroupLocator() : mGroupNum( 0 ) { SetEventType(LocatorEvent::LOAD_PED_MODEL_GROUP); };
+    PedGroupLocator() : mGroupNum(0) { SetEventType(LocatorEvent::LOAD_PED_MODEL_GROUP); };
+
     virtual ~PedGroupLocator() {};
 
-    void SetGroupNum( unsigned int num );
+    void SetGroupNum(unsigned int num);
+
     unsigned int GetGroupNum() const;
 
     virtual LocatorType::Type GetDataType() const { return LocatorType::PED_GROUP; };
@@ -48,8 +49,9 @@ private:
     unsigned int mGroupNum;
 
     //Prevent wasteful constructor creation.
-	PedGroupLocator( const PedGroupLocator& pedgrouplocator );
-	PedGroupLocator& operator=( const PedGroupLocator& pedgrouplocator );
+    PedGroupLocator(const PedGroupLocator &pedgrouplocator);
+
+    PedGroupLocator &operator=(const PedGroupLocator &pedgrouplocator);
 };
 
 //*****************************************************************************
@@ -63,13 +65,12 @@ private:
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int num )
+// Parameters:  (unsigned int num)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void PedGroupLocator::SetGroupNum( unsigned int num )
-{
+inline void PedGroupLocator::SetGroupNum(unsigned int num) {
     mGroupNum = num;
 }
 
@@ -83,8 +84,7 @@ inline void PedGroupLocator::SetGroupNum( unsigned int num )
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int PedGroupLocator::GetGroupNum() const
-{
+inline unsigned int PedGroupLocator::GetGroupNum() const {
     return mGroupNum;
 }
 

@@ -23,15 +23,20 @@
 //========================================
 // Forward References
 //========================================
-namespace ActionButton
-{
+namespace ActionButton {
     class ButtonHandler;
+
     class ActionEventHandler;
 };
+
 class Character;
+
 class ActionEventLocator;
+
 class AnimCollisionEntityDSG;
+
 class tCompositeDrawable;
+
 class tEntityStore;
 //=============================================================================
 //
@@ -39,59 +44,75 @@ class tEntityStore;
 //
 //=============================================================================
 
-class ActionButtonManager : public LoadingManager::ProcessRequestsCallback, public EventListener
-{
+class ActionButtonManager : public LoadingManager::ProcessRequestsCallback, public EventListener {
 public:
-    enum { MAX_ACTIONS = 128 };
+    enum {
+        MAX_ACTIONS = 128
+    };
 
     ActionButtonManager();
+
     ~ActionButtonManager();
 
-    static ActionButtonManager* GetInstance( );
-    static ActionButtonManager* CreateInstance( );
+    static ActionButtonManager *GetInstance();
+
+    static ActionButtonManager *CreateInstance();
+
     static void DestroyInstance();
 
-    void EnterGame( void );
-    void Destroy( void );
-    
-    void Update( float timeins );
+    void EnterGame(void);
 
-    bool AddActionEventLocator( ActionEventLocator* pActionEventLocator, tEntityStore* inStore = 0 );
+    void Destroy(void);
 
-    ActionButton::ButtonHandler* GetActionByIndex( int i ) const;
-    int GetIndexByAction( ActionButton::ButtonHandler* ) const;
+    void Update(float timeins);
 
-    bool AddAction( ActionButton::ButtonHandler* pAction, int& id, tUID section = 0);
-    bool RemoveActionByIndex( int id );
-    int RemoveAction( ActionButton::ButtonHandler* pAction );
-    ActionButton::ButtonHandler* NewActionButtonHandler( const char* typeName, ActionEventLocator* pActionEventLocator );
+    bool AddActionEventLocator(ActionEventLocator *pActionEventLocator, tEntityStore *inStore = 0);
 
-    bool CreateActionEventTrigger( const char* triggerName, rmt::Vector& pos, float r );
-    bool LinkActionToObjectJoint( const char* objectName, const char* jointName, const char* triggerName, const char* typeName, const char* buttonName );
-    bool LinkActionToObject( const char* objectName, const char* jointName, const char* triggerName, const char* typeName, const char* buttonName, bool bAttachToJoint );
-    
-    bool LinkActionToLocator( ActionEventLocator* pActionEventLocator, tEntityStore* inStore = 0 );
+    ActionButton::ButtonHandler *GetActionByIndex(int i) const;
 
-    void EnterActionTrigger( Character* pCharacter, int index );
-    void ExitActionTrigger( Character* pCharacter, int index );
+    int GetIndexByAction(ActionButton::ButtonHandler *) const;
 
-    bool ResolveActionTrigger( AnimCollisionEntityDSG* pAnimObject, tEntityStore* inStore = 0 );
+    bool AddAction(ActionButton::ButtonHandler *pAction, int &id, tUID section = 0);
 
-    AnimCollisionEntityDSG* GetCurrentAnimObjectToResolve( void ) const
-    {
+    bool RemoveActionByIndex(int id);
+
+    int RemoveAction(ActionButton::ButtonHandler *pAction);
+
+    ActionButton::ButtonHandler *
+    NewActionButtonHandler(const char *typeName, ActionEventLocator *pActionEventLocator);
+
+    bool CreateActionEventTrigger(const char *triggerName, rmt::Vector &pos, float r);
+
+    bool
+    LinkActionToObjectJoint(const char *objectName, const char *jointName, const char *triggerName,
+                            const char *typeName, const char *buttonName);
+
+    bool LinkActionToObject(const char *objectName, const char *jointName, const char *triggerName,
+                            const char *typeName, const char *buttonName, bool bAttachToJoint);
+
+    bool LinkActionToLocator(ActionEventLocator *pActionEventLocator, tEntityStore *inStore = 0);
+
+    void EnterActionTrigger(Character *pCharacter, int index);
+
+    void ExitActionTrigger(Character *pCharacter, int index);
+
+    bool ResolveActionTrigger(AnimCollisionEntityDSG *pAnimObject, tEntityStore *inStore = 0);
+
+    AnimCollisionEntityDSG *GetCurrentAnimObjectToResolve(void) const {
         return mpCurrentToResolve;
     }
 
     // Returns the button handler that owns the given locator
     // Returns NULL if none found
-    ActionButton::ActionEventHandler* FindHandler( const ActionEventLocator* locator )const;
+    ActionButton::ActionEventHandler *FindHandler(const ActionEventLocator *locator) const;
 
-    static void AddVehicleSelectInfo( int argc, char** argv );
-    static void ClearVehicleSelectInfo( int argc, char** argv );
+    static void AddVehicleSelectInfo(int argc, char **argv);
 
-    virtual void OnProcessRequestsComplete( void* pUserData );
+    static void ClearVehicleSelectInfo(int argc, char **argv);
 
-    virtual void HandleEvent( EventEnum id, void* pEventData );
+    virtual void OnProcessRequestsComplete(void *pUserData);
+
+    virtual void HandleEvent(EventEnum id, void *pEventData);
 
     //HACK HACK HACK
     void LoadingIntoInterior() { mLoadingIntoInterior = true; };
@@ -99,36 +120,38 @@ public:
 
 private:
     //Prevent wasteful constructor creation.
-    ActionButtonManager( const ActionButtonManager& actionbuttonmanager );
-    ActionButtonManager& operator=( const ActionButtonManager& actionbuttonmanager );
+    ActionButtonManager(const ActionButtonManager &actionbuttonmanager);
+
+    ActionButtonManager &operator=(const ActionButtonManager &actionbuttonmanager);
 
     // Singleton.
     //
-    static ActionButtonManager* spActionButtonManager;
+    static ActionButtonManager *spActionButtonManager;
 
-    struct HandlerData
-    {
-        HandlerData() : handler( NULL ), sectionName( 0 ) { };
-        ActionButton::ButtonHandler* handler;
+    struct HandlerData {
+        HandlerData() : handler(NULL), sectionName(0) {};
+        ActionButton::ButtonHandler *handler;
         tUID sectionName;   //This is for knowing when to release these.  The worldrenderlayer section UID when this is loaded is stored here.
         int id;
     };
 
-    HandlerData mActionButtonList[ MAX_ACTIONS ];
-    bool mbActionButtonNeedsUpdate[ MAX_ACTIONS ];
+    HandlerData mActionButtonList[MAX_ACTIONS];
+    bool mbActionButtonNeedsUpdate[MAX_ACTIONS];
 
     // Big huge hack here.  But it'll work.
     //
-    AnimCollisionEntityDSG* mpCurrentToResolve;
+    AnimCollisionEntityDSG *mpCurrentToResolve;
 
-    bool mLoadingIntoInterior : 1;
+    bool mLoadingIntoInterior: 1;
 
     int Find(int id) const;
+
     bool RemoveActionByArrayPos(int i);
 };
 
 // A little syntactic sugar for getting at this singleton.
-inline ActionButtonManager* GetActionButtonManager() { return( ActionButtonManager::GetInstance() ); }
+inline ActionButtonManager *
+GetActionButtonManager() { return (ActionButtonManager::GetInstance()); }
 
 
 #endif //ACTIONBUTTONMANAGER_H

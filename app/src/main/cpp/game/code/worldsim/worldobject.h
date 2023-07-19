@@ -29,24 +29,26 @@
 //
 //=============================================================================
 
-class WorldObject : public tDrawable
-{
-    public:
-        WorldObject( tDrawable* drawable );
-        virtual ~WorldObject();
+class WorldObject : public tDrawable {
+public:
+    WorldObject(tDrawable *drawable);
 
-        void SetPosition( rmt::Vector &position );
+    virtual ~WorldObject();
 
-        virtual void Display();
+    void SetPosition(rmt::Vector &position);
 
-        tDrawable* GetDrawable() { return( mDrawable ); }
-    private:
-        //Prevent wasteful constructor creation.
-        WorldObject( const WorldObject& worldObject );
-        WorldObject& operator=( const WorldObject& worldObject );
+    virtual void Display();
 
-        tDrawable* mDrawable;
-        rmt::Matrix mTransform;
+    tDrawable *GetDrawable() { return (mDrawable); }
+
+private:
+    //Prevent wasteful constructor creation.
+    WorldObject(const WorldObject &worldObject);
+
+    WorldObject &operator=(const WorldObject &worldObject);
+
+    tDrawable *mDrawable;
+    rmt::Matrix mTransform;
 };
 
 

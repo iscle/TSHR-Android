@@ -42,9 +42,8 @@
 // Return:      none
 //
 //===========================================================================
-tNameInsensitive::tNameInsensitive():
-    Parent()
-{
+tNameInsensitive::tNameInsensitive() :
+        Parent() {
     //nothing
 }
 
@@ -60,10 +59,9 @@ tNameInsensitive::tNameInsensitive():
 // Return:      none
 //
 //===========================================================================
-tNameInsensitive::tNameInsensitive( const char* name ):
-    Parent()
-{
-    SetText( name );
+tNameInsensitive::tNameInsensitive(const char *name) :
+        Parent() {
+    SetText(name);
 }
 
 //===========================================================================
@@ -78,9 +76,8 @@ tNameInsensitive::tNameInsensitive( const char* name ):
 // Return:      none
 //
 //===========================================================================
-tNameInsensitive::tNameInsensitive( const tNameInsensitive& name ):
-    Parent( name )
-{
+tNameInsensitive::tNameInsensitive(const tNameInsensitive &name) :
+        Parent(name) {
     //nothing
 }
 
@@ -96,9 +93,8 @@ tNameInsensitive::tNameInsensitive( const tNameInsensitive& name ):
 // Return:      none
 //
 //===========================================================================
-const tNameInsensitive& tNameInsensitive::operator=( const char* other )
-{
-    SetText( other );
+const tNameInsensitive &tNameInsensitive::operator=(const char *other) {
+    SetText(other);
     return *this;
 }
 
@@ -114,9 +110,8 @@ const tNameInsensitive& tNameInsensitive::operator=( const char* other )
 // Return:      none
 //
 //===========================================================================
-const tNameInsensitive& tNameInsensitive::operator=(const tNameInsensitive& other)
-{
-    Parent::operator=( other );
+const tNameInsensitive &tNameInsensitive::operator=(const tNameInsensitive &other) {
+    Parent::operator=(other);
     return *this;
 }
 
@@ -132,14 +127,13 @@ const tNameInsensitive& tNameInsensitive::operator=(const tNameInsensitive& othe
 // Return:      none
 //
 //===========================================================================
-void tNameInsensitive::SetText( const char* name )
-{
-    char temp[ 1024 ];
-    #ifdef RAD_DEBUG
-        size_t length = strlen( name );
-        rAssert( length < 1024 );
-    #endif
-    strcpy( temp, name );
-    Upcase( temp );
-    Parent::SetText( name );
+void tNameInsensitive::SetText(const char *name) {
+    char temp[1024];
+#ifdef RAD_DEBUG
+    size_t length = strlen(name);
+    rAssert(length <1024);
+#endif
+    strcpy(temp, name);
+    Upcase(temp);
+    Parent::SetText(name);
 }

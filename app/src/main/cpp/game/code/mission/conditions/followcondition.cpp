@@ -66,10 +66,9 @@
 //
 //==============================================================================
 FollowCondition::FollowCondition() :
-    mMinDistance( 0.0f ),
-    mMaxDistance( 0.0f )
-{
-    this->SetType( COND_FOLLOW_DISTANCE );
+        mMinDistance(0.0f),
+        mMaxDistance(0.0f) {
+    this->SetType(COND_FOLLOW_DISTANCE);
 }
 
 //==============================================================================
@@ -82,8 +81,7 @@ FollowCondition::FollowCondition() :
 // Return:      N/A.
 //
 //==============================================================================
-FollowCondition::~FollowCondition()
-{
+FollowCondition::~FollowCondition() {
 }
 
 //=============================================================================
@@ -91,41 +89,35 @@ FollowCondition::~FollowCondition()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int elapsedTime )
+// Parameters:  (unsigned int elapsedTime)
 //
 // Return:      void 
 //
 //=============================================================================
-void FollowCondition::Update( unsigned int elapsedTime )
-{
-    rTuneAssertMsg( !rmt::Epsilon( mMaxDistance, 0.0f ), "FollowCondition must have a max distance greater than 0!\n" );
+void FollowCondition::Update(unsigned int elapsedTime) {
+    rTuneAssertMsg(!rmt::Epsilon(mMaxDistance, 0.0f),
+                   "FollowCondition must have a max distance greater than 0!\n");
 
     muTime += elapsedTime;
 
-    if( muTime > MIN_UPDATE_PERIOD )
-    {
+    if (muTime > MIN_UPDATE_PERIOD) {
         muTime = 0;
 
-        if ( !GetInteriorManager()->IsEntering() && 
-             !GetInteriorManager()->IsExiting() &&
-             !GetHitnRunManager()->BustingPlayer() ) 
-        {
+        if (!GetInteriorManager()->IsEntering() &&
+            !GetInteriorManager()->IsExiting() &&
+            !GetHitnRunManager()->BustingPlayer()) {
             float dist = CalculateDistanceToTarget();
 
-            if( dist > mMaxDistance * mMaxDistance )
-            {
-                SetIsViolated( true );
-            }
-            else
-            {
-                CGuiScreenHud* pHUD = GetCurrentHud();
-                if( pHUD != NULL )
-                {
+            if (dist > mMaxDistance * mMaxDistance) {
+                SetIsViolated(true);
+            } else {
+                CGuiScreenHud *pHUD = GetCurrentHud();
+                if (pHUD != NULL) {
                     // update proximity meter on HUD
                     //
-                    pHUD->SetProximityMeter( 1.0f - rmt::Sqrt( dist ) / mMaxDistance );
+                    pHUD->SetProximityMeter(1.0f - rmt::Sqrt(dist) / mMaxDistance);
 
-                    //                pHUD->GetHudMap( 0 )->UpdateAICarDistance( rmt::Sqrt(dist), mMaxDistance );
+                    //                pHUD->GetHudMap(0)->UpdateAICarDistance(rmt::Sqrt(dist), mMaxDistance);
                 }
             }
         }
@@ -142,9 +134,8 @@ void FollowCondition::Update( unsigned int elapsedTime )
 // Return:      True 
 //
 //=============================================================================
-bool FollowCondition::IsChaseCondition()
-{
-    return( true );
+bool FollowCondition::IsChaseCondition() {
+    return (true);
 }
 
 //=============================================================================
@@ -158,13 +149,12 @@ bool FollowCondition::IsChaseCondition()
 // Return:      True if close, false otherwise 
 //
 //=============================================================================
-bool FollowCondition::IsClose()
-{
+bool FollowCondition::IsClose() {
     //
     // For now, assume that follow conditions are always tense, since it's
     // hard to say whether you're running away with this one
     //
-    return( true );
+    return (true);
 }
 
 //******************************************************************************
@@ -183,17 +173,15 @@ bool FollowCondition::IsClose()
 // Return:      void 
 //
 //=============================================================================
-void FollowCondition::OnInitialize()
-{
+void FollowCondition::OnInitialize() {
     //Set this vehicle as the focus of the HUD.
-    rAssert( GetVehicle() );
-    VehicleAI* vehicleAI = GetVehicleCentral()->GetVehicleAI( GetVehicle() );
-    rAssert( vehicleAI );
+    rAssert(GetVehicle());
+    VehicleAI *vehicleAI = GetVehicleCentral()->GetVehicleAI(GetVehicle());
+    rAssert(vehicleAI);
 
     int hudID = vehicleAI->GetHUDIndex();
-    if ( GetCurrentHud() )
-    {
-        GetCurrentHud()->GetHudMap( 0 )->SetFocalPointIcon( hudID );
+    if (GetCurrentHud()) {
+        GetCurrentHud()->GetHudMap(0)->SetFocalPointIcon(hudID);
     }
 }
 
@@ -207,8 +195,7 @@ void FollowCondition::OnInitialize()
 // Return:      void 
 //
 //=============================================================================
-void FollowCondition::OnFinalize()
-{
+void FollowCondition::OnFinalize() {
 }
 
 //******************************************************************************
@@ -227,22 +214,21 @@ void FollowCondition::OnFinalize()
 // Return:      float 
 //
 //=============================================================================
-float FollowCondition::CalculateDistanceToTarget()
-{
+float FollowCondition::CalculateDistanceToTarget() {
     //
     // TODO: Find the distance along the road?
     //
     rmt::Vector myPos;
 
-    GetAvatarManager()->GetAvatarForPlayer( 0 )->GetPosition( myPos );
+    GetAvatarManager()->GetAvatarForPlayer(0)->GetPosition(myPos);
 
-    Vehicle* target = GetVehicle();
-    rAssert( target != NULL );
+    Vehicle *target = GetVehicle();
+    rAssert(target != NULL);
 
     rmt::Vector targetPos;
-    target->GetPosition( &targetPos );
+    target->GetPosition(&targetPos);
 
-    targetPos.Sub( myPos );
+    targetPos.Sub(myPos);
     return targetPos.MagnitudeSqr();
 
 }

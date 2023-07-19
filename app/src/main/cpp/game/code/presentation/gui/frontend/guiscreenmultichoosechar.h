@@ -28,34 +28,35 @@
 //===========================================================================
 class CGuiMenu;
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Screen;
 };
 
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class CGuiScreenMultiChooseChar : public CGuiScreen
-{
+class CGuiScreenMultiChooseChar : public CGuiScreen {
 public:
-    CGuiScreenMultiChooseChar( Scrooby::Screen* pScreen, CGuiEntity* pParent );
+    CGuiScreenMultiChooseChar(Scrooby::Screen *pScreen, CGuiEntity *pParent);
+
     virtual ~CGuiScreenMultiChooseChar();
 
-	virtual void HandleMessage( eGuiMessage message, 
-			                    unsigned int param1 = 0,
-								unsigned int param2 = 0 );
+    virtual void HandleMessage(eGuiMessage message,
+                               unsigned int param1 = 0,
+                               unsigned int param2 = 0);
 
 protected:
     void InitIntro();
-	void InitRunning();
-	void InitOutro();
 
-    void HandleControllerMessage( int player, eGuiMessage message );
+    void InitRunning();
+
+    void InitOutro();
+
+    void HandleControllerMessage(int player, eGuiMessage message);
 
 private:
-    CGuiMenu* m_pMenu[ MAX_PLAYERS ];
-    Scrooby::Sprite* m_pCharacter[ MAX_PLAYERS ];
+    CGuiMenu *m_pMenu[MAX_PLAYERS];
+    Scrooby::Sprite *m_pCharacter[MAX_PLAYERS];
 
 };
 

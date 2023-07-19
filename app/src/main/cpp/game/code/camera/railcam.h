@@ -18,7 +18,9 @@
 #include <radmath/radmath.hpp>
 
 #ifndef WORLD_BUILDER
+
 #include <camera/supercam.h>
+
 #else
 #include "supercam.h"
 #endif
@@ -34,19 +36,19 @@ class ISuperCamTarget;
 //
 //=============================================================================
 
-class RailCam : public SuperCam
-{
+class RailCam : public SuperCam {
 public:
     RailCam();
+
     virtual ~RailCam();
 
     //-----------  From SuperCam
     //Update: Called when you want the super cam to update its state.
-    virtual void Update( unsigned int milliseconds );
+    virtual void Update(unsigned int milliseconds);
 
     //Returns the name of the super cam.  
     //This can be used in the FE or debug info
-    virtual const char* const GetName() const;
+    virtual const char *const GetName() const;
 
     virtual Type GetType();
 
@@ -54,100 +56,136 @@ public:
 
     //This loads the off-line created settings for the camera.  
     //It is passed in as a byte stream of some data of known size.
-    virtual void LoadSettings( unsigned char* settings ); 
+    virtual void LoadSettings(unsigned char *settings);
 
     //These are for favourable support of this command
-    virtual void SetTarget( ISuperCamTarget* target ); 
-    virtual void AddTarget( ISuperCamTarget* target );
+    virtual void SetTarget(ISuperCamTarget *target);
+
+    virtual void AddTarget(ISuperCamTarget *target);
 
     virtual unsigned int GetNumTargets() const;
 
     //-----------  RailCam specific
-    typedef enum { DISTANCE=1, PROJECTION, NUM_BEHAVIOUR } Behaviour;
-    static const char* const BehaviourNames[];
-    
-    void SetBehaviour( Behaviour b );
-    void SetMaxStep( float du );
-    void SetMinRadius( float r );
-    void SetMaxRadius( float r );
-    void SetClosedRail( bool closed );
-    void SetNumCVs( unsigned int num );
-    void SetVertex( unsigned int idx, const rmt::Vector& cv );
-    void SetTrackRail( bool trackRail );
-    void SetTrackDist( float offset );
-    void SetStartPosition( float u0 );  
+    typedef enum {
+        DISTANCE = 1, PROJECTION, NUM_BEHAVIOUR
+    } Behaviour;
+    static const char *const BehaviourNames[];
+
+    void SetBehaviour(Behaviour b);
+
+    void SetMaxStep(float du);
+
+    void SetMinRadius(float r);
+
+    void SetMaxRadius(float r);
+
+    void SetClosedRail(bool closed);
+
+    void SetNumCVs(unsigned int num);
+
+    void SetVertex(unsigned int idx, const rmt::Vector &cv);
+
+    void SetTrackRail(bool trackRail);
+
+    void SetTrackDist(float offset);
+
+    void SetStartPosition(float u0);
+
     void SetStartPositionCB();  //Called by the watcher.
-    void SetReverseSense( bool reverseSense );
-    void SetTargetOffset( const rmt::Vector& offset );
-    void SetAxisPlay( const rmt::Vector& play );
-    void SetPositionLag( float lag );
-    void SetTargetLag( float lag );
+    void SetReverseSense(bool reverseSense);
 
-    void SetDrawRail( bool draw );
-    void SetDrawHull( bool draw );
-    void SetDrawCylinder( bool draw );
-    void SetDrawIntersections( bool draw );
+    void SetTargetOffset(const rmt::Vector &offset);
 
-    void SetSplineCurve( rmt::SplineCurve& curve );
+    void SetAxisPlay(const rmt::Vector &play);
 
-    void SetMaxFOV( float fov );
-    void SetFOVLag( float lag );
+    void SetPositionLag(float lag);
 
-    void SetReset( bool reset );
+    void SetTargetLag(float lag);
 
-    #ifdef DEBUGWATCH
-        virtual const char* GetWatcherName() const;
-    #endif
+    void SetDrawRail(bool draw);
+
+    void SetDrawHull(bool draw);
+
+    void SetDrawCylinder(bool draw);
+
+    void SetDrawIntersections(bool draw);
+
+    void SetSplineCurve(rmt::SplineCurve &curve);
+
+    void SetMaxFOV(float fov);
+
+    void SetFOVLag(float lag);
+
+    void SetReset(bool reset);
+
+#ifdef DEBUGWATCH
+    virtual const char* GetWatcherName() const;
+#endif
 
 protected:
     //Init...  This gets called when the camera is registered
     virtual void OnInit();
+
     virtual void OnShutdown();
 
     //These functions are to allow real-time control of the settings of 
     //the supercam.
     virtual void OnRegisterDebugControls();
+
     virtual void OnUnregisterDebugControls();
 
     virtual float GetTargetSpeedModifier();
 
     //-----------  RailCam specific RENDERING
-    void DrawRail( bool active );
-    void DrawHull( bool active );
-    void DrawCylinder( const rmt::Vector& origin );
+    void DrawRail(bool active);
+
+    void DrawHull(bool active);
+
+    void DrawCylinder(const rmt::Vector &origin);
 
 
 private:
 
     //-----------  From SuperCam
-    void GetTargetPosition( rmt::Vector* position, bool withOffset = true );
+    void GetTargetPosition(rmt::Vector *position, bool withOffset = true);
+
     void DenyUpdate();
+
     void AllowUpdate();
 
 
-    ISuperCamTarget* mTarget;
+    ISuperCamTarget *mTarget;
 
 
     //-----------  RailCam specific
-    typedef enum { EXACT, APPROX, WORSTCASE } SolutionType;
+    typedef enum {
+        EXACT, APPROX, WORSTCASE
+    } SolutionType;
 
     SolutionType IntervalClamp(float &t) const;
-    float& ProjectPointOnLine(const rmt::Vector& A, const rmt::Vector& B, const rmt::Vector& O, float& t) const;
-    SolutionType IntersectLineCylinder(const int segment, const rmt::Vector& origin, const float radius, const rmt::Vector& neighbour, float& t);
 
-    rmt::Vector FindCameraPosition_Distance(const rmt::Vector& target, const float radius);
-    rmt::Vector FindCameraPosition_Projection(const rmt::Vector& target, const float pOffset);
+    float &ProjectPointOnLine(const rmt::Vector &A, const rmt::Vector &B, const rmt::Vector &O,
+                              float &t) const;
 
-    rmt::Vector FindCameraLookAt(const rmt::Vector& target, const rmt::Vector& desiredPos );
+    SolutionType
+    IntersectLineCylinder(const int segment, const rmt::Vector &origin, const float radius,
+                          const rmt::Vector &neighbour, float &t);
+
+    rmt::Vector FindCameraPosition_Distance(const rmt::Vector &target, const float radius);
+
+    rmt::Vector FindCameraPosition_Projection(const rmt::Vector &target, const float pOffset);
+
+    rmt::Vector FindCameraLookAt(const rmt::Vector &target, const rmt::Vector &desiredPos);
+
     rmt::Vector FinalizeRailPosition(SolutionType index);
 
-    rmt::Vector TestEval( float u );
+    rmt::Vector TestEval(float u);
 
-    Behaviour   mBehaviour;
-    float       mMinRadius;
-    float       mMaxRadius;
-    float       mTrackDist;
-    float       mStartU;
+    Behaviour mBehaviour;
+    float mMinRadius;
+    float mMaxRadius;
+    float mTrackDist;
+    float mStartU;
 
     rmt::SplineCurve mQ;
     rmt::SplineCurve mQd;  //Derivative of mQ
@@ -157,12 +195,18 @@ private:
 
     struct CamPosition {
         CamPosition() { /**/ };
-        void Reset() { segment=-1; u=0.0f; dist=9.9E9f; pDist=9.9E9f; }
- 
-        int         segment;    // segment of the curve for this solution
-        float       u;          // u value along this segment [0, 1]
-        float       dist;       // world-space distance to current camera position
-        float       pDist;      // parameter space distance to current camera position
+
+        void Reset() {
+            segment = -1;
+            u = 0.0f;
+            dist = 9.9E9f;
+            pDist = 9.9E9f;
+        }
+
+        int segment;    // segment of the curve for this solution
+        float u;          // u value along this segment [0, 1]
+        float dist;       // world-space distance to current camera position
+        float pDist;      // parameter space distance to current camera position
         rmt::Vector pu;         // world-space position of camera at u
     } mCandidates[3];
 
@@ -189,20 +233,21 @@ private:
     bool mDrawCylinder;
     bool mDrawIntersections;
 #else
-    bool mTrackRail         : 1;
-    bool mReverseSensing    : 1;
-    bool mDrawRail          : 1;
-    bool mDrawHull          : 1;
-    bool mDrawCylinder      : 1;
-    bool mDrawIntersections : 1;
+    bool mTrackRail: 1;
+    bool mReverseSensing: 1;
+    bool mDrawRail: 1;
+    bool mDrawHull: 1;
+    bool mDrawCylinder: 1;
+    bool mDrawIntersections: 1;
 #endif
-    bool mAllowUpdate       : 1;
-    bool mReset             : 1;
-    bool mResetting         : 1;
+    bool mAllowUpdate: 1;
+    bool mReset: 1;
+    bool mResetting: 1;
 
     //Prevent wasteful constructor creation.
-    RailCam( const RailCam& railcam );
-    RailCam& operator=( const RailCam& railcam );
+    RailCam(const RailCam &railcam);
+
+    RailCam &operator=(const RailCam &railcam);
 };
 
 //*****************************************************************************
@@ -221,8 +266,7 @@ private:
 // Return:      const char* const 
 //
 //=============================================================================
-inline const char* const RailCam::GetName() const
-{
+inline const char *const RailCam::GetName() const {
     return "RAIL_CAM";
 }
 
@@ -236,8 +280,7 @@ inline const char* const RailCam::GetName() const
 // Return:      Type 
 //
 //=============================================================================
-inline SuperCam::Type RailCam::GetType()
-{
+inline SuperCam::Type RailCam::GetType() {
     return RAIL_CAM;
 }
 
@@ -246,13 +289,12 @@ inline SuperCam::Type RailCam::GetType()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetTarget( ISuperCamTarget* target )
-{
+inline void RailCam::SetTarget(ISuperCamTarget *target) {
     mTarget = target;
 }
 
@@ -261,14 +303,13 @@ inline void RailCam::SetTarget( ISuperCamTarget* target )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( ISuperCamTarget* target )
+// Parameters:  (ISuperCamTarget* target)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::AddTarget( ISuperCamTarget* target )
-{
-    rAssertMsg( false, "Only call SetTarget on the RailCam" );
+inline void RailCam::AddTarget(ISuperCamTarget *target) {
+    rAssertMsg(false, "Only call SetTarget on the RailCam");
 }
 
 //=============================================================================
@@ -281,10 +322,8 @@ inline void RailCam::AddTarget( ISuperCamTarget* target )
 // Return:      unsigned 
 //
 //=============================================================================
-inline unsigned int RailCam::GetNumTargets() const
-{
-    if ( mTarget )
-    {
+inline unsigned int RailCam::GetNumTargets() const {
+    if (mTarget) {
         return 1;
     }
 
@@ -296,13 +335,12 @@ inline unsigned int RailCam::GetNumTargets() const
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( Behaviour b )
+// Parameters:  (Behaviour b)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetBehaviour( Behaviour b )
-{
+inline void RailCam::SetBehaviour(Behaviour b) {
     mBehaviour = b;
 }
 
@@ -311,13 +349,12 @@ inline void RailCam::SetBehaviour( Behaviour b )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float du )
+// Parameters:  (float du)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetMaxStep( float du )
-{
+inline void RailCam::SetMaxStep(float du) {
     mStep = du;
 }
 
@@ -326,13 +363,12 @@ inline void RailCam::SetMaxStep( float du )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float r )
+// Parameters:  (float r)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetMinRadius( float r )
-{
+inline void RailCam::SetMinRadius(float r) {
     mMinRadius = r;
 }
 
@@ -341,13 +377,12 @@ inline void RailCam::SetMinRadius( float r )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float r )
+// Parameters:  (float r)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetMaxRadius( float r )
-{
+inline void RailCam::SetMaxRadius(float r) {
     mMaxRadius = r;
 }
 
@@ -356,14 +391,13 @@ inline void RailCam::SetMaxRadius( float r )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool closed )
+// Parameters:  (bool closed)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetClosedRail( bool closed )
-{
-    mQ.SetClosed( closed );
+inline void RailCam::SetClosedRail(bool closed) {
+    mQ.SetClosed(closed);
 }
 
 //=============================================================================
@@ -371,22 +405,18 @@ inline void RailCam::SetClosedRail( bool closed )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int num )
+// Parameters:  (unsigned int num)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetNumCVs( unsigned int num )
-{
-    mQ.SetNumVertices( num );
-    mQd.SetNumVertices( num );
+inline void RailCam::SetNumCVs(unsigned int num) {
+    mQ.SetNumVertices(num);
+    mQd.SetNumVertices(num);
 
-    if ( (mStartU >= 0.0f) && (mStartU <= 1.0f) )
-    {
+    if ((mStartU >= 0.0f) && (mStartU <= 1.0f)) {
         mStartU = mStartU * mQ.GetEndParam();
-    }
-    else
-    {
+    } else {
         mStartU = -1.0f;
     }
 }
@@ -396,13 +426,12 @@ inline void RailCam::SetNumCVs( unsigned int num )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( unsigned int idx, const rmt::Vector& cv )
+// Parameters:  (unsigned int idx, const rmt::Vector& cv)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetVertex( unsigned int idx, const rmt::Vector& cv )
-{
+inline void RailCam::SetVertex(unsigned int idx, const rmt::Vector &cv) {
     mQ.SetCntrlVertex(idx, cv);
     mQd.SetCntrlVertex(idx, cv);
 
@@ -413,13 +442,12 @@ inline void RailCam::SetVertex( unsigned int idx, const rmt::Vector& cv )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool trackRail )
+// Parameters:  (bool trackRail)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetTrackRail( bool trackRail )
-{
+inline void RailCam::SetTrackRail(bool trackRail) {
     mTrackRail = trackRail;
 }
 
@@ -428,13 +456,12 @@ inline void RailCam::SetTrackRail( bool trackRail )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float offset )
+// Parameters:  (float offset)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetTrackDist( float offset )
-{
+inline void RailCam::SetTrackDist(float offset) {
     mTrackDist = offset;
 }
 
@@ -443,26 +470,19 @@ inline void RailCam::SetTrackDist( float offset )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float u0 )
+// Parameters:  (float u0)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetStartPosition( float u0 )
-{
-    if ( mQ.GetNumVertices() > 0 )
-    {
-        if ( (u0 >= 0.0f && u0 <= 1.0f) )
-        {
+inline void RailCam::SetStartPosition(float u0) {
+    if (mQ.GetNumVertices() > 0) {
+        if ((u0 >= 0.0f && u0 <= 1.0f)) {
             mStartU = u0 * mQ.GetEndParam();
-        }
-        else 
-        {
+        } else {
             mStartU = -1.0f;
         }
-    } 
-    else
-    {
+    } else {
         // The first time this is called CVs are not yet set on the spline, 
         // so we don't know how long it'll be.
         // SetCameraNumCVs() fixes this...
@@ -481,8 +501,7 @@ inline void RailCam::SetStartPosition( float u0 )
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetStartPositionCB()
-{
+inline void RailCam::SetStartPositionCB() {
     SetStartPosition(mStartU);
 }
 
@@ -491,13 +510,12 @@ inline void RailCam::SetStartPositionCB()
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool reverseSense )
+// Parameters:  (bool reverseSense)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetReverseSense( bool reverseSense )
-{
+inline void RailCam::SetReverseSense(bool reverseSense) {
     mReverseSensing = reverseSense;
 }
 
@@ -506,13 +524,12 @@ inline void RailCam::SetReverseSense( bool reverseSense )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const rmt::Vector& offset )
+// Parameters:  (const rmt::Vector& offset)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetTargetOffset( const rmt::Vector& offset )
-{
+inline void RailCam::SetTargetOffset(const rmt::Vector &offset) {
     mTargetOffset = offset;
 }
 
@@ -521,13 +538,12 @@ inline void RailCam::SetTargetOffset( const rmt::Vector& offset )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( const rmt::Vector& play )
+// Parameters:  (const rmt::Vector& play)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetAxisPlay( const rmt::Vector& play )
-{
+inline void RailCam::SetAxisPlay(const rmt::Vector &play) {
     mAxisPlay = play;
 }
 
@@ -536,13 +552,12 @@ inline void RailCam::SetAxisPlay( const rmt::Vector& play )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float lag )
+// Parameters:  (float lag)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetPositionLag( float lag )
-{
+inline void RailCam::SetPositionLag(float lag) {
     mPositionLag = lag;
 }
 
@@ -551,13 +566,12 @@ inline void RailCam::SetPositionLag( float lag )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float lag )
+// Parameters:  (float lag)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetTargetLag( float lag )
-{
+inline void RailCam::SetTargetLag(float lag) {
     mTargetLag = lag;
 }
 
@@ -567,13 +581,12 @@ inline void RailCam::SetTargetLag( float lag )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool draw )
+// Parameters:  (bool draw)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetDrawRail( bool draw )
-{
+inline void RailCam::SetDrawRail(bool draw) {
     mDrawRail = draw;
 }
 
@@ -582,13 +595,12 @@ inline void RailCam::SetDrawRail( bool draw )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool draw )
+// Parameters:  (bool draw)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetDrawHull( bool draw )
-{
+inline void RailCam::SetDrawHull(bool draw) {
     mDrawHull = draw;
 }
 
@@ -597,13 +609,12 @@ inline void RailCam::SetDrawHull( bool draw )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool draw )
+// Parameters:  (bool draw)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetDrawCylinder( bool draw )
-{
+inline void RailCam::SetDrawCylinder(bool draw) {
     mDrawCylinder = draw;
 }
 
@@ -612,13 +623,12 @@ inline void RailCam::SetDrawCylinder( bool draw )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool draw )
+// Parameters:  (bool draw)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetDrawIntersections( bool draw )
-{
+inline void RailCam::SetDrawIntersections(bool draw) {
     mDrawIntersections = draw;
 }
 
@@ -627,27 +637,23 @@ inline void RailCam::SetDrawIntersections( bool draw )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( rmt::SplineCurve& curve )
+// Parameters:  (rmt::SplineCurve& curve)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetSplineCurve( rmt::SplineCurve& curve )
-{
-    mQ.SetNumVertices( curve.GetNumVertices() );
-    mQd.SetNumVertices( curve.GetNumVertices() );
+inline void RailCam::SetSplineCurve(rmt::SplineCurve &curve) {
+    mQ.SetNumVertices(curve.GetNumVertices());
+    mQd.SetNumVertices(curve.GetNumVertices());
 
     mQ = curve;
     mQd = curve;
 
-    mQd.SetBasis( rmt::Spline::DBSpline );
+    mQd.SetBasis(rmt::Spline::DBSpline);
 
-    if ( (mStartU >= 0.0f) && (mStartU <= 1.0f) )
-    {
+    if ((mStartU >= 0.0f) && (mStartU <= 1.0f)) {
         mStartU = mStartU * mQ.GetEndParam();
-    }
-    else
-    {
+    } else {
         mStartU = -1.0f;
     }
 }
@@ -657,13 +663,12 @@ inline void RailCam::SetSplineCurve( rmt::SplineCurve& curve )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float fov )
+// Parameters:  (float fov)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetMaxFOV( float fov )
-{
+inline void RailCam::SetMaxFOV(float fov) {
     mMaxFOV = fov;
 }
 
@@ -672,13 +677,12 @@ inline void RailCam::SetMaxFOV( float fov )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( float lag )
+// Parameters:  (float lag)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetFOVLag( float lag )
-{
+inline void RailCam::SetFOVLag(float lag) {
     mFOVLag = lag;
 }
 
@@ -687,13 +691,12 @@ inline void RailCam::SetFOVLag( float lag )
 //=============================================================================
 // Description: Comment
 //
-// Parameters:  ( bool reset )
+// Parameters:  (bool reset)
 //
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::SetReset( bool reset )
-{
+inline void RailCam::SetReset(bool reset) {
     mReset = true;
 }
 
@@ -707,8 +710,7 @@ inline void RailCam::SetReset( bool reset )
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::AllowUpdate()
-{
+inline void RailCam::AllowUpdate() {
     mAllowUpdate = true;
 }
 
@@ -722,8 +724,7 @@ inline void RailCam::AllowUpdate()
 // Return:      void 
 //
 //=============================================================================
-inline void RailCam::DenyUpdate()
-{
+inline void RailCam::DenyUpdate() {
     mAllowUpdate = false;
 }
 
