@@ -51,102 +51,115 @@ class radMovieVideoDecoderPs2;
 // Class radMovieVideoDecoderPs2
 //=============================================================================
 
-class radMovieVideoDecoderPs2 
-    : 
-    public IRadMovieVideoDecoder,
-    public IRadFileCompletionCallback,
-    public radRefCount
-{
-    public:
+class radMovieVideoDecoderPs2
+        :
+                public IRadMovieVideoDecoder,
+                public IRadFileCompletionCallback,
+                public radRefCount {
+public:
 
-        IMPLEMENT_REFCOUNTED( "radMovieVideoDecoderPs2" )
-    
-        //
-        // Constructor / Destructor
-        //
+    IMPLEMENT_REFCOUNTED("radMovieVideoDecoderPs2")
 
-        radMovieVideoDecoderPs2( void );
-        virtual ~radMovieVideoDecoderPs2( void );
+    //
+    // Constructor / Destructor
+    //
 
-        //
-        // IRadMovieVideoDecoder
-        //
+    radMovieVideoDecoderPs2(void);
 
-        virtual void Initialize( unsigned int maxWidthPixels, 
-            unsigned int maxHeightPixels, unsigned int codedVideoBufferSize );
+    virtual ~radMovieVideoDecoderPs2(void);
 
-        virtual void SetSource( IRadFile * pIRadFile, unsigned int widthPixels, unsigned int heightPixels, unsigned int startPosition, unsigned int frameRate );
-        virtual void Reset( void );
+    //
+    // IRadMovieVideoDecoder
+    //
 
-        virtual void * GetLockedVideoFrame( unsigned int * pPresentationTime );
-        virtual void UnlockVideoFrame( void );
+    virtual void Initialize(unsigned int maxWidthPixels,
+                            unsigned int maxHeightPixels, unsigned int codedVideoBufferSize);
 
-        virtual IRadMovieVideoDecoder::State GetState( void );
-        virtual float GetFrameRate( void );
-        virtual unsigned int GetCurrentFrameNumber( void );
-        virtual void Service( void );
+    virtual void SetSource(IRadFile *pIRadFile, unsigned int widthPixels, unsigned int heightPixels,
+                           unsigned int startPosition, unsigned int frameRate);
 
-        //
-        // IRadFileCompletionCallback
-        //
+    virtual void Reset(void);
 
-        virtual void OnFileOperationsComplete( void* pUserData );
+    virtual void *GetLockedVideoFrame(unsigned int *pPresentationTime);
 
-    private:
+    virtual void UnlockVideoFrame(void);
 
-        void AddDataToBuffer( void );
-        void AddDataToDecoder( void );
-        void MonitorDecoder( void );
-        void DecodeNextFrame( void );
-        void SetState( IRadMovieVideoDecoder::State state );
+    virtual IRadMovieVideoDecoder::State GetState(void);
 
-        //
-        // Some state flags
-        //
+    virtual float GetFrameRate(void);
 
-        bool m_DecoderInputPending;
+    virtual unsigned int GetCurrentFrameNumber(void);
 
-        ref< IRadFile > m_refIRadFile;
-        unsigned int m_FileBytesRemaining;
-        unsigned int m_FileReadSize;
+    virtual void Service(void);
 
-        //
-        // Members shared by both processes
-        //
-        
-        IRadMovieVideoDecoder::State m_State;
+    //
+    // IRadFileCompletionCallback
+    //
 
-        char * m_pCodedVideoPacket[ PS2_VIDEO_DECODE_NUM_PACKETS ];
-        unsigned int m_CodedVideoPacketSize;
-        unsigned int m_CurrentFileReadPacket;
-        unsigned int m_CurrentDecodePacket;
-        bool m_AllPacketsFull;
+    virtual void OnFileOperationsComplete(void *pUserData);
 
-        //
-        // Decoded video output buffer info
-        //
+private:
 
-        char * m_pDecodedVideoBuffer;
-        unsigned int m_DecodedVideoBufferSize; // available memory
-        unsigned int m_DecodedVideoFrameSize;  // size of frame
+    void AddDataToBuffer(void);
 
-        unsigned int m_FramesDecoded;
-        unsigned int m_FrameRate;
+    void AddDataToDecoder(void);
 
-        //
-        // Keep track of the state of the file source
-        //
+    void MonitorDecoder(void);
 
-        enum FileState { FileState_None,            
-                         FileState_Initializing, 
-                         FileState_Reinitializing,  
-                         FileState_Ready, 
-                         FileState_WaitingForReset, 
-                         FileState_Reading, 
-                         FileState_SettingPosition };
+    void DecodeNextFrame(void);
 
-        FileState m_FileState;
-        void SetFileState( FileState state );
+    void SetState(IRadMovieVideoDecoder::State state);
+
+    //
+    // Some state flags
+    //
+
+    bool m_DecoderInputPending;
+
+    ref <IRadFile> m_refIRadFile;
+    unsigned int m_FileBytesRemaining;
+    unsigned int m_FileReadSize;
+
+    //
+    // Members shared by both processes
+    //
+
+    IRadMovieVideoDecoder::State m_State;
+
+    char *m_pCodedVideoPacket[PS2_VIDEO_DECODE_NUM_PACKETS];
+    unsigned int m_CodedVideoPacketSize;
+    unsigned int m_CurrentFileReadPacket;
+    unsigned int m_CurrentDecodePacket;
+    bool m_AllPacketsFull;
+
+    //
+    // Decoded video output buffer info
+    //
+
+    char *m_pDecodedVideoBuffer;
+    unsigned int m_DecodedVideoBufferSize; // available memory
+    unsigned int m_DecodedVideoFrameSize;  // size of frame
+
+    unsigned int m_FramesDecoded;
+    unsigned int m_FrameRate;
+
+    //
+    // Keep track of the state of the file source
+    //
+
+    enum FileState {
+        FileState_None,
+        FileState_Initializing,
+        FileState_Reinitializing,
+        FileState_Ready,
+        FileState_WaitingForReset,
+        FileState_Reading,
+        FileState_SettingPosition
+    };
+
+    FileState m_FileState;
+
+    void SetFileState(FileState state);
 };
 
 #endif // VIDEODECODERPS2_HPP

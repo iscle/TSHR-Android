@@ -68,26 +68,26 @@ class radMovieRenderStrategyBink
 {
     public:
 
-        IMPLEMENT_REFCOUNTED( "radMovieRenderStrategyBink" )
+        IMPLEMENT_REFCOUNTED("radMovieRenderStrategyBink")
     
         //
         // Constructor / Destructor
         //
 
-        radMovieRenderStrategyBink( void );
-        virtual ~radMovieRenderStrategyBink( void );
+        radMovieRenderStrategyBink(void);
+        virtual ~radMovieRenderStrategyBink(void);
 
         //
         // IRadMovieRenderStrategy
         //
 
-        virtual void ResetDestinations( void );
-        virtual unsigned int LockNextDestination( LockedDestination * pLockedDestination );
-        virtual void UnlockDestination( void );
+        virtual void ResetDestinations(void);
+        virtual unsigned int LockNextDestination(LockedDestination * pLockedDestination);
+        virtual void UnlockDestination(void);
 
-        virtual void ChangeParameters( unsigned int width, unsigned int height );
+        virtual void ChangeParameters(unsigned int width, unsigned int height);
 
-        virtual bool Render( void );
+        virtual bool Render(void);
 
     private:
 
@@ -107,9 +107,9 @@ class radMovieRenderStrategyBink
         int m_MoviePosY;
         unsigned int m_MovieWidth;
         unsigned int m_MovieHeight;
-		float m_DisplayMultiplier;
+        float m_DisplayMultiplier;
 
-		unsigned int m_NumTiles;
+        unsigned int m_NumTiles;
         unsigned int m_CurrentDestIndex;
 
         Tile m_pTile[ RMV_MAX_NUM_TILES ];

@@ -42,84 +42,87 @@ class radMovieAudioDataSource;
 // Factories
 //=============================================================================
 
-radMovieAudioDataSource * radMovieAudioDataSourceCreate( radMemoryAllocator allocator );
+radMovieAudioDataSource *radMovieAudioDataSourceCreate(radMemoryAllocator allocator);
 
 //=============================================================================
 // class radMovieAudioDataSource
 //=============================================================================
 
 class radMovieAudioDataSource
-	:
-	public IRadSoundHalDataSource,
-	public IRadFileCompletionCallback,
-	public radRefCount
-{
-    public:
+        :
+                public IRadSoundHalDataSource,
+                public IRadFileCompletionCallback,
+                public radRefCount {
+public:
 
-	    IMPLEMENT_REFCOUNTED( "radMovieAudioDataSource" )
+    IMPLEMENT_REFCOUNTED("radMovieAudioDataSource")
 
-	    radMovieAudioDataSource( void );
-	    virtual ~radMovieAudioDataSource( void );
-	    
-        void Initialize( IRadFile * pIRadFile, unsigned int startPosition, unsigned int size );
+    radMovieAudioDataSource(void);
 
-	    // IRadSoundHalDataSource
+    virtual ~radMovieAudioDataSource(void);
 
-	    virtual IRadSoundHalDataSource::State GetState( void );
-	    virtual IRadSoundHalAudioFormat * GetFormat( void );
-	    virtual unsigned int GetRemainingFrames( void );
+    void Initialize(IRadFile *pIRadFile, unsigned int startPosition, unsigned int size);
 
-	    virtual void GetFramesAsync(
-		    void * pBytes, 
-		    radMemorySpace destinationMemorySpace, 
-		    unsigned int size, 
-		    IRadSoundHalDataSourceCallback * pIRshdsc );
-		    
-		virtual const char * GetName( void ) { return "MovieAudioDataSource"; }
+    // IRadSoundHalDataSource
 
-	    // IRadFileCompletionCallback
+    virtual IRadSoundHalDataSource::State GetState(void);
 
-	    virtual void OnFileOperationsComplete( void * pUserData );
+    virtual IRadSoundHalAudioFormat *GetFormat(void);
 
-	private:
+    virtual unsigned int GetRemainingFrames(void);
 
-        void InitFile( void );
+    virtual void GetFramesAsync(
+            void *pBytes,
+            radMemorySpace destinationMemorySpace,
+            unsigned int size,
+            IRadSoundHalDataSourceCallback *pIRshdsc);
 
-		void _StateOpeningFile( void );
-		void _StateReadingHeader( void );
-		void _StateIdle( void );
-		void _StateReadingData( void );
+    virtual const char *GetName(void) { return "MovieAudioDataSource"; }
 
-		unsigned int GetAvailableFrames( void ) { return 0xFFFFFFFF; }
+    // IRadFileCompletionCallback
 
-        unsigned int m_Size;
-		unsigned int m_FramesLeftInFile;
-		unsigned int m_StartPosition;
+    virtual void OnFileOperationsComplete(void *pUserData);
 
-		struct StateInfo
-		{
-			enum State { NONE, OPENING_FILE, FILE_ERROR, READING_HEADER, IDLE, READING_DATA } m_State;
+private:
 
-			union
-			{
-				struct
-				{
-					radSoundHalFileHeader * m_pRadSoundHalFileHeader;
-				} m_ReadingHeaderInfo;
+    void InitFile(void);
 
-				struct
-				{
-					unsigned int m_ReadSizeInFrames;
-				} m_ReadingDataInfo;
+    void _StateOpeningFile(void);
 
-			};
+    void _StateReadingHeader(void);
 
-		} m_StateInfo;
+    void _StateIdle(void);
 
-		ref< IRadSoundHalDataSourceCallback > m_xIRadSoundHalDataSourceCallback;
+    void _StateReadingData(void);
 
-		ref< IRadSoundHalAudioFormat > m_xIRadSoundHalAudioFormat;
-		ref< IRadFile >        m_xIRadFile;
+    unsigned int GetAvailableFrames(void) { return 0xFFFFFFFF; }
+
+    unsigned int m_Size;
+    unsigned int m_FramesLeftInFile;
+    unsigned int m_StartPosition;
+
+    struct StateInfo {
+        enum State {
+            NONE, OPENING_FILE, FILE_ERROR, READING_HEADER, IDLE, READING_DATA
+        } m_State;
+
+        union {
+            struct {
+                radSoundHalFileHeader *m_pRadSoundHalFileHeader;
+            } m_ReadingHeaderInfo;
+
+            struct {
+                unsigned int m_ReadSizeInFrames;
+            } m_ReadingDataInfo;
+
+        };
+
+    } m_StateInfo;
+
+    ref <IRadSoundHalDataSourceCallback> m_xIRadSoundHalDataSourceCallback;
+
+    ref <IRadSoundHalAudioFormat> m_xIRadSoundHalAudioFormat;
+    ref <IRadFile> m_xIRadFile;
 };
 
 #endif // ! RAD_MOVIEPLAYER_USE_BINK

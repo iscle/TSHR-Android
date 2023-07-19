@@ -49,82 +49,92 @@ class radMovieVideoDecoderGcn;
 //=============================================================================
 
 class radMovieVideoDecoderGcn
-    : 
-    public IRadMovieVideoDecoder,
-    public radRefCount
-{
-    public:
+        :
+                public IRadMovieVideoDecoder,
+                public radRefCount {
+public:
 
-        IMPLEMENT_REFCOUNTED( "radMovieVideoDecoderGcn" )
+    IMPLEMENT_REFCOUNTED("radMovieVideoDecoderGcn")
 
-        //
-        // Constructor / Destructor
-        //
+    //
+    // Constructor / Destructor
+    //
 
-        radMovieVideoDecoderGcn( void );
-        virtual ~radMovieVideoDecoderGcn( void );
+    radMovieVideoDecoderGcn(void);
 
-        //
-        // IRadMovieVideoDecoder
-        //
+    virtual ~radMovieVideoDecoderGcn(void);
 
-        virtual void Initialize( unsigned int maxWidthPixels, 
-            unsigned int maxHeightPixels, unsigned int codedVideoBufferSize );
+    //
+    // IRadMovieVideoDecoder
+    //
 
-        virtual void SetSource( IRadFile * pIRadFile, unsigned int widthPixels, unsigned int heightPixels, unsigned int startPosition, unsigned int frameRate );
-        virtual void Reset( void );
+    virtual void Initialize(unsigned int maxWidthPixels,
+                            unsigned int maxHeightPixels, unsigned int codedVideoBufferSize);
 
-        virtual void * GetLockedVideoFrame( unsigned int * pPresentationTime );
-        virtual void UnlockVideoFrame( void );
+    virtual void SetSource(IRadFile *pIRadFile, unsigned int widthPixels, unsigned int heightPixels,
+                           unsigned int startPosition, unsigned int frameRate);
 
-        virtual IRadMovieVideoDecoder::State GetState( void );
-        virtual float GetFrameRate( void );
-        virtual unsigned int GetCurrentFrameNumber( void );
-        virtual void Service( void );
+    virtual void Reset(void);
+
+    virtual void *GetLockedVideoFrame(unsigned int *pPresentationTime);
+
+    virtual void UnlockVideoFrame(void);
+
+    virtual IRadMovieVideoDecoder::State GetState(void);
+
+    virtual float GetFrameRate(void);
+
+    virtual unsigned int GetCurrentFrameNumber(void);
+
+    virtual void Service(void);
 
 
-    private:
+private:
 
-        bool AttemptNextDecode( void * pDestination );
-        void PerformDecode( void * pDestination );
-        void UpdateGOPInfo( void );
-        void UpdateRecInfo( void );
-        void SetState( IRadMovieVideoDecoder::State state );
+    bool AttemptNextDecode(void *pDestination);
 
-        ref< MovieReadBuffer > m_refRadMovieReadBuffer;
+    void PerformDecode(void *pDestination);
 
-        //
-        // Because of I, P, and B pictures, we hang on to previously decoded
-        // pictures.  These ponters are numbered from oldest to newest.  The 
-        // stale picture pointer points to a frame when it needs new data.
-        //
+    void UpdateGOPInfo(void);
 
-        // temp working pointers
+    void UpdateRecInfo(void);
 
-        void * m_pPicture0;
-        void * m_pPicture1;
-        void * m_pPicture2;
-        void * m_pStalePicture;
+    void SetState(IRadMovieVideoDecoder::State state);
 
-        // base pointers
+    ref <MovieReadBuffer> m_refRadMovieReadBuffer;
 
-        void * m_pEncodedPicture;
-        void * m_pDecoderWorkBuffer;
-        void * m_pPictures[ 3 ];
+    //
+    // Because of I, P, and B pictures, we hang on to previously decoded
+    // pictures.  These ponters are numbered from oldest to newest.  The
+    // stale picture pointer points to a frame when it needs new data.
+    //
 
-        unsigned int m_PictureBufferSize;
-        unsigned int m_EncodedPictureBufferSize;
-        unsigned int m_DecoderWorkBufferSize;
-        unsigned int m_FramesDecoded;
-        unsigned int m_RecordsLeftInGOP;
-        unsigned int m_GOPsLeft;
-        unsigned int m_MicrosecondsPerFrame;
-        unsigned int m_CurrentTime;
+    // temp working pointers
 
-        HVQM4SeqObj m_HVQM4SeqObj;
-        HVQM4RecHeader m_HVQM4RecHeader;
+    void *m_pPicture0;
+    void *m_pPicture1;
+    void *m_pPicture2;
+    void *m_pStalePicture;
 
-        IRadMovieVideoDecoder::State m_State;
+    // base pointers
+
+    void *m_pEncodedPicture;
+    void *m_pDecoderWorkBuffer;
+    void *m_pPictures[3];
+
+    unsigned int m_PictureBufferSize;
+    unsigned int m_EncodedPictureBufferSize;
+    unsigned int m_DecoderWorkBufferSize;
+    unsigned int m_FramesDecoded;
+    unsigned int m_RecordsLeftInGOP;
+    unsigned int m_GOPsLeft;
+    unsigned int m_MicrosecondsPerFrame;
+    unsigned int m_CurrentTime;
+
+    HVQM4SeqObj m_HVQM4SeqObj;
+    HVQM4RecHeader m_HVQM4RecHeader;
+
+    IRadMovieVideoDecoder::State m_State;
 };
 
 

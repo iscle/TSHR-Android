@@ -45,71 +45,82 @@ class radMoviePlayerXBox;
 //=============================================================================
 
 class radMoviePlayerXBox
-    : 
-    public IRadMoviePlayer2,
-    public radLinkedClass< radMoviePlayerXBox >,
-    public radRefCount
-{
-    public:
+        :
+                public IRadMoviePlayer2,
+                public radLinkedClass<radMoviePlayerXBox>,
+                public radRefCount {
+public:
 
-        IMPLEMENT_REFCOUNTED( "radMoviePlayerXBox" )
-    
-        //
-        // Constructor / Destructor
-        //
+    IMPLEMENT_REFCOUNTED("radMoviePlayerXBox")
 
-        radMoviePlayerXBox( void );
-        virtual ~radMoviePlayerXBox( void );
+    //
+    // Constructor / Destructor
+    //
 
-        //
-        // IRadMoviePlayer
-        //
+    radMoviePlayerXBox(void);
 
-        virtual void Initialize( 
-            IRadMovieRenderLoop * pIRadMovieRenderLoop, 
-            IRadMovieRenderStrategy * pIRadMovieRenderStrategy );
+    virtual ~radMoviePlayerXBox(void);
 
-        virtual bool Render( void );
+    //
+    // IRadMoviePlayer
+    //
 
-        virtual void Load( const char * pVideoFileName, unsigned int audioTrackIndex );
-        virtual void Unload( void );
-        virtual void Play( void );
-        virtual void Pause( void );
-        virtual void  SetPan( float pan ); 
-        virtual float GetPan( void );
-        virtual void  SetVolume( float volume );
-        virtual float GetVolume( void );
-        virtual State GetState( void );
-        virtual bool GetVideoFrameInfo(VideoFrameInfo * pFrameInfo);
-        virtual float GetFrameRate( void );
-        virtual unsigned int GetCurrentFrameNumber( void );
+    virtual void Initialize(
+            IRadMovieRenderLoop *pIRadMovieRenderLoop,
+            IRadMovieRenderStrategy *pIRadMovieRenderStrategy);
 
-        void Service( void );
+    virtual bool Render(void);
 
-    private:
+    virtual void Load(const char *pVideoFileName, unsigned int audioTrackIndex);
 
-        void SetState( IRadMoviePlayer2::State state );
-        
-        IRadMoviePlayer2::State m_State;
+    virtual void Unload(void);
 
-        XMVDecoder * m_pXMVDecoder;
-        IDirectSoundStream * m_pIDirectSoundStream;
+    virtual void Play(void);
 
-        ref< IRadMovieRenderLoop > m_refIRadMovieRenderLoop;
-        ref< IRadMovieRenderStrategy > m_refIRadMovieRenderStrategy;
-        ref< IRadStopwatch > m_refIRadStopwatch;
+    virtual void Pause(void);
 
-        float m_Volume;
-        float m_Pan;
+    virtual void SetPan(float pan);
 
-        unsigned long m_FramePresentTime;
-        unsigned int m_FramesDecoded;
+    virtual float GetPan(void);
 
-        bool m_IsPresentationOutstanding;
-        bool m_SkippingFrames;
-        bool m_CheckAudio;
+    virtual void SetVolume(float volume);
 
-        XMVVIDEO_DESC m_XMVVideoDesc;
+    virtual float GetVolume(void);
+
+    virtual State GetState(void);
+
+    virtual bool GetVideoFrameInfo(VideoFrameInfo *pFrameInfo);
+
+    virtual float GetFrameRate(void);
+
+    virtual unsigned int GetCurrentFrameNumber(void);
+
+    void Service(void);
+
+private:
+
+    void SetState(IRadMoviePlayer2::State state);
+
+    IRadMoviePlayer2::State m_State;
+
+    XMVDecoder *m_pXMVDecoder;
+    IDirectSoundStream *m_pIDirectSoundStream;
+
+    ref <IRadMovieRenderLoop> m_refIRadMovieRenderLoop;
+    ref <IRadMovieRenderStrategy> m_refIRadMovieRenderStrategy;
+    ref <IRadStopwatch> m_refIRadStopwatch;
+
+    float m_Volume;
+    float m_Pan;
+
+    unsigned long m_FramePresentTime;
+    unsigned int m_FramesDecoded;
+
+    bool m_IsPresentationOutstanding;
+    bool m_SkippingFrames;
+    bool m_CheckAudio;
+
+    XMVVIDEO_DESC m_XMVVideoDesc;
 };
 
 #endif // ! RAD_MOVIEPLAYER_USE_BINK

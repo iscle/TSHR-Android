@@ -23,6 +23,7 @@
 //=============================================================================
 
 #include <radoptions.hpp>
+
 #ifdef RAD_MOVIEPLAYER_USE_BINK
 
 #include <bink.h>
@@ -46,53 +47,53 @@ class radMoviePlayerBink;
 class radMoviePlayerBink
     : 
     public IRadMoviePlayer2,
-    public radLinkedClass< radMoviePlayerBink >,
+    public radLinkedClass<radMoviePlayerBink>,
     public radRefCount
 {
     public:
 
-        IMPLEMENT_REFCOUNTED( "radMoviePlayerBink" )
+        IMPLEMENT_REFCOUNTED("radMoviePlayerBink")
     
         //
         // Constructor / Destructor
         //
 
-        radMoviePlayerBink( void );
-        virtual ~radMoviePlayerBink( void );
+        radMoviePlayerBink(void);
+        virtual ~radMoviePlayerBink(void);
 
         //
         // IRadMoviePlayer
         //
 
-        virtual void Initialize( 
+        virtual void Initialize(
             IRadMovieRenderLoop * pIRadMovieRenderLoop, 
-            IRadMovieRenderStrategy * pIRadMovieRenderStrategy );
+            IRadMovieRenderStrategy * pIRadMovieRenderStrategy);
 
-        virtual bool Render( void );
+        virtual bool Render(void);
 
-        virtual void Load( const char * pVideoFileName, unsigned int audioTrackIndex );
-        virtual void Unload( void );
-        virtual void Play( void );
-        virtual void Pause( void );
-        virtual void  SetPan( float pan ); 
-        virtual float GetPan( void );
-        virtual void  SetVolume( float volume );
-        virtual float GetVolume( void );
-        virtual State GetState( void );
+        virtual void Load(const char * pVideoFileName, unsigned int audioTrackIndex);
+        virtual void Unload(void);
+        virtual void Play(void);
+        virtual void Pause(void);
+        virtual void  SetPan(float pan);
+        virtual float GetPan(void);
+        virtual void  SetVolume(float volume);
+        virtual float GetVolume(void);
+        virtual State GetState(void);
         virtual bool GetVideoFrameInfo(VideoFrameInfo * pFrameInfo);
-        virtual float GetFrameRate( void );
-        virtual unsigned int GetCurrentFrameNumber( void );
+        virtual float GetFrameRate(void);
+        virtual unsigned int GetCurrentFrameNumber(void);
 
-        void Service( void );
+        void Service(void);
 
     private:
 
-        void SetState( IRadMoviePlayer2::State state );
-        void SetBinkVolume( void );
-		void SetBinkPan( void );
+        void SetState(IRadMoviePlayer2::State state);
+        void SetBinkVolume(void);
+        void SetBinkPan(void);
         
-        ref< IRadMovieRenderLoop > m_refIRadMovieRenderLoop;
-        ref< IRadMovieRenderStrategy > m_refIRadMovieRenderStrategy;
+        ref<IRadMovieRenderLoop> m_refIRadMovieRenderLoop;
+        ref<IRadMovieRenderStrategy> m_refIRadMovieRenderStrategy;
         IRadMoviePlayer2::State m_State;
         HBINK m_BinkHandle;
         float m_Volume;

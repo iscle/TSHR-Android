@@ -58,26 +58,26 @@
 //------------------------------------------------------------------------------
 
 MovieReadBuffer::MovieReadBuffer
-( 
-    unsigned int    cacheSize,
-    unsigned int    threshold
-)
-    :
-    radRefCount( 0 ),
-    m_BufferSize( cacheSize ),      
-    m_Threshold( threshold ),
-    m_StartFilePosition( 0 ),
-    m_refIRadFile( NULL ),
-    m_refIRadFile_Stale( NULL )
-{
-    rAssert( cacheSize >= threshold );
+        (
+                unsigned int cacheSize,
+                unsigned int threshold
+        )
+        :
+        radRefCount(0),
+        m_BufferSize(cacheSize),
+        m_Threshold(threshold),
+        m_StartFilePosition(0),
+        m_refIRadFile(NULL),
+        m_refIRadFile_Stale(NULL) {
+    rAssert(cacheSize >= threshold);
 
     //
     // First lets allocate the memory for the circular buffer. Keep it aligned to 32 to 
     // improve performance of some of our reads.
     //
-  	m_pBuffer = (unsigned char*) radMemoryAllocAligned( GetThisAllocator( ), m_BufferSize, radFileOptimalMemoryAlignment );
-    rAssert( m_pBuffer != NULL );
+    m_pBuffer = (unsigned char *) radMemoryAllocAligned(GetThisAllocator(), m_BufferSize,
+                                                        radFileOptimalMemoryAlignment);
+    rAssert(m_pBuffer != NULL);
 }
 
 //=============================================================================
@@ -93,25 +93,22 @@ MovieReadBuffer::MovieReadBuffer
 // Notes:
 //------------------------------------------------------------------------------
 
-MovieReadBuffer::~MovieReadBuffer( void )
-{
+MovieReadBuffer::~MovieReadBuffer(void) {
     //
     // Free the buffer.
     //
-    radMemoryFreeAligned( GetThisAllocator( ), m_pBuffer );
+    radMemoryFreeAligned(GetThisAllocator(), m_pBuffer);
 }
 
-void MovieReadBuffer::SetSource( IRadFile * pIRadFile, unsigned int startPosition )
-{
-    rAssert( pIRadFile != NULL );
-    rAssert( m_refIRadFile == NULL );
+void MovieReadBuffer::SetSource(IRadFile *pIRadFile, unsigned int startPosition) {
+    rAssert(pIRadFile != NULL);
+    rAssert(m_refIRadFile == NULL);
 
-    if( pIRadFile != NULL )
-    {
+    if (pIRadFile != NULL) {
         m_refIRadFile = pIRadFile;
 
-        rAssert( m_refIRadFile->IsOpen( ) == true );
-        
+        rAssert(m_refIRadFile->IsOpen() == true);
+
         //
         // Set up our data structures to manage the queue.
         //
@@ -128,48 +125,38 @@ void MovieReadBuffer::SetSource( IRadFile * pIRadFile, unsigned int startPositio
         // initiate the first request.  Otherwise wait until the
         // other file is done with.
         //
-        
-        if( m_refIRadFile_Stale == NULL )
-        {
+
+        if (m_refIRadFile_Stale == NULL) {
             m_OutstandingFileRequest = true;
-            m_refIRadFile->SetPositionAsync( m_StartFilePosition );
-            m_refIRadFile->AddCompletionCallback( this, NULL );
-        }
-        else
-        {
+            m_refIRadFile->SetPositionAsync(m_StartFilePosition);
+            m_refIRadFile->AddCompletionCallback(this, NULL);
+        } else {
             // We don't do anything here.
         }
     }
 }
 
-bool MovieReadBuffer::CanReadBytes( unsigned int bytes )
-{
-    return( ( m_BytesInBuffer >= bytes ) == true );
+bool MovieReadBuffer::CanReadBytes(unsigned int bytes) {
+    return ((m_BytesInBuffer >= bytes) == true);
 }
 
-void MovieReadBuffer::SkipData( unsigned int bytes )
-{
-    if( m_BytesInBuffer >= bytes )
-    {
+void MovieReadBuffer::SkipData(unsigned int bytes) {
+    if (m_BytesInBuffer >= bytes) {
         //
         // We can meet the request. See if we can copy in using a single copy
         // or need to partion it due to the buffer wrap condition.
         //
-        if( m_BufferSize + m_pBuffer - m_pBufferRead >= bytes )
-        {
+        if (m_BufferSize + m_pBuffer - m_pBufferRead >= bytes) {
             //
             // Update state checking for wrap of read pointer.
             //
             m_pBufferRead += bytes;
-            if( m_pBufferRead == m_BufferSize + m_pBuffer )
-            {
+            if (m_pBufferRead == m_BufferSize + m_pBuffer) {
                 m_pBufferRead = m_pBuffer;
             }
-    
+
             m_BytesInBuffer -= bytes;
-        }
-        else
-        {
+        } else {
             //
             // Here we must do the copy in two stages, to deal with the wrap.
             //
@@ -183,18 +170,15 @@ void MovieReadBuffer::SkipData( unsigned int bytes )
             //
             partialCopySize = bytes - partialCopySize;
 
-            m_pBufferRead += partialCopySize; 
+            m_pBufferRead += partialCopySize;
             m_BytesInBuffer -= partialCopySize;
         }
-    }
-    else
-    {
-        rAssert( false );
+    } else {
+        rAssert(false);
     }
 
-    if( !m_OutstandingFileRequest )
-    {
-        OnFileOperationsComplete( NULL );
+    if (!m_OutstandingFileRequest) {
+        OnFileOperationsComplete(NULL);
     }
 }
 
@@ -214,81 +198,72 @@ void MovieReadBuffer::SkipData( unsigned int bytes )
 //------------------------------------------------------------------------------
 
 void MovieReadBuffer::ReadData
-( 
-    void*           pBuffer,
-    unsigned int    bytesToRead
-)
-{
+        (
+                void *pBuffer,
+                unsigned int bytesToRead
+        ) {
     //
     // Make sure the requested read is below threshold setting. If not, possible to get
     // into situation where read will not be satisfied.
     //
-    rAssert( bytesToRead <= m_Threshold );
+    rAssert(bytesToRead <= m_Threshold);
 
     //
     // First check if we can meet the clients request for data. 
     //
 
-    if( m_BytesInBuffer >= bytesToRead )
-    {
+    if (m_BytesInBuffer >= bytesToRead) {
         //
         // We can meet the request. See if we can copy in using a single copy
         // or need to partion it due to the buffer wrap condition.
         //
-        if( m_BufferSize + m_pBuffer - m_pBufferRead >= bytesToRead )
-        {
+        if (m_BufferSize + m_pBuffer - m_pBufferRead >= bytesToRead) {
             //
             // Do the tranfer using a single memory copy.
             //
-            memcpy( pBuffer, m_pBufferRead, bytesToRead );
+            memcpy(pBuffer, m_pBufferRead, bytesToRead);
 
             //
             // Update state checking for wrap of read pointer.
             //
             m_pBufferRead += bytesToRead;
-            if( m_pBufferRead == m_BufferSize + m_pBuffer )
-            {
+            if (m_pBufferRead == m_BufferSize + m_pBuffer) {
                 m_pBufferRead = m_pBuffer;
             }
-    
+
             m_BytesInBuffer -= bytesToRead;
-        }
-        else
-        {
+        } else {
             //
             // Here we must do the copy in two stages, to deal with the wrap.
             //
             unsigned int partialCopySize = m_BufferSize + m_pBuffer - m_pBufferRead;
-        
-            memcpy( pBuffer, m_pBufferRead, partialCopySize );
+
+            memcpy(pBuffer, m_pBufferRead, partialCopySize);
 
             m_pBufferRead = m_pBuffer;
             m_BytesInBuffer -= partialCopySize;
-            pBuffer = (unsigned char*) pBuffer + partialCopySize;
+            pBuffer = (unsigned char *) pBuffer + partialCopySize;
 
             //
             // Lets do the second part now.
             //
             partialCopySize = bytesToRead - partialCopySize;
 
-            memcpy( pBuffer, m_pBufferRead, partialCopySize );
+            memcpy(pBuffer, m_pBufferRead, partialCopySize);
 
-            m_pBufferRead += partialCopySize; 
+            m_pBufferRead += partialCopySize;
             m_BytesInBuffer -= partialCopySize;
         }
-    }
-    else
-    {
-        rAssert( false );
+    } else {
+        rAssert(false);
     }
 
     //
     // Lets we if we can initiate a reading of more data. If no oustanding operations exist,
     // we can initiate a new one by simply invoking the file completion callback.
     //
-    if( !m_OutstandingFileRequest )
-    {
-        OnFileOperationsComplete( NULL );
+    if (!m_OutstandingFileRequest) {
+        OnFileOperationsComplete(NULL);
     }
 
 }
@@ -307,10 +282,9 @@ void MovieReadBuffer::ReadData
 //------------------------------------------------------------------------------
 
 void MovieReadBuffer::Reset
-( 
-    void
-)
-{
+        (
+                void
+        ) {
     //
     // First lets clear variables used to maintain the circular queue. This does 
     // not present problems even if we have an outstanding read.
@@ -321,17 +295,16 @@ void MovieReadBuffer::Reset
     m_TotalBytesReadFromFile = 0;
     m_CurrentFileReadSize = 0;
 
-    if( m_OutstandingFileRequest == true )
-    {
+    if (m_OutstandingFileRequest == true) {
         //
         // If an outstanding file request is pending, we'll hang
         // on to the stale file until it's complete
         //
 
-        m_refIRadFile->CancelAsync( );
+        m_refIRadFile->CancelAsync();
         m_refIRadFile_Stale = m_refIRadFile;
     }
-    
+
     m_refIRadFile = NULL;
     m_OutstandingFileRequest = false;
 }
@@ -351,31 +324,26 @@ void MovieReadBuffer::Reset
 //------------------------------------------------------------------------------
 
 void MovieReadBuffer::OnFileOperationsComplete
-( 
-    void* pUserData
-)
-{
-    if( m_refIRadFile_Stale != NULL )
-    {
+        (
+                void *pUserData
+        ) {
+    if (m_refIRadFile_Stale != NULL) {
         //
         // This means there was an outstanding request on an old file.
         //
-        
+
         m_refIRadFile_Stale = NULL;
 
         //
         // If a file is waiting to begin, then let it
         //
 
-        if( m_refIRadFile != NULL )
-        {
+        if (m_refIRadFile != NULL) {
             m_OutstandingFileRequest = true;
-            m_refIRadFile->SetPositionAsync( m_StartFilePosition );
-            m_refIRadFile->AddCompletionCallback( this, NULL );
+            m_refIRadFile->SetPositionAsync(m_StartFilePosition);
+            m_refIRadFile->AddCompletionCallback(this, NULL);
         }
-    }
-    else
-    {
+    } else {
 
         //
         // Clear flag indicating that we don't have an outstanding request.
@@ -390,8 +358,7 @@ void MovieReadBuffer::OnFileOperationsComplete
         m_TotalBytesReadFromFile += m_CurrentFileReadSize;
         m_BytesInBuffer += m_CurrentFileReadSize;
         m_pBufferWrite += m_CurrentFileReadSize;
-        if( m_pBufferWrite == m_pBuffer + m_BufferSize )
-        {
+        if (m_pBufferWrite == m_pBuffer + m_BufferSize) {
             m_pBufferWrite = m_pBuffer;
         }
         //
@@ -400,33 +367,30 @@ void MovieReadBuffer::OnFileOperationsComplete
         // file size.
         //
         m_CurrentFileReadSize = m_BufferSize - m_BytesInBuffer;
-        m_CurrentFileReadSize = ::radMemoryRoundDown( m_CurrentFileReadSize, 32 );
+        m_CurrentFileReadSize = ::radMemoryRoundDown(m_CurrentFileReadSize, 32);
 
-        if( m_CurrentFileReadSize > 0 )
-        {
+        if (m_CurrentFileReadSize > 0) {
             //
             // Check if a wrap will occur. If so read the amount only at the end of the
             // buffer.
             //
-            if( m_pBuffer + m_BufferSize - m_pBufferWrite < m_CurrentFileReadSize )
-            {
+            if (m_pBuffer + m_BufferSize - m_pBufferWrite < m_CurrentFileReadSize) {
                 m_CurrentFileReadSize = m_pBuffer + m_BufferSize - m_pBufferWrite;
             }
 
             //
             // Finally make sure we have data remaining in the file.
             //
-            if( m_refIRadFile->GetSize( ) - m_TotalBytesReadFromFile < m_CurrentFileReadSize )
-            {
-                m_CurrentFileReadSize = m_refIRadFile->GetSize( ) - m_TotalBytesReadFromFile;
-                m_CurrentFileReadSize = ::radMemoryRoundUp( m_CurrentFileReadSize, 32 );
+            if (m_refIRadFile->GetSize() - m_TotalBytesReadFromFile < m_CurrentFileReadSize) {
+                m_CurrentFileReadSize = m_refIRadFile->GetSize() - m_TotalBytesReadFromFile;
+                m_CurrentFileReadSize = ::radMemoryRoundUp(m_CurrentFileReadSize, 32);
             }
 
             m_OutstandingFileRequest = true;
-            m_refIRadFile->ReadAsync( m_pBufferWrite, m_CurrentFileReadSize );
-            m_refIRadFile->AddCompletionCallback( this, NULL );
+            m_refIRadFile->ReadAsync(m_pBufferWrite, m_CurrentFileReadSize);
+            m_refIRadFile->AddCompletionCallback(this, NULL);
         }
-      
+
 
     }
 }
@@ -445,11 +409,9 @@ void MovieReadBuffer::OnFileOperationsComplete
 // Notes:
 //------------------------------------------------------------------------------
 
-bool MovieReadBuffer::IsFileReadOutstanding( void )
-{
-    return( m_OutstandingFileRequest );
+bool MovieReadBuffer::IsFileReadOutstanding(void) {
+    return (m_OutstandingFileRequest);
 }
-
 
 
 #endif // ! RAD_MOVIEPLAYER_USE_BINK

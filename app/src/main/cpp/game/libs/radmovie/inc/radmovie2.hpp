@@ -43,7 +43,7 @@
 #include <radmemory.hpp>
 #include <radsound_hal.hpp>
 
-#if defined RAD_XBOX && ! defined RAD_MOVIEPLAYER_USE_BINK
+#if defined RAD_XBOX && !defined RAD_MOVIEPLAYER_USE_BINK
 #include <d3d8.h>
 #endif // RAD_XBOX && ! RAD_MOVIEPLAYER_USE_BINK
 
@@ -67,10 +67,10 @@ struct IRadMovieRenderStrategy;
 extern const unsigned int radMovie_NoAudioTrack;
 
 //
-// To view movie player debug printf's call ::radDebugChannelEnable( radMovieDebugChannel );
+// To view movie player debug printf's call ::radDebugChannelEnable(radMovieDebugChannel);
 //
 
-extern const char * radMovieDebugChannel2;
+extern const char *radMovieDebugChannel2;
 
 //=============================================================================
 // Global Functions
@@ -81,46 +81,45 @@ extern const char * radMovieDebugChannel2;
 // occur during the set up and tear down of the game
 //
 
-void radMovieInitialize2( radMemoryAllocator allocator );
-void radMovieTerminate2( void );
+void radMovieInitialize2(radMemoryAllocator allocator);
+
+void radMovieTerminate2(void);
 
 //
 // Service the radMovie as often as possible.  The assumption is that
 // only activities related to movie playback will be serviced while
 // a movie is playing.
 //
-// This service call should occur along with radFileService( ), 
-// radSoundHalSystemGet( )->Service( ), radSoundHalSystemGet( )->ServiceOncePerFrame( ),
-// and optionally radControllerSystemService( ).
+// This service call should occur along with radFileService(),
+// radSoundHalSystemGet()->Service(), radSoundHalSystemGet()->ServiceOncePerFrame(),
+// and optionally radControllerSystemService().
 //
 
-void radMovieService2( void );
+void radMovieService2(void);
 
 //=============================================================================
 // Factories
 //=============================================================================
 
-IRadMoviePlayer2 * radMoviePlayerCreate2( radMemoryAllocator alloc );
-IRadMovieRenderStrategy * radMovieSimpleFullScreenRenderStrategyCreate( radMemoryAllocator alloc );
+IRadMoviePlayer2 *radMoviePlayerCreate2(radMemoryAllocator alloc);
+
+IRadMovieRenderStrategy *radMovieSimpleFullScreenRenderStrategyCreate(radMemoryAllocator alloc);
 
 //=============================================================================
 // struct IRadMoviePlayer2
 //=============================================================================
 
-struct IRadMoviePlayer2 : public IRefCount
-{
-    struct VideoFrameInfo
-    {
+struct IRadMoviePlayer2 : public IRefCount {
+    struct VideoFrameInfo {
         unsigned int Width;
         unsigned int Height;
     };
 
-    enum State
-    {
+    enum State {
         NoData,         // no movie file has been loaded.
         Loading,        // in the process of loading a movie file.
         LoadToPlay,     // in the process of loading; after it is loaded, it will start
-                        // the playback.
+        // the playback.
         ReadyToPlay,    // the movie file has been loaded, but the movie playback is paused/stopped.
         Playing        // in the process of playing the movie file.
     };
@@ -138,41 +137,41 @@ struct IRadMoviePlayer2 : public IRefCount
     //      * Audio Secondary Buffer:   This can be quite small (you'll hear skips if it's too small)
     //
 
-    #if ( defined RAD_XBOX || defined RAD_WIN32 || defined RAD_MOVIEPLAYER_USE_BINK )
+#if (defined RAD_XBOX || defined RAD_WIN32 || defined RAD_MOVIEPLAYER_USE_BINK)
 
-    virtual void Initialize( 
+    virtual void Initialize(
         IRadMovieRenderLoop * pIRadMovieRenderLoop, 
-        IRadMovieRenderStrategy * pIRadMovieRenderStrategy ) = 0;
+        IRadMovieRenderStrategy * pIRadMovieRenderStrategy) = 0;
 
-    #elif RAD_PS2
+#elif RAD_PS2
 
-    virtual void Initialize( 
-        IRadMovieRenderLoop * pIRadMovieRenderLoop, 
-        IRadMovieRenderStrategy * pIRadMovieRenderStrategy,
-        unsigned int maxWidthPixels, 
-        unsigned int maxHeightPixels, unsigned int codedVideoBufferBytes, 
-        unsigned int audioPrimaryBufferSize, unsigned int audioSecondaryBufferSize,
-        IRadSoundHalAudioFormat::SizeType audioSizeType ) = 0;
-
-    #elif RAD_GAMECUBE
-
-    virtual void Initialize( 
+    virtual void Initialize(
         IRadMovieRenderLoop * pIRadMovieRenderLoop, 
         IRadMovieRenderStrategy * pIRadMovieRenderStrategy,
         unsigned int maxWidthPixels, 
         unsigned int maxHeightPixels, unsigned int codedVideoBufferBytes, 
         unsigned int audioPrimaryBufferSize, unsigned int audioSecondaryBufferSize,
-        IRadSoundHalAudioFormat::SizeType audioSizeType ) = 0;
+        IRadSoundHalAudioFormat::SizeType audioSizeType) = 0;
 
-    #endif
+#elif RAD_GAMECUBE
+
+    virtual void Initialize(
+        IRadMovieRenderLoop * pIRadMovieRenderLoop, 
+        IRadMovieRenderStrategy * pIRadMovieRenderStrategy,
+        unsigned int maxWidthPixels, 
+        unsigned int maxHeightPixels, unsigned int codedVideoBufferBytes, 
+        unsigned int audioPrimaryBufferSize, unsigned int audioSecondaryBufferSize,
+        IRadSoundHalAudioFormat::SizeType audioSizeType) = 0;
+
+#endif
 
     //
     // The client will call render from within the IRadMovieRenderLoop::IterateLoop
     // function.  See IRadMovieRenderLoop for more details.
     //
 
-    virtual bool Render( void ) = 0;
-    
+    virtual bool Render(void) = 0;
+
     // 
     // Loading movies: Provide the name of the movie to load.  Rmv movie
     // files may contain several audio tracks (.e.g for multiple languages).  
@@ -187,11 +186,12 @@ struct IRadMoviePlayer2 : public IRefCount
     //      Unload: * -> NoData
     //
 
-    virtual void Load( const char * pFileName, unsigned int audioTrackIndex ) = 0;
-    virtual void Unload( void ) = 0;
+    virtual void Load(const char *pFileName, unsigned int audioTrackIndex) = 0;
+
+    virtual void Unload(void) = 0;
 
     //
-    // Play( ) causes the movie player to playback audio and decode video frames.
+    // Play() causes the movie player to playback audio and decode video frames.
     // 
     // State transitions:   ReadyToPlay -> Playing   or
     //                      Loading -> LoadingToPlay -> Playing
@@ -199,52 +199,55 @@ struct IRadMoviePlayer2 : public IRefCount
     //                      When the player reaches the end of the file -> NoData
     //
 
-    virtual void Play( void ) = 0;
+    virtual void Play(void) = 0;
 
     //
-    // Pause( ) halts audio playback and video decoding.  During the Pause
+    // Pause() halts audio playback and video decoding.  During the Pause
     // state, no render will be be happening.
     //
     // State transitions:   Playing -> ReadyToPlay or
     //                      LoadToPlay -> Loading -> ReadyToPlay
     //
 
-    virtual void Pause( void ) = 0;
+    virtual void Pause(void) = 0;
 
     //
     // Audio control
     //
 
-    virtual void  SetVolume( float volume ) = 0; // 0.0 to 1.0 ( min to max )
-    virtual float GetVolume( void ) = 0;
-    virtual void  SetPan( float pan ) = 0; // -1.0 to 1.0 ( left to right )
-    virtual float GetPan( void ) = 0;
+    virtual void SetVolume(float volume) = 0; // 0.0 to 1.0 (min to max)
+    virtual float GetVolume(void) = 0;
+
+    virtual void SetPan(float pan) = 0; // -1.0 to 1.0 (left to right)
+    virtual float GetPan(void) = 0;
 
     //
     // State information.  Note that video frame info can only be obtained 
     // if a movie has been loaded.
     //
 
-    virtual State GetState( void ) = 0;
-    virtual bool GetVideoFrameInfo( VideoFrameInfo * pFrameInfo ) = 0;
-    virtual float GetFrameRate( void ) = 0;
-    virtual unsigned int GetCurrentFrameNumber( void ) = 0;
+    virtual State GetState(void) = 0;
+
+    virtual bool GetVideoFrameInfo(VideoFrameInfo *pFrameInfo) = 0;
+
+    virtual float GetFrameRate(void) = 0;
+
+    virtual unsigned int GetCurrentFrameNumber(void) = 0;
 };
 
 //=============================================================================
 // struct IRadMovieRenderLoop
 //=============================================================================
 
-struct IRadMovieRenderLoop : public IRefCount
-{
+struct IRadMovieRenderLoop : public IRefCount {
     //
     // IterateLoop is called by the movie player when it is time to render
     // the next frame.  The render loop object will begin the frame and end
-    // the frame and must call pIRadMoviePlayer->Render( ) when it is okay
+    // the frame and must call pIRadMoviePlayer->Render() when it is okay
     // for the movie frame to be rendered to the screen.
     //
 
-    virtual void IterateLoop( IRadMoviePlayer2 * pIRadMoviePlayer ) = 0;
+    virtual void IterateLoop(IRadMoviePlayer2 *pIRadMoviePlayer) = 0;
 };
 
 //=============================================================================
@@ -257,60 +260,60 @@ struct IRadMovieRenderLoop : public IRefCount
 // care of that.
 //
 
-struct IRadMovieRenderStrategy : public IRefCount
-{
-    #ifdef RAD_MOVIEPLAYER_USE_BINK
+struct IRadMovieRenderStrategy : public IRefCount {
+#ifdef RAD_MOVIEPLAYER_USE_BINK
 
-        struct LockedDestination
-        {
-            // Info about where to copy data to...
+    struct LockedDestination
+    {
+        // Info about where to copy data to...
 
-            void * m_pDest;            // Destination buffer address
-            int m_DestPitch;           // Pitch of the destination buffer in pixels
-            unsigned int m_DestPosX;   // X offset into the dest buffer in pixels
-            unsigned int m_DestPosY;   // Y offset into the dest buffer in piexls
-            unsigned int m_SrcPosX;    // X offset into the src buffer in pixels
-            unsigned int m_SrcPosY;    // Y offset into the src buffer in piexls
-            unsigned int m_Width;      // The width in pixels to copy
-            unsigned int m_Height;     // The height in pixels to copy
-        };
+        void * m_pDest;            // Destination buffer address
+        int m_DestPitch;           // Pitch of the destination buffer in pixels
+        unsigned int m_DestPosX;   // X offset into the dest buffer in pixels
+        unsigned int m_DestPosY;   // Y offset into the dest buffer in piexls
+        unsigned int m_SrcPosX;    // X offset into the src buffer in pixels
+        unsigned int m_SrcPosY;    // Y offset into the src buffer in piexls
+        unsigned int m_Width;      // The width in pixels to copy
+        unsigned int m_Height;     // The height in pixels to copy
+    };
 
-        //
-        // The render strategy implementation may spread video data across a 
-        // number of buffers.  Clients iterate through all destinantions
-        // when they wish to render a frame.  ResetDesination must be called 
-        // for each new frame.  LockNextDestination returns the number of 
-        // destinations remaining.  For a complete frame to be rendered,
-        // LockNextDestination followed by UnlockDestination must be called
-        // until the return value of LockNextDestination returns 0.
-        //
+    //
+    // The render strategy implementation may spread video data across a
+    // number of buffers.  Clients iterate through all destinantions
+    // when they wish to render a frame.  ResetDesination must be called
+    // for each new frame.  LockNextDestination returns the number of
+    // destinations remaining.  For a complete frame to be rendered,
+    // LockNextDestination followed by UnlockDestination must be called
+    // until the return value of LockNextDestination returns 0.
+    //
 
-        virtual void ResetDestinations( void ) = 0;
-        virtual unsigned int LockNextDestination( LockedDestination * pLockedDestination ) = 0;
-        virtual void UnlockDestination( void ) = 0;
+    virtual void ResetDestinations(void) = 0;
+    virtual unsigned int LockNextDestination(LockedDestination * pLockedDestination) = 0;
+    virtual void UnlockDestination(void) = 0;
 
-        // ChangeParameters may cause textures and other buffers to be re-allocated
+    // ChangeParameters may cause textures and other buffers to be re-allocated
 
-        virtual void ChangeParameters( unsigned int width, unsigned int height ) = 0;
-        virtual bool Render( void ) = 0;
+    virtual void ChangeParameters(unsigned int width, unsigned int height) = 0;
+    virtual bool Render(void) = 0;
 
-    #else
+#else
 
-        #ifdef RAD_XBOX
+#ifdef RAD_XBOX
 
-        virtual void SetParameters( unsigned int width, unsigned int height ) = 0;
-        virtual void ResetParameters( void ) = 0;
-        virtual void GetDestination( IDirect3DSurface8 ** ppIDirect3DSurface8 ) = 0;
-        virtual bool Render( void ) = 0;
+    virtual void SetParameters(unsigned int width, unsigned int height) = 0;
+    virtual void ResetParameters(void) = 0;
+    virtual void GetDestination(IDirect3DSurface8 ** ppIDirect3DSurface8) = 0;
+    virtual bool Render(void) = 0;
 
-        #else
+#else
 
-        virtual void SetParameters( unsigned int width, unsigned int height ) = 0;
-        virtual bool Render( void * pBuffer ) = 0;
+    virtual void SetParameters(unsigned int width, unsigned int height) = 0;
 
-        #endif 
+    virtual bool Render(void *pBuffer) = 0;
 
-    #endif // RAD_MOVIEPLAYER_USE_BINK
+#endif
+
+#endif // RAD_MOVIEPLAYER_USE_BINK
 };
 
 #endif // RADMOVIE_HPP

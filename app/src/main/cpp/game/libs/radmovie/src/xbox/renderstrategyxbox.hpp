@@ -23,6 +23,7 @@
 //=============================================================================
 
 #undef _TEXTURE_HPP
+
 #include <pddi/xbox/texture.hpp>
 
 
@@ -45,39 +46,41 @@ class radMovieRenderStrategyXBox;
 //=============================================================================
 
 class radMovieRenderStrategyXBox
-    : 
-    public IRadMovieRenderStrategy,
-    public radRefCount
+        :
+                public IRadMovieRenderStrategy,
+                public radRefCount {
+public:
 
-{
-    public:
+    IMPLEMENT_REFCOUNTED("radMovieRenderStrategyXBox")
 
-        IMPLEMENT_REFCOUNTED( "radMovieRenderStrategyXBox" )
-    
-        //
-        // Constructor / Destructor
-        //
+    //
+    // Constructor / Destructor
+    //
 
-        radMovieRenderStrategyXBox( void );
-        virtual ~radMovieRenderStrategyXBox( void );
+    radMovieRenderStrategyXBox(void);
 
-        //
-        // IRadMovieRenderStrategy
-        //
+    virtual ~radMovieRenderStrategyXBox(void);
 
-        virtual void SetParameters( unsigned int width, unsigned int height );
-        virtual void ResetParameters( void );
-        virtual void GetDestination( IDirect3DSurface8 ** ppIDirect3DSurface8 );
-        virtual bool Render( void );
+    //
+    // IRadMovieRenderStrategy
+    //
 
-    private:
+    virtual void SetParameters(unsigned int width, unsigned int height);
 
-        d3dTexture * m_pD3dTexture;
-        pddiShader * m_pPddiShader;
-        IDirect3DSurface8 * m_pIDirect3DSurface8;
-        IDirect3DTexture8 * m_pIDirect3DTexture8;
-        unsigned int m_Width;
-        unsigned int m_Height;
+    virtual void ResetParameters(void);
+
+    virtual void GetDestination(IDirect3DSurface8 **ppIDirect3DSurface8);
+
+    virtual bool Render(void);
+
+private:
+
+    d3dTexture *m_pD3dTexture;
+    pddiShader *m_pPddiShader;
+    IDirect3DSurface8 *m_pIDirect3DSurface8;
+    IDirect3DTexture8 *m_pIDirect3DTexture8;
+    unsigned int m_Width;
+    unsigned int m_Height;
 };
 
 #endif // ! RAD_MOVIEPLAYER_USE_BINK

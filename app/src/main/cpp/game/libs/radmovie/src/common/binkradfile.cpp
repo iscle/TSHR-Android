@@ -26,8 +26,12 @@
 //=============================================================================
 // Forward Declarations
 //=============================================================================
-static void ReadKickoff( BINKIO PTR4* bio );
+static void ReadKickoff(BINKIO PTR4
+
+* bio);
+
 class BinkCallback;
+
 struct radBinkFile;
 
 //=============================================================================
@@ -35,41 +39,43 @@ struct radBinkFile;
 //=============================================================================
 
 extern "C" {
-    extern U32 RADLINK RADTimerRead( void );
+extern U32 RADLINK
+RADTimerRead(void);
 }
 
-#define BASEREADSIZE   ( 16 * 1024 )
+#define BASEREADSIZE   (16 * 1024)
 
-static BinkCallback* s_BinkCallback = NULL;
+static BinkCallback *s_BinkCallback = NULL;
 
 //=============================================================================
 // struct radBinkFile
 //=============================================================================
 // All of the info we need to make the file system functions work.
 //------------------------------------------------------------------------------
-struct radBinkFile
-{
-    IRadFile*    filePtr;           // our file!
+struct radBinkFile {
+    IRadFile *filePtr;           // our file!
     unsigned int fileSize;          // the file size
     unsigned int filePosition;      // the current file position
     unsigned int fileBufPos;        // current file position for start of buffer
     unsigned int readEndPosition;   // the file pointer after a read
     unsigned int readSize;          // the size that the read was meant to be 
 
-    char*        buffer;            // the start of our buffer (total memory)
-    char*        bufferEnd;         // the end of our buffer (total memory)
-    char*        bufferFront;       // start of the used buffer
-    char*        bufferBack;        // end of the used buffer
+    char *buffer;            // the start of our buffer (total memory)
+    char *bufferEnd;         // the end of our buffer (total memory)
+    char *bufferFront;       // start of the used buffer
+    char *bufferBack;        // end of the used buffer
     unsigned int bufferEmpty;       // how much empty space is there in our buffer
 
-    S32          binkWorking;       // Bink timer stuff ... I just copied it
-    U32          binkTimer;         // Bink timer
+    S32 binkWorking;       // Bink timer stuff ... I just copied it
+    U32 binkTimer;         // Bink timer
 
-    char         stopReads;         // flag to indicate not to issue more reads
+    char stopReads;         // flag to indicate not to issue more reads
 
     unsigned int alignPos;
 };
-typedef radBinkFile PTR4* radBinkFilePtr;
+typedef radBinkFile PTR4
+*
+radBinkFilePtr;
 
 //=============================================================================
 // BinkCallback
@@ -79,13 +85,15 @@ typedef radBinkFile PTR4* radBinkFilePtr;
 // just keep a count/
 //-----------------------------------------------------------------------------
 
-class BinkCallback : public radObject, public IRadFileCompletionCallback
-{
+class BinkCallback : public radObject, public IRadFileCompletionCallback {
 public:
-    BinkCallback( void ) : refCount( 0 ) { }
-    void OnFileOperationsComplete( void* pUserData );
-    void AddRef( ) { refCount++; };
-    void Release( ) { refCount--; };
+    BinkCallback(void) : refCount(0) {}
+
+    void OnFileOperationsComplete(void *pUserData);
+
+    void AddRef() { refCount++; };
+
+    void Release() { refCount--; };
 
     unsigned int refCount;
 };
@@ -96,21 +104,21 @@ public:
 // Description: Set variables to indicate that the read finished, and start a
 //              new read.
 //-----------------------------------------------------------------------------
-void BinkCallback::OnFileOperationsComplete( void* pUserData )
-{
-    BINKIO* bio = (BINKIO*) pUserData;
-    radBinkFilePtr binkFile = (radBinkFilePtr) bio->iodata;
+void BinkCallback::OnFileOperationsComplete(void *pUserData) {
+    BINKIO *bio = (BINKIO *) pUserData;
+    radBinkFilePtr
+            binkFile = (radBinkFilePtr)
+    bio->iodata;
 
     //
     // check that the read succeeded
     //
     unsigned int bytesRead = binkFile->readEndPosition - binkFile->filePosition;
 
-    if ( 
-        bytesRead != BASEREADSIZE && 
-        bytesRead != ::radMemoryRoundUp( binkFile->readSize, binkFile->filePtr->GetOptimalSize( ) )
-       )
-    {
+    if (
+            bytesRead != BASEREADSIZE &&
+            bytesRead != ::radMemoryRoundUp(binkFile->readSize, binkFile->filePtr->GetOptimalSize())
+            ) {
         bio->DoingARead = 0;
         bio->ReadError = 1;
         return;
@@ -123,8 +131,7 @@ void BinkCallback::OnFileOperationsComplete( void* pUserData )
     //
     // wrap around the circular buffer.
     //
-    if ( binkFile->bufferBack >= binkFile->bufferEnd )
-    {
+    if (binkFile->bufferBack >= binkFile->bufferEnd) {
         binkFile->bufferBack = binkFile->buffer;
     }
 
@@ -134,23 +141,19 @@ void BinkCallback::OnFileOperationsComplete( void* pUserData )
     binkFile->bufferEmpty -= bytesRead;
     bio->CurBufUsed += bytesRead;
 
-    if ( bio->CurBufUsed > bio->BufHighUsed )
-    {
+    if (bio->CurBufUsed > bio->BufHighUsed) {
         bio->BufHighUsed = bio->CurBufUsed;
     }
 
     //
     // update timings
     //
-    binkFile->binkTimer = RADTimerRead( ) - binkFile->binkTimer;
+    binkFile->binkTimer = RADTimerRead() - binkFile->binkTimer;
     bio->TotalTime += binkFile->binkTimer;
 
-    if ( ( binkFile->binkWorking ) || ( bio->Working ) )
-    {
+    if ((binkFile->binkWorking) || (bio->Working)) {
         bio->ThreadTime += binkFile->binkTimer;
-    }
-    else
-    {
+    } else {
         bio->IdleTime += binkFile->binkTimer;
     }
 
@@ -159,7 +162,7 @@ void BinkCallback::OnFileOperationsComplete( void* pUserData )
     //
     // Kickoff another read.
     //
-    ReadKickoff( bio );
+    ReadKickoff(bio);
 }
 
 //=============================================================================
@@ -172,11 +175,10 @@ void BinkCallback::OnFileOperationsComplete( void* pUserData )
 // Description: Create the binkcallback instance
 //-----------------------------------------------------------------------------
 
-void radBinkFileInitialize( radMemoryAllocator alloc )
-{
-    rAssert( s_BinkCallback == NULL );
-    s_BinkCallback = new( alloc ) BinkCallback;
-    rAssert( s_BinkCallback != NULL );
+void radBinkFileInitialize(radMemoryAllocator alloc) {
+    rAssert(s_BinkCallback == NULL);
+    s_BinkCallback = new(alloc) BinkCallback;
+    rAssert(s_BinkCallback != NULL);
 }
 
 //=============================================================================
@@ -185,10 +187,10 @@ void radBinkFileInitialize( radMemoryAllocator alloc )
 // Description: Destroy the binkcallback instance
 //-----------------------------------------------------------------------------
 
-void radBinkFileTerminate( void )
-{
-    rAssert( s_BinkCallback != NULL );
-    rAssertMsg( s_BinkCallback->refCount == 0, "radMovie2: trying to terminate with outstanding requests." );
+void radBinkFileTerminate(void) {
+    rAssert(s_BinkCallback != NULL);
+    rAssertMsg(s_BinkCallback->refCount == 0,
+               "radMovie2: trying to terminate with outstanding requests.");
     delete s_BinkCallback;
     s_BinkCallback = NULL;
 }
@@ -200,19 +202,19 @@ void radBinkFileTerminate( void )
 //------------------------------------------------------------------------------
 
 #ifdef RAD_GAMECUBE
-static void intelendian( void* dest, U32 size )
+static void intelendian(void* dest, U32 size)
 {
-    U32  s = ( size + 3 ) / 4;
+    U32  s = (size + 3) / 4;
     U32* d = (U32*) dest;
-    while ( s-- )
+    while (s--)
     {
-        U32 v = __lwbrx( d, 0 );
+        U32 v = __lwbrx(d, 0);
         *d++ = v;
     }
 }
 
 #else
-#define intelendian( dest, size )
+#define intelendian(dest, size)
 #endif
 
 //=============================================================================
@@ -221,78 +223,98 @@ static void intelendian( void* dest, U32 size )
 // Description: Synchronously (!) read bytes from the file.
 //-----------------------------------------------------------------------------
 
-static U32 RADLINK BinkFileReadHeader( BINKIO PTR4* bio, S32 offset, void* dest, U32 size )
+static U32 RADLINK
+BinkFileReadHeader(BINKIO
+PTR4 *bio, S32
+offset,
+void *dest, U32
+size)
 {
-    radBinkFilePtr binkFile = (radBinkFilePtr) bio->iodata;
+radBinkFilePtr binkFile = (radBinkFilePtr)
+bio->
+iodata;
 
-    if ( offset != -1 && binkFile->filePosition != offset )
-    {
-        binkFile->filePosition = offset;
-    }
+if (offset != -1 && binkFile->filePosition != offset)
+{
+binkFile->
+filePosition = offset;
+}
 
-    //
-    // Make an aligned buffer.
-    //
-    unsigned int alignment = binkFile->filePtr->GetOptimalSize( );
-    if ( alignment > 1024 ) alignment = 1024;
+//
+// Make an aligned buffer.
+//
+unsigned int alignment = binkFile->filePtr->GetOptimalSize();
+if (alignment> 1024)
+alignment = 1024;
 
-    char buffer[ 1024 + radFileOptimalMemoryAlignment ];
-    char* pBuffer = (char*) ::radMemoryRoundUp( (unsigned int) buffer, radFileOptimalMemoryAlignment );
-    unsigned int bufferSize = buffer + sizeof( buffer ) - pBuffer;
-    bufferSize = ::radMemoryRoundDown( bufferSize, alignment );
+char buffer[1024 + radFileOptimalMemoryAlignment];
+char *pBuffer = (char *) ::radMemoryRoundUp((unsigned int) buffer, radFileOptimalMemoryAlignment);
+unsigned int bufferSize = buffer + sizeof(buffer) - pBuffer;
+bufferSize = ::radMemoryRoundDown(bufferSize, alignment);
 
-    char* ptr = (char*) dest;
-    unsigned int bytesRead = 0;
-    while( size )
-    {
-        unsigned int readPosition = ::radMemoryRoundDown( binkFile->filePosition, alignment );
-        unsigned int readOffset = binkFile->filePosition - readPosition;
+char *ptr = (char *) dest;
+unsigned int bytesRead = 0;
+while(size)
+{
+unsigned int readPosition = ::radMemoryRoundDown(binkFile->filePosition, alignment);
+unsigned int readOffset = binkFile->filePosition - readPosition;
 
-        unsigned int copySize = bufferSize - readOffset;
-        unsigned int readSize = bufferSize;
-        if ( size < bufferSize )
-        {
-            copySize = size;
-            readSize = ::radMemoryRoundUp( size + readOffset, alignment );
-        }
+unsigned int copySize = bufferSize - readOffset;
+unsigned int readSize = bufferSize;
+if (size<bufferSize)
+{
+copySize = size;
+readSize = ::radMemoryRoundUp(size + readOffset, alignment);
+}
 
-        //
-        // Do a synchronous read for the header.
-        //
-        unsigned int newPosition;
-        binkFile->filePtr->SetPositionSync( readPosition );
-        binkFile->filePtr->ReadSync( pBuffer, readSize );
-        binkFile->filePtr->GetPositionSync( &newPosition );
+//
+// Do a synchronous read for the header.
+//
+unsigned int newPosition;
+binkFile->filePtr->
+SetPositionSync(readPosition);
+binkFile->filePtr->
+ReadSync(pBuffer, readSize
+);
+binkFile->filePtr->
+GetPositionSync(&newPosition);
 
-        //
-        // Error!
-        //
-        if ( readSize != ( newPosition - readPosition ) )
-        {
-            return 0;
-        }
+//
+// Error!
+//
+if (readSize != (newPosition - readPosition))
+{
+return 0;
+}
 
-        //
-        // Copy over the info.
-        //
-        memcpy( ptr, &pBuffer[ readOffset ], copySize );
-        ptr += copySize;
-        size -= copySize;
+//
+// Copy over the info.
+//
+memcpy(ptr, &pBuffer[readOffset], copySize
+);
+ptr +=
+copySize;
+size -=
+copySize;
 
-        //
-        // Set the new file position.
-        //
-        binkFile->filePosition += copySize;
-        binkFile->fileBufPos = binkFile->filePosition;
-        bytesRead += copySize;
-    }
+//
+// Set the new file position.
+//
+binkFile->filePosition +=
+copySize;
+binkFile->
+fileBufPos = binkFile->filePosition;
+bytesRead +=
+copySize;
+}
 
-    unsigned int temp = ( binkFile->fileSize - binkFile->fileBufPos );
-    bio->CurBufSize = ( temp < bio->BufSize ) ? temp : bio->BufSize;
+unsigned int temp = (binkFile->fileSize - binkFile->fileBufPos);
+bio->
+CurBufSize = (temp < bio->BufSize) ? temp : bio->BufSize;
 
-    intelendian( dest, bytesRead );
+intelendian(dest, bytesRead);
 
-    return( bytesRead );
+return(bytesRead);
 }
 
 //=============================================================================
@@ -301,64 +323,89 @@ static U32 RADLINK BinkFileReadHeader( BINKIO PTR4* bio, S32 offset, void* dest,
 // Description: Start a new read if possible.
 //-----------------------------------------------------------------------------
 
-static void ReadKickoff( BINKIO PTR4* bio )
+static void ReadKickoff(BINKIO
+PTR4 *bio
+)
 {
-    radBinkFilePtr binkFile = (radBinkFilePtr) bio->iodata;
+radBinkFilePtr binkFile = (radBinkFilePtr)
+bio->
+iodata;
 
-    if ( binkFile->stopReads == 1 ) return;
-    if ( bio->DoingARead ) return;
+if (binkFile->stopReads == 1) return;
+if (bio->DoingARead) return;
 
-    unsigned int amountLeft = 
-        binkFile->filePosition >= binkFile->fileSize ? 0 : binkFile->fileSize - binkFile->filePosition;
+unsigned int amountLeft =
+        binkFile->filePosition >= binkFile->fileSize ? 0 : binkFile->fileSize -
+                                                           binkFile->filePosition;
 
-    if ( ( binkFile->bufferEmpty >= BASEREADSIZE ) && amountLeft > 0 )
-    {
-        // issue a new read.
-        binkFile->binkWorking = bio->Working;
-        binkFile->binkTimer = RADTimerRead( );
+if ((binkFile->bufferEmpty>= BASEREADSIZE) && amountLeft> 0)
+{
+// issue a new read.
+binkFile->
+binkWorking = bio->Working;
+binkFile->
+binkTimer = RADTimerRead();
 
-        bio->DoingARead = 1;
+bio->
+DoingARead = 1;
 
-        unsigned int readSize;
-        if ( amountLeft > BASEREADSIZE )
-        {
-            binkFile->readSize = BASEREADSIZE;
-            readSize = BASEREADSIZE;
-        }
-        else
-        {
-            binkFile->readSize = amountLeft;
-            readSize = ::radMemoryRoundUp( amountLeft, binkFile->filePtr->GetOptimalSize( ) );
-        }
+unsigned int readSize;
+if (amountLeft> BASEREADSIZE)
+{
+binkFile->
+readSize = BASEREADSIZE;
+readSize = BASEREADSIZE;
+}
+else
+{
+binkFile->
+readSize = amountLeft;
+readSize = ::radMemoryRoundUp(amountLeft, binkFile->filePtr->GetOptimalSize());
+}
 
-        //
-        // Check our alignment.
-        //
-        unsigned int alignSize = binkFile->filePosition % binkFile->filePtr->GetOptimalSize( );
-        if ( alignSize != 0 )
-        {
-            rAssert( binkFile->alignPos == 0 );
-            rAssert( binkFile->bufferBack == binkFile->buffer );
-            rAssert( binkFile->filePosition == binkFile->fileBufPos );
+//
+// Check our alignment.
+//
+unsigned int alignSize = binkFile->filePosition % binkFile->filePtr->GetOptimalSize();
+if (alignSize != 0)
+{
+rAssert(binkFile
+->alignPos == 0);
+rAssert(binkFile
+->bufferBack == binkFile->buffer);
+rAssert(binkFile
+->filePosition == binkFile->fileBufPos);
 
-            binkFile->alignPos = alignSize;
-            binkFile->filePosition -= alignSize;
-            binkFile->fileBufPos -= alignSize;
-        }
+binkFile->
+alignPos = alignSize;
+binkFile->filePosition -=
+alignSize;
+binkFile->fileBufPos -=
+alignSize;
+}
 
-        //
-        // issue a read request.
-        //
-        binkFile->filePtr->SetPositionAsync( binkFile->filePosition );
-        binkFile->filePtr->ReadAsync( binkFile->bufferBack, readSize );
-        binkFile->filePtr->GetPositionAsync( &binkFile->readEndPosition );
-        binkFile->filePtr->AddCompletionCallback( s_BinkCallback, bio );
-    }
-    else
-    {
-        // if we can't fill anymore, then set the max size to the current size
-        bio->CurBufSize = bio->CurBufUsed;
-    }
+//
+// issue a read request.
+//
+binkFile->filePtr->
+SetPositionAsync(binkFile
+->filePosition);
+binkFile->filePtr->
+ReadAsync(binkFile
+->bufferBack, readSize);
+binkFile->filePtr->
+GetPositionAsync(&binkFile
+->readEndPosition);
+binkFile->filePtr->
+AddCompletionCallback(s_BinkCallback, bio
+);
+}
+else
+{
+// if we can't fill anymore, then set the max size to the current size
+bio->
+CurBufSize = bio->CurBufUsed;
+}
 }
 
 //=============================================================================
@@ -367,24 +414,27 @@ static void ReadKickoff( BINKIO PTR4* bio )
 // Description: Start a new read if possible and service.
 //-----------------------------------------------------------------------------
 
-static U32 RADLINK BinkFileIdle( BINKIO PTR4* bio )
+static U32 RADLINK
+BinkFileIdle(BINKIO
+PTR4 *bio
+)
 {
-    if ( bio->ReadError )
-    {
-        return( 0 );
-    }
+if (bio->ReadError)
+{
+return(0);
+}
 
-    if ( bio->DoingARead )
-    {
-        ::radFileService( );
-    }
+if (bio->DoingARead)
+{
+::radFileService();
+}
 
-    if ( !bio->DoingARead )
-    {
-        ReadKickoff( bio );
-    }
+if (!bio->DoingARead)
+{
+ReadKickoff(bio);
+}
 
-    return( bio->DoingARead );
+return(bio->DoingARead);
 }
 
 //=============================================================================
@@ -393,15 +443,21 @@ static U32 RADLINK BinkFileIdle( BINKIO PTR4* bio )
 // Description: Synchronous tear-down. TODO: remove this.
 //-----------------------------------------------------------------------------
 
-static void CancelReadRequests( BINKIO PTR4* bio )
+static void CancelReadRequests(BINKIO
+PTR4 *bio
+)
 {
-    radBinkFilePtr binkFile = (radBinkFilePtr) bio->iodata;
-    binkFile->stopReads = 1;
-    while( bio->DoingARead )
-    {
-        ::radFileService( );
-    }
-    binkFile->stopReads = 0;
+radBinkFilePtr binkFile = (radBinkFilePtr)
+bio->
+iodata;
+binkFile->
+stopReads = 1;
+while(bio->DoingARead)
+{
+::radFileService();
+}
+binkFile->
+stopReads = 0;
 }
 
 //=============================================================================
@@ -411,140 +467,192 @@ static void CancelReadRequests( BINKIO PTR4* bio )
 //              the frame needs to be skipped.
 //-----------------------------------------------------------------------------
 
-static U32  RADLINK BinkFileReadFrame( BINKIO PTR4* bio, U32 framenum, S32 offset, void * dest, U32 size )
+static U32 RADLINK
+BinkFileReadFrame(BINKIO
+PTR4 *bio, U32
+framenum,
+S32 offset,
+void *dest, U32
+size)
 {
-    radBinkFilePtr binkFile = (radBinkFilePtr) bio->iodata;
+radBinkFilePtr binkFile = (radBinkFilePtr)
+bio->
+iodata;
 
-    if ( bio->ReadError ) return 0;
+if (bio->ReadError) return 0;
 
-    U32 timer = RADTimerRead( );
-    void* odest = dest;
-    unsigned int transferAmount = 0;
+U32 timer = RADTimerRead();
+void *odest = dest;
+unsigned int transferAmount = 0;
 
-    if ( ( offset != -1 ) && ( binkFile->fileBufPos != offset ) )
-    {
-        rReleaseAssert( false );
-        if ( ( binkFile->fileBufPos < (unsigned int) offset ) && ( binkFile->filePosition >= (unsigned int) offset ) )
-        {
-            unsigned int amount = offset = binkFile->fileBufPos;
-            binkFile->fileBufPos = offset;
-            binkFile->bufferEmpty += amount;
-            bio->CurBufUsed -= amount;
-            if ( binkFile->bufferFront > binkFile->bufferEnd )
-            {
-                binkFile->bufferFront -= bio->BufSize;
-            }
-        }
-        else
-        {
-            // We've got nothing in our buffer!
-            CancelReadRequests( bio );
-            
-            // check this set of the file position
-            rReleaseAssert( false );
+if ((offset != -1) && (binkFile->fileBufPos != offset))
+{
+rReleaseAssert(false);
+if ((binkFile->
 
-            binkFile->filePosition = offset;
-            binkFile->fileBufPos = offset;
-            binkFile->bufferEmpty = bio->BufSize;
-            bio->CurBufUsed = 0;
-            binkFile->bufferFront = binkFile->buffer;
-            binkFile->bufferBack = binkFile->buffer;
-        }
-    }
+fileBufPos<(unsigned int)
 
-    if ( !binkFile->buffer )
-    {
-        //
-        // No read buffer, so read synchronously.
-        //
-        U32 timer2 = RADTimerRead( );
+offset) && (binkFile->filePosition>= (unsigned int) offset))
+{
+unsigned int amount = offset = binkFile->fileBufPos;
+binkFile->
+fileBufPos = offset;
+binkFile->bufferEmpty +=
+amount;
+bio->CurBufUsed -=
+amount;
+if (binkFile->bufferFront> binkFile->bufferEnd)
+{
+binkFile->bufferFront -= bio->
+BufSize;
+}
+}
+else
+{
+// We've got nothing in our buffer!
+CancelReadRequests(bio);
 
-        unsigned int newPosition;
-        binkFile->filePtr->SetPositionSync( binkFile->filePosition );
-        binkFile->filePtr->ReadSync( dest, size );
-        binkFile->filePtr->GetPositionSync( &newPosition );
+// check this set of the file position
+rReleaseAssert(false);
 
-        //
-        // Set the new file position.
-        //
-        unsigned int bytesRead = newPosition - binkFile->filePosition;
-        if ( bytesRead < size )
-        {
-            bio->ReadError = 1;
-        }
-        binkFile->filePosition = newPosition;
-        binkFile->fileBufPos = newPosition;
-        bio->BytesRead += bytesRead;
-        transferAmount += bytesRead;
+binkFile->
+filePosition = offset;
+binkFile->
+fileBufPos = offset;
+binkFile->
+bufferEmpty = bio->BufSize;
+bio->
+CurBufUsed = 0;
+binkFile->
+bufferFront = binkFile->buffer;
+binkFile->
+bufferBack = binkFile->buffer;
+}
+}
 
-        //
-        // Update the timers.
-        //
-        U32 endTime = RADTimerRead( );
-        bio->TotalTime += ( endTime - timer2 );
-        bio->ForegroundTime += ( endTime - timer );
-    }
-    else
-    {
-        while( ( size > 0 ) && ( bio->ReadError == 0 ) )
-        {
-            //
-            // Make sure we're we've got reads going on.
-            //
-            if ( bio->DoingARead )
-            {
-                ::radFileService( );
-            }
-            ReadKickoff( bio );
+if (!binkFile->buffer)
+{
+//
+// No read buffer, so read synchronously.
+//
+U32 timer2 = RADTimerRead();
 
-            U32 copySize = bio->CurBufUsed;
+unsigned int newPosition;
+binkFile->filePtr->
+SetPositionSync(binkFile
+->filePosition);
+binkFile->filePtr->
+ReadSync(dest, size
+);
+binkFile->filePtr->
+GetPositionSync(&newPosition);
 
-            if ( copySize )
-            {
-                copySize = ( copySize > size ) ? size : copySize;
-                copySize -= binkFile->alignPos;
+//
+// Set the new file position.
+//
+unsigned int bytesRead = newPosition - binkFile->filePosition;
+if (bytesRead<size)
+{
+bio->
+ReadError = 1;
+}
+binkFile->
+filePosition = newPosition;
+binkFile->
+fileBufPos = newPosition;
+bio->BytesRead +=
+bytesRead;
+transferAmount +=
+bytesRead;
 
-                size -= copySize;
-                transferAmount += copySize;
-                binkFile->fileBufPos += copySize + binkFile->alignPos;
+//
+// Update the timers.
+//
+U32 endTime = RADTimerRead();
+bio->TotalTime += (endTime - timer2);
+bio->ForegroundTime += (endTime - timer);
+}
+else
+{
+while((size> 0) && (bio->ReadError == 0))
+{
+//
+// Make sure we're we've got reads going on.
+//
+if (bio->DoingARead)
+{
+::radFileService();
+}
+ReadKickoff(bio);
 
-                U32 front = binkFile->bufferEnd - binkFile->bufferFront - binkFile->alignPos;
-                if ( front <= copySize )
-                {
-                    memcpy( dest, binkFile->bufferFront + binkFile->alignPos, front );
-                    dest = ( (U8*) dest ) + front;
-                    binkFile->bufferFront = binkFile->buffer;
-                    copySize -= front;
+U32 copySize = bio->CurBufUsed;
 
-                    bio->CurBufUsed -= ( (S32) front + binkFile->alignPos );
-                    binkFile->bufferEmpty += front + binkFile->alignPos;
-                    binkFile->alignPos = 0;
-                }
+if (copySize)
+{
+copySize = (copySize > size) ? size : copySize;
+copySize -= binkFile->
+alignPos;
 
-                if ( copySize > 0 )
-                {
-                    memcpy( dest, binkFile->bufferFront + binkFile->alignPos, copySize );
-                    dest = ( (U8*) dest ) + copySize;
-                    binkFile->bufferFront += copySize + binkFile->alignPos;
-                    bio->CurBufUsed -= ( (S32) copySize + binkFile->alignPos );
-                    binkFile->bufferEmpty += copySize + binkFile->alignPos;
-                    binkFile->alignPos = 0;
-                }
-            }
-        }
-        bio->ForegroundTime += RADTimerRead() - timer;
-    }
+size -=
+copySize;
+transferAmount +=
+copySize;
+binkFile->fileBufPos += copySize + binkFile->
+alignPos;
 
-    unsigned int tmp = binkFile->fileSize - binkFile->fileBufPos;
-    bio->CurBufSize = ( tmp < bio->BufSize ) ? tmp : bio->BufSize;
-    if ( ( bio->CurBufUsed + BASEREADSIZE ) > bio->CurBufSize )
-    {
-        bio->CurBufSize = bio->CurBufUsed;
-    }
+U32 front = binkFile->bufferEnd - binkFile->bufferFront - binkFile->alignPos;
+if (front <= copySize)
+{
+memcpy(dest, binkFile
+->bufferFront + binkFile->alignPos, front);
+dest = ((U8 *) dest) + front;
+binkFile->
+bufferFront = binkFile->buffer;
+copySize -=
+front;
 
-    intelendian( odest, transferAmount );
+bio->CurBufUsed -= ((S32) front + binkFile->alignPos);
+binkFile->bufferEmpty += front + binkFile->
+alignPos;
+binkFile->
+alignPos = 0;
+}
 
-    return( transferAmount );
+if (copySize> 0)
+{
+memcpy(dest, binkFile
+->bufferFront + binkFile->alignPos, copySize);
+dest = ((U8 *) dest) + copySize;
+binkFile->bufferFront += copySize + binkFile->
+alignPos;
+bio->CurBufUsed -= ((S32) copySize + binkFile->alignPos);
+binkFile->bufferEmpty += copySize + binkFile->
+alignPos;
+binkFile->
+alignPos = 0;
+}
+}
+}
+bio->ForegroundTime +=
+
+RADTimerRead()
+
+-
+timer;
+}
+
+unsigned int tmp = binkFile->fileSize - binkFile->fileBufPos;
+bio->
+CurBufSize = (tmp < bio->BufSize) ? tmp : bio->BufSize;
+if ((bio->CurBufUsed + BASEREADSIZE)> bio->CurBufSize)
+{
+bio->
+CurBufSize = bio->CurBufUsed;
+}
+
+intelendian(odest, transferAmount);
+
+return(transferAmount);
 }
 
 //=============================================================================
@@ -553,12 +661,17 @@ static U32  RADLINK BinkFileReadFrame( BINKIO PTR4* bio, U32 framenum, S32 offse
 // Description: Return the recommended buffer size.
 //-----------------------------------------------------------------------------
 
-static U32 RADLINK BinkFileGetBufferSize( BINKIO PTR4* bio, U32 size )
+static U32 RADLINK
+BinkFileGetBufferSize(BINKIO
+PTR4 *bio, U32
+size)
 {
-    radBinkFilePtr binkFile = (radBinkFilePtr) bio->iodata;
+radBinkFilePtr binkFile = (radBinkFilePtr)
+bio->
+iodata;
 
-    size = ::radMemoryRoundUp( size, BASEREADSIZE );
-    return( size );
+size = ::radMemoryRoundUp(size, BASEREADSIZE);
+return(size);
 }
 
 //=============================================================================
@@ -567,25 +680,45 @@ static U32 RADLINK BinkFileGetBufferSize( BINKIO PTR4* bio, U32 size )
 // Description: Initialize our internal variables.
 //-----------------------------------------------------------------------------
 
-static void RADLINK BinkFileSetInfo( BINKIO PTR4* bio, void PTR4* buf, U32 size, U32 filesize, U32 simulate )
+static void RADLINK
+BinkFileSetInfo(BINKIO
+PTR4 *bio,
+void PTR4
+* buf,
+U32 size, U32
+filesize,
+U32 simulate
+)
 {
-    radBinkFilePtr binkFile = (radBinkFilePtr) bio->iodata;
+radBinkFilePtr binkFile = (radBinkFilePtr)
+bio->
+iodata;
 
-    rAssert( (unsigned int) buf % radFileOptimalMemoryAlignment == 0 );
+rAssert((unsigned int) buf % radFileOptimalMemoryAlignment == 0);
 
-    unsigned int realSize = ::radMemoryRoundDown( size, BASEREADSIZE );
+unsigned int realSize = ::radMemoryRoundDown(size, BASEREADSIZE);
 
-    binkFile->alignPos = 0;
-    binkFile->buffer = (char*) buf;
-    binkFile->bufferFront = binkFile->buffer;
-    binkFile->bufferBack = binkFile->buffer;
-    binkFile->bufferEnd = binkFile->buffer + realSize;
-    binkFile->bufferEmpty = realSize;
-    binkFile->fileSize = filesize;
-    binkFile->stopReads = 0;
+binkFile->
+alignPos = 0;
+binkFile->
+buffer = (char *) buf;
+binkFile->
+bufferFront = binkFile->buffer;
+binkFile->
+bufferBack = binkFile->buffer;
+binkFile->
+bufferEnd = binkFile->buffer + realSize;
+binkFile->
+bufferEmpty = realSize;
+binkFile->
+fileSize = filesize;
+binkFile->
+stopReads = 0;
 
-    bio->BufSize = realSize;
-    bio->CurBufUsed = 0;
+bio->
+BufSize = realSize;
+bio->
+CurBufUsed = 0;
 }
 
 //=============================================================================
@@ -594,14 +727,23 @@ static void RADLINK BinkFileSetInfo( BINKIO PTR4* bio, void PTR4* buf, U32 size,
 // Description: Close the file.
 //-----------------------------------------------------------------------------
 
-static void RADLINK BinkFileClose( BINKIO PTR4* bio )
+static void RADLINK
+BinkFileClose(BINKIO
+PTR4 *bio
+)
 {
-    radBinkFilePtr binkFile = (radBinkFilePtr) bio->iodata;
+radBinkFilePtr binkFile = (radBinkFilePtr)
+bio->
+iodata;
 
-    CancelReadRequests( bio );
+CancelReadRequests(bio);
 
-    binkFile->filePtr->Release( );
-    binkFile->filePtr = NULL;
+binkFile->filePtr->
+
+Release();
+
+binkFile->
+filePtr = NULL;
 }
 
 //=============================================================================
@@ -610,26 +752,49 @@ static void RADLINK BinkFileClose( BINKIO PTR4* bio )
 // Description: Open the file.
 //-----------------------------------------------------------------------------
 
-S32 RADLINK radBinkFileOpen( BINKIO PTR4* bio, const char PTR4* name, U32 flags )
+S32 RADLINK
+radBinkFileOpen(BINKIO
+PTR4 *bio,
+const char PTR4
+* name,
+U32 flags
+)
 {
-    rAssert( sizeof( radBinkFile ) <= sizeof( bio->iodata ) );
-//    rAssert( flags & BINKFILEHANDLE );
+rAssert(sizeof(radBinkFile) <= sizeof(bio->iodata));
+//    rAssert(flags & BINKFILEHANDLE);
 
-    memset( bio, 0, sizeof( BINKIO ) );
+memset(bio,
+0, sizeof(BINKIO));
 
-    radBinkFilePtr binkFile = (radBinkFilePtr) bio->iodata;
+radBinkFilePtr binkFile = (radBinkFilePtr)
+bio->
+iodata;
 
-    ::radFileOpenSync( &binkFile->filePtr, name );
-    rAssert( binkFile->filePtr != NULL );
-    rAssert( binkFile->filePtr->IsOpen( ) );
-    binkFile->filePtr->SetBufferedRead( IRadFile::BufferedReadOff );
+::radFileOpenSync(&binkFile
+->filePtr, name);
+rAssert(binkFile
+->filePtr != NULL);
+rAssert(binkFile
+->filePtr->
 
-    bio->ReadHeader = BinkFileReadHeader;
-    bio->ReadFrame = BinkFileReadFrame;
-    bio->GetBufferSize = BinkFileGetBufferSize;
-    bio->SetInfo = BinkFileSetInfo;
-    bio->Idle = BinkFileIdle;
-    bio->Close = BinkFileClose;
+IsOpen()
 
-    return( 1 );
+);
+binkFile->filePtr->
+SetBufferedRead(IRadFile::BufferedReadOff);
+
+bio->
+ReadHeader = BinkFileReadHeader;
+bio->
+ReadFrame = BinkFileReadFrame;
+bio->
+GetBufferSize = BinkFileGetBufferSize;
+bio->
+SetInfo = BinkFileSetInfo;
+bio->
+Idle = BinkFileIdle;
+bio->
+Close = BinkFileClose;
+
+return(1);
 }

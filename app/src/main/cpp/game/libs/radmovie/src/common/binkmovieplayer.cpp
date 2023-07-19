@@ -27,16 +27,16 @@
 //
 // We've only tested Bink version 1.5
 //
-#if ( !defined BINKMAJORVERSION ) || ( BINKMAJORVERSION != 1  ) || \
-    ( !defined BINKMINORVERSION ) || ( BINKMINORVERSION != 5  )
-    #error "Only Bink 1.5 is supported."
+#if (!defined BINKMAJORVERSION) || (BINKMAJORVERSION != 1) || \
+    (!defined BINKMINORVERSION) || (BINKMINORVERSION != 5)
+#error "Only Bink 1.5 is supported."
 #endif
 
 //
 // Support for the old header before version 1.5s
 //
-#if ( defined BINKSUBVERSION ) && ( BINKSUBVERSION < 19 )
-    #include <rad.h>
+#if (defined BINKSUBVERSION) && (BINKSUBVERSION <19)
+#include <rad.h>
 #endif
 
 #include <radsoundmath.hpp>
@@ -58,7 +58,7 @@ static void* s_BinkAramBuffer = NULL;
 static unsigned int s_AllocCount = 0;
 
 #ifdef RAD_GAMECUBE
-    #define BINK_ARAM_SIZE 0x0025800
+#define BINK_ARAM_SIZE 0x0025800
 #endif
 //=============================================================================
 // Local Functions
@@ -74,13 +74,13 @@ static unsigned int s_AllocCount = 0;
 //=============================================================================
 
 #ifndef RAD_GAMECUBE
-static void * __stdcall BinkAllocate( unsigned long bytes )
+static void * __stdcall BinkAllocate(unsigned long bytes)
 #else
-static void * BinkAllocate( unsigned long bytes )
+static void * BinkAllocate(unsigned long bytes)
 #endif
 {
-    ::radMemorySetAllocationName( "BinkAllocate" );
-    return ::radMemoryAllocAligned( g_CurrentMovieAllocator, bytes, radFileOptimalMemoryAlignment );   
+    ::radMemorySetAllocationName("BinkAllocate");
+    return ::radMemoryAllocAligned(g_CurrentMovieAllocator, bytes, radFileOptimalMemoryAlignment);
 }
 
 //=============================================================================
@@ -88,18 +88,18 @@ static void * BinkAllocate( unsigned long bytes )
 //=============================================================================
 
 #ifndef RAD_GAMECUBE
-static void __stdcall BinkFree( void * pBuffer )
+static void __stdcall BinkFree(void * pBuffer)
 #else
-static void BinkFree( void * pBuffer )
+static void BinkFree(void * pBuffer)
 #endif
 {
-    ::radMemoryFreeAligned( pBuffer );
+    ::radMemoryFreeAligned(pBuffer);
 }
 
 //
 // These are gamecube only functions that are required by Bink to allocated
 // memory from ARAM
-// 
+//
 
 #ifdef RAD_GAMECUBE
 
@@ -107,12 +107,12 @@ static void BinkFree( void * pBuffer )
 // ::BinkAramAllocate
 //=============================================================================
 
-static void * BinkAramAllocate( unsigned long bytes )
+static void * BinkAramAllocate(unsigned long bytes)
 {
-    rTuneAssert( bytes <= BINK_ARAM_SIZE );
+    rTuneAssert(bytes <= BINK_ARAM_SIZE);
 
     s_AllocCount++;
-    if ( s_AllocCount == 1 )
+    if (s_AllocCount == 1)
     {
         return s_BinkAramBuffer;
     }
@@ -126,9 +126,9 @@ static void * BinkAramAllocate( unsigned long bytes )
 // ::BinkAramFree
 //=============================================================================
 
-static void BinkAramFree( void * pBuffer )
+static void BinkAramFree(void * pBuffer)
 {
-    rAssert( pBuffer == s_BinkAramBuffer );
+    rAssert(pBuffer == s_BinkAramBuffer);
     s_AllocCount--;
 }
 
@@ -138,48 +138,48 @@ static void BinkAramFree( void * pBuffer )
 // Static initialization
 //=============================================================================
 
-radMoviePlayerBink * radLinkedClass< radMoviePlayerBink >::s_pLinkedClassHead = NULL;
-radMoviePlayerBink * radLinkedClass< radMoviePlayerBink >::s_pLinkedClassTail = NULL;
+radMoviePlayerBink * radLinkedClass<radMoviePlayerBink>::s_pLinkedClassHead = NULL;
+radMoviePlayerBink * radLinkedClass<radMoviePlayerBink>::s_pLinkedClassTail = NULL;
 
 //=============================================================================
 // radMoviePlayerBink::radMoviePlayerBink
 //=============================================================================
 
-radMoviePlayerBink::radMoviePlayerBink( void )
+radMoviePlayerBink::radMoviePlayerBink(void)
     :
-    radRefCount( 0 ),
-    m_refIRadMovieRenderLoop( NULL ),
-    m_refIRadMovieRenderStrategy( NULL ),
-    m_State( NoData ),
-    m_BinkHandle( NULL ),
-    m_Volume( 1.0f ),
-    m_Pan( 0.0f ),
-    m_AudioTrackIndex( 0 ),
-    m_IsPresentationOutstanding( false ),
-    m_CheckAudio( false )
+    radRefCount(0),
+    m_refIRadMovieRenderLoop(NULL),
+    m_refIRadMovieRenderStrategy(NULL),
+    m_State(NoData),
+    m_BinkHandle(NULL),
+    m_Volume(1.0f),
+    m_Pan(0.0f),
+    m_AudioTrackIndex(0),
+    m_IsPresentationOutstanding(false),
+    m_CheckAudio(false)
 {
-    rAssert( g_MovieInitialized == true );
+    rAssert(g_MovieInitialized == true);
 }
 
 //=============================================================================
 // radMoviePlayerBink::~radMoviePlayerBink
 //=============================================================================
 
-radMoviePlayerBink::~radMoviePlayerBink( void )
+radMoviePlayerBink::~radMoviePlayerBink(void)
 {
     // Just to be sure
 
-    Unload( );
+    Unload();
 }
 
 //=============================================================================
 // radMoviePlayerBink::Initialize
 //=============================================================================
 
-void radMoviePlayerBink::Initialize( IRadMovieRenderLoop * pIRadMovieRenderLoop, IRadMovieRenderStrategy * pIRadMovieRenderStrategy )
+void radMoviePlayerBink::Initialize(IRadMovieRenderLoop * pIRadMovieRenderLoop, IRadMovieRenderStrategy * pIRadMovieRenderStrategy)
 {
-    rAssert( m_refIRadMovieRenderLoop == NULL );
-    rAssert( m_refIRadMovieRenderStrategy == NULL );
+    rAssert(m_refIRadMovieRenderLoop == NULL);
+    rAssert(m_refIRadMovieRenderStrategy == NULL);
 
     m_refIRadMovieRenderLoop = pIRadMovieRenderLoop;
     m_refIRadMovieRenderStrategy = pIRadMovieRenderStrategy;
@@ -189,22 +189,22 @@ void radMoviePlayerBink::Initialize( IRadMovieRenderLoop * pIRadMovieRenderLoop,
 // radMoviePlayerBink::Render
 //=============================================================================
 
-bool radMoviePlayerBink::Render( void )
+bool radMoviePlayerBink::Render(void)
 {
-    rAssert( m_refIRadMovieRenderStrategy != NULL );
+    rAssert(m_refIRadMovieRenderStrategy != NULL);
     m_IsPresentationOutstanding = false;
 
-    return m_refIRadMovieRenderStrategy->Render( );
+    return m_refIRadMovieRenderStrategy->Render();
 }
 
 //=============================================================================
 // radMoviePlayerBink::Load
 //=============================================================================
 
-void radMoviePlayerBink::Load( const char * pVideoFileName, unsigned int audioTrackIndex )
+void radMoviePlayerBink::Load(const char * pVideoFileName, unsigned int audioTrackIndex)
 {
-    rAssert( m_refIRadMovieRenderStrategy != NULL );
-   
+    rAssert(m_refIRadMovieRenderStrategy != NULL);
+
     m_IsPresentationOutstanding = false;
 
     //
@@ -213,76 +213,76 @@ void radMoviePlayerBink::Load( const char * pVideoFileName, unsigned int audioTr
 
     m_AudioTrackIndex = audioTrackIndex;
 
-    if( audioTrackIndex != radMovie_NoAudioTrack )
+    if(audioTrackIndex != radMovie_NoAudioTrack)
     {
         // Override bink's allocation system
 
-        ::RADSetMemory( BinkAllocate, BinkFree );
+        ::RADSetMemory(BinkAllocate, BinkFree);
 
-        // On the gcn we need to tell bink where they can put the sound 
+        // On the gcn we need to tell bink where they can put the sound
 
-        #ifdef RAD_GAMECUBE
-        ::RADSetAudioMemory( BinkAramAllocate, BinkAramFree );
-        #endif // RAD_GAMECUBE
+#ifdef RAD_GAMECUBE
+        ::RADSetAudioMemory(BinkAramAllocate, BinkAramFree);
+#endif // RAD_GAMECUBE
 
         // Use direct sound on win32
 
-        #ifdef RAD_WIN32
-        ::BinkSoundUseDirectSound( radSoundHalSystem::GetInstance( )->GetDirectSound( ) );
-        #endif // RAD_WIN32
+#ifdef RAD_WIN32
+        ::BinkSoundUseDirectSound(radSoundHalSystem::GetInstance()->GetDirectSound());
+#endif // RAD_WIN32
 
         // We tell bink to play the one sound track
         // specified in the audioTrackIndex array
 
-        ::BinkSetSoundTrack( 1, & m_AudioTrackIndex );
+        ::BinkSetSoundTrack(1, & m_AudioTrackIndex);
     }
     else
     {
         // We tell bink not to play any sound track at all
 
-        ::BinkSetSoundTrack( 0, NULL );
+        ::BinkSetSoundTrack(0, NULL);
     }
 
     //
     // Now tell bink to open the movie.  We specify that it
     // should use the sound track that we declared above.
     //
-    // Also... Bink doesn't give use a way to identify which movie 
-    // is asking for memory at what time.  This is kind of a lame 
+    // Also... Bink doesn't give use a way to identify which movie
+    // is asking for memory at what time.  This is kind of a lame
     // way to work around the problem, but I'll assume that I
     // can set a global to store the current allocator.  All allocations
     // should happen here?
     //
 
-    g_CurrentMovieAllocator = GetThisAllocator( );
-    ::BinkSetIO( radBinkFileOpen );
-    m_BinkHandle = ::BinkOpen( pVideoFileName, BINKSNDTRACK | BINKIOPROCESSOR | BINKNOTHREADEDIO );
+    g_CurrentMovieAllocator = GetThisAllocator();
+    ::BinkSetIO(radBinkFileOpen);
+    m_BinkHandle = ::BinkOpen(pVideoFileName, BINKSNDTRACK | BINKIOPROCESSOR | BINKNOTHREADEDIO);
 
-    if ( m_BinkHandle != NULL )
+    if (m_BinkHandle != NULL)
     {
         //
         // Just in case, we'll make sure that the movie is paused
         //
 
-        ::BinkPause( m_BinkHandle, true );
+        ::BinkPause(m_BinkHandle, true);
 
         // The old movie player overrode the default speaker
         // settings so I will too
 
-        #ifdef RAD_XBOX
+#ifdef RAD_XBOX
 
         unsigned long mixBins[2];
         mixBins[0] = DSMIXBIN_FRONT_LEFT;
         mixBins[1] = DSMIXBIN_FRONT_RIGHT;
 
-        ::BinkSetMixBins( m_BinkHandle, m_AudioTrackIndex, mixBins, 2 );
+        ::BinkSetMixBins(m_BinkHandle, m_AudioTrackIndex, mixBins, 2);
 
-        #endif // RAD_XBOX
+#endif // RAD_XBOX
     }
     else
     {
-        rTunePrintf( "ERROR radMoviePlayerBink [%s] BinkOpen: %s\n", pVideoFileName, BinkGetError( ) );
-        SetState( IRadMoviePlayer2::NoData );
+        rTunePrintf("ERROR radMoviePlayerBink [%s] BinkOpen: %s\n", pVideoFileName, BinkGetError());
+        SetState(IRadMoviePlayer2::NoData);
         return;
     }
 
@@ -290,46 +290,46 @@ void radMoviePlayerBink::Load( const char * pVideoFileName, unsigned int audioTr
     // Make sure that the audio will play back at the appropriate levels
     //
 
-    float volume = GetVolume( );
-    float pan = GetPan( );
+    float volume = GetVolume();
+    float pan = GetPan();
     m_Volume = 1.0f;
     m_Pan = 0.0f;
     m_CheckAudio = false;
-    SetVolume( volume );
-    SetPan( pan );
+    SetVolume(volume);
+    SetPan(pan);
     m_CheckAudio = true;
 
     //
     // Prepare the render strategy
     //
 
-    m_refIRadMovieRenderStrategy->ChangeParameters( m_BinkHandle->Width, m_BinkHandle->Height );
+    m_refIRadMovieRenderStrategy->ChangeParameters(m_BinkHandle->Width, m_BinkHandle->Height);
 
     //
     // We're ready to play
-    // 
+    //
 
-    SetState( IRadMoviePlayer2::ReadyToPlay );
+    SetState(IRadMoviePlayer2::ReadyToPlay);
 }
 
 //=============================================================================
 // radMoviePlayerBink::Unload
 //=============================================================================
 
-void radMoviePlayerBink::Unload( void )
+void radMoviePlayerBink::Unload(void)
 {
-    if( m_State != IRadMoviePlayer2::NoData )
+    if(m_State != IRadMoviePlayer2::NoData)
     {
-        rAssert( m_BinkHandle != NULL );
+        rAssert(m_BinkHandle != NULL);
 
         // I'll print out a bink summary and then close the movie
 
-        #ifndef RAD_RELEASE
+#ifndef RAD_RELEASE
 
         BINKSUMMARY sum;
-        ::BinkGetSummary( m_BinkHandle, & sum );
+        ::BinkGetSummary(m_BinkHandle, & sum);
 
-        rTunePrintf( 
+        rTunePrintf(
             "//===================================//\n"
             "//        RADMOVIE BINK SUMMARY      //\n"
             "//===================================//\n"
@@ -346,9 +346,9 @@ void radMoviePlayerBink::Unload( void )
             "//           SoundSkips [%10d] //\n"
             "//        TotalBlitTime [%10d] //\n"
             "//        TotalReadTime [%10d] //\n",
-            sum.Width, sum.Height, sum.TotalTime, sum.FileFrameRate / ( float ) sum.FileFrameRateDiv,
-            sum.FrameRate / ( float ) sum.FrameRateDiv, sum.TotalOpenTime, sum.TotalFrames, sum.TotalPlayedFrames,
-            sum.SkippedFrames, sum.SkippedBlits, sum.SoundSkips, sum.TotalBlitTime, sum.TotalReadTime );
+            sum.Width, sum.Height, sum.TotalTime, sum.FileFrameRate / (float) sum.FileFrameRateDiv,
+            sum.FrameRate / (float) sum.FrameRateDiv, sum.TotalOpenTime, sum.TotalFrames, sum.TotalPlayedFrames,
+            sum.SkippedFrames, sum.SkippedBlits, sum.SoundSkips, sum.TotalBlitTime, sum.TotalReadTime);
 
         rTunePrintf(
             "// TotalVideoDecompTime [%10d] //\n"
@@ -371,14 +371,14 @@ void radMoviePlayerBink::Unload( void )
             sum.TotalVideoDecompTime, sum.TotalAudioDecompTime, sum.TotalIdleReadTime, sum.TotalBackReadTime,
             sum.TotalReadSpeed, sum.SlowestFrameTime, sum.Slowest2FrameTime, sum.SlowestFrameNum,
             sum.Slowest2FrameNum, sum.AverageDataRate, sum.AverageFrameSize, sum.HighestMemAmount,
-            sum.TotalIOMemory, sum.HighestIOUsed, sum.Highest1SecRate, sum.Highest1SecFrame );
+            sum.TotalIOMemory, sum.HighestIOUsed, sum.Highest1SecRate, sum.Highest1SecFrame);
 
-        #endif
+#endif
 
-        ::BinkClose( m_BinkHandle );
+        ::BinkClose(m_BinkHandle);
         m_BinkHandle = NULL;
 
-        SetState( IRadMoviePlayer2::NoData );
+        SetState(IRadMoviePlayer2::NoData);
     }
 }
 
@@ -386,24 +386,24 @@ void radMoviePlayerBink::Unload( void )
 // radMoviePlayerBink::Play
 //=============================================================================
 
-void radMoviePlayerBink::Play( void )
+void radMoviePlayerBink::Play(void)
 {
-    if( m_State == IRadMoviePlayer2::ReadyToPlay )
+    if(m_State == IRadMoviePlayer2::ReadyToPlay)
     {
-        rAssert( m_BinkHandle != NULL );
+        rAssert(m_BinkHandle != NULL);
 
         //
         // Tell Bink to Play the movie
         //
 
-        ::BinkPause( m_BinkHandle, false );
+        ::BinkPause(m_BinkHandle, false);
 
-        SetState( IRadMoviePlayer2::Playing );
+        SetState(IRadMoviePlayer2::Playing);
     }
-    else if( m_State == IRadMoviePlayer2::Loading )
+    else if(m_State == IRadMoviePlayer2::Loading)
     {
-        rAssert( false );  // for now
-        SetState( IRadMoviePlayer2::LoadToPlay );
+        rAssert(false);  // for now
+        SetState(IRadMoviePlayer2::LoadToPlay);
     }
 }
 
@@ -411,24 +411,24 @@ void radMoviePlayerBink::Play( void )
 // radMoviePlayerBink::Pause
 //=============================================================================
 
-void radMoviePlayerBink::Pause( void )
+void radMoviePlayerBink::Pause(void)
 {
-    if( m_State == IRadMoviePlayer2::Playing )
+    if(m_State == IRadMoviePlayer2::Playing)
     {
-        rAssert( m_BinkHandle != NULL );
+        rAssert(m_BinkHandle != NULL);
 
         //
         // Tell Bink to Pause the movie
         //
 
-        ::BinkPause( m_BinkHandle, true );
+        ::BinkPause(m_BinkHandle, true);
 
-        SetState( IRadMoviePlayer2::ReadyToPlay );
+        SetState(IRadMoviePlayer2::ReadyToPlay);
     }
-    else if( m_State == IRadMoviePlayer2::LoadToPlay )
+    else if(m_State == IRadMoviePlayer2::LoadToPlay)
     {
-        rAssert( false );  // not possible yet
-        SetState( Loading );
+        rAssert(false);  // not possible yet
+        SetState(Loading);
     }
 }
 
@@ -436,26 +436,26 @@ void radMoviePlayerBink::Pause( void )
 // radMoviePlayerBink::SetPan
 //=============================================================================
 
-void  radMoviePlayerBink::SetPan( float pan )
+void  radMoviePlayerBink::SetPan(float pan)
 {
-    rAssert( pan >= -1.0f && pan <= 1.0f );
+    rAssert(pan>= -1.0f && pan <= 1.0f);
 
-    if( m_Pan != pan )
+    if(m_Pan != pan)
     {
         // Remember this new pan
 
         m_Pan = pan;
 
-        if( m_BinkHandle != NULL )
+        if(m_BinkHandle != NULL)
         {
-            #ifdef RAD_XBOX
+#ifdef RAD_XBOX
 
                 // Turn analog into left and right using radsound
 
                 float panL = 1.0f;
                 float panR = 1.0f;
 
-                if( pan > 0 )
+                if(pan> 0)
                 {
                     panL = 1.0f - 1.0f * pan;
                 }
@@ -464,8 +464,8 @@ void  radMoviePlayerBink::SetPan( float pan )
                     panR = 1.0f + 1.0f * pan;
                 }
 
-                panL = ::radSoundVolumeAnalogToAmplitude( panL );
-                panR = ::radSoundVolumeAnalogToAmplitude( panR );
+                panL = ::radSoundVolumeAnalogToAmplitude(panL);
+                panR = ::radSoundVolumeAnalogToAmplitude(panR);
 
                 unsigned long mixbins[ 2 ];
                 mixbins[ 0 ] = DSMIXBIN_FRONT_LEFT;
@@ -474,38 +474,38 @@ void  radMoviePlayerBink::SetPan( float pan )
                 // Full volume for bink bins is 32768
 
                 long volumes[ 2 ];
-                volumes[ 0 ] = static_cast< long >( 32768 * panL );
-                volumes[ 1 ] = static_cast< long >( 32768 * panR );
+                volumes[ 0 ] = static_cast<long>(32768 * panL);
+                volumes[ 1 ] = static_cast<long>(32768 * panR);
 
                 //
                 // In Bink 1.5s, there's an assert if the volume is between 1 and 32.
                 //
-                #if ( defined BINKSUBVERSION ) && ( BINKSUBVERSION == 19 )
-                    if ( volumes[ 0 ] <= 32 && volumes[ 0 ] > 0 )
+#if (defined BINKSUBVERSION) && (BINKSUBVERSION == 19)
+                    if (volumes[ 0 ] <= 32 && volumes[ 0 ]> 0)
                     {
                         volumes[ 0 ] = 33;
                     }
 
-                    if ( volumes[ 1 ] <= 32 && volumes[ 1 ] > 0 )
+                    if (volumes[ 1 ] <= 32 && volumes[ 1 ]> 0)
                     {
                         volumes[ 1 ] = 33;
                     }
-                #endif
+#endif
 
-                ::BinkSetMixBinVolumes( m_BinkHandle, m_AudioTrackIndex, mixbins, volumes, 2 );
+                ::BinkSetMixBinVolumes(m_BinkHandle, m_AudioTrackIndex, mixbins, volumes, 2);
 
-            #else
+#else
 
                 // Pc and gamecube can set pan directly.
                 //     0 is left
                 // 32768 is centre
                 // 65536 is right
 
-                float binkPan = 65536.0f * ( pan + 1.0f ) / 2.0f;
+                float binkPan = 65536.0f * (pan + 1.0f) / 2.0f;
 
-                ::BinkSetPan( m_BinkHandle, m_AudioTrackIndex, ( long ) binkPan );        
+                ::BinkSetPan(m_BinkHandle, m_AudioTrackIndex, (long) binkPan);
 
-            #endif // RAD_XBOX
+#endif // RAD_XBOX
 
         }
     }
@@ -515,7 +515,7 @@ void  radMoviePlayerBink::SetPan( float pan )
 // radMoviePlayerBink::GetPan
 //=============================================================================
 
-float radMoviePlayerBink::GetPan( void )
+float radMoviePlayerBink::GetPan(void)
 {
     return m_Pan;
 }
@@ -524,32 +524,31 @@ float radMoviePlayerBink::GetPan( void )
 // radMoviePlayerBink::SetVolume
 //=============================================================================
 
-void  radMoviePlayerBink::SetVolume( float volume )
+void  radMoviePlayerBink::SetVolume(float volume)
 {
-    if( m_Volume != volume )
+    if(m_Volume != volume)
     {
-        ::radSoundVerifyChangeThreshold( m_CheckAudio, "Volume", m_Volume, volume, radSoundVolumeChangeThreshold );
+        ::radSoundVerifyChangeThreshold(m_CheckAudio, "Volume", m_Volume, volume, radSoundVolumeChangeThreshold);
 
         // Remember this new volume
 
         m_Volume = volume;
 
-	    if ( m_BinkHandle != NULL )
-	    {
-		    //
-		    // Scale new Volume to 0-32768 value, compatible with Bink
-		    //
+        if (m_BinkHandle != NULL)
+        {
+            //
+            // Scale new Volume to 0-32768 value, compatible with Bink
+            //
 
-		    int binkVol =
-			    static_cast< unsigned int >(
-				    radSoundVolumeAnalogToAmplitude( m_Volume ) * 32768.0f );
+            int binkVol =
+                static_cast<unsigned int>(radSoundVolumeAnalogToAmplitude(m_Volume) * 32768.0f);
 
             //
             // Set the volume of the appropriate audio track
             //
 
-		    BinkSetVolume( m_BinkHandle, m_AudioTrackIndex, binkVol );
-	    }
+            BinkSetVolume(m_BinkHandle, m_AudioTrackIndex, binkVol);
+        }
     }
 }
 
@@ -557,7 +556,7 @@ void  radMoviePlayerBink::SetVolume( float volume )
 // radMoviePlayerBink::GetVolume
 //=============================================================================
 
-float radMoviePlayerBink::GetVolume( void )
+float radMoviePlayerBink::GetVolume(void)
 {
     return m_Volume;
 }
@@ -566,7 +565,7 @@ float radMoviePlayerBink::GetVolume( void )
 // radMoviePlayerBink::GetState
 //=============================================================================
 
-IRadMoviePlayer2::State radMoviePlayerBink::GetState( void )
+IRadMoviePlayer2::State radMoviePlayerBink::GetState(void)
 {
     return m_State;
 }
@@ -577,9 +576,9 @@ IRadMoviePlayer2::State radMoviePlayerBink::GetState( void )
 
 bool radMoviePlayerBink::GetVideoFrameInfo(VideoFrameInfo * pFrameInfo)
 {
-    rAssert( pFrameInfo != NULL );
+    rAssert(pFrameInfo != NULL);
 
-    if( m_BinkHandle != NULL )
+    if(m_BinkHandle != NULL)
     {
         pFrameInfo->Height = m_BinkHandle->Width;
         pFrameInfo->Width  = m_BinkHandle->Height;
@@ -595,11 +594,11 @@ bool radMoviePlayerBink::GetVideoFrameInfo(VideoFrameInfo * pFrameInfo)
 // radMoviePlayerBink::GetFrameRate
 //=============================================================================
 
-float radMoviePlayerBink::GetFrameRate( void )
+float radMoviePlayerBink::GetFrameRate(void)
 {
-    if( m_BinkHandle != NULL )
+    if(m_BinkHandle != NULL)
     {
-        return( ( float ) m_BinkHandle->FrameRate / m_BinkHandle->FrameRateDiv );
+        return((float) m_BinkHandle->FrameRate / m_BinkHandle->FrameRateDiv);
     }
     else
     {
@@ -611,9 +610,9 @@ float radMoviePlayerBink::GetFrameRate( void )
 // radMoviePlayerBink::GetCurrentFrameNumber
 //=============================================================================
 
-unsigned int radMoviePlayerBink::GetCurrentFrameNumber( void )
+unsigned int radMoviePlayerBink::GetCurrentFrameNumber(void)
 {
-    if( m_BinkHandle != NULL )
+    if(m_BinkHandle != NULL)
     {
         return m_BinkHandle->FrameNum;
     }
@@ -627,11 +626,11 @@ unsigned int radMoviePlayerBink::GetCurrentFrameNumber( void )
 // radMoviePlayerBink::Service
 //=============================================================================
 
-void radMoviePlayerBink::Service( void )
+void radMoviePlayerBink::Service(void)
 {
     State state = m_State;
 
-    switch( state )
+    switch(state)
     {
     case NoData:
         break;
@@ -643,15 +642,15 @@ void radMoviePlayerBink::Service( void )
         break;
         case Playing:
         {
-            rAssert( m_refIRadMovieRenderStrategy != NULL );
-            rAssert( m_BinkHandle != NULL );
+            rAssert(m_refIRadMovieRenderStrategy != NULL);
+            rAssert(m_BinkHandle != NULL);
 
             //
             // Poll the BinkWait function until it's time to
             // render the next frame
             //
 
-            if( BinkWait( m_BinkHandle ) == 0 )
+            if(BinkWait(m_BinkHandle) == 0)
             {
                 //
                 // Decompress the next frame
@@ -659,53 +658,53 @@ void radMoviePlayerBink::Service( void )
 
                 bool iterateLoop = false;
 
-                if( m_IsPresentationOutstanding == false && ::BinkDoFrame( m_BinkHandle ) == 0 )
+                if(m_IsPresentationOutstanding == false && ::BinkDoFrame(m_BinkHandle) == 0)
                 {
 
                     // Reset the list of render destinations
 
-                    m_refIRadMovieRenderStrategy->ResetDestinations( );
+                    m_refIRadMovieRenderStrategy->ResetDestinations();
 
-                    // Now go through the list destinations until we've filled 
+                    // Now go through the list destinations until we've filled
                     // them all up with the freshly decoded data
 
                     IRadMovieRenderStrategy::LockedDestination dest;
 
-                    while( m_refIRadMovieRenderStrategy->LockNextDestination( & dest ) > 0 )
+                    while(m_refIRadMovieRenderStrategy->LockNextDestination(& dest)> 0)
                     {
                         // If one of these copies fail, we'll have to skip this frame
                         // and not iterate the loop
 
-                        // BinkCopyToBufferRect handles pitch differently than pure3d and 
+                        // BinkCopyToBufferRect handles pitch differently than pure3d and
                         // always accesses buffers from the top.  So...
 
                         void * pDest = dest.m_pDest;
 
-                        if( dest.m_DestPitch < 0 )
+                        if(dest.m_DestPitch <0)
                         {
-                            pDest = ( char * ) dest.m_pDest + ( dest.m_Height - 1 ) * dest.m_DestPitch;
+                            pDest = (char *) dest.m_pDest + (dest.m_Height - 1) * dest.m_DestPitch;
                         }
 
-                        if( 0 == ::BinkCopyToBufferRect( m_BinkHandle, pDest,
-                            dest.m_DestPitch, dest.m_Height, 0, 0, 
-                            dest.m_SrcPosX, dest.m_SrcPosY, dest.m_Width, dest.m_Height, BINKSURFACE32 | BINKCOPYALL ) )
+                        if(0 == ::BinkCopyToBufferRect(m_BinkHandle, pDest,
+                            dest.m_DestPitch, dest.m_Height, 0, 0,
+                            dest.m_SrcPosX, dest.m_SrcPosY, dest.m_Width, dest.m_Height, BINKSURFACE32 | BINKCOPYALL))
                         {
                             iterateLoop = true;
                         }
 
-                        m_refIRadMovieRenderStrategy->UnlockDestination( );
+                        m_refIRadMovieRenderStrategy->UnlockDestination();
                     }
 
-                    if( iterateLoop == false )
+                    if(iterateLoop == false)
                     {
-                        rTunePrintf( "radMoviePlayerBink: BinkCopyToBuffer skipped frame\n" );
+                        rTunePrintf("radMoviePlayerBink: BinkCopyToBuffer skipped frame\n");
                     }
                 }
                 else
                 {
                     // The next frame was skipped.  Don't render.
 
-                    rTunePrintf( "radMoviePlayerBink: BinkDoFrame skipped frame\n!" );
+                    rTunePrintf("radMoviePlayerBink: BinkDoFrame skipped frame\n!");
                 }
 
                 //
@@ -713,24 +712,24 @@ void radMoviePlayerBink::Service( void )
                 // movie.  It needs to be called for all others though.
                 //
 
-		        if ( m_BinkHandle->FrameNum == ( m_BinkHandle->Frames - 1 ) )
-		        {
-			        //
-			        // We're done
-			        //
-                    Unload( );
-		        }
-		        else
-		        {
-                    ::BinkNextFrame( m_BinkHandle );
+                if (m_BinkHandle->FrameNum == (m_BinkHandle->Frames - 1))
+                {
+                    //
+                    // We're done
+                    //
+                    Unload();
+                }
+                else
+                {
+                    ::BinkNextFrame(m_BinkHandle);
 
-                    if( iterateLoop == true )
+                    if(iterateLoop == true)
                     {
                         m_IsPresentationOutstanding = true;
 
-                        if( m_refIRadMovieRenderLoop != NULL )
+                        if(m_refIRadMovieRenderLoop != NULL)
                         {
-                            m_refIRadMovieRenderLoop->IterateLoop( this );
+                            m_refIRadMovieRenderLoop->IterateLoop(this);
                         }
                     }
                 }
@@ -738,7 +737,7 @@ void radMoviePlayerBink::Service( void )
             break;
         }
     default:
-        rAssert( false );
+        rAssert(false);
         return;
     }
 }
@@ -747,7 +746,7 @@ void radMoviePlayerBink::Service( void )
 // radMoviePlayerBink::SetState
 //=============================================================================
 
-void radMoviePlayerBink::SetState( IRadMoviePlayer2::State state )
+void radMoviePlayerBink::SetState(IRadMoviePlayer2::State state)
 {
     m_State = state;
 }
@@ -756,27 +755,27 @@ void radMoviePlayerBink::SetState( IRadMoviePlayer2::State state )
 // radMoviePlayerCreate2
 //=============================================================================
 
-IRadMoviePlayer2 * radMoviePlayerCreate2( radMemoryAllocator alloc )
+IRadMoviePlayer2 * radMoviePlayerCreate2(radMemoryAllocator alloc)
 {
-    return new( alloc )radMoviePlayerBink( );
+    return new(alloc)radMoviePlayerBink();
 }
 
 //=============================================================================
 // radMovieInitialize2
 //=============================================================================
 
-void radMovieInitialize2( radMemoryAllocator alloc )
+void radMovieInitialize2(radMemoryAllocator alloc)
 {
     // I know that these functions aren't doing any work 
     // here.  But I want the interface behave the same
     // on all platforms
 
-    rAssert( g_MovieInitialized == false );
-    radBinkFileInitialize( alloc );
+    rAssert(g_MovieInitialized == false);
+    radBinkFileInitialize(alloc);
 
 #ifdef RAD_GAMECUBE
-    ::radMemorySetAllocationName( "BinkAramAllocate" );
-    s_BinkAramBuffer = ::radMemorySpaceAlloc( radMemorySpace_Aram, RADMEMORY_ALLOC_DEFAULT, BINK_ARAM_SIZE );
+    ::radMemorySetAllocationName("BinkAramAllocate");
+    s_BinkAramBuffer = ::radMemorySpaceAlloc(radMemorySpace_Aram, RADMEMORY_ALLOC_DEFAULT, BINK_ARAM_SIZE);
 #endif
 
     g_MovieInitialized = true;
@@ -786,17 +785,17 @@ void radMovieInitialize2( radMemoryAllocator alloc )
 // radMovieTerminate2
 //=============================================================================
 
-void radMovieTerminate2( void )
+void radMovieTerminate2(void)
 {
     // I know that these functions aren't doing any work 
     // here.  But I want the interface behave the same
     // on all platforms
 
-    rAssert( g_MovieInitialized == true );
+    rAssert(g_MovieInitialized == true);
 #ifdef RAD_GAMECUBE
-    ::radMemorySpaceFree( radMemorySpace_Aram, radMemorySpace_Aram, s_BinkAramBuffer );
+    ::radMemorySpaceFree(radMemorySpace_Aram, radMemorySpace_Aram, s_BinkAramBuffer);
 #endif
-    radBinkFileTerminate( );
+    radBinkFileTerminate();
     g_MovieInitialized = false;
 }
 
@@ -804,14 +803,14 @@ void radMovieTerminate2( void )
 // radMovieService2
 //=============================================================================
 
-void radMovieService2( void )
+void radMovieService2(void)
 {
-    ref< radMoviePlayerBink > pNext = radMoviePlayerBink::GetLinkedClassHead( );
+    ref<radMoviePlayerBink> pNext = radMoviePlayerBink::GetLinkedClassHead();
 
-    while( pNext != NULL )
+    while(pNext != NULL)
     {
-        pNext->Service( );
-        pNext = pNext->GetLinkedClassNext( );
+        pNext->Service();
+        pNext = pNext->GetLinkedClassNext();
     }
 }
 

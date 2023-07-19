@@ -23,15 +23,16 @@
 //=============================================================================
 
 #include <radoptions.hpp>
+
 #ifdef RAD_MOVIEPLAYER_USE_BINK
 
 #include <bink.h>
 #include <radmemory.hpp>
 
-void radBinkFileInitialize( radMemoryAllocator alloc );
-void radBinkFileTerminate( void );
+void radBinkFileInitialize(radMemoryAllocator alloc);
+void radBinkFileTerminate(void);
 
-S32 RADLINK radBinkFileOpen( BINKIO PTR4* bio, const char PTR4* name, U32 flags );
+S32 RADLINK radBinkFileOpen(BINKIO PTR4* bio, const char PTR4* name, U32 flags);
 
 #endif // RAD_MOVIEPLAYER_USE_BINK
 #endif // BINKRADFILE_HPP

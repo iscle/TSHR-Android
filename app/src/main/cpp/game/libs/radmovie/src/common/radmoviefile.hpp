@@ -30,21 +30,20 @@
 // struct RadMovieFileHeaderPs2
 //=============================================================================
 
-struct RadMovieFileHeader
-{
-    char m_Id[ 8 ];  // 'r' 'm' 'v' 'p' 's' '2' '1' '2'
-                     // 'r' 'm' 'v' 'g' 'c' 'n' '1' '0'
-                     // 'r' 'm' 'v' 'x' 'b' 'x' '1' '0'
-                     // 'r' 'm' 'v' 'p' 'c' 'c' '1' '0'
+struct RadMovieFileHeader {
+    char m_Id[8];  // 'r' 'm' 'v' 'p' 's' '2' '1' '2'
+    // 'r' 'm' 'v' 'g' 'c' 'n' '1' '0'
+    // 'r' 'm' 'v' 'x' 'b' 'x' '1' '0'
+    // 'r' 'm' 'v' 'p' 'c' 'c' '1' '0'
     unsigned short m_Width;
     unsigned short m_Height;
     unsigned short m_NumFrames;
-    unsigned int   m_DataSize;
-    unsigned int   m_DataPosition;  // Relative to beginning of file
-    unsigned int   m_NumAudioTracks;
-    unsigned int   m_pAudioTrackOffsets[ RAD_MOVIE_FILE_MAX_AUDIO_TRACKS ];
-    unsigned int   m_pAudioTrackSizes[ RAD_MOVIE_FILE_MAX_AUDIO_TRACKS ];
-    unsigned int   m_FrameRate; // in frames per Hectoseconds (i.e. frames / 100 seconds)
+    unsigned int m_DataSize;
+    unsigned int m_DataPosition;  // Relative to beginning of file
+    unsigned int m_NumAudioTracks;
+    unsigned int m_pAudioTrackOffsets[RAD_MOVIE_FILE_MAX_AUDIO_TRACKS];
+    unsigned int m_pAudioTrackSizes[RAD_MOVIE_FILE_MAX_AUDIO_TRACKS];
+    unsigned int m_FrameRate; // in frames per Hectoseconds (i.e. frames / 100 seconds)
 };
 
 #endif // RADMOVIEFILE_HPP

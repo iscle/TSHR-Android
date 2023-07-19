@@ -43,41 +43,42 @@ class radMovieRenderStrategyGcn;
 //=============================================================================
 
 class radMovieRenderStrategyGcn
-    : 
-    public IRadMovieRenderStrategy,
-    public radRefCount
+        :
+                public IRadMovieRenderStrategy,
+                public radRefCount {
+public:
 
-{
-    public:
+    IMPLEMENT_REFCOUNTED("radMovieRenderStrategyGcn")
 
-        IMPLEMENT_REFCOUNTED( "radMovieRenderStrategyGcn" )
-    
-        //
-        // Constructor / Destructor
-        //
+    //
+    // Constructor / Destructor
+    //
 
-        radMovieRenderStrategyGcn( void );
-        virtual ~radMovieRenderStrategyGcn( void );
+    radMovieRenderStrategyGcn(void);
 
-        //
-        // IRadMovieRenderStrategy
-        //
+    virtual ~radMovieRenderStrategyGcn(void);
 
-        virtual void SetParameters( unsigned int width, unsigned int height );
-        virtual void Reset( void );
-        virtual bool Render( void * pBuffer );
+    //
+    // IRadMovieRenderStrategy
+    //
 
-    private:
+    virtual void SetParameters(unsigned int width, unsigned int height);
+
+    virtual void Reset(void);
+
+    virtual bool Render(void *pBuffer);
+
+private:
 
 //        void ConvertTexRgba8(u8 *pSrc,u8 *pDst,u32 ImageW,u32 ImageH);
-        void ConvertTexRgba8(char *src, char *dest, unsigned int width, unsigned int height);
+    void ConvertTexRgba8(char *src, char *dest, unsigned int width, unsigned int height);
 
-        ref< pddiTexture > m_refTTexture;
-        ref< pddiShader > m_refTShader;
-        void * m_pFrameBuffer;
+    ref <pddiTexture> m_refTTexture;
+    ref <pddiShader> m_refTShader;
+    void *m_pFrameBuffer;
 
-        unsigned int m_Width;
-        unsigned int m_Height;
+    unsigned int m_Width;
+    unsigned int m_Height;
 };
 
 #endif // ! RAD_MOVIEPLAYER_USE_BINK
