@@ -2,7 +2,9 @@
 // Created by wng on Wed, May 03, 2000 @ 12:55 PM.
 
 #ifndef __FeDrawable__
+
 #include "FeDrawable.h"
+
 #endif
 
 #include <p3d/utility.hpp>
@@ -13,16 +15,15 @@
 #include "FeScreen.h"
 #include "utility/debugmessages.h"
 
-FeDrawable::FeDrawable( const tName& name )       
-:
-    mParent( NULL ),
-    mColour( 255, 255, 255, 255 ),
-    mAlpha( 1.0f ),
-    mPosX( 0.0f ),
-    mPosY( 0.0f )
-{   
-    FeEntity::SetNameObject( name );
-    
+FeDrawable::FeDrawable(const tName &name)
+        :
+        mParent(NULL),
+        mColour(255, 255, 255, 255),
+        mAlpha(1.0f),
+        mPosX(0.0f),
+        mPosY(0.0f) {
+    FeEntity::SetNameObject(name);
+
     //
     // Always use explicit qualification when calling a virtual function from
     // a constructor.
@@ -30,34 +31,29 @@ FeDrawable::FeDrawable( const tName& name )
     FeDrawable::Reset();
 }
 
-FeDrawable::~FeDrawable()
-{
+FeDrawable::~FeDrawable() {
 }
 
-float FeDrawable::DegreesToRadian( float degree )
-{
+float FeDrawable::DegreesToRadian(float degree) {
     return degree / 360 * rmt::PI_2;
 }
 
-pddiRect* FeDrawable::GetClipRect()
-{
-    rAssert( this->m_clip == true );
+pddiRect *FeDrawable::GetClipRect() {
+    rAssert(this->m_clip == true);
     return &m_rect;
 }
 
-void FeDrawable::Update( float elapsedTime )
-{
-    #ifdef DEBUGWATCH
-        //
-        // Update output values for the watcher
-        //
-        InverseNormalizeCoord( mPosX, mPosY, mPosXInt, mPosYInt );
-    #endif //DEBUGWATCH
+void FeDrawable::Update(float elapsedTime) {
+#ifdef DEBUGWATCH
+    //
+    // Update output values for the watcher
+    //
+    InverseNormalizeCoord(mPosX, mPosY, mPosXInt, mPosYInt);
+#endif //DEBUGWATCH
 }
 
-void FeDrawable::Display()
-{
-    rAssert( false );
+void FeDrawable::Display() {
+    rAssert(false);
 }
 
 //===========================================================================
@@ -72,8 +68,7 @@ void FeDrawable::Display()
 // Return:      the alpha value for this object
 //
 //===========================================================================
-float FeDrawable::GetAlpha() const
-{
+float FeDrawable::GetAlpha() const {
     return this->mAlpha;
 }
 
@@ -89,13 +84,11 @@ float FeDrawable::GetAlpha() const
 // Return:      the colour value for this object
 //
 //===========================================================================
-const tColour& FeDrawable::GetColour() const
-{
+const tColour &FeDrawable::GetColour() const {
     return mColour;
 }
 
-float FeDrawable::GetLayer()
-{
+float FeDrawable::GetLayer() {
     return m_layer;
 }
 
@@ -111,8 +104,7 @@ float FeDrawable::GetLayer()
 // Return:      pointer to the matrix
 //
 //===========================================================================
-rmt::Matrix* FeDrawable::GetMatrix()
-{
+rmt::Matrix *FeDrawable::GetMatrix() {
     return &m_matrix;
 }
 
@@ -128,13 +120,12 @@ rmt::Matrix* FeDrawable::GetMatrix()
 // Return:      const pointer to the matrix
 //
 //===========================================================================
-const rmt::Matrix* FeDrawable::GetMatrix() const
-{
+const rmt::Matrix *FeDrawable::GetMatrix() const {
     return &m_matrix;
 }
-  
+
 //===========================================================================
-// int GetOriginPosition( int& x, int& y ) const
+// int GetOriginPosition(int& x, int& y) const
 //===========================================================================
 // Description: allows access to the original position of the object
 //
@@ -146,13 +137,12 @@ const rmt::Matrix* FeDrawable::GetMatrix() const
 // Return:      None
 //
 //===========================================================================
-void FeDrawable::GetOriginPosition( int& x, int& y ) const
-{
-    InverseNormalizeCoord( mPosX, mPosY, x, y );
+void FeDrawable::GetOriginPosition(int &x, int &y) const {
+    InverseNormalizeCoord(mPosX, mPosY, x, y);
 }
 
 //===========================================================================
-// void InverseNormalizeCoord( float x, float y, int& ix, int& iy ) const
+// void InverseNormalizeCoord(float x, float y, int& ix, int& iy) const
 //===========================================================================
 // Description: allows conversion from P3D coords to pixel coords
 //
@@ -166,29 +156,27 @@ void FeDrawable::GetOriginPosition( int& x, int& y ) const
 // Return:      None
 //
 //===========================================================================
-void FeDrawable::InverseNormalizeCoord( float x, float y, int& ix, int& iy ) const
-{    
+void FeDrawable::InverseNormalizeCoord(float x, float y, int &ix, int &iy) const {
     float yRes = FeApp::GetInstance()->GetScreenHeight();
     float xRes = FeApp::GetInstance()->GetScreenWidth();
 
     // MIKE IMPROVE : does this still need to be here?
-    #ifdef RAD_PS2
-        float loc = (float )( y * yRes ) + 0.5f;
-        iy = static_cast< int >( loc * xRes / yRes );       //fix for the aspect ratio
-        ix = static_cast< int >( x * xRes + 0.5f );
-    #elif defined RAD_XBOX
-        float loc = (float )( y * yRes ) + 0.5f;
-        iy = static_cast< int >( loc * xRes / yRes );       //fix for the aspect ratio
-        ix = static_cast< int >( x * xRes + 0.5f );
-    #else
-        float loc = (float )( y * yRes ) - 0.0f;
-        iy = static_cast< int >( loc * xRes / yRes );       //fix for the aspect ratio
-        ix = static_cast< int >( x * xRes - 0.0f );
-    #endif
+#ifdef RAD_PS2
+    float loc = (float)(y * yRes) + 0.5f;
+    iy = static_cast<int>(loc * xRes / yRes);       //fix for the aspect ratio
+    ix = static_cast<int>(x * xRes + 0.5f);
+#elif defined RAD_XBOX
+    float loc = (float)(y * yRes) + 0.5f;
+    iy = static_cast<int>(loc * xRes / yRes);       //fix for the aspect ratio
+    ix = static_cast<int>(x * xRes + 0.5f);
+#else
+    float loc = (float) (y * yRes) - 0.0f;
+    iy = static_cast<int>(loc * xRes / yRes);       //fix for the aspect ratio
+    ix = static_cast<int>(x * xRes - 0.0f);
+#endif
 }
 
-bool FeDrawable::IsClip()
-{
+bool FeDrawable::IsClip() {
     return m_clip;
 }
 
@@ -205,8 +193,7 @@ bool FeDrawable::IsClip()
 // Return:      bool - true or false is the object was a page
 //
 //===========================================================================
-bool FeDrawable::IsPage() const
-{
+bool FeDrawable::IsPage() const {
     return false;
 }
 
@@ -222,8 +209,7 @@ bool FeDrawable::IsPage() const
 // Return:      bool - true or false is the object visible
 //
 //===========================================================================
-bool FeDrawable::IsVisible() const
-{
+bool FeDrawable::IsVisible() const {
     return mVisible;
 }
 
@@ -241,10 +227,9 @@ bool FeDrawable::IsVisible() const
 //
 //===========================================================================
 void FeDrawable::LinkPrimitive
-(
-    unsigned handle 
-)
-{
+        (
+                unsigned handle
+        ) {
 }
 
 //===========================================================================
@@ -253,7 +238,7 @@ void FeDrawable::LinkPrimitive
 // Description: determines how colors modify one another
 //
 // Constraints:    IF YOU CHANGE THIS FUNCTION, IT SHOULD STILL BE SYMMETRIC - 
-//              IE ModulateColour( a, b ) == ModulateColour( b, a ).  It's
+//              IE ModulateColour(a, b) == ModulateColour(b, a).  It's
 //              used both ways 
 //
 // Parameters:    colour - the colour that's getting changed
@@ -262,42 +247,40 @@ void FeDrawable::LinkPrimitive
 // Return:      None
 //
 //===========================================================================
-void FeDrawable::ModulateColour( tColour& colour, const tColour& modulator )
-{
+void FeDrawable::ModulateColour(tColour &colour, const tColour &modulator) {
     float a = modulator.Alpha() / 255.0f;
-    float r = modulator.Red()   / 255.0f;
+    float r = modulator.Red() / 255.0f;
     float g = modulator.Green() / 255.0f;
-    float b = modulator.Blue()  / 255.0f;
+    float b = modulator.Blue() / 255.0f;
 
-    int ia = static_cast< int >( a * colour.Alpha() );
-    int ir = static_cast< int >( r * colour.Red() );
-    int ig = static_cast< int >( g * colour.Green() );
-    int ib = static_cast< int >( b * colour.Blue() );
+    int ia = static_cast<int>(a * colour.Alpha());
+    int ir = static_cast<int>(r * colour.Red());
+    int ig = static_cast<int>(g * colour.Green());
+    int ib = static_cast<int>(b * colour.Blue());
 
-    colour.SetAlpha( ia );
-    colour.SetRed(   ir );
-    colour.SetGreen( ig );
-    colour.SetBlue(  ib );
+    colour.SetAlpha(ia);
+    colour.SetRed(ir);
+    colour.SetGreen(ig);
+    colour.SetBlue(ib);
 }
 
-void FeDrawable::NormalizeCoord(int ix, int iy, float &x, float &y) const
-{
+void FeDrawable::NormalizeCoord(int ix, int iy, float &x, float &y) const {
     float height = FeApp::GetInstance()->GetScreenHeight();
     float width = FeApp::GetInstance()->GetScreenWidth();
 
     //fix bug where we're off by a pixel left and down
 
     // MIKE IMPROVE : does this still need to be here?
-    #ifdef RAD_PS2
-        float loc = static_cast< float >( iy - 0.5f ) / height;    //IMPROVE: need for the -0.5 is a P3D bug
-        x = static_cast< float >( ix - 0.5 ) / width;
-    #elif defined(RAD_XBOX)
-        float loc = static_cast< float >( iy - 0.5f ) / height;
-        x = static_cast< float >( ix - 0.5f ) / width;
-    #else
-        float loc = static_cast< float >( iy - 0.0f ) / height;
-        x = static_cast< float >( ix - 0.0f ) / width;
-    #endif
+#ifdef RAD_PS2
+    float loc = static_cast<float>(iy - 0.5f) / height;    //IMPROVE: need for the -0.5 is a P3D bug
+    x = static_cast<float>(ix - 0.5) / width;
+#elif defined(RAD_XBOX)
+    float loc = static_cast<float>(iy - 0.5f) / height;
+    x = static_cast<float>(ix - 0.5f) / width;
+#else
+    float loc = static_cast<float>(iy - 0.0f) / height;
+    x = static_cast<float>(ix - 0.0f) / width;
+#endif
     y = loc * height / width;
 }
 
@@ -313,8 +296,7 @@ void FeDrawable::NormalizeCoord(int ix, int iy, float &x, float &y) const
 // Return:      None
 //
 //===========================================================================
-void FeDrawable::Reset()
-{
+void FeDrawable::Reset() {
     mVisible = true;
     m_clip = false;
     m_layer = 1.0f;
@@ -326,13 +308,12 @@ void FeDrawable::Reset()
     FeDrawable::ResetTransformation();
 }
 
-void FeDrawable::ResetTransformation()
-{
+void FeDrawable::ResetTransformation() {
     m_matrix.Identity();
 }
 
 //===========================================================================
-// void FeDrawable::RotateArbitrary( float axisX, float axisY, float axisZ, float angle )
+// void FeDrawable::RotateArbitrary(float axisX, float axisY, float axisZ, float angle)
 //===========================================================================
 // Description: allows an FeDrawable to rotate an arbitrary angle about an
 //                arbitrary axis of rotation
@@ -346,46 +327,40 @@ void FeDrawable::ResetTransformation()
 // Return:      NONE
 //
 //===========================================================================
-void FeDrawable::RotateArbitrary( float axisX, float axisY, float axisZ, float angle )
-{
+void FeDrawable::RotateArbitrary(float axisX, float axisY, float axisZ, float angle) {
     rmt::Matrix rotation;
     rotation.Identity();
 
-    rmt::Vector axis( axisX, axisY, axisZ );
-    rotation.FillRotation( axis, DegreesToRadian( angle ) );
+    rmt::Vector axis(axisX, axisY, axisZ);
+    rotation.FillRotation(axis, DegreesToRadian(angle));
 
-    m_matrix.Mult( rotation );
+    m_matrix.Mult(rotation);
 
 }
 
-void FeDrawable::RotateX( float angle )
-{
-    RotateArbitrary( 1.0f, 0, 0, angle );
+void FeDrawable::RotateX(float angle) {
+    RotateArbitrary(1.0f, 0, 0, angle);
 }
 
-void FeDrawable::RotateY( float angle )
-{
-    RotateArbitrary( 0, 1.0f, 0, angle );
+void FeDrawable::RotateY(float angle) {
+    RotateArbitrary(0, 1.0f, 0, angle);
 }
 
-void FeDrawable::RotateZ( float angle )
-{
-    RotateArbitrary( 0, 0, 1.0f, angle );
+void FeDrawable::RotateZ(float angle) {
+    RotateArbitrary(0, 0, 1.0f, angle);
 }
 
-void FeDrawable::Scale( float factor )
-{
-    Scale( factor, factor, factor );
+void FeDrawable::Scale(float factor) {
+    Scale(factor, factor, factor);
 }
 
-void FeDrawable::Scale( float factorX, float factorY, float factorZ )
-{
+void FeDrawable::Scale(float factorX, float factorY, float factorZ) {
     rmt::Matrix scale;
     scale.Identity();
-    
-    scale.FillScale( factorX, factorY, factorZ );
-    
-    m_matrix.Mult( scale );
+
+    scale.FillScale(factorX, factorY, factorZ);
+
+    m_matrix.Mult(scale);
 }
 
 //===========================================================================
@@ -400,12 +375,12 @@ void FeDrawable::Scale( float factorX, float factorY, float factorZ )
 // Return:      NONE
 //
 //===========================================================================
-void FeDrawable::SetAlpha( float a )    //IAN IMPROVE: this should be a byte, not a float
+void FeDrawable::SetAlpha(float a)    //IAN IMPROVE: this should be a byte, not a float
 {
-    rAssertMsg( a >= 0 && a <= 1.0f, "FeDrawable::SetAlphaNoRedraw Bad Alpha Value received" );
+    rAssertMsg(a >= 0 && a <= 1.0f, "FeDrawable::SetAlphaNoRedraw Bad Alpha Value received");
     mAlpha = a;
-    char intAlpha = static_cast< char >( a * 255 );
-    mColour.Set( mColour.Red(),mColour.Green(),mColour.Blue(), intAlpha );
+    char intAlpha = static_cast<char>(a * 255);
+    mColour.Set(mColour.Red(), mColour.Green(), mColour.Blue(), intAlpha);
     //this->Display();
 }
 
@@ -424,18 +399,17 @@ void FeDrawable::SetAlpha( float a )    //IAN IMPROVE: this should be a byte, no
 // Return:      NONE
 //
 //===========================================================================
-void FeDrawable::SetClip( float l, float b, float r, float t )
-{
+void FeDrawable::SetClip(float l, float b, float r, float t) {
     int screenResX = p3d::display->GetWidth();
     int screenResY = p3d::display->GetHeight();
 
-    m_rect.top = static_cast<int>( t * screenResY );
-    m_rect.bottom = static_cast<int>( b * screenResY );
-    m_rect.left = static_cast<int>( l * screenResX );
-    m_rect.right = static_cast<int>( r * screenResX );
+    m_rect.top = static_cast<int>(t * screenResY);
+    m_rect.bottom = static_cast<int>(b * screenResY);
+    m_rect.left = static_cast<int>(l * screenResX);
+    m_rect.right = static_cast<int>(r * screenResX);
 
     m_clip = true;
-}     
+}
 
 
 //===========================================================================
@@ -450,26 +424,23 @@ void FeDrawable::SetClip( float l, float b, float r, float t )
 // Return:      NONE
 //
 //===========================================================================
-void FeDrawable::SetColour( tColour c )
-{
-    mColour.Set( c.Red(), c.Green(), c.Blue(), c.Alpha() );
+void FeDrawable::SetColour(tColour c) {
+    mColour.Set(c.Red(), c.Green(), c.Blue(), c.Alpha());
 }
 
-void FeDrawable::SetLayer( float layer )
-{
+void FeDrawable::SetLayer(float layer) {
     m_layer = layer;
 }
 
-void FeDrawable::SetParent( FeDrawable* p )
-{
+void FeDrawable::SetParent(FeDrawable *p) {
     //NEVER EVER EVER add a reference to your parent - you won't be able to 
     //release things recursively, because the child won't release the parent
-    //if( p != NULL )
+    //if(p != NULL)
     //{
-        //p->AddRef();
+    //p->AddRef();
     //}
 
-    //if( mParent != NULL )
+    //if(mParent != NULL)
     //{
     //    mParent->Release();
     //}
@@ -477,40 +448,32 @@ void FeDrawable::SetParent( FeDrawable* p )
     mParent = p;
 }
 
-void FeDrawable::SetTransform( rmt::Matrix* matrix )
-{
-   m_matrix = *matrix;
+void FeDrawable::SetTransform(rmt::Matrix *matrix) {
+    m_matrix = *matrix;
 }
 
-void FeDrawable::SetTransform( const rmt::Matrix& matrix )
-{
+void FeDrawable::SetTransform(const rmt::Matrix &matrix) {
     m_matrix = matrix;
 }
 
-void FeDrawable::SetTranslation( int x, int y )
-{
-    float tx,ty;
-    NormalizeCoord( x, y, tx, ty);
-    SetTranslationRealWorld( tx, ty );
+void FeDrawable::SetTranslation(int x, int y) {
+    float tx, ty;
+    NormalizeCoord(x, y, tx, ty);
+    SetTranslationRealWorld(tx, ty);
 }
 
-void FeDrawable::SetTranslationRealWorld( float x, float y )
-{
-   m_matrix.Row(3).x = x;
-   m_matrix.Row(3).y = y;
+void FeDrawable::SetTranslationRealWorld(float x, float y) {
+    m_matrix.Row(3).x = x;
+    m_matrix.Row(3).y = y;
 }
 
-void FeDrawable::SetVisible(bool v)
-{
-    if ( v == true )
-    {
+void FeDrawable::SetVisible(bool v) {
+    if (v == true) {
         //make visible
-        SetLayer( 1.0f );
-    }
-    else
-    {
+        SetLayer(1.0f);
+    } else {
         //make invisible
-        SetLayer( 0.0f );     //IAN IMPROVE - this is a major hack - everything gets drawn
+        SetLayer(0.0f);     //IAN IMPROVE - this is a major hack - everything gets drawn
     }
     mVisible = v;
 }
@@ -521,52 +484,45 @@ void FeDrawable::Show()
     Display();
 }
 
-void FeDrawable::Transform(rmt::Matrix* matrix)
-{
-   m_matrix.Mult( *matrix );
+void FeDrawable::Transform(rmt::Matrix *matrix) {
+    m_matrix.Mult(*matrix);
 }
 
-void FeDrawable::Translate( int x, int y )
-{
-    float tx,ty;
-    float zx,zy;
-    NormalizeCoord( 0, 0, zx, zy );
-    NormalizeCoord( x, y, tx, ty );
+void FeDrawable::Translate(int x, int y) {
+    float tx, ty;
+    float zx, zy;
+    NormalizeCoord(0, 0, zx, zy);
+    NormalizeCoord(x, y, tx, ty);
 
     rmt::Matrix translation;
     translation.Identity();
 
-    rmt::Vector direction( tx - zx, ty - zy , 0 );
-    translation.FillTranslate( direction );
-    m_matrix.Mult( translation );
+    rmt::Vector direction(tx - zx, ty - zy, 0);
+    translation.FillTranslate(direction);
+    m_matrix.Mult(translation);
 }
 
-void FeDrawable::TranslateRealWorld(float x, float y)
-{
-   m_matrix.Row(3).x += x;
-   m_matrix.Row(3).y += y;
+void FeDrawable::TranslateRealWorld(float x, float y) {
+    m_matrix.Row(3).x += x;
+    m_matrix.Row(3).y += y;
 }
 
-rmt::Matrix* FeDrawable::GetTransform()
-{
+rmt::Matrix *FeDrawable::GetTransform() {
     return &this->m_matrix;
 }
 
-const rmt::Matrix* FeDrawable::GetTransform() const
-{
+const rmt::Matrix *FeDrawable::GetTransform() const {
     return &this->m_matrix;
 }
 
-void FeDrawable::GetNormalizedPosition(float &x, float &y) const
-{
+void FeDrawable::GetNormalizedPosition(float &x, float &y) const {
     x = mPosX;
     y = mPosY;
 }
 
 
-void FeDrawable::SetPosition(int x, int y)
-{
-    NormalizeCoord( x, y, mPosX, mPosY );
+void FeDrawable::SetPosition(int x, int y) {
+    NormalizeCoord(x, y, mPosX, mPosY);
 }
 
 //=============================================================================
@@ -582,18 +538,16 @@ void FeDrawable::SetPosition(int x, int y)
 // Return:      NONE
 //
 //=============================================================================
-void FeDrawable::TranslatePosition( int x, int y )
-{
-    float fx,fy;
-    NormalizeCoord( x, y, fx, fy );
+void FeDrawable::TranslatePosition(int x, int y) {
+    float fx, fy;
+    NormalizeCoord(x, y, fx, fy);
     mPosX += fx;
     mPosY += fy;
 }
 
 
-FeDrawable* FeDrawable::Parent()
-{ 
-    return mParent; 
+FeDrawable *FeDrawable::Parent() {
+    return mParent;
 }
 
 //=============================================================================
@@ -609,11 +563,11 @@ FeDrawable* FeDrawable::Parent()
 //
 //=============================================================================
 #ifdef DEBUGWATCH
-void FeDrawable::WatchAll( const char* nameSpace )
+void FeDrawable::WatchAll(const char* nameSpace)
 {
-    WatchVisibility( nameSpace );
-    WatchPosition  ( nameSpace );
-    WatchColor     ( nameSpace );
+    WatchVisibility(nameSpace);
+    WatchPosition  (nameSpace);
+    WatchColor     (nameSpace);
 }
 #endif
 
@@ -630,20 +584,20 @@ void FeDrawable::WatchAll( const char* nameSpace )
 //
 //=============================================================================
 #ifdef DEBUGWATCH
-void FeDrawable::WatchColor( const char* nameSpace )
+void FeDrawable::WatchColor(const char* nameSpace)
 {
     const char* drawableName = GetName();
     char finishedNamespace[ 1024 ];
-    sprintf( finishedNamespace, "%s\\%s\\", nameSpace, drawableName );
-    unsigned char* color = reinterpret_cast< unsigned char* >( &mColour );
-    ::radDbgWatchDelete( color + 0 );
-    ::radDbgWatchDelete( color + 1 );
-    ::radDbgWatchDelete( color + 2 );
-    ::radDbgWatchDelete( color + 3 );
-    ::radDbgWatchAddUnsignedChar( color + 2, "R",     finishedNamespace, NULL, NULL, 0, 255, false );
-    ::radDbgWatchAddUnsignedChar( color + 1, "G",     finishedNamespace, NULL, NULL, 0, 255, false );
-    ::radDbgWatchAddUnsignedChar( color + 0, "B",     finishedNamespace, NULL, NULL, 0, 255, false );
-    ::radDbgWatchAddUnsignedChar( color + 3, "A",     finishedNamespace, NULL, NULL, 0, 255, false );
+    sprintf(finishedNamespace, "%s\\%s\\", nameSpace, drawableName);
+    unsigned char* color = reinterpret_cast<unsigned char*>(&mColour);
+    ::radDbgWatchDelete(color + 0);
+    ::radDbgWatchDelete(color + 1);
+    ::radDbgWatchDelete(color + 2);
+    ::radDbgWatchDelete(color + 3);
+    ::radDbgWatchAddUnsignedChar(color + 2, "R",     finishedNamespace, NULL, NULL, 0, 255, false);
+    ::radDbgWatchAddUnsignedChar(color + 1, "G",     finishedNamespace, NULL, NULL, 0, 255, false);
+    ::radDbgWatchAddUnsignedChar(color + 0, "B",     finishedNamespace, NULL, NULL, 0, 255, false);
+    ::radDbgWatchAddUnsignedChar(color + 3, "A",     finishedNamespace, NULL, NULL, 0, 255, false);
 }
 #endif
 
@@ -660,21 +614,21 @@ void FeDrawable::WatchColor( const char* nameSpace )
 //
 //=============================================================================
 #ifdef DEBUGWATCH
-void FeDrawable::WatchPosition( const char* nameSpace )
+void FeDrawable::WatchPosition(const char* nameSpace)
 {
     const char* drawableName = GetName();
     char finishedNamespace[ 1024 ];
-    sprintf( finishedNamespace, "%s\\%s\\", nameSpace, drawableName );
-    ::radDbgWatchDelete( &mPosX );
-    ::radDbgWatchDelete( &mPosY );
-    ::radDbgWatchAddFloat( &mPosX, "X",     finishedNamespace, NULL, NULL, -1.0f, 1.0f, false );
-    ::radDbgWatchAddFloat( &mPosY, "Y",     finishedNamespace, NULL, NULL, -1.0f, 1.0f, false );
-    #ifdef DEBUGWATCH
-        ::radDbgWatchDelete( &mPosXInt );
-        ::radDbgWatchDelete( &mPosYInt );
-        ::radDbgWatchAddInt( &mPosXInt, "Xi", finishedNamespace, NULL, NULL, -640, 640  , true  );
-        ::radDbgWatchAddInt( &mPosYInt, "Yi", finishedNamespace, NULL, NULL, -640, 640  , true  );
-    #endif //DEBUGWATCH
+    sprintf(finishedNamespace, "%s\\%s\\", nameSpace, drawableName);
+    ::radDbgWatchDelete(&mPosX);
+    ::radDbgWatchDelete(&mPosY);
+    ::radDbgWatchAddFloat(&mPosX, "X",     finishedNamespace, NULL, NULL, -1.0f, 1.0f, false);
+    ::radDbgWatchAddFloat(&mPosY, "Y",     finishedNamespace, NULL, NULL, -1.0f, 1.0f, false);
+#ifdef DEBUGWATCH
+        ::radDbgWatchDelete(&mPosXInt);
+        ::radDbgWatchDelete(&mPosYInt);
+        ::radDbgWatchAddInt(&mPosXInt, "Xi", finishedNamespace, NULL, NULL, -640, 640  , true);
+        ::radDbgWatchAddInt(&mPosYInt, "Yi", finishedNamespace, NULL, NULL, -640, 640  , true);
+#endif //DEBUGWATCH
 }
 #endif
 //=============================================================================
@@ -690,12 +644,12 @@ void FeDrawable::WatchPosition( const char* nameSpace )
 //
 //=============================================================================
 #ifdef DEBUGWATCH
-void FeDrawable::WatchVisibility( const char* nameSpace )
+void FeDrawable::WatchVisibility(const char* nameSpace)
 {
     const char* drawableName = GetName();
     char finishedNamespace[ 1024 ];
-    sprintf( finishedNamespace, "%s\\%s\\", nameSpace, drawableName );
-    ::radDbgWatchDelete( &mVisible );
-    ::radDbgWatchAddBoolean( &mVisible, "Visible", finishedNamespace, NULL, NULL, false );
+    sprintf(finishedNamespace, "%s\\%s\\", nameSpace, drawableName);
+    ::radDbgWatchDelete(&mVisible);
+    ::radDbgWatchAddBoolean(&mVisible, "Visible", finishedNamespace, NULL, NULL, false);
 }
 #endif

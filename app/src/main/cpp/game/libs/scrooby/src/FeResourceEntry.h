@@ -28,45 +28,44 @@
 // Interface Definitions
 //===========================================================================
 
-class FeResourceEntry : public FeEntity
-{
-    public:
+class FeResourceEntry : public FeEntity {
+public:
 
-        FeResourceEntry( const char* alias, unsigned int resourceHandle );
-        virtual ~FeResourceEntry();
+    FeResourceEntry(const char *alias, unsigned int resourceHandle);
 
-        const char* GetAlias( void ) const;
-        unsigned int GetResourceHandle( void ) const;
+    virtual ~FeResourceEntry();
 
-    private:
+    const char *GetAlias(void) const;
 
-        //---------------------------------------------------------------------
-        // Private Functions
-        //---------------------------------------------------------------------
+    unsigned int GetResourceHandle(void) const;
 
-        // No copying. Declare but don't define.
-        //
-        FeResourceEntry( const FeResourceEntry& );
+private:
 
-        // No assignment. Declare but don't define.
-        //
-        FeResourceEntry& operator= ( const FeResourceEntry& );
+    //---------------------------------------------------------------------
+    // Private Functions
+    //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // Private Data
-        //---------------------------------------------------------------------
-        char* mAlias;
-        unsigned int mResourceHandle;
+    // No copying. Declare but don't define.
+    //
+    FeResourceEntry(const FeResourceEntry &);
+
+    // No assignment. Declare but don't define.
+    //
+    FeResourceEntry &operator=(const FeResourceEntry &);
+
+    //---------------------------------------------------------------------
+    // Private Data
+    //---------------------------------------------------------------------
+    char *mAlias;
+    unsigned int mResourceHandle;
 };
 
-inline const char* FeResourceEntry::GetAlias( void ) const
-{
-    return( mAlias );
+inline const char *FeResourceEntry::GetAlias(void) const {
+    return (mAlias);
 }
 
-inline unsigned int FeResourceEntry::GetResourceHandle( void ) const
-{
-    return( mResourceHandle );
+inline unsigned int FeResourceEntry::GetResourceHandle(void) const {
+    return (mResourceHandle);
 }
 
 #endif

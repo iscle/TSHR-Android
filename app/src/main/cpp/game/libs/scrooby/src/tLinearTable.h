@@ -10,73 +10,94 @@
 
 class FeEntity;
 
-class tLinearTable 
-: 
-    public tRefCounted
+class tLinearTable
+        :
+                public tRefCounted
     //public FeAllocatesMemory
 {
 public:
 
-   tLinearTable();
+    tLinearTable();
 
 
-   // raw iterator - finds all objects in table - returns NULL when done
-   class RawIterator
+    // raw iterator - finds all objects in table - returns NULL when done
+    class RawIterator
 //   :
 //   public FeAllocatesMemory
-   {
-   public:
-      RawIterator(tLinearTable* table);
-      ~RawIterator();
-      FeEntity* First();
-      FeEntity* Last();
-      FeEntity* Next();
-      FeEntity* Prev();
-      FeEntity* Current();
-      FeEntity* First(const tUID uid);
-   
-   private:
-      tLinearTable* table;
-      int index;
-      tUID mUID;
-      int FirstFree(const tUID uid);
-      int FirstIndex(const tUID uid);
-      int FirstIndex(FeEntity* entity);
-   friend class tLinearTable;
-   };
+    {
+    public:
+        RawIterator(tLinearTable *table);
 
-   friend class RawIterator;
-   
-   void AddRef()
-   {
-       tRefCounted::AddRef();
-   };
-   void Release()
-   {
-       tRefCounted::Release();
-   };
-   FeEntity* Find(const tUID uid);
-   void Store(FeEntity* obj);
-   void StoreNoAddRef( FeEntity* obj );
-   void Remove(FeEntity* obj);
-   void Replace(FeEntity* obj, FeEntity* newObj);
-   void RemoveAll();
-   int  GetElementCount() { return nElement; }
-   void Resize( const size_t size );
+        ~RawIterator();
+
+        FeEntity *First();
+
+        FeEntity *Last();
+
+        FeEntity *Next();
+
+        FeEntity *Prev();
+
+        FeEntity *Current();
+
+        FeEntity *First(const tUID uid);
+
+    private:
+        tLinearTable *table;
+        int index;
+        tUID mUID;
+
+        int FirstFree(const tUID uid);
+
+        int FirstIndex(const tUID uid);
+
+        int FirstIndex(FeEntity *entity);
+
+        friend class tLinearTable;
+    };
+
+    friend class RawIterator;
+
+    void AddRef() {
+        tRefCounted::AddRef();
+    };
+
+    void Release() {
+        tRefCounted::Release();
+    };
+
+    FeEntity *Find(const tUID uid);
+
+    void Store(FeEntity *obj);
+
+    void StoreNoAddRef(FeEntity *obj);
+
+    void Remove(FeEntity *obj);
+
+    void Replace(FeEntity *obj, FeEntity *newObj);
+
+    void RemoveAll();
+
+    int GetElementCount() { return nElement; }
+
+    void Resize(const size_t size);
 
 private:
-   virtual ~tLinearTable();
+    virtual ~tLinearTable();
 
-   void Grow();
-   void Repack();
-   void Restore(FeEntity** elements, int count);
+    void Grow();
 
-   int tableSize;
-   FeEntity** table;
-   int nElement;
-   int resizeThreshhold;
-   int nDeleteMarker;
-   int repackThreshhold;
-   FeEntity* deleteMarker;
+    void Repack();
+
+    void Restore(FeEntity **elements, int count);
+
+    int tableSize;
+    FeEntity **table;
+    int nElement;
+    int resizeThreshhold;
+    int nDeleteMarker;
+    int repackThreshhold;
+    FeEntity *deleteMarker;
 };
+
 #endif

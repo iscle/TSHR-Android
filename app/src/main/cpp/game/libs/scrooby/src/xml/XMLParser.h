@@ -29,65 +29,69 @@ class StreamReader;
 // Constants, Typedefs, and Macro Definitions (needed by external clients)
 //===========================================================================
 
-enum XMLNodeType
-{
+enum XMLNodeType {
     NormalTag = 0,
     EndTag,
     SingleTag,
     UnknownTag
 };
 
-class XMLAttribute
-{
-    public:
-        PascalCString GetName();
-        PascalCString GetValue();
+class XMLAttribute {
+public:
+    PascalCString GetName();
 
-    public:
-        PascalCString m_name;
-        PascalCString m_value;
+    PascalCString GetValue();
+
+public:
+    PascalCString m_name;
+    PascalCString m_value;
 };
 
-class XMLAttributeList
-{
-    public:
-        int GetLength();
-        void AddItem( XMLAttribute* attribute );
-        XMLAttribute* GetItem( int index );
+class XMLAttributeList {
+public:
+    int GetLength();
 
-    private:
-        rVector<XMLAttribute*> m_attributes;
+    void AddItem(XMLAttribute *attribute);
+
+    XMLAttribute *GetItem(int index);
+
+private:
+    rVector<XMLAttribute *> m_attributes;
 };
 
 class XMLNode;
 
-class XMLNodeList
-{
-    public:
-        int GetLength();
-        void AddItem( XMLNode* node );
-        XMLNode* GetItem( int index );
+class XMLNodeList {
+public:
+    int GetLength();
 
-    private:
-        rVector<XMLNode*> m_childNodes;
+    void AddItem(XMLNode *node);
+
+    XMLNode *GetItem(int index);
+
+private:
+    rVector<XMLNode *> m_childNodes;
 };
 
-class XMLNode
-{
-    public:
-        XMLNode();
-        virtual ~XMLNode();
+class XMLNode {
+public:
+    XMLNode();
 
-        XMLNodeType GetType();
-        PascalCString GetName();
-        XMLAttributeList* GetAttributes();
-        XMLNodeList* GetChildNodes();
+    virtual ~XMLNode();
 
-    public:
-        XMLNodeType m_nodeType;
-        PascalCString m_tagName;
-        XMLAttributeList m_attributes;
-        XMLNodeList m_childNodes;
+    XMLNodeType GetType();
+
+    PascalCString GetName();
+
+    XMLAttributeList *GetAttributes();
+
+    XMLNodeList *GetChildNodes();
+
+public:
+    XMLNodeType m_nodeType;
+    PascalCString m_tagName;
+    XMLAttributeList m_attributes;
+    XMLNodeList m_childNodes;
 };
 
 //===========================================================================
@@ -102,26 +106,32 @@ class XMLNode
 //
 //===========================================================================
 
-class XMLParser  
-{
-    public:
-        XMLParser();
-        virtual ~XMLParser();
-        
-        XMLNode* ParseFromFile( const char* filename );
-        XMLNode* ParseFromBuffer( char* buffer, 
-                                  const unsigned int bufferSize );
+class XMLParser {
+public:
+    XMLParser();
 
-    private:
-        XMLNode* Parse( StreamReader* stream );
-        XMLNode* Parse( char*& buffer );
-        PascalCString ReadNextTag( StreamReader* stream );
-        PascalCString ReadNextTag( char*& buffer );
-        XMLNode* DecodeTag( PascalCString& tagString );
-        XMLNode* DecodeTag( char*& buffer );
+    virtual ~XMLParser();
 
-        PascalCString m_filename;
-        XMLNode m_rootNode;
+    XMLNode *ParseFromFile(const char *filename);
+
+    XMLNode *ParseFromBuffer(char *buffer,
+                             const unsigned int bufferSize);
+
+private:
+    XMLNode *Parse(StreamReader *stream);
+
+    XMLNode *Parse(char *&buffer);
+
+    PascalCString ReadNextTag(StreamReader *stream);
+
+    PascalCString ReadNextTag(char *&buffer);
+
+    XMLNode *DecodeTag(PascalCString &tagString);
+
+    XMLNode *DecodeTag(char *&buffer);
+
+    PascalCString m_filename;
+    XMLNode m_rootNode;
 };
 
 //===========================================================================

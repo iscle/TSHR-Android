@@ -19,8 +19,7 @@
 #include "Drawable.h"
 #include "owner.h"
 
-namespace Scrooby
-{
+namespace Scrooby {
 //===========================================================================
 // Interface Definitions
 //===========================================================================
@@ -33,15 +32,14 @@ namespace Scrooby
 //
 //===========================================================================
 
-class Layer 
-: 
-    virtual public Drawable,
-    virtual public Owner
-{
+    class Layer
+            :
+                    virtual public Drawable,
+                    virtual public Owner {
     public:
     protected:
     private:
-};
+    };
 
 } // End namespace
 

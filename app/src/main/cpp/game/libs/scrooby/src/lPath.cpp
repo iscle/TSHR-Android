@@ -39,22 +39,17 @@
 // Return:      None
 //
 //===========================================================================
-lPath::lPath(const char* full_path) 
-{
+lPath::lPath(const char *full_path) {
 //    _splitpath(full_path,mDrive,mDir,mFname,mExt);
-    strcpy( mFullPath, full_path );
+    strcpy(mFullPath, full_path);
 
     //build the path without the filename
-    strcpy( mFullDir, full_path );
-    int i = strlen( mFullDir ) - 1;
-    for( ; i >= 0; i-- )
-    {
-        if( ( mFullDir[ i ] != '/' ) && ( mFullDir[ i ] != '\\' ) )
-        {
-            mFullDir[ i ] = NULL;
-        }
-        else
-        {
+    strcpy(mFullDir, full_path);
+    int i = strlen(mFullDir) - 1;
+    for (; i >= 0; i--) {
+        if ((mFullDir[i] != '/') && (mFullDir[i] != '\\')) {
+            mFullDir[i] = NULL;
+        } else {
             break;
         }
     }
@@ -63,37 +58,31 @@ lPath::lPath(const char* full_path)
 
     //build the file name
     //IAN IMPROVE: this would be better to use a strcpy
-    int filenameSize = strlen( full_path ) - lastSlashCharacter - 1;
-    for( i = 0; i < filenameSize; i++ )
-    {
-        char addme = full_path[ i + lastSlashCharacter + 1 ];
-        if( addme != '.' )
-        {
-            mFname[ i ] = full_path[ i + lastSlashCharacter + 1 ];
-        }
-        else
-        {
+    int filenameSize = strlen(full_path) - lastSlashCharacter - 1;
+    for (i = 0; i < filenameSize; i++) {
+        char addme = full_path[i + lastSlashCharacter + 1];
+        if (addme != '.') {
+            mFname[i] = full_path[i + lastSlashCharacter + 1];
+        } else {
             break;
         }
     }
-    mFname[ i ] = NULL;
+    mFname[i] = NULL;
 
     int lastDotCharacter = i + lastSlashCharacter + 1;
 
     //build the extension name
     //IAN IMPROVE: this would be better to use a strcpy
-    int extensionSize = strlen( full_path ) - lastDotCharacter - 1;
-    for( i = 0; i < extensionSize; i++ )
-    {
-        char addme = full_path[ i + lastDotCharacter + 1 ];
-        mExt[ i ] = full_path[ i + lastDotCharacter + 1 ];
+    int extensionSize = strlen(full_path) - lastDotCharacter - 1;
+    for (i = 0; i < extensionSize; i++) {
+        char addme = full_path[i + lastDotCharacter + 1];
+        mExt[i] = full_path[i + lastDotCharacter + 1];
     }
-    mExt[ i ] = NULL;
+    mExt[i] = NULL;
 
 //    strcat(mFullDir,mDir);
 }
 
 
-lPath::~lPath()
-{
+lPath::~lPath() {
 }

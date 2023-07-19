@@ -32,61 +32,71 @@
 // Interface Definitions
 //===========================================================================
 class FeMovie
- : 
-    public FeBoundedDrawable,
-    public FeParent,
-    virtual public Scrooby::Movie
-{
-    public:
+        :
+                public FeBoundedDrawable,
+                public FeParent,
+                virtual public Scrooby::Movie {
+public:
 
-        FeMovie( const tName& name, int x, int y );
-        virtual ~FeMovie();
+    FeMovie(const tName &name, int x, int y);
 
-        void AddMovieClip( unsigned int imageResourceID );
-    
-        virtual void SetAlpha( float alpha );
-        virtual float GetAlpha() const;
-        void SetAlphaNoRedraw( float alpha );
+    virtual ~FeMovie();
 
-        virtual void SetColour( tColour colour );
-        // Javascript testbed interface
-        virtual void SetColour( int red, int green, int blue );
+    void AddMovieClip(unsigned int imageResourceID);
 
-        virtual const tColour& GetColour() const;
+    virtual void SetAlpha(float alpha);
 
-        
-        virtual void Display();
-        virtual void Reset();
+    virtual float GetAlpha() const;
 
-        //
-        // Implementation of Scrooby interface.
-        //
-        virtual void Play();
-        virtual void Pause();
-        virtual void Stop();
-        virtual int GetCurrentFrame() const;
-        virtual void SetNextFrame( int frameIndex );
+    void SetAlphaNoRedraw(float alpha);
+
+    virtual void SetColour(tColour colour);
+
+    // Javascript testbed interface
+    virtual void SetColour(int red, int green, int blue);
+
+    virtual const tColour &GetColour() const;
 
 
-    private:
+    virtual void Display();
 
-        //---------------------------------------------------------------------
-        // Private Functions
-        //---------------------------------------------------------------------
+    virtual void Reset();
 
-        // No copying or assignment. Declare but don't define.
-        //
-        FeMovie( const FeMovie& );
-        FeMovie& operator= ( const FeMovie& );
+    //
+    // Implementation of Scrooby interface.
+    //
+    virtual void Play();
 
-        void SetColourNoRedraw( int red, int green, int blue );
-        void SetColourNoRedraw( tColour colour );
+    virtual void Pause();
 
-        //---------------------------------------------------------------------
-        // Private Data
-        //---------------------------------------------------------------------
-        float mAlpha;
-        tColour mColour;
+    virtual void Stop();
+
+    virtual int GetCurrentFrame() const;
+
+    virtual void SetNextFrame(int frameIndex);
+
+
+private:
+
+    //---------------------------------------------------------------------
+    // Private Functions
+    //---------------------------------------------------------------------
+
+    // No copying or assignment. Declare but don't define.
+    //
+    FeMovie(const FeMovie &);
+
+    FeMovie &operator=(const FeMovie &);
+
+    void SetColourNoRedraw(int red, int green, int blue);
+
+    void SetColourNoRedraw(tColour colour);
+
+    //---------------------------------------------------------------------
+    // Private Data
+    //---------------------------------------------------------------------
+    float mAlpha;
+    tColour mColour;
 
 };
 

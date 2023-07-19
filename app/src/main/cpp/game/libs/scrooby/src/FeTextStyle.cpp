@@ -32,7 +32,7 @@
 // Inline Defined Functions (See FeTextStyle.h)
 //=============================================================================
 // int   FeTextStyle::GetSize();
-// void  FeTextStyle::SetSize( int size );
+// void  FeTextStyle::SetSize(int size);
 // const FeTextStyle::PascalCString& GetFontName();
 // const FeTextStyle::PascalCString& GetFontFilename();
 // const FeTextStyle::PascalCString& GetFontStyle();
@@ -45,12 +45,11 @@
 //
 //=============================================================================
 FeTextStyle::FeTextStyle() :
-m_Size( 0 )
-{
+        m_Size(0) {
     m_FontName = new PascalCString();
     m_FontData = new PascalCString();
     m_FontStyle = new PascalCString();
-    m_Colour = new tColour( 255, 255, 255, 255 );
+    m_Colour = new tColour(255, 255, 255, 255);
 }
 
 //=============================================================================
@@ -59,22 +58,17 @@ m_Size( 0 )
 // Description : deconstructor
 //
 //=============================================================================
-FeTextStyle::~FeTextStyle()
-{
-    if( m_FontName )
-    {
+FeTextStyle::~FeTextStyle() {
+    if (m_FontName) {
         delete m_FontName;
     }
-    if( m_FontData )
-    {
+    if (m_FontData) {
         delete m_FontData;
     }
-    if( m_FontStyle )
-    {
+    if (m_FontStyle) {
         delete m_FontStyle;
     }
-    if( m_Colour )
-    {
+    if (m_Colour) {
         delete m_Colour;
     }
 }
@@ -87,8 +81,7 @@ FeTextStyle::~FeTextStyle()
 // Parameters  : name - a PascalCString object which will be copied
 //
 //=============================================================================
-void FeTextStyle::SetFontName( PascalCString name )
-{
+void FeTextStyle::SetFontName(PascalCString name) {
     *m_FontName = name;
 }
 
@@ -100,8 +93,7 @@ void FeTextStyle::SetFontName( PascalCString name )
 // Parameters  : name - a PascalCString object which will be copied
 //
 //=============================================================================
-void FeTextStyle::SetFontFilename( PascalCString name )
-{
+void FeTextStyle::SetFontFilename(PascalCString name) {
     *m_FontData = name;
 }
 
@@ -113,8 +105,7 @@ void FeTextStyle::SetFontFilename( PascalCString name )
 // Parameters  : style - a PascalCString object which will be copied
 //
 //=============================================================================
-void FeTextStyle::SetFontStyle( PascalCString style )
-{
+void FeTextStyle::SetFontStyle(PascalCString style) {
     *m_FontStyle = style;
 }
 
@@ -129,10 +120,8 @@ void FeTextStyle::SetFontStyle( PascalCString style )
 // Parameters  : colour - a tColour object
 //
 //=============================================================================
-void FeTextStyle::SetColour( tColour* colour )
-{
-    if( m_Colour )
-    {
+void FeTextStyle::SetColour(tColour *colour) {
+    if (m_Colour) {
         delete m_Colour;
     }
     m_Colour = colour;
@@ -149,7 +138,6 @@ void FeTextStyle::SetColour( tColour* colour )
 // Parameters  : r,g,b,a - the individual color components of the color
 //
 //=============================================================================
-void FeTextStyle::SetColour( int r, int g, int b, int a )
-{
-    SetColour( new tColour( r, g, b, a ) );
+void FeTextStyle::SetColour(int r, int g, int b, int a) {
+    SetColour(new tColour(r, g, b, a));
 }

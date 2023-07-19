@@ -3,7 +3,9 @@
 #include "stdafx.h"
 
 #ifndef __FE2DCore__
+
 #include "FE2DCore.h"
+
 #endif
 
 #include "utility/memory.h"
@@ -15,7 +17,8 @@
 // Global Data, Local Data, Local Classes
 //===========================================================================
 class Fe2DCore;
-Fe2DCore* Fe2DCore::sInstance = NULL;
+
+Fe2DCore *Fe2DCore::sInstance = NULL;
 
 //===========================================================================
 // Member Functions
@@ -35,14 +38,12 @@ Fe2DCore* Fe2DCore::sInstance = NULL;
 // Return:      Pointer to the single instance of this class.
 //
 //===========================================================================
-Fe2DCore* Fe2DCore::GetInstance()
-{
-    if( sInstance == NULL )
-    {
-        sInstance = new ( ScroobyPermPool ) Fe2DCore;
+Fe2DCore *Fe2DCore::GetInstance() {
+    if (sInstance == NULL) {
+        sInstance = new(ScroobyPermPool) Fe2DCore;
     }
 
-    return( sInstance );
+    return (sInstance);
 }
 
 
@@ -59,46 +60,37 @@ Fe2DCore* Fe2DCore::GetInstance()
 // Return:      None
 //
 //===========================================================================
-void Fe2DCore::DeleteInstance()
-{
-    if( sInstance != NULL )
-    {
+void Fe2DCore::DeleteInstance() {
+    if (sInstance != NULL) {
         delete sInstance;
         sInstance = NULL;
     }
 }
 
 
-
-Fe2DCore::Fe2DCore() 
-{
+Fe2DCore::Fe2DCore() {
 }
 
 
-Fe2DCore::~Fe2DCore()
-{
+Fe2DCore::~Fe2DCore() {
 }
 
-void Fe2DCore::AddSection(char *sectionname)
-{
+void Fe2DCore::AddSection(char *sectionname) {
     p3d::inventory->AddSection(sectionname);
 }
 
-void Fe2DCore::RemoveSectionElement(char *name)
-{
+void Fe2DCore::RemoveSectionElement(char *name) {
     p3d::inventory->RemoveSectionElements(name);
 }
 
-tDrawable *Fe2DCore::GetHandlePrimitive(unsigned handle)
-{
-    rAssert( scene[ handle ].Used() );
-//    rAssert( scene[ handle ].GetTDrawable() );
+tDrawable *Fe2DCore::GetHandlePrimitive(unsigned handle) {
+    rAssert(scene[handle].Used());
+//    rAssert(scene[ handle ].GetTDrawable());
 
-    return scene[ handle ].GetTDrawable();
+    return scene[handle].GetTDrawable();
 }
 
-void Fe2DCore::DeleteSection(char *sectionname)
-{
+void Fe2DCore::DeleteSection(char *sectionname) {
     p3d::inventory->DeleteSection(sectionname);
 }
 

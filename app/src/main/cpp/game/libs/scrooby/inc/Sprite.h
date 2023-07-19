@@ -24,24 +24,24 @@
 #include "BoundedDrawable.h"
 
 #ifdef BITMAP_TEXT_SUPPORT
-    #include <strings/unicodestring.h>
+
+#include <strings/unicodestring.h>
+
 #endif
 
 class tSprite;
 
-namespace Scrooby
-{
+namespace Scrooby {
 //===========================================================================
 // Interface Definitions
 //===========================================================================
 
-enum eSpriteMode
-{
-    SPRITE_NORMAL,
-    SPRITE_BITMAP_TEXT,
+    enum eSpriteMode {
+        SPRITE_NORMAL,
+        SPRITE_BITMAP_TEXT,
 
-    NUM_SPRITE_MODES
-};
+        NUM_SPRITE_MODES
+    };
 
 //===========================================================================
 //
@@ -51,42 +51,51 @@ enum eSpriteMode
 //
 //===========================================================================
 
-class Sprite 
-: 
-    virtual public BoundedDrawable
-{
+    class Sprite
+            :
+                    virtual public BoundedDrawable {
     public:
-        virtual void SetImage( int index, const char* alias ) = 0;
-        virtual void SetIndex( int n ) = 0;
-        virtual int  GetIndex() = 0;
-        virtual int  GetNumOfImages() = 0;
-        virtual const tSprite* GetRawSprite() = 0;
+        virtual void SetImage(int index, const char *alias) = 0;
+
+        virtual void SetIndex(int n) = 0;
+
+        virtual int GetIndex() = 0;
+
+        virtual int GetNumOfImages() = 0;
+
+        virtual const tSprite *GetRawSprite() = 0;
+
         virtual void ResizeToBoundingBox() = 0;
-        virtual void SetRawSprite( tSprite* sprite, bool updateDrawable = false ) = 0;
-    
+
+        virtual void SetRawSprite(tSprite *sprite, bool updateDrawable = false) = 0;
+
 #ifdef BITMAP_TEXT_SUPPORT
+
         // set current sprite mode
         //
-        virtual void SetSpriteMode( eSpriteMode mode ) = 0;
+        virtual void SetSpriteMode(eSpriteMode mode) = 0;
 
         // set current bitmap text string
         //
-        virtual void CreateBitmapTextBuffer( unsigned int size ) = 0;
-        virtual void SetBitmapText( const UnicodeChar* text ) = 0;
-        virtual void SetBitmapText( const char* text ) = 0;
+        virtual void CreateBitmapTextBuffer(unsigned int size) = 0;
+
+        virtual void SetBitmapText(const UnicodeChar *text) = 0;
+
+        virtual void SetBitmapText(const char *text) = 0;
 
         // set character spacing
         //
-        virtual void SetBitmapTextSpacing( short numPixels ) = 0;
+        virtual void SetBitmapTextSpacing(short numPixels) = 0;
 
         // set line spacing (in y-direction)
         //
-        virtual void SetBitmapTextLineSpacing( short numPixels ) = 0;
+        virtual void SetBitmapTextLineSpacing(short numPixels) = 0;
+
 #endif
 
     protected:
     private:
-};
+    };
 
 
 } // End namespace

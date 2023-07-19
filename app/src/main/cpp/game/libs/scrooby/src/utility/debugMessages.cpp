@@ -23,16 +23,15 @@
 //===========================================================================
 #ifndef RAD_RELEASE
 
-namespace Scrooby
-{
-Log* Log::s_instance = NULL;
+namespace Scrooby {
+    Log *Log::s_instance = NULL;
 
 
 //===========================================================================
 // Global Data, Local Data, Local Classes
 //===========================================================================
 
-bool AsyncFileLoaderMessagesOn = true;
+    bool AsyncFileLoaderMessagesOn = true;
 
 //===========================================================================
 // ScroobyInfo
@@ -46,16 +45,14 @@ bool AsyncFileLoaderMessagesOn = true;
 // Return:      NONE
 //
 //===========================================================================
-void ScroobyInfo( const char* message )
-{
-    Log::Message( LVL_INFO, message );
-}
+    void ScroobyInfo(const char *message) {
+        Log::Message(LVL_INFO, message);
+    }
 
-void ScroobyMessage( int level, const char* message )
-{
-    Scrooby::ErrorLevel errorlevel = static_cast< Scrooby::ErrorLevel >( level );
-    Log::Message( errorlevel, message );
-}
+    void ScroobyMessage(int level, const char *message) {
+        Scrooby::ErrorLevel errorlevel = static_cast<Scrooby::ErrorLevel>(level);
+        Log::Message(errorlevel, message);
+    }
 
 //===========================================================================
 // ScroobyWarning
@@ -70,10 +67,9 @@ void ScroobyMessage( int level, const char* message )
 // Return:      None
 //
 //===========================================================================
-void ScroobyWarning( int level, const char* message )
-{
-    Log::Message( LVL_WARNING, message );
-}
+    void ScroobyWarning(int level, const char *message) {
+        Log::Message(LVL_WARNING, message);
+    }
 
 //===========================================================================
 // ScroobyError
@@ -87,10 +83,9 @@ void ScroobyWarning( int level, const char* message )
 // Return:      None
 //
 //===========================================================================
-void ScroobyError( const char* message )
-{
-    Log::Message( LVL_ERROR, message );
-}
+    void ScroobyError(const char *message) {
+        Log::Message(LVL_ERROR, message);
+    }
 
 //===========================================================================
 // Member Functions
@@ -108,19 +103,19 @@ void ScroobyError( const char* message )
 // Return:      None
 //
 //===========================================================================
-Log::Log() :
+    Log::Log() :
 #ifdef RAD_RELEASE
-m_errorLevel( LVL_SILENT )
+            m_errorLevel(LVL_SILENT)
 #elif defined RAD_TUNE
-m_errorLevel( LVL_WARNING )
+            m_errorLevel(LVL_WARNING)
 #elif defined SCROOBY_VERBOSE
-m_errorLevel( LVL_DEBUG )
+            m_errorLevel(LVL_DEBUG)
 #else
-m_errorLevel( LVL_INFO )
+            m_errorLevel(LVL_INFO)
 #endif
-{
-    m_errorString = new char[256];
-}
+    {
+        m_errorString = new char[256];
+    }
 
 //===========================================================================
 // Log::~Log
@@ -134,10 +129,9 @@ m_errorLevel( LVL_INFO )
 // Return:      None
 //
 //===========================================================================
-Log::~Log()
-{
-    delete m_errorString;
-}
+    Log::~Log() {
+        delete m_errorString;
+    }
 
 //===========================================================================
 // Log::GetInstance
@@ -151,14 +145,12 @@ Log::~Log()
 // Return:      None
 //
 //===========================================================================
-Log* Log::GetInstance()
-{
-    if( s_instance == NULL )
-    {
-        s_instance = new Log();
+    Log *Log::GetInstance() {
+        if (s_instance == NULL) {
+            s_instance = new Log();
+        }
+        return s_instance;
     }
-    return s_instance;
-}
 
 //===========================================================================
 // Log::ScroobyMessage
@@ -173,13 +165,12 @@ Log* Log::GetInstance()
 // Return:      None
 //
 //===========================================================================
-void Log::Message( ErrorLevel level, const char* message, ... )
-{
-    va_list argList;
-    va_start( argList, message );
-    Log::GetInstance()->Msg( level, message, argList );
-    va_end( argList );
-}
+    void Log::Message(ErrorLevel level, const char *message, ...) {
+        va_list argList;
+        va_start(argList, message);
+        Log::GetInstance()->Msg(level, message, argList);
+        va_end(argList);
+    }
 
 //===========================================================================
 // Log::Msg
@@ -195,17 +186,15 @@ void Log::Message( ErrorLevel level, const char* message, ... )
 // Return:      None
 //
 //===========================================================================
-void Log::Msg( ErrorLevel level, const char* message, va_list argList )
-{
-    
-    if( level >= m_errorLevel )
-    {
-        char temp[256];
-        vsprintf( temp, message, argList );
-        sprintf( m_errorString, "Scrooby Message (Lvl %d) %s\n", level, temp );
-        rDebugString( m_errorString );
+    void Log::Msg(ErrorLevel level, const char *message, va_list argList) {
+
+        if (level >= m_errorLevel) {
+            char temp[256];
+            vsprintf(temp, message, argList);
+            sprintf(m_errorString, "Scrooby Message (Lvl %d) %s\n", level, temp);
+            rDebugString(m_errorString);
+        }
     }
-}
 
 //===========================================================================
 // Log::Msg
@@ -221,19 +210,17 @@ void Log::Msg( ErrorLevel level, const char* message, va_list argList )
 // Return:      None
 //
 //===========================================================================
-void Log::Msg( ErrorLevel level, const char* message, ... )
-{
-    if( level >= m_errorLevel )
-    {
-        va_list argList;
-        va_start( argList, message );
-        char temp[256];
-        vsprintf( temp, message, argList );
-        va_end( argList );
-        sprintf( m_errorString, "Scrooby Message (Lvl %d) %s\n", level, temp );
-        rDebugString( m_errorString );
+    void Log::Msg(ErrorLevel level, const char *message, ...) {
+        if (level >= m_errorLevel) {
+            va_list argList;
+            va_start(argList, message);
+            char temp[256];
+            vsprintf(temp, message, argList);
+            va_end(argList);
+            sprintf(m_errorString, "Scrooby Message (Lvl %d) %s\n", level, temp);
+            rDebugString(m_errorString);
+        }
     }
-}
 }    //end namespace
 
 #endif

@@ -18,8 +18,7 @@
 //===========================================================================
 #include "BoundedDrawable.h"
 
-namespace Scrooby
-{
+namespace Scrooby {
 //===========================================================================
 // Interface Definitions
 //===========================================================================
@@ -32,23 +31,24 @@ namespace Scrooby
 //
 //===========================================================================
 
-class Movie 
-: 
-    virtual public BoundedDrawable
-{
+    class Movie
+            :
+                    virtual public BoundedDrawable {
     public:
 
         virtual void Play() = 0;
+
         virtual void Pause() = 0;
-        
+
         virtual void Stop() = 0;
-        
+
         virtual int GetCurrentFrame() const = 0;
-        virtual void SetNextFrame( int frameIndex ) = 0;
-    
+
+        virtual void SetNextFrame(int frameIndex) = 0;
+
     protected:
     private:
-};
+    };
 
 
 } // End namespace

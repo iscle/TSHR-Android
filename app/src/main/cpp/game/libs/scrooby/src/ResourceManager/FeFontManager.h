@@ -42,14 +42,16 @@ class FeFontManager : public FeEntity
 public:
     FeFontManager();
 
-    void AddFontFilename( const char* filename );
+    void AddFontFilename(const char *filename);
 
-    void SetFontsReused( bool reuse );
-    bool IsFontsReused();    
+    void SetFontsReused(bool reuse);
 
-    void SetDefaultFontSize( int size );
+    bool IsFontsReused();
+
+    void SetDefaultFontSize(int size);
+
     int GetDefaultFontSize();
-    
+
 protected:
     ~FeFontManager();
 

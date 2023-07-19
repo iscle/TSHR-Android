@@ -44,10 +44,9 @@
 //
 //===========================================================================
 UnicodeChar::UnicodeChar()
-:
-    loByte( 0x00 ),
-    hiByte( 0x00 )
-{
+        :
+        loByte(0x00),
+        hiByte(0x00) {
 };
 
 //===========================================================================
@@ -64,11 +63,10 @@ UnicodeChar::UnicodeChar()
 // Return:      none
 //
 //===========================================================================
-UnicodeChar::UnicodeChar( const unsigned char hiByte, const unsigned char loByte )
-:
-    loByte( loByte ),
-    hiByte( hiByte )
-{
+UnicodeChar::UnicodeChar(const unsigned char hiByte, const unsigned char loByte)
+        :
+        loByte(loByte),
+        hiByte(hiByte) {
 }
 
 //===========================================================================
@@ -85,21 +83,19 @@ UnicodeChar::UnicodeChar( const unsigned char hiByte, const unsigned char loByte
 // Return:      none
 //
 //===========================================================================
-UnicodeChar::UnicodeChar( const unsigned short right)
-{
+UnicodeChar::UnicodeChar(const unsigned short right) {
 #ifndef __BIG_ENDIAN__
-    this->loByte = right & 0x00FF ;
-    this->hiByte = ( right & 0xFF00 ) >> 8 ;
+    this->loByte = right & 0x00FF;
+    this->hiByte = (right & 0xFF00) >> 8;
 #else
-    this->loByte = ( right & 0xFF00 ) >> 8 ;
+    this->loByte = (right & 0xFF00)>> 8 ;
     this->hiByte = right & 0x00FF ;
 #endif
 }
 
 
-
 //===========================================================================
-// UnicodeChar::operator<( const UnicodeChar& right ) const
+// UnicodeChar::operator<(const UnicodeChar& right) const
 //===========================================================================
 // Description: if the character is an Ascii character, then it gets returned
 //                otherwise it returns a '?'
@@ -111,15 +107,11 @@ UnicodeChar::UnicodeChar( const unsigned short right)
 // Return:      bool - true or false
 //
 //===========================================================================
-char UnicodeChar::Ascii() const
-{
-    if( hiByte == 0 )
-    {
-        return loByte ;
-    }
-    else
-    {
-        return '?' ;
+char UnicodeChar::Ascii() const {
+    if (hiByte == 0) {
+        return loByte;
+    } else {
+        return '?';
     }
 }
 
@@ -136,21 +128,17 @@ char UnicodeChar::Ascii() const
 // Return:      bool - true or false
 //
 //===========================================================================
-bool UnicodeChar::IsExtended() const 
-{
+bool UnicodeChar::IsExtended() const {
     //check to see if value of the character is less than 0x0080 (128)
-    if( ( hiByte == 0x00 ) && (loByte < 0x80 ) )
-    {
-        return false ;
-    }
-    else
-    {
-        return true ;
+    if ((hiByte == 0x00) && (loByte < 0x80)) {
+        return false;
+    } else {
+        return true;
     }
 }
 
 //===========================================================================
-// bool UnicodeChar::operator=( const UnicodeChar& right )
+// bool UnicodeChar::operator=(const UnicodeChar& right)
 //===========================================================================
 // Description: assignment operator
 //
@@ -161,15 +149,14 @@ bool UnicodeChar::IsExtended() const
 // Return:      reference to the current object
 //
 //===========================================================================
-UnicodeChar& UnicodeChar::operator=( const UnicodeChar& right )
-{
+UnicodeChar &UnicodeChar::operator=(const UnicodeChar &right) {
     this->loByte = right.loByte;
     this->hiByte = right.hiByte;
     return *this;
 }
 
 //===========================================================================
-// bool UnicodeChar::operator==( const UnicodeChar& right ) const
+// bool UnicodeChar::operator==(const UnicodeChar& right) const
 //===========================================================================
 // Description: equality operator
 //
@@ -180,28 +167,20 @@ UnicodeChar& UnicodeChar::operator=( const UnicodeChar& right )
 // Return:      bool - true or false
 //
 //===========================================================================
-bool UnicodeChar::operator==( const UnicodeChar& right ) const
-{
+bool UnicodeChar::operator==(const UnicodeChar &right) const {
     //IMPROVE: make this way more efficient by doing a bitwise comparison
-    if( *this < right ) 
-    {
-        return false ;
-    }
-    else if( right < *this )
-    {
-        return false ;
-    }
-    else
-    {
-        return true ;
+    if (*this < right) {
+        return false;
+    } else if (right < *this) {
+        return false;
+    } else {
+        return true;
     }
 }
 
 
-
-
 //===========================================================================
-// bool UnicodeChar::operator!=( const UnicodeChar& right ) const
+// bool UnicodeChar::operator!=(const UnicodeChar& right) const
 //===========================================================================
 // Description: inequality operator
 //
@@ -212,13 +191,12 @@ bool UnicodeChar::operator==( const UnicodeChar& right ) const
 // Return:      bool - true or false
 //
 //===========================================================================
-bool UnicodeChar::operator!=( const UnicodeChar& right ) const
-{
-    return !( *this == right ) ;
+bool UnicodeChar::operator!=(const UnicodeChar &right) const {
+    return !(*this == right);
 }
 
 //===========================================================================
-// UnicodeChar::operator<( const UnicodeChar& right ) const
+// UnicodeChar::operator<(const UnicodeChar& right) const
 //===========================================================================
 // Description: less than operator - this is only really good for sorting in 
 //                stl sets and the like.  It's not unicode ordering
@@ -230,28 +208,20 @@ bool UnicodeChar::operator!=( const UnicodeChar& right ) const
 // Return:      bool - true or false
 //
 //===========================================================================
-bool UnicodeChar::operator<( const UnicodeChar& right ) const
-{
-    if( hiByte < right.hiByte )
-    {
-        return true ;
-    }
-    else if( hiByte > right.hiByte )
-    {
-        return false ;
-    }
-    else if( loByte < right.loByte )
-    {
-        return true ;
-    }
-    else
-    {
-        return false ;
+bool UnicodeChar::operator<(const UnicodeChar &right) const {
+    if (hiByte < right.hiByte) {
+        return true;
+    } else if (hiByte > right.hiByte) {
+        return false;
+    } else if (loByte < right.loByte) {
+        return true;
+    } else {
+        return false;
     }
 };
 
 //===========================================================================
-// bool UnicodeChar::operator<( const UnicodeChar& right ) const 
+// bool UnicodeChar::operator<(const UnicodeChar& right) const
 //===========================================================================
 // Description: less than operator 
 //
@@ -262,13 +232,12 @@ bool UnicodeChar::operator<( const UnicodeChar& right ) const
 // Return:      bool - true or false
 //
 //===========================================================================
-bool UnicodeChar::operator>( const UnicodeChar& right ) const 
-{
-    return ( right < *this ) ;
+bool UnicodeChar::operator>(const UnicodeChar &right) const {
+    return (right < *this);
 }
 
 //===========================================================================
-// bool operator<=( const UnicodeChar& right ) const
+// bool operator<=(const UnicodeChar& right) const
 //===========================================================================
 // Description: greater than equal to operator 
 //
@@ -279,13 +248,12 @@ bool UnicodeChar::operator>( const UnicodeChar& right ) const
 // Return:      bool - true or false
 //
 //===========================================================================
-bool UnicodeChar::operator<=( const UnicodeChar& right ) const
-{
-    return !( *this > right );     
+bool UnicodeChar::operator<=(const UnicodeChar &right) const {
+    return !(*this > right);
 }
 
 //===========================================================================
-// bool operator>=( const UnicodeChar& right ) const
+// bool operator>=(const UnicodeChar& right) const
 //===========================================================================
 // Description: greater than equal to operator 
 //
@@ -296,9 +264,8 @@ bool UnicodeChar::operator<=( const UnicodeChar& right ) const
 // Return:      bool - true or false
 //
 //===========================================================================
-bool UnicodeChar::operator>=( const UnicodeChar& right ) const
-{
-    return !( *this < right ); 
+bool UnicodeChar::operator>=(const UnicodeChar &right) const {
+    return !(*this < right);
 }
 
 
@@ -314,12 +281,11 @@ bool UnicodeChar::operator>=( const UnicodeChar& right ) const
 // Return:      
 //
 //===========================================================================
-UnicodeChar::operator unsigned short() const
-{
+UnicodeChar::operator unsigned short() const {
     unsigned short returnMe = 0;
-    returnMe = hiByte << 8 ;
-    returnMe += loByte ;
-    return returnMe ;
+    returnMe = hiByte << 8;
+    returnMe += loByte;
+    return returnMe;
 }
 
 //===========================================================================
@@ -334,15 +300,14 @@ UnicodeChar::operator unsigned short() const
 // Return:      none
 //
 //===========================================================================
-void UnicodeChar::SwapEndian()
-{
+void UnicodeChar::SwapEndian() {
     unsigned char tmp = hiByte;
     hiByte = loByte;
     loByte = tmp;
 }
 
 //===========================================================================
-// ostream& operator<< ( ostream& os, const UnicodeChar c )
+// ostream& operator<<(ostream& os, const UnicodeChar c)
 //===========================================================================
 // Description: ostream output operator for the UnicodeChar class
 //
@@ -354,18 +319,18 @@ void UnicodeChar::SwapEndian()
 // Return:      none
 //
 //===========================================================================
-/*ostream& operator<< ( ostream& os, const UnicodeChar& c )
+/*ostream& operator<<(ostream& os, const UnicodeChar& c)
 {
-    os.put( c.loByte ) ;
-    os.put( c.hiByte ) ;
-//    os << c.loByte ;    //all windows programs have the lobyte first
-//    os << c.hiByte ;
+    os.put(c.loByte) ;
+    os.put(c.hiByte) ;
+//    os <<c.loByte ;    //all windows programs have the lobyte first
+//    os <<c.hiByte ;
     return os ;
 };
 */
 
 //===========================================================================
-// istream& operator<< ( istream& is, const UnicodeChar c ) ;
+// istream& operator<<(istream& is, const UnicodeChar c) ;
 //===========================================================================
 // Description: istream input operator for the UnicodeChar class
 //
@@ -378,17 +343,17 @@ void UnicodeChar::SwapEndian()
 //
 //===========================================================================
 /*
-istream& operator>> ( istream& is, UnicodeChar& c ) 
+istream& operator>>(istream& is, UnicodeChar& c)
 {
     char c0 ;
     char c1 ;
-    is.get( c0 ) ;
-    is.get( c1 ) ;
+    is.get(c0) ;
+    is.get(c1) ;
     c.loByte = c0 ;
     c.hiByte = c1 ;
-//    is >> c.loByte ;        //All windows programs have the lobyte first
-//    is >> c.hiByte ;
-    if( c.hiByte != 00 )
+//    is>> c.loByte ;        //All windows programs have the lobyte first
+//    is>> c.hiByte ;
+    if(c.hiByte != 00)
     {
         int a = 10 ;
         a++ ;

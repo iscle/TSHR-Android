@@ -5,31 +5,31 @@
 
 #include <string.h>
 
-enum CommandType
-{
+enum CommandType {
     e_ctConnect,
-   e_ctAcknowledge,
-   e_ctProject,
+    e_ctAcknowledge,
+    e_ctProject,
     e_ctPage,
     e_ctReload,
     e_ctQuit,
-   e_ctWorkingDir
+    e_ctWorkingDir
 };
 
-class MessagePacket
-{
+class MessagePacket {
 public:
     // constructors and destructors
-   //MessagePacket() {};
-   //~MessagePacket() {};
+    //MessagePacket() {};
+    //~MessagePacket() {};
 
     CommandType GetCommand() { return m_eCommand; };
-    char* GetMessage() { return m_strMessage; };
 
-    void SetCommand( const CommandType c ) { m_eCommand = c; };
-    void SetMessage( const char* s ) { strncpy( m_strMessage, s, MESSAGE_LENGTH); };
+    char *GetMessage() { return m_strMessage; };
 
-    unsigned int Size() { return sizeof( MessagePacket ); };
+    void SetCommand(const CommandType c) { m_eCommand = c; };
+
+    void SetMessage(const char *s) { strncpy(m_strMessage, s, MESSAGE_LENGTH); };
+
+    unsigned int Size() { return sizeof(MessagePacket); };
 private:
 
     CommandType m_eCommand;

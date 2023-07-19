@@ -23,8 +23,7 @@
 // Forward References
 //===========================================================================
 
-enum FeResourceType
-{
+enum FeResourceType {
     FE_RESOURCE_FONT,
     FE_RESOURCE_MEMORY_BUFFER,
     FE_RESOURCE_SPRITE,

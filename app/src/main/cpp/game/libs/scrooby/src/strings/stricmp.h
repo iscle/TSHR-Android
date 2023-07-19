@@ -40,7 +40,7 @@
 // Constraints: 
 //
 //===========================================================================
-int rstricmp( const char *string1, const char *string2 );
+int rstricmp(const char *string1, const char *string2);
 
 //===========================================================================
 //
@@ -50,7 +50,7 @@ int rstricmp( const char *string1, const char *string2 );
 // Constraints: 
 //
 //===========================================================================
-int rstrincmp( const char *string1, const char *string2, int tCount);
+int rstrincmp(const char *string1, const char *string2, int tCount);
 
 
 #endif                                  // End conditional inclusion

@@ -61,12 +61,11 @@
 // Return:      NONE
 //
 //===========================================================================
-FeParent::FeParent() 
-{
+FeParent::FeParent() {
     mChildren = new tLinearTable;
     mChildren->AddRef();
 
-    mpChildIter = new tLinearTable::RawIterator( mChildren );
+    mpChildIter = new tLinearTable::RawIterator(mChildren);
     mCurChildIndex = 0;
 }
 
@@ -83,8 +82,7 @@ FeParent::FeParent()
 // Return:      NONE
 //
 //===========================================================================
-FeParent::~FeParent()
-{
+FeParent::~FeParent() {
     mChildren->Release();
     delete mpChildIter;
 }
@@ -102,11 +100,11 @@ FeParent::~FeParent()
 // Constraints: None.
 //
 //========================================================================
-void FeParent::ResetIter() const
-{
+void FeParent::ResetIter() const {
     mCurChildIndex = 0;
     mpChildIter->First();
 }
+
 //===========================================================================
 // void FeParent::AddChild(FeEntity *s)
 //===========================================================================
@@ -120,9 +118,8 @@ void FeParent::ResetIter() const
 // Return:      NONE
 //
 //===========================================================================
-void FeParent::AddChild( FeEntity* s )
-{
-    mChildren->Store( s );
+void FeParent::AddChild(FeEntity *s) {
+    mChildren->Store(s);
     ResetIter();
 }
 
@@ -139,8 +136,7 @@ void FeParent::AddChild( FeEntity* s )
 // Return:      NONE
 //
 //===========================================================================
-void FeParent::RemoveChild( FeEntity* s )
-{
+void FeParent::RemoveChild(FeEntity *s) {
     mChildren->Remove(s);
     ResetIter();
 }
@@ -158,9 +154,8 @@ void FeParent::RemoveChild( FeEntity* s )
 // Return:      NONE
 //
 //===========================================================================
-void FeParent::ReplaceChild( FeEntity* s, FeEntity* newS )
-{
-    mChildren->Replace( s, newS );
+void FeParent::ReplaceChild(FeEntity *s, FeEntity *newS) {
+    mChildren->Replace(s, newS);
     ResetIter();
 }
 
@@ -176,9 +171,8 @@ void FeParent::ReplaceChild( FeEntity* s, FeEntity* newS )
 // Return:      NONE
 //
 //===========================================================================
-void FeParent::Resize( const size_t size )
-{
-    mChildren->Resize( size );
+void FeParent::Resize(const size_t size) {
+    mChildren->Resize(size);
 }
 
 //===========================================================================
@@ -194,16 +188,14 @@ void FeParent::Resize( const size_t size )
 // Return:      NONE
 //
 //===========================================================================
-void FeParent::DeleteChildren()
-{
+void FeParent::DeleteChildren() {
     mChildren->RemoveAll();
     ResetIter();
 }
 
 
-
 //===========================================================================
-// FeEntity* FeParent::GetChild( const char* name )
+// FeEntity* FeParent::GetChild(const char* name)
 //===========================================================================
 // Description: looks up a child entity by name
 //
@@ -216,13 +208,12 @@ void FeParent::DeleteChildren()
 // Return:      pointer to the child that you wanted
 //
 //===========================================================================
-FeEntity* FeParent::GetChild( const char* name )
-{
+FeEntity *FeParent::GetChild(const char *name) {
     return mChildren->Find(FeEntity::MakeUID(name));
 }
 
 //===========================================================================
-// FeEntity* FeParent::GetChild( const tUID hashvalue )
+// FeEntity* FeParent::GetChild(const tUID hashvalue)
 //===========================================================================
 // Description: gets a child object from the parent by its hash value
 //
@@ -233,9 +224,8 @@ FeEntity* FeParent::GetChild( const char* name )
 // Return:      NONE
 //
 //===========================================================================
-FeEntity* FeParent::GetChild( const tUID hashvalue )
-{
-    return mChildren->Find( hashvalue );
+FeEntity *FeParent::GetChild(const tUID hashvalue) {
+    return mChildren->Find(hashvalue);
 }
 
 //===========================================================================
@@ -251,30 +241,26 @@ FeEntity* FeParent::GetChild( const tUID hashvalue )
 // Return:      a pointer to one of the children
 //
 //===========================================================================
-FeEntity* FeParent::GetChildIndex( int i ) 
-{
+FeEntity *FeParent::GetChildIndex(int i) {
     int childrenCount = GetChildrenCount();
-    rAssert( i < childrenCount );
-    
-    if( i >= childrenCount ) 
-    {
+    rAssert(i < childrenCount);
+
+    if (i >= childrenCount) {
         i = childrenCount - 1;
     }
 
-    if( i < mCurChildIndex )
-    {
+    if (i < mCurChildIndex) {
         ResetIter();
     }
 
-    FeEntity* entity  = mpChildIter->Current();
+    FeEntity *entity = mpChildIter->Current();
 
-    while ( entity && mCurChildIndex < i )
-    {
+    while (entity && mCurChildIndex < i) {
         entity = mpChildIter->Next();
         mCurChildIndex++;
     }
-    
-    return( entity );
+
+    return (entity);
 }
 
 //===========================================================================
@@ -290,30 +276,26 @@ FeEntity* FeParent::GetChildIndex( int i )
 // Return:      a const pointer to one of the children
 //
 //===========================================================================
-const FeEntity* FeParent::GetChildIndex( int i ) const
-{
+const FeEntity *FeParent::GetChildIndex(int i) const {
     int childrenCount = GetChildrenCount();
-    rAssert( i < childrenCount );
-    
-    if( i >= childrenCount ) 
-    {
+    rAssert(i < childrenCount);
+
+    if (i >= childrenCount) {
         i = childrenCount - 1;
     }
 
-    if( i < mCurChildIndex )
-    {
+    if (i < mCurChildIndex) {
         ResetIter();
     }
 
-    FeEntity* entity  = mpChildIter->Current();
+    FeEntity *entity = mpChildIter->Current();
 
-    while ( entity && mCurChildIndex < i )
-    {
+    while (entity && mCurChildIndex < i) {
         entity = mpChildIter->Next();
         mCurChildIndex++;
     }
-    
-    return( entity );
+
+    return (entity);
 }
 
 //===========================================================================
@@ -329,11 +311,10 @@ const FeEntity* FeParent::GetChildIndex( int i ) const
 // Return:      a const pointer to one of the children
 //
 //===========================================================================
-Scrooby::Drawable* FeParent::GetChildDrawable( const unsigned int index )
-{
-    FeEntity* entity = GetChildIndex( index );
-    Scrooby::Drawable* returnMe = dynamic_cast< Scrooby::Drawable* >( entity );
-    rAssert( returnMe != NULL );
+Scrooby::Drawable *FeParent::GetChildDrawable(const unsigned int index) {
+    FeEntity *entity = GetChildIndex(index);
+    Scrooby::Drawable *returnMe = dynamic_cast<Scrooby::Drawable *>(entity);
+    rAssert(returnMe != NULL);
     //IAN - get rid of this dynamic cast if you can
     return returnMe;
 }
@@ -350,13 +331,12 @@ Scrooby::Drawable* FeParent::GetChildDrawable( const unsigned int index )
 // Return:      NONE
 //
 //===========================================================================
-int FeParent::GetChildrenCount() const
-{
+int FeParent::GetChildrenCount() const {
     return mChildren->GetElementCount();
 }
 
 //===========================================================================
-// Scrooby::Group* FeParent::GetGroup( const char* name );
+// Scrooby::Group* FeParent::GetGroup(const char* name);
 //===========================================================================
 // Description: gets a group object from within the page by name
 //
@@ -367,14 +347,13 @@ int FeParent::GetChildrenCount() const
 // Return:      NONE
 //
 //===========================================================================
-Scrooby::Group* FeParent::GetGroup( const char* name )
-{
-    tUID hashValue = FeEntity::MakeUID( name );
-    return this->GetGroup( hashValue );
+Scrooby::Group *FeParent::GetGroup(const char *name) {
+    tUID hashValue = FeEntity::MakeUID(name);
+    return this->GetGroup(hashValue);
 }
 
 //===========================================================================
-// Scrooby::Group* GetGroup( const tUID hashValue );
+// Scrooby::Group* GetGroup(const tUID hashValue);
 //===========================================================================
 // Description: gets a group object from within the page by hash value
 //
@@ -385,33 +364,26 @@ Scrooby::Group* FeParent::GetGroup( const char* name )
 // Return:      NONE
 //
 //===========================================================================
-Scrooby::Group* FeParent::GetGroup( const tUID hashValue )
-{
+Scrooby::Group *FeParent::GetGroup(const tUID hashValue) {
     int childrenCount = this->GetChildrenCount();
-    for( int i = 0; i < childrenCount; i++ )
-    {
-        FeEntity* child = this->GetChildIndex( i );
+    for (int i = 0; i < childrenCount; i++) {
+        FeEntity *child = this->GetChildIndex(i);
         tUID uid = child->GetUID();
 
-        if( uid == hashValue )
-        {
+        if (uid == hashValue) {
             //check if the child is a group
-            FeGroup* element = dynamic_cast< FeGroup* >( child );
-            if( element != NULL )
-            {
-               return element;
+            FeGroup *element = dynamic_cast<FeGroup *>(child);
+            if (element != NULL) {
+                return element;
             }
         }
 
         //check if it's a parent
-        if( child->IsOwner() )
-        {
-            FeParent* parent = dynamic_cast< FeParent* >( child );
-            if( parent != NULL )
-            {
-                Scrooby::Group* element = parent->GetGroup( hashValue );
-                if( element != NULL )
-                {
+        if (child->IsOwner()) {
+            FeParent *parent = dynamic_cast<FeParent *>(child);
+            if (parent != NULL) {
+                Scrooby::Group *element = parent->GetGroup(hashValue);
+                if (element != NULL) {
                     return element;
                 }
             }
@@ -422,7 +394,7 @@ Scrooby::Group* FeParent::GetGroup( const tUID hashValue )
 }
 
 //===========================================================================
-// Scrooby::Layer* FeParent::GetLayer( const char* name );
+// Scrooby::Layer* FeParent::GetLayer(const char* name);
 //===========================================================================
 // Description: gets a layer object from within the page by name
 //
@@ -433,14 +405,13 @@ Scrooby::Group* FeParent::GetGroup( const tUID hashValue )
 // Return:      NONE
 //
 //===========================================================================
-Scrooby::Layer* FeParent::GetLayer( const char* name )
-{
-    tUID hashValue = FeEntity::MakeUID( name );
-    return this->GetLayer( hashValue );
+Scrooby::Layer *FeParent::GetLayer(const char *name) {
+    tUID hashValue = FeEntity::MakeUID(name);
+    return this->GetLayer(hashValue);
 }
 
 //===========================================================================
-// Scrooby::Layer* FeParent::GetLayer( const tUID hashValue )
+// Scrooby::Layer* FeParent::GetLayer(const tUID hashValue)
 //===========================================================================
 // Description: gets a text object from within the page by name
 //
@@ -451,33 +422,26 @@ Scrooby::Layer* FeParent::GetLayer( const char* name )
 // Return:      NONE
 //
 //===========================================================================
-Scrooby::Layer* FeParent::GetLayer( const tUID hashValue )
-{
+Scrooby::Layer *FeParent::GetLayer(const tUID hashValue) {
     int childrenCount = this->GetChildrenCount();
-    for( int i = 0; i < childrenCount; i++ )
-    {
-        FeEntity* child = this->GetChildIndex( i );
+    for (int i = 0; i < childrenCount; i++) {
+        FeEntity *child = this->GetChildIndex(i);
         tUID uid = child->GetUID();
 
         //check if the child is a layer
-        if( uid == hashValue )
-        {
-            Scrooby::Layer* element = dynamic_cast< Scrooby::Layer* >( child );
-            if( element != NULL )
-            {
+        if (uid == hashValue) {
+            Scrooby::Layer *element = dynamic_cast<Scrooby::Layer *>(child);
+            if (element != NULL) {
                 return element;
             }
         }
 
         //check if it's a parent
-        if( child->IsOwner() )
-        {
-            FeParent* parent = dynamic_cast< FeParent* >( child );
-            if( parent != NULL )
-            {
-                Scrooby::Layer* element = parent->GetLayer( hashValue );
-                if( element != NULL )
-                {
+        if (child->IsOwner()) {
+            FeParent *parent = dynamic_cast<FeParent *>(child);
+            if (parent != NULL) {
+                Scrooby::Layer *element = parent->GetLayer(hashValue);
+                if (element != NULL) {
                     return element;
                 }
             }
@@ -487,7 +451,7 @@ Scrooby::Layer* FeParent::GetLayer( const tUID hashValue )
 }
 
 //===========================================================================
-// Scrooby::Polygon* FeParent::GetPolygon( const char* name );
+// Scrooby::Polygon* FeParent::GetPolygon(const char* name);
 //===========================================================================
 // Description: gets a polygon object from within the page by name
 //
@@ -498,14 +462,13 @@ Scrooby::Layer* FeParent::GetLayer( const tUID hashValue )
 // Return:      NONE
 //
 //===========================================================================
-Scrooby::Polygon* FeParent::GetPolygon( const char* name )
-{
-    tUID hashValue = FeEntity::MakeUID( name );
-    return this->GetPolygon( hashValue );
+Scrooby::Polygon *FeParent::GetPolygon(const char *name) {
+    tUID hashValue = FeEntity::MakeUID(name);
+    return this->GetPolygon(hashValue);
 }
 
 //===========================================================================
-// Scrooby::Polygon* GetPolygon( const tUID hashValue );
+// Scrooby::Polygon* GetPolygon(const tUID hashValue);
 //===========================================================================
 // Description: gets a polygon from within the page by hashValue
 //
@@ -516,31 +479,25 @@ Scrooby::Polygon* FeParent::GetPolygon( const char* name )
 // Return:      NONE
 //
 //===========================================================================
-Scrooby::Polygon* FeParent::GetPolygon( const tUID hashValue )
-{
+Scrooby::Polygon *FeParent::GetPolygon(const tUID hashValue) {
     int childrenCount = this->GetChildrenCount();
-    for( int i = 0; i < childrenCount; i++ )
-    {
-        FeEntity* child = this->GetChildIndex( i );
+    for (int i = 0; i < childrenCount; i++) {
+        FeEntity *child = this->GetChildIndex(i);
 
         //check if the child is a sprite
-        Scrooby::Polygon* element = dynamic_cast< Scrooby::Polygon* >( child );
-        if( element != NULL )
-        {
+        Scrooby::Polygon *element = dynamic_cast<Scrooby::Polygon *>(child);
+        if (element != NULL) {
             //check if it's a sprite with the correct name
-            if( child->GetUID() == hashValue )
-            {
+            if (child->GetUID() == hashValue) {
                 return element;
             }
         }
 
         //check if it's a parent
-        FeParent* parent = dynamic_cast< FeParent* >( child );
-        if( parent != NULL )
-        {
-            Scrooby::Polygon* element = parent->GetPolygon( hashValue );
-            if( element != NULL )
-            {
+        FeParent *parent = dynamic_cast<FeParent *>(child);
+        if (parent != NULL) {
+            Scrooby::Polygon *element = parent->GetPolygon(hashValue);
+            if (element != NULL) {
                 return element;
             }
         }
@@ -549,7 +506,7 @@ Scrooby::Polygon* FeParent::GetPolygon( const tUID hashValue )
 }
 
 //===========================================================================
-// Sprite* FeParent::GetSprite( const char* name )
+// Sprite* FeParent::GetSprite(const char* name)
 //===========================================================================
 // Description: gets a sprite out of the page by name
 //
@@ -560,14 +517,13 @@ Scrooby::Polygon* FeParent::GetPolygon( const tUID hashValue )
 // Return:      NONE
 //
 //===========================================================================
-Scrooby::Sprite* FeParent::GetSprite( const char* name )
-{
-    tUID hashValue = FeEntity::MakeUID( name );
-    return this->GetSprite( hashValue );
+Scrooby::Sprite *FeParent::GetSprite(const char *name) {
+    tUID hashValue = FeEntity::MakeUID(name);
+    return this->GetSprite(hashValue);
 }
 
 //===========================================================================
-// Scrooby::Sprite* GetSprite( const tUID hashValue );
+// Scrooby::Sprite* GetSprite(const tUID hashValue);
 //===========================================================================
 // Description: gets a sprite from within the page by hashValue
 //
@@ -578,33 +534,26 @@ Scrooby::Sprite* FeParent::GetSprite( const char* name )
 // Return:      NONE
 //
 //===========================================================================
-Scrooby::Sprite* FeParent::GetSprite( const tUID hashValue )
-{
+Scrooby::Sprite *FeParent::GetSprite(const tUID hashValue) {
     int childrenCount = this->GetChildrenCount();
-    for( int i = 0; i < childrenCount; i++ )
-    {
-        FeEntity* child = this->GetChildIndex( i );
+    for (int i = 0; i < childrenCount; i++) {
+        FeEntity *child = this->GetChildIndex(i);
         tUID uid = child->GetUID();
 
         //check if the child is a sprite
-        if( uid == hashValue )
-        {
-            FeSprite* element = dynamic_cast< FeSprite* >( child );
-            if( element != NULL )
-            {
+        if (uid == hashValue) {
+            FeSprite *element = dynamic_cast<FeSprite *>(child);
+            if (element != NULL) {
                 //check if it's a sprite with the correct name
                 return element;
             }
         }
         //check if it's a parent
-        if( child->IsOwner() )
-        {
-            FeParent* parent = dynamic_cast< FeParent* >( child );
-            if( parent != NULL )
-            {
-                Scrooby::Sprite* element = parent->GetSprite( hashValue );
-                if( element != NULL )
-                {
+        if (child->IsOwner()) {
+            FeParent *parent = dynamic_cast<FeParent *>(child);
+            if (parent != NULL) {
+                Scrooby::Sprite *element = parent->GetSprite(hashValue);
+                if (element != NULL) {
                     return element;
                 }
             }
@@ -614,7 +563,7 @@ Scrooby::Sprite* FeParent::GetSprite( const tUID hashValue )
 }
 
 //===========================================================================
-// Sprite* FeParent::GetText( const char* name )
+// Sprite* FeParent::GetText(const char* name)
 //===========================================================================
 // Description: gets a text object from within the page by name
 //
@@ -625,15 +574,14 @@ Scrooby::Sprite* FeParent::GetSprite( const tUID hashValue )
 // Return:      NONE
 //
 //===========================================================================
-Scrooby::Text* FeParent::GetText( const char* name )
-{
-    tUID hashValue = FeEntity::MakeUID( name );
-    return this->GetText( hashValue );
+Scrooby::Text *FeParent::GetText(const char *name) {
+    tUID hashValue = FeEntity::MakeUID(name);
+    return this->GetText(hashValue);
 }
 
 
 //===========================================================================
-// Scrooby::Text* GetText( const tUID hashValue );
+// Scrooby::Text* GetText(const tUID hashValue);
 //===========================================================================
 // Description: gets a text object from within the page by name
 //
@@ -644,33 +592,26 @@ Scrooby::Text* FeParent::GetText( const char* name )
 // Return:      NONE
 //
 //===========================================================================
-Scrooby::Text* FeParent::GetText( const tUID hashValue )
-{
+Scrooby::Text *FeParent::GetText(const tUID hashValue) {
     int childrenCount = this->GetChildrenCount();
-    for( int i = 0; i < childrenCount; i++ )
-    {
-        FeEntity* child = this->GetChildIndex( i );
+    for (int i = 0; i < childrenCount; i++) {
+        FeEntity *child = this->GetChildIndex(i);
         tUID childId = child->GetUID();
-        if( childId == hashValue )
-        {
+        if (childId == hashValue) {
             //check if the child is a text object
-            FeText* element = dynamic_cast< FeText* >( child );
-            if( element != NULL )
-            {
+            FeText *element = dynamic_cast<FeText *>(child);
+            if (element != NULL) {
                 return element;
             }
         }
 
         //check if it's a parent
-        if( child->IsOwner() )
-        {
+        if (child->IsOwner()) {
 
-            FeParent* parent = dynamic_cast< FeParent* >( child );
-            if( parent != NULL )
-            {
-                Scrooby::Text* element = parent->GetText( hashValue );
-                if( element != NULL )
-                {
+            FeParent *parent = dynamic_cast<FeParent *>(child);
+            if (parent != NULL) {
+                Scrooby::Text *element = parent->GetText(hashValue);
+                if (element != NULL) {
                     return element;
                 }
             }
@@ -681,7 +622,7 @@ Scrooby::Text* FeParent::GetText( const tUID hashValue )
 
 
 //===========================================================================
-// FeParent::GetMovie( const char* name )
+// FeParent::GetMovie(const char* name)
 //===========================================================================
 // Description: gets a movie object by name
 //
@@ -692,19 +633,18 @@ Scrooby::Text* FeParent::GetText( const tUID hashValue )
 // Return:      A pointer to the object if found, else NULL.
 //
 //===========================================================================
-Scrooby::Movie* FeParent::GetMovie
-(
-    const char* name 
-)
-{
-    tUID hashValue = FeEntity::MakeUID( name );
-    
-    return( this->GetMovie( hashValue ) );
+Scrooby::Movie *FeParent::GetMovie
+        (
+                const char *name
+        ) {
+    tUID hashValue = FeEntity::MakeUID(name);
+
+    return (this->GetMovie(hashValue));
 }
 
 
 //===========================================================================
-// FeParent::GetMovie( const tUID hashValue );
+// FeParent::GetMovie(const tUID hashValue);
 //===========================================================================
 // Description: gets a movie object by hash value
 //
@@ -716,49 +656,43 @@ Scrooby::Movie* FeParent::GetMovie
 // Return:      A pointer to the object if found, else NULL.
 //
 //===========================================================================
-Scrooby::Movie* FeParent::GetMovie( const tUID hashValue )
-{
+Scrooby::Movie *FeParent::GetMovie(const tUID hashValue) {
     int childrenCount = this->GetChildrenCount();
 
-    for( int i = 0; i < childrenCount; ++i )
-    {
-        FeEntity* child = this->GetChildIndex( i );
+    for (int i = 0; i < childrenCount; ++i) {
+        FeEntity *child = this->GetChildIndex(i);
 
         // Check if the child is a movie.
         //
-        FeMovie* element = dynamic_cast<FeMovie*>( child );
-        
-        if( element != NULL )
-        {
+        FeMovie *element = dynamic_cast<FeMovie *>(child);
+
+        if (element != NULL) {
             // Check if it's a movie with the correct name.
             //
-            if( child->GetUID() == hashValue )
-            {
-                return( element );
+            if (child->GetUID() == hashValue) {
+                return (element);
             }
         }
 
         // Check if it's a parent.
         //
-        FeParent* parent = dynamic_cast<FeParent*>( child );
-        
-        if( parent != NULL )
-        {
-            Scrooby::Movie* element = parent->GetMovie( hashValue );
-            
-            if( element != NULL )
-            {
-                return( element );
+        FeParent *parent = dynamic_cast<FeParent *>(child);
+
+        if (parent != NULL) {
+            Scrooby::Movie *element = parent->GetMovie(hashValue);
+
+            if (element != NULL) {
+                return (element);
             }
         }
     }
-    
-    return( NULL );
+
+    return (NULL);
 }
 
 
 //===========================================================================
-// FeParent::GetPure3dObject( const char* name )
+// FeParent::GetPure3dObject(const char* name)
 //===========================================================================
 // Description: Gets a Pure3d object by name
 //
@@ -769,19 +703,18 @@ Scrooby::Movie* FeParent::GetMovie( const tUID hashValue )
 // Return:      A pointer to the object if found, else NULL.
 //
 //===========================================================================
-Scrooby::Pure3dObject* FeParent::GetPure3dObject
-(
-    const char* name 
-)
-{
-    tUID hashValue = FeEntity::MakeUID( name );
-    
-    return( this->GetPure3dObject( hashValue ) );
+Scrooby::Pure3dObject *FeParent::GetPure3dObject
+        (
+                const char *name
+        ) {
+    tUID hashValue = FeEntity::MakeUID(name);
+
+    return (this->GetPure3dObject(hashValue));
 }
 
 
 //===========================================================================
-// FeParent::GetPure3dObject( const tUID hashValue );
+// FeParent::GetPure3dObject(const tUID hashValue);
 //===========================================================================
 // Description: Gets a Pure3d object by hash value
 //
@@ -793,44 +726,38 @@ Scrooby::Pure3dObject* FeParent::GetPure3dObject
 // Return:      A pointer to the object if found, else NULL.
 //
 //===========================================================================
-Scrooby::Pure3dObject* FeParent::GetPure3dObject( const tUID hashValue )
-{
+Scrooby::Pure3dObject *FeParent::GetPure3dObject(const tUID hashValue) {
     int childrenCount = this->GetChildrenCount();
 
-    for( int i = 0; i < childrenCount; ++i )
-    {
-        FeEntity* child = this->GetChildIndex( i );
+    for (int i = 0; i < childrenCount; ++i) {
+        FeEntity *child = this->GetChildIndex(i);
 
         // Check if the child is a movie.
         //
-        FePure3dObject* element = dynamic_cast<FePure3dObject*>( child );
-        
-        if( element != NULL )
-        {
+        FePure3dObject *element = dynamic_cast<FePure3dObject *>(child);
+
+        if (element != NULL) {
             // Check if it's a movie with the correct name.
             //
-            if( child->GetUID() == hashValue )
-            {
-                return( element );
+            if (child->GetUID() == hashValue) {
+                return (element);
             }
         }
 
         // Check if it's a parent.
         //
-        FeParent* parent = dynamic_cast<FeParent*>( child );
-        
-        if( parent != NULL )
-        {
-            Scrooby::Pure3dObject* element = parent->GetPure3dObject( hashValue );
-            
-            if( element != NULL )
-            {
-                return( element );
+        FeParent *parent = dynamic_cast<FeParent *>(child);
+
+        if (parent != NULL) {
+            Scrooby::Pure3dObject *element = parent->GetPure3dObject(hashValue);
+
+            if (element != NULL) {
+                return (element);
             }
         }
     }
-    
-    return( NULL );
+
+    return (NULL);
 }
 
 //===========================================================================
@@ -845,9 +772,8 @@ Scrooby::Pure3dObject* FeParent::GetPure3dObject( const tUID hashValue )
 // Return:      unsigned int representing the size
 //
 //===========================================================================
-unsigned int FeParent::Size() const
-{
+unsigned int FeParent::Size() const {
     int childrenCount = GetChildrenCount();
-    rAssert( childrenCount >= 0 );
+    rAssert(childrenCount >= 0);
     return childrenCount;
 }

@@ -21,19 +21,17 @@ using namespace Scrooby;
 //===========================================================================
 // Global Data, Local Data, Local Classes
 //===========================================================================
-App* App::sInstance = 0;
+App *App::sInstance = 0;
 
 //===========================================================================
 // Member Functions
 //===========================================================================
 
 // Since this is an interface, leave the constructor and destructor empty
-App::App() 
-{
+App::App() {
 }
 
-App::~App()
-{
+App::~App() {
 }
 
 //===========================================================================
@@ -51,48 +49,42 @@ App::~App()
 // Return      : None
 //
 //===========================================================================
-void App::SetBackslashes( bool backslashesOn ) 
-{
-    //AsyncFileLoader::ForceBackSlashes( backslashesOn );
+void App::SetBackslashes(bool backslashesOn) {
+    //AsyncFileLoader::ForceBackSlashes(backslashesOn);
 }
 
 // These static members are used in place of constructors and destructors
 // for this singleton class
-App* App::GetInstance()
-{
-    if( sInstance == 0 )
-    {
+App *App::GetInstance() {
+    if (sInstance == 0) {
         sInstance = FeApp::GetInstance();
     }
 
-    return( sInstance );
+    return (sInstance);
 }
 
-void App::DeleteInstance()
-{
-    if( sInstance != 0 )
-    {
+void App::DeleteInstance() {
+    if (sInstance != 0) {
         FeApp::DeleteInstance();
         sInstance = 0;
     }
 }
 
-void App::EnableScreenScaling( bool enable, float scaleX, float scaleY, float scaleZ )
-{
+void App::EnableScreenScaling(bool enable, float scaleX, float scaleY, float scaleZ) {
 #ifdef SCREEN_SCALING_HACK
     g_screenScalingEnabled = enable;
 
-    if( scaleX > 0.0f )
+    if(scaleX> 0.0f)
     {
         g_screenScaleX = scaleX;
     }
 
-    if( scaleY > 0.0f )
+    if(scaleY> 0.0f)
     {
         g_screenScaleY = scaleY;
     }
 
-    if( scaleZ > 0.0f )
+    if(scaleZ> 0.0f)
     {
         g_screenScaleZ = scaleZ;
     }

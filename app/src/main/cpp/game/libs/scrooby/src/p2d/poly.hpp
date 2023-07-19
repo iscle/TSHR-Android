@@ -8,30 +8,30 @@
 
 class tShader;
 
-namespace Pure2D
-{
+namespace Pure2D {
 
-class Poly 
-: 
-    public tDrawable,
-    public FeAllocatesMemory
-{
-public:
-   Poly( const int nVer, const rmt::Vector* verts, const tColour* colours);
-   ~Poly();
+    class Poly
+            :
+                    public tDrawable,
+                    public FeAllocatesMemory {
+    public:
+        Poly(const int nVer, const rmt::Vector *verts, const tColour *colours);
 
-   void Display(void);
-   void SetColour( tColour c );
+        ~Poly();
 
-private:
-   int nVer;
+        void Display(void);
 
-   //pddiVertex_CT* verts;
-   rmt::Vector* m_Vectors;
-   tColour*     m_Colours;
-   tShader*     m_Shader;
-   tColour      m_Color;        //this is a base color for the polygon
-};
+        void SetColour(tColour c);
+
+    private:
+        int nVer;
+
+        //pddiVertex_CT* verts;
+        rmt::Vector *m_Vectors;
+        tColour *m_Colours;
+        tShader *m_Shader;
+        tColour m_Color;        //this is a base color for the polygon
+    };
 
 }
 

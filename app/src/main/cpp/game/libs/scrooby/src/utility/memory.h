@@ -21,16 +21,18 @@
 #endif
 
 #ifndef SCROOBY_TOOL
+
 #include <p3d/memory.hpp>
+
 #else
 namespace p3d
 {
     typedef unsigned int AllocType;
     const AllocType ALLOC_TEMPORARY = 0;
 
-    void* MallocTemp( unsigned int size );
-    void FreeTemp( void* mem );
-    AllocType SetCurrentAlloc( AllocType a );
+    void* MallocTemp(unsigned int size);
+    void FreeTemp(void* mem);
+    AllocType SetCurrentAlloc(AllocType a);
     AllocType GetCurrentAlloc();
 }
 #endif

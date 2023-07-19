@@ -21,8 +21,9 @@
 // Nested Includes
 //===========================================================================
 #ifdef WIN32
-#pragma warning ( disable : 4786 ) 
+#pragma warning (disable : 4786)
 #endif
+
 #include <stddef.h>
 
 //===========================================================================
@@ -46,90 +47,96 @@ typedef unsigned short UnicodeChar;
 // Constraints: 
 //
 //===========================================================================
-class UnicodeString
-{
+class UnicodeString {
     //DATA MEMBERS-------------------------------------------------------------
-    protected:
-    UnicodeChar*        m_charVector ;
-    int                 m_vectorSize;
+protected:
+    UnicodeChar *m_charVector;
+    int m_vectorSize;
 
     //FUNCTIONS----------------------------------------------------------------
-    public:
-        //default constructor
-        UnicodeString() ;
+public:
+    //default constructor
+    UnicodeString();
 
-        //copy constructor
-        UnicodeString( const UnicodeString& right) ;
-        UnicodeString( const char* right );
+    //copy constructor
+    UnicodeString(const UnicodeString &right);
 
-        //destructor
-        ~UnicodeString() ;
+    UnicodeString(const char *right);
 
-        //assignment operator
-        UnicodeString& operator=( const UnicodeString& right ) ;
+    //destructor
+    ~UnicodeString();
 
-        //appends a character to the end of the string
-        void Append( const UnicodeChar& c ) ;
+    //assignment operator
+    UnicodeString &operator=(const UnicodeString &right);
 
-        //emptys the string
-        void Clear() ;
+    //appends a character to the end of the string
+    void Append(const UnicodeChar &c);
 
-        //gets direct access to the character buffer
-        UnicodeChar* GetBuffer() ;
+    //emptys the string
+    void Clear();
 
-        //string length operatorl
-        int Length() const ;
+    //gets direct access to the character buffer
+    UnicodeChar *GetBuffer();
 
-        //prints some version of the string in an ASCII format
-        void MakeAscii( char* buffer, int size ) const ;
+    //string length operatorl
+    int Length() const;
 
-        //prints some version of the string in a Unicode format
-        void MakeWide( UnicodeChar* buffer, int size ) const ;
+    //prints some version of the string in an ASCII format
+    void MakeAscii(char *buffer, int size) const;
 
-        //append operator for ascii strings
-        void operator+=( const UnicodeString& right );
-        void operator+=( const UnicodeChar&   right );
+    //prints some version of the string in a Unicode format
+    void MakeWide(UnicodeChar *buffer, int size) const;
 
-        //equality operator
-        bool operator==( const UnicodeString& right ) const ;
+    //append operator for ascii strings
+    void operator+=(const UnicodeString &right);
 
-        //equality operator for ascii strings
-        bool operator==( const char* right ) const ;
+    void operator+=(const UnicodeChar &right);
 
-        //less than operator
-        bool operator< ( const UnicodeString& right ) const ;
+    //equality operator
+    bool operator==(const UnicodeString &right) const;
 
-        //random acess operator
-        const UnicodeChar& operator[]( const int index ) const ;
-              UnicodeChar& operator[]( const int index );
+    //equality operator for ascii strings
+    bool operator==(const char *right) const;
 
-        //constructs a unicode string from an ASCII string
-        void ReadAscii( const char* asciiString, const int count = -1 ) ;
-    
-        //constructs a unicode string from a unicode string
-        void ReadUnicode( const char* unicodeString, const int lengthInBytes = -2 ) ;
+    //less than operator
+    bool operator<(const UnicodeString &right) const;
 
-        //constructs a unicode string from a wchar_t array
-        void ReadUnicode( const UnicodeChar* unicodeString, const int lengthInDblBytes = -1 ) ;
+    //random acess operator
+    const UnicodeChar &operator[](const int index) const;
 
-        //replaces character in a unicode string
-        void Replace( const UnicodeChar find, const UnicodeChar replace ) ;
+    UnicodeChar &operator[](const int index);
 
-        //replaces a substring in a unicode string with another string
-        void Replace( const UnicodeString& find, const UnicodeString& replace );
+    //constructs a unicode string from an ASCII string
+    void ReadAscii(const char *asciiString, const int count = -1);
+
+    //constructs a unicode string from a unicode string
+    void ReadUnicode(const char *unicodeString, const int lengthInBytes = -2);
+
+    //constructs a unicode string from a wchar_t array
+    void ReadUnicode(const UnicodeChar *unicodeString, const int lengthInDblBytes = -1);
+
+    //replaces character in a unicode string
+    void Replace(const UnicodeChar find, const UnicodeChar replace);
+
+    //replaces a substring in a unicode string with another string
+    void Replace(const UnicodeString &find, const UnicodeString &replace);
 
 #ifndef RAD_RELEASE
-        // Run this as a coverage test
-        static void Test();
+
+    // Run this as a coverage test
+    static void Test();
+
 #endif
 
-    protected:
-        int  FindFirstSubstring( const UnicodeString& str ) const;
-        void Resize( unsigned int newSize );
-        UnicodeString Substring( const unsigned int index, const unsigned int size ) const;
+protected:
+    int FindFirstSubstring(const UnicodeString &str) const;
 
-    private:
- 
+    void Resize(unsigned int newSize);
+
+    UnicodeString Substring(const unsigned int index, const unsigned int size) const;
+
+private:
+
 };
 
 

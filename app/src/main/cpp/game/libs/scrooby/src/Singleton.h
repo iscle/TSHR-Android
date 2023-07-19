@@ -7,39 +7,36 @@
 #define NULL 0
 #endif
 
-template <class TYPE>
-class Singleton
-{
+template<class TYPE>
+class Singleton {
 public:
     virtual ~Singleton();
-    static TYPE* Instance();
+
+    static TYPE *Instance();
 
 protected:
     Singleton();
 
 private:
-    static TYPE* sInstance;
+    static TYPE *sInstance;
 };
 
-template <class TYPE>
-inline Singleton<TYPE>::Singleton() 
-{
-    rAssert( sInstance == NULL );
-    sInstance = (TYPE*)this;
+template<class TYPE>
+inline Singleton<TYPE>::Singleton() {
+    rAssert(sInstance == NULL);
+    sInstance = (TYPE *) this;
 }
 
-template <class TYPE>
-inline Singleton<TYPE>::~Singleton()
-{
+template<class TYPE>
+inline Singleton<TYPE>::~Singleton() {
 //    P3TASSERT(sInstance != NULL);
-    rAssert( sInstance != NULL );
+    rAssert(sInstance != NULL);
     sInstance = NULL;
 }
 
-template <class TYPE>
-inline TYPE* Singleton<TYPE>::Instance()
-{
-    rAssert( sInstance != NULL );
+template<class TYPE>
+inline TYPE *Singleton<TYPE>::Instance() {
+    rAssert(sInstance != NULL);
     return sInstance;
 }
 

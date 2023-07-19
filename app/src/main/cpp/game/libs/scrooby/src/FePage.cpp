@@ -8,7 +8,9 @@
 //
 //===========================================================================
 #ifndef __FePage__
+
 #include "FePage.h"
+
 #endif
 
 //===========================================================================
@@ -33,19 +35,18 @@
 // Return:      NONE
 //
 //===========================================================================
-FePage::FePage( const char* fullFileName, FeProject* project ) 
-: 
-    FeOwner( fullFileName ),
-    mProject( project )
-{
+FePage::FePage(const char *fullFileName, FeProject *project)
+        :
+        FeOwner(fullFileName),
+        mProject(project) {
     // Store the whole file name, e.g. "Page1.fePag"
     mFileName = fullFileName;
 
-    radMemoryAllocator old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
-        PascalCString pathParser( fullFileName );
-        PascalCString fileName = pathParser.FullFilename();
-    ::radMemorySetCurrentAllocator( old );
-    FeEntity::SetName( fileName );
+    radMemoryAllocator old = ::radMemorySetCurrentAllocator(RADMEMORY_ALLOC_TEMP);
+    PascalCString pathParser(fullFileName);
+    PascalCString fileName = pathParser.FullFilename();
+    ::radMemorySetCurrentAllocator(old);
+    FeEntity::SetName(fileName);
 }
 
 //===========================================================================
@@ -60,19 +61,16 @@ FePage::FePage( const char* fullFileName, FeProject* project )
 // Return:      NONE
 //
 //===========================================================================
-FePage::~FePage()
-{
+FePage::~FePage() {
     int i = 0;
-    for( i; i < mResources.Size(); i++ )
-    {
-        FeApp::GetInstance()->GetFeResourceManager().RemoveResource( mResources[i] );
+    for (i; i < mResources.Size(); i++) {
+        FeApp::GetInstance()->GetFeResourceManager().RemoveResource(mResources[i]);
     }
 }
 
 
-const char* FePage::GetFileName()
-{
-    return( static_cast<const char*>( mFileName ) );
+const char *FePage::GetFileName() {
+    return (static_cast<const char *>(mFileName));
 }
 
 //===========================================================================
@@ -87,22 +85,19 @@ const char* FePage::GetFileName()
 // Return:      FeLayer* the layer we just added
 //
 //===========================================================================
-FeLayer* FePage::AddLayer( const char* name )
-{
-    FeLayer* newLayer = new FeLayer( name );
-    newLayer->SetParent( this );
-    AddChild( newLayer );
+FeLayer *FePage::AddLayer(const char *name) {
+    FeLayer *newLayer = new FeLayer(name);
+    newLayer->SetParent(this);
+    AddChild(newLayer);
     return newLayer;
 }
 
-void FePage::GetBoundingBoxSize( int& width, int& height ) const
-{
+void FePage::GetBoundingBoxSize(int &width, int &height) const {
     width = static_cast<int>(FeApp::GetInstance()->GetScreenWidth());
     height = static_cast<int>(FeApp::GetInstance()->GetScreenHeight());
 }
 
-void FePage::GetBoundingBox( int& xMin, int& yMin, int& xMax, int& yMax ) const
-{
+void FePage::GetBoundingBox(int &xMin, int &yMin, int &xMax, int &yMax) const {
     xMin = 0;
     yMin = 0;
     xMax = static_cast<int>(FeApp::GetInstance()->GetScreenWidth()) - 1;
@@ -110,45 +105,38 @@ void FePage::GetBoundingBox( int& xMin, int& yMin, int& xMax, int& yMax ) const
 }
 
 
-void FePage::Display()
-{
+void FePage::Display() {
     FeOwner::Display();
 }
 
 //gets a group object from within the page by hash
-Scrooby::Group* FePage::GetGroup( const tUID hashValue )
-{
-    return FeParent::GetGroup( hashValue );
+Scrooby::Group *FePage::GetGroup(const tUID hashValue) {
+    return FeParent::GetGroup(hashValue);
 };
 
 //gets a group object from within the page by name
-Scrooby::Group* FePage::GetGroup( const char* name )
-{
-    return FeParent::GetGroup( name );
+Scrooby::Group *FePage::GetGroup(const char *name) {
+    return FeParent::GetGroup(name);
 };
 
 //gets a polygon object from within the page by hash
-Scrooby::Polygon* FePage::GetPolygon( const tUID hashValue ) 
-{
-    return FeParent::GetPolygon( hashValue );
+Scrooby::Polygon *FePage::GetPolygon(const tUID hashValue) {
+    return FeParent::GetPolygon(hashValue);
 };
 
 //gets a polygon object from within the page by name
-Scrooby::Polygon* FePage::GetPolygon( const char* name )
-{
-    return FeParent::GetPolygon( name );
+Scrooby::Polygon *FePage::GetPolygon(const char *name) {
+    return FeParent::GetPolygon(name);
 };
 
 //gets a layer object from within the page by hash
-Scrooby::Layer* FePage::GetLayer( const tUID hashValue )
-{
-    return FeParent::GetLayer( hashValue );
+Scrooby::Layer *FePage::GetLayer(const tUID hashValue) {
+    return FeParent::GetLayer(hashValue);
 };
 
 //gets a layer object from within the page by name
-Scrooby::Layer* FePage::GetLayer( const char* name )
-{
-    return FeParent::GetLayer( name );
+Scrooby::Layer *FePage::GetLayer(const char *name) {
+    return FeParent::GetLayer(name);
 };
 
 //===========================================================================
@@ -163,25 +151,22 @@ Scrooby::Layer* FePage::GetLayer( const char* name )
 // Return:      Scrooby::Layer* thie layer we just got
 //
 //===========================================================================
-Scrooby::Layer* FePage::GetLayerByIndex( const int index )
-{
-    FeEntity* thisItem = this->GetChildIndex( index );
-    Scrooby::Layer* thisLayer = dynamic_cast< Scrooby::Layer* >( thisItem );
-    rAssert( thisLayer );
+Scrooby::Layer *FePage::GetLayerByIndex(const int index) {
+    FeEntity *thisItem = this->GetChildIndex(index);
+    Scrooby::Layer *thisLayer = dynamic_cast<Scrooby::Layer *>(thisItem);
+    rAssert(thisLayer);
     return thisLayer;
 }
 
 
 //gets a movie object from within the page by hash
-Scrooby::Movie* FePage::GetMovie( const tUID hashValue ) 
-{
-    return FeParent::GetMovie( hashValue );
+Scrooby::Movie *FePage::GetMovie(const tUID hashValue) {
+    return FeParent::GetMovie(hashValue);
 };
 
 //gets a movie object from within the page by name
-Scrooby::Movie* FePage::GetMovie( const char* name )
-{
-    return FeParent::GetMovie( name );
+Scrooby::Movie *FePage::GetMovie(const char *name) {
+    return FeParent::GetMovie(name);
 };
 
 //===========================================================================
@@ -196,21 +181,18 @@ Scrooby::Movie* FePage::GetMovie( const char* name )
 // Return:      int - the total number of layers stored in this page
 //
 //===========================================================================
-int FePage::GetNumberOfLayers() const
-{
+int FePage::GetNumberOfLayers() const {
     return this->GetChildrenCount();
 }
 
 //gets a pure3d object from within the page by hash
-Scrooby::Pure3dObject* FePage::GetPure3dObject( const tUID hashValue ) 
-{
-    return FeParent::GetPure3dObject( hashValue );
+Scrooby::Pure3dObject *FePage::GetPure3dObject(const tUID hashValue) {
+    return FeParent::GetPure3dObject(hashValue);
 };
 
 //gets a pure3d object from within the page by name
-Scrooby::Pure3dObject* FePage::GetPure3dObject( const char* name )
-{
-    return FeParent::GetPure3dObject( name );
+Scrooby::Pure3dObject *FePage::GetPure3dObject(const char *name) {
+    return FeParent::GetPure3dObject(name);
 };
 
 //===========================================================================
@@ -226,13 +208,11 @@ Scrooby::Pure3dObject* FePage::GetPure3dObject( const char* name )
 // Return:      bool - true or false is the object was a page
 //
 //===========================================================================
-bool FePage::IsPage() const
-{
+bool FePage::IsPage() const {
     return true;
 }
 
-FeProject* FePage::Project()
-{
+FeProject *FePage::Project() {
     return mProject;
 }
 
@@ -248,18 +228,16 @@ FeProject* FePage::Project()
 // Return:      NONE
 //
 //===========================================================================
-void FePage::SetAlpha( float a )
-{
+void FePage::SetAlpha(float a) {
     //IAN IMPROVE: is this what we really want to do?
     //shouldn't this function be like a group?
 
     tLinearTable::RawIterator iter(mChildren);
-    FeEntity* first = iter.First();
-    FeLayer* layer = dynamic_cast< FeLayer* >( first );
-    while (layer)
-    {
-        layer->SetAlpha( a );
-        FeEntity* next = iter.Next();
-        layer = dynamic_cast< FeLayer* >( next );
+    FeEntity *first = iter.First();
+    FeLayer *layer = dynamic_cast<FeLayer *>(first);
+    while (layer) {
+        layer->SetAlpha(a);
+        FeEntity *next = iter.Next();
+        layer = dynamic_cast<FeLayer *>(next);
     }
 }

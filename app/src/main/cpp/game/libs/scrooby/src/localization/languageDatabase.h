@@ -19,104 +19,109 @@
 //===========================================================================
 // Nested Includes
 //===========================================================================
-#pragma warning( disable : 4786 )
+#pragma warning(disable : 4786)
 
 #include "LanguageEntry.h"
 #include <map>
 #include <set>
 #include <stdio.h>
-#include "..\strings\pcstring.h"
-#include "..\strings\unicodeString.h"
+#include "../strings/pcstring.h"
+#include "../strings/unicodeString.h"
 
-//#pragma warning( disable : 4018 )                //IMPROVE: this warning should not be disabled
+//#pragma warning(disable : 4018)                //IMPROVE: this warning should not be disabled
 
 
 //===========================================================================
 // Forward References
 //===========================================================================
 
-typedef std::map< PascalCString, LanguageEntry* > RidToEntryMap;
-typedef std::map< PascalCString, RidToEntryMap* > ScreenToDatabaseMap;
-typedef std::set< PascalCString > StringSet;
+typedef std::map<PascalCString, LanguageEntry *> RidToEntryMap;
+typedef std::map<PascalCString, RidToEntryMap *> ScreenToDatabaseMap;
+typedef std::set <PascalCString> StringSet;
 
-class LanguageDatabase
-{
-    public:
-        LanguageDatabase();
-        LanguageDatabase( const LanguageDatabase& right );
-        LanguageDatabase& operator=( const LanguageDatabase& right );
-        ~LanguageDatabase();
+class LanguageDatabase {
+public:
+    LanguageDatabase();
 
-        //adds a translation to the database
-        bool AddEntry( const PascalCString& rid, const UnicodeString& translation, const char chLanguage );
+    LanguageDatabase(const LanguageDatabase &right);
 
-        //exports the database to file
-        void Export( const char language, const _int8* mapBuffer, const _int8* stringBuffer ) const;
+    LanguageDatabase &operator=(const LanguageDatabase &right);
 
-        //exports the database to file
-        void ExportHeaderFile( FILE* fout ) const;
+    ~LanguageDatabase();
 
-        //??
-        bool FileLoaded( char* buffer = NULL ) const;
+    //adds a translation to the database
+    bool
+    AddEntry(const PascalCString &rid, const UnicodeString &translation, const char chLanguage);
 
-        //returns the filename
-        PascalCString Filename() const;
+    //exports the database to file
+    void Export(const char language, const _int8 *mapBuffer, const _int8 *stringBuffer) const;
 
-        //gets all the RIDs that are valid 
-        StringSet GetAllRids() const;
+    //exports the database to file
+    void ExportHeaderFile(FILE *fout) const;
 
-        //gets the character set used by this bible
-        CharSet GetCharSet() const;
+    //??
+    bool FileLoaded(char *buffer = NULL) const;
 
-        //imports the database from file
-        bool Import( const char* szFilename );
+    //returns the filename
+    PascalCString Filename() const;
 
-        //returns all the languages possible
-        void Languages( char* buffer ) const;
+    //gets all the RIDs that are valid
+    StringSet GetAllRids() const;
 
-        //determines the longest translation for a given RID
-        UnicodeString LongestTranslation( const PascalCString& label ) const;
+    //gets the character set used by this bible
+    CharSet GetCharSet() const;
 
-        //looks up the RID for a given language and platform
-        bool LookupLabel( const UnicodeString& string, const char language, PascalCString& buffer ) const;
+    //imports the database from file
+    bool Import(const char *szFilename);
 
-        //looks up the translation for a given RID
-        bool LookupTranslation(    const PascalCString& label, const char language, UnicodeString& buffer ) const;
+    //returns all the languages possible
+    void Languages(char *buffer) const;
 
-        //??    
-        bool LookupTranslationForAPlatform( const PascalCString& label, const char language, const char platform, UnicodeString& buffer ) const;
+    //determines the longest translation for a given RID
+    UnicodeString LongestTranslation(const PascalCString &label) const;
 
-        //returns the total number of strings in the bible
-        int NumberOfStrings() const;
+    //looks up the RID for a given language and platform
+    bool LookupLabel(const UnicodeString &string, const char language, PascalCString &buffer) const;
 
-        //sets the hashing modulo
-        void SetHashingModulo( const int modulo );
+    //looks up the translation for a given RID
+    bool
+    LookupTranslation(const PascalCString &label, const char language, UnicodeString &buffer) const;
 
-        //determines the byte length of all the strings
-        int SizeOfAllStrings( const char language ) const;
+    //??
+    bool LookupTranslationForAPlatform(const PascalCString &label, const char language,
+                                       const char platform, UnicodeString &buffer) const;
 
-        //populates a drop down list box with all the RIDs that are allowable for a platform
-//        void PopulateRidListBox( const HWND hwndCombo, const PascalCString& screen, const char platform ) const;
+    //returns the total number of strings in the bible
+    int NumberOfStrings() const;
 
-    private:
+    //sets the hashing modulo
+    void SetHashingModulo(const int modulo);
 
-        //the mapping of RID to language/translation/platform entries
-        RidToEntryMap m_mapLabelToEntry;
+    //determines the byte length of all the strings
+    int SizeOfAllStrings(const char language) const;
 
-        //maps from the name of the screen to the database (RidToEntryMap) that is valid here
-        //ScreenToDatabaseMap m_screenDatabases;
+    //populates a drop down list box with all the RIDs that are allowable for a platform
+//        void PopulateRidListBox(const HWND hwndCombo, const PascalCString& screen, const char platform) const;
 
-        //the filename that we originally loaded
-        PascalCString fileName;
+private:
 
-        //the hashing modulo that we're using
-        int hashingModulo;
+    //the mapping of RID to language/translation/platform entries
+    RidToEntryMap m_mapLabelToEntry;
 
-        //imports the database from an LDB file
-        bool ImportLdbFile( const char* szFilename );
+    //maps from the name of the screen to the database (RidToEntryMap) that is valid here
+    //ScreenToDatabaseMap m_screenDatabases;
 
-        //imports the database from an XLS file 
-        bool ImportXlsFile( const char* szFilename );
+    //the filename that we originally loaded
+    PascalCString fileName;
+
+    //the hashing modulo that we're using
+    int hashingModulo;
+
+    //imports the database from an LDB file
+    bool ImportLdbFile(const char *szFilename);
+
+    //imports the database from an XLS file
+    bool ImportXlsFile(const char *szFilename);
 };
 
 #endif

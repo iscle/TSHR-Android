@@ -6,25 +6,21 @@
 #include "FeLayer.h"
 #include "FeApp.h"
 
-FeLayer::FeLayer( const char* name) 
-: 
-    FeOwner( name )
-{
+FeLayer::FeLayer(const char *name)
+        :
+        FeOwner(name) {
 }
 
-FeLayer::~FeLayer()
-{
+FeLayer::~FeLayer() {
 }
 
 
-void FeLayer::GetBoundingBoxSize( int& width, int& height ) const
-{
+void FeLayer::GetBoundingBoxSize(int &width, int &height) const {
     width = static_cast<int>(FeApp::GetInstance()->GetScreenWidth());
     height = static_cast<int>(FeApp::GetInstance()->GetScreenHeight());
 }
 
-void FeLayer::GetBoundingBox( int& xMin, int& yMin, int& xMax, int& yMax ) const
-{
+void FeLayer::GetBoundingBox(int &xMin, int &yMin, int &xMax, int &yMax) const {
     xMin = 0;
     yMin = 0;
     xMax = static_cast<int>(FeApp::GetInstance()->GetScreenWidth()) - 1;

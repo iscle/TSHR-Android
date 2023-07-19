@@ -40,18 +40,24 @@ class FeLanguage : public FeEntity
 //=============================================================================
 {
 public:
-    FeLanguage( const char* name = NULL );
-    
+    FeLanguage(const char *name = NULL);
+
     // Accessors
     char GetLanguageID();
-    unsigned int GetModulo();
-    unsigned int GetNumStrings();
-    unsigned short* GetString( unsigned int hash );
-    unsigned short* GetString( const char* name );
-    unsigned int GetHash( const char* name );
 
-    void SetLanguageID( const char ID );
-    void SetModulo( unsigned int modulo );
+    unsigned int GetModulo();
+
+    unsigned int GetNumStrings();
+
+    unsigned short *GetString(unsigned int hash);
+
+    unsigned short *GetString(const char *name);
+
+    unsigned int GetHash(const char *name);
+
+    void SetLanguageID(const char ID);
+
+    void SetModulo(unsigned int modulo);
 
     virtual bool IsDrawable() { return false; }
 
@@ -68,9 +74,9 @@ protected:
     unsigned int m_bufferSize;
     unsigned int m_numStrings;
 
-    unsigned int* m_hashes;
-    unsigned int* m_offsets;
-    unsigned short* m_buffer;
+    unsigned int *m_hashes;
+    unsigned int *m_offsets;
+    unsigned short *m_buffer;
 private:
     friend class FeTextBibleLoader;
 };
@@ -85,8 +91,7 @@ private:
 // Return      : The single letter identifier of the language
 //
 //=============================================================================
-inline char FeLanguage::GetLanguageID()
-{
+inline char FeLanguage::GetLanguageID() {
     return m_languageID;
 }
 
@@ -96,20 +101,20 @@ inline char FeLanguage::GetLanguageID()
 // Return      : the hashing modulo used to turn strings into indexes
 //
 //=============================================================================
-inline unsigned int FeLanguage::GetModulo()
-{
+inline unsigned int FeLanguage::GetModulo() {
     return m_modulo;
 }
+
 //=============================================================================
 // FeLanguage::GetNumStrings
 //=============================================================================
 // Return      : the number of text strings in the language
 //
 //=============================================================================
-inline unsigned int FeLanguage::GetNumStrings()
-{
+inline unsigned int FeLanguage::GetNumStrings() {
     return m_numStrings;
 }
+
 //=============================================================================
 // FeLanguage::SetLanguageID
 //=============================================================================
@@ -118,10 +123,10 @@ inline unsigned int FeLanguage::GetNumStrings()
 // Parameters  : ID - the new language ID
 //
 //=============================================================================
-inline void FeLanguage::SetLanguageID( const char ID )
-{
+inline void FeLanguage::SetLanguageID(const char ID) {
     m_languageID = ID;
 }
+
 //=============================================================================
 // FeLanguage::SetModulo
 //=============================================================================
@@ -130,8 +135,7 @@ inline void FeLanguage::SetLanguageID( const char ID )
 // Parameters  : modulo - the new modulo
 //
 //=============================================================================
-inline void FeLanguage::SetModulo( unsigned int modulo )
-{
+inline void FeLanguage::SetModulo(unsigned int modulo) {
     m_modulo = modulo;
 }
 

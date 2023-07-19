@@ -48,174 +48,179 @@ class GfeFile;
 //        and writing of data from/to persistent storage by prefixing the string
 //        with its length.
 //
-class PascalCString
-{
-    public:
-        // @cmember Default constructor
-        PascalCString();
+class PascalCString {
+public:
+    // @cmember Default constructor
+    PascalCString();
 
-        // @cmember Destructor.
-        ~PascalCString();
+    // @cmember Destructor.
+    ~PascalCString();
 
-        // @cmember Copy constructor from const UnicodeString
-        explicit PascalCString( const UnicodeString& uString );
+    // @cmember Copy constructor from const UnicodeString
+    explicit PascalCString(const UnicodeString &uString);
 
-        // @cmember Copy constructor from const char*
-        PascalCString( const char* szString );
+    // @cmember Copy constructor from const char*
+    PascalCString(const char *szString);
 
-        // @cmember Copy constructor from char
-        PascalCString( const char ch );
+    // @cmember Copy constructor from char
+    PascalCString(const char ch);
 
-        // @cmember Copy constructor from another PCString
-        PascalCString( const PascalCString& rhs );
+    // @cmember Copy constructor from another PCString
+    PascalCString(const PascalCString &rhs);
 
-        // @cmember Assignment operator from another PCString
-        PascalCString& operator=( const PascalCString& rhs );
+    // @cmember Assignment operator from another PCString
+    PascalCString &operator=(const PascalCString &rhs);
 
-        // @cmember Assignment operator from a string
-        PascalCString& operator=( const char* rhs );
+    // @cmember Assignment operator from a string
+    PascalCString &operator=(const char *rhs);
 
-        // @cmember Assignment operator from a char;
-        PascalCString& operator=( const char rhs );
+    // @cmember Assignment operator from a char;
+    PascalCString &operator=(const char rhs);
 
-        // @cmember Concatentation
-        PascalCString& operator+=( const PascalCString& rhs );
+    // @cmember Concatentation
+    PascalCString &operator+=(const PascalCString &rhs);
 
-        // @cmember Concatentation
-        PascalCString& operator+=( const char* rhs );
+    // @cmember Concatentation
+    PascalCString &operator+=(const char *rhs);
 
-        // @cmember Concatentation
-        PascalCString& operator+=( const char rhs );
+    // @cmember Concatentation
+    PascalCString &operator+=(const char rhs);
 
-        //array access
-        char operator[]( const int index ) const;
+    //array access
+    char operator[](const int index) const;
 
-        //array access
-        char& operator[]( const int index );
+    //array access
+    char &operator[](const int index);
 
-        // @cmember comparison (equality) operator
-        bool operator==( const PascalCString& rhs ) const;
+    // @cmember comparison (equality) operator
+    bool operator==(const PascalCString &rhs) const;
 
-        // @cmember comparison (equality) operator
-        bool operator==( const char* rhs ) const;
+    // @cmember comparison (equality) operator
+    bool operator==(const char *rhs) const;
 
-        // @cmember comparison (equality) operator
-        bool operator==( const char rhs ) const;
+    // @cmember comparison (equality) operator
+    bool operator==(const char rhs) const;
 
-        // @cmember comparison (inequality) operator
-        bool operator!=( const PascalCString& rhs ) const;
+    // @cmember comparison (inequality) operator
+    bool operator!=(const PascalCString &rhs) const;
 
-        // @cmember comparison (inequality) operator
-        bool operator!=( const char* rhs ) const;
+    // @cmember comparison (inequality) operator
+    bool operator!=(const char *rhs) const;
 
-        // @cmember comparison (inequality) operator
-        bool operator!=( const char rhs ) const;
+    // @cmember comparison (inequality) operator
+    bool operator!=(const char rhs) const;
 
-        // @cmember comparison (less than) operator
-        bool operator<( const PascalCString& rhs ) const;
+    // @cmember comparison (less than) operator
+    bool operator<(const PascalCString &rhs) const;
 
-        // @cmember comparison (less than) operator
-        bool operator<( const char* rhs ) const;
+    // @cmember comparison (less than) operator
+    bool operator<(const char *rhs) const;
 
-        // @cmember comparison (less than) operator
-        bool operator<( const char rhs ) const;
+    // @cmember comparison (less than) operator
+    bool operator<(const char rhs) const;
 
-        // @cmember comparison (less than) operator
-        bool operator<=( const PascalCString& rhs ) const;
+    // @cmember comparison (less than) operator
+    bool operator<=(const PascalCString &rhs) const;
 
-        // @cmember comparison (less than) operator
-        bool operator<=( const char* rhs ) const;
+    // @cmember comparison (less than) operator
+    bool operator<=(const char *rhs) const;
 
-        // @cmember comparison (less than) operator
-        bool operator<=( const char rhs ) const;
+    // @cmember comparison (less than) operator
+    bool operator<=(const char rhs) const;
 
-        // @cmember comparison (greater than) operator
-        bool operator>( const PascalCString& rhs ) const;
+    // @cmember comparison (greater than) operator
+    bool operator>(const PascalCString &rhs) const;
 
-        // @cmember comparison (greater than) operator
-        bool operator>( const char* rhs ) const;
+    // @cmember comparison (greater than) operator
+    bool operator>(const char *rhs) const;
 
-        // @cmember comparison (greater than) operator
-        bool operator>( const char rhs ) const;
+    // @cmember comparison (greater than) operator
+    bool operator>(const char rhs) const;
 
-        // @cmember comparison (less than) operator
-        bool operator>=( const PascalCString& rhs ) const;
+    // @cmember comparison (less than) operator
+    bool operator>=(const PascalCString &rhs) const;
 
-        // @cmember comparison (less than) operator
-        bool operator>=( const char* rhs ) const;
+    // @cmember comparison (less than) operator
+    bool operator>=(const char *rhs) const;
 
-        // @cmember comparison (less than) operator
-        bool operator>=( const char rhs ) const;
+    // @cmember comparison (less than) operator
+    bool operator>=(const char rhs) const;
 
-        // @cmember Get the length (exclusive of null) of string
-        int Length() const;
+    // @cmember Get the length (exclusive of null) of string
+    int Length() const;
 
-        // @cmember Reserve space for the string.
-        void Reserve( int nSize );
+    // @cmember Reserve space for the string.
+    void Reserve(int nSize);
 
-        // @cmember Implicit type conversion operator
-        operator char*();
+    // @cmember Implicit type conversion operator
+    operator char *();
 
-        // @cmember Implicit type conversion operator
-        operator char*() const;
+    // @cmember Implicit type conversion operator
+    operator char *() const;
 
-        // @cmember Grow the character array
-        void Grow( unsigned int uiLen );
+    // @cmember Grow the character array
+    void Grow(unsigned int uiLen);
 
-        // @cmember Generate a hash value for this string
-        long Hash( int iModulo );
+    // @cmember Generate a hash value for this string
+    long Hash(int iModulo);
 
-        // @cmember Read the string from the file
-        //void ReadFile( GfeFile& gf );
+    // @cmember Read the string from the file
+    //void ReadFile(GfeFile& gf);
 
-        // @cmember Write the string to a file
-        //void WriteFile( GfeFile& gf );
+    // @cmember Write the string to a file
+    //void WriteFile(GfeFile& gf);
 
-        // @cmember Find a match between the two strings
-        PascalCString Match( const PascalCString& rhs );
+    // @cmember Find a match between the two strings
+    PascalCString Match(const PascalCString &rhs);
 
-        // @cmember Replace all occurences of the first string with the second
-        void Replace( const PascalCString& stFind, const PascalCString& stReplace );
+    // @cmember Replace all occurences of the first string with the second
+    void Replace(const PascalCString &stFind, const PascalCString &stReplace);
 
-        // @cmember Make the string all uppercase
-        void ToUpper( void );
+    // @cmember Make the string all uppercase
+    void ToUpper(void);
 
-        // @cmember Make the string all lowercase
-        void ToLower( void );
+    // @cmember Make the string all lowercase
+    void ToLower(void);
 
-        // @cmember Get a substring from the object
-        PascalCString SubString( int iStart, int iChars );
+    // @cmember Get a substring from the object
+    PascalCString SubString(int iStart, int iChars);
 
-        char StreamFirstChar();
-        PascalCString StreamFirstWord( char charToSplit );
-        bool Find( char charToFind );
-        bool EqualsInsensitive( const char* name );
+    char StreamFirstChar();
 
-        // Special functions just for file entries
-        PascalCString JustFilename();
-        PascalCString FullFilename();
-        PascalCString JustExtension();
-        PascalCString JustPath();
+    PascalCString StreamFirstWord(char charToSplit);
 
-    protected:
-        void AdjustMaxArraySize( const unsigned int newSize );
+    bool Find(char charToFind);
 
-    private:
+    bool EqualsInsensitive(const char *name);
 
-        // @cmember The array of chars
-        char* m_szString;
+    // Special functions just for file entries
+    PascalCString JustFilename();
 
-        // @cmember The number of characters in the string (strlen + 1)
-        unsigned int m_ichMac;
+    PascalCString FullFilename();
 
-        // @cmember The size of the array.
-        unsigned int m_ichMax;
+    PascalCString JustExtension();
 
-        // @cmember The "grow by" size;
-        unsigned int m_uiGrowBy;
-        #ifdef RAD_DEBUG
-            int m_NumberOfGrows;
-        #endif
+    PascalCString JustPath();
+
+protected:
+    void AdjustMaxArraySize(const unsigned int newSize);
+
+private:
+
+    // @cmember The array of chars
+    char *m_szString;
+
+    // @cmember The number of characters in the string (strlen + 1)
+    unsigned int m_ichMac;
+
+    // @cmember The size of the array.
+    unsigned int m_ichMax;
+
+    // @cmember The "grow by" size;
+    unsigned int m_uiGrowBy;
+#ifdef RAD_DEBUG
+    int m_NumberOfGrows;
+#endif
 };
 
 #endif // End of conditional inclusion

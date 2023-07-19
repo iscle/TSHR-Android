@@ -29,7 +29,7 @@
 //===========================================================================
 // Global Data, Local Data, Local Classes
 //===========================================================================
-FeApp* FeApp::s_Instance = NULL;
+FeApp *FeApp::s_Instance = NULL;
 
 
 //===========================================================================
@@ -48,16 +48,12 @@ FeApp* FeApp::s_Instance = NULL;
 // Return:      None
 //
 //===========================================================================
-void FeApp::AddProject( Scrooby::Project* project )
-{
-    FeProject* feProject = dynamic_cast<FeProject*>( project );
-    if( feProject )
-    {
-        m_Projects.Insert( feProject );
-    }
-    else
-    {
-        Scrooby::ScroobyError( "Failed to add project" );
+void FeApp::AddProject(Scrooby::Project *project) {
+    FeProject *feProject = dynamic_cast<FeProject *>(project);
+    if (feProject) {
+        m_Projects.Insert(feProject);
+    } else {
+        Scrooby::ScroobyError("Failed to add project");
     }
 }
 
@@ -75,14 +71,12 @@ void FeApp::AddProject( Scrooby::Project* project )
 // Return:      Pointer to the single instance of this class.
 //
 //===========================================================================
-FeApp* FeApp::GetInstance()
-{
-    if( s_Instance == NULL )
-    {
+FeApp *FeApp::GetInstance() {
+    if (s_Instance == NULL) {
         s_Instance = new FeApp;
     }
-    
-    return( s_Instance );
+
+    return (s_Instance);
 }
 
 //===========================================================================
@@ -97,18 +91,15 @@ FeApp* FeApp::GetInstance()
 // Return:      Pointer to the single project that could be loaded
 //
 //===========================================================================
-Scrooby::Project* FeApp::GetProject()
-{
-    return GetProject( m_projectIndex );
+Scrooby::Project *FeApp::GetProject() {
+    return GetProject(m_projectIndex);
 }
 
-Scrooby::Project* FeApp::GetProject( unsigned int x )
-{
-    if( static_cast<int>(x) >= m_Projects.Size() )
-    {
+Scrooby::Project *FeApp::GetProject(unsigned int x) {
+    if (static_cast<int>(x) >= m_Projects.Size()) {
         return NULL;
     }
-    return dynamic_cast<Scrooby::Project*>( m_Projects[x] );
+    return dynamic_cast<Scrooby::Project *>(m_Projects[x]);
 }
 
 //===========================================================================
@@ -141,27 +132,24 @@ return this->m_Children[ m_projectIndex ];
 // Return:      reference to the resource manager
 //
 //===========================================================================
-Scrooby::ResourceManager& FeApp::GetResourceManager()
-{
-    rAssert( this->m_ResourceManager != NULL );
-    Scrooby::ResourceManager* returnMe;
-    returnMe = dynamic_cast< Scrooby::ResourceManager* >( this->m_ResourceManager );
-    rAssert( returnMe != NULL );
+Scrooby::ResourceManager &FeApp::GetResourceManager() {
+    rAssert(this->m_ResourceManager != NULL);
+    Scrooby::ResourceManager *returnMe;
+    returnMe = dynamic_cast<Scrooby::ResourceManager *>(this->m_ResourceManager);
+    rAssert(returnMe != NULL);
     return *returnMe;
 }
 
-Scrooby::TextBible*
-FeApp::GetTextBible( const char* name ) const
-{
-    Scrooby::TextBible* textBible = NULL;
-    
-    tEntity* entity = m_ResourceManager->GetResource( name );
-    if( entity != NULL )
-    {
-        textBible = dynamic_cast<Scrooby::TextBible*>( entity );
+Scrooby::TextBible *
+FeApp::GetTextBible(const char *name) const {
+    Scrooby::TextBible *textBible = NULL;
+
+    tEntity *entity = m_ResourceManager->GetResource(name);
+    if (entity != NULL) {
+        textBible = dynamic_cast<Scrooby::TextBible *>(entity);
     }
 
-    rWarningMsg( textBible != NULL, "Can't find text bible!" );
+    rWarningMsg(textBible != NULL, "Can't find text bible!");
 
     return textBible;
 }
@@ -178,12 +166,10 @@ FeApp::GetTextBible( const char* name ) const
 // Return:      the Y Resolution (height) of the screen in pixels
 //
 //===========================================================================
-float FeApp::GetScreenHeight()
-{
-    FeProject* project = GetProjectFast();
-    if( !project )
-    {
-        return static_cast<float>( p3d::display->GetHeight() );
+float FeApp::GetScreenHeight() {
+    FeProject *project = GetProjectFast();
+    if (!project) {
+        return static_cast<float>(p3d::display->GetHeight());
     }
     return project->GetScreenHeight();
 }
@@ -200,12 +186,10 @@ float FeApp::GetScreenHeight()
 // Return:      the X Resolution (width) of the screen in pixels
 //
 //===========================================================================
-float FeApp::GetScreenWidth()
-{
-    FeProject* project = GetProjectFast();
-    if( !project )
-    {
-        return static_cast<float>( p3d::display->GetWidth() );
+float FeApp::GetScreenWidth() {
+    FeProject *project = GetProjectFast();
+    if (!project) {
+        return static_cast<float>(p3d::display->GetWidth());
     }
     return project->GetScreenWidth();
 }
@@ -222,12 +206,11 @@ float FeApp::GetScreenWidth()
 // Return:      None
 //
 //===========================================================================
-void FeApp::AddScroobyHandlers()
-{
-    tP3DFileHandler* filehandler = p3d::loadManager->GetP3DHandler();
-    filehandler->AddHandler( new Scrooby::FeProjectChunkHandler );
-    filehandler->AddHandler( new FeTextBibleLoader() );
-    p3d::context->GetLoadManager()->AddHandler( new FeProjectFileHandler(), "p3d" );
+void FeApp::AddScroobyHandlers() {
+    tP3DFileHandler *filehandler = p3d::loadManager->GetP3DHandler();
+    filehandler->AddHandler(new Scrooby::FeProjectChunkHandler);
+    filehandler->AddHandler(new FeTextBibleLoader());
+    p3d::context->GetLoadManager()->AddHandler(new FeProjectFileHandler(), "p3d");
 }
 
 
@@ -244,10 +227,8 @@ void FeApp::AddScroobyHandlers()
 // Return:      None
 //
 //===========================================================================
-void FeApp::DeleteInstance()
-{
-    if( s_Instance != NULL )
-    {
+void FeApp::DeleteInstance() {
+    if (s_Instance != NULL) {
         delete s_Instance;
         s_Instance = NULL;
     }
@@ -267,24 +248,23 @@ void FeApp::DeleteInstance()
 // Return:      None
 //
 //===========================================================================
-FeApp::FeApp() 
-:
-m_Callback( NULL ),
+FeApp::FeApp()
+        :
+        m_Callback(NULL),
 #ifdef RAD_DEBUG
-m_ShowBoundingBoxes( false ),
+        m_ShowBoundingBoxes(false),
 #endif
-m_ProjectLoadPending( false ),
-m_DrawingFrame( false ),
-m_SafeToRender( false ),
-m_FullImageNames( true ),
-m_projectIndex( 0 ),
-m_deltaTime( 0.0f ),
-m_textBuffer( NULL )
-{
+        m_ProjectLoadPending(false),
+        m_DrawingFrame(false),
+        m_SafeToRender(false),
+        m_FullImageNames(true),
+        m_projectIndex(0),
+        m_deltaTime(0.0f),
+        m_textBuffer(NULL) {
     m_ResourceManager = new FeResourceManager();
     //m_Fe2D =  Fe2DCore::GetInstance();// lives as a singleton
-    //m_FeScreenResolution = new( ScroobyPermPool )FeScreenResolution;
-    //m_FeProjectLoader = new( ScroobyPermPool )FeProjectLoader;
+    //m_FeScreenResolution = new(ScroobyPermPool)FeScreenResolution;
+    //m_FeProjectLoader = new(ScroobyPermPool)FeProjectLoader;
 
     // create other Scrooby singletons
     //
@@ -293,7 +273,7 @@ m_textBuffer( NULL )
 #endif
 
     AddScroobyHandlers();
-    m_Projects.Reserve( 10 );
+    m_Projects.Reserve(10);
 }
 
 
@@ -310,12 +290,10 @@ m_textBuffer( NULL )
 // Return:      None
 //
 //===========================================================================
-FeApp::~FeApp()
-{
+FeApp::~FeApp() {
     int x = m_Projects.Size() - 1;
-    while( x >= 0 )
-    {
-        UnloadProject( GetProject( x ) );
+    while (x >= 0) {
+        UnloadProject(GetProject(x));
         x = m_Projects.Size() - 1;
     }
     m_ResourceManager->Release();
@@ -334,19 +312,18 @@ FeApp::~FeApp()
 // Return:      None
 //
 //===========================================================================
-void FeApp::Display( tUID startLayer, tUID endLayer )
-{
+void FeApp::Display(tUID startLayer, tUID endLayer) {
     //
     // Nothing to do if no project is loaded.
     //
 
     // MIKE IMPROVE : re-implement this function
     /*Scrooby::Project* project = GetProject();
-    if( project != NULL )
+    if(project != NULL)
     {
-        rAssert( project );
+        rAssert(project);
         // object on layer 0.0f is not drawn
-        Fe2DCore::GetInstance()->Display( startLayer, endLayer );
+        Fe2DCore::GetInstance()->Display(startLayer, endLayer);
     }*/
 }
 
@@ -363,8 +340,7 @@ void FeApp::Display( tUID startLayer, tUID endLayer )
 // Return:      None
 //
 //===========================================================================
-void FeApp::Display( const char* startLayer, const char* endLayer )
-{
+void FeApp::Display(const char *startLayer, const char *endLayer) {
     //
     // Nothing to do if no project is loaded.
     //
@@ -372,14 +348,14 @@ void FeApp::Display( const char* startLayer, const char* endLayer )
     // MIKE IMPROVE : re-implement this function
     /*
     Scrooby::Project* project = this->GetProject();
-    if( project != NULL )
+    if(project != NULL)
     {
-        rAssert( project );
-        tUID startUID   = tEntity::MakeUID( startLayer );
-        tUID endUID     = tEntity::MakeUID( endLayer );
+        rAssert(project);
+        tUID startUID   = tEntity::MakeUID(startLayer);
+        tUID endUID     = tEntity::MakeUID(endLayer);
         
         // object on layer 0.0f is not drawn
-        Fe2DCore::GetInstance()->Display( startUID, endUID );
+        Fe2DCore::GetInstance()->Display(startUID, endUID);
     }*/
 }
 
@@ -396,36 +372,26 @@ void FeApp::Display( const char* startLayer, const char* endLayer )
 // Return:      None
 //
 //===========================================================================
-void FeApp::DrawFrame( float deltaTime )
-{
+void FeApp::DrawFrame(float deltaTime) {
     m_deltaTime = deltaTime;
     // Nothing to do if no project is loaded.
-    Scrooby::Project* project = this->GetProject();
-    if( project != NULL ) 
-    {        
-        rAssert( project );
-        FeProject* feProject = dynamic_cast<FeProject*>(project);
-        if( feProject )
-        {
-            if( feProject->IsLoaded() )
-            {
-                m_DrawingFrame = true;        
+    Scrooby::Project *project = this->GetProject();
+    if (project != NULL) {
+        rAssert(project);
+        FeProject *feProject = dynamic_cast<FeProject *>(project);
+        if (feProject) {
+            if (feProject->IsLoaded()) {
+                m_DrawingFrame = true;
                 project->GetCurrentScreen()->Display();
                 m_DrawingFrame = false;
-            }
-            else
-            {
-                if( !m_ResourceManager->IsAsyncLoading() )
-                {
+            } else {
+                if (!m_ResourceManager->IsAsyncLoading()) {
                     m_ResourceManager->ContinueLoading();
                 }
             }
         }
-    }
-    else
-    {
-        if( !m_ResourceManager->IsAsyncLoading() )
-        {
+    } else {
+        if (!m_ResourceManager->IsAsyncLoading()) {
             m_ResourceManager->ContinueLoading();
         }
     }
@@ -443,40 +409,29 @@ void FeApp::DrawFrame( float deltaTime )
 // Return:      None
 //
 //===========================================================================
-void FeApp::DrawBackground( float deltaTime )
-{
+void FeApp::DrawBackground(float deltaTime) {
     m_deltaTime = deltaTime;
-    Scrooby::Project* project = this->GetProject();
-    if( project != NULL ) 
-    {
-        rAssert( project );
-        FeProject* feProject = dynamic_cast<FeProject*>(project);
-        if( feProject )
-        {
-            if( feProject->IsLoaded() )
-            {
-                m_DrawingFrame = true;        
-                FeScreen* screen = dynamic_cast<FeScreen*>(project->GetCurrentScreen());
-                if( screen )
-                {
+    Scrooby::Project *project = this->GetProject();
+    if (project != NULL) {
+        rAssert(project);
+        FeProject *feProject = dynamic_cast<FeProject *>(project);
+        if (feProject) {
+            if (feProject->IsLoaded()) {
+                m_DrawingFrame = true;
+                FeScreen *screen = dynamic_cast<FeScreen *>(project->GetCurrentScreen());
+                if (screen) {
                     screen->DisplayBackground();
                 }
                 m_DrawingFrame = false;
-            }
-            else
-            {
-                if( !m_ResourceManager->IsAsyncLoading() )
-                {
+            } else {
+                if (!m_ResourceManager->IsAsyncLoading()) {
                     m_ResourceManager->ContinueLoading();
                 }
 
             }
         }
-    }
-    else
-    {
-        if( !m_ResourceManager->IsAsyncLoading() )
-        {
+    } else {
+        if (!m_ResourceManager->IsAsyncLoading()) {
             m_ResourceManager->ContinueLoading();
         }
     }
@@ -495,22 +450,17 @@ void FeApp::DrawBackground( float deltaTime )
 // Return:      None
 //
 //===========================================================================
-void FeApp::DrawForeground( float deltaTime )
-{
+void FeApp::DrawForeground(float deltaTime) {
     m_deltaTime = deltaTime;
-    Scrooby::Project* project = this->GetProject();
-    if( project != NULL ) 
-    {
-        rAssert( project );
-        FeProject* feProject = dynamic_cast<FeProject*>(project);
-        if( feProject )
-        {
-            if( feProject->IsLoaded() )
-            {
-                m_DrawingFrame = true;        
-                FeScreen* screen = dynamic_cast<FeScreen*>(project->GetCurrentScreen());
-                if( screen )
-                {
+    Scrooby::Project *project = this->GetProject();
+    if (project != NULL) {
+        rAssert(project);
+        FeProject *feProject = dynamic_cast<FeProject *>(project);
+        if (feProject) {
+            if (feProject->IsLoaded()) {
+                m_DrawingFrame = true;
+                FeScreen *screen = dynamic_cast<FeScreen *>(project->GetCurrentScreen());
+                if (screen) {
                     screen->DisplayForeground();
                 }
                 m_DrawingFrame = false;
@@ -531,12 +481,10 @@ void FeApp::DrawForeground( float deltaTime )
 // Return:      pointer to the resource manager
 //
 //===========================================================================
-FeResourceManager& FeApp::GetFeResourceManager()
-{
-    rAssert( m_ResourceManager != NULL );
+FeResourceManager &FeApp::GetFeResourceManager() {
+    rAssert(m_ResourceManager != NULL);
     return *m_ResourceManager;
 }
-
 
 
 //===========================================================================
@@ -551,22 +499,19 @@ FeResourceManager& FeApp::GetFeResourceManager()
 // Return:      true or false have all the resoruces been loaded
 //
 //===========================================================================
-bool FeApp::IsSafeToRender()
-{
-    Scrooby::Project* project = this->GetProject();
-    if( project == NULL )
-    {
+bool FeApp::IsSafeToRender() {
+    Scrooby::Project *project = this->GetProject();
+    if (project == NULL) {
         return false;
     }
-    if( project->IsLoadingScreens() )
-    {
+    if (project->IsLoadingScreens()) {
         return false;
     }
     return true;
 }
 
 //===========================================================================
-// FeApp::LoadProject( char* path, LoadProjectCallback* pCallback )
+// FeApp::LoadProject(char* path, LoadProjectCallback* pCallback)
 //===========================================================================
 // Description: Loads a project from a specific path, and stores it.
 //              This is an ASYNCRONOUS load.
@@ -581,53 +526,50 @@ bool FeApp::IsSafeToRender()
 // Return:      None.
 //
 //===========================================================================
-void FeApp::LoadProject( const char* path, Scrooby::LoadProjectCallback* pCallback, char* inventorySection, radMemoryAllocator allocator )
-{
-    rAssert( path );
-    radMemoryAllocator old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
-        PascalCString filePath( path );
-    ::radMemorySetCurrentAllocator( old );
+void FeApp::LoadProject(const char *path, Scrooby::LoadProjectCallback *pCallback,
+                        char *inventorySection, radMemoryAllocator allocator) {
+    rAssert(path);
+    radMemoryAllocator old = ::radMemorySetCurrentAllocator(RADMEMORY_ALLOC_TEMP);
+    PascalCString filePath(path);
+    ::radMemorySetCurrentAllocator(old);
 
     // Ignore subsequent load calls until the first request is complete.
-    if( m_ProjectLoadPending )
-    {
-        rAssertMsg( 0, "Still busy loading a project!  Go away!" );
+    if (m_ProjectLoadPending) {
+        rAssertMsg(0, "Still busy loading a project!  Go away!");
         return;
     }
 
     bool allocated = false;
 
-    if( inventorySection == NULL )
-    {
-        inventorySection = new char[strlen( "ScroobySection_" ) + 2];
-        sprintf( inventorySection, "ScroobySection_%d", static_cast<int>( m_Projects.Size() ) );
+    if (inventorySection == NULL) {
+        inventorySection = new char[strlen("ScroobySection_") + 2];
+        sprintf(inventorySection, "ScroobySection_%d", static_cast<int>(m_Projects.Size()));
         allocated = true;
     }
-    old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_DEFAULT );
-        p3d::inventory->AddSection( inventorySection );
-    ::radMemorySetCurrentAllocator( old );
-    
-    m_ResourceManager->SetInventorySection( inventorySection );
+    old = ::radMemorySetCurrentAllocator(RADMEMORY_ALLOC_DEFAULT);
+    p3d::inventory->AddSection(inventorySection);
+    ::radMemorySetCurrentAllocator(old);
 
-    m_ResourceManager->SetAllocator (allocator);
+    m_ResourceManager->SetInventorySection(inventorySection);
 
-    if( allocated )
-    {
+    m_ResourceManager->SetAllocator(allocator);
+
+    if (allocated) {
         delete[] inventorySection;
         inventorySection = NULL;
     }
-    
+
     m_ProjectLoadPending = true;
-    
+
     // Store this for now and we'll invoke it once we're done.
     m_Callback = pCallback;
-    
+
     // Register the cement file that packs the project
     //mFeProjectLoader->RegisterCementFile();
-    old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
-        PascalCString fullFileName = filePath.FullFilename();
-        m_ResourceManager->AddResource( filePath, NULL, RT_PROJECT, fullFileName );
-    ::radMemorySetCurrentAllocator( old );
+    old = ::radMemorySetCurrentAllocator(RADMEMORY_ALLOC_TEMP);
+    PascalCString fullFileName = filePath.FullFilename();
+    m_ResourceManager->AddResource(filePath, NULL, RT_PROJECT, fullFileName);
+    ::radMemorySetCurrentAllocator(old);
     m_ResourceManager->ContinueLoading();
 }
 
@@ -643,9 +585,8 @@ void FeApp::LoadProject( const char* path, Scrooby::LoadProjectCallback* pCallba
 // Return:      None.
 //
 //===========================================================================
-void FeApp::LoadResourcesAll( Scrooby::ResourceManagerCallback* callback )
-{
-    this->m_ResourceManager->LoadAll( callback );
+void FeApp::LoadResourcesAll(Scrooby::ResourceManagerCallback *callback) {
+    this->m_ResourceManager->LoadAll(callback);
 }
 
 
@@ -662,8 +603,7 @@ void FeApp::LoadResourcesAll( Scrooby::ResourceManagerCallback* callback )
 // Return:      None.
 //
 //===========================================================================
-void FeApp::MarkSafeToRender()
-{
+void FeApp::MarkSafeToRender() {
     this->m_SafeToRender = true;
 }
 
@@ -679,8 +619,7 @@ void FeApp::MarkSafeToRender()
 // Return:      None.
 //
 //===========================================================================
-void FeApp::MarkUnsafeToRender()
-{
+void FeApp::MarkUnsafeToRender() {
     this->m_SafeToRender = false;
 }
 
@@ -699,21 +638,20 @@ void FeApp::MarkUnsafeToRender()
 // Return:      None.
 //
 //===========================================================================
-void FeApp::OnProjectLoadComplete( Scrooby::Project* pProject )
-{
-    Scrooby::LoadProjectCallback* tempCallback;
+void FeApp::OnProjectLoadComplete(Scrooby::Project *pProject) {
+    Scrooby::LoadProjectCallback *tempCallback;
 
-    rAssert( pProject );
-    //mProject = dynamic_cast< FeProject* >( pProject );
-    //rAssert( mProject );
-    
-    this->AddProject( pProject );
-    
+    rAssert(pProject);
+    //mProject = dynamic_cast<FeProject*>(pProject);
+    //rAssert(mProject);
+
+    this->AddProject(pProject);
+
     //
     // Clear the flag so the client can now request another load.
     //
     m_ProjectLoadPending = false;
-    
+
     //
     // Invoke the client supplied callback.
     //
@@ -726,9 +664,8 @@ void FeApp::OnProjectLoadComplete( Scrooby::Project* pProject )
     tempCallback = m_Callback;
     m_Callback = NULL;
 
-    if( tempCallback != NULL )
-    {
-        tempCallback->OnProjectLoadComplete( pProject );
+    if (tempCallback != NULL) {
+        tempCallback->OnProjectLoadComplete(pProject);
     }
 }
 
@@ -743,9 +680,8 @@ void FeApp::OnProjectLoadComplete( Scrooby::Project* pProject )
 // Return:      None
 //
 //===========================================================================
-void FeApp::RegisterCementFile( const char* filename )
-{
-    this->m_ResourceManager->RegisterCementFile( filename );
+void FeApp::RegisterCementFile(const char *filename) {
+    this->m_ResourceManager->RegisterCementFile(filename);
 }
 
 //===========================================================================
@@ -758,27 +694,26 @@ void FeApp::RegisterCementFile( const char* filename )
 // Return:      None
 //
 //===========================================================================
-void FeApp::RemoveProject( Scrooby::Project* project )
-{
+void FeApp::RemoveProject(Scrooby::Project *project) {
     char temp[80];
-    FeProject* feProject = dynamic_cast<FeProject*>( project );
-    strcpy( temp, feProject->GetInventorySection() );
-    m_ResourceManager->SetInventorySection( temp );
-    m_ResourceManager->RemoveResource( feProject );
-    m_Projects.Erase( feProject );
+    FeProject *feProject = dynamic_cast<FeProject *>(project);
+    strcpy(temp, feProject->GetInventorySection());
+    m_ResourceManager->SetInventorySection(temp);
+    m_ResourceManager->RemoveResource(feProject);
+    m_Projects.Erase(feProject);
     feProject->Release();
 
-    p3d::inventory->RemoveSectionElements( temp );
-    p3d::inventory->DeleteSection( temp );
-    
+    p3d::inventory->RemoveSectionElements(temp);
+    p3d::inventory->DeleteSection(temp);
+
     //couldn't find this particular project
-    //Scrooby::Log::Message( Scrooby::LVL_ERROR, "FeApp::RemoveProject : tried to remove a project which was not in it's inventory" );
-    //rAssert( false );
+    //Scrooby::Log::Message(Scrooby::LVL_ERROR, "FeApp::RemoveProject : tried to remove a project which was not in it's inventory");
+    //rAssert(false);
 }
 
 
 //===========================================================================
-// void FeApp::SetLocalizationLanguage( const XLLanguage lang )
+// void FeApp::SetLocalizationLanguage(const XLLanguage lang)
 //===========================================================================
 // Description: changes the localization language
 //
@@ -787,9 +722,8 @@ void FeApp::RemoveProject( Scrooby::Project* project )
 // Return:      None
 //
 //===========================================================================
-void FeApp::SetLocalizationLanguage( const Scrooby::XLLanguage lang )
-{
-    this->m_ResourceManager->SetLocalizationLanguage( lang );
+void FeApp::SetLocalizationLanguage(const Scrooby::XLLanguage lang) {
+    this->m_ResourceManager->SetLocalizationLanguage(lang);
     this->m_ResourceManager->ContinueLoading();
 }
 
@@ -804,20 +738,16 @@ void FeApp::SetLocalizationLanguage( const Scrooby::XLLanguage lang )
 // Return      : None
 //
 //===========================================================================
-void FeApp::SetProjectIndex( unsigned int x )
-{
+void FeApp::SetProjectIndex(unsigned int x) {
     m_projectIndex = x;
 }
 
-void FeApp::SetProject( Scrooby::Project* project )
-{
-    rAssert( project != NULL );
+void FeApp::SetProject(Scrooby::Project *project) {
+    rAssert(project != NULL);
 
-    FeProject* feProject = dynamic_cast<FeProject*>( project );
-    for( unsigned int i = 0; i < static_cast<unsigned int>( m_Projects.Size() ); i++ )
-    {
-        if( feProject == m_Projects[ i ] )
-        {
+    FeProject *feProject = dynamic_cast<FeProject *>(project);
+    for (unsigned int i = 0; i < static_cast<unsigned int>(m_Projects.Size()); i++) {
+        if (feProject == m_Projects[i]) {
             m_projectIndex = i;
 
             break;
@@ -833,12 +763,12 @@ void FeApp::SetProject( Scrooby::Project* project )
 // Return      : the index to the current project
 //
 //===========================================================================
-unsigned int FeApp::GetProjectIndex()
-{
+unsigned int FeApp::GetProjectIndex() {
     return m_projectIndex;
 }
+
 //===========================================================================
-// void FeApp::UnloadProject( Scrooby::Project* pProject )
+// void FeApp::UnloadProject(Scrooby::Project* pProject)
 //===========================================================================
 // Description: Unloads the specified project.
 //
@@ -847,43 +777,33 @@ unsigned int FeApp::GetProjectIndex()
 // Return:      None.
 //
 //===========================================================================
-void FeApp::UnloadProject( Scrooby::Project* pProject )
-{
-    if( pProject == NULL )
-    {
+void FeApp::UnloadProject(Scrooby::Project *pProject) {
+    if (pProject == NULL) {
         return;
     }
-    rAssert( pProject );
-    
-    FeProject* feProject = dynamic_cast<FeProject*>(pProject);
+    rAssert(pProject);
+
+    FeProject *feProject = dynamic_cast<FeProject *>(pProject);
     unsigned int i = 0;
-    for( i; i < static_cast<unsigned int>(m_Projects.Size()); i++ )
-    {
-        if( feProject == m_Projects[i] )
-        {
+    for (i; i < static_cast<unsigned int>(m_Projects.Size()); i++) {
+        if (feProject == m_Projects[i]) {
             break;
         }
     }
-    if( i <= m_projectIndex )
-    {
+    if (i <= m_projectIndex) {
         m_projectIndex = m_projectIndex > 0 ? m_projectIndex - 1 : 0;
     }
 
-    if( feProject )
-    {
-        if( feProject->IsLoaded() )
-        {
-            RemoveProject( pProject );
-        }
-        else
-        {
-            //Scrooby::Log::Message( Scrooby::LVL_ERROR, "Project %s is still loading.  Unload ignored", feProject->GetName() );
+    if (feProject) {
+        if (feProject->IsLoaded()) {
+            RemoveProject(pProject);
+        } else {
+            //Scrooby::Log::Message(Scrooby::LVL_ERROR, "Project %s is still loading.  Unload ignored", feProject->GetName());
         }
     }
     return;
 }
 
-float FeApp::GetDeltaTime()
-{
+float FeApp::GetDeltaTime() {
     return m_deltaTime;
 }

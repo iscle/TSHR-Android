@@ -20,18 +20,23 @@
 #include "drawable.h"
 #include "owner.h"
 
-namespace Scrooby
-{
+namespace Scrooby {
 //===========================================================================
 // Forward References
 //===========================================================================
-class Layer;
-class Group;
-class Sprite;
-class Polygon;
-class Text;
-class Movie;
-class Pure3dObject;
+    class Layer;
+
+    class Group;
+
+    class Sprite;
+
+    class Polygon;
+
+    class Text;
+
+    class Movie;
+
+    class Pure3dObject;
 
 //===========================================================================
 // Interface Definitions
@@ -45,33 +50,32 @@ class Pure3dObject;
 //
 //===========================================================================
 
-class Page 
-: 
-    virtual public Drawable,
-    virtual public Owner
-{
+    class Page
+            :
+                    virtual public Drawable,
+                    virtual public Owner {
     public:
         //gets a movie object from within the page by hash
-        virtual Movie* GetMovie( const tUID hashValue ) = 0;
+        virtual Movie *GetMovie(const tUID hashValue) = 0;
 
         //gets a movie object from within the page by name
-        virtual Movie* GetMovie( const char* name ) = 0;
+        virtual Movie *GetMovie(const char *name) = 0;
 
-           //gets a text object from within the page by name
+        //gets a text object from within the page by name
         virtual int GetNumberOfLayers() const = 0;
-        
+
         //gets a layer object from within the page by hash
-        virtual Layer* GetLayer( const tUID hashValue ) = 0;
+        virtual Layer *GetLayer(const tUID hashValue) = 0;
 
         //gets a text object from within the page by name
-        virtual Layer* GetLayer( const char* name ) = 0;
+        virtual Layer *GetLayer(const char *name) = 0;
 
         //gets a text object from within the page by name
-        virtual Layer* GetLayerByIndex( const int index ) = 0;
+        virtual Layer *GetLayerByIndex(const int index) = 0;
 
     protected:
     private:
-};
+    };
 
 } // End namespace
 

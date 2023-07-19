@@ -19,24 +19,21 @@
 // Local Constants, Typedefs, and Macros
 //===========================================================================
 
-namespace Scrooby
-{
+namespace Scrooby {
 
 //===========================================================================
 // Global Data, Local Data, Local Classes
 //===========================================================================
 
-PascalCString StripFileExtension( const char* string, const char* ext )
-{
-    int numChars = strlen( string ) - strlen( ext );
-    PascalCString completeString = string;
-    PascalCString extString = completeString.SubString( numChars, strlen( ext ) );
-    if( extString.EqualsInsensitive( ext ) )
-    {
-        return completeString.SubString( 0, numChars );
+    PascalCString StripFileExtension(const char *string, const char *ext) {
+        int numChars = strlen(string) - strlen(ext);
+        PascalCString completeString = string;
+        PascalCString extString = completeString.SubString(numChars, strlen(ext));
+        if (extString.EqualsInsensitive(ext)) {
+            return completeString.SubString(0, numChars);
+        }
+        return string;
     }
-    return string;
-}
 
 //===========================================================================
 // Member Functions

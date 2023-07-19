@@ -19,7 +19,7 @@
 // Local constants, typedefs, macros
 //=============================================================================
 const bool DefaultFontReuse = false;
-const int  DefalutFontSize  = 20;
+const int DefalutFontSize = 20;
 
 //=============================================================================
 // Global data, local data, local classes
@@ -36,10 +36,9 @@ const int  DefalutFontSize  = 20;
 //
 //=============================================================================
 FeFontManager::FeFontManager()
-:
-mbReuseFonts( DefaultFontReuse ),
-mDefaultFontSize( DefalutFontSize )
-{
+        :
+        mbReuseFonts(DefaultFontReuse),
+        mDefaultFontSize(DefalutFontSize) {
 
 }
 
@@ -51,8 +50,7 @@ mDefaultFontSize( DefalutFontSize )
 // Constraints : should only be called by Release()
 //
 //=============================================================================
-FeFontManager::~FeFontManager()
-{
+FeFontManager::~FeFontManager() {
 
 }
 
@@ -66,8 +64,7 @@ FeFontManager::~FeFontManager()
 // Parameters  : filename - a filename for a font to be added to the manager
 //
 //=============================================================================
-void FeFontManager::AddFontFilename( const char* filename )
-{
+void FeFontManager::AddFontFilename(const char *filename) {
 
 }
 
@@ -82,8 +79,7 @@ void FeFontManager::AddFontFilename( const char* filename )
 // Parameters  : reuse - true if the fonts will be reused, false otherwise
 //
 //=============================================================================
-void FeFontManager::SetFontsReused( bool reuse )
-{
+void FeFontManager::SetFontsReused(bool reuse) {
     mbReuseFonts = reuse;
 }
 
@@ -95,8 +91,7 @@ void FeFontManager::SetFontsReused( bool reuse )
 // Return      : true if fonts are going to be reused, false otherwise
 //
 //=============================================================================
-bool FeFontManager::IsFontsReused()
-{
+bool FeFontManager::IsFontsReused() {
     return mbReuseFonts;
 }
 
@@ -110,8 +105,7 @@ bool FeFontManager::IsFontsReused()
 // Parameters  : size - new integral font height
 //
 //=============================================================================
-void FeFontManager::SetDefaultFontSize( int size )
-{
+void FeFontManager::SetDefaultFontSize(int size) {
     mDefaultFontSize = size;
 }
 
@@ -125,7 +119,6 @@ void FeFontManager::SetDefaultFontSize( int size )
 // Return      : an integral size for the font height
 //
 //=============================================================================
-int FeFontManager::GetDefaultFontSize()
-{
+int FeFontManager::GetDefaultFontSize() {
     return mDefaultFontSize;
 }

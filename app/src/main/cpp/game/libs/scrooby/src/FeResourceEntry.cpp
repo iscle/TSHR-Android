@@ -38,31 +38,30 @@
 //
 //===========================================================================
 FeResourceEntry::FeResourceEntry
-( 
-    const char* alias,
-    unsigned int resourceHandle
-)
-:
-    FeEntity(),    
-    mResourceHandle( resourceHandle )
-{
-    rAssert( NULL != alias );
-    
+        (
+                const char *alias,
+                unsigned int resourceHandle
+        )
+        :
+        FeEntity(),
+        mResourceHandle(resourceHandle) {
+    rAssert(NULL != alias);
+
     //
     // Has the alias and store it.  This is how we'll look it up later.
     //
-    FeEntity::SetUID( FeEntity::MakeUID( alias ) );
+    FeEntity::SetUID(FeEntity::MakeUID(alias));
 
     //
     // DARWIN TODO:  Do we really need to store this string since we
     // can use the hash value for lookup?  Does anyone actually ever
     // need to use the string itself?
     // 
-    /*mAlias = static_cast< char* >( ScroobyGetMemory( ScroobyTempPool, strlen( alias ) + 1 ) );
-    rValid( mAlias ); 
-    strcpy( mAlias, alias );*/
+    /*mAlias = static_cast<char*>(ScroobyGetMemory(ScroobyTempPool, strlen(alias) + 1));
+    rValid(mAlias);
+    strcpy(mAlias, alias);*/
 }
-        
+
 
 //===========================================================================
 // FeResourceEntry::~FeResourceEntry
@@ -76,9 +75,8 @@ FeResourceEntry::FeResourceEntry
 // Return:      
 //
 //===========================================================================
-FeResourceEntry::~FeResourceEntry()
-{
-    /*if( NULL != mAlias )
+FeResourceEntry::~FeResourceEntry() {
+    /*if(NULL != mAlias)
     {
         delete [] mAlias;
     }*/

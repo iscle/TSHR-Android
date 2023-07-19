@@ -22,7 +22,7 @@ class PascalCString;
 #include "strings/unicodeString.h"
 
 #ifdef WIN32
-#pragma warning( disable : 4250 )
+#pragma warning(disable : 4250)
 #endif
 
 #ifdef RAD_WIN32
@@ -36,182 +36,212 @@ struct ShortRectExtents
 #endif
 
 class tTextString;
+
 class tFont;
 
 
 class FeText
-    : 
-        public FeBoundedDrawable, 
-        public FeParent,
-        virtual public Scrooby::Text // for the exported client interface
+        :
+                public FeBoundedDrawable,
+                public FeParent,
+                virtual public Scrooby::Text // for the exported client interface
 {
-    public:
+public:
 
-        FeText( const tName& name, int x, int y );
-        virtual void SetAlpha( float a );
-        virtual void SetColour( tColour c );
-        virtual void SetColour( int red, int green, int blue ); // Javascript testbed interface
+    FeText(const tName &name, int x, int y);
 
-        virtual void RestoreDefaultColour();
+    virtual void SetAlpha(float a);
 
-        virtual int GetIndex();
-        virtual void SetIndex( int n );
-        virtual int GetNumOfStrings();
+    virtual void SetColour(tColour c);
 
-        //allows access to the current string in the text object 
-        virtual UnicodeString GetString();
-        UnicodeChar* GetStringBuffer();
+    virtual void SetColour(int red, int green, int blue); // Javascript testbed interface
 
-        // be careful when using this function!!!
-        //
-        void SetStringBuffer( UnicodeChar* buffer );
+    virtual void RestoreDefaultColour();
 
-        //allows access to any of the individual strings in the text object
-        virtual UnicodeString GetString( const int index );
-        UnicodeChar* GetStringBuffer( const int index );
+    virtual int GetIndex();
 
-        // this will default to setting it as a hard coded string
-        virtual void SetString( int index, const char* string, const char* textBibleName = NULL );
-        virtual void SetString( int index, const char* string, unsigned int textBibleID = 0 );
-        virtual void SetString( int index, UnicodeString& string, const char* textBibleName = NULL );
-        virtual void SetString( int index, UnicodeString& string, unsigned int textBibleID = 0 );
+    virtual void SetIndex(int n);
 
-        virtual void Reset();
-        virtual void Display();
+    virtual int GetNumOfStrings();
 
-        void SetTextStyle( const char* textStyleName );
-        void SetTextStyle( unsigned int resourceID );
-        tFont* GetTextStyle() const;
+    //allows access to the current string in the text object
+    virtual UnicodeString GetString();
 
-        void AddHardCodedString( const char* string );
-        void AddTextBibleString( unsigned int textBibleResourceID, const char* stringID );
-        void AddTextBibleString( const char* textBibleName, const char* stringID );
+    UnicodeChar *GetStringBuffer();
 
-        Scrooby::TextMode GetTextMode();
-        void SetTextMode( Scrooby::TextMode mode );
+    // be careful when using this function!!!
+    //
+    void SetStringBuffer(UnicodeChar *buffer);
 
-        int GetTextWidth();
-        int GetTextHeight();
+    //allows access to any of the individual strings in the text object
+    virtual UnicodeString GetString(const int index);
+
+    UnicodeChar *GetStringBuffer(const int index);
+
+    // this will default to setting it as a hard coded string
+    virtual void SetString(int index, const char *string, const char *textBibleName = NULL);
+
+    virtual void SetString(int index, const char *string, unsigned int textBibleID = 0);
+
+    virtual void SetString(int index, UnicodeString &string, const char *textBibleName = NULL);
+
+    virtual void SetString(int index, UnicodeString &string, unsigned int textBibleID = 0);
+
+    virtual void Reset();
+
+    virtual void Display();
+
+    void SetTextStyle(const char *textStyleName);
+
+    void SetTextStyle(unsigned int resourceID);
+
+    tFont *GetTextStyle() const;
+
+    void AddHardCodedString(const char *string);
+
+    void AddTextBibleString(unsigned int textBibleResourceID, const char *stringID);
+
+    void AddTextBibleString(const char *textBibleName, const char *stringID);
+
+    Scrooby::TextMode GetTextMode();
+
+    void SetTextMode(Scrooby::TextMode mode);
+
+    int GetTextWidth();
+
+    int GetTextHeight();
 
 #ifdef RAD_WIN32
-        virtual bool IsPointInBoundingRect( float x, float y );
-#endif
-        // Whether or not to show text with a drop shadow
-        void SetDisplayShadow( bool show );
-        bool IsDisplayingShadow();
-        
-        // Properties for text shadows
-        void SetShadowOffset( int x, int y );
-        int GetXShadowOffset();
-        int GetYShadowOffset();
-        void SetShadowColour( tColour c );
-        tColour& GetShadowColour();
-
-        // TC: Added text outline support
-        //
-        void SetDisplayOutline( bool show ) { mDisplayOutline = show; }
-        bool IsDisplayingOutline() const { return mDisplayOutline; }
-        void SetOutlineColour( tColour c ) { mOutlineColour = c; }
-        tColour GetOutlineColour() const { return mOutlineColour; }
-
-        virtual tFont* GetFont() const { return mFont; }
-
-    protected:
-        virtual ~FeText();
-
-        //-------------------------------------------------------------------------
-        // Private member functions.
-        //-------------------------------------------------------------------------
-
-        void ResetText();       
-        void ReCalculateAlignment();
-#ifdef RAD_WIN32
-        void RecalculateRectExtents();
+    virtual bool IsPointInBoundingRect(float x, float y);
 #endif
 
-        //-------------------------------------------------------------------------
-        // Private member data.
-        //-------------------------------------------------------------------------
- 
-        int mIndex;
-        unsigned int mTextStyle;
-        float mXShadowOffset;
-        float mYShadowOffset;
-        tColour mOriginalColour;
-        tColour mShadowColour;
-        tFont* mFont;
-        Scrooby::TextMode mTextMode;
-        UnicodeChar* mBuffer;
+    // Whether or not to show text with a drop shadow
+    void SetDisplayShadow(bool show);
 
-        bool mOverrideStringBuffer : 1;
-        bool mDisplayShadow : 1;
-        bool mDisplayOutline : 1;
+    bool IsDisplayingShadow();
+
+    // Properties for text shadows
+    void SetShadowOffset(int x, int y);
+
+    int GetXShadowOffset();
+
+    int GetYShadowOffset();
+
+    void SetShadowColour(tColour c);
+
+    tColour &GetShadowColour();
+
+    // TC: Added text outline support
+    //
+    void SetDisplayOutline(bool show) { mDisplayOutline = show; }
+
+    bool IsDisplayingOutline() const { return mDisplayOutline; }
+
+    void SetOutlineColour(tColour c) { mOutlineColour = c; }
+
+    tColour GetOutlineColour() const { return mOutlineColour; }
+
+    virtual tFont *GetFont() const { return mFont; }
+
+protected:
+    virtual ~FeText();
+
+    //-------------------------------------------------------------------------
+    // Private member functions.
+    //-------------------------------------------------------------------------
+
+    void ResetText();
+
+    void ReCalculateAlignment();
+
 #ifdef RAD_WIN32
-        bool mIsBoundingBoxStretched : 1;
+    void RecalculateRectExtents();
 #endif
-        // TC: Added text outline support
-        //
-        tColour mOutlineColour;
+
+    //-------------------------------------------------------------------------
+    // Private member data.
+    //-------------------------------------------------------------------------
+
+    int mIndex;
+    unsigned int mTextStyle;
+    float mXShadowOffset;
+    float mYShadowOffset;
+    tColour mOriginalColour;
+    tColour mShadowColour;
+    tFont *mFont;
+    Scrooby::TextMode mTextMode;
+    UnicodeChar *mBuffer;
+
+    bool mOverrideStringBuffer: 1;
+    bool mDisplayShadow: 1;
+    bool mDisplayOutline: 1;
+#ifdef RAD_WIN32
+    bool mIsBoundingBoxStretched : 1;
+#endif
+    // TC: Added text outline support
+    //
+    tColour mOutlineColour;
 
 #ifdef RAD_WIN32
-        ShortRectExtents m_rectExtents;     //stores the bounding rect info in windows coordinate system.
+    ShortRectExtents m_rectExtents;     //stores the bounding rect info in windows coordinate system.
 #endif
 
 };
 
 
+class FeTextChildString : public FeEntity {
+public:
 
-class FeTextChildString : public FeEntity
-{
-    public:
-    
-        virtual UnicodeString GetString();
-        virtual UnicodeChar* GetStringBuffer() = 0;
-        virtual bool IsValid() = 0;
+    virtual UnicodeString GetString();
 
-        virtual bool IsDrawable() { return false; }
+    virtual UnicodeChar *GetStringBuffer() = 0;
+
+    virtual bool IsValid() = 0;
+
+    virtual bool IsDrawable() { return false; }
 
 };
 
 
-class FeTextChildHardCodedString : public FeTextChildString
-{
-    public:
-        
-        FeTextChildHardCodedString( UnicodeString string );
-        virtual ~FeTextChildHardCodedString();
+class FeTextChildHardCodedString : public FeTextChildString {
+public:
 
-        virtual UnicodeChar* GetStringBuffer();
-        void SetString( UnicodeString string );
-        bool IsValid();
-    
-    protected:
-        
-        UnicodeString mUnicodeString;
+    FeTextChildHardCodedString(UnicodeString string);
+
+    virtual ~FeTextChildHardCodedString();
+
+    virtual UnicodeChar *GetStringBuffer();
+
+    void SetString(UnicodeString string);
+
+    bool IsValid();
+
+protected:
+
+    UnicodeString mUnicodeString;
 };
 
 
-class FeTextChildTextBibleString : public FeTextChildString
-{
-    public:
-        
-        FeTextChildTextBibleString( unsigned int textBibleResourceID,
-                                    const char* stringID );
-        
-        virtual ~FeTextChildTextBibleString();
+class FeTextChildTextBibleString : public FeTextChildString {
+public:
 
-        virtual UnicodeChar* GetStringBuffer();
+    FeTextChildTextBibleString(unsigned int textBibleResourceID,
+                               const char *stringID);
 
-        virtual unsigned int GetTextBibleResourceId() const;
+    virtual ~FeTextChildTextBibleString();
 
-        bool IsValid();
+    virtual UnicodeChar *GetStringBuffer();
 
-    protected:
-        
-        unsigned int mTextBibleResourceID;
-        char* mStringID;
-        unsigned int mLanguage;
-        bool mLoaded;
+    virtual unsigned int GetTextBibleResourceId() const;
+
+    bool IsValid();
+
+protected:
+
+    unsigned int mTextBibleResourceID;
+    char *mStringID;
+    unsigned int mLanguage;
+    bool mLoaded;
 };
 
 #endif

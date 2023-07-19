@@ -19,12 +19,11 @@
 #include <p3d/p3dtypes.hpp> // for tUID
 
 
-namespace Scrooby
-{
+namespace Scrooby {
 //===========================================================================
 // Forward References
 //===========================================================================
-class Screen;
+    class Screen;
 
 //===========================================================================
 // Interface Definitions
@@ -42,14 +41,12 @@ class Screen;
 // Constraints: None
 //
 //===========================================================================
-class GotoScreenCallback
-{
+    class GotoScreenCallback {
     public:
 
         //IAN IMPROVE: inline functions are bad - remove them
-        GotoScreenCallback() 
-        { 
-            mScreen = NULL; 
+        GotoScreenCallback() {
+            mScreen = NULL;
         };
 
         //
@@ -60,18 +57,17 @@ class GotoScreenCallback
         //
         virtual void OnGotoScreenComplete() = 0;
 
-        void SetScreen( Screen* pScreen ) 
-        { 
-            mScreen = pScreen; 
+        void SetScreen(Screen *pScreen) {
+            mScreen = pScreen;
         };
-        Screen* GetScreen() 
-        { 
-            return mScreen; 
+
+        Screen *GetScreen() {
+            return mScreen;
         };
 
     private:
-        Screen* mScreen;
-};
+        Screen *mScreen;
+    };
 
 
 //===========================================================================
@@ -82,61 +78,60 @@ class GotoScreenCallback
 //
 //===========================================================================
 
-class Project
-{
+    class Project {
     public:
 
         // Gets the current screen
         //
-        virtual Screen* GetCurrentScreen() = 0;
+        virtual Screen *GetCurrentScreen() = 0;
 
         // Gets a screen from within a project by hashed name.
         //
-        virtual Screen* GetScreen( const tUID hashName ) = 0;
+        virtual Screen *GetScreen(const tUID hashName) = 0;
 
         // Change to the specified screen by hashed name.
         //
         virtual void GotoScreen
-        ( 
-            const tUID hashName, 
-            GotoScreenCallback* pCallback 
-        ) = 0; 
+                (
+                        const tUID hashName,
+                        GotoScreenCallback *pCallback
+                ) = 0;
 
-        virtual void GotoScreen( Screen* screen, 
-                                 GotoScreenCallback* pCallback ) = 0; 
-        
-           // Gets a screen from within a project by name.
+        virtual void GotoScreen(Screen *screen,
+                                GotoScreenCallback *pCallback) = 0;
+
+        // Gets a screen from within a project by name.
         // Note: This version should only be used for debugging.
         //
-        virtual Screen* GetScreen( const char* name ) = 0;
+        virtual Screen *GetScreen(const char *name) = 0;
 
         // Change to the specified screen by name.
         // Note: This version should only be used for debugging.
         //
-        virtual void GotoScreen( const char* name, 
-                                 GotoScreenCallback* pCallback ) = 0; 
+        virtual void GotoScreen(const char *name,
+                                GotoScreenCallback *pCallback) = 0;
 
         // Retrieve the number of screens in this project.
         //
-        virtual int GetScreenCount( void ) = 0;
+        virtual int GetScreenCount(void) = 0;
 
         // Change to the specified screen by index. (Only the test viewer
         // actually needs this.
         //
-        virtual void GotoScreenByIndex( int screenIndex, 
-                                        GotoScreenCallback* pCallback ) = 0; 
+        virtual void GotoScreenByIndex(int screenIndex,
+                                       GotoScreenCallback *pCallback) = 0;
 
-        virtual void LoadScreen( Screen* screen, GotoScreenCallback* pCallback ) = 0;
+        virtual void LoadScreen(Screen *screen, GotoScreenCallback *pCallback) = 0;
 
-        virtual void UnLoadScreen( Screen* screen ) = 0;
+        virtual void UnLoadScreen(Screen *screen) = 0;
 
-        virtual bool IsScreenLoaded( Screen* screen ) = 0;
+        virtual bool IsScreenLoaded(Screen *screen) = 0;
 
         virtual bool IsLoadingScreens() const = 0;
 
     protected:
     private:
-};
+    };
 
 
 } // End namespace

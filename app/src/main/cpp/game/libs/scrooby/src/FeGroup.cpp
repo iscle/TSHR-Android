@@ -1,22 +1,24 @@
 // FeGroup.cpp
 // Created by wng on Thu, May 11, 2000 @ 6:51 PM.
 #include "stdafx.h"
+
 #ifndef __FeGroup__
+
 #include "FeGroup.h"
+
 #endif
+
 #include "tLinearTable.h"
 
-FeGroup::FeGroup( const tName& name ) 
-: 
-    FeOwner( name ),
-    m_offsetsComputed( false )
-{
-    //mHandle = Fe2DCore::GetInstance()->AddDummy( this );
+FeGroup::FeGroup(const tName &name)
+        :
+        FeOwner(name),
+        m_offsetsComputed(false) {
+    //mHandle = Fe2DCore::GetInstance()->AddDummy(this);
 }
 
 
-FeGroup::~FeGroup()
-{
+FeGroup::~FeGroup() {
 }
 
 //===========================================================================
@@ -34,57 +36,47 @@ FeGroup::~FeGroup()
 // Return:      NONE
 //
 //===========================================================================
-void FeGroup::GetBoundingBox( int& xMin, int& yMin, int& xMax, int& yMax ) const
-{
+void FeGroup::GetBoundingBox(int &xMin, int &yMin, int &xMax, int &yMax) const {
     bool initialized = false;
-       int childrenCount = this->GetChildrenCount();
-    for( int i = 0; i < childrenCount; i++ )
-    {
-        const FeEntity* child = this->GetChildIndex( i );
-        const FeDrawable* drawable = dynamic_cast< const FeDrawable* >( child );
-        if( drawable != NULL )
-        {
+    int childrenCount = this->GetChildrenCount();
+    for (int i = 0; i < childrenCount; i++) {
+        const FeEntity *child = this->GetChildIndex(i);
+        const FeDrawable *drawable = dynamic_cast<const FeDrawable *>(child);
+        if (drawable != NULL) {
             int dxMin;
             int dxMax;
             int dyMin;
             int dyMax;
 
-            drawable->GetBoundingBox( dxMin, dyMin, dxMax, dyMax );
+            drawable->GetBoundingBox(dxMin, dyMin, dxMax, dyMax);
 
-            if( initialized == false )
-            {
+            if (initialized == false) {
                 xMin = dxMin;
                 xMax = dxMax;
                 yMin = dyMin;
                 yMax = dyMax;
                 initialized = true;
-            }
-            else
-            {
-                if( dxMin < xMin )
-                {
+            } else {
+                if (dxMin < xMin) {
                     xMin = dxMin;
                 }
 
-                if( dxMax > xMax )
-                {
+                if (dxMax > xMax) {
                     xMax = dxMax;
                 }
 
-                if( dyMin < yMin )
-                {
+                if (dyMin < yMin) {
                     yMin = dyMin;
                 }
 
-                if( dyMax > yMax )
-                {
+                if (dyMax > yMax) {
                     yMax = dyMax;
                 }
             }
         }
     }
     int x, y;
-    this->GetOriginPosition( x,y);
+    this->GetOriginPosition(x, y);
     xMin += x;
     xMax += x;
     yMin += y;
@@ -93,24 +85,21 @@ void FeGroup::GetBoundingBox( int& xMin, int& yMin, int& xMax, int& yMax ) const
 
 }
 
-void FeGroup::Show()
-{
+void FeGroup::Show() {
     //check if we need ot recompute the offsets of this item
-    if( m_offsetsComputed == false )
-    {
+    if (m_offsetsComputed == false) {
         RecomputeOffsets();
     }
-    
+
     FeOwner::Show();
 }
 
-void FeGroup::GetBoundingBoxSize( int& width, int& height ) const
-{
+void FeGroup::GetBoundingBoxSize(int &width, int &height) const {
     int xMin;
     int xMax;
     int yMin;
     int yMax;
-    this->GetBoundingBox( xMin, yMin, xMax, yMax );
+    this->GetBoundingBox(xMin, yMin, xMax, yMax);
     width = xMax - xMin;
     height = yMax - yMin;
 }
@@ -130,45 +119,40 @@ void FeGroup::GetBoundingBoxSize( int& width, int& height ) const
 // Return:      
 //
 //===========================================================================
-void FeGroup::RecomputeOffsets()
-{
+void FeGroup::RecomputeOffsets() {
     //first find the minX and minY for all the children
     int minX = 65535;   //IAN IMPROVE: this is assumed to be larger than the posiiton
     int minY = 65535;   //of any of the drawables
 
-    tLinearTable::RawIterator iter( mChildren );
-    FeDrawable* drawable = dynamic_cast< FeDrawable* >( iter.First() );
-    while ( drawable != NULL )
-    {
+    tLinearTable::RawIterator iter(mChildren);
+    FeDrawable *drawable = dynamic_cast<FeDrawable *>(iter.First());
+    while (drawable != NULL) {
         int drawableMinX;
         int drawableMaxX;
         int drawableMinY;
         int drawableMaxY;
-        drawable->GetBoundingBox( drawableMinX, drawableMinY, drawableMaxX, drawableMaxY );
-      
-        if( drawableMinX < minX )
-        {
+        drawable->GetBoundingBox(drawableMinX, drawableMinY, drawableMaxX, drawableMaxY);
+
+        if (drawableMinX < minX) {
             minX = drawableMinX;
         }
 
-        if( drawableMinY < minY )
-        {
+        if (drawableMinY < minY) {
             minY = drawableMinY;
         }
-        drawable = dynamic_cast<FeDrawable*>( iter.Next() );
+        drawable = dynamic_cast<FeDrawable *>(iter.Next());
     }
 
 
     //go through and translate all the children down and left by xMin, yMin
-    tLinearTable::RawIterator iter2( mChildren );
-    drawable = dynamic_cast< FeDrawable* >( iter2.First() );
-    while ( drawable )
-    {
-        drawable->TranslatePosition( -minX, -minY );
-        drawable = dynamic_cast<FeDrawable*>( iter2.Next() );
+    tLinearTable::RawIterator iter2(mChildren);
+    drawable = dynamic_cast<FeDrawable *>(iter2.First());
+    while (drawable) {
+        drawable->TranslatePosition(-minX, -minY);
+        drawable = dynamic_cast<FeDrawable *>(iter2.Next());
     }
 
-    this->SetPosition( minX, minY );
+    this->SetPosition(minX, minY);
 
     m_offsetsComputed = true;
 };
@@ -185,9 +169,8 @@ void FeGroup::RecomputeOffsets()
 // Return:      None
 //
 //===========================================================================
-void FeGroup::ScaleAboutCenter( float factor )
-{
-    ScaleAboutCenter( factor, factor, 1.0f );
+void FeGroup::ScaleAboutCenter(float factor) {
+    ScaleAboutCenter(factor, factor, 1.0f);
 }
 
 //===========================================================================
@@ -202,24 +185,23 @@ void FeGroup::ScaleAboutCenter( float factor )
 // Return:      None
 //
 //===========================================================================
-void FeGroup::ScaleAboutCenter( float factorX, float factorY, float factorZ )
-{
+void FeGroup::ScaleAboutCenter(float factorX, float factorY, float factorZ) {
     int xmin;
     int ymin;
     int xmax;
     int ymax;
-    GetBoundingBox( xmin, ymin, xmax, ymax );
-    int centerPosX = ( xmin + xmax ) / 2;
-    int centerPosY = ( ymin + ymax ) / 2;
+    GetBoundingBox(xmin, ymin, xmax, ymax);
+    int centerPosX = (xmin + xmax) / 2;
+    int centerPosY = (ymin + ymax) / 2;
 
     // translate drawable to screen origin first
-    Translate( -centerPosX, -centerPosY );
+    Translate(-centerPosX, -centerPosY);
 
     // do the scaling
-    Scale( factorX, factorY, factorZ );
+    Scale(factorX, factorY, factorZ);
 
     // translate drawable back to original position
-    Translate( centerPosX, centerPosY );
+    Translate(centerPosX, centerPosY);
 }
 
 //===========================================================================
@@ -234,25 +216,24 @@ void FeGroup::ScaleAboutCenter( float factorX, float factorY, float factorZ )
 // Return:      None
 //
 //===========================================================================
-void FeGroup::ScaleAboutPoint( float factor, const int x, const int y )
-{
+void FeGroup::ScaleAboutPoint(float factor, const int x, const int y) {
     int xmin;
     int ymin;
     int xmax;
     int ymax;
-    GetBoundingBox( xmin, ymin, xmax, ymax );
+    GetBoundingBox(xmin, ymin, xmax, ymax);
 
     int pointX = xmin + x;
     int pointY = ymin + y;
 
     // translate drawable to screen origin first
-    Translate( -pointX, -pointY );
+    Translate(-pointX, -pointY);
 
     // do the scaling
-    Scale( factor, factor, factor );
+    Scale(factor, factor, factor);
 
     // translate drawable back to original position
-    Translate( pointX, pointY );
+    Translate(pointX, pointY);
 }
 
 //===========================================================================
@@ -267,25 +248,24 @@ void FeGroup::ScaleAboutPoint( float factor, const int x, const int y )
 // Return:      None
 //
 //===========================================================================
-void FeGroup::RotateAboutCenter( float angle, rmt::Vector axis )
-{
+void FeGroup::RotateAboutCenter(float angle, rmt::Vector axis) {
     int xmin = 0;
     int ymin = 0;
     int xmax = 0;
     int ymax = 0;
-    GetBoundingBox( xmin, ymin, xmax, ymax );
+    GetBoundingBox(xmin, ymin, xmax, ymax);
 
-    int centerPosX = ( xmin + xmax ) / 2;
-    int centerPosY = ( ymin + ymax ) / 2;
+    int centerPosX = (xmin + xmax) / 2;
+    int centerPosY = (ymin + ymax) / 2;
 
     // translate drawable to screen origin first
-    Translate( -centerPosX, -centerPosY );
+    Translate(-centerPosX, -centerPosY);
 
     // do the rotation(s)
     //
-    RotateArbitrary( axis.x, axis.y, axis.z, angle );
+    RotateArbitrary(axis.x, axis.y, axis.z, angle);
 
     // translate drawable back to original position
-    Translate( centerPosX, centerPosY );
+    Translate(centerPosX, centerPosY);
 }
 

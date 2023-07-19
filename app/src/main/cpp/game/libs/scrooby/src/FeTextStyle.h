@@ -41,21 +41,27 @@ class FeTextStyle : public FeEntity
 public:
     FeTextStyle();
 
-    int  GetSize();
-    void SetSize( int size );
+    int GetSize();
 
-    const PascalCString& GetFontName();
-    void                 SetFontName( PascalCString name );
+    void SetSize(int size);
 
-    const PascalCString& GetFontFilename();
-    void                 SetFontFilename( PascalCString name );
+    const PascalCString &GetFontName();
 
-    const PascalCString& GetFontStyle();
-    void                 SetFontStyle( PascalCString style );
+    void SetFontName(PascalCString name);
 
-    const tColour& GetColour();
-    void           SetColour( tColour* colour );
-    void           SetColour( int r, int g, int b, int a = 0xff );
+    const PascalCString &GetFontFilename();
+
+    void SetFontFilename(PascalCString name);
+
+    const PascalCString &GetFontStyle();
+
+    void SetFontStyle(PascalCString style);
+
+    const tColour &GetColour();
+
+    void SetColour(tColour *colour);
+
+    void SetColour(int r, int g, int b, int a = 0xff);
 
     virtual bool IsDrawable() { return false; }
 
@@ -64,10 +70,10 @@ protected:
 
     // member variables
     int m_Size;
-    PascalCString* m_FontName;
-    PascalCString* m_FontData;
-    PascalCString* m_FontStyle;
-    tColour* m_Colour;
+    PascalCString *m_FontName;
+    PascalCString *m_FontData;
+    PascalCString *m_FontStyle;
+    tColour *m_Colour;
 
 private:
 };
@@ -84,8 +90,7 @@ private:
 // Return      : integer value font point size
 //
 //=============================================================================
-inline int FeTextStyle::GetSize()
-{
+inline int FeTextStyle::GetSize() {
     return m_Size;
 }
 
@@ -97,8 +102,7 @@ inline int FeTextStyle::GetSize()
 // Parameters  : size - a new integral point display size
 //
 //=============================================================================
-inline void FeTextStyle::SetSize( int size )
-{
+inline void FeTextStyle::SetSize(int size) {
     m_Size = size;
 }
 
@@ -110,8 +114,7 @@ inline void FeTextStyle::SetSize( int size )
 // Return      : const reference to a PascalCString object
 //
 //=============================================================================
-inline const PascalCString& FeTextStyle::GetFontName()
-{
+inline const PascalCString &FeTextStyle::GetFontName() {
     return *m_FontName;
 }
 
@@ -123,8 +126,7 @@ inline const PascalCString& FeTextStyle::GetFontName()
 // Return      : const reference to a PascalCString object
 //
 //=============================================================================
-inline const PascalCString& FeTextStyle::GetFontFilename()
-{
+inline const PascalCString &FeTextStyle::GetFontFilename() {
     return *m_FontData;
 }
 
@@ -136,8 +138,7 @@ inline const PascalCString& FeTextStyle::GetFontFilename()
 // Return      : const reference to a PascalCString object
 //
 //=============================================================================
-inline const PascalCString& FeTextStyle::GetFontStyle()
-{
+inline const PascalCString &FeTextStyle::GetFontStyle() {
     return *m_FontStyle;
 }
 
@@ -152,8 +153,7 @@ inline const PascalCString& FeTextStyle::GetFontStyle()
 // Return      : a const tColour object reference
 //
 //=============================================================================
-inline const tColour& FeTextStyle::GetColour()
-{
+inline const tColour &FeTextStyle::GetColour() {
     return *m_Colour;
 }
 

@@ -40,45 +40,56 @@ class XMLNode;
 //
 //===========================================================================
 
-class XMLTree
-{
-    public:
-        XMLTree();
-        XMLTree( XMLNode* node );
-        virtual ~XMLTree();
+class XMLTree {
+public:
+    XMLTree();
 
-        bool LoadTreeFromFile( const char* filename, const char* rootSectionName );
-        bool LoadTreeFromBuffer( char* buffer, 
-                                 const unsigned int bufferSize, 
-                                 const char* rootSectionName );
+    XMLTree(XMLNode *node);
 
-        bool SetCurrentElementByName( const char* name );
-        bool SetCurrentElementByIndex( const int index );
+    virtual ~XMLTree();
 
-        void SetFilename( const char* filename );
-        bool GetFilename( PascalCString& returnString );
-        int GetName( PascalCString &returnString );
-        int GetAttribute( const char* name, PascalCString &returnString );
-        bool GetAttribute( const char* name, int* returnInt );
-        bool GetAttribute( const char* name, double* returnDouble );
-        bool GetAttribute( const char* name, bool* returnBool );
+    bool LoadTreeFromFile(const char *filename, const char *rootSectionName);
 
-        XMLTree* GetSubTreeByName( const char* elementName );
-        XMLTree* GetSubTreeByIndex( const int index );
+    bool LoadTreeFromBuffer(char *buffer,
+                            const unsigned int bufferSize,
+                            const char *rootSectionName);
 
-        // Win Debug functions
-        void DumpTree();
+    bool SetCurrentElementByName(const char *name);
 
-    private:
-        XMLNode* m_fileRootNode;
-        XMLNode* m_rootNode;
-        XMLNode* m_currentNode;
-        PascalCString m_filename;
-        bool m_loadedFromFile;
+    bool SetCurrentElementByIndex(const int index);
 
-        bool LoadTreeWorker( const char* rootSectionName );
-        // Win Debug functions
-        void PrintNode( XMLNode* node, PascalCString spaces );
+    void SetFilename(const char *filename);
+
+    bool GetFilename(PascalCString &returnString);
+
+    int GetName(PascalCString &returnString);
+
+    int GetAttribute(const char *name, PascalCString &returnString);
+
+    bool GetAttribute(const char *name, int *returnInt);
+
+    bool GetAttribute(const char *name, double *returnDouble);
+
+    bool GetAttribute(const char *name, bool *returnBool);
+
+    XMLTree *GetSubTreeByName(const char *elementName);
+
+    XMLTree *GetSubTreeByIndex(const int index);
+
+    // Win Debug functions
+    void DumpTree();
+
+private:
+    XMLNode *m_fileRootNode;
+    XMLNode *m_rootNode;
+    XMLNode *m_currentNode;
+    PascalCString m_filename;
+    bool m_loadedFromFile;
+
+    bool LoadTreeWorker(const char *rootSectionName);
+
+    // Win Debug functions
+    void PrintNode(XMLNode *node, PascalCString spaces);
 };
 
 //===========================================================================

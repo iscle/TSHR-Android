@@ -48,20 +48,24 @@ class FeTextBible : public FeEntity,
 public:
     FeTextBible();
 
-    unsigned int HashStringID( const char* key );
+    unsigned int HashStringID(const char *key);
 
-    UnicodeString GetString( unsigned int hash );
-    UnicodeString GetString( const char* key );
+    UnicodeString GetString(unsigned int hash);
 
-    UnicodeChar* GetWChar( unsigned int hash );
-    UnicodeChar* GetWChar( const char* key );
+    UnicodeString GetString(const char *key);
 
-    void SetLanguage( char language );
-    void SetLanguage( unsigned int index );
+    UnicodeChar *GetWChar(unsigned int hash);
+
+    UnicodeChar *GetWChar(const char *key);
+
+    void SetLanguage(char language);
+
+    void SetLanguage(unsigned int index);
 
     virtual bool IsDrawable() { return false; }
 
     static unsigned int GetLanguageIndex();
+
     static char GetCurrentLanguageID();
 
 protected:
@@ -69,10 +73,10 @@ protected:
     virtual ~FeTextBible();
 
     static const int MAX_NUM_LANGUAGES = 16;
-    static char m_languageIDs[ MAX_NUM_LANGUAGES ];
+    static char m_languageIDs[MAX_NUM_LANGUAGES];
     static unsigned int m_index;
-    rVector<FeLanguage*> m_languages;
-    UnicodeString* m_tempString;
+    rVector<FeLanguage *> m_languages;
+    UnicodeString *m_tempString;
 
 //=============================================================================
 // Data Members
@@ -83,16 +87,13 @@ private:
     friend class FeTextBibleLoader;
 };
 
-inline unsigned int FeTextBible::GetLanguageIndex()
-{
+inline unsigned int FeTextBible::GetLanguageIndex() {
     return m_index;
 }
 
-inline char FeTextBible::GetCurrentLanguageID()
-{
-    if( m_languageIDs != NULL )
-    {
-        return m_languageIDs[ m_index ];
+inline char FeTextBible::GetCurrentLanguageID() {
+    if (m_languageIDs != NULL) {
+        return m_languageIDs[m_index];
     }
 
     return '\0';

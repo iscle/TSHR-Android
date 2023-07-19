@@ -19,31 +19,30 @@
 #ifndef STREAMREADER_H
 #define STREAMREADER_H
 
-class StreamReader
-{
-    public:
-        
-        // Specify the file you want to read and the number of bytes
-        // to be read at a time.  Obviously a smaller buffer uses less
-        // memory but will require more file accesses.
-        //
-        StreamReader( const char* buffer, 
-                      const unsigned int bufferSize = 0 );
-        
-        // Get the next character from the file.  Returns '\0' at
-        // the end of the file.
-        // 
-        char GetNextChar( void );
+class StreamReader {
+public:
 
-    private:
+    // Specify the file you want to read and the number of bytes
+    // to be read at a time.  Obviously a smaller buffer uses less
+    // memory but will require more file accesses.
+    //
+    StreamReader(const char *buffer,
+                 const unsigned int bufferSize = 0);
 
-        const char* mBuffer;
-        unsigned int mBufferSize;
-        
-        // Number of times client has called GetNextChar().
-        //
-        unsigned int mBytesStreamed;
-};        
+    // Get the next character from the file.  Returns '\0' at
+    // the end of the file.
+    //
+    char GetNextChar(void);
+
+private:
+
+    const char *mBuffer;
+    unsigned int mBufferSize;
+
+    // Number of times client has called GetNextChar().
+    //
+    unsigned int mBytesStreamed;
+};
 
 /*
 //===========================================================================
@@ -74,37 +73,37 @@ class StreamReader : public bIObjectAvailableCallback,
         // to be read at a time.  Obviously a smaller buffer uses less
         // memory but will require more file accesses.
         //
-        StreamReader( const char* filename, 
-                      const unsigned int readBufferSize = 32768 );
+        StreamReader(const char* filename,
+                      const unsigned int readBufferSize = 32768);
         
-        virtual ~StreamReader( );
+        virtual ~StreamReader();
 
         // Get the next character from the file.  Returns '\0' at
         // the end of the file.
         // 
-        char GetNextChar( void );
+        char GetNextChar(void);
         
-        unsigned int GetFileSize( void ) { return( mFileSize ); };
+        unsigned int GetFileSize(void) { return(mFileSize); };
 
 
         // Overrides for callbacks required by the Foundation file system.
         // Clients can ignore these.
         //
-        void OnObjectAvailable( bIObject* pObject );
-        void OnReadAsyncComplete( void );
+        void OnObjectAvailable(bIObject* pObject);
+        void OnReadAsyncComplete(void);
 
         // Overrides required for COM.  Clients can igonre these.
         //
-        void AddRef( void );
-        void Release( void );
-        void GetInterface( bInterfaceId interfaceId, void** ppInterface );
+        void AddRef(void);
+        void Release(void);
+        void GetInterface(bInterfaceId interfaceId, void** ppInterface);
 
 
     private:
         
         // Used to read a chunk of the file into memory.
         //
-        void GetNextBufferFromFile( void );
+        void GetNextBufferFromFile(void);
         
       
         // COM reference count for this object.

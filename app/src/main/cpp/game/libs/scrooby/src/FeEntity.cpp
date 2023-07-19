@@ -17,6 +17,7 @@
 // Includes
 //===========================================================================
 #include "FeEntity.h"
+
 #ifdef SCROOBY_MEMORY_CHECKING
 #include "utility/debugmessages.h"
 #include "radtime.hpp"
@@ -38,17 +39,16 @@
 // Return:      N/A.
 //
 //===========================================================================
-FeEntity::FeEntity()
-{
+FeEntity::FeEntity() {
 #ifdef SCROOBY_MEMORY_CHECKING
     static bool initializedTime = false;
-    if( !initializedTime )
+    if(!initializedTime)
     {
         ::radTimeInitialize();
         initializedTime = true;
     }
-    Scrooby::Log::Message( Scrooby::LVL_DEBUG, "FeEntity 0x%8.8x %u ****************", this, ::radTimeGetMicroseconds() );
-    Scrooby::Log::Message( Scrooby::LVL_DEBUG, "FeEntity 0x%8.8x %u - created", this, ::radTimeGetMicroseconds() );
+    Scrooby::Log::Message(Scrooby::LVL_DEBUG, "FeEntity 0x%8.8x %u ****************", this, ::radTimeGetMicroseconds());
+    Scrooby::Log::Message(Scrooby::LVL_DEBUG, "FeEntity 0x%8.8x %u - created", this, ::radTimeGetMicroseconds());
 #endif
 }
 
@@ -65,29 +65,28 @@ FeEntity::FeEntity()
 // Return:      N/A.
 //
 //===========================================================================
-FeEntity::~FeEntity()
-{
+FeEntity::~FeEntity() {
 #ifdef SCROOBY_MEMORY_CHECKING
-    Scrooby::Log::Message( Scrooby::LVL_DEBUG, "FeEntity 0x%8.8x %u - destroyed (%s)", this, ::radTimeGetMicroseconds(),GetName() );
+    Scrooby::Log::Message(Scrooby::LVL_DEBUG, "FeEntity 0x%8.8x %u - destroyed (%s)", this, ::radTimeGetMicroseconds(),GetName());
 #endif
 }
 
 #ifdef SCROOBY_MEMORY_CHECKING
-void FeEntity::SetName( const char* n )
+void FeEntity::SetName(const char* n)
 {
-    tEntity::SetName( n );
-    Scrooby::Log::Message( Scrooby::LVL_DEBUG, "FeEntity 0x%8.8x %u - given name %s", this, ::radTimeGetMicroseconds(), n );
+    tEntity::SetName(n);
+    Scrooby::Log::Message(Scrooby::LVL_DEBUG, "FeEntity 0x%8.8x %u - given name %s", this, ::radTimeGetMicroseconds(), n);
 }
 
 void FeEntity::AddRef()
 {
     tEntity::AddRef();
-    Scrooby::Log::Message( Scrooby::LVL_DEBUG, "FeEntity 0x%8.8x %u - AddRef (%d)", this, ::radTimeGetMicroseconds(), refCount );
+    Scrooby::Log::Message(Scrooby::LVL_DEBUG, "FeEntity 0x%8.8x %u - AddRef (%d)", this, ::radTimeGetMicroseconds(), refCount);
 }
 
 void FeEntity::Release()
 {
-    Scrooby::Log::Message( Scrooby::LVL_DEBUG, "FeEntity 0x%8.8x %u - Release (%d)", this, ::radTimeGetMicroseconds(), refCount );
+    Scrooby::Log::Message(Scrooby::LVL_DEBUG, "FeEntity 0x%8.8x %u - Release (%d)", this, ::radTimeGetMicroseconds(), refCount);
     tEntity::Release();
 }
 #endif
@@ -104,8 +103,7 @@ void FeEntity::Release()
 // Return:      true or false - is this object of the class
 //
 //===========================================================================
-bool FeEntity::IsOwner() const
-{
+bool FeEntity::IsOwner() const {
     //by default, an object is NOT an owner
     return false;
 }

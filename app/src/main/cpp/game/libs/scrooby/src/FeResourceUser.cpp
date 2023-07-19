@@ -46,13 +46,12 @@
 //
 //===========================================================================
 FeResourceUser::FeResourceUser()
-:
-    mpImageResources( NULL ),
-    mpTextStyleResources( NULL ),
-    mpTextBibleResources( NULL ),
-    mpMovieClipResources( NULL ),
-    mp3dModelResources( NULL )
-{
+        :
+        mpImageResources(NULL),
+        mpTextStyleResources(NULL),
+        mpTextBibleResources(NULL),
+        mpMovieClipResources(NULL),
+        mp3dModelResources(NULL) {
     //
     // Nothing to see here.
     //
@@ -71,30 +70,24 @@ FeResourceUser::FeResourceUser()
 // Return:      N/A.
 //
 //===========================================================================
-FeResourceUser::~FeResourceUser()
-{
-    if( NULL != mpImageResources )
-    {
+FeResourceUser::~FeResourceUser() {
+    if (NULL != mpImageResources) {
         mpImageResources->Release();
     }
 
-    if( NULL != mpTextBibleResources )
-    {
+    if (NULL != mpTextBibleResources) {
         mpTextBibleResources->Release();
     }
 
-    if( NULL != mpTextStyleResources )
-    {
+    if (NULL != mpTextStyleResources) {
         mpTextStyleResources->Release();
     }
 
-    if( NULL != mpMovieClipResources )
-    {
+    if (NULL != mpMovieClipResources) {
         mpMovieClipResources->Release();
     }
 
-    if( NULL != mp3dModelResources )
-    {
+    if (NULL != mp3dModelResources) {
         mp3dModelResources->Release();
     }
 
@@ -114,31 +107,29 @@ FeResourceUser::~FeResourceUser()
 //
 //===========================================================================
 void FeResourceUser::AddImageResourceEntry
-( 
-    const char* alias,
-    const char* filename
-)
-{
-    rAssert( NULL != alias );
-    rAssert( NULL != filename );
+        (
+                const char *alias,
+                const char *filename
+        ) {
+    rAssert(NULL != alias);
+    rAssert(NULL != filename);
 
     //
     // Create a table the first time this is called.  
     //
-    if( NULL == mpImageResources )
-    {
-        mpImageResources = new( ScroobyPermPool )tLinearTable;
-        rValid( mpImageResources );
-        
+    if (NULL == mpImageResources) {
+        mpImageResources = new(ScroobyPermPool)tLinearTable;
+        rValid(mpImageResources);
+
         mpImageResources->AddRef();
     }
-      
-    unsigned int handle;
-    handle = FeApp::GetInstance()->GetFeResourceManager().AddFilenameSprite( filename );
 
-    FeResourceEntry* pImageEntry = new ( ScroobyPermPool ) FeResourceEntry( alias, handle );
-    
-    mpImageResources->Store( pImageEntry );
+    unsigned int handle;
+    handle = FeApp::GetInstance()->GetFeResourceManager().AddFilenameSprite(filename);
+
+    FeResourceEntry *pImageEntry = new(ScroobyPermPool) FeResourceEntry(alias, handle);
+
+    mpImageResources->Store(pImageEntry);
 }
 
 
@@ -155,31 +146,29 @@ void FeResourceUser::AddImageResourceEntry
 //
 //===========================================================================
 void FeResourceUser::AddTextBibleResourceEntry
-( 
-    const char* alias,
-    const char* filename
-)
-{
-    rAssert( NULL != alias );
-    rAssert( NULL != filename );
+        (
+                const char *alias,
+                const char *filename
+        ) {
+    rAssert(NULL != alias);
+    rAssert(NULL != filename);
 
     //
     // Create a table the first time this is called.  
     //
-    if( NULL == mpTextBibleResources )
-    {
-        mpTextBibleResources = new( ScroobyPermPool ) tLinearTable;
-        rValid( mpTextBibleResources );
-        
+    if (NULL == mpTextBibleResources) {
+        mpTextBibleResources = new(ScroobyPermPool) tLinearTable;
+        rValid(mpTextBibleResources);
+
         mpTextBibleResources->AddRef();
     }
-      
-    unsigned int handle = 0;
-    handle = FeApp::GetInstance()->GetFeResourceManager().AddFilenameTextBible( filename );
 
-    FeResourceEntry* pTextBibleEntry = new( ScroobyPermPool ) FeResourceEntry( alias, handle );
-    
-    mpTextBibleResources->Store( pTextBibleEntry );
+    unsigned int handle = 0;
+    handle = FeApp::GetInstance()->GetFeResourceManager().AddFilenameTextBible(filename);
+
+    FeResourceEntry *pTextBibleEntry = new(ScroobyPermPool) FeResourceEntry(alias, handle);
+
+    mpTextBibleResources->Store(pTextBibleEntry);
 }
 
 //===========================================================================
@@ -195,31 +184,29 @@ void FeResourceUser::AddTextBibleResourceEntry
 //
 //===========================================================================
 void FeResourceUser::AddTextStyleResourceEntry
-( 
-    const char* alias,
-    const char* filename
-)
-{
-    rAssert( NULL != alias );
-    rAssert( NULL != filename );
+        (
+                const char *alias,
+                const char *filename
+        ) {
+    rAssert(NULL != alias);
+    rAssert(NULL != filename);
 
     //
     // Create a table the first time this is called.  
     //
-    if( NULL == mpTextStyleResources )
-    {
-        mpTextStyleResources = new( ScroobyPermPool ) tLinearTable;
-        rValid( mpTextStyleResources );
-        
+    if (NULL == mpTextStyleResources) {
+        mpTextStyleResources = new(ScroobyPermPool) tLinearTable;
+        rValid(mpTextStyleResources);
+
         mpTextStyleResources->AddRef();
     }
-      
-    unsigned int handle;
-    handle = FeApp::GetInstance()->GetFeResourceManager().AddFilenameTextStyle( filename );
 
-    FeResourceEntry* pTextStyleEntry = new ( ScroobyPermPool ) FeResourceEntry( alias, handle );
-    
-    mpTextStyleResources->Store( pTextStyleEntry );
+    unsigned int handle;
+    handle = FeApp::GetInstance()->GetFeResourceManager().AddFilenameTextStyle(filename);
+
+    FeResourceEntry *pTextStyleEntry = new(ScroobyPermPool) FeResourceEntry(alias, handle);
+
+    mpTextStyleResources->Store(pTextStyleEntry);
 }
 
 
@@ -236,31 +223,29 @@ void FeResourceUser::AddTextStyleResourceEntry
 //
 //===========================================================================
 void FeResourceUser::AddMovieClipResourceEntry
-( 
-    const char* alias,
-    const char* filename
-)
-{
-    rAssert( NULL != alias );
-    rAssert( NULL != filename );
+        (
+                const char *alias,
+                const char *filename
+        ) {
+    rAssert(NULL != alias);
+    rAssert(NULL != filename);
 
     //
     // Create a table the first time this is called.  
     //
-    if( NULL == mpMovieClipResources )
-    {
-        mpMovieClipResources = new( ScroobyPermPool ) tLinearTable;
-        rValid( mpMovieClipResources );
-        
+    if (NULL == mpMovieClipResources) {
+        mpMovieClipResources = new(ScroobyPermPool) tLinearTable;
+        rValid(mpMovieClipResources);
+
         mpMovieClipResources->AddRef();
     }
-      
-    unsigned int handle;
-    handle = FeApp::GetInstance()->GetFeResourceManager().AddFilenameMovieClip( filename );
 
-    FeResourceEntry* pMovieClipEntry = new( ScroobyPermPool ) FeResourceEntry( alias, handle );
-    
-    mpMovieClipResources->Store( pMovieClipEntry );
+    unsigned int handle;
+    handle = FeApp::GetInstance()->GetFeResourceManager().AddFilenameMovieClip(filename);
+
+    FeResourceEntry *pMovieClipEntry = new(ScroobyPermPool) FeResourceEntry(alias, handle);
+
+    mpMovieClipResources->Store(pMovieClipEntry);
 }
 
 
@@ -277,42 +262,40 @@ void FeResourceUser::AddMovieClipResourceEntry
 //
 //===========================================================================
 void FeResourceUser::Add3dModelResourceEntry
-( 
-    const char* alias,
-    const char* filename,
-    const char* inventoryName,
-    const char* animationName,      //IAN IMPROVE: i'm casting to and from PascalCString all over the place here
-    const char* cameraName
-)
-{
-    rAssert( NULL != alias );
-    rAssert( NULL != filename );
-    rAssert( NULL != inventoryName );
+        (
+                const char *alias,
+                const char *filename,
+                const char *inventoryName,
+                const char *animationName,      //IAN IMPROVE: i'm casting to and from PascalCString all over the place here
+                const char *cameraName
+        ) {
+    rAssert(NULL != alias);
+    rAssert(NULL != filename);
+    rAssert(NULL != inventoryName);
 
     //
     // Create a table the first time this is called.  
     //
-    if( NULL == mp3dModelResources )
-    {
-        mp3dModelResources = new( ScroobyPermPool ) tLinearTable;
-        rValid( mp3dModelResources );
-        
+    if (NULL == mp3dModelResources) {
+        mp3dModelResources = new(ScroobyPermPool) tLinearTable;
+        rValid(mp3dModelResources);
+
         mp3dModelResources->AddRef();
     }
-      
+
     unsigned int handle;
     handle = FeApp::GetInstance()->GetFeResourceManager().AddFilename3dModel
-    ( 
-        filename, 
-        alias, 
-        inventoryName,
-        animationName,
-        cameraName
-    );  //IAN IMPROVE: this should say alias, filename
+            (
+                    filename,
+                    alias,
+                    inventoryName,
+                    animationName,
+                    cameraName
+            );  //IAN IMPROVE: this should say alias, filename
 
-    FeResourceEntry* p3dModelEntry = new( ScroobyPermPool ) FeResourceEntry( alias, handle );
-    
-    mp3dModelResources->Store( p3dModelEntry );
+    FeResourceEntry *p3dModelEntry = new(ScroobyPermPool) FeResourceEntry(alias, handle);
+
+    mp3dModelResources->Store(p3dModelEntry);
 }
 
 
@@ -329,21 +312,20 @@ void FeResourceUser::Add3dModelResourceEntry
 //
 //===========================================================================
 unsigned int FeResourceUser::FindImageResourceEntry
-( 
-    const char* alias
-)
-const
-{
-    tLinearTable::RawIterator iter( mpImageResources );
-    
-    tUID id = FeEntity::MakeUID( alias );
+        (
+                const char *alias
+        )
+const {
+    tLinearTable::RawIterator iter(mpImageResources);
 
-    FeEntity* pEntity = iter.First( id );
+    tUID id = FeEntity::MakeUID(alias);
 
-    FeResourceEntry* pResourceEntry = dynamic_cast<FeResourceEntry*>( pEntity );
-    rValid( pResourceEntry );
+    FeEntity *pEntity = iter.First(id);
 
-    return( pResourceEntry->GetResourceHandle() );
+    FeResourceEntry *pResourceEntry = dynamic_cast<FeResourceEntry *>(pEntity);
+    rValid(pResourceEntry);
+
+    return (pResourceEntry->GetResourceHandle());
 }
 
 
@@ -360,21 +342,20 @@ const
 //
 //===========================================================================
 unsigned int FeResourceUser::FindTextStyleResourceEntry
-( 
-    const char* alias
-)
-const
-{
-    tLinearTable::RawIterator iter( mpTextStyleResources );
-    
-    tUID id = FeEntity::MakeUID( alias );
+        (
+                const char *alias
+        )
+const {
+    tLinearTable::RawIterator iter(mpTextStyleResources);
 
-    FeEntity* pEntity = iter.First( id );
+    tUID id = FeEntity::MakeUID(alias);
 
-    FeResourceEntry* pResourceEntry = dynamic_cast<FeResourceEntry*>( pEntity );
-    rValid( pResourceEntry );
+    FeEntity *pEntity = iter.First(id);
 
-    return( pResourceEntry->GetResourceHandle() );
+    FeResourceEntry *pResourceEntry = dynamic_cast<FeResourceEntry *>(pEntity);
+    rValid(pResourceEntry);
+
+    return (pResourceEntry->GetResourceHandle());
 }
 
 
@@ -391,21 +372,20 @@ const
 //
 //===========================================================================
 unsigned int FeResourceUser::FindTextBibleResourceEntry
-( 
-    const char* alias
-)
-const
-{
-    tLinearTable::RawIterator iter( mpTextBibleResources );
-    
-    tUID id = FeEntity::MakeUID( alias );
+        (
+                const char *alias
+        )
+const {
+    tLinearTable::RawIterator iter(mpTextBibleResources);
 
-    FeEntity* pEntity = iter.First( id );
+    tUID id = FeEntity::MakeUID(alias);
 
-    FeResourceEntry* pResourceEntry = dynamic_cast<FeResourceEntry*>( pEntity );
-    rValid( pResourceEntry );
+    FeEntity *pEntity = iter.First(id);
 
-    return( pResourceEntry->GetResourceHandle() );
+    FeResourceEntry *pResourceEntry = dynamic_cast<FeResourceEntry *>(pEntity);
+    rValid(pResourceEntry);
+
+    return (pResourceEntry->GetResourceHandle());
 }
 
 
@@ -422,21 +402,20 @@ const
 //
 //===========================================================================
 unsigned int FeResourceUser::FindMovieClipResourceEntry
-( 
-    const char* alias
-)
-const
-{
-    tLinearTable::RawIterator iter( mpMovieClipResources );
-    
-    tUID id = FeEntity::MakeUID( alias );
+        (
+                const char *alias
+        )
+const {
+    tLinearTable::RawIterator iter(mpMovieClipResources);
 
-    FeEntity* pEntity = iter.First( id );
+    tUID id = FeEntity::MakeUID(alias);
 
-    FeResourceEntry* pResourceEntry = dynamic_cast<FeResourceEntry*>( pEntity );
-    rValid( pResourceEntry );
+    FeEntity *pEntity = iter.First(id);
 
-    return( pResourceEntry->GetResourceHandle() );
+    FeResourceEntry *pResourceEntry = dynamic_cast<FeResourceEntry *>(pEntity);
+    rValid(pResourceEntry);
+
+    return (pResourceEntry->GetResourceHandle());
 }
 
 
@@ -453,20 +432,19 @@ const
 //
 //===========================================================================
 unsigned int FeResourceUser::Find3dModelResourceEntry
-( 
-    const char* alias
-)
-const
-{
-    tLinearTable::RawIterator iter( mp3dModelResources );
-    
-    tUID id = FeEntity::MakeUID( alias );
-    
-    FeEntity* pEntity = iter.First( id );
-    rAssert( pEntity != NULL );
+        (
+                const char *alias
+        )
+const {
+    tLinearTable::RawIterator iter(mp3dModelResources);
 
-    FeResourceEntry* pResourceEntry = dynamic_cast<FeResourceEntry*>( pEntity );
-    rValid( pResourceEntry );
+    tUID id = FeEntity::MakeUID(alias);
 
-    return( pResourceEntry->GetResourceHandle() );
+    FeEntity *pEntity = iter.First(id);
+    rAssert(pEntity != NULL);
+
+    FeResourceEntry *pResourceEntry = dynamic_cast<FeResourceEntry *>(pEntity);
+    rValid(pResourceEntry);
+
+    return (pResourceEntry->GetResourceHandle());
 }

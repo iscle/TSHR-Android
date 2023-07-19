@@ -27,20 +27,18 @@
 //
 //===========================================================================
 FeMovie::FeMovie
-( 
-    const tName& name,
-    int x,
-    int y
-) 
-: 
-    FeBoundedDrawable( name ),
-    FeParent()
-{
-    this->NormalizeCoord( x, y, mPosX, mPosY );
-    
+        (
+                const tName &name,
+                int x,
+                int y
+        )
+        :
+        FeBoundedDrawable(name),
+        FeParent() {
+    this->NormalizeCoord(x, y, mPosX, mPosY);
+
     Reset();
 }
-
 
 
 //===========================================================================
@@ -55,8 +53,7 @@ FeMovie::FeMovie
 // Return:      n/a
 //
 //===========================================================================
-FeMovie::~FeMovie()
-{
+FeMovie::~FeMovie() {
 }
 
 
@@ -72,13 +69,12 @@ FeMovie::~FeMovie()
 // Return:      
 //
 //===========================================================================
-void FeMovie::Reset()
-{
+void FeMovie::Reset() {
     this->FeBoundedDrawable::Reset();
 
-    this->SetAlphaNoRedraw( 1.0f );
-    
-    this->SetColourNoRedraw( 255, 255, 255 );
+    this->SetAlphaNoRedraw(1.0f);
+
+    this->SetColourNoRedraw(255, 255, 255);
 }
 
 
@@ -94,15 +90,14 @@ void FeMovie::Reset()
 // Return:      
 //
 //===========================================================================
-void FeMovie::Display()
-{
+void FeMovie::Display() {
     //
     // STUB.
     //
 }
 
 //===========================================================================
-// void FeMovie::AddMovieClip( unsigned int imageResourceID )
+// void FeMovie::AddMovieClip(unsigned int imageResourceID)
 //===========================================================================
 // Description: 
 //
@@ -114,21 +109,20 @@ void FeMovie::Display()
 //
 //===========================================================================
 void FeMovie::AddMovieClip
-( 
-    unsigned int 
-)
-{
+        (
+                unsigned int
+        ) {
     //
     // STUB.
     //
-    
-//    FeResourceEntry* pResourceEntry = new FeResourceEntry( "", imageResourceID );
-//  AddChild( pResourceEntry );
+
+//    FeResourceEntry* pResourceEntry = new FeResourceEntry("", imageResourceID);
+//  AddChild(pResourceEntry);
 }
 
 
 //===========================================================================
-// void FeMovie::SetAlpha( float alpha )
+// void FeMovie::SetAlpha(float alpha)
 //===========================================================================
 // Description: 
 //
@@ -140,18 +134,17 @@ void FeMovie::AddMovieClip
 //
 //===========================================================================
 void FeMovie::SetAlpha
-(
-    float alpha
-)
-{
-    this->SetAlphaNoRedraw( alpha );
-    
+        (
+                float alpha
+        ) {
+    this->SetAlphaNoRedraw(alpha);
+
     this->Display();
 }
 
 
 //===========================================================================
-// void FeMovie::SetAlphaNoRedraw( float alpha )
+// void FeMovie::SetAlphaNoRedraw(float alpha)
 //===========================================================================
 // Description: 
 //
@@ -163,23 +156,22 @@ void FeMovie::SetAlpha
 //
 //===========================================================================
 void FeMovie::SetAlphaNoRedraw
-( 
-    float alpha 
-)
-{
-    rAssert( alpha >= 0 && alpha <= 1.0f );
-    
+        (
+                float alpha
+        ) {
+    rAssert(alpha >= 0 && alpha <= 1.0f);
+
     mAlpha = alpha;
-    
-    mColour.Set( mColour.Red(), 
-                 mColour.Green(),
-                 mColour.Blue(),
-                 static_cast<int>( (alpha*255) ) );
+
+    mColour.Set(mColour.Red(),
+                mColour.Green(),
+                mColour.Blue(),
+                static_cast<int>((alpha * 255)));
 }
 
 
 //===========================================================================
-// void FeMovie::SetColour( int red, int green, int blue )
+// void FeMovie::SetColour(int red, int green, int blue)
 //===========================================================================
 // Description: 
 //
@@ -191,24 +183,23 @@ void FeMovie::SetAlphaNoRedraw
 //
 //===========================================================================
 void FeMovie::SetColour
-(
-    int red,
-    int green,
-    int blue
-)
-{
-    rAssert( red >= 0 && red <= 255 );
-    rAssert( green >= 0 && green <= 255 );
-    rAssert( blue >= 0 && blue <= 255 );
+        (
+                int red,
+                int green,
+                int blue
+        ) {
+    rAssert(red >= 0 && red <= 255);
+    rAssert(green >= 0 && green <= 255);
+    rAssert(blue >= 0 && blue <= 255);
 
-    this->SetColourNoRedraw( red, green, blue );
+    this->SetColourNoRedraw(red, green, blue);
 
     this->Display();
 }
 
 
 //===========================================================================
-// void FeMovie::SetColour( tColour c )
+// void FeMovie::SetColour(tColour c)
 //===========================================================================
 // Description: 
 //
@@ -219,16 +210,15 @@ void FeMovie::SetColour
 // Return:      
 //
 //===========================================================================
-void FeMovie::SetColour( tColour c )
-{
-    this->SetColourNoRedraw( c );
-    
+void FeMovie::SetColour(tColour c) {
+    this->SetColourNoRedraw(c);
+
     this->Display();
 }
 
 
 //===========================================================================
-// void FeMovie::SetColourNoRedraw( tColour c )
+// void FeMovie::SetColourNoRedraw(tColour c)
 //===========================================================================
 // Description: 
 //
@@ -239,14 +229,13 @@ void FeMovie::SetColour( tColour c )
 // Return:      
 //
 //===========================================================================
-void FeMovie::SetColourNoRedraw( tColour c )
-{
-    SetColourNoRedraw( c.Red(), c.Green(), c.Blue() );
+void FeMovie::SetColourNoRedraw(tColour c) {
+    SetColourNoRedraw(c.Red(), c.Green(), c.Blue());
 }
 
 
 //===========================================================================
-// void FeMovie::SetColourNoRedraw( int red, int green, int blue )
+// void FeMovie::SetColourNoRedraw(int red, int green, int blue)
 //===========================================================================
 // Description: 
 //
@@ -258,17 +247,16 @@ void FeMovie::SetColourNoRedraw( tColour c )
 //
 //===========================================================================
 void FeMovie::SetColourNoRedraw
-( 
-    int red,
-    int green,
-    int blue 
-)
-{
-    rAssert( red >= 0 && red <= 255 );
-    rAssert( green >= 0 && green <= 255 );
-    rAssert( blue >= 0 && blue <= 255 );
+        (
+                int red,
+                int green,
+                int blue
+        ) {
+    rAssert(red >= 0 && red <= 255);
+    rAssert(green >= 0 && green <= 255);
+    rAssert(blue >= 0 && blue <= 255);
 
-    mColour.Set( red, green, blue, mColour.Alpha() );
+    mColour.Set(red, green, blue, mColour.Alpha());
 }
 
 
@@ -284,9 +272,8 @@ void FeMovie::SetColourNoRedraw
 // Return:      the alpha value for this object
 //
 //===========================================================================
-float FeMovie::GetAlpha() const
-{
-    return( mAlpha );
+float FeMovie::GetAlpha() const {
+    return (mAlpha);
 }
 
 
@@ -302,9 +289,8 @@ float FeMovie::GetAlpha() const
 // Return:      the alpha value for this object
 //
 //===========================================================================
-const tColour& FeMovie::GetColour() const
-{
-    return( mColour );
+const tColour &FeMovie::GetColour() const {
+    return (mColour);
 }
 
 
@@ -320,8 +306,7 @@ const tColour& FeMovie::GetColour() const
 // Return:      
 //
 //===========================================================================
-void FeMovie::Play()
-{
+void FeMovie::Play() {
     //
     // Stub.
     //
@@ -340,8 +325,7 @@ void FeMovie::Play()
 // Return:      
 //
 //===========================================================================
-void FeMovie::Pause()
-{
+void FeMovie::Pause() {
     //
     // Stub.
     //
@@ -360,8 +344,7 @@ void FeMovie::Pause()
 // Return:      
 //
 //===========================================================================
-void FeMovie::Stop()
-{
+void FeMovie::Stop() {
     //
     // Stub.
     //
@@ -380,17 +363,16 @@ void FeMovie::Stop()
 // Return:      
 //
 //===========================================================================
-int FeMovie::GetCurrentFrame() const
-{
+int FeMovie::GetCurrentFrame() const {
     //
     // Stub.
     //
-    return( 0 );
+    return (0);
 }
 
 
 //===========================================================================
-// void FeMovie::SetNextFrame( int frameIndex )
+// void FeMovie::SetNextFrame(int frameIndex)
 //===========================================================================
 // Description: 
 //
@@ -402,10 +384,9 @@ int FeMovie::GetCurrentFrame() const
 //
 //===========================================================================
 void FeMovie::SetNextFrame
-(
-    int
-)
-{
+        (
+                int
+        ) {
     //
     // Stub.
     //

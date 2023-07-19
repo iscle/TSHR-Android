@@ -29,7 +29,7 @@
 // Constants, Typedefs, and Macro Definitions (needed by external clients)
 //===========================================================================
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
-#pragma warning( disable : 4250 )
+#pragma warning(disable : 4250)
 #endif
 
 //===========================================================================
@@ -44,70 +44,73 @@
 //
 //===========================================================================
 class FeBoundedDrawable
-: 
-    public FeDrawable,
-    virtual public Scrooby::BoundedDrawable
-{
+        :
+                public FeDrawable,
+                virtual public Scrooby::BoundedDrawable {
 public:
-    FeBoundedDrawable( const tName& name );
+    FeBoundedDrawable(const tName &name);
 
     //get the extents of the bounding box
-    virtual void GetBoundingBox( int& xMin, int& yMin, int& xMax, int& yMax ) const;
+    virtual void GetBoundingBox(int &xMin, int &yMin, int &xMax, int &yMax) const;
 
     //get the size of the bounding box
-    virtual void GetBoundingBoxSize( int& width, int& height ) const;
+    virtual void GetBoundingBoxSize(int &width, int &height) const;
 
     //get the center point of the bounding box
-    virtual void GetBoundingBoxCenter( int& centerX, int& centerY ) const;
+    virtual void GetBoundingBoxCenter(int &centerX, int &centerY) const;
 
-    virtual bool IsPointInBoundingRect( float x, float y );
+    virtual bool IsPointInBoundingRect(float x, float y);
 
     //gets the matrix associated with this bounded drawable
-    virtual rmt::Matrix* GetMatrix();
-    virtual const rmt::Matrix* GetMatrix() const;
+    virtual rmt::Matrix *GetMatrix();
+
+    virtual const rmt::Matrix *GetMatrix() const;
 
     virtual void Reset();
-    
-    void SetHorizontalJustification( Scrooby::JustificationEnum justification );
-    void SetVerticalJustification( Scrooby::JustificationEnum justification );
 
-    Scrooby::JustificationEnum GetHorizontalJustification() const
-    {
+    void SetHorizontalJustification(Scrooby::JustificationEnum justification);
+
+    void SetVerticalJustification(Scrooby::JustificationEnum justification);
+
+    Scrooby::JustificationEnum GetHorizontalJustification() const {
         return m_horizontalJustification;
     }
 
-    Scrooby::JustificationEnum GetVerticalJustification() const
-    {
+    Scrooby::JustificationEnum GetVerticalJustification() const {
         return m_verticalJustification;
     }
 
-    void SetBoundingBoxSize( int width, int height );
-    void SetObjectSize( int width, int height );
-    
+    void SetBoundingBoxSize(int width, int height);
+
+    void SetObjectSize(int width, int height);
+
     //translates the transformation matrix to reflect the position
     void UpdatePosition() const;
 
-    void DisplayBoundingBox( tColour colour = tColour( 255, 255, 255 ) );
+    void DisplayBoundingBox(tColour colour = tColour(255, 255, 255));
 
     // Transformations About Bounded Drawable's Center
     //
-    void ScaleAboutCenter( float factor );
-    void ScaleAboutCenter( float factorX, float factorY, float factorZ );
+    void ScaleAboutCenter(float factor);
 
-    virtual void ScaleAboutPoint( const float factor,
-                                  const int x, const int y );
+    void ScaleAboutCenter(float factorX, float factorY, float factorZ);
 
-    virtual void ScaleAboutPoint( const float factorX, const float factorY, const float factorZ,
-                                  const int x, const int y );
+    virtual void ScaleAboutPoint(const float factor,
+                                 const int x, const int y);
 
-    virtual void SetPositionOfCenter( const int x, const int y );
-    void RotateAboutCenter( float angle,
-                            rmt::Vector axis = rmt::Vector( 0, 0, 1 ) );
+    virtual void ScaleAboutPoint(const float factorX, const float factorY, const float factorZ,
+                                 const int x, const int y);
+
+    virtual void SetPositionOfCenter(const int x, const int y);
+
+    void RotateAboutCenter(float angle,
+                           rmt::Vector axis = rmt::Vector(0, 0, 1));
 
     // Scales Bounding Box wrt. Justification
     //
-    virtual void StretchBoundingBox( const int amountX, const int amountY );
-    virtual void StretchBoundingBox( const float factorX, const float factorY );
+    virtual void StretchBoundingBox(const int amountX, const int amountY);
+
+    virtual void StretchBoundingBox(const float factorX, const float factorY);
 
 protected:
     virtual ~FeBoundedDrawable();
@@ -118,7 +121,7 @@ protected:
     Scrooby::JustificationEnum m_horizontalJustification;
     Scrooby::JustificationEnum m_verticalJustification;
 
-    tDrawable* m_drawable;
+    tDrawable *m_drawable;
 
     mutable bool m_isDirty;
 

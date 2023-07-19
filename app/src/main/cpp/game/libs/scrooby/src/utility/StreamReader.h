@@ -19,7 +19,9 @@
 //===========================================================================
 
 #define WIN32_LEAN_AND_MEAN
+
 #include <windows.h>
+
 #undef WIN32_LEAN_AND_MEAN
 
 //===========================================================================
@@ -42,28 +44,29 @@
 //
 //===========================================================================
 
-class StreamReader
-{
-    public:
-        StreamReader( const char* filename, const int bufferSize = 1024 );
-        virtual ~StreamReader();
-        
-        char GetNextChar();
+class StreamReader {
+public:
+    StreamReader(const char *filename, const int bufferSize = 1024);
 
-    private:
-        bool OpenFile( const char* filename );
-        void CloseFile();
+    virtual ~StreamReader();
 
-        int GetNextBufferFromFile();
+    char GetNextChar();
 
-        int m_pos;
-        int m_charsRead;
-        int m_bufferSize;
-        char* m_buffer;
+private:
+    bool OpenFile(const char *filename);
 
-        bool m_fileError;
-        
-        HANDLE m_fileHandle;
+    void CloseFile();
+
+    int GetNextBufferFromFile();
+
+    int m_pos;
+    int m_charsRead;
+    int m_bufferSize;
+    char *m_buffer;
+
+    bool m_fileError;
+
+    HANDLE m_fileHandle;
 };
 
 #endif                                  // End conditional inclusion

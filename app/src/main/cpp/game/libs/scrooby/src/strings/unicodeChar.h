@@ -52,34 +52,45 @@
 //
 //===========================================================================
 
-class UnicodeChar
-{
-    public:
-        UnicodeChar() ;
-        UnicodeChar( const unsigned short right ) ;
-        UnicodeChar( const unsigned char hiByte, const unsigned char loByte ) ;
+class UnicodeChar {
+public:
+    UnicodeChar();
 
-        char Ascii() const ;
-        bool IsExtended() const ;
-        UnicodeChar& operator=( const UnicodeChar& right );
-        bool operator==( const UnicodeChar& right ) const ;
-        bool operator!=( const UnicodeChar& right ) const ;
-        bool operator<( const UnicodeChar& right ) const ;
-        bool operator>( const UnicodeChar& right ) const ;
-        bool operator<=( const UnicodeChar& right ) const ;
-        bool operator>=( const UnicodeChar& right ) const ;
-        operator unsigned short() const ;
-        void SwapEndian();            
-//        friend ostream& operator<< ( ostream& os, const UnicodeChar& c ) ;
-//        friend istream& operator>> ( istream& is, UnicodeChar& c ) ;
+    UnicodeChar(const unsigned short right);
+
+    UnicodeChar(const unsigned char hiByte, const unsigned char loByte);
+
+    char Ascii() const;
+
+    bool IsExtended() const;
+
+    UnicodeChar &operator=(const UnicodeChar &right);
+
+    bool operator==(const UnicodeChar &right) const;
+
+    bool operator!=(const UnicodeChar &right) const;
+
+    bool operator<(const UnicodeChar &right) const;
+
+    bool operator>(const UnicodeChar &right) const;
+
+    bool operator<=(const UnicodeChar &right) const;
+
+    bool operator>=(const UnicodeChar &right) const;
+
+    operator unsigned short() const;
+
+    void SwapEndian();
+//        friend ostream& operator<<(ostream& os, const UnicodeChar& c) ;
+//        friend istream& operator>>(istream& is, UnicodeChar& c) ;
 
 
-    protected:
-        unsigned char    loByte ;        //one byte of the two byte unicode character
-        unsigned char    hiByte ;        //second byte of the two byte unicode character
+protected:
+    unsigned char loByte;        //one byte of the two byte unicode character
+    unsigned char hiByte;        //second byte of the two byte unicode character
 
-    private:
- 
+private:
+
 };
 
 //===========================================================================

@@ -28,56 +28,57 @@
 // Interface Definitions
 //===========================================================================
 class FeResourceTextBible
-:
-    public FeAllocatesMemory
-{
-    public:
-        //constructor
-        FeResourceTextBible();
-        FeResourceTextBible( const char* name, const char* path );
-        virtual ~FeResourceTextBible();
+        :
+                public FeAllocatesMemory {
+public:
+    //constructor
+    FeResourceTextBible();
 
-        //hashes a string
-        unsigned long Hash(const char *string);
+    FeResourceTextBible(const char *name, const char *path);
 
-        //triggers this object to be loaded asynchronously
-        bool Load();
+    virtual ~FeResourceTextBible();
 
-        //sets the current language of translation for a translator
-        void SetLanguage(const char* path, XLLanguage lang);
+    //hashes a string
+    unsigned long Hash(const char *string);
 
-        //changes the language
-        void SetLanguage( XLLanguage lang );
+    //triggers this object to be loaded asynchronously
+    bool Load();
 
-        //translates a string given its hash value
-        const UnicodeString Translate(unsigned long hash_value);
+    //sets the current language of translation for a translator
+    void SetLanguage(const char *path, XLLanguage lang);
 
-        //translates a string given a string which is then hashed
-        const UnicodeString Translate(const char *hash_name);
+    //changes the language
+    void SetLanguage(XLLanguage lang);
+
+    //translates a string given its hash value
+    const UnicodeString Translate(unsigned long hash_value);
+
+    //translates a string given a string which is then hashed
+    const UnicodeString Translate(const char *hash_name);
 
 
-    protected: 
+protected:
 
-        //???
-        void LoadLanguageDatafile( const char* fileName, const int index );
+    //???
+    void LoadLanguageDatafile(const char *fileName, const int index);
 
-        //???
-        void SetLanguageDatapath(const char* path);
+    //???
+    void SetLanguageDatapath(const char *path);
 
-        //these are handles to memory buffers for various languages
-        int handleToMemoryBuffer[ XL_LAST_LANGUAGE ];
+    //these are handles to memory buffers for various languages
+    int handleToMemoryBuffer[XL_LAST_LANGUAGE];
 
-        //this is an array of translator objects that contain the datafiles
-        XLTranslator mTranslator[ XL_LAST_LANGUAGE ];
+    //this is an array of translator objects that contain the datafiles
+    XLTranslator mTranslator[XL_LAST_LANGUAGE];
 
-        //???
-        char mPathName[ 255 ];      //IAN IMPROVE: hardcoded string length
+    //???
+    char mPathName[255];      //IAN IMPROVE: hardcoded string length
 
-        //the current language
-        XLLanguage currentLanguage;
+    //the current language
+    XLLanguage currentLanguage;
 
-        //???
-        long mModulo;
+    //???
+    long mModulo;
 };
 
 #endif

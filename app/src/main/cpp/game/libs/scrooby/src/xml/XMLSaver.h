@@ -23,10 +23,12 @@
 //===========================================================================
 
 #include <deque>
-#include "Strings\PCString.h"
+#include "Strings/PCString.h"
 
 #define WIN32_LEAN_AND_MEAN
+
 #include <windows.h>
+
 #undef WIN32_LEAN_AND_MEAN
 
 //===========================================================================
@@ -37,8 +39,7 @@
 // Constants, Typedefs, and Macro Definitions (needed by external clients)
 //===========================================================================
 
-struct AttributeStruct 
-{
+struct AttributeStruct {
     PascalCString m_name;
     PascalCString m_value;
 };
@@ -55,47 +56,56 @@ struct AttributeStruct
 //
 //===========================================================================
 
-class XMLSaver
-{
-    public:
-        XMLSaver();
-        virtual ~XMLSaver();
+class XMLSaver {
+public:
+    XMLSaver();
 
-        bool OpenFile( const char* filename );
-        bool CloseFile();
+    virtual ~XMLSaver();
 
-        bool PushElement( const char* name );
-        bool PopElement();
+    bool OpenFile(const char *filename);
 
-        bool AddAttribute( const char* name, const char* value );
-        bool AddAttribute( const char* name, int value );
-        bool AddAttribute( const char* name, double value );
-        bool AddAttribute( const char* name, bool value );
-        bool FlushAttributes();
+    bool CloseFile();
 
-    protected:
+    bool PushElement(const char *name);
 
-    private:
-        bool PrintTabs();
-        bool PrintNewLine();
-        bool Print( const char* string );
+    bool PopElement();
 
-        // Create this methods as private so they can not be used
-        XMLSaver(const XMLSaver &right);
-        const XMLSaver & operator = (const XMLSaver &right);
+    bool AddAttribute(const char *name, const char *value);
 
-        // Constants
-        static const int m_tabSize;
-        static const int m_maxValueLength;
+    bool AddAttribute(const char *name, int value);
 
-        // Data members
-        std::deque< AttributeStruct* > m_attributes;
-        std::deque< PascalCString* > m_elementNames;
+    bool AddAttribute(const char *name, double value);
 
-        HANDLE m_hFile;
-        int m_numTabs;
-        bool m_justPushed;
-        bool m_justPopped;
+    bool AddAttribute(const char *name, bool value);
+
+    bool FlushAttributes();
+
+protected:
+
+private:
+    bool PrintTabs();
+
+    bool PrintNewLine();
+
+    bool Print(const char *string);
+
+    // Create this methods as private so they can not be used
+    XMLSaver(const XMLSaver &right);
+
+    const XMLSaver &operator=(const XMLSaver &right);
+
+    // Constants
+    static const int m_tabSize;
+    static const int m_maxValueLength;
+
+    // Data members
+    std::deque<AttributeStruct *> m_attributes;
+    std::deque<PascalCString *> m_elementNames;
+
+    HANDLE m_hFile;
+    int m_numTabs;
+    bool m_justPushed;
+    bool m_justPopped;
 };
 
 //===========================================================================

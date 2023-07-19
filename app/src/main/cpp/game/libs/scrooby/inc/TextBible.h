@@ -13,20 +13,19 @@
 
 #include <strings/unicodestring.h>
 
-namespace Scrooby
-{
+namespace Scrooby {
 
 //===========================================================================
 // Interface Definitions
 //===========================================================================
 
-class TextBible
-{
-public:
-    virtual UnicodeChar* GetWChar( unsigned int hash ) = 0;
-    virtual UnicodeChar* GetWChar( const char* key ) = 0;
+    class TextBible {
+    public:
+        virtual UnicodeChar *GetWChar(unsigned int hash) = 0;
 
-};
+        virtual UnicodeChar *GetWChar(const char *key) = 0;
+
+    };
 
 } // End namespace
 

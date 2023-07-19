@@ -23,8 +23,7 @@
 // Forward References
 //===========================================================================
 
-namespace Scrooby
-{
+namespace Scrooby {
 
 //===========================================================================
 // Constants, Typedefs, and Macro Definitions (needed by external clients)
@@ -34,7 +33,7 @@ namespace Scrooby
 // Interface Definitions
 //===========================================================================
 
-PascalCString StripFileExtension( const char* string, const char* ext );
+    PascalCString StripFileExtension(const char *string, const char *ext);
 
 //===========================================================================
 // Inlines

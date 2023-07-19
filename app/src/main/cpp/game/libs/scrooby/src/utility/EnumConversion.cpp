@@ -42,31 +42,19 @@
 // Return:      enum - the appropriate enum
 //
 //===========================================================================
-Scrooby::JustificationEnum StringToJustificationEnum( const char* str )
-{
-    if( ::rstricmp( str, g_JustificationLeft ) == 0 )
-    {
+Scrooby::JustificationEnum StringToJustificationEnum(const char *str) {
+    if (::rstricmp(str, g_JustificationLeft) == 0) {
         return Scrooby::Left;
-    }
-    else if( ::rstricmp( str, g_JustificationRight ) == 0 )
-    {
+    } else if (::rstricmp(str, g_JustificationRight) == 0) {
         return Scrooby::Right;
-    }
-    else if( ::rstricmp( str, g_JustificationTop ) == 0 )
-    {
+    } else if (::rstricmp(str, g_JustificationTop) == 0) {
         return Scrooby::Top;
-    }
-    else if( ::rstricmp( str, g_JustificationBottom ) == 0 )
-    {
+    } else if (::rstricmp(str, g_JustificationBottom) == 0) {
         return Scrooby::Bottom;
-    }
-    else if( ::rstricmp( str, g_JustificationCenter ) == 0 )
-    {
+    } else if (::rstricmp(str, g_JustificationCenter) == 0) {
         return Scrooby::Centre;
-    }
-    else
-    {
-        assert( 0 );
+    } else {
+        assert(0);
         return Scrooby::Left;
     }
 }

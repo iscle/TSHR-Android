@@ -43,14 +43,14 @@ int g_ScroobyMemoryCount = 0;
 //
 //=============================================================================
 PascalCString::PascalCString
-(
-)
-:
-    m_ichMac( 0 ),
-    m_ichMax( 0 ),
-    m_uiGrowBy( 16 )
+        (
+        )
+        :
+        m_ichMac(0),
+        m_ichMax(0),
+        m_uiGrowBy(16)
 #ifdef RAD_DEBUG
-    ,m_NumberOfGrows( 0 )
+,m_NumberOfGrows(0)
 #endif
 {
     g_ScroobyMemoryCount += m_ichMax;
@@ -65,19 +65,18 @@ PascalCString::PascalCString
 //
 //=============================================================================
 PascalCString::~PascalCString
-(
-)
-{
+        (
+        ) {
     g_ScroobyMemoryCount -= m_ichMax;
-    
-    delete [] m_szString;
 
-    #ifdef RAD_DEBUG
-        m_szString = 0;
-        m_ichMac   = 0;
-        m_ichMax   = 0;
-        m_uiGrowBy = 0;
-    #endif
+    delete[] m_szString;
+
+#ifdef RAD_DEBUG
+    m_szString = 0;
+    m_ichMac   = 0;
+    m_ichMax   = 0;
+    m_uiGrowBy = 0;
+#endif
 }
 
 //=============================================================================
@@ -87,19 +86,19 @@ PascalCString::~PascalCString
 // @rdesc N/A
 //
 //=============================================================================
-PascalCString::PascalCString( const UnicodeString& uString )
-:
-    m_ichMac( 0 ),
-    m_ichMax( 0 ),
-    m_uiGrowBy( 16 )
-    #ifdef RAD_DEBUG
-        ,m_NumberOfGrows( 0 )
-    #endif
+PascalCString::PascalCString(const UnicodeString &uString)
+        :
+        m_ichMac(0),
+        m_ichMax(0),
+        m_uiGrowBy(16)
+#ifdef RAD_DEBUG
+,m_NumberOfGrows(0)
+#endif
 {
-    AdjustMaxArraySize( uString.Length() + 1 );
+    AdjustMaxArraySize(uString.Length() + 1);
     g_ScroobyMemoryCount += m_ichMax;
     m_szString = new char[m_ichMax];
-    uString.MakeAscii( m_szString, m_ichMax );
+    uString.MakeAscii(m_szString, m_ichMax);
 }
 
 
@@ -111,27 +110,24 @@ PascalCString::PascalCString( const UnicodeString& uString )
 //
 //=============================================================================
 PascalCString::PascalCString
-(
-    const char* szString // @parm The string to copy
-)
-:
-    m_ichMax( 0 ),
-    m_uiGrowBy( 16 )
-    #ifdef RAD_DEBUG
-    , m_NumberOfGrows( 0 )
-    #endif
+        (
+                const char *szString // @parm The string to copy
+        )
+        :
+        m_ichMax(0),
+        m_uiGrowBy(16)
+#ifdef RAD_DEBUG
+, m_NumberOfGrows(0)
+#endif
 {
-    if( szString )
-    {
-        m_ichMac = strlen( szString );
-        AdjustMaxArraySize( m_ichMac + 1 );
+    if (szString) {
+        m_ichMac = strlen(szString);
+        AdjustMaxArraySize(m_ichMac + 1);
 
         g_ScroobyMemoryCount += m_ichMax;
         m_szString = new char[m_ichMax];
-        strcpy( m_szString, szString );
-    }
-    else
-    {
+        strcpy(m_szString, szString);
+    } else {
         m_szString[0] = '\0';
         m_ichMac = 0;
     }
@@ -145,18 +141,18 @@ PascalCString::PascalCString
 //
 //=============================================================================
 PascalCString::PascalCString
-(
-    const char ch // @parm The character to copy
-)
-:
-    m_ichMax( 0 ),
-    m_uiGrowBy( 16 )
-    #ifdef RAD_DEBUG
-    ,m_NumberOfGrows( 0 )
-    #endif
+        (
+                const char ch // @parm The character to copy
+        )
+        :
+        m_ichMax(0),
+        m_uiGrowBy(16)
+#ifdef RAD_DEBUG
+,m_NumberOfGrows(0)
+#endif
 {
     m_ichMac = 1;
-    AdjustMaxArraySize( 2 );
+    AdjustMaxArraySize(2);
     g_ScroobyMemoryCount += m_ichMax;
     m_szString = new char[m_ichMax];
     m_szString[0] = ch;
@@ -171,21 +167,21 @@ PascalCString::PascalCString
 //
 //=============================================================================
 PascalCString::PascalCString
-(
-    const PascalCString& rhs // @parm The string to copy
-) :
-    m_ichMax( 0 )
-    #ifdef RAD_DEBUG
-    ,m_NumberOfGrows( 0 )
-    #endif
+        (
+                const PascalCString &rhs // @parm The string to copy
+        ) :
+        m_ichMax(0)
+#ifdef RAD_DEBUG
+,m_NumberOfGrows(0)
+#endif
 {
     m_uiGrowBy = rhs.m_uiGrowBy;
-    m_ichMac   = rhs.m_ichMac;
-    AdjustMaxArraySize( rhs.m_ichMax );
+    m_ichMac = rhs.m_ichMac;
+    AdjustMaxArraySize(rhs.m_ichMax);
 
     g_ScroobyMemoryCount += m_ichMax;
     m_szString = new char[m_ichMax];
-    strcpy( m_szString, rhs.m_szString );
+    strcpy(m_szString, rhs.m_szString);
 }
 
 //=============================================================================
@@ -195,19 +191,16 @@ PascalCString::PascalCString
 // @rdesc A reference to the new object
 //
 //=============================================================================
-PascalCString& PascalCString::operator=
-(
-    const PascalCString& rhs // @parm The string to copy
-)
-{
+PascalCString &PascalCString::operator=
+        (
+                const PascalCString &rhs // @parm The string to copy
+        ) {
     // check for assignment to self first
-    if( this != &rhs ) 
-    {
+    if (this != &rhs) {
         g_ScroobyMemoryCount -= m_ichMax;
 
-        if( m_ichMax < static_cast< unsigned int >( rhs.Length() ) + 1 )
-        {
-            AdjustMaxArraySize( rhs.m_ichMax );
+        if (m_ichMax < static_cast<unsigned int>(rhs.Length()) + 1) {
+            AdjustMaxArraySize(rhs.m_ichMax);
             delete[] m_szString;
             m_szString = new char[m_ichMax];
         }
@@ -215,13 +208,13 @@ PascalCString& PascalCString::operator=
         // make sure original m_szString is de-allocated
 
         m_uiGrowBy = rhs.m_uiGrowBy;
-        m_ichMac   = rhs.m_ichMac ;
+        m_ichMac = rhs.m_ichMac;
 
         g_ScroobyMemoryCount += m_ichMax;
-        strcpy( m_szString, rhs.m_szString );
+        strcpy(m_szString, rhs.m_szString);
     }
 
-    return( *this ); 
+    return (*this);
 }
 
 //=============================================================================
@@ -231,27 +224,23 @@ PascalCString& PascalCString::operator=
 // @rdesc A reference to the new object
 //
 //=============================================================================
-PascalCString& PascalCString::operator=
-(
-    const char* rhs // @parm The string to copy
-)
-{
-    if( rhs )
-    {
-        m_ichMac = strlen( rhs );
-        Grow( m_ichMac );
+PascalCString &PascalCString::operator=
+        (
+                const char *rhs // @parm The string to copy
+        ) {
+    if (rhs) {
+        m_ichMac = strlen(rhs);
+        Grow(m_ichMac);
 
-        strcpy( m_szString, rhs );
-    }
-    else
-    {
+        strcpy(m_szString, rhs);
+    } else {
         m_ichMac = 0;
-        Grow( m_ichMac );
+        Grow(m_ichMac);
 
         m_szString[0] = 0;
     }
 
-    return( *this );
+    return (*this);
 }
 
 //=============================================================================
@@ -261,17 +250,16 @@ PascalCString& PascalCString::operator=
 // @rdesc A reference to the new object
 //
 //=============================================================================
-PascalCString& PascalCString::operator=
-(
-    const char rhs // @parm The character to copy
-)
-{
-    Grow( 2 );
+PascalCString &PascalCString::operator=
+        (
+                const char rhs // @parm The character to copy
+        ) {
+    Grow(2);
 
     m_szString[0] = rhs;
     m_szString[1] = 0;
 
-    return( *this );
+    return (*this);
 }
 
 //=============================================================================
@@ -282,47 +270,42 @@ PascalCString& PascalCString::operator=
 //
 //=============================================================================
 void PascalCString::Grow
-(
-    unsigned int uiLen // @parm We need to hold this many chars (+ a null)
-)
-{
-    if( m_ichMax > uiLen )
-    {
+        (
+                unsigned int uiLen // @parm We need to hold this many chars (+ a null)
+        ) {
+    if (m_ichMax > uiLen) {
         return;
     }
 
-    #ifdef RAD_DEBUG
-        radMemoryAllocator current = ::radMemoryGetCurrentAllocator();
-        if( current != RADMEMORY_ALLOC_TEMP )
-        {
-            rAssertMsg( m_NumberOfGrows == 0, "Growing strings cause fragmentation. Please ask Ian if you don't know how to prevent the grow" );
-            ++m_NumberOfGrows;
-        }
-    #endif
-    unsigned int temp = uiLen - m_ichMax;
-    if(temp < m_uiGrowBy)
+#ifdef RAD_DEBUG
+    radMemoryAllocator current = ::radMemoryGetCurrentAllocator();
+    if(current != RADMEMORY_ALLOC_TEMP)
     {
+        rAssertMsg(m_NumberOfGrows == 0, "Growing strings cause fragmentation. Please ask Ian if you don't know how to prevent the grow");
+        ++m_NumberOfGrows;
+    }
+#endif
+    unsigned int temp = uiLen - m_ichMax;
+    if (temp < m_uiGrowBy) {
         temp = m_uiGrowBy;
     }
 
-    if( m_szString )
-    {
+    if (m_szString) {
         g_ScroobyMemoryCount -= m_ichMax;
     }
 
-    AdjustMaxArraySize( uiLen + 1 );
+    AdjustMaxArraySize(uiLen + 1);
 
     g_ScroobyMemoryCount += m_ichMax;
-    radMemoryAllocator old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
-    char* szString = new char[m_ichMax];
-    ::radMemorySetCurrentAllocator( old );
-    assert( szString );
+    radMemoryAllocator old = ::radMemorySetCurrentAllocator(RADMEMORY_ALLOC_TEMP);
+    char *szString = new char[m_ichMax];
+    ::radMemorySetCurrentAllocator(old);
+    assert(szString);
 
-    if( m_szString )
-    {
-        strcpy( szString, m_szString );
+    if (m_szString) {
+        strcpy(szString, m_szString);
         delete[] m_szString;
-        m_szString = NULL ;
+        m_szString = NULL;
     }
 
     m_szString = szString;
@@ -335,17 +318,16 @@ void PascalCString::Grow
 // @rdesc A reference to this object (after concatenation)
 //
 //=============================================================================
-PascalCString& PascalCString::operator+=
-(
-    const PascalCString& rhs // @parm What we are concatenating
-)
-{
+PascalCString &PascalCString::operator+=
+        (
+                const PascalCString &rhs // @parm What we are concatenating
+        ) {
     m_ichMac += rhs.m_ichMac;
-    Grow( m_ichMac );
+    Grow(m_ichMac);
 
-    strcat( m_szString, rhs.m_szString );
+    strcat(m_szString, rhs.m_szString);
 
-    return( *this );
+    return (*this);
 }
 
 //=============================================================================
@@ -355,20 +337,18 @@ PascalCString& PascalCString::operator+=
 // @rdesc A reference to this object (after concatenation)
 //
 //=============================================================================
-PascalCString& PascalCString::operator+=
-(
-    const char* rhs // @parm What we are concatenating
-)
-{
-    if( rhs )
-    {
-        m_ichMac += strlen( rhs );
-        Grow( m_ichMac );
+PascalCString &PascalCString::operator+=
+        (
+                const char *rhs // @parm What we are concatenating
+        ) {
+    if (rhs) {
+        m_ichMac += strlen(rhs);
+        Grow(m_ichMac);
 
-        strcat( m_szString, rhs );
+        strcat(m_szString, rhs);
     }
 
-    return( *this );
+    return (*this);
 }
 
 //=============================================================================
@@ -378,18 +358,17 @@ PascalCString& PascalCString::operator+=
 // @rdesc A reference to this object (after concatenation)
 //
 //=============================================================================
-PascalCString& PascalCString::operator+=
-(
-    const char rhs // @parm What we are concatenating
-)
-{
+PascalCString &PascalCString::operator+=
+        (
+                const char rhs // @parm What we are concatenating
+        ) {
     m_ichMac += 1;
-    Grow( m_ichMac );
+    Grow(m_ichMac);
 
-    m_szString[ m_ichMac - 1 ] = rhs;
-    m_szString[ m_ichMac ] = 0;
+    m_szString[m_ichMac - 1] = rhs;
+    m_szString[m_ichMac] = 0;
 
-    return( *this );
+    return (*this);
 }
 
 //=============================================================================
@@ -400,23 +379,19 @@ PascalCString& PascalCString::operator+=
 //
 //=============================================================================
 bool PascalCString::operator==
-(
-    const PascalCString& rhs // @parm What we are comparing too
-) const
-{
-    if( m_ichMac == rhs.m_ichMac )
-    {
+        (
+                const PascalCString &rhs // @parm What we are comparing too
+        ) const {
+    if (m_ichMac == rhs.m_ichMac) {
         // Compare the two strings. If they are equal (according to
         // the standard Windows rules for comparison) then strcmp
         // will return 0.
-        return( strcmp( m_szString, rhs.m_szString ) == 0 );
-    }
-    else
-    {
+        return (strcmp(m_szString, rhs.m_szString) == 0);
+    } else {
         // The two strings lengths are different so there is no
         // way that they are equal. This is a very fast check and
         // is much cheaper than doing the actual string comparison.
-        return( false );
+        return (false);
     }
 }
 
@@ -428,21 +403,17 @@ bool PascalCString::operator==
 //
 //=============================================================================
 bool PascalCString::operator==
-(
-    const char* rhs // @parm What we are comparing too
-) const
-{
-    if( rhs )
-    {
+        (
+                const char *rhs // @parm What we are comparing too
+        ) const {
+    if (rhs) {
         // Compare the two strings. If they are equal (according to
         // the standard Windows rules for comparison) then strcmp
         // will return 0.
-        return( strcmp( m_szString, rhs ) == 0 );
-    }
-    else
-    {
+        return (strcmp(m_szString, rhs) == 0);
+    } else {
         // The right hand side is a null string, so we can't be equal to it.
-        return( false );
+        return (false);
     }
 }
 
@@ -454,22 +425,18 @@ bool PascalCString::operator==
 //
 //=============================================================================
 bool PascalCString::operator==
-(
-    const char rhs // @parm What we are comparing too
-) const
-{
-    if( m_ichMac == 1 )
-    {
+        (
+                const char rhs // @parm What we are comparing too
+        ) const {
+    if (m_ichMac == 1) {
         // Compare the string and the character. If they are equal 
         // (according to the standard Windows rules for comparison) 
         // then we will return non-zero.
-        return( m_szString[0] == rhs );
-    }
-    else
-    {
+        return (m_szString[0] == rhs);
+    } else {
         // Our string has more than a single character in it, so we can't
         // be equal.
-        return( false );
+        return (false);
     }
 }
 
@@ -481,11 +448,10 @@ bool PascalCString::operator==
 //
 //=============================================================================
 bool PascalCString::operator!=
-(
-    const PascalCString& rhs // @parm What we are comparing too
-) const
-{
-    return( !(*this == rhs) );
+        (
+                const PascalCString &rhs // @parm What we are comparing too
+        ) const {
+    return (!(*this == rhs));
 }
 
 //=============================================================================
@@ -496,11 +462,10 @@ bool PascalCString::operator!=
 //
 //=============================================================================
 bool PascalCString::operator!=
-(
-    const char* rhs // @parm What we are comparing too
-) const
-{
-    return( !(*this == rhs) );
+        (
+                const char *rhs // @parm What we are comparing too
+        ) const {
+    return (!(*this == rhs));
 }
 
 //=============================================================================
@@ -511,11 +476,10 @@ bool PascalCString::operator!=
 //
 //=============================================================================
 bool PascalCString::operator!=
-(
-    const char rhs // @parm What we are comparing too
-) const
-{
-    return( !(*this == rhs) );
+        (
+                const char rhs // @parm What we are comparing too
+        ) const {
+    return (!(*this == rhs));
 }
 
 //=============================================================================
@@ -526,12 +490,11 @@ bool PascalCString::operator!=
 //
 //=============================================================================
 bool PascalCString::operator<
-(
-    const PascalCString& rhs // @parm What we are comparing too
-) const
-{
+        (
+                const PascalCString &rhs // @parm What we are comparing too
+        ) const {
     // Compare the two strings.
-    return( strcmp( m_szString, rhs.m_szString ) < 0 );
+    return (strcmp(m_szString, rhs.m_szString) < 0);
 }
 
 //=============================================================================
@@ -542,19 +505,15 @@ bool PascalCString::operator<
 //
 //=============================================================================
 bool PascalCString::operator<
-(
-    const char* rhs // @parm What we are comparing too
-) const
-{
-    if( rhs )
-    {
+        (
+                const char *rhs // @parm What we are comparing too
+        ) const {
+    if (rhs) {
         // Compare the two strings.
-        return( strcmp( m_szString, rhs ) < 0 );
-    }
-    else
-    {
+        return (strcmp(m_szString, rhs) < 0);
+    } else {
         // The right hand side is a null string, so we can't be less than it.
-        return( false );
+        return (false);
     }
 }
 
@@ -566,12 +525,11 @@ bool PascalCString::operator<
 //
 //=============================================================================
 bool PascalCString::operator<
-(
-    const char rhs // @parm What we are comparing too
-) const
-{
+        (
+                const char rhs // @parm What we are comparing too
+        ) const {
     // Compare the string and the character.
-    return( m_szString[0] < rhs );
+    return (m_szString[0] < rhs);
 }
 
 //=============================================================================
@@ -581,13 +539,10 @@ bool PascalCString::operator<
 // @rdesc Returns non-zero if greater-than, 0 if less or equal than
 //
 //=============================================================================
-bool PascalCString::operator>
-(
-    const PascalCString& rhs // @parm What we are comparing too
-) const
-{
+bool PascalCString::operator>(const PascalCString &rhs // @parm What we are comparing too
+) const {
     // Compare the two strings.
-    return( strcmp( m_szString, rhs.m_szString ) > 0 );
+    return (strcmp(m_szString, rhs.m_szString) > 0);
 }
 
 //=============================================================================
@@ -597,20 +552,14 @@ bool PascalCString::operator>
 // @rdesc Returns non-zero if greater than, 0 if equal or less
 //
 //=============================================================================
-bool PascalCString::operator>
-(
-    const char* rhs // @parm What we are comparing too
-) const
-{
-    if( rhs )
-    {
+bool PascalCString::operator>(const char *rhs // @parm What we are comparing too
+) const {
+    if (rhs) {
         // Compare the two strings.
-        return( strcmp( m_szString, rhs ) > 0 );
-    }
-    else
-    {
+        return (strcmp(m_szString, rhs) > 0);
+    } else {
         // The right hand side is a null string, so we can't be greater than it.
-        return( false );
+        return (false);
     }
 }
 
@@ -621,23 +570,15 @@ bool PascalCString::operator>
 // @rdesc Returns non-zero if greater than, 0 if equal or less
 //
 //=============================================================================
-bool PascalCString::operator>
-(
-    const char rhs // @parm What we are comparing too
-) const
-{
+bool PascalCString::operator>(const char rhs // @parm What we are comparing too
+) const {
     // Compare the string and the character.
-    if( m_ichMac == 1 )
-    {
-        return( m_szString[0] > rhs );
-    }
-    else if( m_ichMac > 1 )
-    {
-        return( m_szString[0] >= rhs );
-    }
-    else
-    {
-        return( false );
+    if (m_ichMac == 1) {
+        return (m_szString[0] > rhs);
+    } else if (m_ichMac > 1) {
+        return (m_szString[0] >= rhs);
+    } else {
+        return (false);
     }
 }
 
@@ -649,12 +590,11 @@ bool PascalCString::operator>
 //
 //=============================================================================
 bool PascalCString::operator<=
-(
-    const PascalCString& rhs // @parm What we are comparing too
-) const
-{
+        (
+                const PascalCString &rhs // @parm What we are comparing too
+        ) const {
     // Compare the two strings.
-    return( !(*this > rhs) );
+    return (!(*this > rhs));
 }
 
 //=============================================================================
@@ -665,11 +605,10 @@ bool PascalCString::operator<=
 //
 //=============================================================================
 bool PascalCString::operator<=
-(
-    const char* rhs // @parm What we are comparing too
-) const
-{
-    return( !(*this > rhs) );
+        (
+                const char *rhs // @parm What we are comparing too
+        ) const {
+    return (!(*this > rhs));
 }
 
 //=============================================================================
@@ -680,11 +619,10 @@ bool PascalCString::operator<=
 //
 //=============================================================================
 bool PascalCString::operator<=
-(
-    const char rhs // @parm What we are comparing too
-) const
-{
-    return( !(*this > rhs) );
+        (
+                const char rhs // @parm What we are comparing too
+        ) const {
+    return (!(*this > rhs));
 }
 
 //=============================================================================
@@ -695,12 +633,11 @@ bool PascalCString::operator<=
 //
 //=============================================================================
 bool PascalCString::operator>=
-(
-    const PascalCString& rhs // @parm What we are comparing too
-) const
-{
+        (
+                const PascalCString &rhs // @parm What we are comparing too
+        ) const {
     // Compare the two strings.
-    return( !(*this < rhs) );
+    return (!(*this < rhs));
 }
 
 //=============================================================================
@@ -711,11 +648,10 @@ bool PascalCString::operator>=
 //
 //=============================================================================
 bool PascalCString::operator>=
-(
-    const char* rhs // @parm What we are comparing too
-) const
-{
-    return( !(*this < rhs) );
+        (
+                const char *rhs // @parm What we are comparing too
+        ) const {
+    return (!(*this < rhs));
 }
 
 //=============================================================================
@@ -726,11 +662,10 @@ bool PascalCString::operator>=
 //
 //=============================================================================
 bool PascalCString::operator>=
-(
-    const char rhs // @parm What we are comparing too
-) const
-{
-    return( !(*this < rhs) );
+        (
+                const char rhs // @parm What we are comparing too
+        ) const {
+    return (!(*this < rhs));
 }
 
 //=============================================================================
@@ -740,9 +675,8 @@ bool PascalCString::operator>=
 // @rdesc array access
 //
 //=============================================================================
-char PascalCString::operator[]( const int index ) const
-{
-    return this->m_szString[ index ];
+char PascalCString::operator[](const int index) const {
+    return this->m_szString[index];
 }
 
 //=============================================================================
@@ -752,9 +686,8 @@ char PascalCString::operator[]( const int index ) const
 // @rdesc array access
 //
 //=============================================================================
-char& PascalCString::operator[]( const int index )
-{
-    return this->m_szString[ index ];
+char &PascalCString::operator[](const int index) {
+    return this->m_szString[index];
 }
 
 
@@ -766,10 +699,9 @@ char& PascalCString::operator[]( const int index )
 //
 //=============================================================================
 int PascalCString::Length
-(
-) const
-{
-    return( m_ichMac );
+        (
+        ) const {
+    return (m_ichMac);
 }
 
 //=============================================================================
@@ -778,11 +710,10 @@ int PascalCString::Length
 //
 //=============================================================================
 void PascalCString::Reserve
-(
-    int nSize // @parm The total number of characters we want in the string.
-)
-{
-    Grow( nSize );
+        (
+                int nSize // @parm The total number of characters we want in the string.
+        ) {
+    Grow(nSize);
 }
 
 //=============================================================================
@@ -793,11 +724,10 @@ void PascalCString::Reserve
 //        chars.
 //
 //=============================================================================
-PascalCString::operator char*
-(
-)
-{
-    return( m_szString );
+PascalCString::operator char *
+        (
+        ) {
+    return (m_szString);
 }
 
 //=============================================================================
@@ -808,11 +738,10 @@ PascalCString::operator char*
 //        chars.
 //
 //=============================================================================
-PascalCString::operator char*
-(
-) const
-{
-    return( m_szString );
+PascalCString::operator char *
+        (
+        ) const {
+    return (m_szString);
 }
 
 //=============================================================================
@@ -828,7 +757,7 @@ PascalCString::operator char*
 ) const
 {
     _asm int 3;
-    return( (const char*)m_szString );
+    return((const char*)m_szString);
 }*/
 
 //=============================================================================
@@ -838,11 +767,9 @@ PascalCString::operator char*
 // @rdesc A hash value
 //
 //=============================================================================
-void PascalCString::AdjustMaxArraySize( const unsigned int newSize )
-{
-//    rAssert( reinterpret_cast< unsigned int >( this ) != 0xd00517d0 );
-    if( m_ichMax < newSize )
-    {
+void PascalCString::AdjustMaxArraySize(const unsigned int newSize) {
+//    rAssert(reinterpret_cast<unsigned int>(this) != 0xd00517d0);
+    if (m_ichMax < newSize) {
         m_ichMax = newSize + m_uiGrowBy;
     }
 }
@@ -855,19 +782,17 @@ void PascalCString::AdjustMaxArraySize( const unsigned int newSize )
 //
 //=============================================================================
 long PascalCString::Hash
-(
-    int iModulo             // The modulo to use in the hash table
-)
-{
-    const char* pch = m_szString;
+        (
+                int iModulo             // The modulo to use in the hash table
+        ) {
+    const char *pch = m_szString;
     long lHash = 0L;
 
-    for( ; *pch != 0; ++pch )
-    {
-        lHash = ( 64 * lHash + *pch ) % iModulo;
+    for (; *pch != 0; ++pch) {
+        lHash = (64 * lHash + *pch) % iModulo;
     }
 
-    return( lHash );
+    return (lHash);
 }
 
 //=============================================================================
@@ -888,40 +813,31 @@ long PascalCString::Hash
 //
 //=============================================================================
 PascalCString PascalCString::Match
-(
-    const PascalCString& rhs // @parm The string we are trying to match
-)
-{
+        (
+                const PascalCString &rhs // @parm The string we are trying to match
+        ) {
     // The maximal match could be the shortest of the two strings.
     int ichMax;
-    //i=  __min( Length(), rhs.Length() );    there's no Min on ps2
-    if( Length() < rhs.Length() )
-    {
+    //i=  __min(Length(), rhs.Length());    there's no Min on ps2
+    if (Length() < rhs.Length()) {
         ichMax = Length();
-    }
-    else
-    {
+    } else {
         ichMax = rhs.Length();
     }
 
-    for( int ich = 0; ich < ichMax; ++ich )
-    {
-        if( m_szString[ich] != rhs.m_szString[ich] )
-        {
-            if( ich == 0 )
-            {
+    for (int ich = 0; ich < ichMax; ++ich) {
+        if (m_szString[ich] != rhs.m_szString[ich]) {
+            if (ich == 0) {
                 // No match so return a null string.
-                return( "" );
-            }
-            else
-            {
+                return ("");
+            } else {
                 // Take advantage of the return value obtimization (hopefully)
-                return( SubString( 0, ich - 1 ) );
+                return (SubString(0, ich - 1));
             }
         }
     }
 
-    return( SubString( 0, ichMax ) );
+    return (SubString(0, ichMax));
 }
 
 //=============================================================================
@@ -941,36 +857,35 @@ PascalCString PascalCString::Match
 // 4) the temporary buffer is thrown out
 // wasted overhead: 1 new, 1 strcpy, 1 delete
 PascalCString PascalCString::SubString
-(
-    int iStart, // @parm The starting offset
-    int iChars  // @parm The number of characters to retrieve
-)
-{
+        (
+                int iStart, // @parm The starting offset
+                int iChars  // @parm The number of characters to retrieve
+        ) {
     // Make sure we are asking for a valid substring
-    assert( iStart + iChars <= int( m_ichMac + 1 ) );
+    assert(iStart + iChars <= int(m_ichMac + 1));
 
     // Allocate the space for the new substring
-    radMemoryAllocator old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
-    char* szSub = new char[iChars + 1];
-    ::radMemorySetCurrentAllocator( old );
+    radMemoryAllocator old = ::radMemorySetCurrentAllocator(RADMEMORY_ALLOC_TEMP);
+    char *szSub = new char[iChars + 1];
+    ::radMemorySetCurrentAllocator(old);
 
     // Copy the substring...
-    strncpy( szSub, (const char*)&(m_szString[ iStart ]), iChars );
+    strncpy(szSub, (const char *) &(m_szString[iStart]), iChars);
 
     // ...and make sure it is null terminated
-    szSub[ iChars ] = 0;
+    szSub[iChars] = 0;
 
     // Make a string object out of it.
     // g_ScroobyMemoryCount gets updated in the constructor
-    old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
-    PascalCString stSub( szSub );
-    ::radMemorySetCurrentAllocator( old );
+    old = ::radMemorySetCurrentAllocator(RADMEMORY_ALLOC_TEMP);
+    PascalCString stSub(szSub);
+    ::radMemorySetCurrentAllocator(old);
 
     // Free the memory we allocated
-    delete[] szSub;  
+    delete[] szSub;
 
     // Return the object
-    return( stSub );
+    return (stSub);
 }
 
 //===========================================================================
@@ -985,19 +900,17 @@ PascalCString PascalCString::SubString
 // Return:      the first character in the string
 //
 //===========================================================================
-char PascalCString::StreamFirstChar()
-{
+char PascalCString::StreamFirstChar() {
     // Remember the first character
-    char tempchar = m_szString[ 0 ];
-    if( tempchar == 0 )
-    {
+    char tempchar = m_szString[0];
+    if (tempchar == 0) {
         return tempchar;
     }
 
     // Shrink string by one character
-    memcpy( m_szString, m_szString + 1, m_ichMac );
+    memcpy(m_szString, m_szString + 1, m_ichMac);
     m_ichMac--;
-    
+
     return tempchar;
 }
 
@@ -1013,57 +926,45 @@ char PascalCString::StreamFirstChar()
 // Return:      the first token in the string split by the charToSplit parameter
 //
 //===========================================================================
-PascalCString PascalCString::StreamFirstWord( char charToSplit )
-{
+PascalCString PascalCString::StreamFirstWord(char charToSplit) {
     //find the pivot point of the string
     unsigned int i = 0;
-    while( ( i < this->m_ichMac ) && ( this->m_szString[ i ] != charToSplit ) )
-    {
+    while ((i < this->m_ichMac) && (this->m_szString[i] != charToSplit)) {
         i++;
     }
 
     int pivot = i;
-    PascalCString word = this->SubString( 0, pivot );
-    int newLength = m_ichMac - ( pivot + 1 );
-    if( newLength > 0 )
-    {
-        *this = this->SubString( pivot + 1, m_ichMac - ( pivot + 1 ) );
-    }
-    else
-    {
+    PascalCString word = this->SubString(0, pivot);
+    int newLength = m_ichMac - (pivot + 1);
+    if (newLength > 0) {
+        *this = this->SubString(pivot + 1, m_ichMac - (pivot + 1));
+    } else {
         *this = "";
     }
 
     return word;
 }
 
-bool PascalCString::Find( char charToFind )
-{
-    for( int i=0; i<int(m_ichMac); i++ )
-    {
-        if( m_szString[ i ] == charToFind )
-        {
+bool PascalCString::Find(char charToFind) {
+    for (int i = 0; i < int(m_ichMac); i++) {
+        if (m_szString[i] == charToFind) {
             return true;
         }
     }
     return false;
 }
 
-bool PascalCString::EqualsInsensitive( const char* name )
-{
-    if( m_ichMac == strlen( name ) )
-    {
+bool PascalCString::EqualsInsensitive(const char *name) {
+    if (m_ichMac == strlen(name)) {
         // Compare the two strings. If they are equal (according to
         // the standard Windows rules for comparison) then strcmp
         // will return 0.
-        return( ::rstricmp( m_szString, name ) == 0 );
-    }
-    else
-    {
+        return (::rstricmp(m_szString, name) == 0);
+    } else {
         // The two strings lengths are different so there is no
         // way that they are equal. This is a very fast check and
         // is much cheaper than doing the actual string comparison.
-        return( false );
+        return (false);
     }
 }
 
@@ -1072,47 +973,43 @@ bool PascalCString::EqualsInsensitive( const char* name )
 // @mfunc Replace all occurences of 'stFind' with 'stReplace'
 //
 //=============================================================================
-void PascalCString::Replace( const PascalCString& stFind, const PascalCString& stReplace )
-{
-    // Do a quick check to see if stFind is > in length than this string,
+void PascalCString::Replace(const PascalCString &stFind, const PascalCString &stReplace) {
+    // Do a quick check to see if stFind is> in length than this string,
     // if it is then there can't possibly be a match.
-    if ( stFind.Length() > Length() )
-    {
+    if (stFind.Length() > Length()) {
         return;
     }
 
     // Search for stFind in this string, and abort if we don't find it.
-    char* szString = m_szString;
-    char* szFind = strstr( szString, stFind.m_szString );
-    if ( szFind == 0 )
-    {
+    char *szString = m_szString;
+    char *szFind = strstr(szString, stFind.m_szString);
+    if (szFind == 0) {
         return;
     }
 
     // We know that there is at least one occurence of stFind in this string,
     // so we now do the expensive part of replacing each occurence of
     // stFind with stReplace.
-    radMemoryAllocator old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
-        PascalCString stNew = "";
-        while ( szFind != 0 )
-        {
-            // replace the first character of found string in this string with a null
-            *szFind = 0;
+    radMemoryAllocator old = ::radMemorySetCurrentAllocator(RADMEMORY_ALLOC_TEMP);
+    PascalCString stNew = "";
+    while (szFind != 0) {
+        // replace the first character of found string in this string with a null
+        *szFind = 0;
 
-            // add what we have so far
-            stNew += szString;
-
-            // add in the replacement
-            stNew += stReplace;
-
-            // skip ahead by the length of the found string.
-            szString = szFind + stFind.Length();
-
-            // and try finding it again
-            szFind = strstr( szString, stFind.m_szString );
-        }
+        // add what we have so far
         stNew += szString;
-    ::radMemorySetCurrentAllocator( old );
+
+        // add in the replacement
+        stNew += stReplace;
+
+        // skip ahead by the length of the found string.
+        szString = szFind + stFind.Length();
+
+        // and try finding it again
+        szFind = strstr(szString, stFind.m_szString);
+    }
+    stNew += szString;
+    ::radMemorySetCurrentAllocator(old);
 
     // Last, but not least, assign the result to ourselves.
     *this = stNew;
@@ -1123,12 +1020,10 @@ void PascalCString::Replace( const PascalCString& stFind, const PascalCString& s
 // @mfunc Change all characters to uppercase.
 //
 //=============================================================================
-void PascalCString::ToUpper( void )
-{
+void PascalCString::ToUpper(void) {
     int index = 0;
-    for ( index; index < Length(); ++index )
-    {
-        m_szString[ index ] = toupper( m_szString[ index ] );
+    for (index; index < Length(); ++index) {
+        m_szString[index] = toupper(m_szString[index]);
     }
 }
 
@@ -1137,12 +1032,10 @@ void PascalCString::ToUpper( void )
 // @mfunc Change all characters to lowercase.
 //
 //=============================================================================
-void PascalCString::ToLower( void )
-{
+void PascalCString::ToLower(void) {
     int index = 0;
-    for ( index; index < Length(); ++index )
-    {
-        m_szString[ index ] = tolower( m_szString[ index ] );
+    for (index; index < Length(); ++index) {
+        m_szString[index] = tolower(m_szString[index]);
     }
 }
 
@@ -1151,19 +1044,16 @@ void PascalCString::ToLower( void )
 // @mfunc Retrieve the filename from a file/path string
 //
 //=============================================================================
-PascalCString PascalCString::FullFilename()
-{
+PascalCString PascalCString::FullFilename() {
     int index = Length();
-    for( index; index >= 0; index-- )
-    {
-        if( (m_szString[index] == '/') || (m_szString[index] == '\\') )
-        {
+    for (index; index >= 0; index--) {
+        if ((m_szString[index] == '/') || (m_szString[index] == '\\')) {
             break;
         }
     }
-    radMemoryAllocator old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
-    PascalCString rValue( m_szString + index + 1 );
-    ::radMemorySetCurrentAllocator( old );
+    radMemoryAllocator old = ::radMemorySetCurrentAllocator(RADMEMORY_ALLOC_TEMP);
+    PascalCString rValue(m_szString + index + 1);
+    ::radMemorySetCurrentAllocator(old);
     return rValue;
 }
 
@@ -1172,27 +1062,22 @@ PascalCString PascalCString::FullFilename()
 // @mfunc Retrieve the filename from a file/path string
 //
 //=============================================================================
-PascalCString PascalCString::JustFilename()
-{
+PascalCString PascalCString::JustFilename() {
     int index = Length();
-    for( index; index >= 0; index-- )
-    {
-        if( (m_szString[index] == '/') || (m_szString[index] == '\\') )
-        {
+    for (index; index >= 0; index--) {
+        if ((m_szString[index] == '/') || (m_szString[index] == '\\')) {
             break;
         }
     }
     char temp[20];
-    strcpy( temp, m_szString + index + 1);
-    for( index = 0; index < (int)strlen( temp ); index++ )
-    {
-        if( temp[index] == '.' )
-        {
+    strcpy(temp, m_szString + index + 1);
+    for (index = 0; index < (int) strlen(temp); index++) {
+        if (temp[index] == '.') {
             temp[index] = 0;
             break;
         }
     }
-    PascalCString rValue( temp );
+    PascalCString rValue(temp);
     return rValue;
 }
 
@@ -1202,29 +1087,23 @@ PascalCString PascalCString::JustFilename()
 // @mfunc Retrieve the extension from a file/path string
 //
 //=============================================================================
-PascalCString PascalCString::JustExtension()
-{
+PascalCString PascalCString::JustExtension() {
     int index = Length();
     bool found = false;
-    for( index; index > 0; index-- )
-    {
-        if( m_szString[index] == '.' )
-        {
+    for (index; index > 0; index--) {
+        if (m_szString[index] == '.') {
             found = true;
             break;
         }
     }
-    radMemoryAllocator old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
+    radMemoryAllocator old = ::radMemorySetCurrentAllocator(RADMEMORY_ALLOC_TEMP);
     PascalCString rValue;
-    if( found )
-    {
+    if (found) {
         rValue = m_szString + index + 1;
-    }
-    else
-    {
+    } else {
         rValue = "";
     }
-    ::radMemorySetCurrentAllocator( old );
+    ::radMemorySetCurrentAllocator(old);
     return rValue;
 }
 
@@ -1233,15 +1112,12 @@ PascalCString PascalCString::JustExtension()
 // @mfunc Retrieve the path portion from a file/path string
 //
 //=============================================================================
-PascalCString PascalCString::JustPath()
-{
+PascalCString PascalCString::JustPath() {
     int index = Length();
-    for( index; index > 0; index-- )
-    {
-        if( (m_szString[index] == '/') || (m_szString[index] == '\\') )
-        {
+    for (index; index > 0; index--) {
+        if ((m_szString[index] == '/') || (m_szString[index] == '\\')) {
             break;
         }
     }
-    return SubString( 0, index );
+    return SubString(0, index);
 }

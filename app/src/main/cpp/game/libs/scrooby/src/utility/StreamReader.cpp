@@ -43,19 +43,17 @@
 // Return:      Nothing
 //
 //===========================================================================
-StreamReader::StreamReader( const char* filename, const int bufferSize )
-{
+StreamReader::StreamReader(const char *filename, const int bufferSize) {
     m_pos = 0;
     m_charsRead = 0;
     m_bufferSize = bufferSize;
 
-    m_buffer = new char[ m_bufferSize ];
-    bool result = OpenFile( filename );
-    if( result == false )
-    {
-        char currentDir[ 256 ] = "";
-        ::_getcwd( currentDir, 256 );
-        assert( result == true );
+    m_buffer = new char[m_bufferSize];
+    bool result = OpenFile(filename);
+    if (result == false) {
+        char currentDir[256] = "";
+        ::_getcwd(currentDir, 256);
+        assert(result == true);
     }
 }
 
@@ -71,13 +69,12 @@ StreamReader::StreamReader( const char* filename, const int bufferSize )
 // Return:      Nothing
 //
 //===========================================================================
-StreamReader::~StreamReader()
-{
-    delete [] m_buffer;
+StreamReader::~StreamReader() {
+    delete[] m_buffer;
 
     CloseFile();
 }
-        
+
 //===========================================================================
 // StreamReader::GetNextChar
 //===========================================================================
@@ -90,23 +87,17 @@ StreamReader::~StreamReader()
 // Return:      char - the next char - '\0' if nothing
 //
 //===========================================================================
-char StreamReader::GetNextChar()
-{
-    if( m_fileError )
-    {
+char StreamReader::GetNextChar() {
+    if (m_fileError) {
         return '\0';
-    }
-    else if( m_pos >= m_charsRead )
-    {
+    } else if (m_pos >= m_charsRead) {
         // Finished with the current buffer, let's read more from the file
         m_charsRead = GetNextBufferFromFile();
         m_pos = 1;
-        
-        return m_buffer[ 0 ];
-    }
-    else
-    {
-        return m_buffer[ m_pos++ ];
+
+        return m_buffer[0];
+    } else {
+        return m_buffer[m_pos++];
     }
 }
 
@@ -122,23 +113,21 @@ char StreamReader::GetNextChar()
 // Return:      bool - whether the open was successful
 //
 //===========================================================================
-bool StreamReader::OpenFile( const char* filename )
-{
+bool StreamReader::OpenFile(const char *filename) {
     m_fileHandle = ::CreateFile
-    (
-        filename,              // the path
-        GENERIC_READ,          // open for reading
-        FILE_SHARE_READ,       // prevent sharing
-        0,                     // security is ignored in Win95
-        OPEN_EXISTING,         // opens an existing file, creates a new file
-        FILE_ATTRIBUTE_NORMAL, // normal file attributes
-        0                      // no file to copy attributes from
-    );
-    
-    if( m_fileHandle == INVALID_HANDLE_VALUE )
-    {
+            (
+                    filename,              // the path
+                    GENERIC_READ,          // open for reading
+                    FILE_SHARE_READ,       // prevent sharing
+                    0,                     // security is ignored in Win95
+                    OPEN_EXISTING,         // opens an existing file, creates a new file
+                    FILE_ATTRIBUTE_NORMAL, // normal file attributes
+                    0                      // no file to copy attributes from
+            );
+
+    if (m_fileHandle == INVALID_HANDLE_VALUE) {
         m_fileError = true;
-        return( false );
+        return (false);
     }
 
     m_fileError = false;
@@ -157,9 +146,8 @@ bool StreamReader::OpenFile( const char* filename )
 // Return:      None
 //
 //===========================================================================
-void StreamReader::CloseFile()
-{
-    CloseHandle( m_fileHandle );
+void StreamReader::CloseFile() {
+    CloseHandle(m_fileHandle);
 }
 
 //===========================================================================
@@ -174,26 +162,25 @@ void StreamReader::CloseFile()
 // Return:      int - number of bytes read
 //
 //===========================================================================
-int StreamReader::GetNextBufferFromFile()
-{
+int StreamReader::GetNextBufferFromFile() {
     // Variables to hold the number of requested bytes and the actual bytes
     // that were read from the file.
     DWORD dwBytesRead;
     DWORD dwBytesToRead = m_bufferSize;
 
     ::ReadFile
-    ( 
-        m_fileHandle,        // handle of file to read 
-        m_buffer,            // address of buffer that receives data  
-        dwBytesToRead,       // number of bytes to read 
-        &dwBytesRead,        // address of number of bytes read 
-        0                    // address of structure for data (must be non-zero if
-                             // m_hfile is created with FILE_FLAG_OVERLAPPED set.
-    );
-    
+            (
+                    m_fileHandle,        // handle of file to read
+                    m_buffer,            // address of buffer that receives data
+                    dwBytesToRead,       // number of bytes to read
+                    &dwBytesRead,        // address of number of bytes read
+                    0                    // address of structure for data (must be non-zero if
+                    // m_hfile is created with FILE_FLAG_OVERLAPPED set.
+            );
+
     m_charsRead = dwBytesRead;
 
     // Was there nothing to read?
-    m_fileError = ( m_charsRead == 0 ); 
+    m_fileError = (m_charsRead == 0);
     return m_charsRead;
 }

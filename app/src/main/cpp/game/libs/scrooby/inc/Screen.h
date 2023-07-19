@@ -19,12 +19,11 @@
 #include "Drawable.h"
 #include <p3d/p3dtypes.hpp> // for tUID
 
-namespace Scrooby
-{
+namespace Scrooby {
 //===========================================================================
 // Forward References
 //===========================================================================
-class Page;
+    class Page;
 
 //===========================================================================
 // Interface Definitions
@@ -38,34 +37,34 @@ class Page;
 //
 //===========================================================================
 
-class Screen
-:
-    virtual public Drawable
-{
+    class Screen
+            :
+                    virtual public Drawable {
     public:
 
         //reload a screen
         virtual void Reload() = 0;
 
         //get a page by hashValue
-        virtual Page* GetPage( const tUID hashValue ) = 0;
+        virtual Page *GetPage(const tUID hashValue) = 0;
 
         //get a page by name
-        virtual Page* GetPage( const char* name ) = 0;
+        virtual Page *GetPage(const char *name) = 0;
 
         //get a page by index
-        virtual Page* GetPageByIndex( const int index ) = 0;
+        virtual Page *GetPageByIndex(const int index) = 0;
 
         //get the number of pages used by this screen
         virtual int GetNumberOfPages() const = 0;
 
         //screen scaling (for zooming in/out effects)
-        virtual void SetScale( float screenScale ) = 0;
+        virtual void SetScale(float screenScale) = 0;
+
         virtual float GetScale() const = 0;
 
     protected:
     private:
-};
+    };
 
 } // End namespace
 

@@ -25,12 +25,12 @@
 // Forward References
 //===========================================================================
 class FePage;
+
 class FeProject;
 
-namespace Scrooby
-{
+namespace Scrooby {
     class Page;
-} 
+}
 
 // TC: Screen scaling hack to accomodate for different frame buffer sizes on
 //     different platforms.
@@ -38,11 +38,11 @@ namespace Scrooby
 #define SCREEN_SCALING_HACK
 
 #ifdef SCREEN_SCALING_HACK
-    extern bool g_screenScalingEnabled;
+extern bool g_screenScalingEnabled;
 
-    extern float g_screenScaleX;
-    extern float g_screenScaleY;
-    extern float g_screenScaleZ;
+extern float g_screenScaleX;
+extern float g_screenScaleY;
+extern float g_screenScaleZ;
 #endif
 
 //===========================================================================
@@ -57,60 +57,64 @@ namespace Scrooby
 //
 //===========================================================================
 class FeScreen
-: 
-    public FeOwner,
-    virtual public Scrooby::Screen
-{
+        :
+                public FeOwner,
+                virtual public Scrooby::Screen {
 public:
-    FeScreen( const char* name, FeProject* project);
+    FeScreen(const char *name, FeProject *project);
 
-	void AddChild( FeEntity* s );
-    FePage* AddPage( const char* name);
+    void AddChild(FeEntity *s);
+
+    FePage *AddPage(const char *name);
 
     //overload the display function
     virtual void Display();
+
     void DisplayForeground();
+
     void DisplayBackground();
 
     //gets the bounding box for this screen
-    virtual void GetBoundingBox( int& xMin, int& yMin, int& xMax, int& yMax ) const;
+    virtual void GetBoundingBox(int &xMin, int &yMin, int &xMax, int &yMax) const;
 
     //gets the size of the bounding box for this screen
-    virtual void GetBoundingBoxSize( int& width, int& height ) const;
+    virtual void GetBoundingBoxSize(int &width, int &height) const;
 
     //gets the filename for the screen //IAN IMPROVE: is this ever called - and should it be public?
-    const char* GetFileName();
+    const char *GetFileName();
 
     //get a page by name
-    virtual Scrooby::Page* GetPage( const char* name );
+    virtual Scrooby::Page *GetPage(const char *name);
 
     //get a page by hashValue
-    virtual Scrooby::Page* GetPage( const tUID hashValue );
+    virtual Scrooby::Page *GetPage(const tUID hashValue);
 
     //get a page by index
-    virtual Scrooby::Page* GetPageByIndex( const int index );
+    virtual Scrooby::Page *GetPageByIndex(const int index);
 
     //get the number of pages used by this screen
     virtual int GetNumberOfPages() const;
 
     //screen scaling (for zooming in/out effects)
-    virtual void SetScale( float screenScale ) { m_screenScale = screenScale; }
+    virtual void SetScale(float screenScale) { m_screenScale = screenScale; }
+
     virtual float GetScale() const { return m_screenScale; }
 
     //gets the parent project
-    FeProject* GetProject();
+    FeProject *GetProject();
+
     void Reload() {};
 
 private:
     // No copying. Declare but don't define.
-    FeScreen( const FeScreen& );
+    FeScreen(const FeScreen &);
 
     // No assignment. Declare but don't define.
-    FeScreen& operator=( const FeScreen& );
+    FeScreen &operator=(const FeScreen &);
 
     virtual ~FeScreen();
 
-    FeProject* mProject;
+    FeProject *mProject;
     PascalCString mFileName;
     PascalCString mDivide;
 

@@ -9,26 +9,28 @@
 #include "Layer.h"
 
 #ifdef WIN32
-#pragma warning( disable :4250 )
+#pragma warning(disable :4250)
 #endif
 
-class FeLayer 
-: 
-    public FeOwner,
-    virtual public Scrooby::Layer
-{
+class FeLayer
+        :
+                public FeOwner,
+                virtual public Scrooby::Layer {
 public:
-    FeLayer( const char* name );
+    FeLayer(const char *name);
+
     virtual ~FeLayer();
 
     void Display() { FeOwner::Display(); }
 
-    virtual void GetBoundingBoxSize( int& width, int& height ) const;
-    virtual void GetBoundingBox( int& xMin, int& yMin, int& xMax, int& yMax ) const;
+    virtual void GetBoundingBoxSize(int &width, int &height) const;
+
+    virtual void GetBoundingBox(int &xMin, int &yMin, int &xMax, int &yMax) const;
 
 private:
     void HaveNewObject(FeDrawable *s);
-friend class FeDebug;
-}; 
+
+    friend class FeDebug;
+};
 
 #endif

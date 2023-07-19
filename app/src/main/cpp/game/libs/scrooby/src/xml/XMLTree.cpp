@@ -22,7 +22,7 @@
 //===========================================================================
 // Local Constants, Typedefs, and Macros
 //===========================================================================
-static void OutputDebugString( PascalCString ){};
+static void OutputDebugString(PascalCString) {};
 
 //===========================================================================
 // Global Data, Local Data, Local Classes
@@ -44,8 +44,7 @@ static void OutputDebugString( PascalCString ){};
 // Return:      Nothing
 //
 //===========================================================================
-XMLTree::XMLTree( )
-{
+XMLTree::XMLTree() {
     m_fileRootNode = NULL;
     m_rootNode = m_fileRootNode;
     m_currentNode = m_rootNode;
@@ -63,8 +62,7 @@ XMLTree::XMLTree( )
 // Return:      Nothing
 //
 //===========================================================================
-XMLTree::XMLTree( XMLNode* node )
-{
+XMLTree::XMLTree(XMLNode *node) {
     m_fileRootNode = NULL;
     m_rootNode = node;
     m_currentNode = m_rootNode;
@@ -82,22 +80,20 @@ XMLTree::XMLTree( XMLNode* node )
 // Return:      Nothing
 //
 //===========================================================================
-XMLTree::~XMLTree()
-{
+XMLTree::~XMLTree() {
     p3d::AllocType type = p3d::GetCurrentAlloc();
-    p3d::SetCurrentAlloc( p3d::ALLOC_TEMPORARY );
+    p3d::SetCurrentAlloc(p3d::ALLOC_TEMPORARY);
 
     m_rootNode = NULL;
     m_currentNode = NULL;
 
     // If root node is loaded from file, that's the master copy, so we delete it
-    if( m_fileRootNode != NULL )
-    {
+    if (m_fileRootNode != NULL) {
         delete m_fileRootNode;
     }
     m_fileRootNode = NULL;
 
-    p3d::SetCurrentAlloc( type );
+    p3d::SetCurrentAlloc(type);
 
 }
 
@@ -115,27 +111,25 @@ XMLTree::~XMLTree()
 // Return:      bool - whether the retrieve was sucessful
 //
 //===========================================================================
-bool XMLTree::LoadTreeFromBuffer( char* buffer, 
-                                  const unsigned int bufferSize, 
-                                  const char* rootSectionName )
-{
+bool XMLTree::LoadTreeFromBuffer(char *buffer,
+                                 const unsigned int bufferSize,
+                                 const char *rootSectionName) {
     p3d::AllocType type = p3d::GetCurrentAlloc();
-    p3d::SetCurrentAlloc( p3d::ALLOC_TEMPORARY );
+    p3d::SetCurrentAlloc(p3d::ALLOC_TEMPORARY);
 
     // Delete the previous root node if it's loaded from file
-    if( m_fileRootNode != NULL )
-    {
+    if (m_fileRootNode != NULL) {
         delete m_fileRootNode;
     }
 
     XMLParser parser;
-    m_fileRootNode = parser.ParseFromBuffer( buffer, bufferSize );
+    m_fileRootNode = parser.ParseFromBuffer(buffer, bufferSize);
 
     m_filename = "";
 
-    p3d::SetCurrentAlloc( type );
+    p3d::SetCurrentAlloc(type);
 
-    return( this->LoadTreeWorker( rootSectionName ) );
+    return (this->LoadTreeWorker(rootSectionName));
 }
 
 
@@ -151,41 +145,39 @@ bool XMLTree::LoadTreeFromBuffer( char* buffer,
 // Return:      bool - whether the retrieve was sucessful
 //
 //===========================================================================
-bool XMLTree::LoadTreeFromFile( const char* filename, const char* rootSectionName )
-{
+bool XMLTree::LoadTreeFromFile(const char *filename, const char *rootSectionName) {
     p3d::AllocType type = p3d::GetCurrentAlloc();
-    p3d::SetCurrentAlloc( p3d::ALLOC_TEMPORARY );
+    p3d::SetCurrentAlloc(p3d::ALLOC_TEMPORARY);
 
     // Delete the previous root node if it's loaded from file
-    if( m_fileRootNode != NULL )
-    {
+    if (m_fileRootNode != NULL) {
         delete m_fileRootNode;
     }
 
     XMLParser parser;
-    m_fileRootNode = parser.ParseFromFile( filename );
+    m_fileRootNode = parser.ParseFromFile(filename);
 
     m_filename = filename;
 
-    p3d::SetCurrentAlloc( type );
+    p3d::SetCurrentAlloc(type);
 
 
-    return( this->LoadTreeWorker( rootSectionName ) ); 
-    
+    return (this->LoadTreeWorker(rootSectionName));
+
 /*
     // Default node to not found
     m_rootNode = NULL;
 
     
 
-    if( m_fileRootNode != NULL )
+    if(m_fileRootNode != NULL)
     {
         XMLNodeList* childNodes = m_fileRootNode->GetChildNodes();
         int numChildNodes = childNodes->GetLength();
-        for( int i=0; i<numChildNodes; i++ )
+        for(int i=0; i<numChildNodes; i++)
         {
             // Match section name
-            if( childNodes->GetItem(i)->GetName().EqualsInsensitive( rootSectionName ) )
+            if(childNodes->GetItem(i)->GetName().EqualsInsensitive(rootSectionName))
             {
                 // Found the section, set it as the root node
                 m_rootNode = childNodes->GetItem(i);
@@ -214,20 +206,16 @@ bool XMLTree::LoadTreeFromFile( const char* filename, const char* rootSectionNam
 // Return:      bool - whether the retrieve was sucessful
 //
 //===========================================================================
-bool XMLTree::LoadTreeWorker( const char* rootSectionName )
-{
+bool XMLTree::LoadTreeWorker(const char *rootSectionName) {
     // Default node to not found
     m_rootNode = NULL;
 
-    if( m_fileRootNode != NULL )
-    {
-        XMLNodeList* childNodes = m_fileRootNode->GetChildNodes();
+    if (m_fileRootNode != NULL) {
+        XMLNodeList *childNodes = m_fileRootNode->GetChildNodes();
         int numChildNodes = childNodes->GetLength();
-        for( int i=0; i<numChildNodes; i++ )
-        {
+        for (int i = 0; i < numChildNodes; i++) {
             // Match section name
-            if( childNodes->GetItem(i)->GetName().EqualsInsensitive( rootSectionName ) )
-            {
+            if (childNodes->GetItem(i)->GetName().EqualsInsensitive(rootSectionName)) {
                 // Found the section, set it as the root node
                 m_rootNode = childNodes->GetItem(i);
                 m_currentNode = m_rootNode;
@@ -254,21 +242,17 @@ bool XMLTree::LoadTreeWorker( const char* rootSectionName )
 // Return:      bool - whether the action was sucessful
 //
 //===========================================================================
-bool XMLTree::SetCurrentElementByName( const char* name )
-{
-    if( m_rootNode == NULL )
-    {
+bool XMLTree::SetCurrentElementByName(const char *name) {
+    if (m_rootNode == NULL) {
         m_currentNode = NULL;
         return false;
     }
 
-    XMLNodeList* childNodes = m_rootNode->GetChildNodes();
+    XMLNodeList *childNodes = m_rootNode->GetChildNodes();
     int numChildNodes = childNodes->GetLength();
-    for( int i=0; i<numChildNodes; i++ )
-    {
+    for (int i = 0; i < numChildNodes; i++) {
         // Is the name equal? (Case insensitive)
-        if( childNodes->GetItem(i)->GetName().EqualsInsensitive( name ) )
-        {
+        if (childNodes->GetItem(i)->GetName().EqualsInsensitive(name)) {
             m_currentNode = childNodes->GetItem(i);
             return true;
         }
@@ -290,24 +274,19 @@ bool XMLTree::SetCurrentElementByName( const char* name )
 // Return:      bool - whether the action was sucessful
 //
 //===========================================================================
-bool XMLTree::SetCurrentElementByIndex( const int index )
-{
-    if( m_rootNode == NULL )
-    {
+bool XMLTree::SetCurrentElementByIndex(const int index) {
+    if (m_rootNode == NULL) {
         m_currentNode = NULL;
         return false;
     }
 
-    XMLNodeList* childNodes = m_rootNode->GetChildNodes();
+    XMLNodeList *childNodes = m_rootNode->GetChildNodes();
     int numChildNodes = childNodes->GetLength();
-    
-    if( index < numChildNodes )
-    {
-        m_currentNode = childNodes->GetItem( index );
+
+    if (index < numChildNodes) {
+        m_currentNode = childNodes->GetItem(index);
         return true;
-    }
-    else
-    {
+    } else {
         m_currentNode = NULL;
         return false;
     }
@@ -325,8 +304,7 @@ bool XMLTree::SetCurrentElementByIndex( const int index )
 // Return:      int - length of string
 //
 //===========================================================================
-bool XMLTree::GetFilename( PascalCString &returnString )
-{
+bool XMLTree::GetFilename(PascalCString &returnString) {
     returnString = m_filename;
     return true;
 }
@@ -341,8 +319,7 @@ bool XMLTree::GetFilename( PascalCString &returnString )
 // Parameters:    filename - the new filename value
 //
 //===========================================================================
-void XMLTree::SetFilename( const char* filename )
-{
+void XMLTree::SetFilename(const char *filename) {
     m_filename = filename;
 }
 
@@ -359,8 +336,7 @@ void XMLTree::SetFilename( const char* filename )
 // Return:      int - length of string
 //
 //===========================================================================
-int XMLTree::GetName( PascalCString &returnString )
-{
+int XMLTree::GetName(PascalCString &returnString) {
     returnString = m_currentNode->GetName();
     return returnString.Length();
 }
@@ -378,33 +354,28 @@ int XMLTree::GetName( PascalCString &returnString )
 // Return:      int - the number of characters of retrieved string
 //
 //===========================================================================
-int XMLTree::GetAttribute( const char* name, PascalCString &returnString )
-{
-    if( m_currentNode == NULL )
-    {
+int XMLTree::GetAttribute(const char *name, PascalCString &returnString) {
+    if (m_currentNode == NULL) {
         returnString = "";
         return 0;
     }
 
-    XMLAttributeList* attributes = m_currentNode->GetAttributes();
-    if( attributes == NULL )
-    {
+    XMLAttributeList *attributes = m_currentNode->GetAttributes();
+    if (attributes == NULL) {
         returnString = "";
         return 0;
     }
 
     int attrCount = attributes->GetLength();
-    for (int i = 0; i < attrCount; i++)
-    {
+    for (int i = 0; i < attrCount; i++) {
         // See if there is the attribute specified
-        XMLAttribute* attribute = attributes->GetItem(i);
-        if( attribute->GetName().EqualsInsensitive(name) )
-        {
+        XMLAttribute *attribute = attributes->GetItem(i);
+        if (attribute->GetName().EqualsInsensitive(name)) {
             returnString = attribute->GetValue();
             return returnString.Length();
         }
     }
-    
+
     // No attribute of that name found
     returnString = "";
     return 0;
@@ -424,19 +395,15 @@ int XMLTree::GetAttribute( const char* name, PascalCString &returnString )
 // Return:      bool - whether the retrieve was sucessful
 //
 //===========================================================================
-bool XMLTree::GetAttribute( const char* name, int* returnInt )
-{
+bool XMLTree::GetAttribute(const char *name, int *returnInt) {
     PascalCString string;
-    
-    int stringLength = GetAttribute( name, string );
-    if( stringLength == 0 )
-    {
+
+    int stringLength = GetAttribute(name, string);
+    if (stringLength == 0) {
         *returnInt = 0;
         return false;
-    }
-    else
-    {
-        *returnInt = atoi( string );
+    } else {
+        *returnInt = atoi(string);
         return true;
     }
 }
@@ -454,19 +421,15 @@ bool XMLTree::GetAttribute( const char* name, int* returnInt )
 // Return:      bool - whether the retrieve was sucessful
 //
 //===========================================================================
-bool XMLTree::GetAttribute( const char* name, double* returnDouble )
-{
+bool XMLTree::GetAttribute(const char *name, double *returnDouble) {
     PascalCString string;
-    
-    int stringLength = GetAttribute( name, string );
-    if( stringLength == 0 )
-    {
+
+    int stringLength = GetAttribute(name, string);
+    if (stringLength == 0) {
         *returnDouble = 0.0;
         return false;
-    }
-    else
-    {
-        *returnDouble = atof( string );
+    } else {
+        *returnDouble = atof(string);
         return true;
     }
 }
@@ -484,25 +447,18 @@ bool XMLTree::GetAttribute( const char* name, double* returnDouble )
 // Return:      bool - whether the retrieve was sucessful
 //
 //===========================================================================
-bool XMLTree::GetAttribute( const char* name, bool* returnBool )
-{
+bool XMLTree::GetAttribute(const char *name, bool *returnBool) {
     PascalCString string;
-    
-    int stringLength = GetAttribute( name, string );
-    if( stringLength == 0 )
-    {
+
+    int stringLength = GetAttribute(name, string);
+    if (stringLength == 0) {
         return false;
-    }
-    else
-    {
+    } else {
         // We treat anything other than "true" (case insensitive) is false
         string.ToUpper();
-        if( strcmp( string, "TRUE" ) == 0 )
-        {
+        if (strcmp(string, "TRUE") == 0) {
             *returnBool = true;
-        }
-        else
-        {
+        } else {
             *returnBool = false;
         }
         return true;
@@ -521,24 +477,20 @@ bool XMLTree::GetAttribute( const char* name, bool* returnBool )
 // Return:      XMLTree* - the pointer to the subtree, or NULL if nothing found
 //
 //===========================================================================
-XMLTree* XMLTree::GetSubTreeByName( const char* name )
-{
-    if( m_rootNode == NULL )
-    {
+XMLTree *XMLTree::GetSubTreeByName(const char *name) {
+    if (m_rootNode == NULL) {
         return NULL;
     }
 
-    XMLNodeList* childNodes = m_rootNode->GetChildNodes();
+    XMLNodeList *childNodes = m_rootNode->GetChildNodes();
     int numChildNodes = childNodes->GetLength();
-    for( int i=0; i<numChildNodes; i++ )
-    {
+    for (int i = 0; i < numChildNodes; i++) {
         // First lookup the element
-        if( childNodes->GetItem(i)->GetName().EqualsInsensitive( name ) )
-        {
+        if (childNodes->GetItem(i)->GetName().EqualsInsensitive(name)) {
             p3d::AllocType type = p3d::GetCurrentAlloc();
-            p3d::SetCurrentAlloc( p3d::ALLOC_TEMPORARY );
-            return new XMLTree( childNodes->GetItem(i) );
-            p3d::SetCurrentAlloc( type );
+            p3d::SetCurrentAlloc(p3d::ALLOC_TEMPORARY);
+            return new XMLTree(childNodes->GetItem(i));
+            p3d::SetCurrentAlloc(type);
 
         }
     }
@@ -557,27 +509,22 @@ XMLTree* XMLTree::GetSubTreeByName( const char* name )
 // Return:      XMLTree* - the pointer to the subtree, or NULL if nothing found
 //
 //===========================================================================
-XMLTree* XMLTree::GetSubTreeByIndex( const int index )
-{
-    if( m_rootNode == NULL )
-    {
+XMLTree *XMLTree::GetSubTreeByIndex(const int index) {
+    if (m_rootNode == NULL) {
         return NULL;
     }
 
-    XMLNodeList* childNodes = m_rootNode->GetChildNodes();
+    XMLNodeList *childNodes = m_rootNode->GetChildNodes();
     int numChildNodes = childNodes->GetLength();
-    
-    if( index < numChildNodes )
-    {
+
+    if (index < numChildNodes) {
         p3d::AllocType type = p3d::GetCurrentAlloc();
-        p3d::SetCurrentAlloc( p3d::ALLOC_TEMPORARY );
+        p3d::SetCurrentAlloc(p3d::ALLOC_TEMPORARY);
 
-        return new XMLTree( childNodes->GetItem( index ) );
-        p3d::SetCurrentAlloc( type );
+        return new XMLTree(childNodes->GetItem(index));
+        p3d::SetCurrentAlloc(type);
 
-    }
-    else
-    {
+    } else {
         return NULL;
     }
 }
@@ -595,8 +542,7 @@ XMLTree* XMLTree::GetSubTreeByIndex( const int index )
 // Return:      None
 //
 //===========================================================================
-void XMLTree::PrintNode( XMLNode* node, PascalCString spaces )
-{
+void XMLTree::PrintNode(XMLNode *node, PascalCString spaces) {
 
 #ifndef SCROOBY_RUNTIME
 
@@ -608,12 +554,11 @@ void XMLTree::PrintNode( XMLNode* node, PascalCString spaces )
     thisLine += ")";
 
     thisLine += "(";
-    XMLAttributeList* attributes= node->GetAttributes();
+    XMLAttributeList *attributes = node->GetAttributes();
     int numItems = attributes->GetLength();
     int i;
-    for( i=0; i<numItems; i++ )
-    {
-        XMLAttribute* attribute = attributes->GetItem( i );
+    for (i = 0; i < numItems; i++) {
+        XMLAttribute *attribute = attributes->GetItem(i);
         thisLine += "(";
         thisLine += attribute->GetName();
         thisLine += ",";
@@ -622,23 +567,22 @@ void XMLTree::PrintNode( XMLNode* node, PascalCString spaces )
     }
     thisLine += ")\n";
 
-    OutputDebugString( thisLine );
+    OutputDebugString(thisLine);
 
-    XMLNodeList* childNodes= node->GetChildNodes();
+    XMLNodeList *childNodes = node->GetChildNodes();
     numItems = childNodes->GetLength();
-    for( i=0; i<numItems; i++ )
-    {
-        XMLNode* childNode = childNodes->GetItem( i );
+    for (i = 0; i < numItems; i++) {
+        XMLNode *childNode = childNodes->GetItem(i);
         PascalCString tempSpaces = spaces;
         tempSpaces += "  ";
-        PrintNode( childNode, tempSpaces );
+        PrintNode(childNode, tempSpaces);
     }
 
     thisLine = spaces;
     thisLine += "(/";
     thisLine += node->GetName();
     thisLine += ")\n";
-    OutputDebugString( thisLine );
+    OutputDebugString(thisLine);
 
 #endif // SCROOBY_RUNTIME
 
@@ -656,14 +600,13 @@ void XMLTree::PrintNode( XMLNode* node, PascalCString spaces )
 // Return:      None
 //
 //===========================================================================
-void XMLTree::DumpTree()
-{
+void XMLTree::DumpTree() {
 
 #ifndef SCROOBY_RUNTIME
 
-    OutputDebugString( "====================" );
-    PrintNode( this->m_rootNode, "" );
-    OutputDebugString( "====================" );
+    OutputDebugString("====================");
+    PrintNode(this->m_rootNode, "");
+    OutputDebugString("====================");
 
 #endif // SCROOBY_RUNTIME
 

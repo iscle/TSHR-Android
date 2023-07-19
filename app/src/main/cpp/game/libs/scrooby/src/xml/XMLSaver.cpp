@@ -43,8 +43,7 @@ const int XMLSaver::m_maxValueLength = 15;
 // Return:      Nothing
 //
 //===========================================================================
-XMLSaver::XMLSaver()
-{
+XMLSaver::XMLSaver() {
     m_numTabs = 0;
     m_justPushed = false;
     m_justPopped = true;
@@ -62,8 +61,7 @@ XMLSaver::XMLSaver()
 // Return:      Nothing
 //
 //===========================================================================
-XMLSaver::~XMLSaver()
-{
+XMLSaver::~XMLSaver() {
 }
 
 //===========================================================================
@@ -78,8 +76,7 @@ XMLSaver::~XMLSaver()
 // Return:      
 //
 //===========================================================================
-bool XMLSaver::OpenFile( const char* filename )
-{
+bool XMLSaver::OpenFile(const char *filename) {
     m_numTabs = 0;
     m_justPushed = false;
     m_justPopped = true;
@@ -87,22 +84,21 @@ bool XMLSaver::OpenFile( const char* filename )
     PascalCString testFileName = filename;
 
     m_hFile = ::CreateFile
-    (
-        testFileName,              // the path
-        GENERIC_WRITE,         // open for writing
-        0,                     // prevent sharing
-        0,                     // security is ignored in Win95
-        CREATE_ALWAYS,         // opens an existing file, creates a new file
-        FILE_ATTRIBUTE_NORMAL, // normal file attributes
-        0                      // no file to copy attributes from
-    );
-    
-    if( m_hFile == INVALID_HANDLE_VALUE )
-    {
-        return( false );
+            (
+                    testFileName,              // the path
+                    GENERIC_WRITE,         // open for writing
+                    0,                     // prevent sharing
+                    0,                     // security is ignored in Win95
+                    CREATE_ALWAYS,         // opens an existing file, creates a new file
+                    FILE_ATTRIBUTE_NORMAL, // normal file attributes
+                    0                      // no file to copy attributes from
+            );
+
+    if (m_hFile == INVALID_HANDLE_VALUE) {
+        return (false);
     }
 
-    Print( "<?xml version='1.0'?>" );
+    Print("<?xml version='1.0'?>");
     return PrintNewLine();
 }
 
@@ -118,9 +114,8 @@ bool XMLSaver::OpenFile( const char* filename )
 // Return:      
 //
 //===========================================================================
-bool XMLSaver::CloseFile()
-{
-    CloseHandle( m_hFile );
+bool XMLSaver::CloseFile() {
+    CloseHandle(m_hFile);
 
     return true;
 }
@@ -137,25 +132,23 @@ bool XMLSaver::CloseFile()
 // Return:      
 //
 //===========================================================================
-bool XMLSaver::PushElement( const char* name )
-{
+bool XMLSaver::PushElement(const char *name) {
     bool returnValue;
 
-    if( m_justPushed )
-    {
+    if (m_justPushed) {
         FlushAttributes();
-        Print( ">" );
+        Print(">");
         PrintNewLine();
         m_numTabs++;
     }
 
     PrintTabs();
-    
-    Print( "<" );
-    returnValue = Print( name );
 
-    PascalCString* newString = new PascalCString( name );
-    m_elementNames.push_back( newString );
+    Print("<");
+    returnValue = Print(name);
+
+    PascalCString *newString = new PascalCString(name);
+    m_elementNames.push_back(newString);
 
     m_justPushed = true;
     m_justPopped = false;
@@ -175,39 +168,32 @@ bool XMLSaver::PushElement( const char* name )
 // Return:      
 //
 //===========================================================================
-bool XMLSaver::PopElement()
-{
-    if( m_justPopped )
-    {
+bool XMLSaver::PopElement() {
+    if (m_justPopped) {
         m_numTabs--;
         PrintTabs();
-    }
-    else
-    {
+    } else {
         FlushAttributes();
-        Print( ">" );
+        Print(">");
     }
 
     m_justPushed = false;
     m_justPopped = true;
 
-    if( m_elementNames.size() > 0 )
-    {
-        PascalCString* elementName = m_elementNames.back();
+    if (m_elementNames.size() > 0) {
+        PascalCString *elementName = m_elementNames.back();
         m_elementNames.pop_back();
 
-        Print( "</" );
-        Print( *elementName );
-        Print( ">" );
+        Print("</");
+        Print(*elementName);
+        Print(">");
 
         delete elementName;
 
         bool returnValue = PrintNewLine();
 
         return returnValue;
-    }
-    else
-    {
+    } else {
         return false;
     }
 }
@@ -224,55 +210,51 @@ bool XMLSaver::PopElement()
 // Return:      
 //
 //===========================================================================
-bool XMLSaver::AddAttribute( const char* name, const char* value )
-{
-    AttributeStruct* attribute = new AttributeStruct;
+bool XMLSaver::AddAttribute(const char *name, const char *value) {
+    AttributeStruct *attribute = new AttributeStruct;
     attribute->m_name = name;
     attribute->m_value = value;
 
-    m_attributes.push_back( attribute );
+    m_attributes.push_back(attribute);
 
     return true;
 }
 
-bool XMLSaver::AddAttribute( const char* name, int value )
-{
+bool XMLSaver::AddAttribute(const char *name, int value) {
     char valueString[m_maxValueLength];
-    sprintf( valueString, "%d", value );
+    sprintf(valueString, "%d", value);
 
-    AttributeStruct* attribute = new AttributeStruct;
+    AttributeStruct *attribute = new AttributeStruct;
     attribute->m_name = name;
     attribute->m_value = valueString;
 
-    m_attributes.push_back( attribute );
+    m_attributes.push_back(attribute);
 
     return true;
 }
 
-bool XMLSaver::AddAttribute( const char* name, double value )
-{
+bool XMLSaver::AddAttribute(const char *name, double value) {
     char valueString[m_maxValueLength];
-    sprintf( valueString, "%f", value );
+    sprintf(valueString, "%f", value);
 
-    AttributeStruct* attribute = new AttributeStruct;
+    AttributeStruct *attribute = new AttributeStruct;
     attribute->m_name = name;
     attribute->m_value = valueString;
 
-    m_attributes.push_back( attribute );
+    m_attributes.push_back(attribute);
 
     return true;
 }
 
-bool XMLSaver::AddAttribute( const char* name, bool value )
-{
+bool XMLSaver::AddAttribute(const char *name, bool value) {
     char valueString[m_maxValueLength];
-    sprintf( valueString, "%s", ( value ? "true" : "false" ) );
+    sprintf(valueString, "%s", (value ? "true" : "false"));
 
-    AttributeStruct* attribute = new AttributeStruct;
+    AttributeStruct *attribute = new AttributeStruct;
     attribute->m_name = name;
     attribute->m_value = valueString;
 
-    m_attributes.push_back( attribute );
+    m_attributes.push_back(attribute);
 
     return true;
 }
@@ -289,20 +271,18 @@ bool XMLSaver::AddAttribute( const char* name, bool value )
 // Return:      
 //
 //===========================================================================
-bool XMLSaver::FlushAttributes()
-{
+bool XMLSaver::FlushAttributes() {
     bool returnValue = true;
-    
-    while( m_attributes.size() > 0 )
-    {
-        AttributeStruct* attribute = m_attributes.front();
+
+    while (m_attributes.size() > 0) {
+        AttributeStruct *attribute = m_attributes.front();
         m_attributes.pop_front();
 
-        Print( " " );
-        Print( attribute->m_name );
-        Print( "=\"" );
-        Print( attribute->m_value );
-        returnValue = Print( "\"" );
+        Print(" ");
+        Print(attribute->m_name);
+        Print("=\"");
+        Print(attribute->m_value);
+        returnValue = Print("\"");
 
         delete attribute;
         attribute = NULL;
@@ -323,14 +303,12 @@ bool XMLSaver::FlushAttributes()
 // Return:      
 //
 //===========================================================================
-bool XMLSaver::PrintTabs()
-{
+bool XMLSaver::PrintTabs() {
     bool returnValue = true;
-    
+
     int totalTabs = m_tabSize * m_numTabs;
-    for( int i=0; i<totalTabs; i++ )
-    {
-        returnValue = Print( " " );
+    for (int i = 0; i < totalTabs; i++) {
+        returnValue = Print(" ");
     }
 
     return returnValue;
@@ -348,9 +326,8 @@ bool XMLSaver::PrintTabs()
 // Return:      
 //
 //===========================================================================
-bool XMLSaver::PrintNewLine()
-{
-    return Print( "\r\n" );
+bool XMLSaver::PrintNewLine() {
+    return Print("\r\n");
 }
 
 //===========================================================================
@@ -365,30 +342,26 @@ bool XMLSaver::PrintNewLine()
 // Return:      
 //
 //===========================================================================
-bool XMLSaver::Print( const char* str )
-{
+bool XMLSaver::Print(const char *str) {
     // Get the number of bytes to be written
     DWORD dwBytesWritten;
-    DWORD dwBytesToWrite = strlen( str );
+    DWORD dwBytesToWrite = strlen(str);
 
     ::WriteFile
-    ( 
-        m_hFile,             // handle of file to write to
-        (LPVOID)str,         // pointer to data to write to file
-        dwBytesToWrite,      // number of bytes to write 
-        &dwBytesWritten,     // pointer to number of bytes written 
-        0                    // address of structure for data (must be non-zero if
-                             // m_hfile is created with FILE_FLAG_OVERLAPPED set.
-    );
+            (
+                    m_hFile,             // handle of file to write to
+                    (LPVOID) str,         // pointer to data to write to file
+                    dwBytesToWrite,      // number of bytes to write
+                    &dwBytesWritten,     // pointer to number of bytes written
+                    0                    // address of structure for data (must be non-zero if
+                    // m_hfile is created with FILE_FLAG_OVERLAPPED set.
+            );
 
     // The number of bytes actually written MUST equal the number of bytes requested,
     // otherwise we have some bad data (or a bad data file).
-    if( dwBytesWritten != dwBytesToWrite )
-    {
+    if (dwBytesWritten != dwBytesToWrite) {
         return false;
-    }
-    else
-    {
+    } else {
         return true;
     }
 }

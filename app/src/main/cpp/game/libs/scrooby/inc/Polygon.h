@@ -19,8 +19,7 @@
 #include "Drawable.h"
 #include <p3d/p3dtypes.hpp>
 
-namespace Scrooby
-{
+namespace Scrooby {
 //===========================================================================
 // Interface Definitions
 //===========================================================================
@@ -33,23 +32,29 @@ namespace Scrooby
 //
 //===========================================================================
 
-class Polygon 
-: 
-    virtual public Drawable
-{
+    class Polygon
+            :
+                    virtual public Drawable {
     public:
-        virtual float   GetVertexAlpha( const int which ) const = 0;
-        virtual tColour GetVertexColour( const int which ) const = 0;
-        virtual void    GetVertexLocation( const int which, int& left, int& bottom ) const = 0;
-        virtual void    SetVertexLocation(int which,int left,int bottom) = 0;
-        virtual void    SetVertexColour(int which,int red,int green,int blue) = 0;
-        virtual void    SetVertexColour( const unsigned int which, const tColour c ) = 0;
-        virtual void    SetVertexAlpha(int which,float alpha) = 0;
-        virtual int     GetNumOfVertexes() = 0;
+        virtual float GetVertexAlpha(const int which) const = 0;
+
+        virtual tColour GetVertexColour(const int which) const = 0;
+
+        virtual void GetVertexLocation(const int which, int &left, int &bottom) const = 0;
+
+        virtual void SetVertexLocation(int which, int left, int bottom) = 0;
+
+        virtual void SetVertexColour(int which, int red, int green, int blue) = 0;
+
+        virtual void SetVertexColour(const unsigned int which, const tColour c) = 0;
+
+        virtual void SetVertexAlpha(int which, float alpha) = 0;
+
+        virtual int GetNumOfVertexes() = 0;
 
     protected:
     private:
-};
+    };
 
 } // End namespace
 

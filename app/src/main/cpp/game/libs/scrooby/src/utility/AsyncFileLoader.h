@@ -37,72 +37,73 @@ class AsyncFileLoaderCallback;
 // Constraints: None
 //
 //===========================================================================
-class AsyncFileLoader :  public IRadFileCompletionCallback
-{
-    public:
-        
-        AsyncFileLoader();
-        virtual ~AsyncFileLoader();
+class AsyncFileLoader : public IRadFileCompletionCallback {
+public:
 
-        //fixes the forward/back slashes in the filename
-        static void FixSlashes( char* filename );
+    AsyncFileLoader();
 
-        //passing true to this function will turn all the slashes into backslashes
-        //passing false to this funciton will turn all the slashes into forward slashes
-        static void ForceBackSlashes( bool useBackSlashes );
+    virtual ~AsyncFileLoader();
 
-        //===================================================================
-        // Description: Specify the file you want to load and a pointer to
-        //              your callback object that will be invoked once the
-        //              file has finished loading.
-        //
-        //              Optionally, you can pass in a buffer to receive the
-        //              data.  If the buffer is not provided, it will be
-        //              allocated for you.
-        //
-        // Constraints: VERY IMPORTANT!  The client is responsible for
-        //              deleting the buffer in either case.
-        //===================================================================
-        void LoadFile( const char* filename, 
-                       AsyncFileLoaderCallback* pCallback,
-                       char* buffer = NULL,
-                       unsigned int bufferSize = 0,
-                       unsigned int allocator = p3d::ALLOC_LOADED );
+    //fixes the forward/back slashes in the filename
+    static void FixSlashes(char *filename);
 
-        // Overrides for callbacks required by the Foundation file system.
-        // Clients can ignore these.
-        //
-        virtual void OnFileOperationsComplete( void* pUserData );
+    //passing true to this function will turn all the slashes into backslashes
+    //passing false to this funciton will turn all the slashes into forward slashes
+    static void ForceBackSlashes(bool useBackSlashes);
 
-        // Overrides required for COM.  Clients can igonre these.
-        //
-        virtual void AddRef( void );
-        virtual void Release( void );
+    //===================================================================
+    // Description: Specify the file you want to load and a pointer to
+    //              your callback object that will be invoked once the
+    //              file has finished loading.
+    //
+    //              Optionally, you can pass in a buffer to receive the
+    //              data.  If the buffer is not provided, it will be
+    //              allocated for you.
+    //
+    // Constraints: VERY IMPORTANT!  The client is responsible for
+    //              deleting the buffer in either case.
+    //===================================================================
+    void LoadFile(const char *filename,
+                  AsyncFileLoaderCallback *pCallback,
+                  char *buffer = NULL,
+                  unsigned int bufferSize = 0,
+                  unsigned int allocator = p3d::ALLOC_LOADED);
 
-        //Registers a cement file to be used in conjunciton with the file system
-        void RegisterCementFile( const char* cementFileName );
+    // Overrides for callbacks required by the Foundation file system.
+    // Clients can ignore these.
+    //
+    virtual void OnFileOperationsComplete(void *pUserData);
+
+    // Overrides required for COM.  Clients can igonre these.
+    //
+    virtual void AddRef(void);
+
+    virtual void Release(void);
+
+    //Registers a cement file to be used in conjunciton with the file system
+    void RegisterCementFile(const char *cementFileName);
 
 
-    protected:
+protected:
 
-        static bool g_UseBackSlashes;   //'\' - back slash
-                                        //'/' - forward slash
-                                        // backshashes valid on Windows, Xbox, PS2 from CD
-                                        // forwardslashes needed for PS2 under Linux. (Stinky linux)
+    static bool g_UseBackSlashes;   //'\' - back slash
+    //'/' - forward slash
+    // backshashes valid on Windows, Xbox, PS2 from CD
+    // forwardslashes needed for PS2 under Linux. (Stinky linux)
 
-        static bool ValidFilenamePS2( const char* filename );
+    static bool ValidFilenamePS2(const char *filename);
 
-        unsigned int mRefCount;
+    unsigned int mRefCount;
 
-        unsigned int mFileSize;
-        char* mBuffer;
-        unsigned int mBufferSize;
-        IRadFile*   m_pIRadFile;
+    unsigned int mFileSize;
+    char *mBuffer;
+    unsigned int mBufferSize;
+    IRadFile *m_pIRadFile;
 //        static IRadDrive* m_pDrive;
 
-        AsyncFileLoaderCallback* mCallback;
+    AsyncFileLoaderCallback *mCallback;
 
-        bool mLoadPending;
+    bool mLoadPending;
 };
 
 
@@ -118,25 +119,23 @@ class AsyncFileLoader :  public IRadFileCompletionCallback
 // Constraints: None
 //
 //===========================================================================
-class AsyncFileLoaderCallback
-{
-    public:
-        
-        AsyncFileLoaderCallback()
-        {
-        }
+class AsyncFileLoaderCallback {
+public:
 
-        //===================================================================
-        // Description: This member is invoked when the file has completed
-        //              loading from disk.  The client is responsible for
-        //              implementing this member function.
-        //
-        // Constraints: VERY IMPORTANT!  The client is responsible for
-        //              deleting the fileDataBuffer when it's finsihed with
-        //              it!
-        //===================================================================
-        virtual void OnFileLoadComplete( const unsigned int fileSize,
-                                         char* fileDataBuffer ) = 0;
+    AsyncFileLoaderCallback() {
+    }
+
+    //===================================================================
+    // Description: This member is invoked when the file has completed
+    //              loading from disk.  The client is responsible for
+    //              implementing this member function.
+    //
+    // Constraints: VERY IMPORTANT!  The client is responsible for
+    //              deleting the fileDataBuffer when it's finsihed with
+    //              it!
+    //===================================================================
+    virtual void OnFileLoadComplete(const unsigned int fileSize,
+                                    char *fileDataBuffer) = 0;
 };
 
 

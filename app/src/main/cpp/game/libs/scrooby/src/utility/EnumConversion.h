@@ -27,14 +27,14 @@
 // Constants, Typedefs, and Macro Definitions (needed by external clients)
 //===========================================================================
 
-const char* const g_JustificationLeft                   = "left";
-const char* const g_JustificationRight                  = "right";
-const char* const g_JustificationTop                    = "top";
-const char* const g_JustificationBottom                 = "bottom";
-const char* const g_JustificationCenter                 = "centre";
-const char* const g_TranslucencyNormal                  = "normal";
-const char* const g_TextTypeBibleString                 = "textbiblestring";
-const char* const g_TextTypeHardcodedString             = "hardcodedstring";
+const char *const g_JustificationLeft = "left";
+const char *const g_JustificationRight = "right";
+const char *const g_JustificationTop = "top";
+const char *const g_JustificationBottom = "bottom";
+const char *const g_JustificationCenter = "centre";
+const char *const g_TranslucencyNormal = "normal";
+const char *const g_TextTypeBibleString = "textbiblestring";
+const char *const g_TextTypeHardcodedString = "hardcodedstring";
 
 //===========================================================================
 // Interface Definitions
@@ -48,7 +48,7 @@ const char* const g_TextTypeHardcodedString             = "hardcodedstring";
 //
 //===========================================================================
 
-Scrooby::JustificationEnum StringToJustificationEnum( const char* str );
+Scrooby::JustificationEnum StringToJustificationEnum(const char *str);
 
 //===========================================================================
 // Inlines

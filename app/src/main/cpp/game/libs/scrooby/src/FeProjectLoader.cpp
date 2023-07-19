@@ -60,12 +60,11 @@
 //
 //===========================================================================
 FeProjectLoader::FeProjectLoader()
-:
-    mpProject( NULL ),
-    mpScreenIterator( NULL ),
-    mpPageIterator( NULL ),
-    m_ProjectType( SCROOBY_INVALID )
-{
+        :
+        mpProject(NULL),
+        mpScreenIterator(NULL),
+        mpPageIterator(NULL),
+        m_ProjectType(SCROOBY_INVALID) {
     mFileLoader = new AsyncFileLoader;
     mFileLoader->AddRef();
 
@@ -73,7 +72,6 @@ FeProjectLoader::FeProjectLoader()
     // Nothing
     //
 }
-
 
 
 //===========================================================================
@@ -88,21 +86,20 @@ FeProjectLoader::FeProjectLoader()
 // Return:      N/A.
 //
 //===========================================================================
-FeProjectLoader::~FeProjectLoader()
-{
+FeProjectLoader::~FeProjectLoader() {
     mFileLoader->Release();
     mFileLoader->Release();
 
     //if this assert fails, then that means the ResourceLoadComplete function 
     //never got called.
-    rAssert( NULL == mpProject );
-    rAssert( NULL == mpScreenIterator );
-    rAssert( NULL == mpPageIterator );
+    rAssert(NULL == mpProject);
+    rAssert(NULL == mpScreenIterator);
+    rAssert(NULL == mpPageIterator);
 }
 
 
 //===========================================================================
-// void FeProjectLoader::LoadProjectFile( const char* fullFilePath )
+// void FeProjectLoader::LoadProjectFile(const char* fullFilePath)
 //===========================================================================
 // Description: Starts loading the specified XML project file.
 //
@@ -114,44 +111,39 @@ FeProjectLoader::~FeProjectLoader()
 //
 //===========================================================================
 void FeProjectLoader::LoadProjectFile
-(
-    const char* fullFilePath
-)
-{
+        (
+                const char *fullFilePath
+        ) {
     //
     // Create a new FeProject, the start of our data heirarchy.
     //
-    Scrooby::ScroobyInfo( "FeProjectLoader::LoadProjectFile" );
-    mpProject = new ( ScroobyPermPool )FeProject( fullFilePath );
-   
+    Scrooby::ScroobyInfo("FeProjectLoader::LoadProjectFile");
+    mpProject = new(ScroobyPermPool)FeProject(fullFilePath);
+
     //
     // This is now our state.
     //
     mCurrentState = eProjectFilePending;
-    
+
     //
     // Is this an XML or a P3D file?
     //
 
-    //IAN IMPROVE: what if filename is < 3 characters
-    int length = ::strlen( fullFilePath );
+    //IAN IMPROVE: what if filename is <3 characters
+    int length = ::strlen(fullFilePath);
     PascalCString last3 = fullFilePath + length - 3;
     last3.ToUpper();
-    if( last3 == "P3D" )
-    {
+    if (last3 == "P3D") {
         this->m_ProjectType = SCROOBY_P3D;
-    }
-    else
-    {
+    } else {
         this->m_ProjectType = SCROOBY_XML;      //IAN IMPROVE: make this test the fileformat
     }
 
     //
     // Request the file load.
     //
-    mFileLoader->LoadFile( fullFilePath, this );
+    mFileLoader->LoadFile(fullFilePath, this);
 }
-
 
 
 //===========================================================================
@@ -167,39 +159,33 @@ void FeProjectLoader::LoadProjectFile
 //
 //===========================================================================
 void FeProjectLoader::OnFileLoadComplete
-(
-    const unsigned int fileSize,
-    char* fileDataBuffer
-)
-{
-    rAssert( fileSize > 0 );
-    rValid( fileDataBuffer );
+        (
+                const unsigned int fileSize,
+                char *fileDataBuffer
+        ) {
+    rAssert(fileSize > 0);
+    rValid(fileDataBuffer);
 
-    switch( mCurrentState )
-    {
-        case eProjectFilePending:
-        {
-            this->HandleProjectFilePending( fileSize, fileDataBuffer );
+    switch (mCurrentState) {
+        case eProjectFilePending: {
+            this->HandleProjectFilePending(fileSize, fileDataBuffer);
         }
-        break;
+            break;
 
-        case eScreenFilePending:
-        {
-            this->HandleScreenFilePending( fileSize, fileDataBuffer );
+        case eScreenFilePending: {
+            this->HandleScreenFilePending(fileSize, fileDataBuffer);
         }
-        break;
+            break;
 
-        case ePageFilePending:
-        {
-            this->HandlePageFilePending( fileSize, fileDataBuffer );
+        case ePageFilePending: {
+            this->HandlePageFilePending(fileSize, fileDataBuffer);
         }
-        break;
+            break;
 
-        default:
-        {
-            rAssert( 0 );
+        default: {
+            rAssert(0);
         }
-        break;
+            break;
     }
 
     //
@@ -207,14 +193,13 @@ void FeProjectLoader::OnFileLoadComplete
     // the file is read into.  It's allocated inside AsyncFileLoader.
     //
 #ifdef P3D_PS2
-    free( fileDataBuffer );
+    free(fileDataBuffer);
 #else
-    delete [] fileDataBuffer;
+    delete[] fileDataBuffer;
 #endif
 
     return;
 }
-
 
 
 //===========================================================================
@@ -229,19 +214,18 @@ void FeProjectLoader::OnFileLoadComplete
 // Return:      None.
 //
 //===========================================================================
-void FeProjectLoader::OnResourceLoadComplete()
-{
+void FeProjectLoader::OnResourceLoadComplete() {
     //
     // DARWIN TODO: Is this static function how we really want to implement
     // this callback?
     //
-    FeApp::GetInstance()->OnProjectLoadComplete( mpProject );
+    FeApp::GetInstance()->OnProjectLoadComplete(mpProject);
 
     //
     // Deleting the project is now the responsibility of the FeApp.
     //
     mpProject = NULL;
-    
+
     return;
 }
 
@@ -264,50 +248,48 @@ void FeProjectLoader::OnResourceLoadComplete()
 //
 //===========================================================================
 void FeProjectLoader::HandlePageFilePending
-(
-    const unsigned int fileSize,
-    char* fileDataBuffer
-)
-{
-    rValid( fileDataBuffer );
+        (
+                const unsigned int fileSize,
+                char *fileDataBuffer
+        ) {
+    rValid(fileDataBuffer);
 
     //
     // Build the XML tree.
     //
     XMLTree xmlTree;
 
-    bool ok = xmlTree.LoadTreeFromBuffer( fileDataBuffer,
-                                          fileSize,
-                                          TAG_Page );
-    rAssert( true == ok );
+    bool ok = xmlTree.LoadTreeFromBuffer(fileDataBuffer,
+                                         fileSize,
+                                         TAG_Page);
+    rAssert(true == ok);
 
     //
-    // Parse and popluate the resources and layers (i.e. all the drawables ).
+    // Parse and popluate the resources and layers (i.e. all the drawables).
     //
-    FeEntity* current = mpPageIterator->Current();
-    FePage* pCurrentPage = dynamic_cast< FePage* >( current );
-       
-    this->ParsePageResources( &xmlTree, pCurrentPage );
+    FeEntity *current = mpPageIterator->Current();
+    FePage *pCurrentPage = dynamic_cast<FePage *>(current);
 
-    this->ParsePageLayers( &xmlTree, pCurrentPage );
+    this->ParsePageResources(&xmlTree, pCurrentPage);
+
+    this->ParsePageLayers(&xmlTree, pCurrentPage);
 
 
     //
     // Are we done with loading the pages?
     //
-    FeEntity* next = mpPageIterator->Next();
-    FePage* pNextPage = dynamic_cast< FePage* >( next );
-    
+    FeEntity *next = mpPageIterator->Next();
+    FePage *pNextPage = dynamic_cast<FePage *>(next);
+
     //
     // WARNING: At one time there was a PS2 bug that cause the above
     //          to continue calling Next() until it caused a crash.
     //          The workaround for this was to split up the calls like this:
     //
     //          FeEntity* pEntity = mpPageIterator->Next();
-    //          FePage* pNextPage = dynamic_cast<FePage*>( pEntity );
+    //          FePage* pNextPage = dynamic_cast<FePage*>(pEntity);
 
-    if( NULL == pNextPage )
-    {
+    if (NULL == pNextPage) {
         delete mpPageIterator;
         mpPageIterator = NULL;
 
@@ -317,20 +299,18 @@ void FeProjectLoader::HandlePageFilePending
         //
         // Now load the resources!
         //
-        PascalCString fullResourcePath( mpProject->GetProjectPath() );
+        PascalCString fullResourcePath(mpProject->GetProjectPath());
         fullResourcePath += mpProject->GetResPath();
-        FeApp::GetInstance()->GetFeResourceManager().SetResourcePath( fullResourcePath );
+        FeApp::GetInstance()->GetFeResourceManager().SetResourcePath(fullResourcePath);
 
-        FeApp::GetInstance()->OnProjectLoadComplete( this->mpProject );
+        FeApp::GetInstance()->OnProjectLoadComplete(this->mpProject);
 
         //
         // Ownership of the project has been passed off to FeApp.
         //
         mpProject = NULL;
-    }
-    else
-    {
-        this->LoadPage( pNextPage );
+    } else {
+        this->LoadPage(pNextPage);
     }
 
     return;
@@ -350,18 +330,16 @@ void FeProjectLoader::HandlePageFilePending
 //
 //===========================================================================
 void FeProjectLoader::ParsePageResources
-(
-    XMLTree* pXmlTree,
-    FePage* pOwningPage
-)
-{
-    rValid( pXmlTree );
-    rValid( pOwningPage );
+        (
+                XMLTree *pXmlTree,
+                FePage *pOwningPage
+        ) {
+    rValid(pXmlTree);
+    rValid(pOwningPage);
 
-    XMLTree* pResourceSubTree = pXmlTree->GetSubTreeByName( TAG_Resources );
-    
-    if( NULL == pResourceSubTree)
-    {
+    XMLTree *pResourceSubTree = pXmlTree->GetSubTreeByName(TAG_Resources);
+
+    if (NULL == pResourceSubTree) {
         //
         // No resources.
         //
@@ -371,29 +349,27 @@ void FeProjectLoader::ParsePageResources
     //------------------------------------------------------------------------
     // Parse the Image Resources.
     //------------------------------------------------------------------------
-    XMLTree* pImageSubTree = pResourceSubTree->GetSubTreeByName( TAG_Images );
-    
-    if( NULL != pImageSubTree )
-    {
+    XMLTree *pImageSubTree = pResourceSubTree->GetSubTreeByName(TAG_Images);
+
+    if (NULL != pImageSubTree) {
         // There are images.
         int i = 0;
-        
+
         PascalCString alias;
         PascalCString filename;
-                
-        while( pImageSubTree->SetCurrentElementByIndex( i ) )
-        {
+
+        while (pImageSubTree->SetCurrentElementByIndex(i)) {
             int charCount;
-            
-            charCount = pImageSubTree->GetAttribute( TAG_AttrName, alias );
-            rAssert( 0 != charCount );
-                
-            
-            charCount = pImageSubTree->GetAttribute( TAG_AttrData, filename );
-            rAssert( 0 != charCount );
-        
-            pOwningPage->AddImageResourceEntry( alias, filename );
-            
+
+            charCount = pImageSubTree->GetAttribute(TAG_AttrName, alias);
+            rAssert(0 != charCount);
+
+
+            charCount = pImageSubTree->GetAttribute(TAG_AttrData, filename);
+            rAssert(0 != charCount);
+
+            pOwningPage->AddImageResourceEntry(alias, filename);
+
             ++i;
         }
 
@@ -404,31 +380,29 @@ void FeProjectLoader::ParsePageResources
     //------------------------------------------------------------------------
     // Parse the Text Bible Resources.
     //------------------------------------------------------------------------
-    XMLTree* pTextBibleSubTree = pResourceSubTree->GetSubTreeByName( TAG_Bibles );
-    
-    if( NULL != pTextBibleSubTree )
-    {
+    XMLTree *pTextBibleSubTree = pResourceSubTree->GetSubTreeByName(TAG_Bibles);
+
+    if (NULL != pTextBibleSubTree) {
         int i = 0;
 
         PascalCString alias;
         PascalCString filename;
-        
-        while( pTextBibleSubTree->SetCurrentElementByIndex( i ) )
-        {
-            int charCount;
-            
-            charCount = pTextBibleSubTree->GetAttribute( TAG_AttrName, alias );
-            rAssert( 0 != charCount );
-                
-            
-            charCount = pTextBibleSubTree->GetAttribute( TAG_AttrData, filename );
-            rAssert( 0 != charCount );
 
-            pOwningPage->AddTextBibleResourceEntry( alias, filename );
-            
+        while (pTextBibleSubTree->SetCurrentElementByIndex(i)) {
+            int charCount;
+
+            charCount = pTextBibleSubTree->GetAttribute(TAG_AttrName, alias);
+            rAssert(0 != charCount);
+
+
+            charCount = pTextBibleSubTree->GetAttribute(TAG_AttrData, filename);
+            rAssert(0 != charCount);
+
+            pOwningPage->AddTextBibleResourceEntry(alias, filename);
+
             ++i;
         }
-        
+
         delete pTextBibleSubTree;
         pTextBibleSubTree = NULL;
     }
@@ -436,31 +410,29 @@ void FeProjectLoader::ParsePageResources
     //------------------------------------------------------------------------
     // Parse the Text Style Resources.
     //------------------------------------------------------------------------
-    XMLTree* pTextStyleSubTree = pResourceSubTree->GetSubTreeByName( TAG_TextStyles );
-    
-    if( NULL != pTextStyleSubTree )
-    {
+    XMLTree *pTextStyleSubTree = pResourceSubTree->GetSubTreeByName(TAG_TextStyles);
+
+    if (NULL != pTextStyleSubTree) {
         int i = 0;
 
         PascalCString alias;
         PascalCString filename;
-        
-        while( pTextStyleSubTree->SetCurrentElementByIndex( i ) )
-        {
-            int charCount;
-            
-            charCount = pTextStyleSubTree->GetAttribute( TAG_AttrName, alias );
-            rAssert( 0 != charCount );
-                
-            
-            charCount = pTextStyleSubTree->GetAttribute( TAG_AttrData, filename );
-            rAssert( 0 != charCount );
 
-            pOwningPage->AddTextStyleResourceEntry( alias, filename );
-            
+        while (pTextStyleSubTree->SetCurrentElementByIndex(i)) {
+            int charCount;
+
+            charCount = pTextStyleSubTree->GetAttribute(TAG_AttrName, alias);
+            rAssert(0 != charCount);
+
+
+            charCount = pTextStyleSubTree->GetAttribute(TAG_AttrData, filename);
+            rAssert(0 != charCount);
+
+            pOwningPage->AddTextStyleResourceEntry(alias, filename);
+
             ++i;
         }
-        
+
         delete pTextStyleSubTree;
         pTextStyleSubTree = NULL;
     }
@@ -468,31 +440,29 @@ void FeProjectLoader::ParsePageResources
     //------------------------------------------------------------------------
     // Parse the Movie Clip Resources.
     //------------------------------------------------------------------------
-    XMLTree* pMovieClipSubTree = pResourceSubTree->GetSubTreeByName( TAG_MovieClips );
-    
-    if( NULL != pMovieClipSubTree )
-    {
+    XMLTree *pMovieClipSubTree = pResourceSubTree->GetSubTreeByName(TAG_MovieClips);
+
+    if (NULL != pMovieClipSubTree) {
         int i = 0;
 
         PascalCString alias;
         PascalCString filename;
-        
-        while( pMovieClipSubTree->SetCurrentElementByIndex( i ) )
-        {
-            int charCount;
-            
-            charCount = pMovieClipSubTree->GetAttribute( TAG_AttrName, alias );
-            rAssert( 0 != charCount );
-                
-            
-            charCount = pMovieClipSubTree->GetAttribute( TAG_AttrData, filename );
-            rAssert( 0 != charCount );
 
-            pOwningPage->AddMovieClipResourceEntry( alias, filename );
-            
+        while (pMovieClipSubTree->SetCurrentElementByIndex(i)) {
+            int charCount;
+
+            charCount = pMovieClipSubTree->GetAttribute(TAG_AttrName, alias);
+            rAssert(0 != charCount);
+
+
+            charCount = pMovieClipSubTree->GetAttribute(TAG_AttrData, filename);
+            rAssert(0 != charCount);
+
+            pOwningPage->AddMovieClipResourceEntry(alias, filename);
+
             ++i;
         }
-        
+
         delete pMovieClipSubTree;
         pMovieClipSubTree = NULL;
     }
@@ -500,10 +470,9 @@ void FeProjectLoader::ParsePageResources
     //------------------------------------------------------------------------
     // Parse the 3D Model Resources.
     //------------------------------------------------------------------------
-    XMLTree* p3dModelSubTree = pResourceSubTree->GetSubTreeByName( TAG_3dModels );
-    
-    if( NULL != p3dModelSubTree )
-    {
+    XMLTree *p3dModelSubTree = pResourceSubTree->GetSubTreeByName(TAG_3dModels);
+
+    if (NULL != p3dModelSubTree) {
         int i = 0;
 
         PascalCString alias;
@@ -511,39 +480,40 @@ void FeProjectLoader::ParsePageResources
         PascalCString inventoryName;
         PascalCString animationName;
         PascalCString cameraName;
-        
-        while( p3dModelSubTree->SetCurrentElementByIndex( i ) )
-        {
+
+        while (p3dModelSubTree->SetCurrentElementByIndex(i)) {
             int charCount;
-            
-            charCount = p3dModelSubTree->GetAttribute( TAG_AttrName, alias );
-            rAssert( 0 != charCount );//this assertion fires if there was no alias in the XML file                
-            
-            charCount = p3dModelSubTree->GetAttribute( TAG_AttrData, filename );
-            rAssert( 0 != charCount );//this assertion fires if there was no filename in the XML file
 
-            charCount = p3dModelSubTree->GetAttribute( TAG_Pure3dInventoryName, inventoryName );
-            rAssert( 0 != charCount );//this assertion fires if there was no p3d inventory name  in the XML file
+            charCount = p3dModelSubTree->GetAttribute(TAG_AttrName, alias);
+            rAssert(0 !=
+                    charCount);//this assertion fires if there was no alias in the XML file
 
-            charCount = p3dModelSubTree->GetAttribute( TAG_Pure3dAnimationName, animationName );
-            //rAssert( 0 != charCount );//this assertion fires if there was no multicontroller in the XML file
+            charCount = p3dModelSubTree->GetAttribute(TAG_AttrData, filename);
+            rAssert(0 != charCount);//this assertion fires if there was no filename in the XML file
 
-            charCount = p3dModelSubTree->GetAttribute( TAG_Pure3dCameraName, cameraName );
-            //rAssert( 0 != charCount );  //this assertion fires if there was no camera in the XML file
+            charCount = p3dModelSubTree->GetAttribute(TAG_Pure3dInventoryName, inventoryName);
+            rAssert(0 !=
+                    charCount);//this assertion fires if there was no p3d inventory name  in the XML file
+
+            charCount = p3dModelSubTree->GetAttribute(TAG_Pure3dAnimationName, animationName);
+            //rAssert(0 != charCount);//this assertion fires if there was no multicontroller in the XML file
+
+            charCount = p3dModelSubTree->GetAttribute(TAG_Pure3dCameraName, cameraName);
+            //rAssert(0 != charCount);  //this assertion fires if there was no camera in the XML file
 
 
             pOwningPage->Add3dModelResourceEntry
-            ( 
-                alias, 
-                filename, 
-                inventoryName,
-                animationName,
-                cameraName
-            );
-            
+                    (
+                            alias,
+                            filename,
+                            inventoryName,
+                            animationName,
+                            cameraName
+                    );
+
             ++i;
         }
-        
+
         delete p3dModelSubTree;
         p3dModelSubTree = NULL;
     }
@@ -551,7 +521,6 @@ void FeProjectLoader::ParsePageResources
 
     delete pResourceSubTree;
 }
-
 
 
 //===========================================================================
@@ -568,65 +537,57 @@ void FeProjectLoader::ParsePageResources
 //
 //===========================================================================
 void FeProjectLoader::ParsePageLayers
-(
-    XMLTree* pXmlTree,
-    FePage* pOwningPage 
-)
-{
-    rValid( pXmlTree );
-    rValid( pOwningPage );
+        (
+                XMLTree *pXmlTree,
+                FePage *pOwningPage
+        ) {
+    rValid(pXmlTree);
+    rValid(pOwningPage);
 
     //-------------------------------------------------------------------------
     // Ripped off from FeLoadPage::LoadLayers()
     //-------------------------------------------------------------------------
 
     PascalCString layerName;
-    
-    XMLTree* pLayersSubTree = pXmlTree->GetSubTreeByName( TAG_Layers );
-    rAssert( NULL != pLayersSubTree );  // There must be layers in a page.
+
+    XMLTree *pLayersSubTree = pXmlTree->GetSubTreeByName(TAG_Layers);
+    rAssert(NULL != pLayersSubTree);  // There must be layers in a page.
 
     int i = 0;
-    
-    XMLTree* pCurrentLayerTree = pLayersSubTree->GetSubTreeByIndex( i );
-    
-    while( NULL != pCurrentLayerTree )
-    {
-        int charCount = pCurrentLayerTree->GetAttribute( TAG_AttrName, layerName );
-        rAssert( 0 != charCount );  // There must be a name.
+
+    XMLTree *pCurrentLayerTree = pLayersSubTree->GetSubTreeByIndex(i);
+
+    while (NULL != pCurrentLayerTree) {
+        int charCount = pCurrentLayerTree->GetAttribute(TAG_AttrName, layerName);
+        rAssert(0 != charCount);  // There must be a name.
 
         PascalCString visibilityString;
         bool visibility = false;
-        charCount = pCurrentLayerTree->GetAttribute( TAG_AttrVisible, visibilityString );
-        if( visibilityString == "true" )
-        {
+        charCount = pCurrentLayerTree->GetAttribute(TAG_AttrVisible, visibilityString);
+        if (visibilityString == "true") {
             visibility = true;
-        }
-        else
-        {
+        } else {
             visibility = false;
         }
-        
+
         //
         // Did layer exist?  if so, just reload it instead of adding it.
         //
-        Scrooby::Layer* sLayer = pOwningPage->GetLayer( layerName );
-        FeLayer* pLayer = dynamic_cast< FeLayer* >( sLayer );
-        
-        if( NULL == pLayer )
-        {
-            pLayer = pOwningPage->AddLayer( layerName );
-        }
-        else
-        {
-            pLayer->Reset();               
+        Scrooby::Layer *sLayer = pOwningPage->GetLayer(layerName);
+        FeLayer *pLayer = dynamic_cast<FeLayer *>(sLayer);
+
+        if (NULL == pLayer) {
+            pLayer = pOwningPage->AddLayer(layerName);
+        } else {
+            pLayer->Reset();
         }
 
-        pLayer->SetVisible( visibility );
-        this->ParseDrawables( pCurrentLayerTree, pLayer );
+        pLayer->SetVisible(visibility);
+        this->ParseDrawables(pCurrentLayerTree, pLayer);
 
         delete pCurrentLayerTree;
-        
-        pCurrentLayerTree = pLayersSubTree->GetSubTreeByIndex( ++i );
+
+        pCurrentLayerTree = pLayersSubTree->GetSubTreeByIndex(++i);
     }
 
     delete pLayersSubTree;
@@ -648,83 +609,68 @@ void FeProjectLoader::ParsePageLayers
 //
 //===========================================================================
 void FeProjectLoader::ParseDrawables
-(
-    XMLTree* pXmlTree,
-    FeOwner* pOwner
-)
-{
-    rValid( pXmlTree );
-    rValid( pOwner );
+        (
+                XMLTree *pXmlTree,
+                FeOwner *pOwner
+        ) {
+    rValid(pXmlTree);
+    rValid(pOwner);
 
-    XMLTree* pDrawingElementsSubTree = pXmlTree->GetSubTreeByName( TAG_DrawingElements );
-    
+    XMLTree *pDrawingElementsSubTree = pXmlTree->GetSubTreeByName(TAG_DrawingElements);
+
     int i = 0;
-    
-    if( NULL != pDrawingElementsSubTree )
-    {
-        XMLTree* pCurrentDElementSubTree = pDrawingElementsSubTree->GetSubTreeByIndex( i );
-    
+
+    if (NULL != pDrawingElementsSubTree) {
+        XMLTree *pCurrentDElementSubTree = pDrawingElementsSubTree->GetSubTreeByIndex(i);
+
         //
         // Work through all the drawing elements on this page.
         //
-        while( NULL != pCurrentDElementSubTree )
-        {
+        while (NULL != pCurrentDElementSubTree) {
             PascalCString drawingElementType;
             int charCount;
 
-            charCount = pCurrentDElementSubTree->GetName( drawingElementType );
-            rAssert( 0 != charCount ); // Must have a name for this type of drawing element.
+            charCount = pCurrentDElementSubTree->GetName(drawingElementType);
+            rAssert(0 != charCount); // Must have a name for this type of drawing element.
 
             //
             // Figure out what type of drawing element we've got and parse it.
             //
-            if( ( ::rstricmp( drawingElementType, TAG_Sprite ) == 0 ) ||
-                ( ::rstricmp( drawingElementType, TAG_MultiSprite ) == 0 ) )
-            {
-                this->ParseSprite( pCurrentDElementSubTree, pOwner );
-            }
-            else if( ( ::rstricmp( drawingElementType, TAG_Text ) == 0 ) ||
-                     ( ::rstricmp( drawingElementType, TAG_MultiText ) == 0 ) )
-            {
-                this->ParseText( pCurrentDElementSubTree, pOwner );
-            }
-            else if( ::rstricmp( drawingElementType, TAG_Polygon ) == 0 )
-            {
-                this->ParsePolygon( pCurrentDElementSubTree, pOwner );
-            }
-            else if( ::rstricmp( drawingElementType, TAG_Group ) == 0 )
-            {
-                this->ParseGroup( pCurrentDElementSubTree, pOwner );
-            }
-            else if( ::rstricmp( drawingElementType, TAG_Movie ) == 0 )
-            {
-                this->ParseMovie( pCurrentDElementSubTree, pOwner );
-            }
-            else if( ::rstricmp( drawingElementType, TAG_Pure3dObject ) == 0 )
-            {
-                this->ParsePure3dObject( pCurrentDElementSubTree, pOwner );
+            if ((::rstricmp(drawingElementType, TAG_Sprite) == 0) ||
+                (::rstricmp(drawingElementType, TAG_MultiSprite) == 0)) {
+                this->ParseSprite(pCurrentDElementSubTree, pOwner);
+            } else if ((::rstricmp(drawingElementType, TAG_Text) == 0) ||
+                       (::rstricmp(drawingElementType, TAG_MultiText) == 0)) {
+                this->ParseText(pCurrentDElementSubTree, pOwner);
+            } else if (::rstricmp(drawingElementType, TAG_Polygon) == 0) {
+                this->ParsePolygon(pCurrentDElementSubTree, pOwner);
+            } else if (::rstricmp(drawingElementType, TAG_Group) == 0) {
+                this->ParseGroup(pCurrentDElementSubTree, pOwner);
+            } else if (::rstricmp(drawingElementType, TAG_Movie) == 0) {
+                this->ParseMovie(pCurrentDElementSubTree, pOwner);
+            } else if (::rstricmp(drawingElementType, TAG_Pure3dObject) == 0) {
+                this->ParsePure3dObject(pCurrentDElementSubTree, pOwner);
             }
 
             //
             // Free up this sub-tree.
             //
             delete pCurrentDElementSubTree;
-            
+
             //
             // Get the next one.
             //
-            pCurrentDElementSubTree = pDrawingElementsSubTree->GetSubTreeByIndex( ++i );
+            pCurrentDElementSubTree = pDrawingElementsSubTree->GetSubTreeByIndex(++i);
         }
-        
+
         //
         // Finished with all the drawing elements on this page. Clean up.
         //
         delete pDrawingElementsSubTree;
-        
+
         return;
     }
 }
-
 
 
 //===========================================================================
@@ -740,33 +686,29 @@ void FeProjectLoader::ParseDrawables
 //
 //===========================================================================
 void FeProjectLoader::ParseGroup
-(
-    XMLTree* pXmlTree,
-    FeOwner* pOwner
-)
-{
-    rValid( pXmlTree );
-    rValid( pOwner );
-    
+        (
+                XMLTree *pXmlTree,
+                FeOwner *pOwner
+        ) {
+    rValid(pXmlTree);
+    rValid(pOwner);
+
     //
     // Read the group's name.
     //
     PascalCString name;
-    int charCount = pXmlTree->GetAttribute( TAG_AttrName, name );
-    rAssert( 0 != charCount ); // Must have a name.
+    int charCount = pXmlTree->GetAttribute(TAG_AttrName, name);
+    rAssert(0 != charCount); // Must have a name.
 
     // Did group exist?  if so, just reload it instead of adding it
     //
-    Scrooby::Group* sGroup = pOwner->GetGroup( name );
-    FeGroup* pGroup;
-    pGroup = dynamic_cast< FeGroup* >( sGroup );
+    Scrooby::Group *sGroup = pOwner->GetGroup(name);
+    FeGroup *pGroup;
+    pGroup = dynamic_cast<FeGroup *>(sGroup);
 
-    if( NULL == pGroup )
-    {
-        pGroup = pOwner->AddGroup( name );
-    }
-    else
-    {
+    if (NULL == pGroup) {
+        pGroup = pOwner->AddGroup(name);
+    } else {
         pGroup->Reset();
     }
 
@@ -774,13 +716,13 @@ void FeProjectLoader::ParseGroup
     //Read the group's alpha
     //
     int alpha;
-    bool success = pXmlTree->GetAttribute( TAG_AttrAlpha, &alpha );
-    pGroup->SetAlpha( alpha / 256.0f );
+    bool success = pXmlTree->GetAttribute(TAG_AttrAlpha, &alpha);
+    pGroup->SetAlpha(alpha / 256.0f);
 
     //
     // Recurse on the drawables contained in this group.
     //
-    this->ParseDrawables( pXmlTree, pGroup );
+    this->ParseDrawables(pXmlTree, pGroup);
 
     return;
 }
@@ -799,39 +741,35 @@ void FeProjectLoader::ParseGroup
 //
 //===========================================================================
 void FeProjectLoader::ParsePolygon
-(
-    XMLTree* pXmlTree,
-    FeOwner* pOwner
-)
-{
-    rValid( pXmlTree );
-    rValid( pOwner );
+        (
+                XMLTree *pXmlTree,
+                FeOwner *pOwner
+        ) {
+    rValid(pXmlTree);
+    rValid(pOwner);
 
     //
     // Read the name.
     //
     PascalCString polygonName;
-    
-    int charCount = pXmlTree->GetAttribute( TAG_AttrName, polygonName );
-    rAssert( 0 != charCount ); // Must have a name.
-    
-    XMLTree* pVerticesTree = pXmlTree->GetSubTreeByName( TAG_Vertexes );
-    rValid( pVerticesTree );
-   
+
+    int charCount = pXmlTree->GetAttribute(TAG_AttrName, polygonName);
+    rAssert(0 != charCount); // Must have a name.
+
+    XMLTree *pVerticesTree = pXmlTree->GetSubTreeByName(TAG_Vertexes);
+    rValid(pVerticesTree);
+
     //
     // Did polygon already exist?  if so, just reload it.
     //
     bool isReload = false;
-    
-    Scrooby::Polygon* sPolygon = pOwner->GetPolygon( polygonName );
-    FePolygon* pPolygon = dynamic_cast<FePolygon*>( sPolygon );
 
-    if( NULL == pPolygon )
-    {
-        pPolygon = pOwner->AddPolygon( polygonName );
-    }
-    else
-    {
+    Scrooby::Polygon *sPolygon = pOwner->GetPolygon(polygonName);
+    FePolygon *pPolygon = dynamic_cast<FePolygon *>(sPolygon);
+
+    if (NULL == pPolygon) {
+        pPolygon = pOwner->AddPolygon(polygonName);
+    } else {
         pPolygon->Reset();
         isReload = true;
     }
@@ -841,79 +779,76 @@ void FeProjectLoader::ParsePolygon
     //
     int i = 0;
 
-    XMLTree* pCurrentVertexTree = pVerticesTree->GetSubTreeByIndex( i );
-    
-    while( NULL != pCurrentVertexTree )
-    {
+    XMLTree *pCurrentVertexTree = pVerticesTree->GetSubTreeByIndex(i);
+
+    while (NULL != pCurrentVertexTree) {
         bool ok;
 
         //
         // Read and set the vertex position.
         //
-        ok = pCurrentVertexTree->SetCurrentElementByName( TAG_Position );
-        rAssert( true == ok );
+        ok = pCurrentVertexTree->SetCurrentElementByName(TAG_Position);
+        rAssert(true == ok);
 
         int x;
-        ok = pCurrentVertexTree->GetAttribute( TAG_PositionX, &x );
-        rAssert( true == ok );
+        ok = pCurrentVertexTree->GetAttribute(TAG_PositionX, &x);
+        rAssert(true == ok);
 
         int y;
-        ok = pCurrentVertexTree->GetAttribute( TAG_PositionY, &y );
-        rAssert( true == ok );
-        
-        pPolygon->SetVertexLocationNoRedraw( i, x, y );
+        ok = pCurrentVertexTree->GetAttribute(TAG_PositionY, &y);
+        rAssert(true == ok);
 
-        
+        pPolygon->SetVertexLocationNoRedraw(i, x, y);
+
+
         //
         // Read and set the vertex colour and alpha.
         //
-        ok = pCurrentVertexTree->SetCurrentElementByName( TAG_Color );
-        rAssert( true == ok );
+        ok = pCurrentVertexTree->SetCurrentElementByName(TAG_Color);
+        rAssert(true == ok);
 
         int red;
-        ok = pCurrentVertexTree->GetAttribute( TAG_ColorRed, &red );
-        rAssert( true == ok );
+        ok = pCurrentVertexTree->GetAttribute(TAG_ColorRed, &red);
+        rAssert(true == ok);
 
         int green;
-        ok = pCurrentVertexTree->GetAttribute( TAG_ColorGreen, &green );
-        rAssert( true == ok );
-        
+        ok = pCurrentVertexTree->GetAttribute(TAG_ColorGreen, &green);
+        rAssert(true == ok);
+
         int blue;
-        ok = pCurrentVertexTree->GetAttribute( TAG_ColorBlue, &blue );
-        rAssert( true == ok );
-        
-        pPolygon->SetVertexColourNoRedraw( i, red, green, blue );
+        ok = pCurrentVertexTree->GetAttribute(TAG_ColorBlue, &blue);
+        rAssert(true == ok);
+
+        pPolygon->SetVertexColourNoRedraw(i, red, green, blue);
 
         int alpha;
-        ok = pCurrentVertexTree->GetAttribute( TAG_ColorAlpha, &alpha );
-        rAssert( true == ok );
+        ok = pCurrentVertexTree->GetAttribute(TAG_ColorAlpha, &alpha);
+        rAssert(true == ok);
 
-        pPolygon->SetVertexAlphaNoRedraw( i, float( alpha / 255.0f ) );
-        
+        pPolygon->SetVertexAlphaNoRedraw(i, float(alpha / 255.0f));
+
         //
         // Release the current vertex tree and try to get the next one.
         //
         delete pCurrentVertexTree;
-        
-        pCurrentVertexTree = pVerticesTree->GetSubTreeByIndex( ++i );
+
+        pCurrentVertexTree = pVerticesTree->GetSubTreeByIndex(++i);
     }
-    
-    pPolygon->SetNumVertex( i );
+
+    pPolygon->SetNumVertex(i);
 
     //
     // If we are reloading the poly, then there should already be a handle, so it is safe
     // to call display.
     //
-    if( isReload )
-    {
+    if (isReload) {
         pPolygon->Display();
     }
 
     delete pVerticesTree;
-    
-    return;
-}    
 
+    return;
+}
 
 
 //===========================================================================
@@ -929,61 +864,57 @@ void FeProjectLoader::ParsePolygon
 //
 //===========================================================================
 void FeProjectLoader::ParseSprite
-(
-    XMLTree* pXmlTree,
-    FeOwner* pOwner
-)
-{
-    rValid( pXmlTree );
-    rValid( pOwner );
+        (
+                XMLTree *pXmlTree,
+                FeOwner *pOwner
+        ) {
+    rValid(pXmlTree);
+    rValid(pOwner);
 
     //
     // Is this a sprite or multisprite?
     //
     PascalCString spriteType;
 
-    int charCount = pXmlTree->GetName( spriteType );
-    rAssert( 0 != charCount ); // Must have a type!
+    int charCount = pXmlTree->GetName(spriteType);
+    rAssert(0 != charCount); // Must have a type!
 
     //
     // Read the name of this drawable.
     //
     PascalCString spriteName;
-    
-    charCount = pXmlTree->GetAttribute( TAG_AttrName, spriteName );
-    rAssert( 0 != charCount ); // Must have a name!
 
-    
+    charCount = pXmlTree->GetAttribute(TAG_AttrName, spriteName);
+    rAssert(0 != charCount); // Must have a name!
+
+
     //
     // Read and set the position.
     //
     bool ok;
 
-    ok = pXmlTree->SetCurrentElementByName( TAG_Position );
-    rAssert( true == ok );
+    ok = pXmlTree->SetCurrentElementByName(TAG_Position);
+    rAssert(true == ok);
 
     int x;
-    ok = pXmlTree->GetAttribute( TAG_PositionX, &x );
-    rAssert( true == ok );
+    ok = pXmlTree->GetAttribute(TAG_PositionX, &x);
+    rAssert(true == ok);
 
     int y;
-    ok = pXmlTree->GetAttribute( TAG_PositionY, &y );
-    rAssert( true == ok );
+    ok = pXmlTree->GetAttribute(TAG_PositionY, &y);
+    rAssert(true == ok);
 
-    
+
     // Did sprite already exist?  if so, just reload it instead of adding it
     //
-    Scrooby::Sprite* sSprite = pOwner->GetSprite( spriteName );
-    FeSprite* pSprite = dynamic_cast< FeSprite* >( sSprite );
-    
+    Scrooby::Sprite *sSprite = pOwner->GetSprite(spriteName);
+    FeSprite *pSprite = dynamic_cast<FeSprite *>(sSprite);
+
     bool isReload = false;
 
-    if( NULL == pSprite )
-    {
-        pSprite = pOwner->AddSprite( spriteName, x, y );
-    }
-    else
-    {
+    if (NULL == pSprite) {
+        pSprite = pOwner->AddSprite(spriteName, x, y);
+    } else {
         pSprite->Reset();
         isReload = true;
     }
@@ -991,118 +922,113 @@ void FeProjectLoader::ParseSprite
     //
     //read and set the color
     //
-    ok = pXmlTree->SetCurrentElementByName( TAG_Color );
-    rAssert( true == ok );
+    ok = pXmlTree->SetCurrentElementByName(TAG_Color);
+    rAssert(true == ok);
 
     int red;
-    ok = pXmlTree->GetAttribute( TAG_ColorRed, &red );
-    rAssert( true == ok );
+    ok = pXmlTree->GetAttribute(TAG_ColorRed, &red);
+    rAssert(true == ok);
 
     int green;
-    ok = pXmlTree->GetAttribute( TAG_ColorGreen, &green );
-    rAssert( true == ok );
+    ok = pXmlTree->GetAttribute(TAG_ColorGreen, &green);
+    rAssert(true == ok);
 
     int blue;
-    ok = pXmlTree->GetAttribute( TAG_ColorBlue, &blue );
-    rAssert( true == ok );
+    ok = pXmlTree->GetAttribute(TAG_ColorBlue, &blue);
+    rAssert(true == ok);
 
     int alpha;
-    ok = pXmlTree->GetAttribute( TAG_ColorAlpha, &alpha );
-    rAssert( true == ok );
+    ok = pXmlTree->GetAttribute(TAG_ColorAlpha, &alpha);
+    rAssert(true == ok);
 
-    pSprite->SetColourNoRedraw( tColour( red, green, blue, alpha ) );
+    pSprite->SetColourNoRedraw(tColour(red, green, blue, alpha));
 
 
     //
     // Read and set the bounding box.
     //
-    ok = pXmlTree->SetCurrentElementByName( TAG_Dimension );
-    rAssert( true == ok );
+    ok = pXmlTree->SetCurrentElementByName(TAG_Dimension);
+    rAssert(true == ok);
 
     int width;
-    ok = pXmlTree->GetAttribute( TAG_DimensionWidth, &width );
-    rAssert( true == ok );
+    ok = pXmlTree->GetAttribute(TAG_DimensionWidth, &width);
+    rAssert(true == ok);
 
     int height;
-    ok = pXmlTree->GetAttribute( TAG_DimensionHeight, &height );
-    rAssert( true == ok );
+    ok = pXmlTree->GetAttribute(TAG_DimensionHeight, &height);
+    rAssert(true == ok);
 
-    pSprite->SetBoundingBoxSize( width, height );
+    pSprite->SetBoundingBoxSize(width, height);
 
     //
     // Read and set the justification.
     //
-    ok = pXmlTree->SetCurrentElementByName( TAG_Justification );
-    rAssert( true == ok );
-        
+    ok = pXmlTree->SetCurrentElementByName(TAG_Justification);
+    rAssert(true == ok);
+
     PascalCString justification;
 
-    charCount = pXmlTree->GetAttribute( TAG_JustificationVertical, justification );
-    rAssert( 0 != charCount );
+    charCount = pXmlTree->GetAttribute(TAG_JustificationVertical, justification);
+    rAssert(0 != charCount);
 
-    pSprite->SetVerticalJustification( StringToJustificationEnum( justification ) );
+    pSprite->SetVerticalJustification(StringToJustificationEnum(justification));
 
-    charCount = pXmlTree->GetAttribute( TAG_JustificationHorizontal, justification );
-    rAssert( 0 != charCount );
+    charCount = pXmlTree->GetAttribute(TAG_JustificationHorizontal, justification);
+    rAssert(0 != charCount);
 
-    pSprite->SetHorizontalJustification( StringToJustificationEnum( justification ) );
+    pSprite->SetHorizontalJustification(StringToJustificationEnum(justification));
 
 
     //
     // If we are not reloading the page, then we need the images to be added
     //
-    if( !isReload )
-    {
+    if (!isReload) {
         //
         // Is it a sprite or multisprite?
         //
-        if( ::rstricmp( spriteType, TAG_Sprite ) == 0 )
-        {
+        if (::rstricmp(spriteType, TAG_Sprite) == 0) {
             //
             // There is only one image
             //
-            ok = pXmlTree->SetCurrentElementByName( TAG_Image );
-            rAssert( true == ok );
-                
+            ok = pXmlTree->SetCurrentElementByName(TAG_Image);
+            rAssert(true == ok);
+
             PascalCString imageName;
-            
-            int charCount = pXmlTree->GetAttribute( TAG_AttrName, imageName );
-            rAssert( 0 != charCount );
 
-            FeEntity* entity = mpPageIterator->Current();
-            FePage* pCurrentPage = dynamic_cast< FePage* >( entity );
+            int charCount = pXmlTree->GetAttribute(TAG_AttrName, imageName);
+            rAssert(0 != charCount);
 
-            unsigned int imageResourceID = pCurrentPage->FindImageResourceEntry( imageName );
+            FeEntity *entity = mpPageIterator->Current();
+            FePage *pCurrentPage = dynamic_cast<FePage *>(entity);
 
-            pSprite->AddImage( imageResourceID );
-        }
-        else
-        {
+            unsigned int imageResourceID = pCurrentPage->FindImageResourceEntry(imageName);
+
+            pSprite->AddImage(imageResourceID);
+        } else {
             //
             // Load multiple images.
             //
-            XMLTree* pImagesTree = pXmlTree->GetSubTreeByName( TAG_Images );
-            rValid( pImagesTree );
+            XMLTree *pImagesTree = pXmlTree->GetSubTreeByName(TAG_Images);
+            rValid(pImagesTree);
 
             int i = 0;
 
-            FeEntity* entity = mpPageIterator->Current();
-            FePage* pCurrentPage = dynamic_cast< FePage* >( entity );
+            FeEntity *entity = mpPageIterator->Current();
+            FePage *pCurrentPage = dynamic_cast<FePage *>(entity);
 
-            while( pImagesTree->SetCurrentElementByIndex( i ) )
-            {
+            while (pImagesTree->SetCurrentElementByIndex(i)) {
                 PascalCString imageName;
 
-                int charCount = pImagesTree->GetAttribute( TAG_AttrName, imageName );
-                rAssert( 0 != charCount );
-                
-                unsigned int imageResourceID = pCurrentPage->FindImageResourceEntry( imageName );
+                int charCount = pImagesTree->GetAttribute(TAG_AttrName, imageName);
+                rAssert(0 != charCount);
 
-                pSprite->AddImage( imageResourceID );
+                unsigned int imageResourceID = pCurrentPage->FindImageResourceEntry(imageName);
+
+                pSprite->AddImage(imageResourceID);
 
                 ++i;
             }
-            
+
             delete pImagesTree;
         }
     }
@@ -1110,8 +1036,7 @@ void FeProjectLoader::ParseSprite
     //
     // Redisplay the object
     //
-    if( isReload )
-    {
+    if (isReload) {
         pSprite->Display();
     }
 
@@ -1132,13 +1057,12 @@ void FeProjectLoader::ParseSprite
 //
 //===========================================================================
 void FeProjectLoader::ParseText
-(
-    XMLTree* pXmlTree,
-    FeOwner* pOwner
-)
-{
-    rValid( pXmlTree );
-    rValid( pOwner );
+        (
+                XMLTree *pXmlTree,
+                FeOwner *pOwner
+        ) {
+    rValid(pXmlTree);
+    rValid(pOwner);
 
     //
     // Is this a single text or multi-text?
@@ -1146,112 +1070,108 @@ void FeProjectLoader::ParseText
     PascalCString textType;
     int charCount;
 
-    charCount = pXmlTree->GetName( textType );
-    rAssert( 0 != charCount );
+    charCount = pXmlTree->GetName(textType);
+    rAssert(0 != charCount);
 
     //
     // Read the name of this drawable.
     //
     PascalCString textName;
 
-    charCount = pXmlTree->GetAttribute( TAG_AttrName, textName );
-    rAssert( 0 != charCount ); // Must have a name.
+    charCount = pXmlTree->GetAttribute(TAG_AttrName, textName);
+    rAssert(0 != charCount); // Must have a name.
 
-    
+
     //
     // Read and set the position.
     //
     bool ok;
-    ok = pXmlTree->SetCurrentElementByName( TAG_Position );
-    rAssert( true == ok );
-    
+    ok = pXmlTree->SetCurrentElementByName(TAG_Position);
+    rAssert(true == ok);
+
     int x;
-    ok = pXmlTree->GetAttribute( TAG_PositionX, &x );
-    rAssert( true == ok );
+    ok = pXmlTree->GetAttribute(TAG_PositionX, &x);
+    rAssert(true == ok);
 
     int y;
-    ok = pXmlTree->GetAttribute( TAG_PositionY, &y );
-    rAssert( true == ok );
+    ok = pXmlTree->GetAttribute(TAG_PositionY, &y);
+    rAssert(true == ok);
 
     // Did text exist?  if so, just reload it instead of adding it
     //
-    Scrooby::Text* sText = pOwner->GetText( textName );
-    FeText* pText = dynamic_cast< FeText* >( sText );
-    
+    Scrooby::Text *sText = pOwner->GetText(textName);
+    FeText *pText = dynamic_cast<FeText *>(sText);
+
     bool isReload = false;
 
-    if( NULL == pText )
-    {
-        pText = pOwner->AddText( textName, x, y );
-    }
-    else
-    {
+    if (NULL == pText) {
+        pText = pOwner->AddText(textName, x, y);
+    } else {
         pText->Reset();
         isReload = true;
     }
 
-    
+
     //
     // Read and set the bounding box.
     //
-    ok = pXmlTree->SetCurrentElementByName( TAG_Dimension );
-    rAssert( true == ok );
-    
-    int width;
-    ok = pXmlTree->GetAttribute( TAG_DimensionWidth, &width );
-    rAssert( true == ok );        
-    
-    int height;
-    ok = pXmlTree->GetAttribute( TAG_DimensionHeight, &height );
-    rAssert( true == ok );    
+    ok = pXmlTree->SetCurrentElementByName(TAG_Dimension);
+    rAssert(true == ok);
 
-    pText->SetBoundingBoxSize( width, height );
+    int width;
+    ok = pXmlTree->GetAttribute(TAG_DimensionWidth, &width);
+    rAssert(true == ok);
+
+    int height;
+    ok = pXmlTree->GetAttribute(TAG_DimensionHeight, &height);
+    rAssert(true == ok);
+
+    pText->SetBoundingBoxSize(width, height);
 
 
     //
     // Read and set the justification.
     //
-    ok = pXmlTree->SetCurrentElementByName( TAG_Justification );
-    rAssert( true == ok );
-        
+    ok = pXmlTree->SetCurrentElementByName(TAG_Justification);
+    rAssert(true == ok);
+
     PascalCString justification;
 
-    charCount = pXmlTree->GetAttribute( TAG_JustificationVertical, justification );
-    rAssert( 0 != charCount );
+    charCount = pXmlTree->GetAttribute(TAG_JustificationVertical, justification);
+    rAssert(0 != charCount);
 
-    pText->SetVerticalJustification( StringToJustificationEnum( justification ) );
+    pText->SetVerticalJustification(StringToJustificationEnum(justification));
 
-    charCount = pXmlTree->GetAttribute( TAG_JustificationHorizontal, justification );
-    rAssert( 0 != charCount );
+    charCount = pXmlTree->GetAttribute(TAG_JustificationHorizontal, justification);
+    rAssert(0 != charCount);
 
-    pText->SetHorizontalJustification( StringToJustificationEnum( justification ) );
+    pText->SetHorizontalJustification(StringToJustificationEnum(justification));
 
 
     //
     // Read and set the text style.
     //
-    ok = pXmlTree->SetCurrentElementByName( TAG_TextStyle );
-    rAssert( true == ok );
-    
-    PascalCString textStyleName;
-    charCount = pXmlTree->GetAttribute( TAG_AttrName, textStyleName );
-    rAssert( 0 != charCount );
+    ok = pXmlTree->SetCurrentElementByName(TAG_TextStyle);
+    rAssert(true == ok);
 
-    FeEntity* entity = mpPageIterator->Current();
-    FePage* pCurrentPage = dynamic_cast< FePage* >( entity );
-    rValid( pCurrentPage );
+    PascalCString textStyleName;
+    charCount = pXmlTree->GetAttribute(TAG_AttrName, textStyleName);
+    rAssert(0 != charCount);
+
+    FeEntity *entity = mpPageIterator->Current();
+    FePage *pCurrentPage = dynamic_cast<FePage *>(entity);
+    rValid(pCurrentPage);
 
     unsigned int textStyleResourceID;
-    textStyleResourceID = pCurrentPage->FindTextStyleResourceEntry( textStyleName );
+    textStyleResourceID = pCurrentPage->FindTextStyleResourceEntry(textStyleName);
 
-    pText->SetTextStyle( textStyleResourceID );
+    pText->SetTextStyle(textStyleResourceID);
 
 
     //
     // If we are reloading the page, remake all the text objects
     //
-    if( isReload )
-    {
+    if (isReload) {
         pText->DeleteChildren();
     }
 
@@ -1259,85 +1179,74 @@ void FeProjectLoader::ParseText
     //
     // Is it a text or multitext?
     //
-    if( ::rstricmp( textType, TAG_Text ) == 0 )
-    {
+    if (::rstricmp(textType, TAG_Text) == 0) {
         // There is only one text
-        ok = pXmlTree->SetCurrentElementByName( TAG_String );
-        rAssert( true == ok );
+        ok = pXmlTree->SetCurrentElementByName(TAG_String);
+        rAssert(true == ok);
 
         PascalCString textBibleName;
 
-        if( pXmlTree->GetAttribute( TAG_AttrBible, textBibleName ) == 0 )
-        {
+        if (pXmlTree->GetAttribute(TAG_AttrBible, textBibleName) == 0) {
             PascalCString hardCodedString;
 
-            charCount = pXmlTree->GetAttribute( TAG_HardCodedString, hardCodedString );
-            rAssert( 0 != charCount );
-            
-            pText->AddHardCodedString( hardCodedString );
-        }
-        else 
-        {
+            charCount = pXmlTree->GetAttribute(TAG_HardCodedString, hardCodedString);
+            rAssert(0 != charCount);
+
+            pText->AddHardCodedString(hardCodedString);
+        } else {
             PascalCString stringID;
-            
-            charCount = pXmlTree->GetAttribute( TAG_AttrStringID, stringID );
-            rAssert( 0 != charCount );
-            
-            unsigned int textBibleResourceID;
-            textBibleResourceID = pCurrentPage->FindTextBibleResourceEntry( textBibleName );
 
-            pText->AddTextBibleString( textBibleResourceID, stringID );
+            charCount = pXmlTree->GetAttribute(TAG_AttrStringID, stringID);
+            rAssert(0 != charCount);
+
+            unsigned int textBibleResourceID;
+            textBibleResourceID = pCurrentPage->FindTextBibleResourceEntry(textBibleName);
+
+            pText->AddTextBibleString(textBibleResourceID, stringID);
         }
 
-    }
-    else
-    {
+    } else {
         // Load multiple text
-        XMLTree* pStringsTree = pXmlTree->GetSubTreeByName( TAG_Strings );
-        rValid( pStringsTree );
-        
+        XMLTree *pStringsTree = pXmlTree->GetSubTreeByName(TAG_Strings);
+        rValid(pStringsTree);
+
         int i = 0;
 
-        while( pStringsTree->SetCurrentElementByIndex( i ) )
-        {
+        while (pStringsTree->SetCurrentElementByIndex(i)) {
             PascalCString textBibleName;
 
             //
             // Text bible string or hardcoded string?
             //
-            if( pStringsTree->GetAttribute( TAG_AttrBible, textBibleName ) == 0 )
-            {
+            if (pStringsTree->GetAttribute(TAG_AttrBible, textBibleName) == 0) {
                 PascalCString hardCodedString;
 
-                charCount = pStringsTree->GetAttribute( TAG_HardCodedString, hardCodedString );
-                rAssert( 0 != charCount );
-                
-                pText->AddHardCodedString( hardCodedString );
-            }
-            else 
-            {
-                PascalCString stringID;
-            
-                charCount = pStringsTree->GetAttribute( TAG_AttrStringID, stringID );
-                rAssert( 0 != charCount );
-                
-                unsigned int textBibleResourceID;
-                textBibleResourceID = pCurrentPage->FindTextBibleResourceEntry( textBibleName );
+                charCount = pStringsTree->GetAttribute(TAG_HardCodedString, hardCodedString);
+                rAssert(0 != charCount);
 
-                pText->AddTextBibleString( textBibleResourceID, stringID );
+                pText->AddHardCodedString(hardCodedString);
+            } else {
+                PascalCString stringID;
+
+                charCount = pStringsTree->GetAttribute(TAG_AttrStringID, stringID);
+                rAssert(0 != charCount);
+
+                unsigned int textBibleResourceID;
+                textBibleResourceID = pCurrentPage->FindTextBibleResourceEntry(textBibleName);
+
+                pText->AddTextBibleString(textBibleResourceID, stringID);
             }
 
             ++i;
         }
-        
+
         delete pStringsTree;
     }
 
     //
     // Redisplay the object
     //
-    if( isReload )
-    {
+    if (isReload) {
         pText->Display();
     }
 
@@ -1358,52 +1267,48 @@ void FeProjectLoader::ParseText
 //
 //===========================================================================
 void FeProjectLoader::ParseMovie
-(
-    XMLTree* pXmlTree,
-    FeOwner* pOwner
-)
-{
-    rValid( pXmlTree );
-    rValid( pOwner );
+        (
+                XMLTree *pXmlTree,
+                FeOwner *pOwner
+        ) {
+    rValid(pXmlTree);
+    rValid(pOwner);
 
     //
     // Read the name of this drawable.
     //
     PascalCString movieName;
-    
-    int charCount = pXmlTree->GetAttribute( TAG_AttrName, movieName );
-    rAssert( 0 != charCount ); // Must have a name!
 
-    
+    int charCount = pXmlTree->GetAttribute(TAG_AttrName, movieName);
+    rAssert(0 != charCount); // Must have a name!
+
+
     //
     // Read and set the position.
     //
     bool ok;
 
-    ok = pXmlTree->SetCurrentElementByName( TAG_Position );
-    rAssert( true == ok );
+    ok = pXmlTree->SetCurrentElementByName(TAG_Position);
+    rAssert(true == ok);
 
     int x;
-    ok = pXmlTree->GetAttribute( TAG_PositionX, &x );
-    rAssert( true == ok );
+    ok = pXmlTree->GetAttribute(TAG_PositionX, &x);
+    rAssert(true == ok);
 
     int y;
-    ok = pXmlTree->GetAttribute( TAG_PositionY, &y );
-    rAssert( true == ok );
-    
+    ok = pXmlTree->GetAttribute(TAG_PositionY, &y);
+    rAssert(true == ok);
+
     // Did sprite already exist?  if so, just reload it instead of adding it
     //
-    Scrooby::Movie* sMovie = pOwner->GetMovie( movieName );
-    FeMovie* pMovie = dynamic_cast< FeMovie* >( sMovie  );
-    
+    Scrooby::Movie *sMovie = pOwner->GetMovie(movieName);
+    FeMovie *pMovie = dynamic_cast<FeMovie *>(sMovie);
+
     bool isReload = false;
 
-    if( NULL == pMovie )
-    {
-        pMovie = pOwner->AddMovie( movieName, x, y );
-    }
-    else
-    {
+    if (NULL == pMovie) {
+        pMovie = pOwner->AddMovie(movieName, x, y);
+    } else {
         pMovie->Reset();
         isReload = true;
     }
@@ -1411,70 +1316,67 @@ void FeProjectLoader::ParseMovie
     //
     // Read and set the bounding box.
     //
-    ok = pXmlTree->SetCurrentElementByName( TAG_Dimension );
-    rAssert( true == ok );
+    ok = pXmlTree->SetCurrentElementByName(TAG_Dimension);
+    rAssert(true == ok);
 
     int width;
-    ok = pXmlTree->GetAttribute( TAG_DimensionWidth, &width );
-    rAssert( true == ok );
+    ok = pXmlTree->GetAttribute(TAG_DimensionWidth, &width);
+    rAssert(true == ok);
 
     int height;
-    ok = pXmlTree->GetAttribute( TAG_DimensionHeight, &height );
-    rAssert( true == ok );
+    ok = pXmlTree->GetAttribute(TAG_DimensionHeight, &height);
+    rAssert(true == ok);
 
-    pMovie->SetBoundingBoxSize( width, height );
+    pMovie->SetBoundingBoxSize(width, height);
 
     //
     // Read and set the justification.
     //
-    ok = pXmlTree->SetCurrentElementByName( TAG_Justification );
-    rAssert( true == ok );
-        
+    ok = pXmlTree->SetCurrentElementByName(TAG_Justification);
+    rAssert(true == ok);
+
     PascalCString justification;
 
-    charCount = pXmlTree->GetAttribute( TAG_JustificationVertical, justification );
-    rAssert( 0 != charCount );
+    charCount = pXmlTree->GetAttribute(TAG_JustificationVertical, justification);
+    rAssert(0 != charCount);
 
-    pMovie->SetVerticalJustification( StringToJustificationEnum( justification ) );
+    pMovie->SetVerticalJustification(StringToJustificationEnum(justification));
 
-    charCount = pXmlTree->GetAttribute( TAG_JustificationHorizontal, justification );
-    rAssert( 0 != charCount );
+    charCount = pXmlTree->GetAttribute(TAG_JustificationHorizontal, justification);
+    rAssert(0 != charCount);
 
-    pMovie->SetHorizontalJustification( StringToJustificationEnum( justification ) );
+    pMovie->SetHorizontalJustification(StringToJustificationEnum(justification));
 
 
     //
     // If we are not reloading the page, then we need the movie clips to be added
     //
-    if( !isReload )
-    {
-        ok = pXmlTree->SetCurrentElementByName( TAG_MovieClip );
-        rAssert( true == ok );
-            
+    if (!isReload) {
+        ok = pXmlTree->SetCurrentElementByName(TAG_MovieClip);
+        rAssert(true == ok);
+
         PascalCString clipName;
-        
-        int charCount = pXmlTree->GetAttribute( TAG_AttrName, clipName );
-        rAssert( 0 != charCount );
 
-        FeEntity* entity = mpPageIterator->Current();
-        FePage* pCurrentPage = dynamic_cast< FePage* >( entity );
+        int charCount = pXmlTree->GetAttribute(TAG_AttrName, clipName);
+        rAssert(0 != charCount);
 
-        unsigned int imageResourceID = pCurrentPage->FindMovieClipResourceEntry( clipName );
+        FeEntity *entity = mpPageIterator->Current();
+        FePage *pCurrentPage = dynamic_cast<FePage *>(entity);
 
-        pMovie->AddMovieClip( imageResourceID );
+        unsigned int imageResourceID = pCurrentPage->FindMovieClipResourceEntry(clipName);
+
+        pMovie->AddMovieClip(imageResourceID);
     }
 
     //
     // Redisplay the object
     //
-    if( isReload )
-    {
+    if (isReload) {
         pMovie->Display();
     }
 
     return;
 }
-
 
 
 //===========================================================================
@@ -1490,52 +1392,48 @@ void FeProjectLoader::ParseMovie
 //
 //===========================================================================
 void FeProjectLoader::ParsePure3dObject
-(
-    XMLTree* pXmlTree,
-    FeOwner* pOwner
-)
-{
-    rValid( pXmlTree );
-    rValid( pOwner );
+        (
+                XMLTree *pXmlTree,
+                FeOwner *pOwner
+        ) {
+    rValid(pXmlTree);
+    rValid(pOwner);
 
     //
     // Read the name of this drawable.
     //
     PascalCString p3dObjectName;
-    
-    int charCount = pXmlTree->GetAttribute( TAG_AttrName, p3dObjectName );
-    rAssert( 0 != charCount ); // Must have a name!
 
-    
+    int charCount = pXmlTree->GetAttribute(TAG_AttrName, p3dObjectName);
+    rAssert(0 != charCount); // Must have a name!
+
+
     //
     // Read and set the position.
     //
     bool ok;
 
-    ok = pXmlTree->SetCurrentElementByName( TAG_Position );
-    rAssert( true == ok );
+    ok = pXmlTree->SetCurrentElementByName(TAG_Position);
+    rAssert(true == ok);
 
     int x;
-    ok = pXmlTree->GetAttribute( TAG_PositionX, &x );
-    rAssert( true == ok );
+    ok = pXmlTree->GetAttribute(TAG_PositionX, &x);
+    rAssert(true == ok);
 
     int y;
-    ok = pXmlTree->GetAttribute( TAG_PositionY, &y );
-    rAssert( true == ok );
-    
+    ok = pXmlTree->GetAttribute(TAG_PositionY, &y);
+    rAssert(true == ok);
+
     // Did sprite already exist?  if so, just reload it instead of adding it
     //
-    Scrooby::Pure3dObject* entity = pOwner->GetPure3dObject( p3dObjectName );
-    FePure3dObject* pPure3dObject = dynamic_cast< FePure3dObject* >( entity );
-    
+    Scrooby::Pure3dObject *entity = pOwner->GetPure3dObject(p3dObjectName);
+    FePure3dObject *pPure3dObject = dynamic_cast<FePure3dObject *>(entity);
+
     bool isReload = false;
 
-    if( NULL == pPure3dObject )
-    {
-        pPure3dObject = pOwner->AddPure3dObject( p3dObjectName, x, y );
-    }
-    else
-    {
+    if (NULL == pPure3dObject) {
+        pPure3dObject = pOwner->AddPure3dObject(p3dObjectName, x, y);
+    } else {
         pPure3dObject->Reset();
         isReload = true;
     }
@@ -1543,63 +1441,61 @@ void FeProjectLoader::ParsePure3dObject
     //
     // Read and set the bounding box.
     //
-    ok = pXmlTree->SetCurrentElementByName( TAG_Dimension );
-    rAssert( true == ok );
+    ok = pXmlTree->SetCurrentElementByName(TAG_Dimension);
+    rAssert(true == ok);
 
     int width;
-    ok = pXmlTree->GetAttribute( TAG_DimensionWidth, &width );
-    rAssert( true == ok );
+    ok = pXmlTree->GetAttribute(TAG_DimensionWidth, &width);
+    rAssert(true == ok);
 
     int height;
-    ok = pXmlTree->GetAttribute( TAG_DimensionHeight, &height );
-    rAssert( true == ok );
+    ok = pXmlTree->GetAttribute(TAG_DimensionHeight, &height);
+    rAssert(true == ok);
 
-    pPure3dObject->SetBoundingBoxSize( width, height );
+    pPure3dObject->SetBoundingBoxSize(width, height);
 
     //
     // Read and set the justification.
     //
-    ok = pXmlTree->SetCurrentElementByName( TAG_Justification );
-    rAssert( true == ok );
-        
+    ok = pXmlTree->SetCurrentElementByName(TAG_Justification);
+    rAssert(true == ok);
+
     PascalCString justification;
 
-    charCount = pXmlTree->GetAttribute( TAG_JustificationVertical, justification );
-    rAssert( 0 != charCount );
+    charCount = pXmlTree->GetAttribute(TAG_JustificationVertical, justification);
+    rAssert(0 != charCount);
 
-    pPure3dObject->SetVerticalJustification( StringToJustificationEnum( justification ) );
+    pPure3dObject->SetVerticalJustification(StringToJustificationEnum(justification));
 
-    charCount = pXmlTree->GetAttribute( TAG_JustificationHorizontal, justification );
-    rAssert( 0 != charCount );
+    charCount = pXmlTree->GetAttribute(TAG_JustificationHorizontal, justification);
+    rAssert(0 != charCount);
 
-    pPure3dObject->SetHorizontalJustification( StringToJustificationEnum( justification ) );
+    pPure3dObject->SetHorizontalJustification(StringToJustificationEnum(justification));
 
     //
     // If we are not reloading the page, then we need the 3d model needs to be added
     //
-    if( !isReload )
-    {
-        ok = pXmlTree->SetCurrentElementByName( TAG_3dModel );
-        rAssert( true == ok );
-            
+    if (!isReload) {
+        ok = pXmlTree->SetCurrentElementByName(TAG_3dModel);
+        rAssert(true == ok);
+
         PascalCString modelName;
-        
-        int charCount = pXmlTree->GetAttribute( TAG_AttrName, modelName );
-        rAssert( 0 != charCount );
 
-        FeEntity* entity = mpPageIterator->Current();
-        FePage* pCurrentPage = dynamic_cast< FePage* >( entity );
+        int charCount = pXmlTree->GetAttribute(TAG_AttrName, modelName);
+        rAssert(0 != charCount);
 
-        unsigned int imageResourceID = pCurrentPage->Find3dModelResourceEntry( modelName );
+        FeEntity *entity = mpPageIterator->Current();
+        FePage *pCurrentPage = dynamic_cast<FePage *>(entity);
 
-        pPure3dObject->Add3dModel( imageResourceID );
+        unsigned int imageResourceID = pCurrentPage->Find3dModelResourceEntry(modelName);
+
+        pPure3dObject->Add3dModel(imageResourceID);
     }
 
     //
     // Redisplay the object
     //
-    if( isReload )
-    {
+    if (isReload) {
         pPure3dObject->Display();
     }
 
@@ -1620,16 +1516,15 @@ void FeProjectLoader::ParsePure3dObject
 //
 //===========================================================================
 void FeProjectLoader::LoadPage
-(
-    FePage* pPage
-)
-{
-    rValid( pPage );
+        (
+                FePage *pPage
+        ) {
+    rValid(pPage);
 
     //
     // Construct the full path and filename for the page file.
     //
-    PascalCString fullFilePath( mpProject->GetProjectPath() );
+    PascalCString fullFilePath(mpProject->GetProjectPath());
 
     fullFilePath += mpProject->GetPagePath();
     fullFilePath += pPage->GetFileName();
@@ -1638,11 +1533,11 @@ void FeProjectLoader::LoadPage
     // This is now our state.
     //
     mCurrentState = ePageFilePending;
-    
+
     //
     // Request the file load.
     //
-    mFileLoader->LoadFile( fullFilePath, this );
+    mFileLoader->LoadFile(fullFilePath, this);
 
     return;
 }
@@ -1661,18 +1556,16 @@ void FeProjectLoader::LoadPage
 //
 //===========================================================================
 void FeProjectLoader::StartPageLoading
-(
-    void
-)
-{
-    mpPageIterator = new( ScroobyPermPool ) tLinearTable::RawIterator( mpProject->GetPageList() );
-    
-    FeEntity* entity = mpPageIterator->First();
-    FePage* pPage = dynamic_cast< FePage* >( entity );
-    
-    if( pPage != NULL )
-    {
-        this->LoadPage( pPage );
+        (
+                void
+        ) {
+    mpPageIterator = new(ScroobyPermPool) tLinearTable::RawIterator(mpProject->GetPageList());
+
+    FeEntity *entity = mpPageIterator->First();
+    FePage *pPage = dynamic_cast<FePage *>(entity);
+
+    if (pPage != NULL) {
+        this->LoadPage(pPage);
     }
 }
 
@@ -1690,89 +1583,79 @@ void FeProjectLoader::StartPageLoading
 //
 //===========================================================================
 void FeProjectLoader::HandleScreenFilePending
-(
-    const unsigned int fileSize,
-    char* fileDataBuffer
-)
-{
-    rValid( fileDataBuffer );
+        (
+                const unsigned int fileSize,
+                char *fileDataBuffer
+        ) {
+    rValid(fileDataBuffer);
 
     //
     // Build the XML tree.
     //
     XMLTree xmlTree;
 
-    bool ok = xmlTree.LoadTreeFromBuffer( fileDataBuffer,
-                                          fileSize,
-                                          TAG_Screen );
-    rAssert( true == ok );
+    bool ok = xmlTree.LoadTreeFromBuffer(fileDataBuffer,
+                                         fileSize,
+                                         TAG_Screen);
+    rAssert(true == ok);
 
     //
     // Parse the XML tree.
     //
     PascalCString pageFileName;
-    
-    XMLTree* subTree = xmlTree.GetSubTreeByName( TAG_Pages );
-    
-    rValid( subTree );
+
+    XMLTree *subTree = xmlTree.GetSubTreeByName(TAG_Pages);
+
+    rValid(subTree);
 
     int i = 0;
-    
-    while( subTree->SetCurrentElementByIndex( i ) )
-    {
-        int charCount = subTree->GetAttribute( TAG_File, pageFileName );
-        rAssert( charCount != 0 );
-        
+
+    while (subTree->SetCurrentElementByIndex(i)) {
+        int charCount = subTree->GetAttribute(TAG_File, pageFileName);
+        rAssert(charCount != 0);
+
         bool isExport;
-        
-        if( subTree->GetAttribute( TAG_Export, &isExport ) )
-        {
-            if( isExport )
-            {
-                FeEntity* entity = mpScreenIterator->Current();
-                FeScreen* screen = dynamic_cast< FeScreen* >( entity );
-                if( screen != NULL )
-                {
-                    screen->AddPage( pageFileName );
-                }
-                else
-                {
+
+        if (subTree->GetAttribute(TAG_Export, &isExport)) {
+            if (isExport) {
+                FeEntity *entity = mpScreenIterator->Current();
+                FeScreen *screen = dynamic_cast<FeScreen *>(entity);
+                if (screen != NULL) {
+                    screen->AddPage(pageFileName);
+                } else {
                     //IAN IMPROVE:
                     //why would the screen be NULL
                 }
             }
         }
-        
+
         ++i;
     }
-    
+
     delete subTree;
-    
+
     //-------------------------------------------------------------------------
-   
+
     //
     // Are we done with loading the screens?
     //
-    FeEntity* entity = mpScreenIterator->Next();
-    FeScreen* pNextScreen = dynamic_cast< FeScreen* >( entity );
+    FeEntity *entity = mpScreenIterator->Next();
+    FeScreen *pNextScreen = dynamic_cast<FeScreen *>(entity);
     //
     // WARNING: At one time there was a PS2 bug that cause the above
     //          to continue calling Next() until it caused a crash.
     //          The workaround for this was to split up the calls like this:
     //
     //          FeEntity* pEntity = mpScreenIterator->Next();
-    //          FeScreen* pNextScreen = dynamic_cast<FeScreen*>( pEntity );
-    
-    if( NULL == pNextScreen )
-    {
+    //          FeScreen* pNextScreen = dynamic_cast<FeScreen*>(pEntity);
+
+    if (NULL == pNextScreen) {
         delete mpScreenIterator;
         mpScreenIterator = NULL;
 
         this->StartPageLoading();
-    }
-    else
-    {
-        this->LoadScreen( pNextScreen );
+    } else {
+        this->LoadScreen(pNextScreen);
     }
 
     return;
@@ -1791,17 +1674,16 @@ void FeProjectLoader::HandleScreenFilePending
 //
 //===========================================================================
 void FeProjectLoader::LoadScreen
-(
-    FeScreen* pScreen
-)
-{
-    rValid( pScreen );
+        (
+                FeScreen *pScreen
+        ) {
+    rValid(pScreen);
 
     //
     // Construct the full path and filename for the screen file.
     //
-    PascalCString fullFilePath( mpProject->GetProjectPath() );
-    
+    PascalCString fullFilePath(mpProject->GetProjectPath());
+
     fullFilePath += mpProject->GetScreenPath();
     fullFilePath += pScreen->GetFileName();
 
@@ -1809,11 +1691,11 @@ void FeProjectLoader::LoadScreen
     // This is now our state.
     //
     mCurrentState = eScreenFilePending;
-    
+
     //
     // Request the file load.
     //
-    mFileLoader->LoadFile( fullFilePath, this );
+    mFileLoader->LoadFile(fullFilePath, this);
 
     return;
 }
@@ -1832,21 +1714,20 @@ void FeProjectLoader::LoadScreen
 //
 //===========================================================================
 void FeProjectLoader::StartScreenLoading
-(
-    void
-)
-{
+        (
+                void
+        ) {
     //
     // Create and iterator so we can keep track of which screen we're 
     // currently loading.  We'll use this again to keep iterating until all
     // the screens are loaded.
     //
-    mpScreenIterator = new( ScroobyPermPool ) tLinearTable::RawIterator( mpProject->GetScreenList() );
-    
-    FeEntity* entity = mpScreenIterator->First();
-    FeScreen* pScreen = dynamic_cast< FeScreen* >( entity );
-    
-    this->LoadScreen( pScreen );
+    mpScreenIterator = new(ScroobyPermPool) tLinearTable::RawIterator(mpProject->GetScreenList());
+
+    FeEntity *entity = mpScreenIterator->First();
+    FeScreen *pScreen = dynamic_cast<FeScreen *>(entity);
+
+    this->LoadScreen(pScreen);
 
     return;
 }
@@ -1863,17 +1744,16 @@ void FeProjectLoader::StartScreenLoading
 // Return:      None.
 //
 //===========================================================================
-void FeProjectLoader::HandleProjectParsingXML( char* fileDataBuffer, size_t fileSize )
-{
-        //
+void FeProjectLoader::HandleProjectParsingXML(char *fileDataBuffer, size_t fileSize) {
+    //
     // Build the XML tree.
     //
     XMLTree xmlTree;
 
-    bool ok = xmlTree.LoadTreeFromBuffer( fileDataBuffer,
-                                          fileSize,
-                                          TAG_Project );
-    rAssert( true == ok );
+    bool ok = xmlTree.LoadTreeFromBuffer(fileDataBuffer,
+                                         fileSize,
+                                         TAG_Project);
+    rAssert(true == ok);
 
     //-------------------------------------------------------------------------
     // Parse the XML tree for the Project settings.
@@ -1881,32 +1761,27 @@ void FeProjectLoader::HandleProjectParsingXML( char* fileDataBuffer, size_t file
 
     PascalCString stringBuffer;
 
-    if( ( xmlTree.SetCurrentElementByName( TAG_ResourcePath ) ) &&
-        ( xmlTree.GetAttribute( TAG_Value, stringBuffer ) ) )
-    {
-        rAssert( mpProject != NULL );
-        mpProject->SetResPath( stringBuffer );
+    if ((xmlTree.SetCurrentElementByName(TAG_ResourcePath)) &&
+        (xmlTree.GetAttribute(TAG_Value, stringBuffer))) {
+        rAssert(mpProject != NULL);
+        mpProject->SetResPath(stringBuffer);
     }
 
-    if( ( xmlTree.SetCurrentElementByName( TAG_ScreenPath ) ) &&
-        ( xmlTree.GetAttribute( TAG_Value, stringBuffer ) ) )
-    {
-        mpProject->SetScreenPath( stringBuffer );
+    if ((xmlTree.SetCurrentElementByName(TAG_ScreenPath)) &&
+        (xmlTree.GetAttribute(TAG_Value, stringBuffer))) {
+        mpProject->SetScreenPath(stringBuffer);
     }
 
-    if( ( xmlTree.SetCurrentElementByName( TAG_PagePath ) ) &&
-        ( xmlTree.GetAttribute( TAG_Value, stringBuffer ) ) )
-    {
-        mpProject->SetPagePath( stringBuffer );
+    if ((xmlTree.SetCurrentElementByName(TAG_PagePath)) &&
+        (xmlTree.GetAttribute(TAG_Value, stringBuffer))) {
+        mpProject->SetPagePath(stringBuffer);
     }
 
-    if( xmlTree.SetCurrentElementByName( TAG_Resolution ) )
-    {
+    if (xmlTree.SetCurrentElementByName(TAG_Resolution)) {
         int width, height;
-        if( xmlTree.GetAttribute( TAG_Width, &width ) &&
-            xmlTree.GetAttribute( TAG_Height, &height ) )
-        {
-            FeScreenResolution::Instance()->SetResolution( width, height );
+        if (xmlTree.GetAttribute(TAG_Width, &width) &&
+            xmlTree.GetAttribute(TAG_Height, &height)) {
+            FeScreenResolution::Instance()->SetResolution(width, height);
         }
     }
 
@@ -1914,22 +1789,21 @@ void FeProjectLoader::HandleProjectParsingXML( char* fileDataBuffer, size_t file
     // Continue to parse the XML tree for the screen list.
     //-------------------------------------------------------------------------
 
-    XMLTree* subTree = xmlTree.GetSubTreeByName( TAG_Screens );
-    rValid( subTree );
+    XMLTree *subTree = xmlTree.GetSubTreeByName(TAG_Screens);
+    rValid(subTree);
 
     int i = 0;
     PascalCString screenFileName;
-    
-    while( subTree->SetCurrentElementByIndex( i ) )
-    {
-        int charCount = subTree->GetAttribute( TAG_File, screenFileName );
-        rAssert( charCount != 0 );
-        
-        mpProject->AddScreen( screenFileName );
-        
+
+    while (subTree->SetCurrentElementByIndex(i)) {
+        int charCount = subTree->GetAttribute(TAG_File, screenFileName);
+        rAssert(charCount != 0);
+
+        mpProject->AddScreen(screenFileName);
+
         ++i;
     }
-    
+
     delete subTree;
 }
 
@@ -1945,16 +1819,15 @@ void FeProjectLoader::HandleProjectParsingXML( char* fileDataBuffer, size_t file
 // Return:      None.
 //
 //===========================================================================
-void FeProjectLoader::HandleProjectParsingP3D( char* fileDataBuffer, size_t fileSize )
-{
-    tFileMem* mem = new tFileMem
-                        ( 
-                            reinterpret_cast<unsigned char*>( fileDataBuffer ), 
-                            fileSize 
-                        ); //P3D NEW
+void FeProjectLoader::HandleProjectParsingP3D(char *fileDataBuffer, size_t fileSize) {
+    tFileMem *mem = new tFileMem
+            (
+                    reinterpret_cast<unsigned char *>(fileDataBuffer),
+                    fileSize
+            ); //P3D NEW
     mem->AddRef();
-    mem->SetFilename( mpProject->GetFileName() );
-    p3d::context->GetLoadManager()->Load( mem );
+    mem->SetFilename(mpProject->GetFileName());
+    p3d::context->GetLoadManager()->Load(mem);
     mem->Release();
 
     //go find the actual project that we just loaded
@@ -1978,22 +1851,18 @@ void FeProjectLoader::HandleProjectParsingP3D( char* fileDataBuffer, size_t file
 //
 //===========================================================================
 void FeProjectLoader::HandleProjectFilePending
-(
-    const unsigned int fileSize,
-    char* fileDataBuffer
-)
-{
-    rValid( fileDataBuffer );
+        (
+                const unsigned int fileSize,
+                char *fileDataBuffer
+        ) {
+    rValid(fileDataBuffer);
 
     //was this a P3D file or an XML file?
-    if( m_ProjectType == SCROOBY_XML )
-    {
-        this->HandleProjectParsingXML( fileDataBuffer, fileSize );
+    if (m_ProjectType == SCROOBY_XML) {
+        this->HandleProjectParsingXML(fileDataBuffer, fileSize);
         this->StartScreenLoading();
-    }
-    else
-    {
-        this->HandleProjectParsingP3D( fileDataBuffer, fileSize );
+    } else {
+        this->HandleProjectParsingP3D(fileDataBuffer, fileSize);
     }
     return;
 }
@@ -2010,7 +1879,6 @@ void FeProjectLoader::HandleProjectFilePending
 // Return:      None.
 //
 //===========================================================================
-void FeProjectLoader::OnGotoScreenComplete()
-{
+void FeProjectLoader::OnGotoScreenComplete() {
     this->OnResourceLoadComplete();
 }

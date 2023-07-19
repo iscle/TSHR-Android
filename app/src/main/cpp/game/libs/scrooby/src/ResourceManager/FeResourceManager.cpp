@@ -38,22 +38,23 @@
 #define SRR2_HOLIDAYS_THEME_HACK
 
 #ifdef SRR2_HOLIDAYS_THEME_HACK
-    #include <radtime.hpp>
 
-    #ifdef RAD_PS2
-        #include <libscf.h>
-    #endif
+#include <radtime.hpp>
 
-    #ifdef RAD_GAMECUBE
-        #include <dolphin/os.h>
-        #include <dolphin.h>
-    #endif
+#ifdef RAD_PS2
+#include <libscf.h>
+#endif
 
-    #ifdef RAD_WIN32
-        #define WIN32_EXTRA_LEAN
-        #define WIN32_LEAN_AND_MEAN
-        #include <Windows.h>
-    #endif
+#ifdef RAD_GAMECUBE
+#include <dolphin/os.h>
+#include <dolphin.h>
+#endif
+
+#ifdef RAD_WIN32
+#define WIN32_EXTRA_LEAN
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif
 #endif // SRR2_HOLIDAYS_THEME_HACK
 
 //===========================================================================
@@ -61,9 +62,9 @@
 //===========================================================================
 
 #ifdef SRR2_HOLIDAYS_THEME_HACK
-    const char* FILENAME_SUFFIX_FOR_HALLOWEEN = "_H.p3d";
-    const char* FILENAME_SUFFIX_FOR_THANKSGIVING = "_T.p3d";
-    const char* FILENAME_SUFFIX_FOR_CHRISTMAS = "_C.p3d";
+const char *FILENAME_SUFFIX_FOR_HALLOWEEN = "_H.p3d";
+const char *FILENAME_SUFFIX_FOR_THANKSGIVING = "_T.p3d";
+const char *FILENAME_SUFFIX_FOR_CHRISTMAS = "_C.p3d";
 #endif
 
 //===========================================================================
@@ -82,31 +83,30 @@
 // Return:      Nothing
 //
 //===========================================================================
-FeResourceManager::FeResourceManager():
-    mDeletedResources( 0 ),
-    mDeletedAliases( 0 ),
-    mDeletedAttributes( 0 ),
-    m_pLoadProjectCallback( NULL ),
-    m_pResourceManagerCallback( NULL ),
-    m_pP3DCallback( NULL ),
-    m_bAsyncLoading( true ),
-    m_pLoadingProject( NULL ),
-    m_Allocator (RADMEMORY_ALLOC_DEFAULT),
-    m_eLang( Scrooby::XL_ENGLISH ),
-    m_imageHandler( NULL ),
-    m_loadType( tImageHandler::IMAGE ),
-    mCallbackID( 0 )
-{
-    strcpy( m_pInventorySection, P3D_DEFAULT_INV_SECTION );
+FeResourceManager::FeResourceManager() :
+        mDeletedResources(0),
+        mDeletedAliases(0),
+        mDeletedAttributes(0),
+        m_pLoadProjectCallback(NULL),
+        m_pResourceManagerCallback(NULL),
+        m_pP3DCallback(NULL),
+        m_bAsyncLoading(true),
+        m_pLoadingProject(NULL),
+        m_Allocator(RADMEMORY_ALLOC_DEFAULT),
+        m_eLang(Scrooby::XL_ENGLISH),
+        m_imageHandler(NULL),
+        m_loadType(tImageHandler::IMAGE),
+        mCallbackID(0) {
+    strcpy(m_pInventorySection, P3D_DEFAULT_INV_SECTION);
 //    m_pInventorySection[ 0 ] = '\0';
 
     // Add a secondary inventory to search if we can't find resources
     // in the primary inventory
-    strcpy( m_pSecondaryInventorySection, P3D_DEFAULT_INV_SECTION );
+    strcpy(m_pSecondaryInventorySection, P3D_DEFAULT_INV_SECTION);
 //    m_pSecondaryInventorySection[ 0 ] = '\0';
 
-    m_pP3DCallback = new( radMemoryGetCurrentAllocator() ) P3DCallback();
-    m_pP3DCallback->SetResourceManager( this );
+    m_pP3DCallback = new(radMemoryGetCurrentAllocator()) P3DCallback();
+    m_pP3DCallback->SetResourceManager(this);
     m_pP3DCallback->AddRef();
 
     // Pre-reserve space into these arrays so that they will remember which heap
@@ -115,9 +115,9 @@ FeResourceManager::FeResourceManager():
     // This is a hack, and should really be solved by not having auto-grow vectors
     // in Scrooby.
     //
-    mResources.Reserve (1024);
-    mAliases.Reserve (1024);
-    mP3DAttributes.Reserve (32);
+    mResources.Reserve(1024);
+    mAliases.Reserve(1024);
+    mP3DAttributes.Reserve(32);
 }
 
 //===========================================================================
@@ -132,11 +132,10 @@ FeResourceManager::FeResourceManager():
 // Return:      Nothing
 //
 //===========================================================================
-FeResourceManager::~FeResourceManager()
-{
+FeResourceManager::~FeResourceManager() {
     UnloadAll();
 
-    p3d::inventory->SelectSection( "default" );
+    p3d::inventory->SelectSection("default");
 
     m_pP3DCallback->Release();
 }
@@ -157,60 +156,55 @@ FeResourceManager::~FeResourceManager()
 // Return:      integral position the new filename was added to in the list
 //
 //===========================================================================
-int FeResourceManager::AddResource( const char* filename, FeEntity* parent, ResourceType type, const char* inventoryName )
-{
-    radMemoryAllocator old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
-        PascalCString newFile = filename;
-        newFile.Replace( '\\','/' );
-    ::radMemorySetCurrentAllocator( old );
+int FeResourceManager::AddResource(const char *filename, FeEntity *parent, ResourceType type,
+                                   const char *inventoryName) {
+    radMemoryAllocator old = ::radMemorySetCurrentAllocator(RADMEMORY_ALLOC_TEMP);
+    PascalCString newFile = filename;
+    newFile.Replace('\\', '/');
+    ::radMemorySetCurrentAllocator(old);
 
 #ifdef SRR2_HOLIDAYS_THEME_HACK
-    if( type == RT_P3D_OBJECT )
-    {
-        int filenameLength = strlen( filename );
+    if (type == RT_P3D_OBJECT) {
+        int filenameLength = strlen(filename);
 
-        for( int i = filenameLength - 1; i >= 0; i-- )
-        {
+        for (int i = filenameLength - 1; i >= 0; i--) {
             // search for last backslash or forward slash in filename path
             //
-            if( filename[ i ] == '\\' || filename[ i ] == '/' )
-            {
-                const char* filenameOnly = filename + i + 1;
+            if (filename[i] == '\\' || filename[i] == '/') {
+                const char *filenameOnly = filename + i + 1;
 
                 // only replace camset.p3d and homer.p3d files
                 //
-                if( strcmp( filenameOnly, "camset.p3d" ) == 0 ||
-                    strcmp( filenameOnly, "homer.p3d" ) == 0 )
-                {
-                    char filenameModified[ 256 ];
-                    strcpy( filenameModified, filename );
-                    filenameModified[ filenameLength - 4 ] = '\0';
+                if (strcmp(filenameOnly, "camset.p3d") == 0 ||
+                    strcmp(filenameOnly, "homer.p3d") == 0) {
+                    char filenameModified[256];
+                    strcpy(filenameModified, filename);
+                    filenameModified[filenameLength - 4] = '\0';
 
                     radDate today;
-                    ::radTimeGetDate( &today );
+                    ::radTimeGetDate(&today);
 
-                    if( today.m_Month == 10 && today.m_Day == 31 ) // hallowe'en
+                    if (today.m_Month == 10 && today.m_Day == 31) // hallowe'en
                     {
-                        strcat( filenameModified, FILENAME_SUFFIX_FOR_HALLOWEEN );
-                    }
-                    else if( today.m_Month == 11 && today.m_Day > 21 && today.m_Day <= 28 &&
-                             radTimeGetWeekday( today.m_Year, today.m_Month, today.m_Day ) == Weekday_Thursday ) // US thanksgiving
+                        strcat(filenameModified, FILENAME_SUFFIX_FOR_HALLOWEEN);
+                    } else if (today.m_Month == 11 && today.m_Day > 21 && today.m_Day <= 28 &&
+                               radTimeGetWeekday(today.m_Year, today.m_Month, today.m_Day) ==
+                               Weekday_Thursday) // US thanksgiving
                     {
-                        strcat( filenameModified, FILENAME_SUFFIX_FOR_THANKSGIVING );
-                    }
-                    else if( today.m_Month == 12 && today.m_Day == 25 ) // christmas
+                        strcat(filenameModified, FILENAME_SUFFIX_FOR_THANKSGIVING);
+                    } else if (today.m_Month == 12 && today.m_Day == 25) // christmas
                     {
-                        strcat( filenameModified, FILENAME_SUFFIX_FOR_CHRISTMAS );
-                    }
-                    else
-                    {
-                        rReleasePrintf( "Not a special holiday. Using regular P3D file:\n    %s\n", filename );
+                        strcat(filenameModified, FILENAME_SUFFIX_FOR_CHRISTMAS);
+                    } else {
+                        rReleasePrintf("Not a special holiday. Using regular P3D file:\n    %s\n",
+                                       filename);
 
                         break;
                     }
 
                     newFile = filenameModified;
-                    rReleasePrintf( "Replacing normal P3D file w/ special holidays file:\n    %s\n", filenameModified );
+                    rReleasePrintf("Replacing normal P3D file w/ special holidays file:\n    %s\n",
+                                   filenameModified);
                 }
 
                 break;
@@ -219,43 +213,36 @@ int FeResourceManager::AddResource( const char* filename, FeEntity* parent, Reso
     }
 #endif // SRR2_HOLIDAYS_THEME_HACK
 
-    ResourceEntry* newResource = new ResourceEntry();
+    ResourceEntry *newResource = new ResourceEntry();
     newResource->AddRef();
-    if( inventoryName != NULL )
-    {
+    if (inventoryName != NULL) {
         newResource->m_inventoryName = inventoryName;
-        radMemoryAllocator old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
+        radMemoryAllocator old = ::radMemorySetCurrentAllocator(RADMEMORY_ALLOC_TEMP);
         PascalCString p3d = "p3d";
-        if( !newFile.JustExtension().EqualsInsensitive( p3d ) )
-        {
-            newResource->m_inventoryName.Replace( '\\','/');
+        if (!newFile.JustExtension().EqualsInsensitive(p3d)) {
+            newResource->m_inventoryName.Replace('\\', '/');
         }
-        ::radMemorySetCurrentAllocator( old );
-    }
-    else
-    {
+        ::radMemorySetCurrentAllocator(old);
+    } else {
         newResource->m_inventoryName = "";
     }
-    newResource->SetName( newFile );
+    newResource->SetName(newFile);
     newResource->m_parent = parent;
     newResource->m_type = type;
 
     newResource->m_Status = RM_NOT_LOADED;
-    if( mDeletedResources )
-    {
+    if (mDeletedResources) {
         int i = 0;
-        for( i; i < mResources.Size(); i++ )
-        {
-            if( mResources[i] == NULL )
-            {
+        for (i; i < mResources.Size(); i++) {
+            if (mResources[i] == NULL) {
                 mResources[i] = newResource;
                 mDeletedResources--;
                 return i;
             }
         }
     }
-    mResources.Insert( newResource );
-    return mResources.Size()-1;
+    mResources.Insert(newResource);
+    return mResources.Size() - 1;
 }
 
 //===========================================================================
@@ -271,26 +258,22 @@ int FeResourceManager::AddResource( const char* filename, FeEntity* parent, Reso
 // Return:      integral position the new alias was added to in the list
 //
 //===========================================================================
-int FeResourceManager::AddAlias( const tName& alias, int index )
-{
-    AliasEntry* newAlias = NULL;
+int FeResourceManager::AddAlias(const tName &alias, int index) {
+    AliasEntry *newAlias = NULL;
     newAlias = new AliasEntry();
-    newAlias->SetName( alias );
+    newAlias->SetName(alias);
     newAlias->m_resourceIndex = index;
-    if( mDeletedAliases )
-    {
+    if (mDeletedAliases) {
         int i = 0;
-        for( i; i < mAliases.Size(); i++ )
-        {
-            if( mAliases[i] == NULL )
-            {
+        for (i; i < mAliases.Size(); i++) {
+            if (mAliases[i] == NULL) {
                 mAliases[i] = newAlias;
                 mDeletedAliases--;
                 return i;
             }
         }
     }
-    mAliases.Insert( newAlias );
+    mAliases.Insert(newAlias);
     return mAliases.Size();
 }
 
@@ -308,34 +291,28 @@ int FeResourceManager::AddAlias( const tName& alias, int index )
 // Return:      integral position the attributes were added to in the list
 //
 //===========================================================================
-int FeResourceManager::AddPure3dAttributes( const char* camera, const char* animation, int index )
-{
-    Pure3dAttributesEntry* newEntry = NULL;
+int FeResourceManager::AddPure3dAttributes(const char *camera, const char *animation, int index) {
+    Pure3dAttributesEntry *newEntry = NULL;
     newEntry = new Pure3dAttributesEntry();
     newEntry->AddRef();
-    if( camera )
-    {
+    if (camera) {
         newEntry->m_CameraName = camera;
     }
-    if( animation )
-    {
+    if (animation) {
         newEntry->m_AnimName = animation;
     }
     newEntry->m_resourceIndex = index;
-    if( mDeletedAttributes )
-    {
+    if (mDeletedAttributes) {
         int i = 0;
-        for( i; i < mP3DAttributes.Size(); i++ )
-        {
-            if( mP3DAttributes[i] == NULL )
-            {
+        for (i; i < mP3DAttributes.Size(); i++) {
+            if (mP3DAttributes[i] == NULL) {
                 mP3DAttributes[i] = newEntry;
                 mDeletedAttributes--;
                 return i;
             }
         }
     }
-    mP3DAttributes.Insert( newEntry );
+    mP3DAttributes.Insert(newEntry);
     return mP3DAttributes.Size();
 }
 
@@ -351,174 +328,149 @@ int FeResourceManager::AddPure3dAttributes( const char* camera, const char* anim
 // Return:      None
 //
 //===========================================================================
-void FeResourceManager::ContinueLoading()
-{
+void FeResourceManager::ContinueLoading() {
     //
     // Cycle through the list of files, and load those that are appropriate
     //
 
-    radMemoryAllocator old = ::radMemorySetCurrentAllocator( GetAllocator() );
+    radMemoryAllocator old = ::radMemorySetCurrentAllocator(GetAllocator());
 
     int i = 0;
 
-    for( i = 0; i < mResources.Size(); i++ )
-    {
-        ResourceEntry* resource = mResources[ i ];
-        if( resource )
-        {
-            if( resource->m_Status == RM_LOAD_COMPLETE )
-            {
-            }
-            else if( (resource->m_Status == RM_P3D_LOAD_IN_PROGRESS) || (resource->m_Status == RM_NOT_LOADED) )
-            {
+    for (i = 0; i < mResources.Size(); i++) {
+        ResourceEntry *resource = mResources[i];
+        if (resource) {
+            if (resource->m_Status == RM_LOAD_COMPLETE) {
+            } else if ((resource->m_Status == RM_P3D_LOAD_IN_PROGRESS) ||
+                       (resource->m_Status == RM_NOT_LOADED)) {
                 p3d::inventory->PushSection();
-                p3d::inventory->SelectSection( m_pInventorySection );
+                p3d::inventory->SelectSection(m_pInventorySection);
                 bool currentSectionOnly = p3d::inventory->GetCurrentSectionOnly();
-                p3d::inventory->SetCurrentSectionOnly( true );
-                tEntity* entity = NULL;
-                if( mResources[i]->m_inventoryName == "" )
-                {
-                    entity = p3d::find<tEntity>( resource->GetName() );
-                }
-                else
-                {
-                    entity = p3d::find<tEntity>( resource->m_inventoryName );
+                p3d::inventory->SetCurrentSectionOnly(true);
+                tEntity *entity = NULL;
+                if (mResources[i]->m_inventoryName == "") {
+                    entity = p3d::find<tEntity>(resource->GetName());
+                } else {
+                    entity = p3d::find<tEntity>(resource->m_inventoryName);
                 }
 
-                if( entity == NULL )
-                {
+                if (entity == NULL) {
                     // try searching in secondary inventory section, if exists
                     //
-                    if( m_pSecondaryInventorySection[ 0 ] != '\0' )
-                    {
-                        p3d::inventory->SelectSection( m_pSecondaryInventorySection );
+                    if (m_pSecondaryInventorySection[0] != '\0') {
+                        p3d::inventory->SelectSection(m_pSecondaryInventorySection);
 
-                        if( mResources[i]->m_inventoryName == "" )
-                        {
-                            entity = p3d::find<tEntity>( resource->GetName() );
-                        }
-                        else
-                        {
-                            entity = p3d::find<tEntity>( resource->m_inventoryName );
+                        if (mResources[i]->m_inventoryName == "") {
+                            entity = p3d::find<tEntity>(resource->GetName());
+                        } else {
+                            entity = p3d::find<tEntity>(resource->m_inventoryName);
                         }
                     }
                 }
 
                 p3d::inventory->PopSection();
-                p3d::inventory->SetCurrentSectionOnly( currentSectionOnly );
-                if( entity != NULL )
-                {
+                p3d::inventory->SetCurrentSectionOnly(currentSectionOnly);
+                if (entity != NULL) {
                     mResources[i]->theData = entity;
                     entity->AddRef();
                     mResources[i]->m_Status = RM_LOAD_COMPLETE;
-                    if( mResources[i]->m_type == RT_PROJECT )
-                    {
-                        m_pLoadingProject = static_cast<FeProject*>( entity );
+                    if (mResources[i]->m_type == RT_PROJECT) {
+                        m_pLoadingProject = static_cast<FeProject *>(entity);
                         m_pLoadingProject->AddRef();
-                        m_pLoadingProject->SetInventorySection( m_pInventorySection );
-                        SetCallback( m_pLoadingProject );
+                        m_pLoadingProject->SetInventorySection(m_pInventorySection);
+                        SetCallback(m_pLoadingProject);
                     }
-                    if( (mResources[i]->m_type == RT_SCREEN) && (m_pLoadingProject) && (m_pLoadingProject->GetLastScreenToLoad() == i))
-                    {
-                        radMemoryAllocator old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
-                            mCallbackID = AddResource( "ProjectCallback", NULL, RT_PROJECT_LOAD_CALLBACK );
-                        ::radMemorySetCurrentAllocator( old );
+                    if ((mResources[i]->m_type == RT_SCREEN) && (m_pLoadingProject) &&
+                        (m_pLoadingProject->GetLastScreenToLoad() == i)) {
+                        radMemoryAllocator old = ::radMemorySetCurrentAllocator(
+                                RADMEMORY_ALLOC_TEMP);
+                        mCallbackID = AddResource("ProjectCallback", NULL,
+                                                  RT_PROJECT_LOAD_CALLBACK);
+                        ::radMemorySetCurrentAllocator(old);
                     }
-                    if( mResources[i]->m_parent )
-                    {
-                        FeParent* parent = dynamic_cast<FeParent*>( mResources[i]->m_parent );
-                        if( parent )
-                        {
-                            FeEntity* feEntity = dynamic_cast<FeEntity*>(entity);
-                            if( feEntity )
-                            {
-                                parent->AddChild( feEntity );
+                    if (mResources[i]->m_parent) {
+                        FeParent *parent = dynamic_cast<FeParent *>(mResources[i]->m_parent);
+                        if (parent) {
+                            FeEntity *feEntity = dynamic_cast<FeEntity *>(entity);
+                            if (feEntity) {
+                                parent->AddChild(feEntity);
                             }
                         }
                     }
-                    if( mResources[i]->m_type == RT_TEXT_BIBLE )
-                    {
-                        FeTextBible* bible = dynamic_cast<FeTextBible*>( entity );
-                        if( bible )
-                        {
-                            bible->SetLanguage( Scrooby::language_ID[ m_eLang ] );
+                    if (mResources[i]->m_type == RT_TEXT_BIBLE) {
+                        FeTextBible *bible = dynamic_cast<FeTextBible *>(entity);
+                        if (bible) {
+                            bible->SetLanguage(Scrooby::language_ID[m_eLang]);
                         }
                     }
-                    //Scrooby::ScroobyMessage( Scrooby::LVL_DEBUG, "Load Complete : %s", mResources[i]->GetName() );
-                }
-                else
-                {
-                    if( mResources[i]->m_Status == RM_NOT_LOADED )
-                    {
-                        if( mResources[i]->m_type == RT_IMAGE )
-                        {
+                    //Scrooby::ScroobyMessage(Scrooby::LVL_DEBUG, "Load Complete : %s", mResources[i]->GetName());
+                } else {
+                    if (mResources[i]->m_Status == RM_NOT_LOADED) {
+                        if (mResources[i]->m_type == RT_IMAGE) {
                             // Grab any sort of image handler
                             PascalCString fileName = mResources[i]->GetName();
                             fileName = fileName.JustExtension();
-                            if( fileName.EqualsInsensitive( "p3d" ) )
-                            {
+                            if (fileName.EqualsInsensitive("p3d")) {
 
-                            }
-                            else
-                            {
-                                if( m_imageHandler )
-                                {
-                                    m_imageHandler->SetLoadType( m_loadType );
+                            } else {
+                                if (m_imageHandler) {
+                                    m_imageHandler->SetLoadType(m_loadType);
                                     m_imageHandler->Release();
                                 }
-                                m_imageHandler = dynamic_cast<tImageHandler*>(p3d::loadManager->GetHandler( fileName ) );
-                                
+                                m_imageHandler = dynamic_cast<tImageHandler *>(p3d::loadManager->GetHandler(
+                                        fileName));
+
                                 // Set up our image loading parameters
-                                if( m_imageHandler )
-                                {
+                                if (m_imageHandler) {
                                     m_imageHandler->AddRef();
-                                    m_imageHandler->SetFullName( FeApp::GetInstance()->UseFullImageNames() ); 
+                                    m_imageHandler->SetFullName(
+                                            FeApp::GetInstance()->UseFullImageNames());
                                     m_loadType = m_imageHandler->GetLoadType();
-                                    m_imageHandler->SetLoadType( tImageHandler::SPRITE );
-                                    m_imageHandler->SetNativeResolution( static_cast<int>(FeApp::GetInstance()->GetScreenWidth()), static_cast<int>(FeApp::GetInstance()->GetScreenHeight()) );
+                                    m_imageHandler->SetLoadType(tImageHandler::SPRITE);
+                                    m_imageHandler->SetNativeResolution(
+                                            static_cast<int>(FeApp::GetInstance()->GetScreenWidth()),
+                                            static_cast<int>(FeApp::GetInstance()->GetScreenHeight()));
                                 }
                             }
                         }
 
-                        //Scrooby::Log::Message( Scrooby::LVL_INFO, "Loading file %s", mResources[i]->GetName() );
+                        //Scrooby::Log::Message(Scrooby::LVL_INFO, "Loading file %s", mResources[i]->GetName());
                         mResources[i]->m_Status = RM_P3D_LOAD_IN_PROGRESS;
 
-                        const char* name = mResources[i]->GetName();
-                        radMemoryAllocator old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
-                        tLoadRequest* request = new tLoadRequest( name );
-                        ::radMemorySetCurrentAllocator( old );
-                        rAssert( request != NULL );
+                        const char *name = mResources[i]->GetName();
+                        radMemoryAllocator old = ::radMemorySetCurrentAllocator(
+                                RADMEMORY_ALLOC_TEMP);
+                        tLoadRequest *request = new tLoadRequest(name);
+                        ::radMemorySetCurrentAllocator(old);
+                        rAssert(request != NULL);
 
-                        request->SetCallback( m_pP3DCallback );
-                        request->SetInventorySection( m_pInventorySection );
-                        request->SetAsync( m_bAsyncLoading );
-                        request->SetMemoryAllocator( GetAllocator() );
+                        request->SetCallback(m_pP3DCallback);
+                        request->SetInventorySection(m_pInventorySection);
+                        request->SetAsync(m_bAsyncLoading);
+                        request->SetMemoryAllocator(GetAllocator());
 
-                        if( mResources[i]->m_type == RT_PROJECT_LOAD_CALLBACK )
-                        {
-                            request->SetDummy( true );
+                        if (mResources[i]->m_type == RT_PROJECT_LOAD_CALLBACK) {
+                            request->SetDummy(true);
                             mResources[i]->m_Status = RM_LOAD_COMPLETE;
 
                             // restore old allocator cuz we're done loading
                             //
-                            ::radMemorySetCurrentAllocator( old );
+                            ::radMemorySetCurrentAllocator(old);
                         }
 
-                        p3d::context->GetLoadManager()->Load( request );
+                        p3d::context->GetLoadManager()->Load(request);
                     }
 
                     // We don't want to let any other files get queued up until this one is done
                     break;
                 }
-            }
-            else
-            {
+            } else {
                 break;
             }
         }
     }
 
-    ::radMemorySetCurrentAllocator( old );
+    ::radMemorySetCurrentAllocator(old);
 }
 
 //===========================================================================
@@ -534,33 +486,26 @@ void FeResourceManager::ContinueLoading()
 //
 //===========================================================================
 
-void FeResourceManager::DumpResources()
-{
-    for( int i = 0; i < mResources.Size(); i++ )
-    {
-        if( mResources[i] )
-        {
-            //Scrooby::Log::Message( Scrooby::LVL_DEBUG, "Resource %d (type %d): %s ", i, mResources[i]->m_type, mResources[i]->GetName() );
+void FeResourceManager::DumpResources() {
+    for (int i = 0; i < mResources.Size(); i++) {
+        if (mResources[i]) {
+            //Scrooby::Log::Message(Scrooby::LVL_DEBUG, "Resource %d (type %d): %s ", i, mResources[i]->m_type, mResources[i]->GetName());
         }
     }
 }
-void FeResourceManager::DumpAliases()
-{
-    for( int i = 0; i < mAliases.Size(); i++ )
-    {
-        if( mAliases[i] )
-        {
-            //Scrooby::Log::Message( Scrooby::LVL_DEBUG, "Alias %d : %d = %s", i, mAliases[i]->m_resourceIndex, mAliases[i]->GetName() );
+
+void FeResourceManager::DumpAliases() {
+    for (int i = 0; i < mAliases.Size(); i++) {
+        if (mAliases[i]) {
+            //Scrooby::Log::Message(Scrooby::LVL_DEBUG, "Alias %d : %d = %s", i, mAliases[i]->m_resourceIndex, mAliases[i]->GetName());
         }
     }
 }
-void FeResourceManager::DumpPure3dAttributes()
-{
-    for( int i = 0; i < mP3DAttributes.Size(); i++ )
-    {
-        if( mP3DAttributes[i] )
-        {
-            //Scrooby::Log::Message( Scrooby::LVL_DEBUG, "P3D Attributes %d : %s, %s", (const char*)mP3DAttributes[i]->m_CameraName, (const char*)mP3DAttributes[i]->m_AnimName );
+
+void FeResourceManager::DumpPure3dAttributes() {
+    for (int i = 0; i < mP3DAttributes.Size(); i++) {
+        if (mP3DAttributes[i]) {
+            //Scrooby::Log::Message(Scrooby::LVL_DEBUG, "P3D Attributes %d : %s, %s", (const char*)mP3DAttributes[i]->m_CameraName, (const char*)mP3DAttributes[i]->m_AnimName);
         }
     }
 }
@@ -577,8 +522,7 @@ void FeResourceManager::DumpPure3dAttributes()
 // Return:      pointer to the current callback
 //
 //===========================================================================
-Scrooby::ResourceManagerCallback* FeResourceManager::GetCallback() const
-{
+Scrooby::ResourceManagerCallback *FeResourceManager::GetCallback() const {
     return m_pResourceManagerCallback;
 }
 
@@ -595,20 +539,17 @@ Scrooby::ResourceManagerCallback* FeResourceManager::GetCallback() const
 // Return:      pointer to a tCamera object
 //
 //===========================================================================
-tCamera* FeResourceManager::GetCamera( const char* alias )
-{
-    return GetCamera( GetIndex( alias ) );
+tCamera *FeResourceManager::GetCamera(const char *alias) {
+    return GetCamera(GetIndex(alias));
 }
-tCamera* FeResourceManager::GetCamera( int index )
-{
+
+tCamera *FeResourceManager::GetCamera(int index) {
     int i = 0;
-    for( ; i < mP3DAttributes.Size(); i++ )
-    {
-        Pure3dAttributesEntry* attrib = mP3DAttributes[i];
-        
-        if( mP3DAttributes[i] && (mP3DAttributes[i]->m_resourceIndex == index) )
-        {
-            return p3d::find<tCamera>( mP3DAttributes[i]->m_CameraName );
+    for (; i < mP3DAttributes.Size(); i++) {
+        Pure3dAttributesEntry *attrib = mP3DAttributes[i];
+
+        if (mP3DAttributes[i] && (mP3DAttributes[i]->m_resourceIndex == index)) {
+            return p3d::find<tCamera>(mP3DAttributes[i]->m_CameraName);
         }
     }
     return NULL;
@@ -626,29 +567,21 @@ tCamera* FeResourceManager::GetCamera( int index )
 // Return:      index into the resources list
 //
 //===========================================================================
-int FeResourceManager::GetIndex( const tName& alias, bool searchBackwards )
-{
+int FeResourceManager::GetIndex(const tName &alias, bool searchBackwards) {
     int size = mAliases.Size();
-    if( searchBackwards )
-    {
+    if (searchBackwards) {
         int i;
-        for( i = size - 1; i >= 0; --i )
-        {
-            AliasEntry* thisAlias = mAliases[ i ];
-            if( ( thisAlias != NULL ) && ( alias == thisAlias->GetName() ) )
-            {
+        for (i = size - 1; i >= 0; --i) {
+            AliasEntry *thisAlias = mAliases[i];
+            if ((thisAlias != NULL) && (alias == thisAlias->GetName())) {
                 return thisAlias->m_resourceIndex;
             }
         }
-    }
-    else
-    {
+    } else {
         int i;
-        for( i = 0; i < size; ++i )
-        {
-            AliasEntry* thisAlias = mAliases[ i ];
-            if( ( thisAlias != NULL ) && ( alias == thisAlias->GetName() ) )
-            {
+        for (i = 0; i < size; ++i) {
+            AliasEntry *thisAlias = mAliases[i];
+            if ((thisAlias != NULL) && (alias == thisAlias->GetName())) {
                 return thisAlias->m_resourceIndex;
             }
         }
@@ -669,8 +602,7 @@ int FeResourceManager::GetIndex( const tName& alias, bool searchBackwards )
 // Return:      The current language
 //
 //===========================================================================
-Scrooby::XLLanguage FeResourceManager::GetLocalizationLanguage() const
-{
+Scrooby::XLLanguage FeResourceManager::GetLocalizationLanguage() const {
     return m_eLang;
 }
 
@@ -687,18 +619,15 @@ Scrooby::XLLanguage FeResourceManager::GetLocalizationLanguage() const
 // Return:      pointer to a tMultiController object
 //
 //===========================================================================
-tMultiController* FeResourceManager::GetMultiController( const char* alias )
-{
-    return GetMultiController( GetIndex( alias ) );
+tMultiController *FeResourceManager::GetMultiController(const char *alias) {
+    return GetMultiController(GetIndex(alias));
 }
-tMultiController* FeResourceManager::GetMultiController( int index )
-{
+
+tMultiController *FeResourceManager::GetMultiController(int index) {
     int i = 0;
-    for( ; i < mP3DAttributes.Size(); i++ )
-    {
-        if( mP3DAttributes[i] && mP3DAttributes[i]->m_resourceIndex == index )
-        {
-            return p3d::find<tMultiController>( mP3DAttributes[i]->m_AnimName );
+    for (; i < mP3DAttributes.Size(); i++) {
+        if (mP3DAttributes[i] && mP3DAttributes[i]->m_resourceIndex == index) {
+            return p3d::find<tMultiController>(mP3DAttributes[i]->m_AnimName);
         }
     }
     return NULL;
@@ -717,19 +646,15 @@ tMultiController* FeResourceManager::GetMultiController( int index )
 // Return:      pointer to a tEntity object
 //
 //===========================================================================
-tEntity* FeResourceManager::GetResource( const char* alias )
-{
-    return GetResource( GetIndex( alias ) );
+tEntity *FeResourceManager::GetResource(const char *alias) {
+    return GetResource(GetIndex(alias));
 }
-tEntity* FeResourceManager::GetResource( int index )
-{
-    if( index != -1 &&
-        mResources[index] != NULL )
-    {
+
+tEntity *FeResourceManager::GetResource(int index) {
+    if (index != -1 &&
+        mResources[index] != NULL) {
         return mResources[index]->theData;
-    }
-    else
-    {
+    } else {
         return NULL;
     }
 }
@@ -746,8 +671,7 @@ tEntity* FeResourceManager::GetResource( int index )
 // Return:      boolean : true if async loading, false otherwise
 //
 //===========================================================================
-bool FeResourceManager::IsAsyncLoading()
-{
+bool FeResourceManager::IsAsyncLoading() {
     return m_bAsyncLoading;
 }
 
@@ -763,10 +687,9 @@ bool FeResourceManager::IsAsyncLoading()
 // Return:      NONE
 //
 //===========================================================================
-void FeResourceManager::LoadAll( Scrooby::ResourceManagerCallback* callback)
-{
+void FeResourceManager::LoadAll(Scrooby::ResourceManagerCallback *callback) {
     //store the callback function
-    SetCallback( callback );
+    SetCallback(callback);
 
     ContinueLoading();
 }
@@ -785,23 +708,22 @@ void FeResourceManager::LoadAll( Scrooby::ResourceManagerCallback* callback)
 // Return:      NONE
 //
 //===========================================================================
-void FeResourceManager::LoadProject(  Scrooby::Project* project, Scrooby::ResourceManagerCallback* callback )
-{
+void FeResourceManager::LoadProject(Scrooby::Project *project,
+                                    Scrooby::ResourceManagerCallback *callback) {
     //store the callback function
-    rAssert( callback );
-    SetCallback( callback );
+    rAssert(callback);
+    SetCallback(callback);
 
-     FeProject* feProject = dynamic_cast<  FeProject* >( project );
-    rAssert( feProject != NULL );
+    FeProject *feProject = dynamic_cast<FeProject *>(project);
+    rAssert(feProject != NULL);
 
     int size = feProject->GetChildrenCount();
     int i;
-    for( i = 0; i < size; i++ )
-    {
-        FeEntity* child = feProject->GetChildIndex( i );
-        FeScreen* screen = dynamic_cast< FeScreen* >( child );
-        rAssert( screen );
-        //LoadChildren( screen, callback );
+    for (i = 0; i < size; i++) {
+        FeEntity *child = feProject->GetChildIndex(i);
+        FeScreen *screen = dynamic_cast<FeScreen *>(child);
+        rAssert(screen);
+        //LoadChildren(screen, callback);
     }
     ContinueLoading();
 }
@@ -818,15 +740,13 @@ void FeResourceManager::LoadProject(  Scrooby::Project* project, Scrooby::Resour
 // Return:      NONE
 //
 //===========================================================================
-void FeResourceManager::ProjectLoadComplete()
-{
-    if( mCallbackID )
-    {
-        RemoveResource( mCallbackID );
+void FeResourceManager::ProjectLoadComplete() {
+    if (mCallbackID) {
+        RemoveResource(mCallbackID);
         mCallbackID = 0;
     }
 
-    FeApp::GetInstance()->OnProjectLoadComplete( m_pLoadingProject );
+    FeApp::GetInstance()->OnProjectLoadComplete(m_pLoadingProject);
     //m_pLoadingProject = NULL;
 }
 
@@ -842,8 +762,7 @@ void FeResourceManager::ProjectLoadComplete()
 // Return:      none
 //
 //===========================================================================
-void FeResourceManager::RegisterProjectCallback( Scrooby::LoadProjectCallback* callback )
-{
+void FeResourceManager::RegisterProjectCallback(Scrooby::LoadProjectCallback *callback) {
     m_pLoadProjectCallback = callback;
 }
 
@@ -859,9 +778,8 @@ void FeResourceManager::RegisterProjectCallback( Scrooby::LoadProjectCallback* c
 // Return:      None
 //
 //===========================================================================
-void FeResourceManager::RegisterCementFile( const char* filename )
-{
-    //m_FileLoader->RegisterCementFile( filename );
+void FeResourceManager::RegisterCementFile(const char *filename) {
+    //m_FileLoader->RegisterCementFile(filename);
 }
 
 //===========================================================================
@@ -876,39 +794,29 @@ void FeResourceManager::RegisterCementFile( const char* filename )
 // Return:      NONE
 //
 //===========================================================================
-void FeResourceManager::RemoveResource( tEntity* resource, const char* inventorySection )
-{
-    for( int i = 0; i < mResources.Size(); i++ )
-    {
-        if( mResources[i] )
-        {
-            if( mResources[i]->theData == resource )
-            {
-                RemoveResource( i, inventorySection );
+void FeResourceManager::RemoveResource(tEntity *resource, const char *inventorySection) {
+    for (int i = 0; i < mResources.Size(); i++) {
+        if (mResources[i]) {
+            if (mResources[i]->theData == resource) {
+                RemoveResource(i, inventorySection);
             }
         }
     }
 }
 
-void FeResourceManager::RemoveResource( int resourceID, const char* inventorySection )
-{
-    ResourceEntry* entry = mResources[resourceID];
+void FeResourceManager::RemoveResource(int resourceID, const char *inventorySection) {
+    ResourceEntry *entry = mResources[resourceID];
     mResources[resourceID] = NULL;
-    if( entry )
-    {
-        //Scrooby::Log::Message( Scrooby::LVL_INFO, "Unloading resource %s", entry->GetName() );
-        if( entry->theData )
-        {
+    if (entry) {
+        //Scrooby::Log::Message(Scrooby::LVL_INFO, "Unloading resource %s", entry->GetName());
+        if (entry->theData) {
             p3d::inventory->PushSection();
-            if( inventorySection != NULL )
-            {
-                p3d::inventory->SelectSection( inventorySection );
+            if (inventorySection != NULL) {
+                p3d::inventory->SelectSection(inventorySection);
+            } else {
+                p3d::inventory->SelectSection(m_pInventorySection);
             }
-            else
-            {
-                p3d::inventory->SelectSection( m_pInventorySection );
-            }
-            p3d::inventory->Remove( entry->theData );
+            p3d::inventory->Remove(entry->theData);
             entry->theData->Release();
             entry->theData = NULL;
             p3d::inventory->PopSection();
@@ -917,36 +825,28 @@ void FeResourceManager::RemoveResource( int resourceID, const char* inventorySec
         entry = NULL;
         mDeletedResources++;
     }
-    RemoveAlias( resourceID );
-    RemoveP3DAttributes( resourceID );
+    RemoveAlias(resourceID);
+    RemoveP3DAttributes(resourceID);
 }
 
-void FeResourceManager::RemoveAlias( int resourceID )
-{
+void FeResourceManager::RemoveAlias(int resourceID) {
     int i = 0;
-    for( i; i < mAliases.Size(); i++ )
-    {
-        if( mAliases[i] )
-        {
-            if( mAliases[i]->m_resourceIndex == resourceID )
-            {
-                delete mAliases[ i ];
-                mAliases[ i ] = NULL;
+    for (i; i < mAliases.Size(); i++) {
+        if (mAliases[i]) {
+            if (mAliases[i]->m_resourceIndex == resourceID) {
+                delete mAliases[i];
+                mAliases[i] = NULL;
                 ++mDeletedAliases;
             }
         }
     }
 }
 
-void FeResourceManager::RemoveP3DAttributes( int resourceID )
-{
+void FeResourceManager::RemoveP3DAttributes(int resourceID) {
     int i = 0;
-    for( i; i < mP3DAttributes.Size(); i++ )
-    {
-        if( mP3DAttributes[i] )
-        {
-            if( mP3DAttributes[i]->m_resourceIndex == resourceID )
-            {
+    for (i; i < mP3DAttributes.Size(); i++) {
+        if (mP3DAttributes[i]) {
+            if (mP3DAttributes[i]->m_resourceIndex == resourceID) {
                 mP3DAttributes[i]->ReleaseVerified();
                 mP3DAttributes[i] = NULL;
                 mDeletedAttributes++;
@@ -967,8 +867,7 @@ void FeResourceManager::RemoveP3DAttributes( int resourceID )
 // Return:      NONE
 //
 //===========================================================================
-void FeResourceManager::SetAsyncLoading( bool async )
-{
+void FeResourceManager::SetAsyncLoading(bool async) {
     m_bAsyncLoading = async;
 }
 
@@ -983,10 +882,8 @@ void FeResourceManager::SetAsyncLoading( bool async )
 // Return:      Nothing
 //
 //===========================================================================
-void FeResourceManager::SetCallback( Scrooby::ResourceManagerCallback* callback )
-{
-    if( callback != NULL )
-    {
+void FeResourceManager::SetCallback(Scrooby::ResourceManagerCallback *callback) {
+    if (callback != NULL) {
         m_pResourceManagerCallback = callback;
     }
 }
@@ -1003,10 +900,9 @@ void FeResourceManager::SetCallback( Scrooby::ResourceManagerCallback* callback 
 // Return:      Nothing
 //
 //===========================================================================
-void FeResourceManager::SetInventorySection( const char* name )
-{
-    rAssert( name != NULL );
-    strcpy( m_pInventorySection, name );
+void FeResourceManager::SetInventorySection(const char *name) {
+    rAssert(name != NULL);
+    strcpy(m_pInventorySection, name);
 }
 
 //===========================================================================
@@ -1022,15 +918,11 @@ void FeResourceManager::SetInventorySection( const char* name )
 //
 //===========================================================================
 void
-FeResourceManager::SetSecondaryInventorySection( const char* name )
-{
-    if( name != NULL )
-    {
-        strcpy( m_pSecondaryInventorySection, name );
-    }
-    else
-    {
-        m_pSecondaryInventorySection[ 0 ] = '\0';
+FeResourceManager::SetSecondaryInventorySection(const char *name) {
+    if (name != NULL) {
+        strcpy(m_pSecondaryInventorySection, name);
+    } else {
+        m_pSecondaryInventorySection[0] = '\0';
     }
 }
 
@@ -1045,22 +937,17 @@ FeResourceManager::SetSecondaryInventorySection( const char* name )
 // Return:      Nothing
 //
 //===========================================================================
-void FeResourceManager::SetLocalizationLanguage( const Scrooby::XLLanguage lang )
-{
+void FeResourceManager::SetLocalizationLanguage(const Scrooby::XLLanguage lang) {
     int i = 0;
-    if( m_eLang != lang )
-    {
+    if (m_eLang != lang) {
         m_eLang = lang;
-        for( i; i < mResources.Size(); i++ )
-        {
-            if( mResources[i] )
-            {
-                FeTextBible* bible = dynamic_cast<FeTextBible*>( mResources[i]->theData );
-                if( !bible )
-                {
+        for (i; i < mResources.Size(); i++) {
+            if (mResources[i]) {
+                FeTextBible *bible = dynamic_cast<FeTextBible *>(mResources[i]->theData);
+                if (!bible) {
                     continue;
                 }
-                bible->SetLanguage( Scrooby::language_ID[ lang ] );
+                bible->SetLanguage(Scrooby::language_ID[lang]);
             }
         }
     }
@@ -1078,8 +965,7 @@ void FeResourceManager::SetLocalizationLanguage( const Scrooby::XLLanguage lang 
 // Return:      Nothing
 //
 //===========================================================================
-void FeResourceManager::UnloadAll()
-{
+void FeResourceManager::UnloadAll() {
 }
 
 //===========================================================================
@@ -1094,19 +980,17 @@ void FeResourceManager::UnloadAll()
 // Return:      NONE
 //
 //===========================================================================
-void FeResourceManager::UnloadProject(  Scrooby::Project* project )
-{
-    FeProject* feProject = dynamic_cast<  FeProject* >( project );
-    rAssert( feProject != NULL );
+void FeResourceManager::UnloadProject(Scrooby::Project *project) {
+    FeProject *feProject = dynamic_cast<FeProject *>(project);
+    rAssert(feProject != NULL);
 
     int size = feProject->GetChildrenCount();
     int i;
-    for( i = 0; i < size; i++ )
-    {
-        FeEntity* child = feProject->GetChildIndex( i );
-        FeScreen* screen = dynamic_cast< FeScreen* >( child );
-        rAssert  ( screen );
-        //UnloadChildren( screen );
+    for (i = 0; i < size; i++) {
+        FeEntity *child = feProject->GetChildIndex(i);
+        FeScreen *screen = dynamic_cast<FeScreen *>(child);
+        rAssert(screen);
+        //UnloadChildren(screen);
     }
 
     //
@@ -1116,9 +1000,8 @@ void FeResourceManager::UnloadProject(  Scrooby::Project* project )
 }
 
 FeResourceManager::ResourceManagerEntryBase::ResourceManagerEntryBase()
-:
-    isThisCurrentlyBeingLoaded( false ),
-    m_Status( RM_NOT_LOADED ),
-    m_ScroobyName( NULL )
-{
+        :
+        isThisCurrentlyBeingLoaded(false),
+        m_Status(RM_NOT_LOADED),
+        m_ScroobyName(NULL) {
 }

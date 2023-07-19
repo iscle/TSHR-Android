@@ -27,55 +27,63 @@ class tEntityTable;
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class FeResourceUser
-{
-    public:
+class FeResourceUser {
+public:
 
-        FeResourceUser();
-        virtual ~FeResourceUser();
-        
-        void AddImageResourceEntry( const char* alias, const char* filename );
-        void AddTextStyleResourceEntry( const char* alias, const char* filename );
-        void AddTextBibleResourceEntry( const char* alias, const char* filename );
-        void AddMovieClipResourceEntry( const char* alias, const char* filename );
-        void Add3dModelResourceEntry
-        ( 
-            const char* alias, 
-            const char* filename, 
-            const char* inventoryName, 
-            const char* animationName,
-            const char* cameraName
-        );
+    FeResourceUser();
 
-        unsigned int FindImageResourceEntry( const char* alias ) const;
-        unsigned int FindTextStyleResourceEntry( const char* alias ) const;
-        unsigned int FindTextBibleResourceEntry( const char* alias ) const;
-        unsigned int FindMovieClipResourceEntry( const char* alias ) const;
-        unsigned int Find3dModelResourceEntry( const char* alias ) const;
+    virtual ~FeResourceUser();
 
-    private:
+    void AddImageResourceEntry(const char *alias, const char *filename);
 
-        //---------------------------------------------------------------------
-        // Private Functions
-        //---------------------------------------------------------------------
+    void AddTextStyleResourceEntry(const char *alias, const char *filename);
 
-        // No copying. Declare but don't define.
-        //
-        FeResourceUser( const FeResourceUser& );
+    void AddTextBibleResourceEntry(const char *alias, const char *filename);
 
-        // No assignment. Declare but don't define.
-        //
-        FeResourceUser& operator= ( const FeResourceUser& );
+    void AddMovieClipResourceEntry(const char *alias, const char *filename);
+
+    void Add3dModelResourceEntry
+            (
+                    const char *alias,
+                    const char *filename,
+                    const char *inventoryName,
+                    const char *animationName,
+                    const char *cameraName
+            );
+
+    unsigned int FindImageResourceEntry(const char *alias) const;
+
+    unsigned int FindTextStyleResourceEntry(const char *alias) const;
+
+    unsigned int FindTextBibleResourceEntry(const char *alias) const;
+
+    unsigned int FindMovieClipResourceEntry(const char *alias) const;
+
+    unsigned int Find3dModelResourceEntry(const char *alias) const;
+
+private:
+
+    //---------------------------------------------------------------------
+    // Private Functions
+    //---------------------------------------------------------------------
+
+    // No copying. Declare but don't define.
+    //
+    FeResourceUser(const FeResourceUser &);
+
+    // No assignment. Declare but don't define.
+    //
+    FeResourceUser &operator=(const FeResourceUser &);
 
 
-        //---------------------------------------------------------------------
-        // Private Data
-        //---------------------------------------------------------------------
-        tLinearTable* mpImageResources;
-        tLinearTable* mpTextStyleResources;
-        tLinearTable* mpTextBibleResources;
-        tLinearTable* mpMovieClipResources;
-        tLinearTable* mp3dModelResources;
+    //---------------------------------------------------------------------
+    // Private Data
+    //---------------------------------------------------------------------
+    tLinearTable *mpImageResources;
+    tLinearTable *mpTextStyleResources;
+    tLinearTable *mpTextBibleResources;
+    tLinearTable *mpMovieClipResources;
+    tLinearTable *mp3dModelResources;
 };
 
 

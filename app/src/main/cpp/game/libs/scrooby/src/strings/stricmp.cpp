@@ -41,39 +41,32 @@
 //
 // Parameters:    string1, string2 - strings to be compared
 //
-// Return:      int - <0 string1 < string2
+// Return:      int - <0 string1 <string2
 //                    =0 string1 = string2
-//                    >0 string1 > string2
+//>0 string1> string2
 //
 //===========================================================================
-int rstricmp( const char* string1, const char* string2 )
-{
+int rstricmp(const char *string1, const char *string2) {
     //IMPROVE: if this is slow, then it can be swapped for the built in stricmp
     //on the ps2, pc
-    const char* index1 = string1;
-    const char* index2 = string2;
+    const char *index1 = string1;
+    const char *index2 = string2;
 
-    while( ( *index1 != NULL ) && ( *index2 != NULL ) )
-    {
-        char c1 = toupper( *index1 );
-        char c2 = toupper( *index2 );
-        if( c1 > c2 )
-        {
+    while ((*index1 != NULL) && (*index2 != NULL)) {
+        char c1 = toupper(*index1);
+        char c2 = toupper(*index2);
+        if (c1 > c2) {
             return 1;
         }
-        if( c1 < c2 )
-        {
+        if (c1 < c2) {
             return -1;
         }
         index1++;
         index2++;
     }
-    if( (*index1 == NULL) && (*index2 != NULL) )
-    {
+    if ((*index1 == NULL) && (*index2 != NULL)) {
         return -1;
-    }
-    else if( (*index1 != NULL) && (*index2 == NULL) )
-    {
+    } else if ((*index1 != NULL) && (*index2 == NULL)) {
         return 1;
     }
     return 0;
@@ -90,40 +83,33 @@ int rstricmp( const char* string1, const char* string2 )
 // Parameters:    string1, string2 - strings to be compared
 //              tCount - how many characters to compare
 //
-// Return:      int - <0 string1 < string2
+// Return:      int - <0 string1 <string2
 //                    =0 string1 = string2
-//                    >0 string1 > string2
+//>0 string1> string2
 //
 //===========================================================================
-int rstrincmp( const char *string1, const char *string2, int tCount)
-{
+int rstrincmp(const char *string1, const char *string2, int tCount) {
     //IMPROVE: if this is slow, then it can be swapped for the built in stricmp
     //on the ps2, pc
-    const char* index1 = string1;
-    const char* index2 = string2;
+    const char *index1 = string1;
+    const char *index2 = string2;
 
-    while( ( *index1 != NULL ) && ( *index2 != NULL ) && ( tCount != 0 ) )
-    {
-        char c1 = toupper( *index1 );
-        char c2 = toupper( *index2 );
-        if( c1 > c2 )
-        {
+    while ((*index1 != NULL) && (*index2 != NULL) && (tCount != 0)) {
+        char c1 = toupper(*index1);
+        char c2 = toupper(*index2);
+        if (c1 > c2) {
             return 1;
         }
-        if( c1 < c2 )
-        {
+        if (c1 < c2) {
             return -1;
         }
         index1++;
         index2++;
         tCount--;
     }
-    if( (*index1 == NULL) && (*index2 != NULL) )
-    {
+    if ((*index1 == NULL) && (*index2 != NULL)) {
         return -1;
-    }
-    else if( (*index1 != NULL) && (*index2 == NULL) )
-    {
+    } else if ((*index1 != NULL) && (*index2 == NULL)) {
         return 1;
     }
     return 0;

@@ -31,30 +31,29 @@
 //===========================================================================
 // Interface Definitions
 //===========================================================================
-class FeEntity 
-: 
-    //virtual public FeAllocatesMemory,
-    public tEntity
-{
-    public:
-        FeEntity();
+class FeEntity
+        :
+                //virtual public FeAllocatesMemory,
+                public tEntity {
+public:
+    FeEntity();
 
 #ifdef SCROOBY_MEMORY_CHECKING
-        void SetName( const tName& name );          
-        void AddRef();
-        void Release();
+    void SetName(const tName& name);
+    void AddRef();
+    void Release();
 #endif
 
-        virtual bool IsDrawable() = 0;
-        virtual bool IsOwner() const;
+    virtual bool IsDrawable() = 0;
 
-    protected:
-        virtual ~FeEntity();
+    virtual bool IsOwner() const;
+
+protected:
+    virtual ~FeEntity();
 
 };
 
-class FeEntityDummy : public FeEntity
-{
+class FeEntityDummy : public FeEntity {
 public:
     virtual bool IsDrawable() { return false; }
 

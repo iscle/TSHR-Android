@@ -30,14 +30,13 @@
 // Return:      Nothing
 //
 //===========================================================================
-StreamReader::StreamReader( const char* buffer, 
-                            const unsigned int bufferSize )
-:
-    mBuffer( buffer ),
-    mBufferSize( bufferSize ),
-    mBytesStreamed( 0 )
-{
-    rAssert( buffer );
+StreamReader::StreamReader(const char *buffer,
+                           const unsigned int bufferSize)
+        :
+        mBuffer(buffer),
+        mBufferSize(bufferSize),
+        mBytesStreamed(0) {
+    rAssert(buffer);
 }
 
 
@@ -53,17 +52,15 @@ StreamReader::StreamReader( const char* buffer,
 // Return:      char - the next char - '\0' if nothing
 //
 //===========================================================================
-char StreamReader::GetNextChar()
-{
+char StreamReader::GetNextChar() {
     //
     // At the end of the file.
     //
-    if( mBytesStreamed == mBufferSize )
-    {
-        return( '\0' );    
+    if (mBytesStreamed == mBufferSize) {
+        return ('\0');
     }
 
-    return( mBuffer[ mBytesStreamed++ ] );
+    return (mBuffer[mBytesStreamed++]);
 }
 
 
@@ -101,19 +98,19 @@ char StreamReader::GetNextChar()
 // Return:      Nothing
 //
 //===========================================================================
-StreamReader::StreamReader( const char* fileName, 
-                            const unsigned int readBufferSize )
+StreamReader::StreamReader(const char* fileName,
+                            const unsigned int readBufferSize)
 :
-    mRefCount( 1 ),
-    mpDispatcherHack( NULL ),
-    mpIReadAsync( NULL ),
-    mFileReady( false ),
-    mReadComplete( false ),
-    mBufferSize( readBufferSize ),
-    mFileSize( 0 ),
-    mBytesStreamed( 0 ),
-    mIndex( 0 ),
-    mBuffer( NULL )
+    mRefCount(1),
+    mpDispatcherHack(NULL),
+    mpIReadAsync(NULL),
+    mFileReady(false),
+    mReadComplete(false),
+    mBufferSize(readBufferSize),
+    mFileSize(0),
+    mBytesStreamed(0),
+    mIndex(0),
+    mBuffer(NULL)
 {
     //
     // We will read chunks of the file into here.
@@ -125,18 +122,18 @@ StreamReader::StreamReader( const char* fileName,
     //
     bITokenObjectNameSpace* pINameSpace;
     
-    bGetObject( CID_DriveSystem,
+    bGetObject(CID_DriveSystem,
                 NULL,
                 IID_bITokenObjectNameSpace,
-                reinterpret_cast<void**>( &pINameSpace ) );
+                reinterpret_cast<void**>(&pINameSpace));
 
-    rAssert( pINameSpace != NULL );
+    rAssert(pINameSpace != NULL);
 
     //
     // Start by finding the size of this file which will in turn get
     // the read file interface.
     //
-    pINameSpace->GetTokenNameObject( fileName, IID_bISizeSync, this ); 
+    pINameSpace->GetTokenNameObject(fileName, IID_bISizeSync, this);
     pINameSpace->Release();
 
 
@@ -144,15 +141,15 @@ StreamReader::StreamReader( const char* fileName,
     // Get interface pointer to the hacked dispatcher;
     //
     bIDispatcher* pDispatcher;      
-    bGetObject( CID_Dispatcher,
+    bGetObject(CID_Dispatcher,
                 NULL,
                 IID_bIDispatcher,
-                reinterpret_cast<void**>( &pDispatcher ) );
+                reinterpret_cast<void**>(&pDispatcher));
 
-    rAssert( pDispatcher != NULL );
+    rAssert(pDispatcher != NULL);
 
-    pDispatcher->GetInterface( IID_bIDispatcherHack, (void**) &mpDispatcherHack );
-    rAssert( mpDispatcherHack != NULL );
+    pDispatcher->GetInterface(IID_bIDispatcherHack, (void**) &mpDispatcherHack);
+    rAssert(mpDispatcherHack != NULL);
 
     pDispatcher->Release();
     
@@ -160,7 +157,7 @@ StreamReader::StreamReader( const char* fileName,
     // Service the other pending tasks until the file is ready.
     // We'll loop here until our ObjectAvaiable() callback is invoked.
     //
-    while( !mFileReady )
+    while(!mFileReady)
     {
         mpDispatcherHack->Do();
     }
@@ -202,28 +199,28 @@ StreamReader::~StreamReader()
 // Return:      Nothing
 //
 //===========================================================================
-void StreamReader::OnObjectAvailable( bIObject* pObject )
+void StreamReader::OnObjectAvailable(bIObject* pObject)
 {
-    if( pObject == NULL )
+    if(pObject == NULL)
     {     
-        rAssertMsg( 0, "We should not be here\n" );
+        rAssertMsg(0, "We should not be here\n");
         return;
     }
    
     //
     // We can now get the size of the file.
     //
-    bISizeSync* pISizeSync = reinterpret_cast<bISizeSync*>( pObject );
+    bISizeSync* pISizeSync = reinterpret_cast<bISizeSync*>(pObject);
 
-    mFileSize = pISizeSync->GetSizeSync( );
+    mFileSize = pISizeSync->GetSizeSync();
 
     //
     // Get and store the interface to read a file.
     //
-    pISizeSync->GetInterface( IID_bIReadAsync,
-                              reinterpret_cast<void**>( &mpIReadAsync ) );
+    pISizeSync->GetInterface(IID_bIReadAsync,
+                              reinterpret_cast<void**>(&mpIReadAsync));
     
-    rAssert( mpIReadAsync != NULL );
+    rAssert(mpIReadAsync != NULL);
     
     //
     // That's it for now.  We've basically "Open()"ed the file and 
@@ -253,30 +250,30 @@ void StreamReader::GetNextBufferFromFile()
     // Read a full buffer or just the remainder of the file?
     //
     unsigned int readSize;
-    readSize = __min( mBufferSize, mFileSize - mBytesStreamed );
+    readSize = __min(mBufferSize, mFileSize - mBytesStreamed);
     
     //
     // The logic in GetNextChar() should never allow this to happen.
     //
-    rAssert( readSize != 0 );
+    rAssert(readSize != 0);
 
     //
     // We're using multiple inheritance in this class and we need to get
     // back up to a bIObject.
     //
     bIObject* pObj; 
-    pObj = static_cast<bIObject*>( static_cast<bIObjectAvailableCallback*>( this ) );
+    pObj = static_cast<bIObject*>(static_cast<bIObjectAvailableCallback*>(this));
 
     //
     // Request that the file be read into our buffer.
     //
-    mpIReadAsync->ReadAsync( pObj, static_cast<void*>( mBuffer ), readSize, this );
+    mpIReadAsync->ReadAsync(pObj, static_cast<void*>(mBuffer), readSize, this);
 
     //
     // Service the other pending tasks until the file load is complete.
     // We'll loop here until our OnReadAsyncComplete() callback is invoked.
     //
-    while( !mReadComplete )
+    while(!mReadComplete)
     {
         mpDispatcherHack->Do();
     }
@@ -298,7 +295,7 @@ void StreamReader::GetNextBufferFromFile()
 // Return:      Nothing
 //
 //===========================================================================
-void StreamReader::OnReadAsyncComplete( void )
+void StreamReader::OnReadAsyncComplete(void)
 {
     //
     // Finished reading the file, set our flag so we can stop spinning the
@@ -326,35 +323,35 @@ char StreamReader::GetNextChar()
     //
     // At the end of the file.
     //
-    if( mBytesStreamed == mFileSize )
+    if(mBytesStreamed == mFileSize)
     {
         //
         // We're done so release all the file system references.
         //
-        if( mpIReadAsync != NULL )
+        if(mpIReadAsync != NULL)
         {
             mpIReadAsync->Release();
             mpIReadAsync = NULL;
         }
         
-        if( mpDispatcherHack != NULL )
+        if(mpDispatcherHack != NULL)
         {
             mpDispatcherHack->Release();
             mpDispatcherHack = NULL;
         }
 
-        return( '\0' );    
+        return('\0');
     }
 
     //
     // At the start of the file or need to re-fill the buffer.
     //
-    if( mBytesStreamed == 0 || (mIndex == mBufferSize - 1) )
+    if(mBytesStreamed == 0 || (mIndex == mBufferSize - 1))
     {
         this->GetNextBufferFromFile();
         mIndex = 0;
         ++mBytesStreamed;
-        return( mBuffer[ mIndex ] );
+        return(mBuffer[ mIndex ]);
     }
     //
     // Reading from the current buffer.
@@ -362,7 +359,7 @@ char StreamReader::GetNextChar()
     else
     {
         ++mBytesStreamed;
-        return( mBuffer[ ++mIndex ] );
+        return(mBuffer[ ++mIndex ]);
     }
 }
 
@@ -380,7 +377,7 @@ char StreamReader::GetNextChar()
 // Return:      Nothing
 //
 //===========================================================================
-void StreamReader::AddRef( void )
+void StreamReader::AddRef(void)
 {
      mRefCount++;
 };
@@ -398,10 +395,10 @@ void StreamReader::AddRef( void )
 // Return:      Nothing
 //
 //===========================================================================
-void StreamReader::Release( void )
+void StreamReader::Release(void)
 { 
     mRefCount--;
-    if( mRefCount == 0 )
+    if(mRefCount == 0)
     {
         delete this; 
     }
@@ -420,27 +417,27 @@ void StreamReader::Release( void )
 // Return:      Nothing
 //
 //===========================================================================
-void StreamReader::GetInterface( bInterfaceId interfaceId, void** ppInterface )
+void StreamReader::GetInterface(bInterfaceId interfaceId, void** ppInterface)
 {
     *ppInterface = NULL;
     
-    if( interfaceId == IID_bIObjectAvailableCallback )
+    if(interfaceId == IID_bIObjectAvailableCallback)
     {
-        *ppInterface = static_cast< bIObjectAvailableCallback* >( this );
+        *ppInterface = static_cast<bIObjectAvailableCallback*>(this);
     }
-    else if( interfaceId == IID_bIObject )
+    else if(interfaceId == IID_bIObject)
     {
-        bIObjectAvailableCallback* pItons = static_cast< bIObjectAvailableCallback* >( this );    
-        *ppInterface = static_cast< bIObject* >( pItons );
+        bIObjectAvailableCallback* pItons = static_cast<bIObjectAvailableCallback*>(this);
+        *ppInterface = static_cast<bIObject*>(pItons);
     }    
-    else if( interfaceId == IID_bIReadAsyncCallback )
+    else if(interfaceId == IID_bIReadAsyncCallback)
     {
-        *ppInterface = static_cast< bIReadAsyncCallback* >( this );
+        *ppInterface = static_cast<bIReadAsyncCallback*>(this);
     }
 
-    if( *ppInterface != NULL )
+    if(*ppInterface != NULL)
     {
-        reinterpret_cast< bIObject* >(*ppInterface)->AddRef( );
+        reinterpret_cast<bIObject*>(*ppInterface)->AddRef();
     }    
 }
 */

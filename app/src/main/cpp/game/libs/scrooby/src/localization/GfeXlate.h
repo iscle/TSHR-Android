@@ -3,25 +3,29 @@
 
 //#include "FeTypes.h"
 #include "GTxlate.h"
-#include "..\..\..\common\strings\unicodeString.h"
+#include "../../../common/strings/unicodeString.h"
 
-class GfeTranslate 
-{
+class GfeTranslate {
 public:
     GfeTranslate();
-    ~GfeTranslate();
-    
-    UnicodeString Translate(unsigned long hash_value);
-    void SetLanguage(const char* path, int lang);
-    void SetLanguage(int lang);
-    void SetLanguageDatapath(const char* path);
 
-    void* LoadLanguageDatafile(const char* fileName);
-    void UnloadLanguageDatafile(void* data);
+    ~GfeTranslate();
+
+    UnicodeString Translate(unsigned long hash_value);
+
+    void SetLanguage(const char *path, int lang);
+
+    void SetLanguage(int lang);
+
+    void SetLanguageDatapath(const char *path);
+
+    void *LoadLanguageDatafile(const char *fileName);
+
+    void UnloadLanguageDatafile(void *data);
 
 private:
     char pathName[255];
-    void* languageData;
+    void *languageData;
     int languageFileIndex;
     XLTranslator translator;
 
