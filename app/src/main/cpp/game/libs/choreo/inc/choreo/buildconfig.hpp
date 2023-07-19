@@ -11,7 +11,7 @@
 //----------------------------------------------------------------------
 
 // check that we have a build config define
-#if !defined(RAD_DEBUG) && !defined(RAD_TUNE) && !defined(RAD_RELEASE) 
+#if !defined(RAD_DEBUG) && !defined(RAD_TUNE) && !defined(RAD_RELEASE)
 #error No build target defined (one of RAD_DEBUG, RAD_TUNE or RAD_RELEASE)
 #define RAD_DEBUG
 #endif
@@ -23,10 +23,10 @@
 
 // check that we have a valid platform define
 #if !defined(RAD_GAMECUBE) && !defined(RAD_PS2) && !defined(RAD_XBOX) && !defined(RAD_WIN32) && !defined(RAD_LINUX)
-#error No platform defined, define one of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, RAD_WIN32 or RAD_LINUX 
+#error No platform defined, define one of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, RAD_WIN32 or RAD_LINUX
 #endif
 
-#if !defined(RAD_PC) && !defined(RAD_CONSOLE) 
+#if !defined(RAD_PC) && !defined(RAD_CONSOLE)
 #error Must define one of RAD_PC, RAD_CONSOLE
 #endif
 

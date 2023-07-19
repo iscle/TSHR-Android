@@ -5,8 +5,7 @@
 #include <choreo/driver.hpp>
 
 
-namespace choreo
-{
+namespace choreo {
 
 
 } // namespace choreo

@@ -5,8 +5,7 @@
 #include <choreo/jointblenddriver.hpp>
 
 
-namespace choreo
-{
+namespace choreo {
 
 
 } // namespace choreo

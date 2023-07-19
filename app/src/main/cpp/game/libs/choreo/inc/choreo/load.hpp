@@ -20,55 +20,63 @@ struct IRadFile;
 #endif
 
 
-namespace choreo
-{
+namespace choreo {
 
 
-class FileReader;
-class FileWriter;
-class ScriptReader;
-class ScriptWriter;
-class BaseBank;
+    class FileReader;
+
+    class FileWriter;
+
+    class ScriptReader;
+
+    class ScriptWriter;
+
+    class BaseBank;
 
 
 //---------------------------------------------------------------------------
 // script read handler registration
 //---------------------------------------------------------------------------
 
-typedef bool (*ScriptReadHandler)(ScriptReader* script, BaseBank* bank);
-bool RegisterScriptReadHandler(ScriptReadHandler scriptHandler);
-void RegisterDefaultScriptReadHandlers();
+    typedef bool (*ScriptReadHandler)(ScriptReader *script, BaseBank *bank);
+
+    bool RegisterScriptReadHandler(ScriptReadHandler scriptHandler);
+
+    void RegisterDefaultScriptReadHandlers();
 
 
 //---------------------------------------------------------------------------
 // script reading functions
 //---------------------------------------------------------------------------
 
-bool ReadFromScript(ScriptReader* script, tEntityStore* store = p3d::inventory);
-bool ReadFromScriptFile(FileReader* scriptFile, tEntityStore* store = p3d::inventory);
+    bool ReadFromScript(ScriptReader *script, tEntityStore *store = p3d::inventory);
 
-bool ReadFromScriptString(const char* string, const char* fileName, tEntityStore* store = p3d::inventory);
-bool ReadFromScriptString(const char* string, tEntityStore* store = p3d::inventory);
+    bool ReadFromScriptFile(FileReader *scriptFile, tEntityStore *store = p3d::inventory);
+
+    bool ReadFromScriptString(const char *string, const char *fileName,
+                              tEntityStore *store = p3d::inventory);
+
+    bool ReadFromScriptString(const char *string, tEntityStore *store = p3d::inventory);
 
 #ifdef CHOREO_USE_FILE_P3D
-bool ReadFromScriptFileP3D(tFile* scriptFile, tEntityStore* store = p3d::inventory);
+    bool ReadFromScriptFileP3D(tFile* scriptFile, tEntityStore* store = p3d::inventory);
 #endif
 
 #ifdef CHOREO_USE_FILE_FTT
-bool ReadFromScriptFileFTT(IRadFile* scriptFile, tEntityStore* store = p3d::inventory);
+    bool ReadFromScriptFileFTT(IRadFile* scriptFile, tEntityStore* store = p3d::inventory);
 #endif
 
-bool ReadFromScriptPath(const char* scriptPath, tEntityStore* store = p3d::inventory);
+    bool ReadFromScriptPath(const char *scriptPath, tEntityStore *store = p3d::inventory);
 
 
 // only compile in writing if CHOREO_TOOL is defined
 #ifdef CHOREO_TOOL
-//---------------------------------------------------------------------------
-// script write handler registration
-//---------------------------------------------------------------------------
+    //---------------------------------------------------------------------------
+    // script write handler registration
+    //---------------------------------------------------------------------------
 
-typedef bool (*ScriptWriteHandler)(ScriptWriter* script, BaseBank* bank);
-bool RegisterScriptWriteHandler(ScriptWriteHandler scriptHandler);
+    typedef bool (*ScriptWriteHandler)(ScriptWriter* script, BaseBank* bank);
+    bool RegisterScriptWriteHandler(ScriptWriteHandler scriptHandler);
 
 #define CHOREO_SCRIPT_WRITE_HANDLER(type, script, bank) \
 { \
@@ -92,21 +100,21 @@ bool RegisterScriptWriteHandler(ScriptWriteHandler scriptHandler);
     return true; \
 }
 
-void RegisterDefaultScriptWriteHandlers();
+    void RegisterDefaultScriptWriteHandlers();
 
 
-//---------------------------------------------------------------------------
-// script writing functions
-//---------------------------------------------------------------------------
+    //---------------------------------------------------------------------------
+    // script writing functions
+    //---------------------------------------------------------------------------
 
-bool WriteToScript(ScriptWriter* script, tInventory* store = p3d::inventory);
-bool WriteToScriptFile(FileWriter* scriptFile, tInventory* store = p3d::inventory);
+    bool WriteToScript(ScriptWriter* script, tInventory* store = p3d::inventory);
+    bool WriteToScriptFile(FileWriter* scriptFile, tInventory* store = p3d::inventory);
 
 #ifdef CHOREO_USE_FILE_FTT
-bool WriteToScriptFileFTT(IRadFile* scriptFile, tInventory* store = p3d::inventory);
+    bool WriteToScriptFileFTT(IRadFile* scriptFile, tInventory* store = p3d::inventory);
 #endif
 
-bool WriteToScriptPath(const char* scriptPath, tInventory* store = p3d::inventory);
+    bool WriteToScriptPath(const char* scriptPath, tInventory* store = p3d::inventory);
 
 #endif // CHOREO_TOOL
 
@@ -115,7 +123,7 @@ bool WriteToScriptPath(const char* scriptPath, tInventory* store = p3d::inventor
 // general script handler registration
 //---------------------------------------------------------------------------
 
-void RegisterDefaultScriptHandlers();
+    void RegisterDefaultScriptHandlers();
 
 
 //---------------------------------------------------------------------------
@@ -123,8 +131,8 @@ void RegisterDefaultScriptHandlers();
 //---------------------------------------------------------------------------
 
 #ifdef CHOREO_USE_FILE_P3D
-void InstallDefaultLoaders(tLoadManager* loadManager = p3d::loadManager, bool useTxtExtension = true);
-void InstallDefaultChunkHandlers(tLoadManager* loadManager = p3d::loadManager);
+    void InstallDefaultLoaders(tLoadManager* loadManager = p3d::loadManager, bool useTxtExtension = true);
+    void InstallDefaultChunkHandlers(tLoadManager* loadManager = p3d::loadManager);
 #endif
 
 

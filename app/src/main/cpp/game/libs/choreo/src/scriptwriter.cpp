@@ -52,7 +52,7 @@ void BufferFileWriter::Clear()
 {
     m_BufferLength = 0;
 
-    if (m_MaxBufferSize > 0)
+    if (m_MaxBufferSize> 0)
     {
         m_Buffer[0] = '\0';
     }
@@ -64,7 +64,7 @@ void BufferFileWriter::WriteString(const char* str)
     int postBufferLength = m_BufferLength + len;
     int postBufferSize = postBufferLength + 1;
 
-    if (postBufferSize > m_MaxBufferSize)
+    if (postBufferSize> m_MaxBufferSize)
     {
         if (m_MaxBufferSize <= 0)
         {
@@ -73,7 +73,7 @@ void BufferFileWriter::WriteString(const char* str)
         }
         else
         {
-            while (m_MaxBufferSize < postBufferSize)
+            while (m_MaxBufferSize <postBufferSize)
             {
                 m_MaxBufferSize *= 2;
             }
@@ -97,7 +97,7 @@ void BufferFileWriter::WriteString(const char* str)
 //---------------------------------------------------------------------------
 
 CStreamFileWriter::CStreamFileWriter(FILE* file):
-	m_File(file)
+    m_File(file)
 {
 }
 
@@ -107,7 +107,7 @@ CStreamFileWriter::~CStreamFileWriter()
 
 void CStreamFileWriter::WriteString(const char* str)
 {
-	fwrite(str, strlen(str), 1, m_File);
+    fwrite(str, strlen(str), 1, m_File);
 }
 #endif // !RAD_GAMECUBE
 
@@ -132,13 +132,13 @@ FTTFileWriter::~FTTFileWriter()
 void FTTFileWriter::WriteString(const char* str)
 {
     int strLen = strlen(str);
-    if (strLen > 0)
+    if (strLen> 0)
     {
         m_File->WriteAsync(str, strlen(str));
 
-	    // FIXME:  currently, radFile keeps running out of request handles,
-	    //         so we flush the buffer here
-	    m_File->WaitForCompletion();
+        // FIXME:  currently, radFile keeps running out of request handles,
+        //         so we flush the buffer here
+        m_File->WaitForCompletion();
     }
 }
 
@@ -173,9 +173,9 @@ void ScriptWriter::Indent()
 
     if (m_UseTabs)
     {
-        P3DASSERT((sizeof(buf) - 1) >= m_Indent);
+        P3DASSERT((sizeof(buf) - 1)>= m_Indent);
 
-        for (int i = 0; i < m_Indent; ++i)
+        for (int i = 0; i <m_Indent; ++i)
         {
             buf[i] = '\t';
         }
@@ -185,9 +185,9 @@ void ScriptWriter::Indent()
     else
     {
         int bufLen = m_Indent * m_IndentSize;
-        P3DASSERT((sizeof(buf) - 1) >= bufLen);
+        P3DASSERT((sizeof(buf) - 1)>= bufLen);
 
-        for (int i = 0; i < bufLen; ++i)
+        for (int i = 0; i <bufLen; ++i)
         {
             buf[i] = ' ';
         }
@@ -218,7 +218,7 @@ void ScriptWriter::BeginStruct(const char* identifier)
 
 void ScriptWriter::EndStruct()
 {
-    P3DASSERT(m_Indent > 0);
+    P3DASSERT(m_Indent> 0);
     --m_Indent;
 
     Indent();

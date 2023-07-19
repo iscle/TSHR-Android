@@ -5,8 +5,7 @@
 #include <choreo/footblenddriver.hpp>
 
 
-namespace choreo
-{
+namespace choreo {
 
 
 } // namespace choreo

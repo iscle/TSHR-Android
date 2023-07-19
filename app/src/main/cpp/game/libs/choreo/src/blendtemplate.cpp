@@ -5,8 +5,7 @@
 #include <choreo/blendtemplate.hpp>
 
 
-namespace choreo
-{
+namespace choreo {
 
 
 } // namespace choreo

@@ -5,8 +5,7 @@
 #include <choreo/replayblenddriver.hpp>
 
 
-namespace choreo
-{
+namespace choreo {
 
 
 } // namespace choreo
