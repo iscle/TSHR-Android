@@ -17,47 +17,67 @@
 
 class d3dContext;
 
-class d3dTexture : public pddiTexture
-{
+class d3dTexture : public pddiTexture {
 public:
-    d3dTexture(d3dContext* context);
-    d3dTexture(d3dContext* context, LPDIRECT3DBASETEXTURE8);
+    d3dTexture(d3dContext *context);
+
+    d3dTexture(d3dContext *context, LPDIRECT3DBASETEXTURE8);
+
     virtual ~d3dTexture();
-    
-    bool Create(int xSize, int ySize, int bpp, int alphaDepth, int nMip, pddiTextureType type = PDDI_TEXTYPE_RGB, pddiTextureUsageHint usageHint = PDDI_USAGE_STATIC);
-    bool CreateVolume(int xSize, int ySize, int zSize, int bpp, int alphaDepth, int nMip, pddiTextureType type = PDDI_TEXTYPE_RGB, pddiTextureUsageHint usageHint = PDDI_USAGE_STATIC);
+
+    bool Create(int xSize, int ySize, int bpp, int alphaDepth, int nMip,
+                pddiTextureType type = PDDI_TEXTYPE_RGB,
+                pddiTextureUsageHint usageHint = PDDI_USAGE_STATIC);
+
+    bool CreateVolume(int xSize, int ySize, int zSize, int bpp, int alphaDepth, int nMip,
+                      pddiTextureType type = PDDI_TEXTYPE_RGB,
+                      pddiTextureUsageHint usageHint = PDDI_USAGE_STATIC);
+
     pddiPixelFormat GetPixelFormat() { return pixelFormat; }
-    int GetWidth()                   { return width; }
-    int GetHeight()                  { return height; }
-    int GetDepth()                   { return bpp; }
-    int GetAlphaDepth()              { return alphaDepth; }
-    int GetNumMipMaps()              { return numMipMaps; }
+
+    int GetWidth() { return width; }
+
+    int GetHeight() { return height; }
+
+    int GetDepth() { return bpp; }
+
+    int GetAlphaDepth() { return alphaDepth; }
+
+    int GetNumMipMaps() { return numMipMaps; }
 
     // palette managment
     int GetNumPaletteEntries(void);
-    void SetPalette(int nEntries, pddiColour* palette);
-    int GetPalette(pddiColour* palette);
+
+    void SetPalette(int nEntries, pddiColour *palette);
+
+    int GetPalette(pddiColour *palette);
 
     // texture upload
-    pddiLockInfo* Lock(int mipLevel, pddiRect* rect = 0);
+    pddiLockInfo *Lock(int mipLevel, pddiRect *rect = 0);
+
     void Unlock(int mipLevel);
 
     // paging control
     void Prefetch();
-    void Discard();
-    void SetPriority(int priority);
-    int GetPriority()  { return priority; }
 
-    bool IsRenderTarget()   { return rendertarget; }
+    void Discard();
+
+    void SetPriority(int priority);
+
+    int GetPriority() { return priority; }
+
+    bool IsRenderTarget() { return rendertarget; }
 
     void ChangeForgedTexture(LPDIRECT3DTEXTURE8);
 
-    LPDIRECT3DTEXTURE8 GetTexture(void) { return texture2d;}
-    LPDIRECT3DVOLUMETEXTURE8 GetVolumeTexture(void) { return texture3d;}
+    LPDIRECT3DTEXTURE8 GetTexture(void) { return texture2d; }
+
+    LPDIRECT3DVOLUMETEXTURE8 GetVolumeTexture(void) { return texture3d; }
+
     void SetTexture(int stage);
 
 private:
-    d3dContext* context;
+    d3dContext *context;
 
     LPDIRECT3DBASETEXTURE8 forged;
 
@@ -74,7 +94,7 @@ private:
     pddiTextureType type;
     pddiTextureUsageHint usageHint;
     pddiPixelFormat pixelFormat;
-    
+
     int width;
     int height;
     int bpp;
@@ -90,7 +110,7 @@ private:
 
     int priority;
 
-    unsigned char* bits;
+    unsigned char *bits;
 };
 
 #endif // _TEXTURE_HPP

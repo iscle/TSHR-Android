@@ -9,19 +9,20 @@
 #include <p3d/entity.hpp>
 #include <p3d/loadmanager.hpp>
 
-class tColourOffset
-{
+class tColourOffset {
 public:
-    tColourOffset( ) : red( 0 ), green( 0 ), blue( 0 ), alpha( 0 ) { };
-    ~tColourOffset( ){ };    
-    tColourOffset & operator=( const tColourOffset &co );
-    void Clear( ){ red = green = blue = alpha = 0; }
-    
+    tColourOffset() : red(0), green(0), blue(0), alpha(0) {};
+
+    ~tColourOffset() {};
+
+    tColourOffset &operator=(const tColourOffset &co);
+
+    void Clear() { red = green = blue = alpha = 0; }
+
     short red, green, blue, alpha;
 };
 
-inline tColourOffset & tColourOffset::operator=( const tColourOffset &co )
-{
+inline tColourOffset &tColourOffset::operator=(const tColourOffset &co) {
     red = co.red;
     green = co.green;
     blue = co.blue;
@@ -31,95 +32,102 @@ inline tColourOffset & tColourOffset::operator=( const tColourOffset &co )
 }
 
 
-class tOffsetIndexList : public tRefCounted
-{
+class tOffsetIndexList : public tRefCounted {
 public:
-    tOffsetIndexList( );
-    ~tOffsetIndexList( );
-    void CreateIndex( int num );    
+    tOffsetIndexList();
+
+    ~tOffsetIndexList();
+
+    void CreateIndex(int num);
 
     int *mIndex;
     int mNumber;
 };
 
-class tColourOffsetList : public tOffsetIndexList
-{
+class tColourOffsetList : public tOffsetIndexList {
 public:
-    tColourOffsetList( );
-    ~tColourOffsetList( );
-    void CreateOffsets( int num );
-    
-    tColourOffset     *mColour;    
+    tColourOffsetList();
+
+    ~tColourOffsetList();
+
+    void CreateOffsets(int num);
+
+    tColourOffset *mColour;
 };
 
-class tVectorOffsetList : public tOffsetIndexList
-{
+class tVectorOffsetList : public tOffsetIndexList {
 public:
 
-    tVectorOffsetList( );
-    ~tVectorOffsetList( );
+    tVectorOffsetList();
 
-    void CreateOffsets( int num );
-    
-    rmt::Vector     *mVector;    
+    ~tVectorOffsetList();
+
+    void CreateOffsets(int num);
+
+    rmt::Vector *mVector;
 };
 
-class tVector2OffsetList : public tOffsetIndexList
-{   
+class tVector2OffsetList : public tOffsetIndexList {
 public:
 
-    tVector2OffsetList( );
-    ~tVector2OffsetList( );
+    tVector2OffsetList();
 
-    void CreateOffsets( int num );
+    ~tVector2OffsetList();
 
-    rmt::Vector2     *mVector2; 
+    void CreateOffsets(int num);
+
+    rmt::Vector2 *mVector2;
 };
 
-class tVertexAnimKey:  public tEntity
-{
+class tVertexAnimKey : public tEntity {
 
 public:
-    tVertexAnimKey( );
-    tVertexAnimKey( tVertexAnimKey *k, float delta = 1.f );
-    tVertexAnimKey * Interpolate( float targetf, float myframe );
+    tVertexAnimKey();
+
+    tVertexAnimKey(tVertexAnimKey *k, float delta = 1.f);
+
+    tVertexAnimKey *Interpolate(float targetf, float myframe);
 
     tColourOffsetList *mColour;
     tVectorOffsetList *mPosition;
     tVectorOffsetList *mNormal;
-    tVector2OffsetList *mUV[ 4 ];
+    tVector2OffsetList *mUV[4];
 
 protected:
-    ~tVertexAnimKey( );
-    
+    ~tVertexAnimKey();
+
 
 };
 
 
 //Loads vertex animation keys from the 32-bit chunks
 //-----------------------------------------------
-class tVertexAnimKeyLoader : public tSimpleChunkHandler
-{
+class tVertexAnimKeyLoader : public tSimpleChunkHandler {
 public:
     tVertexAnimKeyLoader();
+
 protected:
     ~tVertexAnimKeyLoader() {};
-    tEntity* LoadObject(tChunkFile*, tEntityStore*);
+
+    tEntity *LoadObject(tChunkFile *, tEntityStore *);
 };
 
 //Load offset list for vertex animation keys
 //-----------------------------------------------
-class tOffsetListLoader 
-{
+class tOffsetListLoader {
 public:
-    tOffsetListLoader( ){};
-    ~tOffsetListLoader( ){};
+    tOffsetListLoader() {};
 
-    tOffsetIndexList *LoadObject( tChunkFile *f, tEntityStore *store, unsigned id, int &param );
+    ~tOffsetListLoader() {};
+
+    tOffsetIndexList *LoadObject(tChunkFile *f, tEntityStore *store, unsigned id, int &param);
+
 protected:
-    tOffsetIndexList *LoadVectorOffsetList( tChunkFile *f, tEntityStore *store, int &param );
-    tOffsetIndexList *LoadVector2OffsetList( tChunkFile *f, tEntityStore *store, int &param );
-    tOffsetIndexList *LoadColourOffsetList( tChunkFile *f, tEntityStore *store );
+    tOffsetIndexList *LoadVectorOffsetList(tChunkFile *f, tEntityStore *store, int &param);
+
+    tOffsetIndexList *LoadVector2OffsetList(tChunkFile *f, tEntityStore *store, int &param);
+
+    tOffsetIndexList *LoadColourOffsetList(tChunkFile *f, tEntityStore *store);
 
 };
 

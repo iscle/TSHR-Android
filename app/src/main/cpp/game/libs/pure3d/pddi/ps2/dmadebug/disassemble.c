@@ -12,17 +12,17 @@
 
 static int debug(int chan) {
     int err = NO_ERROR;
-    if(chan == SCE_DMA_VIF0 || chan == SCE_DMA_VIF1) {
+    if (chan == SCE_DMA_VIF0 || chan == SCE_DMA_VIF1) {
         err |= VIF_disassemble();
-    } else if(chan == SCE_DMA_GIF) {
+    } else if (chan == SCE_DMA_GIF) {
         err |= GIF_disassemble();
     } else {
         do {
             err |= DMA_emulateDMACycle();
-        } while(!FATAL(err) && gDmaTransferQWord != NULL);
+        } while (!FATAL(err) && gDmaTransferQWord != NULL);
     }
 
-    if(err != NO_ERROR) {
+    if (err != NO_ERROR) {
         puts("\n\n===== Errors occurred ===== \n");
         puts(gOutputBuffer);
         Exit(1);
@@ -35,7 +35,7 @@ int DIS_dmaSend(int chan, int chcr, char *options) {
 
     DEBUG_init(options);
     err |= DMA_startDmaTransfer(chan, chcr);
-    if(!FATAL(err)) {
+    if (!FATAL(err)) {
         err |= debug(chan);
     }
     return err;
@@ -44,7 +44,7 @@ int DIS_dmaSend(int chan, int chcr, char *options) {
 int DIS_sceDmaSend(sceDmaChan *d, void *tag, char *options) {
     int err = NO_ERROR;
     int chan = DMA_getDmaChannelNumber(d);
-    if(chan == -1) {
+    if (chan == -1) {
         printf("Error - DMA_sceDmaSendN was passed an invalid DMA Handler pointer (%p)\n", d);
         Exit(1);
     }
@@ -56,7 +56,7 @@ int DIS_sceDmaSend(sceDmaChan *d, void *tag, char *options) {
 int DIS_sceDmaSendN(sceDmaChan *d, void *tag, u_int numqwords, char *options) {
     int err = NO_ERROR;
     int chan = DMA_getDmaChannelNumber(d);
-    if(chan == -1) {
+    if (chan == -1) {
         printf("Error - DMA_sceDmaSendN was passed an invalid DMA Handler pointer (%p)\n", d);
         Exit(1);
     }

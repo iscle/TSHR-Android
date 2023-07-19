@@ -9,24 +9,35 @@
 //-------------------------------------------------------------------
 // pddiPrimStream - immediate more rendering
 //-------------------------------------------------------------------
-class pddiPrimStream
-{
+class pddiPrimStream {
 public:
-    virtual void Coord(float x, float y, float z)=0;
-    virtual void Normal(float x, float y, float z)=0;
-    virtual void Binormal(float x, float y, float z) { };
-    virtual void Tangent(float x, float y, float z) { };
-    virtual void Colour(pddiColour colour, int channel = 0)=0;
-    virtual void UV(float u, float v, int channel = 0)=0;
-    virtual void Specular(pddiColour colour)=0;
+    virtual void Coord(float x, float y, float z) = 0;
+
+    virtual void Normal(float x, float y, float z) = 0;
+
+    virtual void Binormal(float x, float y, float z) {};
+
+    virtual void Tangent(float x, float y, float z) {};
+
+    virtual void Colour(pddiColour colour, int channel = 0) = 0;
+
+    virtual void UV(float u, float v, int channel = 0) = 0;
+
+    virtual void Specular(pddiColour colour) = 0;
+
     virtual void SkinIndices(unsigned, unsigned = 0, unsigned = 0, unsigned = 0) {};
+
     virtual void SkinWeights(float, float = 0.0f, float = 0.0f) {};
 
-    virtual void Vertex(pddiVector* v, pddiColour c)=0;
-    virtual void Vertex(pddiVector* v, pddiVector* n)=0;
-    virtual void Vertex(pddiVector* v, pddiVector2* uv)=0;
-    virtual void Vertex(pddiVector* v, pddiColour c, pddiVector2* uv)=0;
-    virtual void Vertex(pddiVector* v, pddiVector* n, pddiVector2* uv)=0;
+    virtual void Vertex(pddiVector *v, pddiColour c) = 0;
+
+    virtual void Vertex(pddiVector *v, pddiVector *n) = 0;
+
+    virtual void Vertex(pddiVector *v, pddiVector2 *uv) = 0;
+
+    virtual void Vertex(pddiVector *v, pddiColour c, pddiVector2 *uv) = 0;
+
+    virtual void Vertex(pddiVector *v, pddiVector *n, pddiVector2 *uv) = 0;
 };
 
 //-------------------------------------------------------------------
@@ -34,8 +45,7 @@ public:
 // assumes OpenGL-style rendering
 
 // alpha blending modes
-enum pddiBlendFactor
-{
+enum pddiBlendFactor {
     PDDI_BF_ZERO,
     PDDI_BF_ONE,
     PDDI_BF_SRC,
@@ -49,11 +59,11 @@ enum pddiBlendFactor
     PDDI_BF_SRCALPHASATURATE
 };
 
-class pddiBlendController : public pddiObject
-{
+class pddiBlendController : public pddiObject {
 public:
     virtual void SetBlend(pddiBlendFactor src, pddiBlendFactor dest) = 0;
-    virtual void GetBlend(pddiBlendFactor* src, pddiBlendFactor* dest) = 0;
+
+    virtual void GetBlend(pddiBlendFactor *src, pddiBlendFactor *dest) = 0;
 };
 
 #endif //_PDDIPC_HPP

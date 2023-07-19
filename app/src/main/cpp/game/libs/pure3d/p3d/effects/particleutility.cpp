@@ -10,8 +10,8 @@
 #include <p3d/effects/particleutility.hpp>
 
 
-int ParticleSystemRandomData::msCurInt=0;
-int ParticleSystemRandomData::msCurFloat=0;
+int ParticleSystemRandomData::msCurInt = 0;
+int ParticleSystemRandomData::msCurFloat = 0;
 unsigned ParticleSystemRandomData::msIntRands[ParticleSystemRandomData::msIntRandMod];
 float    ParticleSystemRandomData::msFloatRands[ParticleSystemRandomData::msFloatRandMod];
 
@@ -55,23 +55,18 @@ int ParticleSystemRandomInt(int mean, int variance)
 // ParticleCalcFloatLookUpTable
 //
 //*****************************************************************************
-void ParticleCalcFloatLookUpTable(const tFloat1Channel* channel, float* lookUpTable, int lookUpSize, float numFrames, float defaultValue)
-{
-    if (channel)
-    {
+void ParticleCalcFloatLookUpTable(const tFloat1Channel *channel, float *lookUpTable, int lookUpSize,
+                                  float numFrames, float defaultValue) {
+    if (channel) {
         float currentFrame = 0.0f;
-        float frameInc = numFrames/rmt::LtoF(lookUpSize);
+        float frameInc = numFrames / rmt::LtoF(lookUpSize);
 
-        for (int i = 0; i < lookUpSize; i++)
-        {
-            channel->GetValue(currentFrame,&lookUpTable[i]);
+        for (int i = 0; i < lookUpSize; i++) {
+            channel->GetValue(currentFrame, &lookUpTable[i]);
             currentFrame += frameInc;
-        }      
-    }
-    else
-    {
-        for (int i = 0; i < lookUpSize; i++)
-        {
+        }
+    } else {
+        for (int i = 0; i < lookUpSize; i++) {
             lookUpTable[i] = defaultValue;
         }
     }
@@ -82,23 +77,18 @@ void ParticleCalcFloatLookUpTable(const tFloat1Channel* channel, float* lookUpTa
 // ParticleCalcIntLookUpTable
 //
 //*****************************************************************************
-void ParticleCalcIntLookUpTable(const tIntChannel* channel, int* lookUpTable, int lookUpSize, float numFrames, int defaultValue)
-{
-    if (channel)
-    {
+void ParticleCalcIntLookUpTable(const tIntChannel *channel, int *lookUpTable, int lookUpSize,
+                                float numFrames, int defaultValue) {
+    if (channel) {
         float currentFrame = 0.0f;
-        float frameInc = numFrames/rmt::LtoF(lookUpSize);
+        float frameInc = numFrames / rmt::LtoF(lookUpSize);
 
-        for (int i = 0; i < lookUpSize; i++)
-        {
-            channel->GetValue(currentFrame,&lookUpTable[i]);
+        for (int i = 0; i < lookUpSize; i++) {
+            channel->GetValue(currentFrame, &lookUpTable[i]);
             currentFrame += frameInc;
-        }      
-    }
-    else
-    {
-        for (int i = 0; i < lookUpSize; i++)
-        {
+        }
+    } else {
+        for (int i = 0; i < lookUpSize; i++) {
             lookUpTable[i] = defaultValue;
         }
     }
@@ -109,23 +99,19 @@ void ParticleCalcIntLookUpTable(const tIntChannel* channel, int* lookUpTable, in
 // ParticleCalcColourLookUpTable
 //
 //*****************************************************************************
-void ParticleCalcColourLookUpTable(const tColourChannel* channel, tColour* lookUpTable, int lookUpSize, float numFrames, tColour defaultColour)
-{
-    if (channel)
-    {
-        float frameInc = numFrames/rmt::LtoF(lookUpSize);
+void
+ParticleCalcColourLookUpTable(const tColourChannel *channel, tColour *lookUpTable, int lookUpSize,
+                              float numFrames, tColour defaultColour) {
+    if (channel) {
+        float frameInc = numFrames / rmt::LtoF(lookUpSize);
         float currentFrame = 0.0f;
 
-        for (int i = 0; i < lookUpSize; i++)
-        {
+        for (int i = 0; i < lookUpSize; i++) {
             channel->GetValue(currentFrame, &lookUpTable[i]);
             currentFrame += frameInc;
-        }      
-    }
-    else
-    {
-        for (int i = 0; i < lookUpSize; i++)
-        {
+        }
+    } else {
+        for (int i = 0; i < lookUpSize; i++) {
             lookUpTable[i] = defaultColour;
         }
     }
@@ -136,8 +122,8 @@ void ParticleCalcColourLookUpTable(const tColourChannel* channel, tColour* lookU
 // p3dCalcPlaneEqn
 //
 //*****************************************************************************
-rmt::Vector4 p3dCalcPlaneEqn(rmt::Matrix transform, rmt::Vector v1, rmt::Vector v2, rmt::Vector v3)
-{
+rmt::Vector4
+p3dCalcPlaneEqn(rmt::Matrix transform, rmt::Vector v1, rmt::Vector v2, rmt::Vector v3) {
     v1.Transform(transform);
     v2.Transform(transform);
     v3.Transform(transform);
@@ -145,8 +131,9 @@ rmt::Vector4 p3dCalcPlaneEqn(rmt::Matrix transform, rmt::Vector v1, rmt::Vector 
     rmt::Vector normal;
     v2.Sub(v1);
     v3.Sub(v1);
-    normal.CrossProduct(v2,v3);
+    normal.CrossProduct(v2, v3);
     normal.Normalize();
 
-    return rmt::Vector4(normal.x,normal.y,normal.z,(normal.x*(-v1.x))+(normal.y*(-v1.y))+(normal.z*(-v1.z)));
+    return rmt::Vector4(normal.x, normal.y, normal.z,
+                        (normal.x * (-v1.x)) + (normal.y * (-v1.y)) + (normal.z * (-v1.z)));
 }

@@ -12,16 +12,16 @@
 #include <pddi/ps2/ps2texture.hpp>
 #include <pddi/ps2/shaders/ps2lightmapshader.hpp>
 
-class ps2LayeredShader : public ps2LightmapShader
-{
+class ps2LayeredShader : public ps2LightmapShader {
 public:
-   ps2LayeredShader(ps2Context* c);
-   virtual const char* GetType(void) { return "layered"; }
+    ps2LayeredShader(ps2Context *c);
+
+    virtual const char *GetType(void) { return "layered"; }
 
 
-   void SetTopTex(pddiTexture* texture);
+    void SetTopTex(pddiTexture *texture);
 
-   static void Install();
+    static void Install();
 };
 
 #endif /* _PS2LAYEREDSHADER_HPP */

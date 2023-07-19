@@ -7,28 +7,24 @@
 #include <p3d/utility.hpp>
 
 
-tGCFileMap::tGCFileMap(const char* filename)
-{
+tGCFileMap::tGCFileMap(const char *filename) {
     mOK = false;
     Open(filename);
-    SetFilename((char*)filename);
+    SetFilename((char *) filename);
 }
 
-tGCFileMap::~tGCFileMap()
-{
+tGCFileMap::~tGCFileMap() {
     Close();
 }
 
-void tGCFileMap::Open(const char* filename)
-{
+void tGCFileMap::Open(const char *filename) {
 
-    mOK = DVDOpen((char *)filename, &mFile);
+    mOK = DVDOpen((char *) filename, &mFile);
     if (!mOK) return;
 
     unsigned int length = DVDGetLength(&mFile);
-    
-    if (length == 0)
-    {
+
+    if (length == 0) {
         DVDClose(&mFile);
         mOK = false;
         return;
@@ -36,15 +32,13 @@ void tGCFileMap::Open(const char* filename)
 
     int aligned_len = (length + 31) & ~31;
 
-    unsigned char* memory = new unsigned char[aligned_len];
+    unsigned char *memory = new unsigned char[aligned_len];
     int read = DVDRead(&mFile, memory, aligned_len, 0);
-    dataStream = new radLoadDataStream(memory,length,true);
+    dataStream = new radLoadDataStream(memory, length, true);
 }
 
-void tGCFileMap::Close()
-{
-    if (mOK)
-    {
+void tGCFileMap::Close() {
+    if (mOK) {
         DVDClose(&mFile);
         mOK = false;
     }

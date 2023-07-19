@@ -20,27 +20,30 @@ class tCamera;
 // Class tOpticEffect - base parent class for optic effects
 //
 //*****************************************************************************
-class tOpticEffect: public tDrawable
-{
+class tOpticEffect : public tDrawable {
 public:
     tOpticEffect();
 
     // enable ztest
-    void SetZTest(bool enable)                                      { zTest = enable; }
-    bool GetZTest() const                                           { return zTest; }
+    void SetZTest(bool enable) { zTest = enable; }
+
+    bool GetZTest() const { return zTest; }
 
     // enable zwrite
-    void SetZWrite(bool enable)                                     { zWrite = enable; }
-    bool GetZWrite() const                                          { return zWrite; }
+    void SetZWrite(bool enable) { zWrite = enable; }
+
+    bool GetZWrite() const { return zWrite; }
 
     // enable fog
-    void SetFog(bool enable)                                        { fog = enable; }
-    bool GetFog() const                                             { return fog; }
+    void SetFog(bool enable) { fog = enable; }
+
+    bool GetFog() const { return fog; }
 
     virtual void Display();
 
 protected:
     virtual ~tOpticEffect();
+
     virtual void DisplayEffect() = 0;
 
     bool zTest;

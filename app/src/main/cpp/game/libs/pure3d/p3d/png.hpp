@@ -8,16 +8,19 @@
 
 #include <p3d/imagefactory.hpp>
 
-class tPNGHandler : public tImageHandler
-{
+class tPNGHandler : public tImageHandler {
 public:
-    char* GetExtension() { return "png"; }
-    bool CanLoad()       { return true; }
-    bool CanSave()       { return false; }
+    char *GetExtension() { return "png"; }
+
+    bool CanLoad() { return true; }
+
+    bool CanSave() { return false; }
 
     bool CheckFormat(Format);
-    void CreateImage(tFile* data, tImageHandler::Builder* builder);
-    bool SaveImage(tImage* image, char* filename);
+
+    void CreateImage(tFile *data, tImageHandler::Builder *builder);
+
+    bool SaveImage(tImage *image, char *filename);
 };
 
 #endif // _PNG_HPP

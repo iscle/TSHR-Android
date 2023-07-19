@@ -20,20 +20,17 @@ using namespace RadicalMathLibrary;
 // Class tOpticEffect
 //
 //*****************************************************************************
-tOpticEffect::tOpticEffect()
-{
+tOpticEffect::tOpticEffect() {
 }
 
-tOpticEffect::~tOpticEffect()
-{
+tOpticEffect::~tOpticEffect() {
 }
 
-void 
-tOpticEffect::Display()
-{
+void
+tOpticEffect::Display() {
     // turn off fog
     bool origFog = p3d::pddi->IsFogEnabled();
-    p3d::pddi->EnableFog(fog&origFog);
+    p3d::pddi->EnableFog(fog & origFog);
 
     // turn z-writing off
     bool origZWrite = p3d::pddi->GetZWrite();
@@ -41,16 +38,14 @@ tOpticEffect::Display()
 
     // turn z compare to always
     pddiCompareMode origZCompare = p3d::pddi->GetZCompare();
-    if (!zTest)
-    {
+    if (!zTest) {
         p3d::pddi->SetZCompare(PDDI_COMPARE_ALWAYS);
     }
 
     DisplayEffect();
 
     // restore original z-compare mode
-    if (!zTest)
-    {
+    if (!zTest) {
         p3d::pddi->SetZCompare(origZCompare);
     }
 

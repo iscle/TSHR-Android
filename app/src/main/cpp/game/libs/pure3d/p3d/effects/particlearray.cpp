@@ -19,49 +19,45 @@
 //
 //*****************************************************************************
 tParticleArray::tParticleArray() :
-    particleType(p3dParticleSystemConstants::UNDEFINED),
-    particlePool(NULL),
-    numParticles(0),
-    numLiveParticles(0),
+        particleType(p3dParticleSystemConstants::UNDEFINED),
+        particlePool(NULL),
+        numParticles(0),
+        numLiveParticles(0),
 //    numDeadParticles(0),
 //    particles(NULL),
-    liveParticles(NULL),
+        liveParticles(NULL),
 //    deadParticles(NULL)
-    particleIndices(NULL)
-{
+        particleIndices(NULL) {
     P3DASSERT(0);
 }
 
-tParticleArray::tParticleArray(tParticlePool* pool) :
-    particleType(p3dParticleSystemConstants::UNDEFINED),
-    particlePool(NULL),
-    numParticles(0),
-    numLiveParticles(0),
+tParticleArray::tParticleArray(tParticlePool *pool) :
+        particleType(p3dParticleSystemConstants::UNDEFINED),
+        particlePool(NULL),
+        numParticles(0),
+        numLiveParticles(0),
 //   numDeadParticles(0),
 //    particles(NULL),
-    liveParticles(NULL),
+        liveParticles(NULL),
 //    deadParticles(NULL)
-    particleIndices(NULL)
-{
-    P3DASSERT((pool)&&(pool->GetNumParticlesPerSubPool()>0));
-    tRefCounted::Assign(particlePool,pool);
+        particleIndices(NULL) {
+    P3DASSERT((pool) && (pool->GetNumParticlesPerSubPool() > 0));
+    tRefCounted::Assign(particlePool, pool);
     particleType = pool->GetParticleType();
-    liveParticles = new tBaseParticle*[pool->GetNumParticlesPerSubPool()];
-    particleIndices = new short[ pool->GetNumParticlesPerSubPool() ];
+    liveParticles = new tBaseParticle *[pool->GetNumParticlesPerSubPool()];
+    particleIndices = new short[pool->GetNumParticlesPerSubPool()];
     // MKR - deadParticles = new tBaseParticle*[pool->GetNumParticlesPerSubPool()];
 }
 
-tParticleArray::~tParticleArray()
-{
+tParticleArray::~tParticleArray() {
     ReleaseParticles();
     tRefCounted::Release(particlePool);
-    delete [] liveParticles;
+    delete[] liveParticles;
     // MKR - delete [] deadParticles;
-    delete [] particleIndices;
+    delete[] particleIndices;
 }
 
-void tParticleArray::AllocateParticles()
-{
+void tParticleArray::AllocateParticles() {
     numParticles = particlePool->GetNumParticlesPerSubPool();
     P3DASSERT(particlePool);
     return;
@@ -71,18 +67,14 @@ void tParticleArray::AllocateParticles()
 //        if (particles)
         {
             numParticles = particlePool->GetNumParticlesPerSubPool();
-            for ( int  i = 0 ; i < numLiveParticles ; i++)
-            {
-                particlePool->ReleaseParticle( particleIndices[ i ] );
+            for (int i = 0; i < numLiveParticles; i++) {
+                particlePool->ReleaseParticle(particleIndices[i]);
             }
             numLiveParticles = 0;
             //numDeadParticles = numParticles;
-            switch(particleType)
-            {
-                case p3dParticleSystemConstants::ParticleType::SPRITE:
-                {
-                    for (int i = 0; i < numParticles; i++)
-                    {
+            switch (particleType) {
+                case p3dParticleSystemConstants::ParticleType::SPRITE: {
+                    for (int i = 0; i < numParticles; i++) {
                         // MKR - deadParticles is an array of pointers to dead particles
                         // I want to keep this unchanged. So the interfaces above particlearray
                         // and particlepool don't require changing.
@@ -91,8 +83,7 @@ void tParticleArray::AllocateParticles()
                     }
                     break;
                 }
-                default:
-                {
+                default: {
                     P3DASSERT(0);
                     break;
                 }
@@ -101,16 +92,14 @@ void tParticleArray::AllocateParticles()
     }
 }
 
-void tParticleArray::ReleaseParticles()
-{
-    for ( int  i = 0 ; i < numLiveParticles ; i++)
-    {
-        particlePool->ReleaseParticle( particleIndices[ i ] );
+void tParticleArray::ReleaseParticles() {
+    for (int i = 0; i < numLiveParticles; i++) {
+        particlePool->ReleaseParticle(particleIndices[i]);
     }
 
     numLiveParticles = 0;
     //numDeadParticles = 0;
-    memset(liveParticles,0,sizeof(int)*numParticles);
+    memset(liveParticles, 0, sizeof(int) * numParticles);
     //memset(deadParticles,0,sizeof(int)*numParticles);
     numParticles = 0;
     // MKR - the subpool is now a short**, not a tBaseParticle**
@@ -118,37 +107,31 @@ void tParticleArray::ReleaseParticles()
     //particlePool->ReleaseSubPool((tBaseParticle**)&particles);
 }
 
-void tParticleArray::UpdateParticles(float deltaTime, float deltaFrame, tBaseEmitter* emitter)
-{
-    if (deltaTime==0.0f)
-    {
+void tParticleArray::UpdateParticles(float deltaTime, float deltaFrame, tBaseEmitter *emitter) {
+    if (deltaTime == 0.0f) {
         return;
     }
-    for (int i = 0; i < numLiveParticles; i++)
-    {
-        liveParticles[i]->Update(deltaTime,deltaFrame,emitter);
+    for (int i = 0; i < numLiveParticles; i++) {
+        liveParticles[i]->Update(deltaTime, deltaFrame, emitter);
     }
 }
 
-void tParticleArray::KillAllParticles()
-{
-    for ( int  i = 0 ; i < numLiveParticles ; i++)
-    {
-        particlePool->ReleaseParticle( particleIndices[ i ] );
+void tParticleArray::KillAllParticles() {
+    for (int i = 0; i < numLiveParticles; i++) {
+        particlePool->ReleaseParticle(particleIndices[i]);
     }
-    numLiveParticles = 0; 
+    numLiveParticles = 0;
     //numDeadParticles = numParticles;
-    //for (int i = 0; i < numParticles; i++)
+    //for (int i = 0; i <numParticles; i++)
     {
-    //    deadParticles[i] = (tBaseParticle*)(&((tSpriteParticle*)particles)[numParticles-i-1]);
+        //    deadParticles[i] = (tBaseParticle*)(&((tSpriteParticle*)particles)[numParticles-i-1]);
     }
 }
 
-void tParticleArray::RefreshParticleArray()
-{/*
+void tParticleArray::RefreshParticleArray() {/*
     int curr = 0;
     int prev = 0;
-    for (curr = 0; curr < numLiveParticles; curr++)
+    for (curr = 0; curr <numLiveParticles; curr++)
     {
         if ((liveParticles[curr]->lifeInit==-1.0f)||(liveParticles[curr]->life<liveParticles[curr]->lifeInit))
         {
@@ -165,68 +148,59 @@ void tParticleArray::RefreshParticleArray()
 
     int curr = 0;
     int prev = 0;
-    for (curr = 0; curr < numLiveParticles; curr++)
-    {
-        if ((liveParticles[curr]->lifeInit==-1.0f)||(liveParticles[curr]->life<liveParticles[curr]->lifeInit))
-        {
-            liveParticles[prev]=liveParticles[curr];
-            particleIndices[prev]=particleIndices[curr];
+    for (curr = 0; curr < numLiveParticles; curr++) {
+        if ((liveParticles[curr]->lifeInit == -1.0f) ||
+            (liveParticles[curr]->life < liveParticles[curr]->lifeInit)) {
+            liveParticles[prev] = liveParticles[curr];
+            particleIndices[prev] = particleIndices[curr];
             prev++;
-        }
-        else
-        {
-            particlePool->ReleaseParticle( particleIndices[curr] );
+        } else {
+            particlePool->ReleaseParticle(particleIndices[curr]);
         }
     }
-    numLiveParticles=prev;
+    numLiveParticles = prev;
 }
 
-tBaseParticle* tParticleArray::RejuenateDeadParticle()
-{
+tBaseParticle *tParticleArray::RejuenateDeadParticle() {
 
     /*
-    if (numDeadParticles > 0)
+    if (numDeadParticles> 0)
     {
         numDeadParticles--;
         liveParticles[numLiveParticles] = deadParticles[numDeadParticles];
         numLiveParticles++;
         return liveParticles[numLiveParticles-1];
     }*/
-    
+
     short index;
-    tBaseParticle* newParticle;
-    if ( particlePool->RequestParticle( &newParticle, &index ) )
-    {
+    tBaseParticle *newParticle;
+    if (particlePool->RequestParticle(&newParticle, &index)) {
         liveParticles[numLiveParticles] = newParticle;
         particleIndices[numLiveParticles] = index;
-        liveParticles[numLiveParticles]->life = liveParticles[numLiveParticles]->lifeInit+1.0f;
+        liveParticles[numLiveParticles]->life = liveParticles[numLiveParticles]->lifeInit + 1.0f;
 
         numLiveParticles++;
-    }
-    else
-    {
+    } else {
         newParticle = NULL;
     }
 
     return newParticle;
 }
 
-void tParticleArray::SetNumLiveParticles(int num)
-{   
-            
-    
-    if (num>=numLiveParticles)
+void tParticleArray::SetNumLiveParticles(int num) {
+
+
+    if (num >= numLiveParticles)
         return;
 
-    for (int curr = num; curr < numLiveParticles; curr++)
-    {
+    for (int curr = num; curr < numLiveParticles; curr++) {
         // MKR - is the next line necessary?
         //liveParticles[curr]->life = liveParticles[curr]->lifeInit+1.0f;
-        particlePool->ReleaseParticle( particleIndices[curr] );
+        particlePool->ReleaseParticle(particleIndices[curr]);
 
         //deadParticles[numDeadParticles]=liveParticles[curr];
         //numDeadParticles++;
-    }   
-    numLiveParticles=num;
+    }
+    numLiveParticles = num;
 }
 

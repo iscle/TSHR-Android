@@ -11,39 +11,33 @@
 #include <radmemory.hpp>
 
 
-
 //----------------------------------------------------------------------------------------------
-tMemorySection::tMemorySection(void) : 
-    mMemoryUsed(0),
-    mAllocations(0),
-    mBeginAllocatorFree(0),
-    mBeginAllocations(0),
-    mBeginTaskedOutMemoryDelta(0),
-    mBeginTaskedOutAllocationsDelta(0)
-{
+tMemorySection::tMemorySection(void) :
+        mMemoryUsed(0),
+        mAllocations(0),
+        mBeginAllocatorFree(0),
+        mBeginAllocations(0),
+        mBeginTaskedOutMemoryDelta(0),
+        mBeginTaskedOutAllocationsDelta(0) {
 }
 
 
 //----------------------------------------------------------------------------------------------
-tMemorySection::~tMemorySection()
-{                    
-    mMemoryUsed = 0xFFFFFFFFUL; 
+tMemorySection::~tMemorySection() {
+    mMemoryUsed = 0xFFFFFFFFUL;
 }
-
 
 
 //----------------------------------------------------------------------------------------------
 //
 //
 //----------------------------------------------------------------------------------------------
-tMemorySectionLoader::tMemorySectionLoader() : tSimpleChunkHandler(MemorySection::MEMORYSECTION)
-{
+tMemorySectionLoader::tMemorySectionLoader() : tSimpleChunkHandler(MemorySection::MEMORYSECTION) {
 
 }
 
 //----------------------------------------------------------------------------------------------
-tEntity* tMemorySectionLoader::LoadObject(tChunkFile *f, tEntityStore *store)
-{
+tEntity *tMemorySectionLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
 #ifdef P3D_TRACK_LOAD_STATS
     char name[256];
     f->GetPString(name);

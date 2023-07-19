@@ -14,37 +14,42 @@
 static const int P3D_MAX_CONTEXTS = 4;
 
 class tContext;
+
 class tFile;
+
 class tPolySkinLoader;
 
-class tContextInitData : public pddiDisplayInit
-{
+class tContextInitData : public pddiDisplayInit {
 public:
     tContextInitData();
 };
 
-class tPlatform
-{
+class tPlatform {
 public:
     tPlatform(void);
-    ~tPlatform()                { /**/ }
+
+    ~tPlatform() { /**/ }
 
     // platform creation/destruction
     static tPlatform *Create(void);
-    static void Destroy(tPlatform *)  { /* */ } 
+
+    static void Destroy(tPlatform *) { /* */ }
+
     static tPlatform *GetPlatform(void);
 
     // context creation/destruction
     tContext *CreateContext(tContextInitData *);
-    void DestroyContext(tContext*);
+
+    void DestroyContext(tContext *);
 
     // active context control
     void SetActiveContext(tContext *c) { mContext = c; }
-    tContext* GetActiveContext(void)   { return mContext; }
+
+    tContext *GetActiveContext(void) { return mContext; }
 
 private:
     // files
-    tFile* OpenFile(const char* filename);
+    tFile *OpenFile(const char *filename);
 
 private:
     tContext *mContext;

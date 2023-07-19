@@ -10,44 +10,37 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-tLinuxFileMap::tLinuxFileMap(char* filename)
-{
+tLinuxFileMap::tLinuxFileMap(char *filename) {
     buf = NULL;
     size = 0;
     Open(filename);
     SetFilename(filename);
 }
 
-tLinuxFileMap::~tLinuxFileMap()
-{
+tLinuxFileMap::~tLinuxFileMap() {
     Close();
 }
 
-void tLinuxFileMap::Open(char* filename)
-{
+void tLinuxFileMap::Open(char *filename) {
     fh = open(filename, O_RDONLY);
-    if(fh == -1)
-    {
+    if (fh == -1) {
         return;
     }
-    
+
     size = lseek(fh, 0, SEEK_END);
-    if(size < 0)
-    {
+    if (size < 0) {
         return;
     }
 
     buf = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fh, 0);
-    if(!buf)
-    {
+    if (!buf) {
         close(fh);
         return;
     }
 }
 
-void tLinuxFileMap::Close()
-{
-    munmap(static_cast<caddr_t>(buf),size);
+void tLinuxFileMap::Close() {
+    munmap(static_cast<caddr_t>(buf), size);
     close(fh);
 }
 

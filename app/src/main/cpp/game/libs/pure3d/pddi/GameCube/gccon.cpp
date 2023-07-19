@@ -29,35 +29,41 @@ static gcPrimStream gPrimStream;
 gcContext *gcContext::gContext = NULL;
 
 static inline void FillGXMatrix(float gx[3][4], pddiMatrix &m);
+
 float VertsToPrims(pddiPrimType type, int vertexcount);
+
 float VertsToPrims(GXPrimitive type, int vertexcount);
 
 
 // vertex arrays rendering
 GXPrimitive primTypeTable[5] =
-{                       
-    GX_TRIANGLES,      // PDDI_PRIM_TRIANGLES,
-    GX_TRIANGLESTRIP,  // PDDI_PRIM_TRISTRIP,
-    GX_LINES,          // PDDI_PRIM_LINES,
-    GX_LINESTRIP,      // PDDI_PRIM_LINESTRIP,
-    GX_POINTS          // PDDI_PRIM_POINTS
-};
+        {
+                GX_TRIANGLES,      // PDDI_PRIM_TRIANGLES,
+                GX_TRIANGLESTRIP,  // PDDI_PRIM_TRISTRIP,
+                GX_LINES,          // PDDI_PRIM_LINES,
+                GX_LINESTRIP,      // PDDI_PRIM_LINESTRIP,
+                GX_POINTS          // PDDI_PRIM_POINTS
+        };
 
 
-
-
-
-static inline void FillGXMatrix(float gx[3][4], pddiMatrix &m)
-{
-    gx[0][0] = m.m[0][0]; gx[0][1] = m.m[1][0]; gx[0][2] = m.m[2][0]; gx[0][3] = m.m[3][0];
-    gx[1][0] = m.m[0][1]; gx[1][1] = m.m[1][1]; gx[1][2] = m.m[2][1]; gx[1][3] = m.m[3][1];
-    gx[2][0] = m.m[0][2]; gx[2][1] = m.m[1][2]; gx[2][2] = m.m[2][2]; gx[2][3] = m.m[3][2];
+static inline void FillGXMatrix(float gx[3][4], pddiMatrix &m) {
+    gx[0][0] = m.m[0][0];
+    gx[0][1] = m.m[1][0];
+    gx[0][2] = m.m[2][0];
+    gx[0][3] = m.m[3][0];
+    gx[1][0] = m.m[0][1];
+    gx[1][1] = m.m[1][1];
+    gx[1][2] = m.m[2][1];
+    gx[1][3] = m.m[3][1];
+    gx[2][0] = m.m[0][2];
+    gx[2][1] = m.m[1][2];
+    gx[2][2] = m.m[2][2];
+    gx[2][3] = m.m[3][2];
 }
 
 
 ///***
-void dumpmatrix44(float m[4][4])
-{
+void dumpmatrix44(float m[4][4]) {
 //  return ;
     printf("    %1.4f %1.4f %1.4f %1.4f\n", m[0][0], m[0][1], m[0][2], m[0][3]);
     printf("    %1.4f %1.4f %1.4f %1.4f\n", m[1][0], m[1][1], m[1][2], m[1][3]);
@@ -66,8 +72,7 @@ void dumpmatrix44(float m[4][4])
     printf("\n");
 }
 
-void dumpmatrix34(float m[3][4])
-{
+void dumpmatrix34(float m[3][4]) {
 //  return ;
     printf("    %1.4f %1.4f %1.4f \n", m[0][0], m[1][0], m[2][0]);
     printf("    %1.4f %1.4f %1.4f \n", m[0][1], m[1][1], m[2][1]);
@@ -82,8 +87,8 @@ void dumpmatrix34(float m[3][4])
 // Class gcContext
 //
 //
-gcContext::gcContext(gcDevice* dev, gcDisplay* disp) : pddiBaseContext((pddiDisplay*)disp,(pddiDevice*)dev)
-{
+gcContext::gcContext(gcDevice *dev, gcDisplay *disp) : pddiBaseContext((pddiDisplay *) disp,
+                                                                       (pddiDevice *) dev) {
     device = dev;
     display = disp;
 
@@ -96,8 +101,8 @@ gcContext::gcContext(gcDevice* dev, gcDisplay* disp) : pddiBaseContext((pddiDisp
     DefaultState();
 
     mExtHardwareSkinning = new gcExtHardwareSkinning(this);
-    mExtBufferCopy = new gcExtBufferCopy(this, (gcDevice *)device);
-    mExtFBEffects = new gcExtFramebufferEffects(this, (gcDevice *)device);
+    mExtBufferCopy = new gcExtBufferCopy(this, (gcDevice *) device);
+    mExtFBEffects = new gcExtFramebufferEffects(this, (gcDevice *) device);
     mExtVisibilityTest = new gcExtVisibilityTest(this);
     mClearShader = new SimpleShader(this);
 
@@ -108,10 +113,9 @@ gcContext::gcContext(gcDevice* dev, gcDisplay* disp) : pddiBaseContext((pddiDisp
     mClearShader->SetInt(PDDI_SP_SHADEMODE, PDDI_SHADE_FLAT);
 
     int a;
-    for (a = 0; a < _GC_MAX_LIGHTS; a++)
-    {
-        mPreMultState[a].mDiffuse   = pddiColour(0);
-        mPreMultState[a].mSpecular  = pddiColour(0);
+    for (a = 0; a < _GC_MAX_LIGHTS; a++) {
+        mPreMultState[a].mDiffuse = pddiColour(0);
+        mPreMultState[a].mSpecular = pddiColour(0);
         mPreMultState[a].mShininess = 0.1F;
     }
 
@@ -202,7 +206,7 @@ gcContext::gcContext(gcDevice* dev, gcDisplay* disp) : pddiBaseContext((pddiDisp
     mPerfRasterisedPixels = 0UL;
     mPerfPixelCopyClocks = 0UL;
 #endif
-    
+
 }
 
 //*****************************************
@@ -210,19 +214,16 @@ gcContext::gcContext(gcDevice* dev, gcDisplay* disp) : pddiBaseContext((pddiDisp
 // Class gcContext
 //
 //
-gcContext::~gcContext()
-{
+gcContext::~gcContext() {
     defaultShader->Release();
 
-    if (gContext == this)
-    {
+    if (gContext == this) {
         gContext = NULL;
     }
 #ifndef RAD_RELEASE
-    else
-    {
+    else {
         printf("Warning: freeing multiple contexts out of order,\n    gcContext::Context() may return wrong values.\n");
-    }    
+    }
 #endif
 
     // This is a truly ugly way to tell the prim stream 
@@ -232,7 +233,7 @@ gcContext::~gcContext()
     delete mExtHardwareSkinning;
     delete mExtBufferCopy;
     delete mClearShader;
-    
+
     display->Release();
     device->Release();
 }
@@ -243,17 +244,15 @@ gcContext::~gcContext()
 //
 //
 // frame synchronisation
-void gcContext::BeginFrame()
-{
+void gcContext::BeginFrame() {
     pddiBaseContext::BeginFrame();
 
     GXClearVtxDesc();
 
     int a;
-    for (a = 0; a < _GC_MAX_LIGHTS; a++)
-    {
-        mPreMultState[a].mDiffuse   = pddiColour(0);
-        mPreMultState[a].mSpecular  = pddiColour(0);
+    for (a = 0; a < _GC_MAX_LIGHTS; a++) {
+        mPreMultState[a].mDiffuse = pddiColour(0);
+        mPreMultState[a].mSpecular = pddiColour(0);
         mPreMultState[a].mShininess = 0.1F;
     }
 
@@ -271,15 +270,14 @@ void gcContext::BeginFrame()
         mBeginFrameTime = OSGetTime();
     }
 #endif
-}                       
+}
 
 //*****************************************
 //
 // Class gcContext
 //
 //
-void gcContext::EndFrame()
-{
+void gcContext::EndFrame() {
     mExtFBEffects->EndOfFrameFromPDDI();
 
     // Fixes single material light problems
@@ -302,16 +300,16 @@ void gcContext::EndFrame()
 
         GXReadGPMetric(mStatPasses[mStatPass].var0, mStatPasses[mStatPass].var1);
         ++mStatPass;
-        if (mStatPass > 13) mStatPass = 0;
+        if (mStatPass> 13) mStatPass = 0;
     }
 #endif
 
-     // HACK: turn off pddiStats for nintendo
-     bool ds = displayStats;
-     pddiBaseContext::EndFrame();
-     //displayStats = false;
-     // HACK: restore render stats var
-     displayStats = ds;
+    // HACK: turn off pddiStats for nintendo
+    bool ds = displayStats;
+    pddiBaseContext::EndFrame();
+    //displayStats = false;
+    // HACK: restore render stats var
+    displayStats = ds;
 
 #ifdef PDDI_TRACK_STATS
 
@@ -335,7 +333,7 @@ void gcContext::EndFrame()
                     mPerfTexelsProcesed,
                     mPerfTextureMainMemStallClocks,
                     mPerfVCacheCheck,
-                    mPerfTopPixelsIn + mPerfBottomPixelsIn );
+                    mPerfTopPixelsIn + mPerfBottomPixelsIn);
         DrawString(s, 10, 300, pddiColour(150, 150, 150));
 
         sprintf(s, 
@@ -393,8 +391,7 @@ void gcContext::EndFrame()
 
 }
 
-void gcContext::DrawSync()
-{
+void gcContext::DrawSync() {
     GXDrawDone();
 }
 
@@ -403,15 +400,14 @@ void gcContext::DrawSync()
 // Class gcContext
 // buffer clearing
 //
-void gcContext::Clear(unsigned bufferMask)
-{
+void gcContext::Clear(unsigned bufferMask) {
     pddiBaseContext::Clear(bufferMask);
 
     if (bufferMask == 0) return;
 
-    bool clear_colour = ((bufferMask & PDDI_BUFFER_COLOUR)  != 0);
-    bool clear_alpha  = ((bufferMask & PDDI_BUFFER_STENCIL) != 0);
-    bool clear_depth  = ((bufferMask & PDDI_BUFFER_DEPTH)   != 0);
+    bool clear_colour = ((bufferMask & PDDI_BUFFER_COLOUR) != 0);
+    bool clear_alpha = ((bufferMask & PDDI_BUFFER_STENCIL) != 0);
+    bool clear_depth = ((bufferMask & PDDI_BUFFER_DEPTH) != 0);
 
     float d = state.viewState->camera.farPlane - 0.1F;
 
@@ -437,18 +433,24 @@ void gcContext::Clear(unsigned bufferMask)
 
     pddiPrimStream *stream = BeginPrims(mClearShader, PDDI_PRIM_TRIANGLES, PDDI_V_C, 6);
 
-	float height = display->GetHeight();
- 	float width = display->GetWidth();
-   
+    float height = display->GetHeight();
+    float width = display->GetWidth();
+
     // tri 1
-    stream->Colour(clear);    stream->Coord(  0.0F, height, d);
-    stream->Colour(clear);    stream->Coord(  0.0F,   0.0F, d);
-    stream->Colour(clear);    stream->Coord(width,   0.0F, d);
-   
+    stream->Colour(clear);
+    stream->Coord(0.0F, height, d);
+    stream->Colour(clear);
+    stream->Coord(0.0F, 0.0F, d);
+    stream->Colour(clear);
+    stream->Coord(width, 0.0F, d);
+
     // tri 2
-    stream->Colour(clear);    stream->Coord(  0.0F, height, d);
-    stream->Colour(clear);    stream->Coord(width,   0.0F, d);
-    stream->Colour(clear);    stream->Coord(width, height, d);
+    stream->Colour(clear);
+    stream->Coord(0.0F, height, d);
+    stream->Colour(clear);
+    stream->Coord(width, 0.0F, d);
+    stream->Colour(clear);
+    stream->Coord(width, height, d);
 
     EndPrims(stream);
 
@@ -458,9 +460,9 @@ void gcContext::Clear(unsigned bufferMask)
     SetZCompare(zc);
     GXSetClipMode(GX_CLIP_ENABLE);
 
-    SetColourWrite(state.renderState->redWrite, 
-                   state.renderState->greenWrite, 
-                   state.renderState->blueWrite, 
+    SetColourWrite(state.renderState->redWrite,
+                   state.renderState->greenWrite,
+                   state.renderState->blueWrite,
                    state.renderState->alphaWrite);
 
 }
@@ -470,17 +472,16 @@ void gcContext::Clear(unsigned bufferMask)
 // Class gcContext
 //
 //
-void gcContext::SetClearColour(pddiColour colour)
-{
+void gcContext::SetClearColour(pddiColour colour) {
     pddiBaseContext::SetClearColour(colour);
 
     GXColor gxcol;
-    gxcol.r = (unsigned char)state.viewState->clearColour.Red();
-    gxcol.g = (unsigned char)state.viewState->clearColour.Green();
-    gxcol.b = (unsigned char)state.viewState->clearColour.Blue();
-    gxcol.a = (unsigned char)state.viewState->clearColour.Alpha();
+    gxcol.r = (unsigned char) state.viewState->clearColour.Red();
+    gxcol.g = (unsigned char) state.viewState->clearColour.Green();
+    gxcol.b = (unsigned char) state.viewState->clearColour.Blue();
+    gxcol.a = (unsigned char) state.viewState->clearColour.Alpha();
 
-    unsigned d = (unsigned) ((float)GX_MAX_Z24 * state.viewState->clearDepth);
+    unsigned d = (unsigned) ((float) GX_MAX_Z24 * state.viewState->clearDepth);
     GXSetCopyClear(gxcol, d);
 }
 
@@ -490,22 +491,18 @@ void gcContext::SetClearColour(pddiColour colour)
 // Class gcContext
 //
 //
-void gcContext::SetClearDepth(float depth)
-{
+void gcContext::SetClearDepth(float depth) {
     pddiBaseContext::SetClearDepth(depth);
 
     GXColor gxcol;
-    gxcol.r = (unsigned char)state.viewState->clearColour.Red();
-    gxcol.g = (unsigned char)state.viewState->clearColour.Green();
-    gxcol.b = (unsigned char)state.viewState->clearColour.Blue();
-    gxcol.a = (unsigned char)state.viewState->clearColour.Alpha();
+    gxcol.r = (unsigned char) state.viewState->clearColour.Red();
+    gxcol.g = (unsigned char) state.viewState->clearColour.Green();
+    gxcol.b = (unsigned char) state.viewState->clearColour.Blue();
+    gxcol.a = (unsigned char) state.viewState->clearColour.Alpha();
 
-    unsigned d = (unsigned) ((float)GX_MAX_Z24 * state.viewState->clearDepth);
+    unsigned d = (unsigned) ((float) GX_MAX_Z24 * state.viewState->clearDepth);
     GXSetCopyClear(gxcol, d);
 }
-
-
-
 
 
 //*****************************************
@@ -513,61 +510,70 @@ void gcContext::SetClearDepth(float depth)
 // Class gcContext
 //
 //
-void gcContext::SetupHardwareProjection(void)
-{
+void gcContext::SetupHardwareProjection(void) {
     Mtx44 matrix;
-    
-    switch (state.viewState->projectionMode)
-    {
+
+    switch (state.viewState->projectionMode) {
         case PDDI_PROJECTION_DEVICE:
 
-            MTXOrtho(matrix, 
-                        0.0F, display->GetHeight(), // Top & Bottom
-                        0.0F, display->GetWidth(),  //  Left & right
-                        state.viewState->camera.nearPlane,
-                        state.viewState->camera.farPlane);
+            MTXOrtho(matrix,
+                     0.0F, display->GetHeight(), // Top & Bottom
+                     0.0F, display->GetWidth(),  //  Left & right
+                     state.viewState->camera.nearPlane,
+                     state.viewState->camera.farPlane);
             GXSetProjection(matrix, GX_ORTHOGRAPHIC);
             break;
 
         case PDDI_PROJECTION_ORTHOGRAPHIC :
-            MTXOrtho(matrix, 
-                         0.5f / (state.viewState->camera.aspect), // Top
-                        -0.5f / (state.viewState->camera.aspect), // Bottom
-                        -0.5F, 0.5F,  //  Left & right   
-                        state.viewState->camera.nearPlane,
-                        state.viewState->camera.farPlane);
+            MTXOrtho(matrix,
+                     0.5f / (state.viewState->camera.aspect), // Top
+                     -0.5f / (state.viewState->camera.aspect), // Bottom
+                     -0.5F, 0.5F,  //  Left & right
+                     state.viewState->camera.nearPlane,
+                     state.viewState->camera.farPlane);
             GXSetProjection(matrix, GX_ORTHOGRAPHIC);
             break;
 
-        case PDDI_PROJECTION_PERSPECTIVE :
-            {
-                pddiCamera& camera = state.viewState->camera;
+        case PDDI_PROJECTION_PERSPECTIVE : {
+            pddiCamera &camera = state.viewState->camera;
 
-                float fov = 1.0f / tanf(camera.fov * 0.5F);
-                float n = camera.nearPlane;
-                float f = camera.farPlane;
+            float fov = 1.0f / tanf(camera.fov * 0.5F);
+            float n = camera.nearPlane;
+            float f = camera.farPlane;
 
-                float p0 = fov;
-                float p1 = 0.0F;
-                float p2 = camera.aspect * fov;
-                float p3 = 0.0F;
-                float p4 = n / (n - f);
-                float p5 = (f * n) / (n - f);
+            float p0 = fov;
+            float p1 = 0.0F;
+            float p2 = camera.aspect * fov;
+            float p3 = 0.0F;
+            float p4 = n / (n - f);
+            float p5 = (f * n) / (n - f);
 
-                matrix[0][0] = p0;   matrix[0][1] = 0.0F; matrix[0][2] = p1;   matrix[0][3] = 0.0F;
-                matrix[1][0] = 0.0F; matrix[1][1] = p2;   matrix[1][2] = p3;   matrix[1][3] = 0.0F;
-                matrix[2][0] = 0.0F; matrix[2][1] = 0.0F; matrix[2][2] = p4;   matrix[2][3] = p5;
-                matrix[3][0] = 0.0F; matrix[3][1] = 0.0F; matrix[3][2] =-1.0F; matrix[3][3] = 0.0F;
+            matrix[0][0] = p0;
+            matrix[0][1] = 0.0F;
+            matrix[0][2] = p1;
+            matrix[0][3] = 0.0F;
+            matrix[1][0] = 0.0F;
+            matrix[1][1] = p2;
+            matrix[1][2] = p3;
+            matrix[1][3] = 0.0F;
+            matrix[2][0] = 0.0F;
+            matrix[2][1] = 0.0F;
+            matrix[2][2] = p4;
+            matrix[2][3] = p5;
+            matrix[3][0] = 0.0F;
+            matrix[3][1] = 0.0F;
+            matrix[3][2] = -1.0F;
+            matrix[3][3] = 0.0F;
 
-                GXSetProjection(matrix, GX_PERSPECTIVE);
-            }
+            GXSetProjection(matrix, GX_PERSPECTIVE);
+        }
             break;
     }
 
     // Setup the viewport
     float width = static_cast<float>(display->GetWidth());
-    float height = static_cast<float>(display->GetHeight());   
-    pddiFloatRect& vw = state.viewState->viewWindow;
+    float height = static_cast<float>(display->GetHeight());
+    pddiFloatRect &vw = state.viewState->viewWindow;
 
     float vpl = vw.left * width;
     float vpt = vw.top * height;
@@ -575,7 +581,7 @@ void gcContext::SetupHardwareProjection(void)
     float vpw = (vw.right - vw.left) * width;
     float vph = (vw.bottom - vw.top) * height;
 
-    GXSetViewportJitter(vpl, vpt, vpw, vph, 0.0F, 1.0F, ((gcDisplay*)display)->GetNextField());
+    GXSetViewportJitter(vpl, vpt, vpw, vph, 0.0F, 1.0F, ((gcDisplay *) display)->GetNextField());
 
 }
 
@@ -585,8 +591,7 @@ void gcContext::SetupHardwareProjection(void)
 //
 //
 // normal scaling
-void gcContext::ScaleNormal(float scale)
-{
+void gcContext::ScaleNormal(float scale) {
     pddiMatrix tmp = *state.matrixStack[PDDI_MATRIX_MODELVIEW]->Top();
 
     float gxmlh[3][4];
@@ -600,7 +605,7 @@ void gcContext::ScaleNormal(float scale)
     float gxmrh[3][4];
     FillGXMatrix(gxmrh, tmp);
 
-    MTXScale       (gxmrh, scale, scale, scale);
+    MTXScale(gxmrh, scale, scale, scale);
     GXLoadNrmMtxImm(gxmrh, GX_PNMTX0);
     GXSetCurrentMtx(GX_PNMTX0);
 }
@@ -611,8 +616,7 @@ void gcContext::ScaleNormal(float scale)
 // Class gcContext
 //
 //
-void gcContext::LoadHardwareMatrix(pddiMatrixType id)
-{
+void gcContext::LoadHardwareMatrix(pddiMatrixType id) {
     mMatrixDirty[id] = true;
 }
 
@@ -622,12 +626,10 @@ void gcContext::LoadHardwareMatrix(pddiMatrixType id)
 // Class gcContext
 //
 //
-void gcContext::FinalizeHardwareMatrix(void)
-{
+void gcContext::FinalizeHardwareMatrix(void) {
 
     int id;
-    for (id = 0; id < PDDI_MAX_MATRIX_STACKS; id++)
-    {
+    for (id = 0; id < PDDI_MAX_MATRIX_STACKS; id++) {
         if (!mMatrixDirty[id]) continue;
 
         mMatrixDirty[id] = false;
@@ -645,8 +647,7 @@ void gcContext::FinalizeHardwareMatrix(void)
         float gxmrh[3][4];
         FillGXMatrix(gxmrh, tmp);
 
-        switch(id)
-        {
+        switch (id) {
             case PDDI_MATRIX_MODELVIEW:
                 GXLoadPosMtxImm(gxmrh, GX_PNMTX0);
                 GXLoadNrmMtxImm(gxmrh, GX_PNMTX0);
@@ -674,9 +675,9 @@ void gcContext::FinalizeHardwareMatrix(void)
                 break;
         }
 
-    #ifdef PDDI_TRACK_STATS
+#ifdef PDDI_TRACK_STATS
         this->ADD_STAT(PDDI_STAT_MATRIX_OPS, 1);
-    #endif
+#endif
     }
 
 }
@@ -687,16 +688,15 @@ void gcContext::FinalizeHardwareMatrix(void)
 //
 //
 // viewport clipping
-void gcContext::SetScissor(pddiRect* rect)
-{
+void gcContext::SetScissor(pddiRect *rect) {
     pddiBaseContext::SetScissor(rect);
-    if(!rect)
-    {
-        GXSetScissor(0, 0, (unsigned long)display->GetWidth(), (unsigned long)display->GetHeight());
-    }
-    else
-    {
-        GXSetScissor((unsigned long)rect->left, (unsigned long)rect->top, (unsigned long)(rect->right - rect->left), (unsigned long)(rect->bottom - rect->top));
+    if (!rect) {
+        GXSetScissor(0, 0, (unsigned long) display->GetWidth(),
+                     (unsigned long) display->GetHeight());
+    } else {
+        GXSetScissor((unsigned long) rect->left, (unsigned long) rect->top,
+                     (unsigned long) (rect->right - rect->left),
+                     (unsigned long) (rect->bottom - rect->top));
     }
 }
 
@@ -735,15 +735,15 @@ void gcContext::SetScissor(pddiRect* rect)
 // Class gcContext
 //
 //
-pddiPrimStream *gcContext::BeginPrims(pddiShader *mat, pddiPrimType primType, unsigned vertexType, int vertexCount, unsigned pass)
-{
-    if(!mat)
-    {
+pddiPrimStream *
+gcContext::BeginPrims(pddiShader *mat, pddiPrimType primType, unsigned vertexType, int vertexCount,
+                      unsigned pass) {
+    if (!mat) {
         mat = defaultShader;
     }
 
     pddiBaseContext::BeginPrims(mat, primType, vertexType, vertexCount);
-    pddiBaseShader* material = (pddiBaseShader*)mat;
+    pddiBaseShader *material = (pddiBaseShader *) mat;
     ADD_STAT(PDDI_STAT_MATERIAL_OPS, !material->IsCurrent());
     material->SetMaterial();
     gPrimStream.Begin(this, primTypeTable[primType], vertexType, vertexCount);
@@ -755,8 +755,7 @@ pddiPrimStream *gcContext::BeginPrims(pddiShader *mat, pddiPrimType primType, un
 // Class gcContext
 //
 //
-void gcContext::EndPrims(pddiPrimStream* stream)
-{
+void gcContext::EndPrims(pddiPrimStream *stream) {
     pddiBaseContext::EndPrims(stream);
     stream->End();
 }
@@ -767,17 +766,15 @@ void gcContext::EndPrims(pddiPrimStream* stream)
 // Class gcContext
 //
 //
-void gcContext::DrawPrimBuffer(pddiShader* mat, pddiPrimBuffer* buffer)
-{
-    if(!mat)
-    {
+void gcContext::DrawPrimBuffer(pddiShader *mat, pddiPrimBuffer *buffer) {
+    if (!mat) {
         mat = defaultShader;
     }
 
-    pddiBaseShader* material = (pddiBaseShader*)mat;
+    pddiBaseShader *material = (pddiBaseShader *) mat;
     ADD_STAT(PDDI_STAT_MATERIAL_OPS, !material->IsCurrent());
     material->SetMaterial();
-    ((gcBasePrimBuffer *)buffer)->Display();
+    ((gcBasePrimBuffer *) buffer)->Display();
 }
 
 //*****************************************
@@ -786,11 +783,9 @@ void gcContext::DrawPrimBuffer(pddiShader* mat, pddiPrimBuffer* buffer)
 //
 //
 // lighting
-int gcContext::GetMaxLights(void)
-{
+int gcContext::GetMaxLights(void) {
     return _GC_MAX_LIGHTS;
 }
-
 
 
 //*****************************************
@@ -798,8 +793,7 @@ int gcContext::GetMaxLights(void)
 // Class gcContext
 //
 //
-void gcContext::SetupHardwareLight(int handle)
-{
+void gcContext::SetupHardwareLight(int handle) {
 
     if (!state.lightingState->light[handle].enabled) return;
 
@@ -832,8 +826,7 @@ void gcContext::SetupHardwareLight(int handle)
     float spot1 = 0.0F;
     float spot0 = 1.0F;
 
-    switch(state.lightingState->light[handle].type)
-    {
+    switch (state.lightingState->light[handle].type) {
         // All lights on the Gamecube are point lights.
         // Move the light far away to make it appear directional.
         case PDDI_LIGHT_DIRECTIONAL :
@@ -862,7 +855,8 @@ void gcContext::SetupHardwareLight(int handle)
             wd.Normalize();
 
             float sharpness = 1.0F / (.01F + state.lightingState->light[handle].theta);
-            float size = (state.lightingState->light[handle].theta + state.lightingState->light[handle].phi);
+            float size = (state.lightingState->light[handle].theta +
+                          state.lightingState->light[handle].phi);
 
             spot2 = 0.0F;
             spot1 = sharpness;
@@ -873,10 +867,10 @@ void gcContext::SetupHardwareLight(int handle)
 
 //   printf("Spot: %f %f %f\n", spot2, spot1, spot0);
 
-    GXInitLightAttn(dl, spot0, spot1, spot2, state.lightingState->light[handle].attenA, 
-                                             state.lightingState->light[handle].attenB,
-                                             state.lightingState->light[handle].attenC);
-    
+    GXInitLightAttn(dl, spot0, spot1, spot2, state.lightingState->light[handle].attenA,
+                    state.lightingState->light[handle].attenB,
+                    state.lightingState->light[handle].attenC);
+
     pddiVector vp;
     pddiVector vd;
     pddiVector vsd;
@@ -892,13 +886,12 @@ void gcContext::SetupHardwareLight(int handle)
     tmp.RotateVector(sd, &vsd);
     tmp.RotateVector(wd, &vd);
     tmp.Transform(wp, &vp);
- 
+
     GXInitLightPos(dl, vp.x, vp.y, vp.z);
     GXInitLightDir(dl, vd.x, vd.y, vd.z);
     GXInitSpecularDir(sl, vsd.x, vsd.y, vsd.z);
 
 }
-
 
 
 //********************************************
@@ -907,11 +900,9 @@ void gcContext::SetupHardwareLight(int handle)
 //  Pre mult Lights
 //
 //
-void gcContext::PreMultiplyLights(pddiColour diffuse, pddiColour specular, float shininess)
-{
+void gcContext::PreMultiplyLights(pddiColour diffuse, pddiColour specular, float shininess) {
     int a;
-    for (a = 0; a < PDDI_MAX_LIGHTS; a++)
-    {
+    for (a = 0; a < PDDI_MAX_LIGHTS; a++) {
         if (!state.lightingState->light[a].enabled) continue;
 
         GXLightObj *dl = &mHWLights[a];
@@ -919,35 +910,41 @@ void gcContext::PreMultiplyLights(pddiColour diffuse, pddiColour specular, float
 
         GXColor c;
 
-        if (mPreMultState[a].mDiffuse != diffuse)
-        {
+        if (mPreMultState[a].mDiffuse != diffuse) {
             mPreMultState[a].mDiffuse = diffuse;
-            c.r = (unsigned char) ((diffuse.Red()   * state.lightingState->light[a].colour.Red())   >> 8);
-            c.g = (unsigned char) ((diffuse.Green() * state.lightingState->light[a].colour.Green()) >> 8);
-            c.b = (unsigned char) ((diffuse.Blue()  * state.lightingState->light[a].colour.Blue())  >> 8);
-            c.a = (unsigned char) ((diffuse.Alpha() * state.lightingState->light[a].colour.Alpha()) >> 8);
+            c.r = (unsigned char) ((diffuse.Red() * state.lightingState->light[a].colour.Red())
+                    >> 8);
+            c.g = (unsigned char) ((diffuse.Green() * state.lightingState->light[a].colour.Green())
+                    >> 8);
+            c.b = (unsigned char) ((diffuse.Blue() * state.lightingState->light[a].colour.Blue())
+                    >> 8);
+            c.a = (unsigned char) ((diffuse.Alpha() * state.lightingState->light[a].colour.Alpha())
+                    >> 8);
             GXInitLightColor(dl, c);
-            GXLoadLightObjImm(dl, (GXLightID)  (1 << a));
+            GXLoadLightObjImm(dl, (GXLightID)(1 << a));
         }
 
-        if ((mPreMultState[a].mSpecular != specular) || (mPreMultState[a].mShininess != shininess))
-        {
-            mPreMultState[a].mSpecular  = specular;
+        if ((mPreMultState[a].mSpecular != specular) ||
+            (mPreMultState[a].mShininess != shininess)) {
+            mPreMultState[a].mSpecular = specular;
             mPreMultState[a].mShininess = shininess;
-            
-            c.r = (unsigned char) ((specular.Red()   * state.lightingState->light[a].colour.Red())   >> 8);
-            c.g = (unsigned char) ((specular.Green() * state.lightingState->light[a].colour.Green()) >> 8);
-            c.b = (unsigned char) ((specular.Blue()  * state.lightingState->light[a].colour.Blue())  >> 8);
-            c.a = (unsigned char) ((specular.Alpha() * state.lightingState->light[a].colour.Alpha()) >> 8);
+
+            c.r = (unsigned char) ((specular.Red() * state.lightingState->light[a].colour.Red())
+                    >> 8);
+            c.g = (unsigned char) ((specular.Green() * state.lightingState->light[a].colour.Green())
+                    >> 8);
+            c.b = (unsigned char) ((specular.Blue() * state.lightingState->light[a].colour.Blue())
+                    >> 8);
+            c.a = (unsigned char) ((specular.Alpha() * state.lightingState->light[a].colour.Alpha())
+                    >> 8);
             GXInitLightColor(sl, c);
 
             GXInitLightShininess(sl, shininess);
 
-            GXLoadLightObjImm(sl, (GXLightID) ((1 << (a + _GC_MAX_LIGHTS))));
+            GXLoadLightObjImm(sl, (GXLightID)((1 << (a + _GC_MAX_LIGHTS))));
         }
     }
 }
-
 
 
 //*****************************************
@@ -955,8 +952,7 @@ void gcContext::PreMultiplyLights(pddiColour diffuse, pddiColour specular, float
 // Class gcContext
 //
 //
-void gcContext::SetAmbientLight(pddiColour col)
-{
+void gcContext::SetAmbientLight(pddiColour col) {
     pddiBaseContext::SetAmbientLight(col);
 }
 
@@ -966,12 +962,10 @@ void gcContext::SetAmbientLight(pddiColour col)
 // Class gcContext
 //
 //
-void gcContext::EnableLight(int handle, bool active)
-{
+void gcContext::EnableLight(int handle, bool active) {
     // Make sure that light gets uploaded
-    if (state.lightingState->light[handle].enabled != active)
-    {
-        mPreMultState[handle].mDiffuse  = pddiColour(0);
+    if (state.lightingState->light[handle].enabled != active) {
+        mPreMultState[handle].mDiffuse = pddiColour(0);
         mPreMultState[handle].mSpecular = pddiColour(0);
     }
 
@@ -983,12 +977,10 @@ void gcContext::EnableLight(int handle, bool active)
 // Class gcContext
 //
 //
-void gcContext::SetLightType(int handle, pddiLightType type)
-{
+void gcContext::SetLightType(int handle, pddiLightType type) {
     // Make sure that light gets uploaded
-    if (state.lightingState->light[handle].type != type)
-    {
-        mPreMultState[handle].mDiffuse  = pddiColour(0);
+    if (state.lightingState->light[handle].type != type) {
+        mPreMultState[handle].mDiffuse = pddiColour(0);
         mPreMultState[handle].mSpecular = pddiColour(0);
     }
 
@@ -1001,12 +993,10 @@ void gcContext::SetLightType(int handle, pddiLightType type)
 // Class gcContext
 //
 //
-void gcContext::SetLightColour(int handle, pddiColour colour)
-{
+void gcContext::SetLightColour(int handle, pddiColour colour) {
     // Make sure that light gets uploaded
-    if (state.lightingState->light[handle].colour != colour)
-    {
-        mPreMultState[handle].mDiffuse  = pddiColour(0);
+    if (state.lightingState->light[handle].colour != colour) {
+        mPreMultState[handle].mDiffuse = pddiColour(0);
         mPreMultState[handle].mSpecular = pddiColour(0);
     }
 
@@ -1019,10 +1009,9 @@ void gcContext::SetLightColour(int handle, pddiColour colour)
 // Class gcContext
 //
 //
-void gcContext::SetLightPosition(int handle, pddiVector* dir)
-{
+void gcContext::SetLightPosition(int handle, pddiVector *dir) {
     // Make sure that light gets uploaded
-    mPreMultState[handle].mDiffuse  = pddiColour(0);
+    mPreMultState[handle].mDiffuse = pddiColour(0);
     mPreMultState[handle].mSpecular = pddiColour(0);
 
     pddiBaseContext::SetLightPosition(handle, dir);
@@ -1034,10 +1023,9 @@ void gcContext::SetLightPosition(int handle, pddiVector* dir)
 // Class gcContext
 //
 //
-void gcContext::SetLightDirection(int handle, pddiVector* dir)
-{
+void gcContext::SetLightDirection(int handle, pddiVector *dir) {
     // Make sure that light gets uploaded
-    mPreMultState[handle].mDiffuse  = pddiColour(0);
+    mPreMultState[handle].mDiffuse = pddiColour(0);
     mPreMultState[handle].mSpecular = pddiColour(0);
 
     pddiBaseContext::SetLightDirection(handle, dir);
@@ -1049,10 +1037,9 @@ void gcContext::SetLightDirection(int handle, pddiVector* dir)
 // Class gcContext
 //
 //
-void gcContext::SetLightRange(int handle, float range)
-{
+void gcContext::SetLightRange(int handle, float range) {
     // Make sure that light gets uploaded
-    mPreMultState[handle].mDiffuse  = pddiColour(0);
+    mPreMultState[handle].mDiffuse = pddiColour(0);
     mPreMultState[handle].mSpecular = pddiColour(0);
 
     pddiBaseContext::SetLightRange(handle, range);
@@ -1064,10 +1051,9 @@ void gcContext::SetLightRange(int handle, float range)
 // Class gcContext
 //
 //
-void gcContext::SetLightAttenuation(int handle, float a, float b, float c)
-{
+void gcContext::SetLightAttenuation(int handle, float a, float b, float c) {
     // Make sure that light gets uploaded
-    mPreMultState[handle].mDiffuse  = pddiColour(0);
+    mPreMultState[handle].mDiffuse = pddiColour(0);
     mPreMultState[handle].mSpecular = pddiColour(0);
 
     pddiBaseContext::SetLightAttenuation(handle, a, b, c);
@@ -1079,15 +1065,13 @@ void gcContext::SetLightAttenuation(int handle, float a, float b, float c)
 // Class gcContext
 //
 //
-void gcContext::SetLightCone(int handle, float phi, float theta, float falloff)
-{
+void gcContext::SetLightCone(int handle, float phi, float theta, float falloff) {
     // Make sure that light gets uploaded
-    mPreMultState[handle].mDiffuse  = pddiColour(0);
+    mPreMultState[handle].mDiffuse = pddiColour(0);
     mPreMultState[handle].mSpecular = pddiColour(0);
 
     pddiBaseContext::SetLightCone(handle, phi, theta, falloff);
 }
-
 
 
 //*****************************************
@@ -1095,8 +1079,7 @@ void gcContext::SetLightCone(int handle, float phi, float theta, float falloff)
 // Class gcContext
 //
 //
-void gcContext::SetColourWrite(bool red, bool green, bool blue, bool alpha)
-{
+void gcContext::SetColourWrite(bool red, bool green, bool blue, bool alpha) {
     pddiBaseContext::SetColourWrite(red, green, blue, alpha);
 
     GXSetColorUpdate(red || green || blue);
@@ -1104,43 +1087,40 @@ void gcContext::SetColourWrite(bool red, bool green, bool blue, bool alpha)
 }
 
 
-
 // backface culling
 static GXCullMode gcCullModeTable[3] =
-{
-    GX_CULL_NONE,  // PDDI_CULL_NONE
-    GX_CULL_BACK, // PDDI_CULL_NORMAL
-    GX_CULL_FRONT   // PDDI_CULL_INVERTED
-};
-    
+        {
+                GX_CULL_NONE,  // PDDI_CULL_NONE
+                GX_CULL_BACK, // PDDI_CULL_NORMAL
+                GX_CULL_FRONT   // PDDI_CULL_INVERTED
+        };
+
 //*****************************************
 //
 // Class gcContext
 //
 //
-void gcContext::SetCullMode(pddiCullMode mode)
-{
+void gcContext::SetCullMode(pddiCullMode mode) {
     pddiBaseContext::SetCullMode(mode);
     GXSetCullMode(gcCullModeTable[mode]);
 }
 
 // z-buffer control
-static GXCompare compTable[8] = { GX_NEVER,
-                                             GX_ALWAYS,  
-                                             GX_LESS,
-                                             GX_LEQUAL,
-                                             GX_GREATER,    
-                                             GX_GEQUAL,  
-                                             GX_EQUAL,
-                                             GX_NEQUAL };
+static GXCompare compTable[8] = {GX_NEVER,
+                                 GX_ALWAYS,
+                                 GX_LESS,
+                                 GX_LEQUAL,
+                                 GX_GREATER,
+                                 GX_GEQUAL,
+                                 GX_EQUAL,
+                                 GX_NEQUAL};
 
 //*****************************************
 //
 // Class gcContext
 //
 //
-void gcContext::EnableZBuffer(bool enable)
-{
+void gcContext::EnableZBuffer(bool enable) {
     pddiBaseContext::EnableZBuffer(enable);
     GXSetZMode(IsZBufferEnabled(), compTable[GetZCompare()], GetZWrite());
 }
@@ -1151,8 +1131,7 @@ void gcContext::EnableZBuffer(bool enable)
 // Class gcContext
 //
 //
-void gcContext::SetZCompare(pddiCompareMode compareMode)
-{
+void gcContext::SetZCompare(pddiCompareMode compareMode) {
     pddiBaseContext::SetZCompare(compareMode);
     GXSetZMode(IsZBufferEnabled(), compTable[GetZCompare()], GetZWrite());
 }
@@ -1162,8 +1141,7 @@ void gcContext::SetZCompare(pddiCompareMode compareMode)
 // Class gcContext
 //
 //
-void gcContext::SetZWrite(bool b)
-{
+void gcContext::SetZWrite(bool b) {
     pddiBaseContext::SetZWrite(b);
     GXSetZMode(IsZBufferEnabled(), compTable[GetZCompare()], GetZWrite());
 }
@@ -1173,8 +1151,7 @@ void gcContext::SetZWrite(bool b)
 // Class gcContext
 //
 //
-void gcContext::SetZBias(float bias)
-{
+void gcContext::SetZBias(float bias) {
     //TODO : This isn't possible on the GameCube
 }
 
@@ -1183,9 +1160,8 @@ void gcContext::SetZBias(float bias)
 // Class gcContext
 //
 //
-void gcContext::SetZRange(float n, float f)
-{
-    pddiBaseContext::SetZRange(n,f);
+void gcContext::SetZRange(float n, float f) {
+    pddiBaseContext::SetZRange(n, f);
     //FIXME  glDepthRange(n,f);
     // GXSetViewport();
 }
@@ -1196,19 +1172,17 @@ void gcContext::SetZRange(float n, float f)
 // Class gcContext
 //
 //
-void gcContext::EnableStencilBuffer(bool enable)
-{
+void gcContext::EnableStencilBuffer(bool enable) {
     pddiBaseContext::EnableStencilBuffer(enable);
     // No Stencil Buffer on GameCube
 }
-        
+
 //*****************************************
 //
 // Class gcContext
 //
 //
-void gcContext::SetStencilCompare(pddiCompareMode compare)
-{
+void gcContext::SetStencilCompare(pddiCompareMode compare) {
     pddiBaseContext::SetStencilCompare(compare);
     // No Stencil Buffer on GameCube
 }
@@ -1218,8 +1192,7 @@ void gcContext::SetStencilCompare(pddiCompareMode compare)
 // Class gcContext
 //
 //
-void gcContext::SetStencilRef(int ref)
-{
+void gcContext::SetStencilRef(int ref) {
     pddiBaseContext::SetStencilRef(ref);
     // No Stencil Buffer on GameCube
 }
@@ -1229,8 +1202,7 @@ void gcContext::SetStencilRef(int ref)
 // Class gcContext
 //
 //
-void gcContext::SetStencilMask(unsigned mask)
-{
+void gcContext::SetStencilMask(unsigned mask) {
     pddiBaseContext::SetStencilMask(mask);
     // No Stencil Buffer on GameCube
 }
@@ -1240,8 +1212,7 @@ void gcContext::SetStencilMask(unsigned mask)
 // Class gcContext
 //
 //
-void gcContext::SetStencilWriteMask(unsigned mask)
-{
+void gcContext::SetStencilWriteMask(unsigned mask) {
     pddiBaseContext::SetStencilWriteMask(mask);
     // No Stencil Buffer on GameCube
 }
@@ -1251,8 +1222,7 @@ void gcContext::SetStencilWriteMask(unsigned mask)
 // Class gcContext
 //
 //
-void gcContext::SetStencilOp(pddiStencilOp failOp, pddiStencilOp zFailOp, pddiStencilOp zPassOp)
-{
+void gcContext::SetStencilOp(pddiStencilOp failOp, pddiStencilOp zFailOp, pddiStencilOp zPassOp) {
     pddiBaseContext::SetStencilOp(failOp, zFailOp, zPassOp);
     // No Stencil Buffer on GameCube
 }
@@ -1262,20 +1232,19 @@ void gcContext::SetStencilOp(pddiStencilOp failOp, pddiStencilOp zFailOp, pddiSt
 // Class gcContext
 //
 //
-void gcContext::SetFillMode(pddiFillMode mode)
-{
+void gcContext::SetFillMode(pddiFillMode mode) {
     pddiBaseContext::SetFillMode(mode);
     // The GameCube can do this
 }
 
 // pddiFogMode
 static GXFogType fogTable[] =
-{
-    GX_FOG_LIN,
-    GX_FOG_EXP,
-    GX_FOG_EXP2,
-    GX_FOG_NONE
-};
+        {
+                GX_FOG_LIN,
+                GX_FOG_EXP,
+                GX_FOG_EXP2,
+                GX_FOG_NONE
+        };
 
 
 //*****************************************
@@ -1284,32 +1253,28 @@ static GXFogType fogTable[] =
 //
 //
 // fog
-void gcContext::EnableFog(bool enable)
-{
+void gcContext::EnableFog(bool enable) {
     pddiBaseContext::EnableFog(enable);
     pddiColour c;
     float start, end;
     GetFog(&c, &start, &end);
     GXColor fogc;
-    fogc.r = (unsigned char)c.Red();
-    fogc.g = (unsigned char)c.Green();
-    fogc.b = (unsigned char)c.Blue();
-    fogc.a = (unsigned char)c.Alpha();
+    fogc.r = (unsigned char) c.Red();
+    fogc.g = (unsigned char) c.Green();
+    fogc.b = (unsigned char) c.Blue();
+    fogc.a = (unsigned char) c.Alpha();
 
-    pddiCamera& camera = state.viewState->camera;
+    pddiCamera &camera = state.viewState->camera;
     float n = camera.nearPlane;
     float f = camera.farPlane;
 
-    if (enable)
-    {
+    if (enable) {
         GXSetFog(GX_FOG_LIN, start, end, n, f, fogc);
         GXSetFogRangeAdj(GX_DISABLE, 0, NULL);
-    }
-    else
-    {
+    } else {
         GXSetFog(GX_FOG_NONE, start, end, n, f, fogc);
         GXSetFogRangeAdj(GX_DISABLE, 0, NULL);
-    }                                   
+    }
 }
 
 //*****************************************
@@ -1317,25 +1282,21 @@ void gcContext::EnableFog(bool enable)
 // Class gcContext
 //
 //
-void gcContext::SetFog(pddiColour colour, float start, float end)
-{
+void gcContext::SetFog(pddiColour colour, float start, float end) {
     pddiBaseContext::SetFog(colour, start, end);
 
     GXColor fogc;
-    fogc.r = (unsigned char)colour.Red();
-    fogc.g = (unsigned char)colour.Green();
-    fogc.b = (unsigned char)colour.Blue();
-    fogc.a = (unsigned char)colour.Alpha();
+    fogc.r = (unsigned char) colour.Red();
+    fogc.g = (unsigned char) colour.Green();
+    fogc.b = (unsigned char) colour.Blue();
+    fogc.a = (unsigned char) colour.Alpha();
 
-    if (IsFogEnabled())
-    {
-        pddiCamera& camera = state.viewState->camera;
+    if (IsFogEnabled()) {
+        pddiCamera &camera = state.viewState->camera;
         float n = camera.nearPlane;
         float f = camera.farPlane;
         GXSetFog(GX_FOG_LIN, start, end, n, f, fogc);
-    }
-    else
-    {
+    } else {
         GXSetFog(GX_FOG_NONE, start, end, start, end, fogc);
     }
 }
@@ -1346,8 +1307,7 @@ void gcContext::SetFog(pddiColour colour, float start, float end)
 // Class gcContext
 //
 //
-int gcContext::GetMaxTextureDimension(void)
-{
+int gcContext::GetMaxTextureDimension(void) {
     return 1024;
 }
 
@@ -1357,8 +1317,7 @@ int gcContext::GetMaxTextureDimension(void)
 // Class gcContext
 //
 //
-void gcContext::BeginTiming()
-{
+void gcContext::BeginTiming() {
     mTimerStart = OSGetTime();
 }
 
@@ -1368,8 +1327,7 @@ void gcContext::BeginTiming()
 // Class gcContext
 // End Timing, returns number of millisecones elapsed since BeginTiming() call
 //
-float gcContext::EndTiming()
-{
+float gcContext::EndTiming() {
     OSTime end = OSGetTime();
 
     float us = (float) OSTicksToMicroseconds(end - mTimerStart);
@@ -1382,27 +1340,22 @@ float gcContext::EndTiming()
 // Class gcContext
 // Get Extension
 //
-pddiExtension *gcContext::GetExtension(unsigned extension)
-{
-    if (extension == PDDI_EXT_HARDWARE_SKINNING)
-    {
+pddiExtension *gcContext::GetExtension(unsigned extension) {
+    if (extension == PDDI_EXT_HARDWARE_SKINNING) {
         return mExtHardwareSkinning;
     }
 
-    if (extension == PDDI_EXT_BUFCOPY)
-    {
+    if (extension == PDDI_EXT_BUFCOPY) {
         return mExtBufferCopy;
     }
 
-    if (extension == PDDI_EXT_FRAMEBUFFER_EFFECTS)
-    {
+    if (extension == PDDI_EXT_FRAMEBUFFER_EFFECTS) {
         return mExtFBEffects;
     }
 
-	if (extension == PDDI_EXT_VISIBILITY_TEST)
-	{
-		return mExtVisibilityTest;
-	}
+    if (extension == PDDI_EXT_VISIBILITY_TEST) {
+        return mExtVisibilityTest;
+    }
 
     return pddiBaseContext::GetExtension(extension);
 }
@@ -1413,10 +1366,9 @@ pddiExtension *gcContext::GetExtension(unsigned extension)
 // Class gcContext
 // Verify Extension
 //
-bool gcContext::VerifyExtension(unsigned extension)
-{
-    if (extension == PDDI_EXT_HARDWARE_SKINNING)   return true;
-    if (extension == PDDI_EXT_BUFCOPY)             return true;
+bool gcContext::VerifyExtension(unsigned extension) {
+    if (extension == PDDI_EXT_HARDWARE_SKINNING) return true;
+    if (extension == PDDI_EXT_BUFCOPY) return true;
     if (extension == PDDI_EXT_FRAMEBUFFER_EFFECTS) return true;
 
     return pddiBaseContext::VerifyExtension(extension);

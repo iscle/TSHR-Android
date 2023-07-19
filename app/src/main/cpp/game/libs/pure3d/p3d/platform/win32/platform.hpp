@@ -15,66 +15,77 @@
 static const int P3D_MAX_CONTEXTS = 4;
 
 class tContext;
+
 class tFile;
+
 class tPolySkinLoader;
+
 class tTask;
 
-class tContextInitData : public pddiDisplayInit
-{
+class tContextInitData : public pddiDisplayInit {
 public:
-    void*             hwnd;          // window handle
-    unsigned          adapterID;     // display to use
-    char              PDDIlib[128];  // PDDI library path
+    void *hwnd;          // window handle
+    unsigned adapterID;     // display to use
+    char PDDIlib[128];  // PDDI library path
 
     tContextInitData();
 };
 
-class tPlatformContext
-{
+class tPlatformContext {
 public :
-    tContext* context;
-    void* windowHandle;
-    void* pddiLib;
+    tContext *context;
+    void *windowHandle;
+    void *pddiLib;
 
-    tPlatformContext() { context = 0; windowHandle = 0; pddiLib = 0; }
+    tPlatformContext() {
+        context = 0;
+        windowHandle = 0;
+        pddiLib = 0;
+    }
 };
 
-class tPlatform
-{
+class tPlatform {
 public:
     // platform creation/destruction
-    static tPlatform* Create(void* instance);
-    static void Destroy(tPlatform*); 
-    static tPlatform* GetPlatform(void);
+    static tPlatform *Create(void *instance);
+
+    static void Destroy(tPlatform *);
+
+    static tPlatform *GetPlatform(void);
 
     // context creation/destruction
-    tContext* CreateContext(tContextInitData*);
-    void DestroyContext(tContext*);
+    tContext *CreateContext(tContextInitData *);
+
+    void DestroyContext(tContext *);
 
     // active context control
-    void SetActiveContext(tContext*);
-    tContext* GetActiveContext(void)  { return currentContext; }
+    void SetActiveContext(tContext *);
+
+    tContext *GetActiveContext(void) { return currentContext; }
 
     // Platform specific funtions
-    bool ProcessWindowsMessage(void* win, unsigned msg, unsigned wparam, int lparam);
+    bool ProcessWindowsMessage(void *win, unsigned msg, unsigned wparam, int lparam);
 
     // Time
     P3D_U64 GetTimeFreq(void);
+
     P3D_U64 GetTime(void);
 
 private:
     // files
-    tFile* OpenFile(const char* filename);
+    tFile *OpenFile(const char *filename);
 
 private:
-    tPlatform(void* instance);
+    tPlatform(void *instance);
+
     ~tPlatform();
 
-    static tPlatform* InternalCreate(void* instance);
-    static tPlatform* currentPlatform;
+    static tPlatform *InternalCreate(void *instance);
 
-    void* instance;
-    tContext* currentContext;
+    static tPlatform *currentPlatform;
+
+    void *instance;
+    tContext *currentContext;
 
     int nContexts;
     tPlatformContext contexts[P3D_MAX_CONTEXTS];

@@ -10,16 +10,17 @@
 #include <p3d/loadmanager.hpp>
 
 //-------------------------------------------------------------------
-class tMemorySection : public tEntity
-{
-  public:
+class tMemorySection : public tEntity {
+public:
     tMemorySection(void);
-   ~tMemorySection();
 
-    unsigned MemoryUsed(void)    { return mMemoryUsed; }
-    unsigned Allocations(void)   { return mAllocations; }
+    ~tMemorySection();
 
-  protected:
+    unsigned MemoryUsed(void) { return mMemoryUsed; }
+
+    unsigned Allocations(void) { return mAllocations; }
+
+protected:
 
     unsigned mMemoryUsed;
     unsigned mAllocations;
@@ -34,16 +35,15 @@ class tMemorySection : public tEntity
 
 
 //-------------------------------------------------------------------
-class tMemorySectionLoader : public tSimpleChunkHandler
-{
+class tMemorySectionLoader : public tSimpleChunkHandler {
 public:
     tMemorySectionLoader();
 
 protected:
     ~tMemorySectionLoader() {}
-    tEntity* LoadObject(tChunkFile*, tEntityStore*);
-};
 
+    tEntity *LoadObject(tChunkFile *, tEntityStore *);
+};
 
 
 #endif //MEMORYSECTION_HPP

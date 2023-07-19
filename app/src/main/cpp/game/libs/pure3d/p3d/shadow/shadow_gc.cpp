@@ -98,8 +98,8 @@ void tShadowGeneratorImpl::End()
     height = (float)p3d::display->GetHeight();
 
     //Simpsons HAHAHAHAHAHAHACK
-    ((gcTexture*)shadowColourBuffer)->SetHeight( height );
-    ((gcTexture*)shadowColourBuffer)->SetWidth( width );
+    ((gcTexture*)shadowColourBuffer)->SetHeight(height);
+    ((gcTexture*)shadowColourBuffer)->SetWidth(width);
 
     bufferCopier->CopyAlphaBuf(shadowColourBuffer, false, 8, 8);
     pddi->SetColourWrite(true, true, true, true); // enable writes to colour buffer

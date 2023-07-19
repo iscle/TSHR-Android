@@ -35,7 +35,7 @@
     static const tColour s_VolumeColour(255,0,0,0);
 #endif
 #else
-    static const tColour s_VolumeColour(0x8,0x8,0x8,0 );
+    static const tColour s_VolumeColour(0x8,0x8,0x8,0);
 #endif
 
 #define BUFFER_RENDER_SHADOW
@@ -98,19 +98,19 @@ enum ShadowVolPass
 static inline void SetupPass(ShadowVolPass pass, tShader* shader)
 {
 #ifdef RAD_PS2
-    p3d::pddi->SetCullMode( (pass == PASS_FRONT) ? PDDI_CULL_SHADOW_BACKFACE : PDDI_CULL_SHADOW_FRONTFACE );
-    shader->SetInt( PDDI_SP_BLENDMODE, (pass == PASS_FRONT) ? PDDI_BLEND_ADD : PDDI_BLEND_SUBTRACT);
+    p3d::pddi->SetCullMode((pass == PASS_FRONT) ? PDDI_CULL_SHADOW_BACKFACE : PDDI_CULL_SHADOW_FRONTFACE);
+    shader->SetInt(PDDI_SP_BLENDMODE, (pass == PASS_FRONT) ? PDDI_BLEND_ADD : PDDI_BLEND_SUBTRACT);
 
 #elif defined RAD_GAMECUBE
     
-    p3d::pddi->SetCullMode( (pass == PASS_FRONT) ? PDDI_CULL_NORMAL : PDDI_CULL_INVERTED );
-    shader->SetInt( PDDI_SP_BLENDMODE, (pass == PASS_FRONT) ? PDDI_BLEND_ADD : PDDI_BLEND_SUBTRACT);
+    p3d::pddi->SetCullMode((pass == PASS_FRONT) ? PDDI_CULL_NORMAL : PDDI_CULL_INVERTED);
+    shader->SetInt(PDDI_SP_BLENDMODE, (pass == PASS_FRONT) ? PDDI_BLEND_ADD : PDDI_BLEND_SUBTRACT);
 
 #else
     #ifdef CARMACK_REVERSE
     p3d::pddi->SetCullMode((pass == PASS_FRONT) ? PDDI_CULL_INVERTED :  PDDI_CULL_NORMAL);
     #else
-    p3d::pddi->SetCullMode((pass == PASS_FRONT) ? PDDI_CULL_NORMAL : PDDI_CULL_INVERTED );
+    p3d::pddi->SetCullMode((pass == PASS_FRONT) ? PDDI_CULL_NORMAL : PDDI_CULL_INVERTED);
     #endif
 
     p3d::pddi->SetStencilOp(PDDI_STENCIL_KEEP, PDDI_STENCIL_KEEP, (pass == PASS_FRONT) ? PDDI_STENCIL_INCR : PDDI_STENCIL_DECR);
@@ -144,9 +144,9 @@ tShadowMeshImpl::tShadowMeshImpl() :
     volumeLength(0.0f),
     setVolumeLength(0.0f)
 {
-    if( !staticShadowBuffer )
+    if(!staticShadowBuffer)
     {
-        CreateShadowBuffer( );
+        CreateShadowBuffer();
     }
     tRefCounted::Assign(shadowBuffer,staticShadowBuffer);
 }
@@ -163,20 +163,20 @@ tShadowMeshImpl::~tShadowMeshImpl()
 
 void tShadowMeshImpl::CreateShadowBuffer()
 {
-    if( !staticShadowBuffer )
+    if(!staticShadowBuffer)
     {
-        staticShadowBuffer = new tPrimGroupOptimised( MAX_SHADOW_BUFFER );
-        staticShadowBuffer->AddRef( );
+        staticShadowBuffer = new tPrimGroupOptimised(MAX_SHADOW_BUFFER);
+        staticShadowBuffer->AddRef();
 
-        pddiPrimBufferDesc desc( PDDI_PRIM_TRIANGLES, PDDI_V_C, MAX_SHADOW_BUFFER, 0 );
-        desc.SetMatrixCount( 0 );
+        pddiPrimBufferDesc desc(PDDI_PRIM_TRIANGLES, PDDI_V_C, MAX_SHADOW_BUFFER, 0);
+        desc.SetMatrixCount(0);
         pddiPrimBuffer *primBuffer  = p3d::device->NewPrimBuffer(&desc);
 
-        staticShadowBuffer->SetBuffer( primBuffer );
+        staticShadowBuffer->SetBuffer(primBuffer);
     }
 }
 
-void tShadowMeshImpl::ReleaseShadowBuffer( )
+void tShadowMeshImpl::ReleaseShadowBuffer()
 {
     tRefCounted::Release(staticShadowBuffer);
 }
@@ -243,7 +243,7 @@ void tShadowMeshImpl::UpdateEdges()
     {
         for(i=0;i<numTriangles;i++)
         {
-            triCulled[i] = (normals[i].DotProduct(light) < 0);
+            triCulled[i] = (normals[i].DotProduct(light) <0);
         }
     }
     else
@@ -253,7 +253,7 @@ void tShadowMeshImpl::UpdateEdges()
         {
             Vector cull;
             cull.Sub(pos, vertices[topology[i].v0]);
-            triCulled[i] = (normals[i].DotProduct(cull) > 0);
+            triCulled[i] = (normals[i].DotProduct(cull)> 0);
         }
     }
 
@@ -264,7 +264,7 @@ void tShadowMeshImpl::UpdateEdges()
     {
         if(!triCulled[i])
         {
-            P3DASSERT(s_NumDrawCapPolys < MAX_CAP_POLYS);
+            P3DASSERT(s_NumDrawCapPolys <MAX_CAP_POLYS);
             s_DrawCapPolys[s_NumDrawCapPolys].a = topology[i].v0;
             s_DrawCapPolys[s_NumDrawCapPolys].b = topology[i].v1;
             s_DrawCapPolys[s_NumDrawCapPolys].c = topology[i].v2;
@@ -274,7 +274,7 @@ void tShadowMeshImpl::UpdateEdges()
             if((topology[i].n0 == (unsigned short)-1) ||
                (triCulled[topology[i].n0]))
             {
-                P3DASSERT(s_NumDrawEdges < MAX_EDGES);
+                P3DASSERT(s_NumDrawEdges <MAX_EDGES);
                 s_DrawEdges[s_NumDrawEdges].b = topology[i].v0;
                 s_DrawEdges[s_NumDrawEdges].a = topology[i].v1;
                 s_NumDrawEdges++;
@@ -282,7 +282,7 @@ void tShadowMeshImpl::UpdateEdges()
             if((topology[i].n1 == (unsigned short)-1) ||
                (triCulled[topology[i].n1]))
             {
-                P3DASSERT(s_NumDrawEdges < MAX_EDGES);
+                P3DASSERT(s_NumDrawEdges <MAX_EDGES);
                 s_DrawEdges[s_NumDrawEdges].b = topology[i].v1;
                 s_DrawEdges[s_NumDrawEdges].a = topology[i].v2;
                 s_NumDrawEdges++;
@@ -290,7 +290,7 @@ void tShadowMeshImpl::UpdateEdges()
             if((topology[i].n2 == (unsigned short)-1) ||
                (triCulled[topology[i].n2]))
             {
-                P3DASSERT(s_NumDrawEdges < MAX_EDGES);
+                P3DASSERT(s_NumDrawEdges <MAX_EDGES);
                 s_DrawEdges[s_NumDrawEdges].b = topology[i].v2;
                 s_DrawEdges[s_NumDrawEdges].a = topology[i].v0;
                 s_NumDrawEdges++;
@@ -400,7 +400,7 @@ void tShadowMeshImpl::DrawShadowVolume()
     //so we wouldn't have to send this data over the bus many times.
     tShadowGeneratorImplCommon::GetCurVolumeShader()->SetColour(PDDI_SP_DIFFUSE, s_VolumeColour);
 
-    shadowBuffer->SetShader( tShadowGeneratorImplCommon::GetCurVolumeShader( ) );
+    shadowBuffer->SetShader(tShadowGeneratorImplCommon::GetCurVolumeShader());
   
     Vector s;
     if(!isPointLight)
@@ -412,12 +412,12 @@ void tShadowMeshImpl::DrawShadowVolume()
         int passes = s_NumDrawEdges/MAX_EDGE_IN_BUFFER;
         int remains = s_NumDrawEdges%MAX_EDGE_IN_BUFFER;
 
-        for( j = 0; j < passes; ++j ){
+        for(j = 0; j <passes; ++j){
 
             int start = j * MAX_EDGE_IN_BUFFER;
-            stream = shadowBuffer->GetBuffer( )->Lock( );
+            stream = shadowBuffer->GetBuffer()->Lock();
 
-            for( i = start; i < start + MAX_EDGE_IN_BUFFER; ++i ){
+            for(i = start; i <start + MAX_EDGE_IN_BUFFER; ++i){
 
                 Vector& va = vertices[s_DrawEdges[i].a];
                 Vector& vb = vertices[s_DrawEdges[i].b];
@@ -439,20 +439,20 @@ void tShadowMeshImpl::DrawShadowVolume()
                 stream->Vertex(&c, s_VolumeColour);
                 stream->Vertex(&d, s_VolumeColour);
             }
-            shadowBuffer->GetBuffer( )->Unlock(  stream );
+            shadowBuffer->GetBuffer()->Unlock(stream);
 
             SetupPass(PASS_FRONT, tShadowGeneratorImplCommon::GetCurVolumeShader());
-            shadowBuffer->Display( );
+            shadowBuffer->Display();
             SetupPass(PASS_BACK, tShadowGeneratorImplCommon::GetCurVolumeShader());
-            shadowBuffer->Display( );
+            shadowBuffer->Display();
         }
 
-        if( remains > 0 ){
+        if(remains> 0){
         //no draw the remaining edges
             start = passes * MAX_EDGE_IN_BUFFER;
 
-            stream = shadowBuffer->GetBuffer( )->Lock( );
-            for( i = start; i < start + remains; ++i ){
+            stream = shadowBuffer->GetBuffer()->Lock();
+            for(i = start; i <start + remains; ++i){
                 Vector& va = vertices[s_DrawEdges[i].a];
                 Vector& vb = vertices[s_DrawEdges[i].b];
 
@@ -473,17 +473,17 @@ void tShadowMeshImpl::DrawShadowVolume()
                 stream->Vertex(&c, s_VolumeColour);
                 stream->Vertex(&d, s_VolumeColour);
             }
-            shadowBuffer->GetBuffer( )->Unlock( stream );
+            shadowBuffer->GetBuffer()->Unlock(stream);
 
-            shadowBuffer->GetBuffer( )->SetUsedSize( remains * 6 );
+            shadowBuffer->GetBuffer()->SetUsedSize(remains * 6);
 
             SetupPass(PASS_FRONT, tShadowGeneratorImplCommon::GetCurVolumeShader());
-            shadowBuffer->Display( );
+            shadowBuffer->Display();
             SetupPass(PASS_BACK, tShadowGeneratorImplCommon::GetCurVolumeShader());
-            shadowBuffer->Display( );
+            shadowBuffer->Display();
 
             //reset the used size to the maximum
-            shadowBuffer->GetBuffer( )->SetUsedSize( 0 );
+            shadowBuffer->GetBuffer()->SetUsedSize(0);
         }
     }
     else
@@ -494,12 +494,12 @@ void tShadowMeshImpl::DrawShadowVolume()
         int passes = s_NumDrawEdges/MAX_EDGE_IN_BUFFER;
         int remains = s_NumDrawEdges%MAX_EDGE_IN_BUFFER;
 
-        for( j = 0; j < passes; ++j ){
+        for(j = 0; j <passes; ++j){
 
             int start = j * MAX_EDGE_IN_BUFFER;
-            stream = shadowBuffer->GetBuffer( )->Lock( );
+            stream = shadowBuffer->GetBuffer()->Lock();
 
-            for( i = start; i < start + MAX_EDGE_IN_BUFFER; ++i ){
+            for(i = start; i <start + MAX_EDGE_IN_BUFFER; ++i){
                 Vector& va = vertices[s_DrawEdges[i].a];
                 Vector& vb = vertices[s_DrawEdges[i].b];
 
@@ -525,21 +525,21 @@ void tShadowMeshImpl::DrawShadowVolume()
                 stream->Vertex(&c, s_VolumeColour);
                 stream->Vertex(&d, s_VolumeColour);
             }
-            shadowBuffer->GetBuffer( )->Unlock( stream );
+            shadowBuffer->GetBuffer()->Unlock(stream);
             
 
             SetupPass(PASS_FRONT, tShadowGeneratorImplCommon::GetCurVolumeShader());
-            shadowBuffer->Display( );
+            shadowBuffer->Display();
             SetupPass(PASS_BACK, tShadowGeneratorImplCommon::GetCurVolumeShader());
-            shadowBuffer->Display( );
+            shadowBuffer->Display();
         }
 
-        if( remains > 0 ){
+        if(remains> 0){
         //no draw the remaining edges
             start = passes * MAX_EDGE_IN_BUFFER;
 
-            stream = shadowBuffer->GetBuffer( )->Lock( );
-            for( i = start; i < start + remains; ++i ){
+            stream = shadowBuffer->GetBuffer()->Lock();
+            for(i = start; i <start + remains; ++i){
                 Vector& va = vertices[s_DrawEdges[i].a];
                 Vector& vb = vertices[s_DrawEdges[i].b];
 
@@ -565,17 +565,17 @@ void tShadowMeshImpl::DrawShadowVolume()
                 stream->Vertex(&c, s_VolumeColour);
                 stream->Vertex(&d, s_VolumeColour);
             }
-            shadowBuffer->GetBuffer( )->Unlock( stream );
+            shadowBuffer->GetBuffer()->Unlock(stream);
 
-            shadowBuffer->GetBuffer( )->SetUsedSize( remains * 6 );
+            shadowBuffer->GetBuffer()->SetUsedSize(remains * 6);
            //draw current buffer
             SetupPass(PASS_FRONT, tShadowGeneratorImplCommon::GetCurVolumeShader());
-            shadowBuffer->Display( );
+            shadowBuffer->Display();
             SetupPass(PASS_BACK, tShadowGeneratorImplCommon::GetCurVolumeShader());
-            shadowBuffer->Display( );
+            shadowBuffer->Display();
 
             //reset the used size to the maximum
-            shadowBuffer->GetBuffer( )->SetUsedSize( 0 );
+            shadowBuffer->GetBuffer()->SetUsedSize(0);
         }
  
     }
@@ -661,7 +661,7 @@ void tShadowMeshImpl::DrawNormals(void)
     pddiPrimStream* stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINES, PDDI_V_C, 2 * numTriangles);
     tColour white(255,255,255,255);
     
-    for(unsigned i = 0; i < numTriangles; i++)
+    for(unsigned i = 0; i <numTriangles; i++)
     {
         rmt::Vector centre;
         centre.Interpolate(vertices[topology[i].v0], vertices[topology[i].v1], 0.5f);
@@ -685,7 +685,7 @@ void tShadowMeshImpl::DrawShell(void)
     pddiPrimStream* stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_TRIANGLES, PDDI_V_C, 3 * numTriangles);
     tColour blue(0,0,255,255);
     
-    for(unsigned i = 0; i < numTriangles; i++)
+    for(unsigned i = 0; i <numTriangles; i++)
     {
         stream->Colour(blue);
         stream->Coord(vertices[topology[i].v0].x, vertices[topology[i].v0].y, vertices[topology[i].v0].z);
@@ -739,7 +739,7 @@ void tShadowMeshImpl::GuessVolumeLength(void)
 
     unsigned i;
 
-    for(i = 1; i < 100; ++i)
+    for(i = 1; i <100; ++i)
     {
         tmpSphere.centre.Add(cameraLight);
         if(!camera->SphereVisibleCamera(tmpSphere.centre, tmpSphere.radius))
@@ -811,8 +811,8 @@ void tShadowSkinImpl::Display(tPose* p)
     // The skin vertices are stored in rest-pose relative world space.
     // The below matrix will transform from this space, into bone-local
     // space where the animation is applied, and then back into camera space.
-    unsigned numJoints = rmt::Min( skeleton->GetNumJoint(), p->GetNumJoint() );
-    for(i = 0; i < numJoints; ++i)
+    unsigned numJoints = rmt::Min(skeleton->GetNumJoint(), p->GetNumJoint());
+    for(i = 0; i <numJoints; ++i)
     {
         Matrix tmp;
 
@@ -823,9 +823,9 @@ void tShadowSkinImpl::Display(tPose* p)
 #endif
         if(!poseChanged)
         {
-            for(unsigned j = 0; j < 4; j++)
+            for(unsigned j = 0; j <4; j++)
             {
-                for(unsigned k = 0; k < 4; k++)
+                for(unsigned k = 0; k <4; k++)
                 {
                     if(boneMatrix[i].m[j][k] != tmp.m[j][k])
                     {
@@ -929,20 +929,20 @@ poseHasChanged: ;
         }
     }
 
-    GuessVolumeLength( p );
+    GuessVolumeLength(p);
     tShadowMeshImpl::Display();
 }
 
-void tShadowSkinImpl::GuessVolumeLength( tPose* Pose )
+void tShadowSkinImpl::GuessVolumeLength(tPose* Pose)
 {
     // if someone has set a volume length, use it
-    if( setVolumeLength != 0.0f )
+    if(setVolumeLength != 0.0f)
     {
         volumeLength = setVolumeLength;
         return;
     }
     // The length has been precalculated somewhere else.
-    if( ( volumeLength != 0.0f ) || ( Pose == 0 ) )
+    if((volumeLength != 0.0f) || (Pose == 0))
     {
         return;
     }
@@ -952,8 +952,8 @@ void tShadowSkinImpl::GuessVolumeLength( tPose* Pose )
     tCamera* camera = p3d::context->GetView()->GetCamera();
     Vector cameraLight;
     Sphere tmpSphere = boundingSphere;
-    const rmt::Vector& worldPos = Pose->GetJoint( 0 )->worldMatrix.Row( 3 );
-    tmpSphere.centre.Add( worldPos );
+    const rmt::Vector& worldPos = Pose->GetJoint(0)->worldMatrix.Row(3);
+    tmpSphere.centre.Add(worldPos);
     camera->WorldToCamera(tmpSphere.centre, &tmpSphere.centre);
 
     if(!isPointLight)
@@ -971,7 +971,7 @@ void tShadowSkinImpl::GuessVolumeLength( tPose* Pose )
 
     unsigned i;
 
-    for(i = 1; i < 100; ++i)
+    for(i = 1; i <100; ++i)
     {
         tmpSphere.centre.Add(cameraLight);
         if(!camera->SphereVisibleCamera(tmpSphere.centre, tmpSphere.radius))
@@ -1132,8 +1132,8 @@ tEntity* tShadowSkinLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     shadow->numVertices = numVertices;
 
     // Temp buffer for holding vertex information.
-    tShadowSkinImpl::VertexThree* sourceVertexThree = (tShadowSkinImpl::VertexThree*)p3d::MallocTemp(sizeof(tShadowSkinImpl::VertexThree) * numVertices );
-    P3DASSERT( sourceVertexThree );
+    tShadowSkinImpl::VertexThree* sourceVertexThree = (tShadowSkinImpl::VertexThree*)p3d::MallocTemp(sizeof(tShadowSkinImpl::VertexThree) * numVertices);
+    P3DASSERT(sourceVertexThree);
 
     //Preallocate the static shadow data
     shadow->topology = new tShadowSkinImpl::Topology[numTriangles];
@@ -1231,15 +1231,15 @@ tEntity* tShadowSkinLoader::LoadObject(tChunkFile* f, tEntityStore* store)
         f->EndChunk();
     }
 
-    for( i = 0; i < numVertices; ++i )
+    for(i = 0; i <numVertices; ++i)
     {
-        tShadowSkinImpl::VertexThree* pSource = &( sourceVertexThree[ i ] );
-        if( 0 == pSource->weights[ 2 ] && 0 == pSource->weights[ 1 ] )
+        tShadowSkinImpl::VertexThree* pSource = &(sourceVertexThree[ i ]);
+        if(0 == pSource->weights[ 2 ] && 0 == pSource->weights[ 1 ])
         {
             // One bone.
             ++(shadow->numVertexOne);
         }
-        else if( 0 == pSource->weights[ 2 ] )
+        else if(0 == pSource->weights[ 2 ])
         {
             ++(shadow->numVertexTwo);
         }
@@ -1288,7 +1288,7 @@ tEntity* tShadowSkinLoader::LoadObject(tChunkFile* f, tEntityStore* store)
         else
         {
             //three bones
-            tShadowSkinImpl::VertexThree* pDest = &( shadow->sourceVertexThree[ vertexThreeIndex ] );
+            tShadowSkinImpl::VertexThree* pDest = &(shadow->sourceVertexThree[ vertexThreeIndex ]);
             pDest->position = source->position;
             pDest->vertexIndex = i;
             pDest->matrixIndex[ 0 ] = source->matrixIndex[ 0 ];
@@ -1301,9 +1301,9 @@ tEntity* tShadowSkinLoader::LoadObject(tChunkFile* f, tEntityStore* store)
         }
     }
 
-    P3DASSERT( (unsigned)vertexOneIndex == shadow->numVertexOne );
-    P3DASSERT( (unsigned)vertexTwoIndex == shadow->numVertexTwo );
-    P3DASSERT( (unsigned)vertexThreeIndex == shadow->numVertexThree );
+    P3DASSERT((unsigned)vertexOneIndex == shadow->numVertexOne);
+    P3DASSERT((unsigned)vertexTwoIndex == shadow->numVertexTwo);
+    P3DASSERT((unsigned)vertexThreeIndex == shadow->numVertexThree);
 
     p3d::FreeTemp(sourceVertexThree);
 

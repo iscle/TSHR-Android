@@ -19,28 +19,32 @@ class tBaseParticle;
 //
 //      Each particle pool consists of x number of evenly divided sub pools
 //*****************************************************************************
-class tParticlePool : public tRefCounted
-{
+class tParticlePool : public tRefCounted {
 public:
     tParticlePool(unsigned particleType, unsigned int numParticles, unsigned int numSubPools);
- 
-    unsigned GetParticleType()          { return particleType; }
-    int GetNumSubPools()                { return numSubPools; }
-    int GetNumAvailableSubPools()       { return numAvailableSubPools; }
-    int GetNumParticlesPerSubPool()     { return numParticlesPerSubPool; }
 
-    bool RequestParticle( tBaseParticle** newParticle, short* newParticleIndex );
-    void ReleaseParticle( short particleIndex );
+    unsigned GetParticleType() { return particleType; }
+
+    int GetNumSubPools() { return numSubPools; }
+
+    int GetNumAvailableSubPools() { return numAvailableSubPools; }
+
+    int GetNumParticlesPerSubPool() { return numParticlesPerSubPool; }
+
+    bool RequestParticle(tBaseParticle **newParticle, short *newParticleIndex);
+
+    void ReleaseParticle(short particleIndex);
 
 protected:
     tParticlePool();
+
     virtual ~tParticlePool();
 
-    unsigned        particleType;
-    int             numSubPools;
-    int             numAvailableSubPools;
-    int             numParticlesPerSubPool;
+    unsigned particleType;
+    int numSubPools;
+    int numAvailableSubPools;
+    int numParticlesPerSubPool;
 
 };
-  
+
 #endif

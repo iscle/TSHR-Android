@@ -15,21 +15,18 @@
 
 //------------------------------------------------------------------------------
 gcExtBufferCopy::gcExtBufferCopy(gcContext *c, gcDevice *d) :
-    mContext(c),
-    mDevice(d)
-{
+        mContext(c),
+        mDevice(d) {
 }
 
 
 //------------------------------------------------------------------------------
-gcExtBufferCopy::~gcExtBufferCopy()
-{
+gcExtBufferCopy::~gcExtBufferCopy() {
     ;
 }
 
 //------------------------------------------------------------------------------
-pddiTexture *gcExtBufferCopy::CreateZTexture(int xres, int yres, int bpp)
-{
+pddiTexture *gcExtBufferCopy::CreateZTexture(int xres, int yres, int bpp) {
     pddiTextureDesc desc;
     desc.SetSizeX(xres);
     desc.SetSizeY(yres);
@@ -37,7 +34,7 @@ pddiTexture *gcExtBufferCopy::CreateZTexture(int xres, int yres, int bpp)
     desc.SetAlphaDepth(0);
     desc.SetType(PDDI_TEXTYPE_Z);
 
-    gcTexture *tex = (gcTexture *)mDevice->NewTexture(&desc);
+    gcTexture *tex = (gcTexture *) mDevice->NewTexture(&desc);
     if (tex == NULL) return NULL;
 
     tex->SetSwizzleEnable(false);
@@ -50,14 +47,12 @@ pddiTexture *gcExtBufferCopy::CreateZTexture(int xres, int yres, int bpp)
 
 
 //------------------------------------------------------------------------------
-pddiTexture *gcExtBufferCopy::CreateBackTexture(int xres, int yres, int bpp, bool alpha)
-{
+pddiTexture *gcExtBufferCopy::CreateBackTexture(int xres, int yres, int bpp, bool alpha) {
 
     int alphadepth = 0;
-    if (alpha) 
-    {
+    if (alpha) {
         if (bpp == 32) alphadepth = 8;
-        else           alphadepth = 1;
+        else alphadepth = 1;
     }
 
     pddiTextureDesc desc;
@@ -68,7 +63,7 @@ pddiTexture *gcExtBufferCopy::CreateBackTexture(int xres, int yres, int bpp, boo
     desc.SetType(PDDI_TEXTYPE_RGB);
 
 
-    gcTexture *tex = (gcTexture *)mDevice->NewTexture(&desc);
+    gcTexture *tex = (gcTexture *) mDevice->NewTexture(&desc);
     if (tex == NULL) return NULL;
 
     tex->SetSwizzleEnable(false);
@@ -81,8 +76,7 @@ pddiTexture *gcExtBufferCopy::CreateBackTexture(int xres, int yres, int bpp, boo
 
 
 //------------------------------------------------------------------------------
-pddiTexture *gcExtBufferCopy::CreateAlphaTexture(int xres, int yres, int bpp)
-{
+pddiTexture *gcExtBufferCopy::CreateAlphaTexture(int xres, int yres, int bpp) {
 
     pddiTextureDesc desc;
     desc.SetSizeX(xres);
@@ -92,7 +86,7 @@ pddiTexture *gcExtBufferCopy::CreateAlphaTexture(int xres, int yres, int bpp)
     desc.SetType(PDDI_TEXTYPE_LUMINANCE);
 
 
-    gcTexture *tex = (gcTexture *)mDevice->NewTexture(&desc);
+    gcTexture *tex = (gcTexture *) mDevice->NewTexture(&desc);
     if (tex == NULL) return NULL;
 
     tex->SetSwizzleEnable(false);
@@ -104,12 +98,8 @@ pddiTexture *gcExtBufferCopy::CreateAlphaTexture(int xres, int yres, int bpp)
 }
 
 
-
-
-
 //------------------------------------------------------------------------------
-bool gcExtBufferCopy::CopyZBuf(pddiTexture *t, bool clear)
-{
+bool gcExtBufferCopy::CopyZBuf(pddiTexture *t, bool clear) {
     //-------------------------------------------
     //  Copy the depth map into Texture
     //-------------------------------------------
@@ -123,8 +113,7 @@ bool gcExtBufferCopy::CopyZBuf(pddiTexture *t, bool clear)
 
     // Copy shadow image into texture
     GXSetTexCopySrc(0, 0, xres, yres);
-    switch (tex->GetDepth())
-    {
+    switch (tex->GetDepth()) {
         case 24:
             GXSetTexCopyDst(xres, yres, GX_TF_Z24X8, false);
             break;
@@ -132,7 +121,7 @@ bool gcExtBufferCopy::CopyZBuf(pddiTexture *t, bool clear)
         case 16:
             GXSetTexCopyDst(xres, yres, GX_TF_Z16, false);
             break;
-        
+
         case 8:
             GXSetTexCopyDst(xres, yres, GX_TF_Z8, false);
             break;
@@ -146,7 +135,7 @@ bool gcExtBufferCopy::CopyZBuf(pddiTexture *t, bool clear)
 
     // Wait for finishing the copy task in the graphics pipeline
     GXPixModeSync();
-    
+
     // So the texture cache doesn't screw the new texture
     GXInvalidateTexAll();
 
@@ -156,8 +145,7 @@ bool gcExtBufferCopy::CopyZBuf(pddiTexture *t, bool clear)
 }
 
 //------------------------------------------------------------------------------
-bool gcExtBufferCopy::CopyBackBuf(pddiTexture *t, bool clear, bool halfsize)
-{
+bool gcExtBufferCopy::CopyBackBuf(pddiTexture *t, bool clear, bool halfsize) {
     //-------------------------------------------
     //  Copy the back buffer into Texture
     //-------------------------------------------
@@ -180,7 +168,7 @@ bool gcExtBufferCopy::CopyBackBuf(pddiTexture *t, bool clear, bool halfsize)
 
     // Wait for finishing the copy task in the graphics pipeline
     GXPixModeSync();
-    
+
     // So the texture cache doesn't screw the new texture
     GXInvalidateTexAll();
 
@@ -190,12 +178,10 @@ bool gcExtBufferCopy::CopyBackBuf(pddiTexture *t, bool clear, bool halfsize)
 }
 
 
-
-bool gcExtBufferCopy::CopyAlphaBuf(pddiTexture *t, bool clear, int bpp, int alphadepth)
-{
-    if (bpp > 8)          return false;
+bool gcExtBufferCopy::CopyAlphaBuf(pddiTexture *t, bool clear, int bpp, int alphadepth) {
+    if (bpp > 8) return false;
     if (alphadepth > bpp) return false;
-    if (alphadepth == 0)  return false;
+    if (alphadepth == 0) return false;
 
     //-------------------------------------------
     //  Copy the back buffer into Texture
@@ -220,7 +206,7 @@ bool gcExtBufferCopy::CopyAlphaBuf(pddiTexture *t, bool clear, int bpp, int alph
 
     // Wait for finishing the copy task in the graphics pipeline
     GXPixModeSync();
-    
+
     // So the texture cache doesn't screw the new texture
     GXInvalidateTexAll();
 

@@ -47,37 +47,33 @@ winTimer setVerticesTimer;
 
 //-------------------------------------------------------------------
 tVertexOffsetExpressionMixer::tVertexOffsetExpressionMixer() :
-    tExpressionMixer(),
-    m_nPrimGroups(0),
-    m_nVertices(NULL),
-    m_pVtxOffsets(NULL),
-    m_pDrawable(NULL),
-    m_pOffsetArray(NULL),
-    m_nMaxNumStages(0),
-    m_uTotalNumOffsets(0),
-    m_pResultOffsets(NULL),
-    m_diagnose(true),
-    m_ExpressionCalcCashSize(0),
-    m_ExpressionCalcCash(NULL)
-{
+        tExpressionMixer(),
+        m_nPrimGroups(0),
+        m_nVertices(NULL),
+        m_pVtxOffsets(NULL),
+        m_pDrawable(NULL),
+        m_pOffsetArray(NULL),
+        m_nMaxNumStages(0),
+        m_uTotalNumOffsets(0),
+        m_pResultOffsets(NULL),
+        m_diagnose(true),
+        m_ExpressionCalcCashSize(0),
+        m_ExpressionCalcCash(NULL) {
     //
 }
 
-tVertexOffsetExpressionMixer::~tVertexOffsetExpressionMixer()
-{
+tVertexOffsetExpressionMixer::~tVertexOffsetExpressionMixer() {
 
     int i;
-    for(i = 0; i < m_nPrimGroups; i++)
-    {
-        if(m_pVtxOffsets[i]) delete[] m_pVtxOffsets[i];
+    for (i = 0; i < m_nPrimGroups; i++) {
+        if (m_pVtxOffsets[i]) delete[] m_pVtxOffsets[i];
     }
 
     delete[] m_pVtxOffsets;
     m_pVtxOffsets = NULL;
 
-    for(i = 0; i < m_nPrimGroups; i++)
-    {
-        if(m_pResultOffsets[i]) delete[] m_pResultOffsets[i];
+    for (i = 0; i < m_nPrimGroups; i++) {
+        if (m_pResultOffsets[i]) delete[] m_pResultOffsets[i];
     }
 
     delete[] m_pResultOffsets;
@@ -94,17 +90,14 @@ tVertexOffsetExpressionMixer::~tVertexOffsetExpressionMixer()
 }
 
 
-bool tVertexOffsetExpressionMixer::ValidateExpressionGroup(tExpressionGroup* eg)
-{
+bool tVertexOffsetExpressionMixer::ValidateExpressionGroup(tExpressionGroup *eg) {
     int nExpr = eg->GetNumExpression();
 
     // just check to make sure all expressions are in fact tExpressions
-    for (int i = 0; i < nExpr; i++)
-    {
-        tExpression* expr = eg->GetExpression(i);
+    for (int i = 0; i < nExpr; i++) {
+        tExpression *expr = eg->GetExpression(i);
 
-        if(expr == NULL)
-        {
+        if (expr == NULL) {
             return false;
         }
     }
@@ -112,9 +105,8 @@ bool tVertexOffsetExpressionMixer::ValidateExpressionGroup(tExpressionGroup* eg)
     return true;
 }
 
-void tVertexOffsetExpressionMixer::SetExpressionGroup(tExpressionGroup* eg)
-{
-    
+void tVertexOffsetExpressionMixer::SetExpressionGroup(tExpressionGroup *eg) {
+
     tExpressionMixer::SetExpressionGroup(eg);
 
     delete[] m_ExpressionCalcCash;
@@ -122,11 +114,9 @@ void tVertexOffsetExpressionMixer::SetExpressionGroup(tExpressionGroup* eg)
     m_ExpressionCalcCash = new ExpressionCalcCash[m_ExpressionCalcCashSize];
 }
 
-bool tVertexOffsetExpressionMixer::ValidateTarget(tEntity* e)
-{
-    tDrawable* target = dynamic_cast<tDrawable*>(e);
-    if (target == NULL)
-    {
+bool tVertexOffsetExpressionMixer::ValidateTarget(tEntity *e) {
+    tDrawable *target = dynamic_cast<tDrawable *>(e);
+    if (target == NULL) {
         return false;
     }
 
@@ -148,7 +138,6 @@ bool tVertexOffsetExpressionMixer::ValidateTarget(tEntity* e)
 }
 
 
-
 //---------------------------------------------------------------------------
 //  Description: Use to set a new mesh target for this mixer.
 //  Performs necessary clean-up and reallocation of memory when    
@@ -160,46 +149,43 @@ bool tVertexOffsetExpressionMixer::ValidateTarget(tEntity* e)
 //  current expression group assigned to this Mixer.
 //
 //---------------------------------------------------------------------------
-void tVertexOffsetExpressionMixer::SetTarget(tEntity* t)
-{
+void tVertexOffsetExpressionMixer::SetTarget(tEntity *t) {
     P3DASSERT(ValidateTarget(t));
 
     // guaranteed we have a tGeometry or tPolySkin from ValidateTarget
-    tDrawable* dw_tmp = (tDrawable*)(t);
+    tDrawable *dw_tmp = (tDrawable * )(t);
     tRefCounted::Assign(m_pDrawable, dw_tmp);
 
 // 1. Check that the target is a tPolySkin: expression animations only apply to skins
 
-    tPolySkin* pSkin = dynamic_cast<tPolySkin*>(m_pDrawable);
+    tPolySkin *pSkin = dynamic_cast<tPolySkin *>(m_pDrawable);
     P3DASSERT(pSkin && "Drawable must be a skin");
 
     //Check that this skin has offsets
-    tExpressionOffsets* expressionOffsets = pSkin->GetExpressionOffsets();
-    P3DASSERTMSG(expressionOffsets,"Invalid target.", "tVertexOffsetExpressionMixer::SetTarget");
-    P3DASSERTMSG(expressionOffsets->GetNumOffsetLists(), "Invalid target. Target has no offset lists.", "tVertexOffsetExpressionMixer::SetTarget");
+    tExpressionOffsets *expressionOffsets = pSkin->GetExpressionOffsets();
+    P3DASSERTMSG(expressionOffsets, "Invalid target.", "tVertexOffsetExpressionMixer::SetTarget");
+    P3DASSERTMSG(expressionOffsets->GetNumOffsetLists(),
+                 "Invalid target. Target has no offset lists.",
+                 "tVertexOffsetExpressionMixer::SetTarget");
 
     expressionOffsets->AddRef();
 
 // 2. Check if target previously set if so delete existing data strucs
-    if(m_pVtxOffsets)
-    {
+    if (m_pVtxOffsets) {
         int i;
-        for(i = 0; i < m_nPrimGroups; i++)
-        {
+        for (i = 0; i < m_nPrimGroups; i++) {
             delete[] m_pVtxOffsets[i];
         }
-        delete[] m_pVtxOffsets; 
+        delete[] m_pVtxOffsets;
         m_pVtxOffsets = NULL;
         delete[] m_nVertices;
         m_nVertices = NULL;
     }
-    if(m_pResultOffsets)
-    {
+    if (m_pResultOffsets) {
         int i;
-        for(i = 0; i < m_nPrimGroups; i++)
-        {
+        for (i = 0; i < m_nPrimGroups; i++) {
             delete[] m_pResultOffsets[i];
-        }        
+        }
         m_pResultOffsets = NULL;
     }
 
@@ -207,38 +193,33 @@ void tVertexOffsetExpressionMixer::SetTarget(tEntity* t)
     m_nPrimGroups = pSkin->GetNumPrimGroups();
 
     m_nVertices = new unsigned[m_nPrimGroups];
-    P3DASSERT(m_nVertices); 
+    P3DASSERT(m_nVertices);
 
-    m_pVtxOffsets = new vertexData*[m_nPrimGroups];
+    m_pVtxOffsets = new vertexData *[m_nPrimGroups];
     P3DASSERT(m_pVtxOffsets);
 
-    m_pResultOffsets = new rmt::Vector*[m_nPrimGroups];
+    m_pResultOffsets = new rmt::Vector *[m_nPrimGroups];
 
     int i;
-    for(i = 0; i < m_nPrimGroups; i++)
-    {
-        tPrimGroup* pPrimGroupSkinned = pSkin->GetPrimGroupSkinned(i);
+    for (i = 0; i < m_nPrimGroups; i++) {
+        tPrimGroup *pPrimGroupSkinned = pSkin->GetPrimGroupSkinned(i);
         m_nVertices[i] = pPrimGroupSkinned->GetVertexCount();
 
-        if(expressionOffsets->hasExpression(i) )
-        {
+        if (expressionOffsets->hasExpression(i)) {
             m_pVtxOffsets[i] = new vertexData[m_nVertices[i]];
-            rmt::Vector* tempVtxs = new rmt::Vector[m_nVertices[i]];
+            rmt::Vector *tempVtxs = new rmt::Vector[m_nVertices[i]];
             m_pResultOffsets[i] = new rmt::Vector[m_nVertices[i]];
 
             // NOTE: Modify this when offsets are added to original vtx pos in hardware
-            pPrimGroupSkinned->GetVertices(0, m_nVertices[i],tempVtxs);
-            for(unsigned j = 0; j <  m_nVertices[i]; j++)
-            {
+            pPrimGroupSkinned->GetVertices(0, m_nVertices[i], tempVtxs);
+            for (unsigned j = 0; j < m_nVertices[i]; j++) {
                 m_pVtxOffsets[i][j].position = tempVtxs[j];
                 m_pResultOffsets[i][j].x = 0;
                 m_pResultOffsets[i][j].y = 0;
                 m_pResultOffsets[i][j].z = 0;
             }
             delete[] tempVtxs;
-        }
-        else 
-        {
+        } else {
             m_pVtxOffsets[i] = NULL;
             m_pResultOffsets[i] = NULL;
         }
@@ -250,14 +231,13 @@ void tVertexOffsetExpressionMixer::SetTarget(tEntity* t)
 }
 
 
-void tVertexOffsetExpressionMixer::CompactBlendStages()
-{
+void tVertexOffsetExpressionMixer::CompactBlendStages() {
     unsigned int numExp = expressionGroup->GetNumExpression();
     unsigned int allPossibleStages[P3D_VERTEXOFFSET_NUM_ACCUMULATE_STAGES];
     memset(allPossibleStages, 0, P3D_VERTEXOFFSET_NUM_ACCUMULATE_STAGES * sizeof(unsigned int));
-    p3dExpressionStage* actualStages = new p3dExpressionStage[numExp];
+    p3dExpressionStage *actualStages = new p3dExpressionStage[numExp];
     memset(actualStages, 0, numExp * sizeof(p3dExpressionStage));
-    
+
     // Here we want to find out if all the blend stages are actually being used
     // so that in the Update call we can use a m_nMaxNumStages variable, which might be
     // less than the NUM_ACCUMULATE_STAGES.   So what we do is create a bit array of all
@@ -267,41 +247,33 @@ void tVertexOffsetExpressionMixer::CompactBlendStages()
     // m_nMaxNumStages of 2 instead of 3, and we set all the blendStages to 1 instead of 2.
     unsigned int expIter, stageIter;
     p3dExpressionStage lastEmpty;
-    for(expIter = 0; expIter < numExp; expIter++)
-    {
+    for (expIter = 0; expIter < numExp; expIter++) {
         p3dExpressionStage expStage = expressionGroup->GetExpressionStage(expIter);
         actualStages[expIter] = expStage;
         allPossibleStages[expStage] = 1;
     }
 
 
-    for (stageIter = 0; stageIter < P3D_VERTEXOFFSET_NUM_ACCUMULATE_STAGES; stageIter++)
-    {
-        if (allPossibleStages[stageIter] == 0)
-        {
+    for (stageIter = 0; stageIter < P3D_VERTEXOFFSET_NUM_ACCUMULATE_STAGES; stageIter++) {
+        if (allPossibleStages[stageIter] == 0) {
             lastEmpty = p3dExpressionStage(stageIter);
-            for (expIter = 0; expIter < numExp; expIter++)
-            {
-                if (actualStages[expIter] == p3dExpressionStage(stageIter + 1))
-                {
+            for (expIter = 0; expIter < numExp; expIter++) {
+                if (actualStages[expIter] == p3dExpressionStage(stageIter + 1)) {
                     actualStages[expIter] = lastEmpty;
                     allPossibleStages[stageIter] = 1;
-                    allPossibleStages[stageIter+1] = 0;
+                    allPossibleStages[stageIter + 1] = 0;
                 }
             }
         }
     }
 
-    for (stageIter = 0;stageIter < P3D_VERTEXOFFSET_NUM_ACCUMULATE_STAGES; stageIter++)
-    {
-        if (allPossibleStages[stageIter] == 1)
-        {
+    for (stageIter = 0; stageIter < P3D_VERTEXOFFSET_NUM_ACCUMULATE_STAGES; stageIter++) {
+        if (allPossibleStages[stageIter] == 1) {
             m_nMaxNumStages++;
         }
     }
 
-    for (expIter = 0; expIter < numExp; expIter++)
-    {
+    for (expIter = 0; expIter < numExp; expIter++) {
         expressionGroup->SetExpressionStage(expIter, actualStages[expIter]);
     }
 
@@ -311,15 +283,11 @@ void tVertexOffsetExpressionMixer::CompactBlendStages()
 }
 
 
-void tVertexOffsetExpressionMixer::ResetAccumulators()
-{
+void tVertexOffsetExpressionMixer::ResetAccumulators() {
     // Reinitialize intermediate values (m_pVtxOffsets[i][j].offset & m_pResultOffsets to zero)
-    for(int k = 0; k < m_nPrimGroups; k++)
-    {
-        if(m_pVtxOffsets[k] && m_pResultOffsets[k])
-        {
-            for(unsigned l = 0; l < m_nVertices[k]; l++)
-            {
+    for (int k = 0; k < m_nPrimGroups; k++) {
+        if (m_pVtxOffsets[k] && m_pResultOffsets[k]) {
+            for (unsigned l = 0; l < m_nVertices[k]; l++) {
                 m_pVtxOffsets[k][l].offset.x = 0;
                 m_pVtxOffsets[k][l].offset.y = 0;
                 m_pVtxOffsets[k][l].offset.z = 0;
@@ -345,15 +313,14 @@ void tVertexOffsetExpressionMixer::ResetAccumulators()
 //
 //  Returns: calculates offset vectors (currently also sums the original vtx position
 //  and offset vector and applies it to each skin primgroup .. this step should be removed
-//  and the addition should be done in PDDI )
+//  and the addition should be done in PDDI)
 //
 //----------------------------------------------------------------------------/
 #if(1)
-void tVertexOffsetExpressionMixer::Update()
-{
-    if (mixerReady)
-    {
-      //  return;
+
+void tVertexOffsetExpressionMixer::Update() {
+    if (mixerReady) {
+        //  return;
     }
 
     ResetAccumulators();
@@ -362,19 +329,19 @@ void tVertexOffsetExpressionMixer::Update()
     updateTimer.startTimer();
     unsigned int expCount = 0;
 #endif
-    
+
     int exprIndex;
     int i;
-    rmt::Vector zeroVector(0.0f,0.0f,0.0f);
+    rmt::Vector zeroVector(0.0f, 0.0f, 0.0f);
 
     //
     // Initialize arrays to store intermediate and final results
     //
-    rmt::Vector vertexOffsets[P3D_VERTEXOFFSET_NUM_ACCUMULATE_STAGES];    
-    float vertexWeights[P3D_VERTEXOFFSET_NUM_ACCUMULATE_STAGES] = {0.0f}; 
-    memset(vertexOffsets, 0, sizeof(rmt::Vector)*P3D_VERTEXOFFSET_NUM_ACCUMULATE_STAGES);
+    rmt::Vector vertexOffsets[P3D_VERTEXOFFSET_NUM_ACCUMULATE_STAGES];
+    float vertexWeights[P3D_VERTEXOFFSET_NUM_ACCUMULATE_STAGES] = {0.0f};
+    memset(vertexOffsets, 0, sizeof(rmt::Vector) * P3D_VERTEXOFFSET_NUM_ACCUMULATE_STAGES);
 
-    Offset* curOffset, *endOffset, *lowOffset, *highOffset;
+    Offset *curOffset, *endOffset, *lowOffset, *highOffset;
     curOffset = m_pOffsetArray;
     endOffset = m_pOffsetArray + m_uTotalNumOffsets;
 
@@ -385,7 +352,7 @@ void tVertexOffsetExpressionMixer::Update()
     float curKey;
     float upperKey = 0;
     float lowerKey = 0;
-    tExpression* expr = NULL;
+    tExpression *expr = NULL;
     bool negKeysExists = false, posKeysExists = false;
     p3dExpressionStage exprStage = P3D_EXPRESSION_STAGE_1;
 
@@ -394,26 +361,24 @@ void tVertexOffsetExpressionMixer::Update()
     //
     unsigned int curExpMask = 0;
     int numExpression = expressionGroup->GetNumExpression();
-    for (exprIndex=0; exprIndex < numExpression; exprIndex++)
-    {
-        if(state[exprIndex] != 0.0f)
-        {
+    for (exprIndex = 0; exprIndex < numExpression; exprIndex++) {
+        if (state[exprIndex] != 0.0f) {
 
 #ifdef _PERF_WIN
-    expCount++;
+            expCount++;
 #endif
             curExpMask |= (1 << exprIndex);
 
 //
 // PreCompute blending info
 //
-            float absExprWeight, exprWeight, low_frac = 0.0f, high_frac= 0.0f, mirror = 1.0f;                
+            float absExprWeight, exprWeight, low_frac = 0.0f, high_frac = 0.0f, mirror = 1.0f;
             expr = expressionGroup->GetExpression(exprIndex);
             negKeysExists = expr->NegKeysExist();
             posKeysExists = expr->PosKeysExist();
             exprWeight = state[exprIndex]; // this array is filled by tExpressionFrameController::Update()
 
-            exprStage  = expressionGroup->GetExpressionStage(exprIndex);
+            exprStage = expressionGroup->GetExpressionStage(exprIndex);
             absExprWeight = rmt::Fabs(exprWeight);
 
             //
@@ -424,63 +389,49 @@ void tVertexOffsetExpressionMixer::Update()
             // expression or greater than all keys in expression, 
             // then upperKey will equal lowerKey
             //
-            if(exprWeight < 0 && !negKeysExists)
-            {
+            if (exprWeight < 0 && !negKeysExists) {
                 upperKey = expr->GetUpperBoundKey(absExprWeight);
                 lowerKey = expr->GetLowerBoundKey(absExprWeight);
                 mirror = -1.0f;
-            }
-            else if(exprWeight > 0 && !posKeysExists)
-            {
+            } else if (exprWeight > 0 && !posKeysExists) {
                 upperKey = expr->GetUpperBoundKey(-1 * exprWeight);
                 lowerKey = expr->GetLowerBoundKey(-1 * exprWeight);
                 mirror = -1.0f;
-            }
-            else
-            {
+            } else {
                 upperKey = expr->GetUpperBoundKey(exprWeight);
                 lowerKey = expr->GetLowerBoundKey(exprWeight);
                 mirror = 1.0f;
             }
-            
+
             //
             // calculate the weighted average factor for this offset vector
             //
-            if(upperKey == lowerKey) 
-            {
+            if (upperKey == lowerKey) {
                 high_frac = 1.0f;
                 low_frac = 0.0f;
-            }
-            else if ( keyEquals(upperKey, 0) ) 
-            {
+            } else if (keyEquals(upperKey, 0)) {
                 high_frac = 0.0f;
                 low_frac = rmt::Fabs(exprWeight / lowerKey);
-            }
-            else if ( keyEquals(lowerKey, 0) )
-            {
+            } else if (keyEquals(lowerKey, 0)) {
                 low_frac = 0.0f;
                 high_frac = rmt::Fabs(exprWeight / upperKey);
-            }
-            else
-            {
-                high_frac = rmt::Fabs( (exprWeight - lowerKey) / (upperKey - lowerKey) );
+            } else {
+                high_frac = rmt::Fabs((exprWeight - lowerKey) / (upperKey - lowerKey));
                 low_frac = 1 - high_frac;
             }
 
-            P3DASSERT(upperKey != tExpression::INVALID_EXPRESSION_KEYVAL || 
+            P3DASSERT(upperKey != tExpression::INVALID_EXPRESSION_KEYVAL ||
                       lowerKey != tExpression::INVALID_EXPRESSION_KEYVAL);
 
             //
             // Cache the results
             //
             m_ExpressionCalcCash[exprIndex].absExprWeight = absExprWeight;
-            m_ExpressionCalcCash[exprIndex].exprWeight  = exprWeight; 
-            m_ExpressionCalcCash[exprIndex].low_frac    = low_frac;
-            m_ExpressionCalcCash[exprIndex].high_frac   = high_frac;
-            m_ExpressionCalcCash[exprIndex].mirror      = mirror;
-        }
-        else
-        {
+            m_ExpressionCalcCash[exprIndex].exprWeight = exprWeight;
+            m_ExpressionCalcCash[exprIndex].low_frac = low_frac;
+            m_ExpressionCalcCash[exprIndex].high_frac = high_frac;
+            m_ExpressionCalcCash[exprIndex].mirror = mirror;
+        } else {
             // Zero?
         }
     }
@@ -491,47 +442,44 @@ void tVertexOffsetExpressionMixer::Update()
         return;
     }
 */
-    vertexData* vertex;
+    vertexData *vertex;
     rmt::Vector interpVtx;
 //
 // looping stats
 //
-int offestLoop = 0;
-int offsetVertLoop = 0;
-int expressionLoop = 0;
+    int offestLoop = 0;
+    int offsetVertLoop = 0;
+    int expressionLoop = 0;
 
 
     //
     // For all offset data in offset_array
     //
-    while (curOffset < endOffset) 
-    {
+    while (curOffset < endOffset) {
         vertex = curOffset->vertex;
-offestLoop++;
+        offestLoop++;
         //
         // Per-Vertex Loop!
         // Calculate the offsets to be applied to this vertex
         // 
-        do 
-        {
-offsetVertLoop++;
+        do {
+            offsetVertLoop++;
             //
             // Compute & accumulate the offset for this vertex: 
             // each expression contributes a certain amount
             // to this vertex's offset. 
             //
-            exprIndex  = curOffset->expressionIndex;
+            exprIndex = curOffset->expressionIndex;
             //
             // quick test to see if this expression participates
             //
-            if (curExpMask & (1 << exprIndex))  
-            {
+            if (curExpMask & (1 << exprIndex)) {
                 float absExprWeight = m_ExpressionCalcCash[exprIndex].absExprWeight;
-                float exprWeight    = m_ExpressionCalcCash[exprIndex].exprWeight; 
-                float low_frac      = m_ExpressionCalcCash[exprIndex].low_frac;
-                float high_frac     = m_ExpressionCalcCash[exprIndex].high_frac;
-                float mirror        = m_ExpressionCalcCash[exprIndex].mirror;         
-                
+                float exprWeight = m_ExpressionCalcCash[exprIndex].exprWeight;
+                float low_frac = m_ExpressionCalcCash[exprIndex].low_frac;
+                float high_frac = m_ExpressionCalcCash[exprIndex].high_frac;
+                float mirror = m_ExpressionCalcCash[exprIndex].mirror;
+
                 highOffset = lowOffset = NULL;
                 bool foundKeys = false;
 
@@ -539,9 +487,8 @@ offsetVertLoop++;
                 // Accumulate this expression's contribution to the 
                 // final offset for this vertex
                 //
-                do 
-                {
-expressionLoop++;
+                do {
+                    expressionLoop++;
                     //
                     // Iterate through each offset in expr until you find 
                     // upperKey/lowerKey in m_poffsetArray
@@ -549,13 +496,11 @@ expressionLoop++;
                     //
                     curKey = curOffset->keyVal;
 
-                    if(curKey == lowerKey)
-                    {
+                    if (curKey == lowerKey) {
                         lowOffset = curOffset;
                     }
 
-                    if(curKey == upperKey)
-                    {
+                    if (curKey == upperKey) {
                         highOffset = curOffset;
                     }
 
@@ -563,82 +508,69 @@ expressionLoop++;
                     // Found offset values for bounding keys - 
                     // calculate the offset and accumulate it
                     //
-                    if( keyEquals(high_frac, 0) && lowOffset != NULL)
-                    {
+                    if (keyEquals(high_frac, 0) && lowOffset != NULL) {
                         interpVtx = VecWght(lowOffset->offset, low_frac, mirror);
                         vertexOffsets[exprStage].ScaleAdd(absExprWeight, interpVtx);
-                        vertexWeights[exprStage]+=absExprWeight;
+                        vertexWeights[exprStage] += absExprWeight;
                         foundKeys = true;
                         break;
-                    }
-                    else if( keyEquals(low_frac, 0) && highOffset != NULL)
-                    {
+                    } else if (keyEquals(low_frac, 0) && highOffset != NULL) {
                         interpVtx = VecWght(highOffset->offset, high_frac, mirror);
                         vertexOffsets[exprStage].ScaleAdd(absExprWeight, interpVtx);
-                        vertexWeights[exprStage]+=absExprWeight;
+                        vertexWeights[exprStage] += absExprWeight;
                         foundKeys = true;
                         break;
-                    }
-                    else if(lowOffset != NULL && highOffset != NULL)
-                    {
-                        if(highOffset == lowOffset)
-                        {
+                    } else if (lowOffset != NULL && highOffset != NULL) {
+                        if (highOffset == lowOffset) {
                             vertexOffsets[exprStage].ScaleAdd(1, highOffset->offset);
-                            vertexWeights[exprStage]+=absExprWeight;
-                        }
-                        else
-                        {
-                            interpVtx = VecWghtAv(lowOffset->offset, highOffset->offset, low_frac, high_frac, mirror);
+                            vertexWeights[exprStage] += absExprWeight;
+                        } else {
+                            interpVtx = VecWghtAv(lowOffset->offset, highOffset->offset, low_frac,
+                                                  high_frac, mirror);
                             vertexOffsets[exprStage].ScaleAdd(absExprWeight, interpVtx);
-                            vertexWeights[exprStage]+=absExprWeight;
+                            vertexWeights[exprStage] += absExprWeight;
                         }
                         foundKeys = true;
                         break;
-                    }
-                    else 
-                    {
+                    } else {
                         //
                         // Advance to the next element in m_pOffsetArray
                         //
-                        curOffset++;     
+                        curOffset++;
                     }
 
-                } while ( (exprIndex == curOffset->expressionIndex) && (curOffset->vertex == vertex) );
+                } while ((exprIndex == curOffset->expressionIndex) &&
+                         (curOffset->vertex == vertex));
 
 
-                if(m_diagnose)
-                {
+                if (m_diagnose) {
                     //
                     // Expression group assigned to this mixer and the mixer's 
                     // target are mismatched
                     // Currently disabled
 
-           //         P3DASSERTMSG(foundKeys, "Detected expression group and mixer target mismatch", "tVertexExpressionMixer::Update");
+                    //         P3DASSERTMSG(foundKeys, "Detected expression group and mixer target mismatch", "tVertexExpressionMixer::Update");
                 }
 
                 //
                 // Found high and low bounding keys so advance to the next expression
                 //
-                while( (exprIndex == curOffset->expressionIndex) && (curOffset->vertex == vertex) )
-                {
+                while ((exprIndex == curOffset->expressionIndex) && (curOffset->vertex == vertex)) {
                     curOffset++;
                 }
             } //end if
-            else 
-            {
+            else {
                 curOffset++;
             }
 
-        } while(curOffset->vertex == vertex);
+        } while (curOffset->vertex == vertex);
 
         //
         // Average the offsets from expressions to get the contribution of a blendstage
         // sum contributions of all blendstage
         //
-        for (int s = 0; s < m_nMaxNumStages; s++)
-        {
-            if (vertexWeights[s] > 0.0f)
-            {
+        for (int s = 0; s < m_nMaxNumStages; s++) {
+            if (vertexWeights[s] > 0.0f) {
                 recWeight = 1.0f / vertexWeights[s];
                 vertex->offset.ScaleAdd(recWeight, vertexOffsets[s]);
                 vertexOffsets[s] = zeroVector;
@@ -658,27 +590,25 @@ expressionLoop++;
 #endif
 
 #ifdef _PERF_WIN
-    updateTimer.startTimer();    
+    updateTimer.startTimer();
 #endif
     //
     // Apply the new vertex positions
     //
-    tPolySkin* pSkin = static_cast<tPolySkin*>(m_pDrawable);
-    P3DASSERT( pSkin->GetNumPrimGroups() == m_nPrimGroups );
-    for(i = 0; i < m_nPrimGroups; i++)
-    {
-        if(m_pVtxOffsets[i])
-        {
-            tPrimGroup* pPrimGroupSkinned = pSkin->GetPrimGroupSkinned(i);
-            P3DASSERT( pPrimGroupSkinned->GetVertexCount() == m_nVertices[i] );
+    tPolySkin *pSkin = static_cast<tPolySkin *>(m_pDrawable);
+    P3DASSERT(pSkin->GetNumPrimGroups() == m_nPrimGroups);
+    for (i = 0; i < m_nPrimGroups; i++) {
+        if (m_pVtxOffsets[i]) {
+            tPrimGroup *pPrimGroupSkinned = pSkin->GetPrimGroupSkinned(i);
+            P3DASSERT(pPrimGroupSkinned->GetVertexCount() == m_nVertices[i]);
 
             //
             // Get sum of resultOffsets = Offsets + original Vtx position
             //
-            for(unsigned j = 0; j < m_nVertices[i]; j++)
-            {
+            for (unsigned j = 0; j < m_nVertices[i]; j++) {
                 P3DASSERT(m_pResultOffsets[i]);
-                m_pResultOffsets[i][j].Add(m_pVtxOffsets[i][j].position, m_pVtxOffsets[i][j].offset);
+                m_pResultOffsets[i][j].Add(m_pVtxOffsets[i][j].position,
+                                           m_pVtxOffsets[i][j].offset);
             }
             pPrimGroupSkinned->SetVertices(0, m_nVertices[i], m_pResultOffsets[i]);
         }
@@ -743,7 +673,7 @@ void tVertexOffsetExpressionMixer::Update()
     //
     unsigned int curExpMask = 0;
     int numExpression = expressionGroup->GetNumExpression();
-    for (i=0; i < numExpression; i++)
+    for (i=0; i <numExpression; i++)
     {
         if(state[i] != 0.0f)
         {
@@ -751,7 +681,7 @@ void tVertexOffsetExpressionMixer::Update()
 #ifdef _PERF_WIN
     expCount++;
 #endif
-            curExpMask |= (1 << i);
+            curExpMask |= (1 <<i);
         }
     }
 
@@ -772,7 +702,7 @@ void tVertexOffsetExpressionMixer::Update()
     //
     // For all offset data in offset_array
     //
-    while (curOffset < endOffset) 
+    while (curOffset <endOffset)
     {
         vertex = curOffset->vertex;
         
@@ -790,7 +720,7 @@ void tVertexOffsetExpressionMixer::Update()
             //
             // quick test to see if this expression participates
             //
-            if (curExpMask & (1 << exprIndex))  
+            if (curExpMask & (1 <<exprIndex))
             {
                 expr = expressionGroup->GetExpression(exprIndex);
                 negKeysExists = expr->NegKeysExist();
@@ -808,13 +738,13 @@ void tVertexOffsetExpressionMixer::Update()
                 // expression or greater than all keys in expression, 
                 // then upperKey will equal lowerKey
                 //
-                if(exprWeight < 0 && !negKeysExists)
+                if(exprWeight <0 && !negKeysExists)
                 {
                     upperKey = expr->GetUpperBoundKey(fabsf(exprWeight));
                     lowerKey = expr->GetLowerBoundKey(fabsf(exprWeight));
                     mirror = -1.0f;
                 }
-                else if(exprWeight > 0 && !posKeysExists)
+                else if(exprWeight> 0 && !posKeysExists)
                 {
                     upperKey = expr->GetUpperBoundKey(-1 * exprWeight);
                     lowerKey = expr->GetLowerBoundKey(-1 * exprWeight);
@@ -835,19 +765,19 @@ void tVertexOffsetExpressionMixer::Update()
                     high_frac = 1.0f;
                     low_frac = 0.0f;
                 }
-                else if ( keyEquals(upperKey, 0) ) 
+                else if (keyEquals(upperKey, 0))
                 {
                     high_frac = 0.0f;
                     low_frac = rmt::Fabs(exprWeight / lowerKey);
                 }
-                else if ( keyEquals(lowerKey, 0) )
+                else if (keyEquals(lowerKey, 0))
                 {
                     low_frac = 0.0f;
                     high_frac = rmt::Fabs(exprWeight / upperKey);
                 }
                 else
                 {
-                    high_frac = rmt::Fabs( (exprWeight - lowerKey) / (upperKey - lowerKey) );
+                    high_frac = rmt::Fabs((exprWeight - lowerKey) / (upperKey - lowerKey));
                     low_frac = 1 - high_frac;
                 }
 
@@ -883,7 +813,7 @@ void tVertexOffsetExpressionMixer::Update()
                     // Found offset values for bounding keys - 
                     // calculate the offset and accumulate it
                     //
-                    if( keyEquals(high_frac, 0) && lowOffset != NULL)
+                    if(keyEquals(high_frac, 0) && lowOffset != NULL)
                     {
                         interpVtx = VecWght(lowOffset->offset, low_frac, mirror);
                         vertexOffsets[exprStage].ScaleAdd(absExprWeight, interpVtx);
@@ -891,7 +821,7 @@ void tVertexOffsetExpressionMixer::Update()
                         foundKeys = true;
                         break;
                     }
-                    else if( keyEquals(low_frac, 0) && highOffset != NULL)
+                    else if(keyEquals(low_frac, 0) && highOffset != NULL)
                     {
                         interpVtx = VecWght(highOffset->offset, high_frac, mirror);
                         vertexOffsets[exprStage].ScaleAdd(absExprWeight, interpVtx);
@@ -923,7 +853,7 @@ void tVertexOffsetExpressionMixer::Update()
                         curOffset++;     
                     }
 
-                } while ( (exprIndex == curOffset->expressionIndex) && (curOffset->vertex == vertex) );
+                } while ((exprIndex == curOffset->expressionIndex) && (curOffset->vertex == vertex));
 
 
                 if(m_diagnose)
@@ -939,7 +869,7 @@ void tVertexOffsetExpressionMixer::Update()
                 //
                 // Found high and low bounding keys so advance to the next expression
                 //
-                while( (exprIndex == curOffset->expressionIndex) && (curOffset->vertex == vertex) )
+                while((exprIndex == curOffset->expressionIndex) && (curOffset->vertex == vertex))
                 {
                     curOffset++;
                 }
@@ -955,9 +885,9 @@ void tVertexOffsetExpressionMixer::Update()
         // Average the offsets from expressions to get the contribution of a blendstage
         // sum contributions of all blendstage
         //
-        for (int s = 0; s < m_nMaxNumStages; s++)
+        for (int s = 0; s <m_nMaxNumStages; s++)
         {
-            if (vertexWeights[s] > 0.0f)
+            if (vertexWeights[s]> 0.0f)
             {
                 recWeight = 1.0f / vertexWeights[s];
                 vertex->offset.ScaleAdd(recWeight, vertexOffsets[s]);
@@ -984,18 +914,18 @@ void tVertexOffsetExpressionMixer::Update()
     // Apply the new vertex positions
     //
     tPolySkin* pSkin = static_cast<tPolySkin*>(m_pDrawable);
-    P3DASSERT( pSkin->GetNumPrimGroups() == m_nPrimGroups );
-    for(i = 0; i < m_nPrimGroups; i++)
+    P3DASSERT(pSkin->GetNumPrimGroups() == m_nPrimGroups);
+    for(i = 0; i <m_nPrimGroups; i++)
     {
         if(m_pVtxOffsets[i])
         {
             tPrimGroup* pPrimGroupSkinned = pSkin->GetPrimGroupSkinned(i);
-            P3DASSERT( pPrimGroupSkinned->GetVertexCount() == m_nVertices[i] );
+            P3DASSERT(pPrimGroupSkinned->GetVertexCount() == m_nVertices[i]);
 
             //
             // Get sum of resultOffsets = Offsets + original Vtx position
             //
-            for(unsigned j = 0; j < m_nVertices[i]; j++)
+            for(unsigned j = 0; j <m_nVertices[i]; j++)
             {
                 P3DASSERT(m_pResultOffsets[i]);
                 m_pResultOffsets[i][j].Add(m_pVtxOffsets[i][j].position, m_pVtxOffsets[i][j].offset);
@@ -1014,6 +944,7 @@ void tVertexOffsetExpressionMixer::Update()
     mixerReady = true;
 }
 #endif
+
 //----------------------------------------------------------------------------
 //  Description: Returns the offsets that should be applied to vtx positions of 
 //  primgroup after the mixer update method is called. 
@@ -1024,10 +955,8 @@ void tVertexOffsetExpressionMixer::Update()
 //  if the primgroup does not have expressions, then return NULL.
 //
 //----------------------------------------------------------------------------/
-const rmt::Vector* tVertexOffsetExpressionMixer::GetVtxOffsets(int primgroupIdx)
-{
-    if(!mixerReady)
-    {
+const rmt::Vector *tVertexOffsetExpressionMixer::GetVtxOffsets(int primgroupIdx) {
+    if (!mixerReady) {
         Update();
     }
     return m_pResultOffsets[primgroupIdx];
@@ -1042,27 +971,24 @@ const rmt::Vector* tVertexOffsetExpressionMixer::GetVtxOffsets(int primgroupIdx)
 // Returns:none
 //
 //----------------------------------------------------------------------------/
-void tVertexOffsetExpressionMixer::InitOffsetArray()
-{
-    tPolySkin* pSkin = static_cast<tPolySkin*>(m_pDrawable);
-    P3DASSERT( pSkin->GetNumPrimGroups() == m_nPrimGroups );
-    
+void tVertexOffsetExpressionMixer::InitOffsetArray() {
+    tPolySkin *pSkin = static_cast<tPolySkin *>(m_pDrawable);
+    P3DASSERT(pSkin->GetNumPrimGroups() == m_nPrimGroups);
+
     int numExpressions = expressionGroup->GetNumExpression();
-    tExpressionOffsets* expressionOffsets = pSkin->GetExpressionOffsets();
+    tExpressionOffsets *expressionOffsets = pSkin->GetExpressionOffsets();
     expressionOffsets->AddRef();
-    
+
     // this is a preliminary pass to determine the total number of vertex offsets in this group
     // go through all the expressions in the current group / mesh
     int expIter;
     unsigned t;
-    for(expIter = 0; expIter < numExpressions; expIter++)
-    {
+    for (expIter = 0; expIter < numExpressions; expIter++) {
         // this has already been validated, otherwise it wouldn't have been loaded
-        tExpression* exp = static_cast<tExpression*>(expressionGroup->GetExpression(expIter));
+        tExpression *exp = static_cast<tExpression *>(expressionGroup->GetExpression(expIter));
 
         // iterate through all the keys / offset lists
-        for (t = 0; t < exp->GetNumKeys(); t++)
-        {
+        for (t = 0; t < exp->GetNumKeys(); t++) {
             unsigned keyIndex = exp->GetIndex(t);  // the offset list that this key relates to
             m_uTotalNumOffsets += expressionOffsets->GetNumVerticesForKey(keyIndex);
         }
@@ -1070,17 +996,15 @@ void tVertexOffsetExpressionMixer::InitOffsetArray()
 
     m_pOffsetArray = new Offset[m_uTotalNumOffsets];
     int curOffset = 0;
-    tExpressionOffsets::OffsetList** offsetLists = expressionOffsets->GetOffsetLists();
-    
-    for(expIter = 0; expIter < numExpressions; expIter++)
-    {
-        tExpression* exp = static_cast<tExpression*>(expressionGroup->GetExpression(expIter));
+    tExpressionOffsets::OffsetList **offsetLists = expressionOffsets->GetOffsetLists();
+
+    for (expIter = 0; expIter < numExpressions; expIter++) {
+        tExpression *exp = static_cast<tExpression *>(expressionGroup->GetExpression(expIter));
         P3DASSERT(exp);
 
         //iterate through all the keys / offset lists
-        for (t = 0; t < exp->GetNumKeys(); t++)
-        {
-            unsigned keyIndex = exp->GetIndex(t);  
+        for (t = 0; t < exp->GetNumKeys(); t++) {
+            unsigned keyIndex = exp->GetIndex(t);
             // All keys belonging to a expression are given
             // a zero-based index.
             // the offset lists are associated with the posekeys by this index.
@@ -1089,16 +1013,14 @@ void tVertexOffsetExpressionMixer::InitOffsetArray()
 
             bool foundOffsetList = false;
             unsigned i;
-            for(i = 0; i < expressionOffsets->GetNumOffsetLists(); i++ )
-            {
-                tExpressionOffsets::OffsetList* curList = offsetLists[i];
-                if(curList->keyIndex == keyIndex)
-                {
+            for (i = 0; i < expressionOffsets->GetNumOffsetLists(); i++) {
+                tExpressionOffsets::OffsetList *curList = offsetLists[i];
+                if (curList->keyIndex == keyIndex) {
                     unsigned j;
-                    for(j = 0; j < curList->offsetCount; j++ ) //for each vtx in the offset list
+                    for (j = 0; j < curList->offsetCount; j++) //for each vtx in the offset list
                     {
                         //add the vertex and its index to the 'offsetToAdd' struct, and shove that into the holder object
-                        tVertexOffsetExpressionMixer::Offset offsetToAdd; 
+                        tVertexOffsetExpressionMixer::Offset offsetToAdd;
 
                         offsetToAdd.expressionIndex = expIter;
                         offsetToAdd.keyVal = keyValue;
@@ -1111,41 +1033,41 @@ void tVertexOffsetExpressionMixer::InitOffsetArray()
                         offsetToAdd.vertex = &(m_pVtxOffsets[curList->primGroupIdx][vertexIndex]);
                         m_pOffsetArray[curOffset++] = offsetToAdd;
                     }
-                            foundOffsetList = true;
+                    foundOffsetList = true;
                 }
             }
-            if(m_diagnose)
-            {
-                P3DASSERTMSG(foundOffsetList, "Missing offset list for expression group", "tVertexOffsetExpressionMixer::InitOffsetArray()");
+            if (m_diagnose) {
+                P3DASSERTMSG(foundOffsetList, "Missing offset list for expression group",
+                             "tVertexOffsetExpressionMixer::InitOffsetArray()");
             }
         }
     }
 
-    qsort(m_pOffsetArray, m_uTotalNumOffsets, sizeof(tVertexOffsetExpressionMixer::Offset), compareOffsets);
+    qsort(m_pOffsetArray, m_uTotalNumOffsets, sizeof(tVertexOffsetExpressionMixer::Offset),
+          compareOffsets);
     tRefCounted::Release(expressionOffsets);
 }
 
 // this function compares two elements of type tVertexOffsetExpressionMixer::Offset
 // it orders by vertex pointer, then by expression index, then by key value.
 // that gets the offset array sorted as we want it
-int compareOffsets(const void* el1, const void* el2)
-{
-    tVertexOffsetExpressionMixer::Offset* off1 = (tVertexOffsetExpressionMixer::Offset*)el1;
-    tVertexOffsetExpressionMixer::Offset* off2 = (tVertexOffsetExpressionMixer::Offset*)el2;
-    
+int compareOffsets(const void *el1, const void *el2) {
+    tVertexOffsetExpressionMixer::Offset *off1 = (tVertexOffsetExpressionMixer::Offset *) el1;
+    tVertexOffsetExpressionMixer::Offset *off2 = (tVertexOffsetExpressionMixer::Offset *) el2;
+
     if (off1->vertex < off2->vertex) // first we compare the vertex pointers
         return -1;
     else if (off1->vertex > off2->vertex)
         return 1;
-    else
-    {
-        if (off1->expressionIndex < off2->expressionIndex) // if they're the same then we compare the expression indices
+    else {
+        if (off1->expressionIndex <
+            off2->expressionIndex) // if they're the same then we compare the expression indices
             return -1;
         else if (off1->expressionIndex > off2->expressionIndex)
             return 1;
-        else
-        {
-            if (off1->keyVal < off2->keyVal) // if *those* are the same, we compare by key value.           
+        else {
+            if (off1->keyVal <
+                off2->keyVal) // if *those* are the same, we compare by key value.
                 return -1;
             else if (off1->keyVal > off2->keyVal)
                 return 1;

@@ -27,27 +27,23 @@ char DEVICE_DESCRIPTION[] = "Direct3D 8";
 
 #define PDDI_VERSION_BUILD  (56)
 
-static d3dDevice* static_d3d = NULL;
+static d3dDevice *static_d3d = NULL;
 
 // initialisation function 
-_EXPORT int pddiCreate(int versionMajor, int versionMinor, pddiDevice** device)
-{
-    if((versionMajor != PDDI_VERSION_MAJOR) || (versionMinor != PDDI_VERSION_MINOR))
-    {
+_EXPORT int pddiCreate(int versionMajor, int versionMinor, pddiDevice **device) {
+    if ((versionMajor != PDDI_VERSION_MAJOR) || (versionMinor != PDDI_VERSION_MINOR)) {
         *device = 0;
         return PDDI_VERSION_ERROR;
     }
 
-    if(!static_d3d)
-    {
+    if (!static_d3d) {
         static_d3d = new d3dDevice(Direct3DCreate8(D3D_SDK_VERSION));
     }
     *device = static_d3d;
     return PDDI_OK;
 }
 
-d3dDevice::d3dDevice(LPDIRECT3D8 d3d)
-{
+d3dDevice::d3dDevice(LPDIRECT3D8 d3d) {
     direct3D = d3d;
 
     context = NULL;
@@ -60,11 +56,9 @@ d3dDevice::d3dDevice(LPDIRECT3D8 d3d)
     d3dShaderSetup();
 }
 
-d3dDevice::~d3dDevice()
-{
+d3dDevice::~d3dDevice() {
 #ifndef _XBOX
-    for(int i=0; i < nDisplay; i++)
-    {
+    for (int i = 0; i < nDisplay; i++) {
         delete[] displayInfo[i].modeInfo;
     }
     delete[] displayInfo;
@@ -76,8 +70,7 @@ d3dDevice::~d3dDevice()
     static_d3d = NULL;
 }
 
-void d3dDevice::GetLibraryInfo(pddiLibInfo* info)
-{
+void d3dDevice::GetLibraryInfo(pddiLibInfo *info) {
 #ifdef _XBOX
     info->libID = PDDI_LIBID_XBOX;
 #else
@@ -90,21 +83,19 @@ void d3dDevice::GetLibraryInfo(pddiLibInfo* info)
 }
 
 #ifndef _XBOX
-int d3dDevice::GetDisplayInfo(pddiDisplayInfo** info)
-{
-    if(!displayInfo)
-    {
+
+int d3dDevice::GetDisplayInfo(pddiDisplayInfo **info) {
+    if (!displayInfo) {
         int totalDisplay = direct3D->GetAdapterCount();
         displayInfo = new pddiDisplayInfo[totalDisplay];
 
         nDisplay = 0;
-        for(int i = 0; i < totalDisplay; i++)
-        {
+        for (int i = 0; i < totalDisplay; i++) {
             D3DADAPTER_IDENTIFIER8 identity;
             D3DCAPS8 devCaps;
 
-            direct3D->GetAdapterIdentifier(i, D3DENUM_NO_WHQL_LEVEL , &identity);
-            if(direct3D->GetDeviceCaps(i, D3DDEVTYPE_HAL, &devCaps) != D3D_OK)
+            direct3D->GetAdapterIdentifier(i, D3DENUM_NO_WHQL_LEVEL, &identity);
+            if (direct3D->GetDeviceCaps(i, D3DDEVTYPE_HAL, &devCaps) != D3D_OK)
                 continue;
 
             displayInfo[nDisplay].id = i;;
@@ -118,16 +109,15 @@ int d3dDevice::GetDisplayInfo(pddiDisplayInfo** info)
             displayInfo[nDisplay].modeInfo = new pddiModeInfo[totalModes];
             int usefulModes = 0;
 
-            for(int j = 0; j < totalModes; j++)
-            {
+            for (int j = 0; j < totalModes; j++) {
                 D3DDISPLAYMODE mode;
                 direct3D->EnumAdapterModes(i, j, &mode);
-                displayInfo[nDisplay].modeInfo[usefulModes].width  = mode.Width;
+                displayInfo[nDisplay].modeInfo[usefulModes].width = mode.Width;
                 displayInfo[nDisplay].modeInfo[usefulModes].height = mode.Height;
-                    
+
                 displayInfo[nDisplay].modeInfo[usefulModes].bpp = DisplayBitDepth(mode.Format);
 
-                if(displayInfo[nDisplay].modeInfo[usefulModes].bpp != 0)
+                if (displayInfo[nDisplay].modeInfo[usefulModes].bpp != 0)
                     usefulModes++;
             }
             displayInfo[nDisplay].nDisplayModes = usefulModes;
@@ -138,20 +128,18 @@ int d3dDevice::GetDisplayInfo(pddiDisplayInfo** info)
     *info = displayInfo;
     return nDisplay;
 }
+
 #endif
 
-void d3dDevice::SetCurrentContext(pddiRenderContext* c)
-{
+void d3dDevice::SetCurrentContext(pddiRenderContext *c) {
     context = c;
 }
 
-pddiRenderContext* d3dDevice::GetCurrentContext()
-{
+pddiRenderContext *d3dDevice::GetCurrentContext() {
     return context;
 }
 
-pddiDisplay* d3dDevice::NewDisplay(int id)
-{
+pddiDisplay *d3dDevice::NewDisplay(int id) {
 #ifdef _XBOX
     PDDIASSERT(direct3D);
     return new d3dDisplay(direct3D);
@@ -167,32 +155,27 @@ pddiDisplay* d3dDevice::NewDisplay(int id)
 
 }
 
-pddiRenderContext* d3dDevice::NewRenderContext(pddiDisplay* display)
-{
-    d3dContext* context = new d3dContext((d3dDisplay*)display, this);
+pddiRenderContext *d3dDevice::NewRenderContext(pddiDisplay *display) {
+    d3dContext *context = new d3dContext((d3dDisplay *) display, this);
     bool goodness = context->Init();
     PDDIASSERT(goodness);
     return context;
 }
 
-pddiTexture* d3dDevice::NewTexture(pddiTextureDesc* desc)
-{
-    d3dTexture* tex = new d3dTexture((d3dContext*)context);
-    if(desc->GetVolume())
-    {
-        if(!tex->CreateVolume( desc->GetSizeX(), desc->GetSizeY(), desc->GetSizeZ(), 
-                                desc->GetBitDepth(), desc->GetAlphaDepth(), desc->GetMipMapCount(),desc->GetType(),desc->GetUsage()))
-        {
+pddiTexture *d3dDevice::NewTexture(pddiTextureDesc *desc) {
+    d3dTexture *tex = new d3dTexture((d3dContext *) context);
+    if (desc->GetVolume()) {
+        if (!tex->CreateVolume(desc->GetSizeX(), desc->GetSizeY(), desc->GetSizeZ(),
+                               desc->GetBitDepth(), desc->GetAlphaDepth(), desc->GetMipMapCount(),
+                               desc->GetType(), desc->GetUsage())) {
             lastError = tex->GetLastError();
             delete tex;
             return NULL;
         }
-    }
-    else
-    {
-        if(!tex->Create(desc->GetSizeX(), desc->GetSizeY(), desc->GetBitDepth(), 
-                         desc->GetAlphaDepth(), desc->GetMipMapCount(),desc->GetType(),desc->GetUsage()))
-        {
+    } else {
+        if (!tex->Create(desc->GetSizeX(), desc->GetSizeY(), desc->GetBitDepth(),
+                         desc->GetAlphaDepth(), desc->GetMipMapCount(), desc->GetType(),
+                         desc->GetUsage())) {
             lastError = tex->GetLastError();
             delete tex;
             return NULL;
@@ -201,27 +184,24 @@ pddiTexture* d3dDevice::NewTexture(pddiTextureDesc* desc)
     return tex;
 }
 
-pddiPrimBuffer* d3dDevice::NewPrimBuffer(pddiPrimBufferDesc* desc)
-{
-    d3dPrimBuffer* buffer = new d3dPrimBuffer((d3dContext*)context);
-    buffer->Create(desc->GetPrimType(), desc->GetVertexFormat(), 0, desc->GetVertexCount(), desc->GetIndexCount(),
-        desc->GetVertexProgram());
+pddiPrimBuffer *d3dDevice::NewPrimBuffer(pddiPrimBufferDesc *desc) {
+    d3dPrimBuffer *buffer = new d3dPrimBuffer((d3dContext *) context);
+    buffer->Create(desc->GetPrimType(), desc->GetVertexFormat(), 0, desc->GetVertexCount(),
+                   desc->GetIndexCount(),
+                   desc->GetVertexProgram());
 
     lastError = buffer->GetLastError();
-    if(lastError != PDDI_OK)
-    {
+    if (lastError != PDDI_OK) {
         delete buffer;
         return NULL;
     }
     return buffer;
 }
 
-pddiShader* d3dDevice::NewShader(const char* name, const char* aux)
-{
+pddiShader *d3dDevice::NewShader(const char *name, const char *aux) {
     return pddiBaseShader::AllocateShader(context, name, NULL);
 }
 
-void d3dDevice::AddCustomShader(const char* name, const char* aux)
-{
+void d3dDevice::AddCustomShader(const char *name, const char *aux) {
 }
 

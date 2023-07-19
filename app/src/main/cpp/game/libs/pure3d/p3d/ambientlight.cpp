@@ -7,20 +7,16 @@
 #include <p3d/context.hpp>
 #include <p3d/utility.hpp>
 
-tAmbientLight::tAmbientLight()
-{
+tAmbientLight::tAmbientLight() {
 }
 
 tAmbientLight::tAmbientLight(tAmbientLight *ambLight) :
-    tLight( ambLight )
-{
+        tLight(ambLight) {
 }
 
-tAmbientLight::~tAmbientLight()
-{
+tAmbientLight::~tAmbientLight() {
 }
 
-void tAmbientLight::Update(void)
-{
-   p3d::pddi->SetAmbientLight(colour);
+void tAmbientLight::Update(void) {
+    p3d::pddi->SetAmbientLight(colour);
 }

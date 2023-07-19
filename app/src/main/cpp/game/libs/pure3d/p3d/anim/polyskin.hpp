@@ -15,54 +15,63 @@
 #include <p3d/array.hpp>
 
 class tPose;
+
 class tSkeleton;
+
 class tPrimGroup;
+
 class tPrimGroupSkinnedStreamed;
+
 class tVertexList;
+
 class tPrimGroupLoader;
 
-class tPolySkin : public tDrawablePose
-{
+class tPolySkin : public tDrawablePose {
 public:
-    tPolySkin(int nPrimGroups=0);
+    tPolySkin(int nPrimGroups = 0);
 
-    virtual void Display()  { tDrawablePose::Display(); }
-    virtual void Display(tPose* p);
-    virtual void DisplayInstanced(tPose* p, unsigned count);
+    virtual void Display() { tDrawablePose::Display(); }
 
-    virtual void GetBoundingBox(rmt::Box3D* b)      { *b = boundingBox; }
-    virtual void GetBoundingSphere(rmt::Sphere* s)  { *s = boundingSphere; }
+    virtual void Display(tPose *p);
 
-    virtual void ProcessShaders(ShaderCallback&);
+    virtual void DisplayInstanced(tPose *p, unsigned count);
 
-    int GetNumPrimGroups()                          { return primGroup.Size(); }
-    tPrimGroup* GetPrimGroupSkinned(int i)   { return primGroup[i]; }
-    tExpressionOffsets* GetExpressionOffsets()      { return exprAnimOffsets; }
-    
-    bool IsDeformable()    const { return exprAnimOffsets != NULL; }
+    virtual void GetBoundingBox(rmt::Box3D *b) { *b = boundingBox; }
+
+    virtual void GetBoundingSphere(rmt::Sphere *s) { *s = boundingSphere; }
+
+    virtual void ProcessShaders(ShaderCallback &);
+
+    int GetNumPrimGroups() { return primGroup.Size(); }
+
+    tPrimGroup *GetPrimGroupSkinned(int i) { return primGroup[i]; }
+
+    tExpressionOffsets *GetExpressionOffsets() { return exprAnimOffsets; }
+
+    bool IsDeformable() const { return exprAnimOffsets != NULL; }
 
 protected:
     virtual ~tPolySkin();
 
-    rmt::Matrix* boneMatrix; // restpose -> joint -> world space matrices
+    rmt::Matrix *boneMatrix; // restpose -> joint -> world space matrices
 
-    tPtrArray<tPrimGroup*> primGroup;
-    tExpressionOffsets* exprAnimOffsets;  // stores all tOffsetLists for this skin
+    tPtrArray<tPrimGroup *> primGroup;
+    tExpressionOffsets *exprAnimOffsets;  // stores all tOffsetLists for this skin
 
     rmt::Sphere boundingSphere;
-    rmt::Box3D  boundingBox;
+    rmt::Box3D boundingBox;
 
     friend class tPolySkinLoader;
 };
 
 //-------------------------------------------------------------------
-class tPolySkinLoader : public tSimpleChunkHandler
-{
+class tPolySkinLoader : public tSimpleChunkHandler {
 public:
     tPolySkinLoader();
 
-    virtual tEntity* LoadObject(tChunkFile* chunk, tEntityStore* store);
-    virtual void SetOptimise(bool b) { optimise = b;}
+    virtual tEntity *LoadObject(tChunkFile *chunk, tEntityStore *store);
+
+    virtual void SetOptimise(bool b) { optimise = b; }
 
 protected:
     tExpressionOffsetsLoader offsetLoader;

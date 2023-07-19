@@ -10,16 +10,17 @@
 #include <pddi/pddienum.hpp>
 
 class d3dContext;
+
 class pddiBaseShader;
 
 // machine dependent types
-typedef __int64        PDDI_S64;
-typedef __int64        PDDI_U64;
-typedef int            PDDI_S32;
-typedef unsigned       PDDI_U32;
-typedef char           PDDI_S8;
-typedef unsigned char  PDDI_U8;
-typedef short          PDDI_S16;
+typedef __int64 PDDI_S64;
+typedef __int64 PDDI_U64;
+typedef int PDDI_S32;
+typedef unsigned PDDI_U32;
+typedef char PDDI_S8;
+typedef unsigned char PDDI_U8;
+typedef short PDDI_S16;
 typedef unsigned short PDDI_U16;
 
 //-------------------------------------------------------------------
@@ -33,7 +34,7 @@ typedef unsigned short PDDI_U16;
 class pddiDevice;
 
 // prototype for the initialization function through implicit linking
-extern "C" int pddiCreate(int versionMajor, int versionMinor, pddiDevice** dev);
+extern "C" int pddiCreate(int versionMajor, int versionMinor, pddiDevice **dev);
 
 // the xbox version of PDDI still uses fully virtualized interfaces (but shouldn't)
 #define PDDI_INTERFACE virtual
@@ -41,12 +42,10 @@ extern "C" int pddiCreate(int versionMajor, int versionMinor, pddiDevice** dev);
 #define PDDI_VIRTUAL
 
 // display init
-class pddiDisplayInit
-{
+class pddiDisplayInit {
 public:
-    enum AntiAlias 
-    {
-        NONE                 = 0x0011,
+    enum AntiAlias {
+        NONE = 0x0011,
         MULTISAMPLE_2_LINEAR = 0x1021,
         MULTISAMPLE_2_QUINCUNX = 0x1121,
         SUPERSAMPLE_2_HORIZONTAL_LINEAR = 0x2021,
@@ -59,17 +58,15 @@ public:
         SUPERSAMPLE_9_GAUSSIAN = 0x2233
     };
 
-    enum PreFilter 
-    { 
-        DEFAULT  =                0x00000,
-        X1R5G5B5 =                0x10000, 
-        R5G6B5   =                0x20000, 
-        X8R8G8B8 =                0x30000, 
-        A8R8G8B8 =                0x40000 
+    enum PreFilter {
+        DEFAULT = 0x00000,
+        X1R5G5B5 = 0x10000,
+        R5G6B5 = 0x20000,
+        X8R8G8B8 = 0x30000,
+        A8R8G8B8 = 0x40000
     };
 
-    pddiDisplayInit()
-    {
+    pddiDisplayInit() {
         xsize = 640;
         ysize = 480;
         bpp = 32;
@@ -84,14 +81,14 @@ public:
         allowWidescreen = false;
     }
 
-    int               xsize;         // x resolution (fullscreen only)
-    int               ysize;         // y resolution (fullscreen only)
-    int               bpp;           // bits per pixel
-    int               nColourBuffer; // number of frame buffers
-    unsigned          bufferMask;    // auxilliary buffer mask
+    int xsize;         // x resolution (fullscreen only)
+    int ysize;         // y resolution (fullscreen only)
+    int bpp;           // bits per pixel
+    int nColourBuffer; // number of frame buffers
+    unsigned bufferMask;    // auxilliary buffer mask
 
-    AntiAlias         antiAlias;
-    PreFilter         preFilter;
+    AntiAlias antiAlias;
+    PreFilter preFilter;
 
     bool lockToVsync;
     bool asyncSwap;
@@ -106,6 +103,7 @@ public:
 //-------------------------------------------------------------------
 
 #include <pddi/xbox/primstream.hpp>
+
 #define pddiPrimStream d3dPrimStream
 
 //-------------------------------------------------------------------
@@ -113,8 +111,7 @@ public:
 // assumes OpenGL-style rendering
 
 // alpha blending modes
-enum pddiBlendFactor
-{
+enum pddiBlendFactor {
     PDDI_BF_ZERO,
     PDDI_BF_ONE,
     PDDI_BF_SRC,
@@ -128,11 +125,11 @@ enum pddiBlendFactor
     PDDI_BF_SRCALPHASATURATE
 };
 
-class pddiBlendController : public pddiObject
-{
+class pddiBlendController : public pddiObject {
 public:
     virtual void SetBlend(pddiBlendFactor src, pddiBlendFactor dest) = 0;
-    virtual void GetBlend(pddiBlendFactor* src, pddiBlendFactor* dest) = 0;
+
+    virtual void GetBlend(pddiBlendFactor *src, pddiBlendFactor *dest) = 0;
 };
 
 #endif 

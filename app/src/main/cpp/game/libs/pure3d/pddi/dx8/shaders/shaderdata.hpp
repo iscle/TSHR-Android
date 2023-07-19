@@ -8,11 +8,10 @@
 
 #include "direct3d.hpp"
 
-namespace ShaderData
-{
-    D3DSHADEMODE   shadeTable[];
-    D3DBLEND       blendTable[];
-    D3DCMPFUNC     compareTable[];
+namespace ShaderData {
+    D3DSHADEMODE shadeTable[];
+    D3DBLEND blendTable[];
+    D3DCMPFUNC compareTable[];
 }
 
 #endif

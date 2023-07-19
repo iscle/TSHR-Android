@@ -9,16 +9,16 @@
 #include <p3d/platform/ps2/vrmanager.hpp>
 
 //------------------------------------------------------------------------
-static const int QUEUESIZE = 20;  
+static const int QUEUESIZE = 20;
+
 //------------------------------------------------------------------------
 tVRManager::tVRManager() : start(0), end(0), head(0), tail(0),
-                                    upload(QUEUESIZE), resident(QUEUESIZE) 
-{
+                           upload(QUEUESIZE), resident(QUEUESIZE) {
     // default constructor
 }
+
 //------------------------------------------------------------------------
-void tVRManager::AddTexture(tTexture *texture)
-{
+void tVRManager::AddTexture(tTexture *texture) {
 /*
 
 - if texture is already resident in VRAM, return
@@ -32,16 +32,16 @@ void tVRManager::AddTexture(tTexture *texture)
 
 */
 }
+
 //------------------------------------------------------------------------
-void tVRManager::RemoveTexture()
-{
+void tVRManager::RemoveTexture() {
 /*
 
 - remove texture at head of 'resident' queue
 - if new texture at head of 'resident' queue != removed texture
         - toggle residency flag to false
 - update VRAM pointers
-- while free VRAM > size of texture at head of 'upload' queue 
+- while free VRAM> size of texture at head of 'upload' queue
         - remove texture from head of 'upload' queue
         - upload to VRAM
         - toggle residency flag to true

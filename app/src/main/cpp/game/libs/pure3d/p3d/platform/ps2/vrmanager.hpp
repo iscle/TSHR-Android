@@ -13,24 +13,25 @@
 #include <p3d/texture.hpp>
 
 //------------------------------------------------------------------------
-class tVRManager 
-{
+class tVRManager {
 public:
-     tVRManager();
-     virtual ~tVRManager() {}
-     
-     void AddTexture(tTexture *texture);
-     void RemoveTexture();
+    tVRManager();
+
+    virtual ~tVRManager() {}
+
+    void AddTexture(tTexture *texture);
+
+    void RemoveTexture();
 
 private:
     int start;  // bounds for dynamic region of VRAM
     int end;
-    
+
     int head;  // start of available VRAM
     int tail;  // start of oldest resident texture
-    
-    tStaticQueue<tTexture> upload;
-    tStaticQueue<tTexture> resident;
+
+    tStaticQueue <tTexture> upload;
+    tStaticQueue <tTexture> resident;
 };
 
 #endif // _VRMANAGER_HPP_

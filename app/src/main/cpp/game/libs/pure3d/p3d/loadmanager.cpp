@@ -44,8 +44,8 @@ int strcmpi(const char *a, const char *b)
 
      while ((*a != 0) && (*b != 0))
      {
-          if (tolower(*a) < tolower(*b)) return -1;
-          else if (tolower(*a) > tolower(*b)) return 1;
+          if (tolower(*a) <tolower(*b)) return -1;
+          else if (tolower(*a)> tolower(*b)) return 1;
           ++a;
           ++b;
      }
@@ -57,69 +57,66 @@ int strcmpi(const char *a, const char *b)
 }
 #endif
 
-class tTempStore : public tEntityStore
-{
+class tTempStore : public tEntityStore {
 public:
     tTempStore() : entity(NULL) {}
-    virtual void Store(tEntity* e)
-    {
+
+    virtual void Store(tEntity *e) {
         // Only allow one object to be stored in this mock entity store.
         // This will also find chunk loaders which are storing more than
         // one object (which is not allowed with radLoad)
         rAssert(!entity);
         entity = e;
     }
-    virtual void StoreHandlingCollisions( tEntity* e )
-    {
-        Store( e );
+
+    virtual void StoreHandlingCollisions(tEntity *e) {
+        Store(e);
     }
 
-    tEntity* GetEntity() {return entity;}
+    tEntity *GetEntity() { return entity; }
+
 protected:
-    tEntity* entity;
+    tEntity *entity;
 };
 
-void tFileHandler::LoadFile(radLoadOptions* options, radLoadUpdatableRequest* request)
-{
-    tFile* file = static_cast<tFile*>(request->GetStream());
-    radMemoryAllocator old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
-    tEntityStore* store = new tEntityStore();
-    ::radMemorySetCurrentAllocator( old );
+void tFileHandler::LoadFile(radLoadOptions *options, radLoadUpdatableRequest *request) {
+    tFile *file = static_cast<tFile *>(request->GetStream());
+    radMemoryAllocator old = ::radMemorySetCurrentAllocator(RADMEMORY_ALLOC_TEMP);
+    tEntityStore *store = new tEntityStore();
+    ::radMemorySetCurrentAllocator(old);
     store->SetAutoCollisionTest(false);
     store->AddRef();
-    
-    if(!file)
-    {
-        radMemoryAllocator old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
-        file = new tFileFTT(options->filename,options->syncLoad);
-        ::radMemorySetCurrentAllocator( old );
+
+    if (!file) {
+        radMemoryAllocator old = ::radMemorySetCurrentAllocator(RADMEMORY_ALLOC_TEMP);
+        file = new tFileFTT(options->filename, options->syncLoad);
+        ::radMemorySetCurrentAllocator(old);
         request->SetStream(file);
     }
     file->AddRef();
-    Load(file,store);
+    Load(file, store);
     request->SetInventory(store);
     file->Release();
     store->Release();
-    
+
 }
 
-IRefCount* tChunkHandler::LoadData(radLoadStream* stream, radMemoryAllocator alloc, radLoadInventory* resolver, IRefCount* originalObject)
-{
+IRefCount *
+tChunkHandler::LoadData(radLoadStream *stream, radMemoryAllocator alloc, radLoadInventory *resolver,
+                        IRefCount *originalObject) {
     // Right now there's no re-loading any pure3d objects.
-    if(originalObject)
-    {
+    if (originalObject) {
         return originalObject;
     }
 
-    tTempStore* store = new tTempStore();
-    Load( static_cast<tChunkFile*>(stream), store );
+    tTempStore *store = new tTempStore();
+    Load(static_cast<tChunkFile *>(stream), store);
     return store->GetEntity();
 }
 
-tP3DFileHandler::tP3DFileHandler(int n)
-{
+tP3DFileHandler::tP3DFileHandler(int n) {
     nExtensions = 1;
-    strcpy(extensions[0],".p3d");
+    strcpy(extensions[0], ".p3d");
 
 #ifdef P3D_TRACK_LOAD_STATS
     mTotalLoadTime = 0;
@@ -127,60 +124,57 @@ tP3DFileHandler::tP3DFileHandler(int n)
 #endif
 }
 
-tP3DFileHandler::~tP3DFileHandler()
-{
+tP3DFileHandler::~tP3DFileHandler() {
     RemoveAllHandlers();
 }
 
-bool tP3DFileHandler::CheckExtension(char* file)
-{
-    for(int i = 0; i < nExtensions; i++)
-    {
+bool tP3DFileHandler::CheckExtension(char *file) {
+    for (int i = 0; i < nExtensions; i++) {
         int len = strlen(file);
         int extLen = strlen(extensions[i]);
-        
-        if(len >= extLen)
-        {
-            if(strcmpi(extensions[i], &file[len-extLen]) == 0)
+
+        if (len >= extLen) {
+            if (strcmpi(extensions[i], &file[len - extLen]) == 0)
                 return true;
         }
-        if((len == extLen-1))
-        {
-          if(strcmp(&extensions[i][1], &file[len-extLen+1]) == 0)
-              return true;
-          if(strcmpi(&extensions[i][1], &file[len-extLen+1]) == 0)
-              return true;
+        if ((len == extLen - 1)) {
+            if (strcmp(&extensions[i][1], &file[len - extLen + 1]) == 0)
+                return true;
+            if (strcmpi(&extensions[i][1], &file[len - extLen + 1]) == 0)
+                return true;
         }
     }
     return false;
 }
 
-struct LoadStats
-{
+struct LoadStats {
     unsigned loadTime;
     unsigned taskedOutTime;
     unsigned loadCount;
-    LoadStats(void) { loadTime = 0; taskedOutTime = 0; loadCount = 0; }
+
+    LoadStats(void) {
+        loadTime = 0;
+        taskedOutTime = 0;
+        loadCount = 0;
+    }
 };
 
 
-tLoadStatus  tP3DFileHandler::Load(tFile* file, tEntityStore* store)
-{
+tLoadStatus tP3DFileHandler::Load(tFile *file, tEntityStore *store) {
 #ifdef P3D_TRACK_LOAD_STATS
     std::map<unsigned, LoadStats> chunkLoadTimes;
     tLoadManager::ResetTaskedOutStats();
     radTime64 totalstart = radTimeGetMicroseconds64();
     tLoadManager::SetLoadActive(true);
 #endif
-    radMemoryAllocator old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
-    tChunkFile* chunkFile = new tChunkFile(file);
-    ::radMemorySetCurrentAllocator( old );
+    radMemoryAllocator old = ::radMemorySetCurrentAllocator(RADMEMORY_ALLOC_TEMP);
+    tChunkFile *chunkFile = new tChunkFile(file);
+    ::radMemorySetCurrentAllocator(old);
     chunkFile->AddRef();
     tLoadStatus fileStatus = LOAD_OK;
 
     P3DASSERT(chunkFile->GetCurrentID() == Pure3D::DATA_FILE);
-    while(chunkFile->ChunksRemaining())
-    {
+    while (chunkFile->ChunksRemaining()) {
 
 #ifdef P3D_TRACK_LOAD_STATS
         unsigned taskedoutstart = tLoadManager::TaskedOutTime();
@@ -188,15 +182,14 @@ tLoadStatus  tP3DFileHandler::Load(tFile* file, tEntityStore* store)
 #endif
         chunkFile->BeginChunk();
 
-        tChunkHandler* h = static_cast<tChunkHandler*>(radLoad->GetDataLoader(chunkFile->GetCurrentID()));
-        if (h != NULL)
-        {
+        tChunkHandler *h = static_cast<tChunkHandler *>(radLoad->GetDataLoader(
+                chunkFile->GetCurrentID()));
+        if (h != NULL) {
             tLoadStatus status = h->Load(chunkFile, store);
-            if(fileStatus == LOAD_ERROR) fileStatus = status;
-        }
-        else
-        {
-            p3d::printf("Unrecognized chunk (%x) in %s\n",  chunkFile->GetCurrentID(), file->GetFilename());
+            if (fileStatus == LOAD_ERROR) fileStatus = status;
+        } else {
+            p3d::printf("Unrecognized chunk (%x) in %s\n", chunkFile->GetCurrentID(),
+                        file->GetFilename());
         }
 
 #ifdef P3D_TRACK_LOAD_STATS
@@ -235,92 +228,79 @@ tLoadStatus  tP3DFileHandler::Load(tFile* file, tEntityStore* store)
     return fileStatus;
 }
 
-tChunkHandler* tP3DFileHandler::AddHandler(tChunkHandler* l)
-{
+tChunkHandler *tP3DFileHandler::AddHandler(tChunkHandler *l) {
     radLoad->AddDataLoader(l, l->GetChunkID());
     return l;
 }
 
-tChunkHandler* tP3DFileHandler::AddHandler(tChunkHandler* l, unsigned chunkID)
-{
+tChunkHandler *tP3DFileHandler::AddHandler(tChunkHandler *l, unsigned chunkID) {
     radLoad->AddDataLoader(l, chunkID);
     return l;
 }
 
-tChunkHandler* tP3DFileHandler::GetHandler(unsigned chunkID)
-{
-    return dynamic_cast<tChunkHandler*>(radLoad->GetDataLoader( chunkID ));
+tChunkHandler *tP3DFileHandler::GetHandler(unsigned chunkID) {
+    return dynamic_cast<tChunkHandler *>(radLoad->GetDataLoader(chunkID));
 }
 
-void tP3DFileHandler::RemoveHandler(unsigned chunkID)
-{
-    radLoad->RemoveDataLoader( chunkID );
+void tP3DFileHandler::RemoveHandler(unsigned chunkID) {
+    radLoad->RemoveDataLoader(chunkID);
 }
 
-void tP3DFileHandler::RemoveAllHandlers(void)
-{
+void tP3DFileHandler::RemoveAllHandlers(void) {
     // Stub
     // No way to do this right now.
 }
 
-void tP3DFileHandler::AddAlternateExtension(char* ext)
-{
+void tP3DFileHandler::AddAlternateExtension(char *ext) {
     P3DASSERT(nExtensions < 8);
     P3DASSERT(strlen(ext) < 8);
     strcpy(extensions[nExtensions++], ext);
-    radLoad->AddFileLoader( this, ext ); 
+    radLoad->AddFileLoader(this, ext);
 }
 
-tLoadStatus tSimpleChunkHandler::Load(tChunkFile* file, tEntityStore* store)
-{
+tLoadStatus tSimpleChunkHandler::Load(tChunkFile *file, tEntityStore *store) {
     status = LOAD_OK;
 
-    if(file->GetCurrentID() != _id)
+    if (file->GetCurrentID() != _id)
         return LOAD_ERROR;
 
-    tEntity* t = LoadObject(file, store);
+    tEntity *t = LoadObject(file, store);
 
-    if(!t)
+    if (!t)
         return (status == LOAD_OK) ? LOAD_ERROR : status;
 
-    tInventory* inv = dynamic_cast<tInventory*>(store);
-    if(inv && inv->TestCollision(t))
-    {
+    tInventory *inv = dynamic_cast<tInventory *>(store);
+    if (inv && inv->TestCollision(t)) {
         HandleCollision(t);
         t = NULL;
         return LOAD_ERROR;
-    }
-    else
-    {
-        if( m_NameOverride )
-        {
-            t->SetName( m_NameOverride );
+    } else {
+        if (m_NameOverride) {
+            t->SetName(m_NameOverride);
             m_NameOverride = 0;
         }
-        store->StoreHandlingCollisions( t );
+        store->StoreHandlingCollisions(t);
     }
 
     return LOAD_OK;
 }
 
-void tSimpleChunkHandler::HandleCollision(tEntity* e)
-{
+void tSimpleChunkHandler::HandleCollision(tEntity *e) {
 #ifdef P3D_DEBUG_MESSAGES
     char buf[256];
     p3d::ClassName(e, buf, 256);
 #ifdef P3D_ALLOW_ENTITY_GETNAME
-    p3d::printf("Pure3D : Inventory collision: %s ( %s )\n", e->GetName(), buf);
+    p3d::printf("Pure3D : Inventory collision: %s (%s)\n", e->GetName(), buf);
 #else
-    p3d::printf("Pure3D : Unknown Inventory collision: ( %s )\n", buf);
+    p3d::printf("Pure3D : Unknown Inventory collision: (%s)\n", buf);
 #endif
 #endif
- 
+
     e->AddRef(); // this is for the case when other objects Addref() in the loader
     e->Release();
 }
 
-bool tSimpleChunkHandler::CheckChunkID(unsigned id)
-{
+bool tSimpleChunkHandler::CheckChunkID(unsigned id) {
     return id == _id;
 }
 
@@ -328,182 +308,150 @@ bool tSimpleChunkHandler::CheckChunkID(unsigned id)
 // Legacy classes
 //----------------------------------------------------------------------------------
 
-tLoadRequest::tLoadRequest( const char* n) : 
-    options(new radLoadOptions),
-    request(NULL),
-    file(NULL),
-    callback(NULL),
-    section(0),
-    store(NULL),
-    priority(0),
-    userData(NULL),
-    dummy(false)
-{
+tLoadRequest::tLoadRequest(const char *n) :
+        options(new radLoadOptions),
+        request(NULL),
+        file(NULL),
+        callback(NULL),
+        section(0),
+        store(NULL),
+        priority(0),
+        userData(NULL),
+        dummy(false) {
     radMemoryAllocator current = ::radMemoryGetCurrentAllocator();
-    rAssert( current == RADMEMORY_ALLOC_TEMP );
+    rAssert(current == RADMEMORY_ALLOC_TEMP);
     section = tEntity::MakeUID(P3D_DEFAULT_INV_SECTION);
-    options->filename = new char[strlen(n)+1];
+    options->filename = new char[strlen(n) + 1];
     strcpy(options->filename, n);
     // Pure3D uses a default sync loading method
     options->syncLoad = true;
 }
 
-tLoadRequest::tLoadRequest(tFile* f) :
-    options(new radLoadOptions),
-    request(NULL),
-    file(f),
-    callback(NULL),
-    section(0),
-    store(NULL),
-    priority(0),
-    userData(NULL),
-    dummy(false)
-{
+tLoadRequest::tLoadRequest(tFile *f) :
+        options(new radLoadOptions),
+        request(NULL),
+        file(f),
+        callback(NULL),
+        section(0),
+        store(NULL),
+        priority(0),
+        userData(NULL),
+        dummy(false) {
     radMemoryAllocator current = ::radMemoryGetCurrentAllocator();
-    rAssert( current == RADMEMORY_ALLOC_TEMP );
+    rAssert(current == RADMEMORY_ALLOC_TEMP);
     // loads go into the default section (not the "current" section) unless requested otherwise
     section = tEntity::MakeUID(P3D_DEFAULT_INV_SECTION);
 
-    if(file)
-    {
+    if (file) {
         file->AddRef();
-        options->filename = new char[strlen(file->GetFullFilename())+1];
-        strcpy(options->filename,file->GetFullFilename());
+        options->filename = new char[strlen(file->GetFullFilename()) + 1];
+        strcpy(options->filename, file->GetFullFilename());
         options->stream = file;
     }
     // Pure3D uses a default sync loading method
     options->syncLoad = true;
 }
 
-tLoadRequest::~tLoadRequest()
-{
-    if(file)
-    {
+tLoadRequest::~tLoadRequest() {
+    if (file) {
         file->Release();
     }
 
     tRefCounted::Release(callback);
     tRefCounted::Release(request);
-    delete [] options->filename;
+    delete[] options->filename;
     delete options;
 }
 
-void tLoadRequest::SetCallback(Callback* c)
-{
+void tLoadRequest::SetCallback(Callback *c) {
     P3DASSERT(GetState() == CREATED);
-    tRefCounted::Assign(callback,c);
+    tRefCounted::Assign(callback, c);
     tRefCounted::Assign(callback->request, this);
 }
 
-void tLoadRequest::SetAsync(bool b)
-{
+void tLoadRequest::SetAsync(bool b) {
     P3DASSERT(GetState() == CREATED);
     options->syncLoad = !b;
 }
 
-void tLoadRequest::SetMemoryAllocator(int a)
-{
+void tLoadRequest::SetMemoryAllocator(int a) {
     P3DASSERT(GetState() == CREATED);
     options->allocator = a;
 }
 
-void tLoadRequest::SetInventorySection(const char* n)
-{
+void tLoadRequest::SetInventorySection(const char *n) {
     P3DASSERT(GetState() == CREATED);
     section = tEntity::MakeUID(n);
 }
 
-void tLoadRequest::SetInventorySection(tUID u)
-{
+void tLoadRequest::SetInventorySection(tUID u) {
     P3DASSERT(GetState() == CREATED);
     section = u;
 }
 
-void tLoadRequest::SetStore(tEntityStore* s)
-{
+void tLoadRequest::SetStore(tEntityStore *s) {
     P3DASSERT(GetState() == CREATED);
     store = s;
 }
 
-void tLoadRequest::SetPriority(int p)
-{
+void tLoadRequest::SetPriority(int p) {
     P3DASSERT(GetState() == CREATED);
     priority = p;
 }
 
-void tLoadRequest::SetUserData(void* u)
-{
+void tLoadRequest::SetUserData(void *u) {
     P3DASSERT(GetState() == CREATED);
     userData = u;
 }
 
-void tLoadRequest::SetDummy(bool d)
-{
+void tLoadRequest::SetDummy(bool d) {
     P3DASSERT(GetState() == CREATED);
     dummy = d;
 }
 
-bool tLoadRequest::IsDummy(void)
-{
+bool tLoadRequest::IsDummy(void) {
     return dummy;
 }
 
-const char* tLoadRequest::GetFilename(void)
-{
-	return options->filename;
+const char *tLoadRequest::GetFilename(void) {
+    return options->filename;
 }
 
-float tLoadRequest::GetPortionLoaded(void)
-{
-	return request->GetPercentDone();
+float tLoadRequest::GetPortionLoaded(void) {
+    return request->GetPercentDone();
 }
 
-radLoadState tLoadRequest::GetState()
-{
-    if( request )
-    {
+radLoadState tLoadRequest::GetState() {
+    if (request) {
         return request->GetState();
     }
     return CREATED;
 }
 
-void tLoadRequest::Complete()
-{
-    if( request )
-    {
-        while (!request->IsComplete())
-        {
+void tLoadRequest::Complete() {
+    if (request) {
+        while (!request->IsComplete()) {
             radLoadService();
         }
     }
 }
 
-void tLoadRequest::Cancel()
-{
-    if( request )
-    {
+void tLoadRequest::Cancel() {
+    if (request) {
         request->Cancel();
     }
 }
 
-void tLoadRequest::InternalCallback::Done()
-{
-    tEntityStore* inventory = static_cast<tEntityStore*>(request->request->GetInventory());
-    if(inventory)
-    {
-        if(request->store)
-        {
+void tLoadRequest::InternalCallback::Done() {
+    tEntityStore *inventory = static_cast<tEntityStore *>(request->request->GetInventory());
+    if (inventory) {
+        if (request->store) {
             inventory->Dump(request->store);
-        }
-        else
-        {
-            tEntityTable* sectionstore = p3d::context->GetInventory()->GetSection(request->section);
-            if(sectionstore)
-            {
+        } else {
+            tEntityTable *sectionstore = p3d::context->GetInventory()->GetSection(request->section);
+            if (sectionstore) {
                 inventory->Dump(sectionstore);
-            }
-            else
-            {
+            } else {
                 inventory->Dump(p3d::context->GetInventory());
             }
         }
@@ -521,18 +469,15 @@ int      tLoadManager::mTaskedOutAllocationsDelta = 0;
 bool     tLoadManager::mLoadActive = false;
 #endif
 
-tLoadManager::tLoadManager(int n)
-{
+tLoadManager::tLoadManager(int n) {
 }
 
-tLoadManager::~tLoadManager()
-{
+tLoadManager::~tLoadManager() {
     TriggerCallbacks();
     RemoveAllHandlers();
 }
 
-void tLoadManager::SwitchTask(void)
-{
+void tLoadManager::SwitchTask(void) {
 #ifdef P3D_TRACK_LOAD_STATS
     radTime64 start = 0;
     int freememorystart = 0, allocationsstart = 0;
@@ -560,33 +505,27 @@ void tLoadManager::SwitchTask(void)
 #endif
 }
 
-void tLoadManager::CancelAll(void)
-{
+void tLoadManager::CancelAll(void) {
     radLoad->Cancel();
 }
 
-void tLoadManager::CompleteAll(void)
-{
-    while( radLoad->IsLoadPending() )
-    {
+void tLoadManager::CompleteAll(void) {
+    while (radLoad->IsLoadPending()) {
         radLoad->Service();
     }
 }
 
-tLoadStatus tLoadManager::Load(tLoadRequest* request)
-{
+tLoadStatus tLoadManager::Load(tLoadRequest *request) {
     request->AddRef();
 
-    if(!request->IsDummy())
-    {
+    if (!request->IsDummy()) {
         radLoad->Load(request->options, &request->request);
-        radMemoryAllocator old = ::radMemorySetCurrentAllocator( RADMEMORY_ALLOC_TEMP );
-        tLoadRequest::InternalCallback* newRequest = new tLoadRequest::InternalCallback(request);
-        ::radMemorySetCurrentAllocator( old );
-        radLoad->AddCallback( newRequest );
+        radMemoryAllocator old = ::radMemorySetCurrentAllocator(RADMEMORY_ALLOC_TEMP);
+        tLoadRequest::InternalCallback *newRequest = new tLoadRequest::InternalCallback(request);
+        ::radMemorySetCurrentAllocator(old);
+        radLoad->AddCallback(newRequest);
     }
-    if(request->callback)
-    {
+    if (request->callback) {
         radLoad->AddCallback(request->callback);
     }
 
@@ -594,36 +533,30 @@ tLoadStatus tLoadManager::Load(tLoadRequest* request)
     return LOAD_OK;
 }
 
-void tLoadManager::TriggerCallbacks(void)
-{
+void tLoadManager::TriggerCallbacks(void) {
 }
 
-tFileHandler* tLoadManager::AddHandler(tFileHandler* l, char* ext)
-{
+tFileHandler *tLoadManager::AddHandler(tFileHandler *l, char *ext) {
     radLoad->AddFileLoader(l, ext);
     return l;
 }
 
-tFileHandler* tLoadManager::GetHandler(char* ext)
-{
-    return dynamic_cast<tFileHandler*>(radLoad->GetFileLoader(ext));
+tFileHandler *tLoadManager::GetHandler(char *ext) {
+    return dynamic_cast<tFileHandler *>(radLoad->GetFileLoader(ext));
 }
 
-void tLoadManager::RemoveHandler(char* ext)
-{
+void tLoadManager::RemoveHandler(char *ext) {
     radLoad->RemoveFileLoader(ext);
 }
 
-void tLoadManager::RemoveAllHandlers()
-{
+void tLoadManager::RemoveAllHandlers() {
     // Stub
     // No way to do this right now
 }
 
 
-tP3DFileHandler* tLoadManager::GetP3DHandler(void)
-{
-    return dynamic_cast<tP3DFileHandler*>(GetHandler(".p3d"));
+tP3DFileHandler *tLoadManager::GetP3DHandler(void) {
+    return dynamic_cast<tP3DFileHandler *>(GetHandler(".p3d"));
 }
 
 

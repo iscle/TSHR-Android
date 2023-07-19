@@ -17,34 +17,37 @@
 #include <p3d/anim/animate.hpp>
 
 class tExpression;
+
 class tExpressionMixer;
 
 //**************************************************************
 // Class tExpressionAnimationController
 //**************************************************************
-class tExpressionAnimationController : public tBlendFrameController
-{
+class tExpressionAnimationController : public tBlendFrameController {
 public:
     tExpressionAnimationController();
-    tExpressionAnimationController(tExpressionAnimationController* c);
 
-    virtual tFrameController* Clone(void);
+    tExpressionAnimationController(tExpressionAnimationController *c);
 
-    virtual bool ValidateAnimation(tAnimation* anim);
+    virtual tFrameController *Clone(void);
 
-    virtual void              SetTargetMixer(tExpressionMixer* t);
-    virtual tExpressionMixer* GetTargetMixer() const;
+    virtual bool ValidateAnimation(tAnimation *anim);
+
+    virtual void SetTargetMixer(tExpressionMixer *t);
+
+    virtual tExpressionMixer *GetTargetMixer() const;
 
 protected:
     virtual ~tExpressionAnimationController();
 
     virtual void UpdateNoBlending();
+
     virtual void UpdateWithBlending();
 
     void ResetAccumulators();
 
-    tExpressionMixer* mixer;
-    float*            expStateAccumulator;
+    tExpressionMixer *mixer;
+    float *expStateAccumulator;
 };
 
 #endif

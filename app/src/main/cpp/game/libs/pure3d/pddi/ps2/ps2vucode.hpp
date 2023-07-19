@@ -29,11 +29,9 @@ extern u_int VU1_SHADOW_VOL;
 extern u_int VU1_REFLECT;
 
 
-namespace VU
-{
-    inline unsigned ConvertProgramAddress(void* base, void* addr)
-    {
-        return ((unsigned)addr - (unsigned)base) >> 3;
+namespace VU {
+    inline unsigned ConvertProgramAddress(void *base, void *addr) {
+        return ((unsigned) addr - (unsigned) base) >> 3;
     }
 };
 

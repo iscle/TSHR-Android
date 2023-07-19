@@ -10,21 +10,26 @@
 #include"shader.hpp"
 
 class d3dContext;
+
 class d3dTexture;
 
-class d3dBumpMapVertexShader : public d3dShader
-{
+class d3dBumpMapVertexShader : public d3dShader {
 public:
-    d3dBumpMapVertexShader(d3dContext* c);
+    d3dBumpMapVertexShader(d3dContext *c);
+
     ~d3dBumpMapVertexShader();
-    const char* GetType(void);
-    int  GetPasses();
 
-	void PreRender( );
-	void PostRender( );
+    const char *GetType(void);
 
-	bool IsVertexShader( ){ return true; }
-	void LoadVSConstants( );
+    int GetPasses();
+
+    void PreRender();
+
+    void PostRender();
+
+    bool IsVertexShader() { return true; }
+
+    void LoadVSConstants();
 
 protected:
     //
@@ -33,34 +38,37 @@ protected:
     void SetPass(int pass = 0);
 
     // texture
-    void SetBumpMap(pddiTexture* texture);
-    void SetBaseTex(pddiTexture* texture);	
-    
-    void EnableSpecular(int b)
-    {
+    void SetBumpMap(pddiTexture *texture);
+
+    void SetBaseTex(pddiTexture *texture);
+
+    void EnableSpecular(int b) {
         m_bSpecularEnabled = b;
     }
-    
-    pddiShadeTextureTable* GetTextureTable(void) { return textureTable;}    
-    pddiShadeIntTable*  GetIntTable(void) { return intTable;}
-    pddiShadeFloatTable*   GetFloatTable(void)   { return floatTable;}
-    pddiShadeColourTable*  GetColourTable(void)  { return colourTable;}
+
+    pddiShadeTextureTable *GetTextureTable(void) { return textureTable; }
+
+    pddiShadeIntTable *GetIntTable(void) { return intTable; }
+
+    pddiShadeFloatTable *GetFloatTable(void) { return floatTable; }
+
+    pddiShadeColourTable *GetColourTable(void) { return colourTable; }
 
     // texturing
-    d3dTexture* m_bumpMap;
-    d3dTexture* m_baseTexture;
+    d3dTexture *m_bumpMap;
+    d3dTexture *m_baseTexture;
     int m_bSpecularEnabled;
-    
-	//pixel shader handle
-	unsigned long m_hSpecDiffBumpMapPS;
+
+    //pixel shader handle
+    unsigned long m_hSpecDiffBumpMapPS;
 
     // alpha blending
-    
-    static pddiShadeTextureTable  textureTable[];    
-    static pddiShadeIntTable   intTable[];
+
+    static pddiShadeTextureTable textureTable[];
+    static pddiShadeIntTable intTable[];
     static pddiShadeColourTable colourTable[];
     static pddiShadeFloatTable floatTable[];
-    
+
 };
 
 #endif

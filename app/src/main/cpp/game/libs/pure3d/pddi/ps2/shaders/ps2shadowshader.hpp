@@ -13,12 +13,12 @@
 
 class ps2Texture;
 
-class ps2ShadowShader : public ps2Shader
-{
+class ps2ShadowShader : public ps2Shader {
 public:
-    ps2ShadowShader(ps2Context* context);
+    ps2ShadowShader(ps2Context *context);
 
-    virtual const char* GetType(void) { return "shadow"; }
+    virtual const char *GetType(void) { return "shadow"; }
+
     static void Install();
 
 protected:
@@ -26,9 +26,10 @@ protected:
 
     // ps2Shader interface
     void Validate(unsigned format);
-    void Bind(GSContext* context, VifStream& vif);
 
-    ps2Context* context;
+    void Bind(GSContext *context, VifStream &vif);
+
+    ps2Context *context;
 };
 
 #endif // PS2SHADOWSHADER_HPP_INCLUDED

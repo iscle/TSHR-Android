@@ -13,37 +13,38 @@ class tLight;
 //*********************************************************
 // Class tLightAnimationController
 //*********************************************************
-class tLightAnimationController : public tBlendFrameController
-{
+class tLightAnimationController : public tBlendFrameController {
 public:
     tLightAnimationController();
-    tLightAnimationController(tLightAnimationController* c);
 
-    void SetLight(tLight* light);
-    tLight* Light(void) { return mLight; }
+    tLightAnimationController(tLightAnimationController *c);
 
-    virtual bool ValidateAnimation(tAnimation* anim);
+    void SetLight(tLight *light);
 
-    virtual tFrameController* Clone(void);
+    tLight *Light(void) { return mLight; }
+
+    virtual bool ValidateAnimation(tAnimation *anim);
+
+    virtual tFrameController *Clone(void);
 
 protected:
     virtual ~tLightAnimationController();
 
     void UpdateNoBlending();
+
     void UpdateWithBlending();
 
     // "Spot" enum entry Added by Bryan Ewert on 19 Dec 2001
-    enum tLightType 
-    {
-        Invalid = -1,  
-        Ambient, 
+    enum tLightType {
+        Invalid = -1,
+        Ambient,
         Point,
-        Directional, 
+        Directional,
         Spot
     };
 
-    tLight*     mLight;
-    tLightType  mLightType;
+    tLight *mLight;
+    tLightType mLightType;
 };
 
 #endif // _LIGHTANIMATION_HPP_

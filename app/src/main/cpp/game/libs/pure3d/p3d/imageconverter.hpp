@@ -10,36 +10,54 @@
 #include <pddi/pddienum.hpp>
 
 class pddiSurface;
+
 class pddiTexture;
+
 struct pddiLockInfo;
+
 class tTexture;
+
 class tImage;
+
 class tImage32;
+
 class tImage8;
 
-class tImageConverter
-{
+class tImageConverter {
 public:
     tImageConverter();
+
     virtual ~tImageConverter();
 
-    virtual tTexture*    ImageToTexture(tImage* image, bool linear = false);
-    virtual tTexture*    ImageToVolumeTexture(tImage** image, int numImages, int numMipMaps = 0, pddiTextureUsageHint usage = PDDI_USAGE_STATIC);
-    virtual tTexture*    ImageInToVolumeTexture(tImage** image, int numImages, tTexture* texture, int mipLevel = 0);
-    virtual tImage*      LockToImage(pddiLockInfo*);
+    virtual tTexture *ImageToTexture(tImage *image, bool linear = false);
 
-    virtual void UpdateTexture(tImage* image, tTexture* texture, int mip = 0);
-    virtual void UpdateVolumeTexture(tImage* image, pddiLockInfo* lock, int depth);
-    virtual void UpdateSurface(tImage* image, pddiLockInfo* lock);
-    virtual void UpdateImage(pddiLockInfo* lock, tImage* image);
+    virtual tTexture *ImageToVolumeTexture(tImage **image, int numImages, int numMipMaps = 0,
+                                           pddiTextureUsageHint usage = PDDI_USAGE_STATIC);
+
+    virtual tTexture *
+    ImageInToVolumeTexture(tImage **image, int numImages, tTexture *texture, int mipLevel = 0);
+
+    virtual tImage *LockToImage(pddiLockInfo *);
+
+    virtual void UpdateTexture(tImage *image, tTexture *texture, int mip = 0);
+
+    virtual void UpdateVolumeTexture(tImage *image, pddiLockInfo *lock, int depth);
+
+    virtual void UpdateSurface(tImage *image, pddiLockInfo *lock);
+
+    virtual void UpdateImage(pddiLockInfo *lock, tImage *image);
 
 private:
 
-    void FillLockPAL8(tImage* img, pddiLockInfo* lock);
-    void FillLockRGB16(tImage* image, pddiLockInfo* lock);
-    void FillLockRGB32(tImage* image, pddiLockInfo* lock);
-    void FillImage32(pddiLockInfo* lock, tImage32* image);
-    void FillImage8(pddiLockInfo* lock, tImage8* image);
+    void FillLockPAL8(tImage *img, pddiLockInfo *lock);
+
+    void FillLockRGB16(tImage *image, pddiLockInfo *lock);
+
+    void FillLockRGB32(tImage *image, pddiLockInfo *lock);
+
+    void FillImage32(pddiLockInfo *lock, tImage32 *image);
+
+    void FillImage8(pddiLockInfo *lock, tImage8 *image);
 };
 
 #endif /* _IMAGECONV_HPP */

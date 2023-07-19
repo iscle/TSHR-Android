@@ -16,49 +16,51 @@
 #include <radmath/radmath.hpp>
 
 
-class tExpressionOffsets : public tRefCounted
-{
+class tExpressionOffsets : public tRefCounted {
 public:
     tExpressionOffsets();
+
     ~tExpressionOffsets();
 
-    struct Offset
-    {
+    struct Offset {
         unsigned int vtxIndex;
-        rmt::Vector  offset;
+        rmt::Vector offset;
     };
 
-    struct OffsetList
-    {
+    struct OffsetList {
         unsigned int offsetCount;
         unsigned int keyIndex;
         unsigned int primGroupIdx;
         Offset *offsets;
     };
-    
-    typedef OffsetList** OffsetListGroup;
 
-    void SetNumPrimGroups(unsigned long n_primgroups) { m_nExprPrimGroups =  n_primgroups;} 
-    void SetNumOffsetLists(unsigned long n_offsetlists) { m_nOffsetLists =  n_offsetlists;} 
+    typedef OffsetList **OffsetListGroup;
+
+    void SetNumPrimGroups(unsigned long n_primgroups) { m_nExprPrimGroups = n_primgroups; }
+
+    void SetNumOffsetLists(unsigned long n_offsetlists) { m_nOffsetLists = n_offsetlists; }
 
     bool hasExpression(int primgrpIdx);
+
     unsigned long GetNumPrimGroups() { return m_nExprPrimGroups; }
+
     unsigned long GetNumOffsetLists() { return m_nOffsetLists; }
+
     unsigned long GetNumVerticesForKey(int keyIdx);
-    OffsetList** GetOffsetLists() { return m_pOffsetListsGroup; }
- 
+
+    OffsetList **GetOffsetLists() { return m_pOffsetListsGroup; }
 
 
 protected:
     friend class tExpressionOffsetsLoader;
-    void InsertList(tExpressionOffsets::OffsetList* pOffsetList, int idx);
 
-    
+    void InsertList(tExpressionOffsets::OffsetList *pOffsetList, int idx);
 
-    unsigned long    m_nExprPrimGroups;    //number of primgroups which have vtx offset data
-    unsigned long    m_nOffsetLists;        //number of offset lists
-    unsigned long*    m_pPrimGroupIndices;//primgroups which have offset data
-    OffsetListGroup    m_pOffsetListsGroup;
+
+    unsigned long m_nExprPrimGroups;    //number of primgroups which have vtx offset data
+    unsigned long m_nOffsetLists;        //number of offset lists
+    unsigned long *m_pPrimGroupIndices;//primgroups which have offset data
+    OffsetListGroup m_pOffsetListsGroup;
 
 
 };
@@ -66,14 +68,16 @@ protected:
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
-class tExpressionOffsetsLoader
-{
+class tExpressionOffsetsLoader {
 public:
     tExpressionOffsetsLoader();
+
     ~tExpressionOffsetsLoader() {};
-    tRefCounted* LoadObject(tChunkFile*, tEntityStore* store);
-protected:  
-    
+
+    tRefCounted *LoadObject(tChunkFile *, tEntityStore *store);
+
+protected:
+
 };
 
 #endif

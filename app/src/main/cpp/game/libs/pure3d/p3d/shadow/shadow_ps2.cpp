@@ -28,7 +28,7 @@
 
 tShader* tShadowGeneratorImpl::s_VolumeShader = NULL;
 
-static const tColour s_VolumeColour(0x8,0x8,0x8,0 );
+static const tColour s_VolumeColour(0x8,0x8,0x8,0);
 
 static const unsigned MAX_EDGES     = 4096;
 static const unsigned MAX_CAP_POLYS = 4096;
@@ -170,9 +170,9 @@ void tShadowMeshImpl::UpdateEdges()
     //Update back face culling information (from pov of light source)
     if (!isPointLight)
     {
-        for (i = 0; i < numTriangles ; i++)
+        for (i = 0; i <numTriangles ; i++)
         {
-            triCulled[i] = (normals[i].DotProduct(light) < 0);
+            triCulled[i] = (normals[i].DotProduct(light) <0);
         }
     }
     else
@@ -182,7 +182,7 @@ void tShadowMeshImpl::UpdateEdges()
         {
             Vector cull;
             cull.Sub(pos, vertices[topology[i].v0]);
-            triCulled[i] = (normals[i].DotProduct(cull) > 0);
+            triCulled[i] = (normals[i].DotProduct(cull)> 0);
         }
     }
 
@@ -195,7 +195,7 @@ void tShadowMeshImpl::UpdateEdges()
             if((topology[i].n0 == (unsigned short)-1) ||
                (triCulled[topology[i].n0]))
             {
-                P3DASSERT(s_NumDrawEdges < MAX_EDGES);
+                P3DASSERT(s_NumDrawEdges <MAX_EDGES);
                 s_DrawEdges[s_NumDrawEdges].b = topology[i].v0;
                 s_DrawEdges[s_NumDrawEdges].a = topology[i].v1;
                 s_NumDrawEdges++;
@@ -203,7 +203,7 @@ void tShadowMeshImpl::UpdateEdges()
             if((topology[i].n1 == (unsigned short)-1) ||
                (triCulled[topology[i].n1]))
             {
-                P3DASSERT(s_NumDrawEdges < MAX_EDGES);
+                P3DASSERT(s_NumDrawEdges <MAX_EDGES);
                 s_DrawEdges[s_NumDrawEdges].b = topology[i].v1;
                 s_DrawEdges[s_NumDrawEdges].a = topology[i].v2;
                 s_NumDrawEdges++;
@@ -211,7 +211,7 @@ void tShadowMeshImpl::UpdateEdges()
             if((topology[i].n2 == (unsigned short)-1) ||
                (triCulled[topology[i].n2]))
             {
-                P3DASSERT(s_NumDrawEdges < MAX_EDGES);
+                P3DASSERT(s_NumDrawEdges <MAX_EDGES);
                 s_DrawEdges[s_NumDrawEdges].b = topology[i].v2;
                 s_DrawEdges[s_NumDrawEdges].a = topology[i].v0;
                 s_NumDrawEdges++;
@@ -276,7 +276,7 @@ void tShadowMeshImpl::DrawShadowVolume()
 
         ": // Outputs
          : "r" (this), "r" (tmp)  // Inputs
-          ); // Clobber list
+); // Clobber list
 #endif
 
         register DrawEdge *drawEdges = s_DrawEdges;
@@ -285,17 +285,17 @@ void tShadowMeshImpl::DrawShadowVolume()
 
         unsigned loopCount;
         unsigned edgesProcessed = 0;
-        while (edgesProcessed < s_NumDrawEdges)
+        while (edgesProcessed <s_NumDrawEdges)
         {
             loopCount = s_NumDrawEdges - edgesProcessed;
             unsigned edgesThisBuffer = stream->GetBufferSizeAvailable() / 6;
-            if (edgesThisBuffer < loopCount) loopCount = edgesThisBuffer;
+            if (edgesThisBuffer <loopCount) loopCount = edgesThisBuffer;
 
             edgesProcessed += loopCount;
 
             register Vector4 *dest = (Vector4 *)stream->GetNextVertexAddress();
 
-            for (i = 0; i < loopCount; i++)
+            for (i = 0; i <loopCount; i++)
             {
 #ifdef PS2MW        
                 asm
@@ -365,7 +365,7 @@ void tShadowMeshImpl::DrawShadowVolume()
                     .set reorder
                 ": "+&r" (drawEdges), "+&r" (indexA), "+&r" (indexB), "+&r" (dest)   // Outputs
                  : "r" (verts)  // Inputs
-                 : "memory" ); // Clobber list
+                 : "memory"); // Clobber list
 #endif
             }
 
@@ -377,7 +377,7 @@ void tShadowMeshImpl::DrawShadowVolume()
         s = light;
 
         //Draw the shadow
-        for (i = 0; i < s_NumDrawEdges; i++)
+        for (i = 0; i <s_NumDrawEdges; i++)
         {
             Vector4 &va = vertices[s_DrawEdges[i].a];
             Vector4 &vb = vertices[s_DrawEdges[i].b];
@@ -416,7 +416,7 @@ void tShadowMeshImpl::DrawNormals(void)
     pddiPrimStream* stream = p3d::pddi->BeginPrims(NULL, PDDI_PRIM_LINES, PDDI_V_C, 2 * numTriangles);
     tColour white(255,255,255,255);
     
-    for (unsigned i = 0; i < numTriangles; i++)
+    for (unsigned i = 0; i <numTriangles; i++)
     {
         rmt::Vector centre;
         centre.Interpolate(vertices[topology[i].v0], vertices[topology[i].v1], 0.5f);
@@ -443,7 +443,7 @@ void tShadowMeshImpl::DrawShell(void)
     pddiPrimStream* stream = p3d::pddi->BeginPrims(s->GetShader(), PDDI_PRIM_TRIANGLES, PDDI_V_C, 3 * numTriangles);
     tColour blue(0,0,255,255);
     
-    for(unsigned i = 0; i < numTriangles; i++)
+    for(unsigned i = 0; i <numTriangles; i++)
     {
         stream->Colour(blue);
         stream->Coord(vertices[topology[i].v0].x, vertices[topology[i].v0].y, vertices[topology[i].v0].z);
@@ -501,7 +501,7 @@ void tShadowMeshImpl::GuessVolumeLength(void)
 
     unsigned i;
 
-    for(i = 1; i < 100; ++i)
+    for(i = 1; i <100; ++i)
     {
         tmpSphere.centre.Add(cameraLight);
         if(!camera->SphereVisibleCamera(tmpSphere.centre, tmpSphere.radius))
@@ -573,15 +573,15 @@ void tShadowSkinImpl::Display(tPose* p)
 #ifdef PS2MW
         asm { visub   vi1, vi1, vi1 }   // zero out vi1
 #else
-        asm (" visub   vi1, vi1, vi1 " );   // zero out vi1
+        asm (" visub   vi1, vi1, vi1 ");   // zero out vi1
 #endif
 
         // The skin vertices are stored in rest-pose relative world space.
         // The below matrix will transform from this space, into bone-local
         // space where the animation is applied, and then back into camera space.
-        unsigned numJoints = rmt::Min( skeleton->GetNumJoint(), p->GetNumJoint() );
-        P3DASSERT((numJoints < 64) && "Matrix palette too large for accelerated shadow skinning!");
-        for(i = 0; i < numJoints; ++i)
+        unsigned numJoints = rmt::Min(skeleton->GetNumJoint(), p->GetNumJoint());
+        P3DASSERT((numJoints <64) && "Matrix palette too large for accelerated shadow skinning!");
+        for(i = 0; i <numJoints; ++i)
         {
             Matrix m;
             u_long128 *src  = (u_long128 *)&m;
@@ -615,7 +615,7 @@ void tShadowSkinImpl::Display(tPose* p)
                 vsqi    vf4, (vi1++)
             ":    // Outputs
              : "r" (src)  // Inputs
-              ); // Clobber list
+); // Clobber list
 #endif
 
         }
@@ -624,7 +624,7 @@ void tShadowSkinImpl::Display(tPose* p)
 
         register VertexThree *pVertex3 = sourceVertexThree;
         register u_long128 tmp = 0;
-        for (i = 0; i < numVertexThree; i++)
+        for (i = 0; i <numVertexThree; i++)
         {
 #ifdef PS2MW        
             asm
@@ -726,7 +726,7 @@ void tShadowSkinImpl::Display(tPose* p)
                 sqc2    vf6, 0x00(%2)               # store result into main memory
             ": "+r" (tmp)   // Outputs
              : "r" (pVertex3), "r" (pOut)  // Inputs
-             : "memory" ); // Clobber list
+             : "memory"); // Clobber list
 #endif
             ++pVertex3;
             ++pOut;
@@ -774,7 +774,7 @@ void tShadowSkinImpl::Display(tPose* p)
 
             ":  // Outputs  
              : "r" (pVertex1), "r" (pOut)  // Inputs
-             : "memory" ); // Clobber list
+             : "memory"); // Clobber list
 #endif
             ++pVertex1;
             ++pOut;
@@ -782,7 +782,7 @@ void tShadowSkinImpl::Display(tPose* p)
 
         //Update per triangle normal
         pOut = normals;
-        for (i = 0; i < numTriangles; i++)
+        for (i = 0; i <numTriangles; i++)
         {
             register Vector4 *a = &vertices[topology[i].v0];
             register Vector4 *b = &vertices[topology[i].v1];
@@ -819,26 +819,26 @@ void tShadowSkinImpl::Display(tPose* p)
 
             ":  // Outputs
              : "r" (a), "r" (b), "r" (c), "r" (pOut)  // Inputs
-             : "memory" ); // Clobber list
+             : "memory"); // Clobber list
 #endif
             ++pOut;
         }
     }
 
-    GuessVolumeLength( p );
+    GuessVolumeLength(p);
     tShadowMeshImpl::Display();
 }
 
-void tShadowSkinImpl::GuessVolumeLength( tPose* Pose )
+void tShadowSkinImpl::GuessVolumeLength(tPose* Pose)
 {
     // if someone has set a volume length, use it
-    if( setVolumeLength != 0.0f )
+    if(setVolumeLength != 0.0f)
     {
         volumeLength = setVolumeLength;
         return;
     }
     // The length has been precalculated somewhere else.
-    if( ( volumeLength != 0.0f ) || ( Pose == 0 ) )
+    if((volumeLength != 0.0f) || (Pose == 0))
     {
         return;
     }
@@ -848,8 +848,8 @@ void tShadowSkinImpl::GuessVolumeLength( tPose* Pose )
     tCamera* camera = p3d::context->GetView()->GetCamera();
     Vector cameraLight;
     Sphere tmpSphere = boundingSphere;
-    const rmt::Vector& worldPos = Pose->GetJoint( 0 )->worldMatrix.Row( 3 );
-    tmpSphere.centre.Add( worldPos );
+    const rmt::Vector& worldPos = Pose->GetJoint(0)->worldMatrix.Row(3);
+    tmpSphere.centre.Add(worldPos);
     camera->WorldToCamera(tmpSphere.centre, &tmpSphere.centre);
 
     if(!isPointLight)
@@ -867,7 +867,7 @@ void tShadowSkinImpl::GuessVolumeLength( tPose* Pose )
 
     unsigned i;
 
-    for(i = 1; i < 100; ++i)
+    for(i = 1; i <100; ++i)
     {
         tmpSphere.centre.Add(cameraLight);
         if(!camera->SphereVisibleCamera(tmpSphere.centre, tmpSphere.radius))
@@ -1034,8 +1034,8 @@ tEntity* tShadowSkinLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     shadow->numVertices = numVertices;
 
     // Temp buffer for holding vertex information.
-    tShadowSkinImpl::VertexThree* sourceVertexThree = (tShadowSkinImpl::VertexThree*)p3d::MallocTemp(sizeof(tShadowSkinImpl::VertexThree) * numVertices );
-    P3DASSERT( sourceVertexThree );
+    tShadowSkinImpl::VertexThree* sourceVertexThree = (tShadowSkinImpl::VertexThree*)p3d::MallocTemp(sizeof(tShadowSkinImpl::VertexThree) * numVertices);
+    P3DASSERT(sourceVertexThree);
 
     //Preallocate the static shadow data
     shadow->topology = new tShadowSkinImpl::Topology[numTriangles];
@@ -1134,10 +1134,10 @@ tEntity* tShadowSkinLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 
 
     // Count quantity of each vertex type
-    for( i = 0; i < numVertices; ++i )
+    for(i = 0; i <numVertices; ++i)
     {
-        tShadowSkinImpl::VertexThree* pSource = &( sourceVertexThree[ i ] );
-        if ( 0 == pSource->weights[ 2 ] && 0 == pSource->weights[ 1 ] )
+        tShadowSkinImpl::VertexThree* pSource = &(sourceVertexThree[ i ]);
+        if (0 == pSource->weights[ 2 ] && 0 == pSource->weights[ 1 ])
         {
             // One bone.
             ++(shadow->numVertexOne);
@@ -1155,7 +1155,7 @@ tEntity* tShadowSkinLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     int vertexThreeIndex = 0;
 
     //Sort the vertices by number of weights
-    for (i = 0; i < numVertices; i++)
+    for (i = 0; i <numVertices; i++)
     {
         //Source vertex
         tShadowSkinImpl::VertexThree* source = &(sourceVertexThree[i]);
@@ -1173,7 +1173,7 @@ tEntity* tShadowSkinLoader::LoadObject(tChunkFile* f, tEntityStore* store)
         else
         {
             // three bones
-            tShadowSkinImpl::VertexThree* pDest = &( shadow->sourceVertexThree[ vertexThreeIndex ] );
+            tShadowSkinImpl::VertexThree* pDest = &(shadow->sourceVertexThree[ vertexThreeIndex ]);
             pDest->position = source->position;
             pDest->matrixIndex[0] = source->matrixIndex[ 0 ] * 4; // pointer in VU0 mem space
             pDest->matrixIndex[1] = source->matrixIndex[ 1 ] * 4;
@@ -1188,11 +1188,11 @@ tEntity* tShadowSkinLoader::LoadObject(tChunkFile* f, tEntityStore* store)
         }
     }
 
-    P3DASSERT( (unsigned)vertexOneIndex == shadow->numVertexOne );
-    P3DASSERT( (unsigned)vertexThreeIndex == shadow->numVertexThree );
+    P3DASSERT((unsigned)vertexOneIndex == shadow->numVertexOne);
+    P3DASSERT((unsigned)vertexThreeIndex == shadow->numVertexThree);
 
     // Remap topology
-    for (i = 0; i < shadow->numTriangles; i++)
+    for (i = 0; i <shadow->numTriangles; i++)
     {
         shadow->topology[i].v0 = vertexRemapping[shadow->topology[i].v0];
         shadow->topology[i].v1 = vertexRemapping[shadow->topology[i].v1];

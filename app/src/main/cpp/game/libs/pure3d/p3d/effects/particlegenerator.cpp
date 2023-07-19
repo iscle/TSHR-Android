@@ -27,13 +27,11 @@ static const float defaultPhi = 1.57080f;
 //
 //*****************************************************************************
 tBaseGeneratorFactory::tBaseGeneratorFactory() :
-    generatorType(p3dParticleSystemConstants::UNDEFINED),
-    generatorAnim(NULL)
-{
+        generatorType(p3dParticleSystemConstants::UNDEFINED),
+        generatorAnim(NULL) {
 }
 
-tBaseGeneratorFactory::~tBaseGeneratorFactory() 
-{
+tBaseGeneratorFactory::~tBaseGeneratorFactory() {
     tRefCounted::Release(generatorAnim);
 }
 
@@ -42,23 +40,20 @@ tBaseGeneratorFactory::~tBaseGeneratorFactory()
 // Class tPointGeneratorFactory 
 //
 //*****************************************************************************
-tPointGeneratorFactory::tPointGeneratorFactory()
-{
+tPointGeneratorFactory::tPointGeneratorFactory() {
     generatorType = p3dParticleSystemConstants::GeneratorType::POINT;
 }
 
-tPointGeneratorFactory::~tPointGeneratorFactory() 
-{
+tPointGeneratorFactory::~tPointGeneratorFactory() {
 }
 
-tBaseGenerator* tPointGeneratorFactory::CreateGenerator()
-{
-    tPointGenerator* generator = new tPointGenerator;
+tBaseGenerator *tPointGeneratorFactory::CreateGenerator() {
+    tPointGenerator *generator = new tPointGenerator;
     generator->CopyName(this);
     generator->factory = this;
     generator->factory->AddRef();
     generator->ReconnectAnimations();
-    return (tBaseGenerator*)generator;
+    return (tBaseGenerator *) generator;
 }
 
 //*****************************************************************************
@@ -66,23 +61,20 @@ tBaseGenerator* tPointGeneratorFactory::CreateGenerator()
 // Class tPlaneGeneratorFactory 
 //
 //*****************************************************************************
-tPlaneGeneratorFactory::tPlaneGeneratorFactory()
-{
+tPlaneGeneratorFactory::tPlaneGeneratorFactory() {
     generatorType = p3dParticleSystemConstants::GeneratorType::PLANE;
 }
 
-tPlaneGeneratorFactory::~tPlaneGeneratorFactory() 
-{
+tPlaneGeneratorFactory::~tPlaneGeneratorFactory() {
 }
 
-tBaseGenerator* tPlaneGeneratorFactory::CreateGenerator()
-{
-    tPlaneGenerator* generator = new tPlaneGenerator;
+tBaseGenerator *tPlaneGeneratorFactory::CreateGenerator() {
+    tPlaneGenerator *generator = new tPlaneGenerator;
     generator->CopyName(this);
     generator->factory = this;
     generator->factory->AddRef();
     generator->ReconnectAnimations();
-    return (tBaseGenerator*)generator;
+    return (tBaseGenerator *) generator;
 }
 
 //*****************************************************************************
@@ -90,23 +82,20 @@ tBaseGenerator* tPlaneGeneratorFactory::CreateGenerator()
 // Class tSphereGeneratorFactory 
 //
 //*****************************************************************************
-tSphereGeneratorFactory::tSphereGeneratorFactory()
-{
+tSphereGeneratorFactory::tSphereGeneratorFactory() {
     generatorType = p3dParticleSystemConstants::GeneratorType::SPHERE;
 }
 
-tSphereGeneratorFactory::~tSphereGeneratorFactory() 
-{
+tSphereGeneratorFactory::~tSphereGeneratorFactory() {
 }
 
-tBaseGenerator* tSphereGeneratorFactory::CreateGenerator()
-{
-    tSphereGenerator* generator = new tSphereGenerator;
+tBaseGenerator *tSphereGeneratorFactory::CreateGenerator() {
+    tSphereGenerator *generator = new tSphereGenerator;
     generator->CopyName(this);
     generator->factory = this;
     generator->factory->AddRef();
     generator->ReconnectAnimations();
-    return (tBaseGenerator*)generator;
+    return (tBaseGenerator *) generator;
 }
 
 //*****************************************************************************
@@ -115,33 +104,28 @@ tBaseGenerator* tSphereGeneratorFactory::CreateGenerator()
 //
 //*****************************************************************************
 tBaseGenerator::tBaseGenerator() :
-    blendRatio(0.0f),
-    blendState1(0),
-    blendState2(0),
-    factory(NULL)
-{
+        blendRatio(0.0f),
+        blendState1(0),
+        blendState2(0),
+        factory(NULL) {
 }
 
-tBaseGenerator::~tBaseGenerator()
-{
+tBaseGenerator::~tBaseGenerator() {
     tRefCounted::Release(factory);
 }
 
-void tBaseGenerator::SetBlendRatio(float ratio)
-{
-    ratio = rmt::Clamp(ratio,0.0f,1.0f);
+void tBaseGenerator::SetBlendRatio(float ratio) {
+    ratio = rmt::Clamp(ratio, 0.0f, 1.0f);
     if (ratio == blendRatio)
         return;
 
-    int numBlendStates = factory->GetGeneratorAnimation()->GetNumGroups()-1;
-    if (numBlendStates>0)
-    {
+    int numBlendStates = factory->GetGeneratorAnimation()->GetNumGroups() - 1;
+    if (numBlendStates > 0) {
         float temp = ratio * rmt::LtoF(numBlendStates);  //span the range of 1.0f to numBlendStates
         int newBlendState1 = rmt::FtoL(rmt::Floor(temp));
         int newBlendState2 = rmt::FtoL(rmt::Ceil(temp));
         blendRatio = temp - rmt::LtoF(newBlendState1);
-        if ((blendState1!=newBlendState1)||(blendState2!=newBlendState2))
-        {
+        if ((blendState1 != newBlendState1) || (blendState2 != newBlendState2)) {
             blendState1 = newBlendState1;
             blendState2 = newBlendState2;
             ReconnectAnimations();
@@ -149,12 +133,10 @@ void tBaseGenerator::SetBlendRatio(float ratio)
     }
 }
 
-float tBaseGenerator::GetBlendRatio() const
-{
-    int numBlendStates = factory->GetGeneratorAnimation()->GetNumGroups()-1;
-    if (numBlendStates>0)
-    {
-        return ((blendRatio + rmt::LtoF(blendState1))/(rmt::LtoF(numBlendStates)));
+float tBaseGenerator::GetBlendRatio() const {
+    int numBlendStates = factory->GetGeneratorAnimation()->GetNumGroups() - 1;
+    if (numBlendStates > 0) {
+        return ((blendRatio + rmt::LtoF(blendState1)) / (rmt::LtoF(numBlendStates)));
     }
     return 0.0f;
 }
@@ -165,10 +147,9 @@ float tBaseGenerator::GetBlendRatio() const
 //
 //*****************************************************************************
 tPointGenerator::tPointGenerator() :
-    horizBias(1.0f),
-    vertBias(1.0f),
-    radialBias(1.0f)
-{
+        horizBias(1.0f),
+        vertBias(1.0f),
+        radialBias(1.0f) {
     horizSpreadChannel[0] = NULL;
     horizSpreadChannel[1] = NULL;
     vertSpreadChannel[0] = NULL;
@@ -177,14 +158,11 @@ tPointGenerator::tPointGenerator() :
     radialVarChannel[1] = NULL;
 }
 
-tPointGenerator::~tPointGenerator()
-{
+tPointGenerator::~tPointGenerator() {
 }
 
-int tPointGenerator::Generate(float frame, int numParticlesToGenerate, tBaseEmitter* emitter)
-{
-    if (numParticlesToGenerate<=0)
-    {
+int tPointGenerator::Generate(float frame, int numParticlesToGenerate, tBaseEmitter *emitter) {
+    if (numParticlesToGenerate <= 0) {
         return 0;
     }
 
@@ -192,35 +170,30 @@ int tPointGenerator::Generate(float frame, int numParticlesToGenerate, tBaseEmit
     float vertSpread = 0.0f;
     float radialVar = 0.0f;
 
-    if (horizSpreadChannel[0])
-    {
-        horizSpreadChannel[0]->GetValue(frame,&horizSpread);
+    if (horizSpreadChannel[0]) {
+        horizSpreadChannel[0]->GetValue(frame, &horizSpread);
         horizSpread *= horizBias;
     }
-    if (vertSpreadChannel[0])
-    {
-        vertSpreadChannel[0]->GetValue(frame,&vertSpread);
+    if (vertSpreadChannel[0]) {
+        vertSpreadChannel[0]->GetValue(frame, &vertSpread);
         vertSpread *= vertBias;
     }
-    if (radialVarChannel[0])
-    {
-        radialVarChannel[0]->GetValue(frame,&radialVar);
+    if (radialVarChannel[0]) {
+        radialVarChannel[0]->GetValue(frame, &radialVar);
         radialVar *= radialBias;
     }
-    
+
     rmt::Matrix transform = emitter->GetTransformMatrix();
     int numGenerated = 0;
-    for (int i = 0; i < numParticlesToGenerate; i++)
-    {
+    for (int i = 0; i < numParticlesToGenerate; i++) {
         float newTheta = ParticleSystemRandomFloat(defaultTheta, horizSpread);
         float newPhi = ParticleSystemRandomFloat(defaultPhi, vertSpread);
-        float scale = rmt::Max(ParticleSystemRandomFloat( 0.0f, radialVar ),0.0f);
-        float x,y,z;
-        rmt::SphericalToCartesian( defaultRadius, newTheta, newPhi, &x, &y, &z);
-        tBaseParticle* particle = emitter->GetParticles()->RejuenateDeadParticle();        
-        if (particle)
-        {
-            particle->velocityInit.Set(x,y,z);
+        float scale = rmt::Max(ParticleSystemRandomFloat(0.0f, radialVar), 0.0f);
+        float x, y, z;
+        rmt::SphericalToCartesian(defaultRadius, newTheta, newPhi, &x, &y, &z);
+        tBaseParticle *particle = emitter->GetParticles()->RejuenateDeadParticle();
+        if (particle) {
+            particle->velocityInit.Set(x, y, z);
             particle->velocityInit.Rotate(transform);
             particle->velocityInit.Normalize();
             particle->Initialize(emitter);
@@ -233,72 +206,62 @@ int tPointGenerator::Generate(float frame, int numParticlesToGenerate, tBaseEmit
     return numGenerated;
 }
 
-void tPointGenerator::SetBias(unsigned bias, float b)
-{
-    switch (bias)
-    {
-        case p3dParticleSystemConstants::GeneratorBias::HORIZ_SPREAD:
-        {
+void tPointGenerator::SetBias(unsigned bias, float b) {
+    switch (bias) {
+        case p3dParticleSystemConstants::GeneratorBias::HORIZ_SPREAD: {
             horizBias = b;
             break;
         }
-        case p3dParticleSystemConstants::GeneratorBias::VERT_SPREAD:
-        {
+        case p3dParticleSystemConstants::GeneratorBias::VERT_SPREAD: {
             vertBias = b;
             break;
         }
-        case p3dParticleSystemConstants::GeneratorBias::RADIAL_VAR:
-        {
+        case p3dParticleSystemConstants::GeneratorBias::RADIAL_VAR: {
             radialBias = b;
             break;
         }
     }
 }
 
-float tPointGenerator::GetBias(unsigned bias) const
-{
-    switch (bias)
-    {
-        case p3dParticleSystemConstants::GeneratorBias::HORIZ_SPREAD:
-        {
+float tPointGenerator::GetBias(unsigned bias) const {
+    switch (bias) {
+        case p3dParticleSystemConstants::GeneratorBias::HORIZ_SPREAD: {
             return horizBias;
             break;
         }
-        case p3dParticleSystemConstants::GeneratorBias::VERT_SPREAD:
-        {
+        case p3dParticleSystemConstants::GeneratorBias::VERT_SPREAD: {
             return vertBias;
             break;
         }
-        case p3dParticleSystemConstants::GeneratorBias::RADIAL_VAR:
-        {
+        case p3dParticleSystemConstants::GeneratorBias::RADIAL_VAR: {
             return radialBias;
             break;
         }
-        default:
-        {
+        default: {
             return 0.0f;
             break;
         }
     }
 }
 
-void tPointGenerator::ReconnectAnimations()
-{
-    const tAnimationGroup* state = factory->GetGeneratorAnimation()->GetGroupByIndex(blendState1);
-    if (state)
-    {
-        horizSpreadChannel[0] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::HORIZ_SPREAD_HOSP);
-        vertSpreadChannel[0] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::VERT_SPREAD_VESP);
-        radialVarChannel[0] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::RADIAL_VAR_RDVA);
-        if (blendState2!=blendState1)
-        {
+void tPointGenerator::ReconnectAnimations() {
+    const tAnimationGroup *state = factory->GetGeneratorAnimation()->GetGroupByIndex(blendState1);
+    if (state) {
+        horizSpreadChannel[0] = state->GetFloat1Channel(
+                Pure3DAnimationChannels::ParticleSystem::Generator::HORIZ_SPREAD_HOSP);
+        vertSpreadChannel[0] = state->GetFloat1Channel(
+                Pure3DAnimationChannels::ParticleSystem::Generator::VERT_SPREAD_VESP);
+        radialVarChannel[0] = state->GetFloat1Channel(
+                Pure3DAnimationChannels::ParticleSystem::Generator::RADIAL_VAR_RDVA);
+        if (blendState2 != blendState1) {
             state = factory->GetGeneratorAnimation()->GetGroupByIndex(blendState2);
-            horizSpreadChannel[1] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::HORIZ_SPREAD_HOSP);
-            vertSpreadChannel[1] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::VERT_SPREAD_VESP);
-            radialVarChannel[1] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::RADIAL_VAR_RDVA);
-        }
-        else
-        {
+            horizSpreadChannel[1] = state->GetFloat1Channel(
+                    Pure3DAnimationChannels::ParticleSystem::Generator::HORIZ_SPREAD_HOSP);
+            vertSpreadChannel[1] = state->GetFloat1Channel(
+                    Pure3DAnimationChannels::ParticleSystem::Generator::VERT_SPREAD_VESP);
+            radialVarChannel[1] = state->GetFloat1Channel(
+                    Pure3DAnimationChannels::ParticleSystem::Generator::RADIAL_VAR_RDVA);
+        } else {
             horizSpreadChannel[1] = NULL;
             vertSpreadChannel[1] = NULL;
             radialVarChannel[1] = NULL;
@@ -312,15 +275,14 @@ void tPointGenerator::ReconnectAnimations()
 //
 //*****************************************************************************
 tPlaneGenerator::tPlaneGenerator() :
-    horizBias(1.0f),
-    vertBias(1.0f),
-    radialBias(1.0f),
-    widthBias(1.0f),
-    heightBias(1.0f),
-    planeU(1.0f,0.0f,0.0f),
-    planeV(0.0f,0.0f,1.0f),
-    offset(-0.5f,0.0f,-0.5f)
-{
+        horizBias(1.0f),
+        vertBias(1.0f),
+        radialBias(1.0f),
+        widthBias(1.0f),
+        heightBias(1.0f),
+        planeU(1.0f, 0.0f, 0.0f),
+        planeV(0.0f, 0.0f, 1.0f),
+        offset(-0.5f, 0.0f, -0.5f) {
     horizSpreadChannel[0] = NULL;
     horizSpreadChannel[1] = NULL;
     vertSpreadChannel[0] = NULL;
@@ -333,14 +295,11 @@ tPlaneGenerator::tPlaneGenerator() :
     heightChannel[1] = NULL;
 }
 
-tPlaneGenerator::~tPlaneGenerator()
-{
+tPlaneGenerator::~tPlaneGenerator() {
 }
 
-int tPlaneGenerator::Generate(float frame, int numParticlesToGenerate, tBaseEmitter* emitter)
-{
-    if (numParticlesToGenerate<=0)
-    {
+int tPlaneGenerator::Generate(float frame, int numParticlesToGenerate, tBaseEmitter *emitter) {
+    if (numParticlesToGenerate <= 0) {
         return 0;
     }
 
@@ -350,29 +309,24 @@ int tPlaneGenerator::Generate(float frame, int numParticlesToGenerate, tBaseEmit
     float width = 1.0f;
     float height = 1.0f;
 
-    if (horizSpreadChannel[0])
-    {
-        horizSpreadChannel[0]->GetValue(frame,&horizSpread);
+    if (horizSpreadChannel[0]) {
+        horizSpreadChannel[0]->GetValue(frame, &horizSpread);
         horizSpread *= horizBias;
     }
-    if (vertSpreadChannel[0])
-    {
-        vertSpreadChannel[0]->GetValue(frame,&vertSpread);
+    if (vertSpreadChannel[0]) {
+        vertSpreadChannel[0]->GetValue(frame, &vertSpread);
         vertSpread *= vertBias;
     }
-    if (radialVarChannel[0])
-    {
-        radialVarChannel[0]->GetValue(frame,&radialVar);
+    if (radialVarChannel[0]) {
+        radialVarChannel[0]->GetValue(frame, &radialVar);
         radialVar *= radialBias;
     }
-    if (widthChannel[0])
-    {
-        widthChannel[0]->GetValue(frame,&width);
+    if (widthChannel[0]) {
+        widthChannel[0]->GetValue(frame, &width);
         width *= widthBias;
     }
-    if (heightChannel[0])
-    {
-        heightChannel[0]->GetValue(frame,&height);
+    if (heightChannel[0]) {
+        heightChannel[0]->GetValue(frame, &height);
         height *= heightBias;
     }
 
@@ -383,19 +337,17 @@ int tPlaneGenerator::Generate(float frame, int numParticlesToGenerate, tBaseEmit
 
     rmt::Matrix transform = emitter->GetTransformMatrix();
     int numGenerated = 0;
-    for (int i = 0; i < numParticlesToGenerate; i++)
-    {
+    for (int i = 0; i < numParticlesToGenerate; i++) {
         float newTheta = ParticleSystemRandomFloat(defaultTheta, horizSpread);
         float newPhi = ParticleSystemRandomFloat(defaultPhi, vertSpread);
-        float scale = rmt::Max(ParticleSystemRandomFloat( 0.0f, radialVar ),0.0f);
-        float x,y,z;
-        rmt::SphericalToCartesian( defaultRadius, newTheta, newPhi, &x, &y, &z);
+        float scale = rmt::Max(ParticleSystemRandomFloat(0.0f, radialVar), 0.0f);
+        float x, y, z;
+        rmt::SphericalToCartesian(defaultRadius, newTheta, newPhi, &x, &y, &z);
 
-        tBaseParticle* particle = emitter->GetParticles()->RejuenateDeadParticle();        
-        if (particle)
-        {
-        
-            particle->velocityInit.Set(x,y,z);
+        tBaseParticle *particle = emitter->GetParticles()->RejuenateDeadParticle();
+        if (particle) {
+
+            particle->velocityInit.Set(x, y, z);
             particle->velocityInit.Rotate(transform);
             particle->velocityInit.Normalize();
             particle->Initialize(emitter);
@@ -403,112 +355,109 @@ int tPlaneGenerator::Generate(float frame, int numParticlesToGenerate, tBaseEmit
             // get U vector
             rmt::Vector vU;
             vU.Scale(randomGenerator.Float(), planeU);
-        
+
             // get V vector
             rmt::Vector vV;
             vV.Scale(randomGenerator.Float(), planeV);
-        
-            rmt::Vector startPos(vU.x + vV.x + offset.x, vU.y + vV.y + offset.y, vU.z + vV.z + offset.z);    
 
-            particle->currPos.x = (transform.m[0][0]*startPos.x + transform.m[1][0]*startPos.y + transform.m[2][0]*startPos.z + transform.m[3][0]) + (particle->velocity.x * scale);
-            particle->currPos.y = (transform.m[0][1]*startPos.x + transform.m[1][1]*startPos.y + transform.m[2][1]*startPos.z + transform.m[3][1]) + (particle->velocity.y * scale);
-            particle->currPos.z = (transform.m[0][2]*startPos.x + transform.m[1][2]*startPos.y + transform.m[2][2]*startPos.z + transform.m[3][2]) + (particle->velocity.z * scale);        
+            rmt::Vector startPos(vU.x + vV.x + offset.x, vU.y + vV.y + offset.y,
+                                 vU.z + vV.z + offset.z);
+
+            particle->currPos.x = (transform.m[0][0] * startPos.x + transform.m[1][0] * startPos.y +
+                                   transform.m[2][0] * startPos.z + transform.m[3][0]) +
+                                  (particle->velocity.x * scale);
+            particle->currPos.y = (transform.m[0][1] * startPos.x + transform.m[1][1] * startPos.y +
+                                   transform.m[2][1] * startPos.z + transform.m[3][1]) +
+                                  (particle->velocity.y * scale);
+            particle->currPos.z = (transform.m[0][2] * startPos.x + transform.m[1][2] * startPos.y +
+                                   transform.m[2][2] * startPos.z + transform.m[3][2]) +
+                                  (particle->velocity.z * scale);
         }
         numGenerated++;
     }
     return numGenerated;
 }
 
-void tPlaneGenerator::SetBias(unsigned bias, float b)
-{
-    switch (bias)
-    {
-        case p3dParticleSystemConstants::GeneratorBias::HORIZ_SPREAD:
-        {
+void tPlaneGenerator::SetBias(unsigned bias, float b) {
+    switch (bias) {
+        case p3dParticleSystemConstants::GeneratorBias::HORIZ_SPREAD: {
             horizBias = b;
             break;
         }
-        case p3dParticleSystemConstants::GeneratorBias::VERT_SPREAD:
-        {
+        case p3dParticleSystemConstants::GeneratorBias::VERT_SPREAD: {
             vertBias = b;
             break;
         }
-        case p3dParticleSystemConstants::GeneratorBias::RADIAL_VAR:
-        {
+        case p3dParticleSystemConstants::GeneratorBias::RADIAL_VAR: {
             radialBias = b;
             break;
         }
-        case p3dParticleSystemConstants::GeneratorBias::WIDTH:
-        {
+        case p3dParticleSystemConstants::GeneratorBias::WIDTH: {
             widthBias = b;
             break;
         }
-        case p3dParticleSystemConstants::GeneratorBias::HEIGHT:
-        {
+        case p3dParticleSystemConstants::GeneratorBias::HEIGHT: {
             heightBias = b;
             break;
         }
     }
 }
 
-float tPlaneGenerator::GetBias(unsigned bias) const
-{
-    switch (bias)
-    {
-        case p3dParticleSystemConstants::GeneratorBias::HORIZ_SPREAD:
-        {
+float tPlaneGenerator::GetBias(unsigned bias) const {
+    switch (bias) {
+        case p3dParticleSystemConstants::GeneratorBias::HORIZ_SPREAD: {
             return horizBias;
             break;
         }
-        case p3dParticleSystemConstants::GeneratorBias::VERT_SPREAD:
-        {
+        case p3dParticleSystemConstants::GeneratorBias::VERT_SPREAD: {
             return vertBias;
             break;
         }
-        case p3dParticleSystemConstants::GeneratorBias::RADIAL_VAR:
-        {
+        case p3dParticleSystemConstants::GeneratorBias::RADIAL_VAR: {
             return radialBias;
             break;
         }
-        case p3dParticleSystemConstants::GeneratorBias::WIDTH:
-        {
+        case p3dParticleSystemConstants::GeneratorBias::WIDTH: {
             return widthBias;
             break;
         }
-        case p3dParticleSystemConstants::GeneratorBias::HEIGHT:
-        {
+        case p3dParticleSystemConstants::GeneratorBias::HEIGHT: {
             return heightBias;
             break;
         }
-        default:
-        {
+        default: {
             return 0.0f;
             break;
         }
     }
 }
 
-void tPlaneGenerator::ReconnectAnimations()
-{
-    const tAnimationGroup* state = factory->GetGeneratorAnimation()->GetGroupByIndex(blendState1);
-    if (state)
-    {
-        horizSpreadChannel[0] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::HORIZ_SPREAD_HOSP);
-        vertSpreadChannel[0] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::VERT_SPREAD_VESP);
-        radialVarChannel[0] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::RADIAL_VAR_RDVA);
-        widthChannel[0] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::WIDTH_WDT);
-        heightChannel[0] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::HEIGHT_HGT);
-        if (blendState2!=blendState1)
-        {
+void tPlaneGenerator::ReconnectAnimations() {
+    const tAnimationGroup *state = factory->GetGeneratorAnimation()->GetGroupByIndex(blendState1);
+    if (state) {
+        horizSpreadChannel[0] = state->GetFloat1Channel(
+                Pure3DAnimationChannels::ParticleSystem::Generator::HORIZ_SPREAD_HOSP);
+        vertSpreadChannel[0] = state->GetFloat1Channel(
+                Pure3DAnimationChannels::ParticleSystem::Generator::VERT_SPREAD_VESP);
+        radialVarChannel[0] = state->GetFloat1Channel(
+                Pure3DAnimationChannels::ParticleSystem::Generator::RADIAL_VAR_RDVA);
+        widthChannel[0] = state->GetFloat1Channel(
+                Pure3DAnimationChannels::ParticleSystem::Generator::WIDTH_WDT);
+        heightChannel[0] = state->GetFloat1Channel(
+                Pure3DAnimationChannels::ParticleSystem::Generator::HEIGHT_HGT);
+        if (blendState2 != blendState1) {
             state = factory->GetGeneratorAnimation()->GetGroupByIndex(blendState2);
-            horizSpreadChannel[1] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::HORIZ_SPREAD_HOSP);
-            vertSpreadChannel[1] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::VERT_SPREAD_VESP);
-            radialVarChannel[1] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::RADIAL_VAR_RDVA);
-            widthChannel[1] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::WIDTH_WDT);
-            heightChannel[1] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::HEIGHT_HGT);
-        }
-        else
-        {
+            horizSpreadChannel[1] = state->GetFloat1Channel(
+                    Pure3DAnimationChannels::ParticleSystem::Generator::HORIZ_SPREAD_HOSP);
+            vertSpreadChannel[1] = state->GetFloat1Channel(
+                    Pure3DAnimationChannels::ParticleSystem::Generator::VERT_SPREAD_VESP);
+            radialVarChannel[1] = state->GetFloat1Channel(
+                    Pure3DAnimationChannels::ParticleSystem::Generator::RADIAL_VAR_RDVA);
+            widthChannel[1] = state->GetFloat1Channel(
+                    Pure3DAnimationChannels::ParticleSystem::Generator::WIDTH_WDT);
+            heightChannel[1] = state->GetFloat1Channel(
+                    Pure3DAnimationChannels::ParticleSystem::Generator::HEIGHT_HGT);
+        } else {
             horizSpreadChannel[1] = NULL;
             vertSpreadChannel[1] = NULL;
             radialVarChannel[1] = NULL;
@@ -524,58 +473,49 @@ void tPlaneGenerator::ReconnectAnimations()
 //
 //*****************************************************************************
 tSphereGenerator::tSphereGenerator() :
-    radialBias(1.0f),
-    radiusBias(1.0f)
-{
+        radialBias(1.0f),
+        radiusBias(1.0f) {
     radialVarChannel[0] = NULL;
     radialVarChannel[1] = NULL;
     radiusChannel[0] = NULL;
     radiusChannel[1] = NULL;
 }
 
-tSphereGenerator::~tSphereGenerator()
-{
+tSphereGenerator::~tSphereGenerator() {
 }
 
-int tSphereGenerator::Generate(float frame, int numParticlesToGenerate, tBaseEmitter* emitter)
-{
-    if (numParticlesToGenerate<=0)
-    {
+int tSphereGenerator::Generate(float frame, int numParticlesToGenerate, tBaseEmitter *emitter) {
+    if (numParticlesToGenerate <= 0) {
         return 0;
     }
 
     float radialVar = 0.0f;
     float radius = 1.0f;
 
-    if (radialVarChannel[0])
-    {
-        radialVarChannel[0]->GetValue(frame,&radialVar);
+    if (radialVarChannel[0]) {
+        radialVarChannel[0]->GetValue(frame, &radialVar);
         radialVar *= radialBias;
     }
-    if (radiusChannel[0])
-    {
-        radiusChannel[0]->GetValue(frame,&radius);
+    if (radiusChannel[0]) {
+        radiusChannel[0]->GetValue(frame, &radius);
         radius *= radialBias;
     }
 
-    rmt::Matrix transform = emitter->GetTransformMatrix();  
+    rmt::Matrix transform = emitter->GetTransformMatrix();
     int numGenerated = 0;
 
-    if (radius != 0.0f)
-    {
-        for (int i = 0; i < numParticlesToGenerate; i++)
-        {
-            float theta = ParticleSystemRandomFloat( 0.0f, rmt::PI);
-            float phi   = ParticleSystemRandomFloat( 0.0f, rmt::PI);
-            float scale = rmt::Max(ParticleSystemRandomFloat( 0.0f, radialVar ),0.0f);
-            float x,y,z;
-            rmt::SphericalToCartesian( radius, theta, phi, &x, &y, &z);                
+    if (radius != 0.0f) {
+        for (int i = 0; i < numParticlesToGenerate; i++) {
+            float theta = ParticleSystemRandomFloat(0.0f, rmt::PI);
+            float phi = ParticleSystemRandomFloat(0.0f, rmt::PI);
+            float scale = rmt::Max(ParticleSystemRandomFloat(0.0f, radialVar), 0.0f);
+            float x, y, z;
+            rmt::SphericalToCartesian(radius, theta, phi, &x, &y, &z);
 
-            tBaseParticle* particle = emitter->GetParticles()->RejuenateDeadParticle();        
-            if (particle)
-            {
-        
-                particle->velocityInit.Set(x,y,z);
+            tBaseParticle *particle = emitter->GetParticles()->RejuenateDeadParticle();
+            if (particle) {
+
+                particle->velocityInit.Set(x, y, z);
                 particle->velocityInit.Rotate(transform);
                 particle->velocityInit.Normalize();
                 particle->Initialize(emitter);
@@ -585,20 +525,16 @@ int tSphereGenerator::Generate(float frame, int numParticlesToGenerate, tBaseEmi
             }
             numGenerated++;
         }
-    }
-    else
-    {
-        for (int i = 0; i < numParticlesToGenerate; i++)
-        {
-            float theta = ParticleSystemRandomFloat( 0.0f, rmt::PI);
-            float phi   = ParticleSystemRandomFloat( 0.0f, rmt::PI);
-            float scale = rmt::Max(ParticleSystemRandomFloat( 0.0f, radialVar ),0.0f);
-            float x,y,z;
-            rmt::SphericalToCartesian( defaultRadius, theta, phi, &x, &y, &z);
-            tBaseParticle* particle = emitter->GetParticles()->RejuenateDeadParticle();        
-            if (particle)
-            {
-                particle->velocityInit.Set(x,y,z);
+    } else {
+        for (int i = 0; i < numParticlesToGenerate; i++) {
+            float theta = ParticleSystemRandomFloat(0.0f, rmt::PI);
+            float phi = ParticleSystemRandomFloat(0.0f, rmt::PI);
+            float scale = rmt::Max(ParticleSystemRandomFloat(0.0f, radialVar), 0.0f);
+            float x, y, z;
+            rmt::SphericalToCartesian(defaultRadius, theta, phi, &x, &y, &z);
+            tBaseParticle *particle = emitter->GetParticles()->RejuenateDeadParticle();
+            if (particle) {
+                particle->velocityInit.Set(x, y, z);
                 particle->velocityInit.Rotate(transform);
                 particle->velocityInit.Normalize();
                 particle->Initialize(emitter);
@@ -612,60 +548,50 @@ int tSphereGenerator::Generate(float frame, int numParticlesToGenerate, tBaseEmi
     return numGenerated;
 }
 
-void tSphereGenerator::SetBias(unsigned bias, float b)
-{
-    switch (bias)
-    {
-        case p3dParticleSystemConstants::GeneratorBias::RADIAL_VAR:
-        {
+void tSphereGenerator::SetBias(unsigned bias, float b) {
+    switch (bias) {
+        case p3dParticleSystemConstants::GeneratorBias::RADIAL_VAR: {
             radialBias = b;
             break;
         }
-        case p3dParticleSystemConstants::GeneratorBias::RADIUS:
-        {
+        case p3dParticleSystemConstants::GeneratorBias::RADIUS: {
             radiusBias = b;
             break;
         }
     }
 }
 
-float tSphereGenerator::GetBias(unsigned bias) const
-{
-    switch (bias)
-    {
-        case p3dParticleSystemConstants::GeneratorBias::RADIAL_VAR:
-        {
+float tSphereGenerator::GetBias(unsigned bias) const {
+    switch (bias) {
+        case p3dParticleSystemConstants::GeneratorBias::RADIAL_VAR: {
             return radialBias;
             break;
         }
-        case p3dParticleSystemConstants::GeneratorBias::RADIUS:
-        {
+        case p3dParticleSystemConstants::GeneratorBias::RADIUS: {
             return radiusBias;
             break;
         }
-        default:
-        {
+        default: {
             return 0.0f;
             break;
         }
     }
 }
 
-void tSphereGenerator::ReconnectAnimations()
-{
-    const tAnimationGroup* state = factory->GetGeneratorAnimation()->GetGroupByIndex(blendState1);
-    if (state)
-    {
-        radialVarChannel[0] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::RADIAL_VAR_RDVA);
-        radiusChannel[0] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::RADIUS_RAD);
-        if (blendState2!=blendState1)
-        {
+void tSphereGenerator::ReconnectAnimations() {
+    const tAnimationGroup *state = factory->GetGeneratorAnimation()->GetGroupByIndex(blendState1);
+    if (state) {
+        radialVarChannel[0] = state->GetFloat1Channel(
+                Pure3DAnimationChannels::ParticleSystem::Generator::RADIAL_VAR_RDVA);
+        radiusChannel[0] = state->GetFloat1Channel(
+                Pure3DAnimationChannels::ParticleSystem::Generator::RADIUS_RAD);
+        if (blendState2 != blendState1) {
             state = factory->GetGeneratorAnimation()->GetGroupByIndex(blendState2);
-            radialVarChannel[1] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::RADIAL_VAR_RDVA);
-            radiusChannel[1] = state->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Generator::RADIUS_RAD);
-        }
-        else
-        {
+            radialVarChannel[1] = state->GetFloat1Channel(
+                    Pure3DAnimationChannels::ParticleSystem::Generator::RADIAL_VAR_RDVA);
+            radiusChannel[1] = state->GetFloat1Channel(
+                    Pure3DAnimationChannels::ParticleSystem::Generator::RADIUS_RAD);
+        } else {
             radialVarChannel[1] = NULL;
             radiusChannel[1] = NULL;
         }

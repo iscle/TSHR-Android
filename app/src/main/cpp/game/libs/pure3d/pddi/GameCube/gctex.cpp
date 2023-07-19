@@ -16,27 +16,22 @@
 
 #define GC_MAX_TEX_LOCKS 3
 
-class gcTexLockGroup
-{
+class gcTexLockGroup {
 
- public:
+public:
 
     //------------------------------------
-    gcTexLockGroup(void)
-    {
+    gcTexLockGroup(void) {
         texture[0] = NULL;
         texture[1] = NULL;
         texture[2] = NULL;
     }
 
     //------------------------------------
-    pddiLockInfo *Lock(gcTexture *t)
-    {
+    pddiLockInfo *Lock(gcTexture *t) {
         int a;
-        for (a = 0; a < GC_MAX_TEX_LOCKS; a++)
-        {
-            if (texture[a] == NULL)
-            {
+        for (a = 0; a < GC_MAX_TEX_LOCKS; a++) {
+            if (texture[a] == NULL) {
                 texture[a] = t;
                 return &lock[a];
             }
@@ -45,13 +40,10 @@ class gcTexLockGroup
     }
 
     //------------------------------------
-    void Unlock(gcTexture *t)
-    {
+    void Unlock(gcTexture *t) {
         int a;
-        for (a = 0; a < GC_MAX_TEX_LOCKS; a++)
-        {
-            if (texture[a] == t)
-            {
+        for (a = 0; a < GC_MAX_TEX_LOCKS; a++) {
+            if (texture[a] == t) {
                 texture[a] = NULL;
                 return;
             }
@@ -59,10 +51,10 @@ class gcTexLockGroup
         PDDIASSERT(0 && "Can't unlock texture that hasn't been locked!");
     }
 
- private:
+private:
 
     pddiLockInfo lock[GC_MAX_TEX_LOCKS];
-    gcTexture   *texture[GC_MAX_TEX_LOCKS];
+    gcTexture *texture[GC_MAX_TEX_LOCKS];
 };
 
 static gcTexLockGroup gTexLockGroup;
@@ -73,8 +65,8 @@ static gcTexLockGroup gTexLockGroup;
 // Helper function for texture creator
 //
 //
-static pddiPixelFormat PickPixelFormat(pddiTextureType type, int bpp, int alphadepth, pddiLockInfo *li, GXTexFmt &gxfmt)
-{
+static pddiPixelFormat
+PickPixelFormat(pddiTextureType type, int bpp, int alphadepth, pddiLockInfo *li, GXTexFmt &gxfmt) {
     li->depth = bpp;
     li->format = PDDI_PIXEL_UNKNOWN;
 
@@ -86,61 +78,56 @@ static pddiPixelFormat PickPixelFormat(pddiTextureType type, int bpp, int alphad
     li->rgbaLShift[2] = 24;
     li->rgbaRShift[2] = 0;
     li->rgbaLShift[3] = 0;
-    li->rgbaRShift[3] =24;
+    li->rgbaRShift[3] = 24;
 
     li->rgbaMask[0] = 0x0000ff00;
     li->rgbaMask[1] = 0x00ff0000;
     li->rgbaMask[2] = 0xff000000;
     li->rgbaMask[3] = 0x000000ff;
 
-    switch(type)
-    {
+    switch (type) {
         case PDDI_TEXTYPE_GC_4BIT:
             li->format = PDDI_PIXEL_GC_4BIT;
             li->native = true;
-            gxfmt = (GXTexFmt)GX_TF_C4;
+            gxfmt = (GXTexFmt) GX_TF_C4;
             return li->format;
             break;
 
         case PDDI_TEXTYPE_GC_8BIT:
             li->format = PDDI_PIXEL_GC_8BIT;
             li->native = true;
-            gxfmt = (GXTexFmt)GX_TF_C8;
+            gxfmt = (GXTexFmt) GX_TF_C8;
             return li->format;
             break;
 
         case PDDI_TEXTYPE_GC_16BIT:
             li->format = PDDI_PIXEL_GC_16BIT;
             li->native = true;
-            gxfmt = (GXTexFmt)GX_TF_RGB5A3;
+            gxfmt = (GXTexFmt) GX_TF_RGB5A3;
             return li->format;
             break;
 
         case PDDI_TEXTYPE_GC_32BIT:
             li->format = PDDI_PIXEL_GC_32BIT;
             li->native = true;
-            gxfmt = (GXTexFmt)GX_TF_RGBA8;
+            gxfmt = (GXTexFmt) GX_TF_RGBA8;
             return li->format;
             break;
 
         case PDDI_TEXTYPE_GC_DXT1:
             li->format = PDDI_PIXEL_GC_DXT1;
             li->native = true;
-            gxfmt = (GXTexFmt)GX_TF_CMPR;
+            gxfmt = (GXTexFmt) GX_TF_CMPR;
             return li->format;
             break;
 
 
         case PDDI_TEXTYPE_RGB :
-            switch (alphadepth)
-            {
+            switch (alphadepth) {
                 case 0:
-                    if (bpp <= 16) 
-                    {
+                    if (bpp <= 16) {
                         return PDDI_PIXEL_RGB565;
-                    }
-                    else
-                    {
+                    } else {
                         li->native = true;
                         li->rgbaLShift[0] = 0;
                         li->rgbaRShift[0] = 8;
@@ -149,7 +136,7 @@ static pddiPixelFormat PickPixelFormat(pddiTextureType type, int bpp, int alphad
                         li->rgbaLShift[2] = 24;
                         li->rgbaRShift[2] = 0;
                         li->rgbaLShift[3] = 0;
-                        li->rgbaRShift[3] =24;
+                        li->rgbaRShift[3] = 24;
 
                         li->rgbaMask[0] = 0x0000ff00;
                         li->rgbaMask[1] = 0x00ff0000;
@@ -161,20 +148,17 @@ static pddiPixelFormat PickPixelFormat(pddiTextureType type, int bpp, int alphad
                     break;
 
                 case 1:
-                    if (bpp <= 16) 
-                    {
+                    if (bpp <= 16) {
                         return PDDI_PIXEL_ARGB1555;
-                    }
-                    else
-                    {
+                    } else {
                         li->native = true;
-                        li->rgbaLShift[0] =  0;
-                        li->rgbaRShift[0] =  8;
-                        li->rgbaLShift[1] =  8;
-                        li->rgbaRShift[1] =  0;
+                        li->rgbaLShift[0] = 0;
+                        li->rgbaRShift[0] = 8;
+                        li->rgbaLShift[1] = 8;
+                        li->rgbaRShift[1] = 0;
                         li->rgbaLShift[2] = 24;
-                        li->rgbaRShift[2] =  0;
-                        li->rgbaLShift[3] =  0;
+                        li->rgbaRShift[2] = 0;
+                        li->rgbaLShift[3] = 0;
                         li->rgbaRShift[3] = 24;
 
                         li->rgbaMask[0] = 0x0000ff00;
@@ -187,12 +171,9 @@ static pddiPixelFormat PickPixelFormat(pddiTextureType type, int bpp, int alphad
                     break;
 
                 default:
-                    if (bpp <= 16) 
-                    {
+                    if (bpp <= 16) {
                         return PDDI_PIXEL_UNKNOWN;
-                    }
-                    else
-                    {
+                    } else {
                         li->native = true;
                         li->rgbaLShift[0] = 0;
                         li->rgbaRShift[0] = 8;
@@ -201,7 +182,7 @@ static pddiPixelFormat PickPixelFormat(pddiTextureType type, int bpp, int alphad
                         li->rgbaLShift[2] = 24;
                         li->rgbaRShift[2] = 0;
                         li->rgbaLShift[3] = 0;
-                        li->rgbaRShift[3] =24;
+                        li->rgbaRShift[3] = 24;
 
                         li->rgbaMask[0] = 0x0000ff00;
                         li->rgbaMask[1] = 0x00ff0000;
@@ -215,51 +196,44 @@ static pddiPixelFormat PickPixelFormat(pddiTextureType type, int bpp, int alphad
             break;
 
         case PDDI_TEXTYPE_PALETTIZED:
-            if (bpp == 4) 
-            {
+            if (bpp == 4) {
                 li->native = true;
-                gxfmt = (GXTexFmt)GX_TF_C4;
+                gxfmt = (GXTexFmt) GX_TF_C4;
                 return PDDI_PIXEL_PAL4;
             }
-            if (bpp == 8) 
-            {
+            if (bpp == 8) {
                 li->native = true;
-                gxfmt = (GXTexFmt)GX_TF_C8;
+                gxfmt = (GXTexFmt) GX_TF_C8;
                 return PDDI_PIXEL_PAL8;
             }
             break;
 
         case PDDI_TEXTYPE_LUMINANCE:
-            if ((bpp == 8) && (alphadepth == 8))
-            {
+            if ((bpp == 8) && (alphadepth == 8)) {
                 li->native = true;
                 gxfmt = GX_TF_I8;
                 return PDDI_PIXEL_LUM8;
             }
 
-            if ((bpp == 8) && (alphadepth == 4))
-            {
+            if ((bpp == 8) && (alphadepth == 4)) {
                 li->native = true;
                 gxfmt = GX_TF_IA4;
                 return PDDI_PIXEL_LUM8;
             }
 
-            if ((bpp == 8) && (alphadepth == 0))
-            {
+            if ((bpp == 8) && (alphadepth == 0)) {
                 li->native = true;
                 gxfmt = GX_TF_I8;
                 return PDDI_PIXEL_LUM8;
             }
 
-            if ((bpp == 4) && (alphadepth == 0))
-            {
+            if ((bpp == 4) && (alphadepth == 0)) {
                 li->native = true;
                 gxfmt = GX_TF_I4;
                 return PDDI_PIXEL_LUM8;
             }
 
-            if ((bpp == 4) && (alphadepth == 4))
-            {
+            if ((bpp == 4) && (alphadepth == 4)) {
                 li->native = true;
                 gxfmt = GX_TF_I4;
                 return PDDI_PIXEL_LUM8;
@@ -273,11 +247,11 @@ static pddiPixelFormat PickPixelFormat(pddiTextureType type, int bpp, int alphad
             break;
 
         case PDDI_TEXTYPE_DXT1:
-             li->native = true;
-             gxfmt = GX_TF_CMPR;
-             return PDDI_PIXEL_DXT1;
+            li->native = true;
+            gxfmt = GX_TF_CMPR;
+            return PDDI_PIXEL_DXT1;
 
-        // Gamecube only supports DXT1 compressed textures      
+            // Gamecube only supports DXT1 compressed textures
         case PDDI_TEXTYPE_DXT2:
         case PDDI_TEXTYPE_DXT3:
         case PDDI_TEXTYPE_DXT4:
@@ -285,18 +259,15 @@ static pddiPixelFormat PickPixelFormat(pddiTextureType type, int bpp, int alphad
             return PDDI_PIXEL_UNKNOWN;
 
         case PDDI_TEXTYPE_Z:
-            if (bpp == 24)
-            {
+            if (bpp == 24) {
                 gxfmt = GX_TF_RGBA8;
                 return PDDI_PIXEL_Z24;
             }
-            if (bpp == 16)
-            {
+            if (bpp == 16) {
                 gxfmt = GX_TF_IA8;
                 return PDDI_PIXEL_Z16;
             }
-            if (bpp == 8)
-            {
+            if (bpp == 8) {
                 gxfmt = GX_TF_I8;
                 return PDDI_PIXEL_Z8;
             }
@@ -313,9 +284,9 @@ static pddiPixelFormat PickPixelFormat(pddiTextureType type, int bpp, int alphad
 // Create
 //
 //
-bool gcTexture::Create(int x, int y, int bpp, int alphadepth, int nMip, pddiTextureType ty, pddiTextureUsageHint usageHint)
-{
-    mWidth  = x;
+bool gcTexture::Create(int x, int y, int bpp, int alphadepth, int nMip, pddiTextureType ty,
+                       pddiTextureUsageHint usageHint) {
+    mWidth = x;
     mHeight = y;
     mBitsPerPixel = bpp;
     mAlphaDepth = alphadepth;
@@ -330,59 +301,52 @@ bool gcTexture::Create(int x, int y, int bpp, int alphadepth, int nMip, pddiText
 
     lock.format = mFormat;
 
-    if (mFormat == PDDI_PIXEL_DXT1)     mBitsPerPixel = 4;
-    if (mFormat == PDDI_PIXEL_GC_DXT1)  mBitsPerPixel = 4;
+    if (mFormat == PDDI_PIXEL_DXT1) mBitsPerPixel = 4;
+    if (mFormat == PDDI_PIXEL_GC_DXT1) mBitsPerPixel = 4;
 
-    if (mFormat == PDDI_PIXEL_UNKNOWN)
-    {
+    if (mFormat == PDDI_PIXEL_UNKNOWN) {
         lastError = PDDI_TEX_BADFORMAT;
         return false;
     }
 
-    if (nMip >= GC_MAX_MIPLEVELS)
-    {
+    if (nMip >= GC_MAX_MIPLEVELS) {
         lastError = PDDI_TEX_TOO_BIG;
         return false;
     }
 
     // Only textures with mipmaps need to be power of two
-    if ((((mWidth - 1) & mWidth) != 0) || (((mHeight - 1) & mHeight) != 0))
-    {
-        if (mMipMapLevels != 0)
-        {
+    if ((((mWidth - 1) & mWidth) != 0) || (((mHeight - 1) & mHeight) != 0)) {
+        if (mMipMapLevels != 0) {
             lastError = PDDI_TEX_NOT_POW_2;
             return false;
         }
         mClampMode = GX_CLAMP;
     }
 
-    if ((mWidth > 1024) || (mHeight > 1024))
-    {
+    if ((mWidth > 1024) || (mHeight > 1024)) {
         lastError = PDDI_TEX_TOO_BIG;
         return false;
     }
 
     // Allocate palette for memory imaged textures
-    if ((mType == PDDI_TEXTYPE_GC_4BIT) || (mType == PDDI_TEXTYPE_GC_8BIT))
-    {
+    if ((mType == PDDI_TEXTYPE_GC_4BIT) || (mType == PDDI_TEXTYPE_GC_8BIT)) {
         int palsize = 256;
         if (mType == PDDI_TEXTYPE_GC_4BIT) palsize = 16;
-        char *pal = (char *)mallocaligned(palsize * 2, 32);
+        char *pal = (char *) mallocaligned(palsize * 2, 32);
 
-        GXInitTlutObj(&mPalette, pal, GX_TL_RGB5A3, (unsigned short)palsize);
+        GXInitTlutObj(&mPalette, pal, GX_TL_RGB5A3, (unsigned short) palsize);
     }
 
-    unsigned long total_size = GXGetTexBufferSize((unsigned short)mWidth, 
-                                                                 (unsigned short)mHeight, 
-                                                                 (unsigned short)mGXTexFormat, 
-                                                                 (mMipMapLevels > 0), 
-                                                                 (unsigned char)(mMipMapLevels + 1));
-    mBits[0] = (char *)mallocaligned(total_size, 32);
+    unsigned long total_size = GXGetTexBufferSize((unsigned short) mWidth,
+                                                  (unsigned short) mHeight,
+                                                  (unsigned short) mGXTexFormat,
+                                                  (mMipMapLevels > 0),
+                                                  (unsigned char) (mMipMapLevels + 1));
+    mBits[0] = (char *) mallocaligned(total_size, 32);
 
     int a;
     int pos = 0;
-    for (a = 1; a < mMipMapLevels + 1; a++) 
-    {
+    for (a = 1; a < mMipMapLevels + 1; a++) {
         int prevmipsize = (((mWidth >> (a - 1)) * (mHeight >> (a - 1)) * mBitsPerPixel) / 8);
         pos += prevmipsize;
         pos = (pos + 31) & ~31; // round up start to 32 byte boundaries
@@ -390,8 +354,7 @@ bool gcTexture::Create(int x, int y, int bpp, int alphadepth, int nMip, pddiText
     }
 
 
-    switch (mType)
-    {
+    switch (mType) {
         case PDDI_TEXTYPE_Z:
         case PDDI_TEXTYPE_GC_4BIT:
         case PDDI_TEXTYPE_GC_8BIT:
@@ -451,16 +414,15 @@ bool gcTexture::Create(int x, int y, int bpp, int alphadepth, int nMip, pddiText
 //
 //
 //
-gcTexture::gcTexture(gcContext *c)
-{
-    mContext  = c;
+gcTexture::gcTexture(gcContext *c) {
+    mContext = c;
     mMipMapLevels = 0;
     mBits[0] = NULL;
 
     mPalette.dummy[0] = 0;
     mPalette.dummy[1] = 0;
     mPalette.dummy[2] = 0;
-    
+
     mPointSampling = false;
 }
 
@@ -470,25 +432,21 @@ gcTexture::gcTexture(gcContext *c)
 //
 //
 //
-gcTexture::~gcTexture()
-{
-    if (mBits[0]) 
-    {
+gcTexture::~gcTexture() {
+    if (mBits[0]) {
         freealigned(mBits[0]); // All texture memory is allocated at once
     }
 
-    if (GXGetTlutObjData(&mPalette) != NULL)
-    {
-        freealigned((void *)OSPhysicalToCached((u32)GXGetTlutObjData(&mPalette)));
+    if (GXGetTlutObjData(&mPalette) != NULL) {
+        freealigned((void *) OSPhysicalToCached((u32) GXGetTlutObjData(&mPalette)));
     }
-
 
 
 #ifdef PDDI_TRACK_STATS
     long total_size = (long) GXGetTexBufferSize((unsigned short)mWidth, 
                                                               (unsigned short)mHeight, 
                                                               (unsigned short)mGXTexFormat, 
-                                                              (mMipMapLevels > 0), 
+                                                              (mMipMapLevels> 0),
                                                               (unsigned char)(mMipMapLevels + 1));
 
     mContext->ADD_STAT(PDDI_STAT_TEXTURE_ALLOCATED, (float)(-total_size / 1024));
@@ -534,8 +492,7 @@ gcTexture::~gcTexture()
 // Get Pixel Format
 //
 //
-pddiPixelFormat gcTexture::GetPixelFormat()
-{
+pddiPixelFormat gcTexture::GetPixelFormat() {
     return mFormat;
 }
 
@@ -545,8 +502,7 @@ pddiPixelFormat gcTexture::GetPixelFormat()
 // Get Width
 //
 //
-int gcTexture::GetWidth()
-{
+int gcTexture::GetWidth() {
     return mWidth;
 }
 
@@ -556,8 +512,7 @@ int gcTexture::GetWidth()
 // Get Height
 //
 //
-int gcTexture::GetHeight()
-{
+int gcTexture::GetHeight() {
     return mHeight;
 }
 
@@ -567,8 +522,7 @@ int gcTexture::GetHeight()
 // get Depth
 //
 //
-int gcTexture::GetDepth()
-{
+int gcTexture::GetDepth() {
     return mBitsPerPixel;
 }
 
@@ -578,8 +532,7 @@ int gcTexture::GetDepth()
 // Get Num Mip
 //
 //
-int gcTexture::GetNumMipMaps()
-{
+int gcTexture::GetNumMipMaps() {
     return mMipMapLevels;
 }
 
@@ -589,8 +542,7 @@ int gcTexture::GetNumMipMaps()
 // Get Alpha Depth
 //
 //
-int gcTexture::GetAlphaDepth()
-{
+int gcTexture::GetAlphaDepth() {
     return mAlphaDepth;
 }
 
@@ -600,9 +552,8 @@ int gcTexture::GetAlphaDepth()
 // Lock
 //
 //
-pddiLockInfo* gcTexture::Lock(int mipMap, pddiRect *rect)
-{
-    
+pddiLockInfo *gcTexture::Lock(int mipMap, pddiRect *rect) {
+
     pddiLockInfo *lock = gTexLockGroup.Lock(this);
     PDDIASSERT(lock != NULL);
 
@@ -613,36 +564,32 @@ pddiLockInfo* gcTexture::Lock(int mipMap, pddiRect *rect)
     mFormat = PickPixelFormat(mType, mBitsPerPixel, mAlphaDepth, lock, mGXTexFormat);
     lock->format = mFormat;
 
-    lock->width  = mWidth  >> mipMap;
+    lock->width = mWidth >> mipMap;
     lock->height = mHeight >> mipMap;
-    lock->depth  = mBitsPerPixel;
+    lock->depth = mBitsPerPixel;
 
-    lock->palette = OSPhysicalToCached((unsigned long)GXGetTlutObjData(&mPalette));
+    lock->palette = OSPhysicalToCached((unsigned long) GXGetTlutObjData(&mPalette));
 
     int pitch = (lock->width * mBitsPerPixel) / 8;
 
     // DXT1 & Z textures are ALWAYS top down
-    switch (mFormat)
-    {
+    switch (mFormat) {
         case PDDI_PIXEL_DXT1:
         case PDDI_PIXEL_Z24:
         case PDDI_PIXEL_Z16:
         case PDDI_PIXEL_Z8:
             lock->pitch = pitch;
-            lock->bits  = &mBits[mipMap][0];
+            lock->bits = &mBits[mipMap][0];
             break;
 
         default:
-            if (mSwizzleEnable)
-            {
+            if (mSwizzleEnable) {
                 lock->pitch = -pitch;
-                lock->bits  = &mBits[mipMap][(lock->height - 1) * pitch];
-            }
-            else
-            {
+                lock->bits = &mBits[mipMap][(lock->height - 1) * pitch];
+            } else {
                 // Assume that the texture modifier knows what they are doing
                 lock->pitch = pitch;
-                lock->bits  = &mBits[mipMap][0];
+                lock->bits = &mBits[mipMap][0];
             }
             break;
     }
@@ -656,17 +603,14 @@ pddiLockInfo* gcTexture::Lock(int mipMap, pddiRect *rect)
 // Unlock
 //
 //
-void gcTexture::Unlock(int mipLevel)
-{
+void gcTexture::Unlock(int mipLevel) {
 
-    int width  = mWidth  >> mipLevel;
+    int width = mWidth >> mipLevel;
     int height = mHeight >> mipLevel;
 
-    if (mSwizzleEnable)
-    {
+    if (mSwizzleEnable) {
         //printf("Swizzling a %d bit texture.\n", mBitsPerPixel);
-        switch (mBitsPerPixel)
-        {
+        switch (mBitsPerPixel) {
             case 32:
                 Swizzle32Bit(mBits[mipLevel], width, height);
                 break;
@@ -674,14 +618,14 @@ void gcTexture::Unlock(int mipLevel)
             case 16:
                 Swizzle16Bit(mBits[mipLevel], width, height);
                 break;
-                                                  
+
             case 8:
                 Swizzle8Bit(mBits[mipLevel], width, height);
                 break;
 
             case 4:
                 if (mFormat == PDDI_PIXEL_DXT1) SwizzleCompressed(mBits[mipLevel], width, height);
-                else                            Swizzle4Bit(mBits[mipLevel], width, height);
+                else Swizzle4Bit(mBits[mipLevel], width, height);
                 break;
         }
 
@@ -689,7 +633,7 @@ void gcTexture::Unlock(int mipLevel)
 
     DCFlushRange(mBits[mipLevel], (unsigned long) (width * height * mBitsPerPixel / 8));
 
-    void *pal = OSPhysicalToCached((unsigned long)GXGetTlutObjData(&mPalette));
+    void *pal = OSPhysicalToCached((unsigned long) GXGetTlutObjData(&mPalette));
     if (pal != NULL) DCFlushRange(pal, 512);
 
     RebuildTexture();
@@ -707,13 +651,11 @@ void gcTexture::Unlock(int mipLevel)
 // Rebuild texture
 //
 //
-void gcTexture::RebuildTexture(void)
-{
+void gcTexture::RebuildTexture(void) {
 
     bool mipmapped = (mMipMapLevels > 0);
 
-    switch (mType)
-    {
+    switch (mType) {
         case PDDI_TEXTYPE_RGB:
         case PDDI_TEXTYPE_LUMINANCE:
         case PDDI_TEXTYPE_DXT1:
@@ -721,60 +663,58 @@ void gcTexture::RebuildTexture(void)
         case PDDI_TEXTYPE_GC_16BIT:
         case PDDI_TEXTYPE_GC_32BIT:
         case PDDI_TEXTYPE_GC_DXT1:
-            GXInitTexObj(&mTexture, 
-                          mBits[0], 
-                          (unsigned short)mWidth, 
-                          (unsigned short)mHeight, 
-                          mGXTexFormat, 
-                          mClampMode, 
-                          mClampMode, 
-                          mipmapped);
-                
+            GXInitTexObj(&mTexture,
+                         mBits[0],
+                         (unsigned short) mWidth,
+                         (unsigned short) mHeight,
+                         mGXTexFormat,
+                         mClampMode,
+                         mClampMode,
+                         mipmapped);
+
             // this has been added so that cell shading can 
             // use point sampling rather than bilinear filtering
-            if(mPointSampling)
-            {          
+            if (mPointSampling) {
                 GXInitTexObjLOD(&mTexture,          // texture object
-                                 GX_NEAR,           // Min Filter
-                                 GX_NEAR,           // Mag Filter
-                                 0,                 // Minimum LOD
-                                 0,                 // Maximum LOD
-                                 0.0,               // LOD Bias
-                                 GX_FALSE,          // Bias Clamp 
-                                 0,                 // Edge LOD
-                                 GX_ANISO_1);       // Iterations of anisotropic filtering
+                                GX_NEAR,           // Min Filter
+                                GX_NEAR,           // Mag Filter
+                                0,                 // Minimum LOD
+                                0,                 // Maximum LOD
+                                0.0,               // LOD Bias
+                                GX_FALSE,          // Bias Clamp
+                                0,                 // Edge LOD
+                                GX_ANISO_1);       // Iterations of anisotropic filtering
             }
 
-                          
+
             break;
 
         case PDDI_TEXTYPE_PALETTIZED:
         case PDDI_TEXTYPE_GC_4BIT:
         case PDDI_TEXTYPE_GC_8BIT:
-            GXInitTexObjCI(&mTexture, 
-                            mBits[0], 
-                            (unsigned short)mWidth, 
-                            (unsigned short)mHeight, 
-                            (GXCITexFmt)mGXTexFormat, 
-                            mClampMode, 
-                            mClampMode, 
-                            mipmapped, 
-                            GX_TLUT0);
+            GXInitTexObjCI(&mTexture,
+                           mBits[0],
+                           (unsigned short) mWidth,
+                           (unsigned short) mHeight,
+                           (GXCITexFmt) mGXTexFormat,
+                           mClampMode,
+                           mClampMode,
+                           mipmapped,
+                           GX_TLUT0);
             break;
 
         case PDDI_TEXTYPE_Z:
-            GXInitTexObj(&mTexture, 
-                          mBits[0], 
-                          (unsigned short)mWidth, 
-                          (unsigned short)mHeight, 
-                          mGXTexFormat, 
-                          GX_CLAMP, 
-                          GX_CLAMP, 
-                          mipmapped);
+            GXInitTexObj(&mTexture,
+                         mBits[0],
+                         (unsigned short) mWidth,
+                         (unsigned short) mHeight,
+                         mGXTexFormat,
+                         GX_CLAMP,
+                         GX_CLAMP,
+                         mipmapped);
     }
 
-    if (mipmapped)
-    {
+    if (mipmapped) {
 
         GXTexFilter min = GX_LIN_MIP_LIN;
         GXTexFilter mag = GX_LINEAR;
@@ -783,8 +723,7 @@ void gcTexture::RebuildTexture(void)
         bool edgelod = true;
         bool biasclamp = true;
 
-        if (GXGetTlutObjData(&mPalette) != NULL)
-        {
+        if (GXGetTlutObjData(&mPalette) != NULL) {
             min = GX_LIN_MIP_NEAR;
             mag = GX_LINEAR;
             aniso = GX_ANISO_1;
@@ -795,14 +734,14 @@ void gcTexture::RebuildTexture(void)
         }
 
         GXInitTexObjLOD(&mTexture,       // texture object
-                             min,             // Min Filter
-                             mag,             // Mag Filter
-                             0.0F,            // Minimum LOD
-                             mMipMapLevels,   // Maximum LOD
-                             lodbias,         // LOD Bias
-                             biasclamp,       // Bias Clamp 
-                             edgelod,         // Edge LOD
-                             aniso);          // Iterations of anisotropic filtering
+                        min,             // Min Filter
+                        mag,             // Mag Filter
+                        0.0F,            // Minimum LOD
+                        mMipMapLevels,   // Maximum LOD
+                        lodbias,         // LOD Bias
+                        biasclamp,       // Bias Clamp
+                        edgelod,         // Edge LOD
+                        aniso);          // Iterations of anisotropic filtering
     }
 
 
@@ -815,8 +754,7 @@ void gcTexture::RebuildTexture(void)
 // Set Priority
 //
 //
-void gcTexture::SetPriority(int p)
-{
+void gcTexture::SetPriority(int p) {
 }
 
 //***************************************
@@ -825,8 +763,7 @@ void gcTexture::SetPriority(int p)
 // Get Priority
 //
 //
-int gcTexture::GetPriority(void)
-{
+int gcTexture::GetPriority(void) {
     return 0;
 }
 
@@ -836,8 +773,7 @@ int gcTexture::GetPriority(void)
 // Prefetch
 //
 //
-void gcTexture::Prefetch(void)
-{
+void gcTexture::Prefetch(void) {
 }
 
 //***************************************
@@ -846,8 +782,7 @@ void gcTexture::Prefetch(void)
 // Discard
 //
 //
-void gcTexture::Discard(void)
-{
+void gcTexture::Discard(void) {
 }
 
 
@@ -857,8 +792,7 @@ void gcTexture::Discard(void)
 // Set Wrap Mode
 //
 //
-void gcTexture::SetWrapMode(GXTexWrapMode mode)
-{
+void gcTexture::SetWrapMode(GXTexWrapMode mode) {
     mClampMode = mode;
     RebuildTexture();
 }
@@ -870,13 +804,11 @@ void gcTexture::SetWrapMode(GXTexWrapMode mode)
 // load Texture
 //
 //
-void gcTexture::LoadTexture(GXTexMapID id)
-{
+void gcTexture::LoadTexture(GXTexMapID id) {
     // You MUST load the palette before the texture or the texture is all black!
-    if (GXGetTlutObjData(&mPalette) != NULL) 
-    {
-        GXLoadTlut(&mPalette, GX_TLUT0 + (int)id);
-        GXInitTexObjTlut(&mTexture, GX_TLUT0 + (int)id);
+    if (GXGetTlutObjData(&mPalette) != NULL) {
+        GXLoadTlut(&mPalette, GX_TLUT0 + (int) id);
+        GXInitTexObjTlut(&mTexture, GX_TLUT0 + (int) id);
     }
     GXLoadTexObj(&mTexture, id);
 }
@@ -887,9 +819,8 @@ void gcTexture::LoadTexture(GXTexMapID id)
 // GX Texture Format
 //
 //
-GXTexFmt gcTexture::GXTextureFormat(void)
-{ 
-    return mGXTexFormat; 
+GXTexFmt gcTexture::GXTextureFormat(void) {
+    return mGXTexFormat;
 }
 
 
@@ -899,8 +830,7 @@ GXTexFmt gcTexture::GXTextureFormat(void)
 // Set Swizzle Enable
 //
 //
-void gcTexture::SetSwizzleEnable(bool en)
-{
+void gcTexture::SetSwizzleEnable(bool en) {
     mSwizzleEnable = en;
 }
 
@@ -910,8 +840,7 @@ void gcTexture::SetSwizzleEnable(bool en)
 // ge Num Palette Entries
 //
 //
-int gcTexture::GetNumPaletteEntries(void)
-{
+int gcTexture::GetNumPaletteEntries(void) {
     return (int) GXGetTlutObjNumEntries(&mPalette);
 }
 
@@ -921,34 +850,28 @@ int gcTexture::GetNumPaletteEntries(void)
 // Set Palette
 //
 //
-void gcTexture::SetPalette(int nEntries, pddiColour *palette)
-{
-    if (GXGetTlutObjData(&mPalette) != NULL)
-    {
-        freealigned((void *)OSPhysicalToCached((u32)GXGetTlutObjData(&mPalette)));
+void gcTexture::SetPalette(int nEntries, pddiColour *palette) {
+    if (GXGetTlutObjData(&mPalette) != NULL) {
+        freealigned((void *) OSPhysicalToCached((u32) GXGetTlutObjData(&mPalette)));
     }
 
-    unsigned short *pal = (unsigned short *)mallocaligned(nEntries * sizeof(unsigned short), 32);
+    unsigned short *pal = (unsigned short *) mallocaligned(nEntries * sizeof(unsigned short), 32);
     int a;
-    for (a = 0; a < nEntries; a++)
-    {
-        if (palette[a].Alpha() > 255 - (256 >> 3))
-        {
-             // Set high bit so the mode is 555, if high bit is clear mode is 4443
+    for (a = 0; a < nEntries; a++) {
+        if (palette[a].Alpha() > 255 - (256 >> 3)) {
+            // Set high bit so the mode is 555, if high bit is clear mode is 4443
             pal[a] = (unsigned short) (0x8000 |
-                        ((palette[a].Red()   >> 3) << 10) |
-                        ((palette[a].Green() >> 3) << 5)  |
-                         (palette[a].Blue()  >> 3));
-        }
-        else
-        {
+                                       ((palette[a].Red() >> 3) << 10) |
+                                       ((palette[a].Green() >> 3) << 5) |
+                                       (palette[a].Blue() >> 3));
+        } else {
 
             // if high bit is clear mode is 4443
-            pal[a] = (unsigned short) (0x7FFF & 
-                        ((palette[a].Red()   >> 4) << 8) |
-                        ((palette[a].Green() >> 4) << 4) |
-                         (palette[a].Blue()  >> 4) |
-                        ((palette[a].Alpha() >> 5) << 12));
+            pal[a] = (unsigned short) (0x7FFF &
+                                       ((palette[a].Red() >> 4) << 8) |
+                                       ((palette[a].Green() >> 4) << 4) |
+                                       (palette[a].Blue() >> 4) |
+                                       ((palette[a].Alpha() >> 5) << 12));
         }
 
 
@@ -956,7 +879,7 @@ void gcTexture::SetPalette(int nEntries, pddiColour *palette)
 
     DCFlushRange(pal, (unsigned long) (nEntries * sizeof(unsigned short)));
 
-    GXInitTlutObj(&mPalette, pal, GX_TL_RGB5A3, (unsigned short)nEntries);
+    GXInitTlutObj(&mPalette, pal, GX_TL_RGB5A3, (unsigned short) nEntries);
 }
 
 //***************************************
@@ -965,11 +888,9 @@ void gcTexture::SetPalette(int nEntries, pddiColour *palette)
 // Get Palette
 //
 //
-int gcTexture::GetPalette(pddiColour *palette)
-{
+int gcTexture::GetPalette(pddiColour *palette) {
     return 0;
 }
-
 
 
 static char gcSwizzleBuffer[1024 * 4 * 4];
@@ -980,29 +901,24 @@ static char gcSwizzleBuffer[1024 * 4 * 4];
 // Swizzle 32 Bit
 //
 //
-void gcTexture::Swizzle32Bit(char *bits, int width, int height)
-{
+void gcTexture::Swizzle32Bit(char *bits, int width, int height) {
     char *artile, *gbtile;
     char *lines = gcSwizzleBuffer;
 
     int bpl = 4 * width;
 
     int x, y;
-    for (y = 0; y < height; y += 4)
-    {
-        memcpy(lines, &bits[y * width * 4], (unsigned long)(width * 4 * 4));
-        memset(&bits[y * width * 4], 0, (unsigned long)(width * 4 * 4));
+    for (y = 0; y < height; y += 4) {
+        memcpy(lines, &bits[y * width * 4], (unsigned long) (width * 4 * 4));
+        memset(&bits[y * width * 4], 0, (unsigned long) (width * 4 * 4));
 
-        for (x = 0; x < width; x += 4)
-        {
-            artile = &bits[(y * bpl) + (x * 16)]; 
-            gbtile = &bits[(y * bpl) + (x * 16) + 32]; 
+        for (x = 0; x < width; x += 4) {
+            artile = &bits[(y * bpl) + (x * 16)];
+            gbtile = &bits[(y * bpl) + (x * 16) + 32];
 
             int tx, ty;
-            for (ty = 0; ty < 4; ty++)
-            {
-                for (tx = x; tx < (x + 4); tx++)
-                {
+            for (ty = 0; ty < 4; ty++) {
+                for (tx = x; tx < (x + 4); tx++) {
                     artile[0] = lines[(ty * bpl) + (tx * 4 + 0)];
                     artile[1] = lines[(ty * bpl) + (tx * 4 + 1)];
                     artile += 2;
@@ -1017,15 +933,13 @@ void gcTexture::Swizzle32Bit(char *bits, int width, int height)
 }
 
 
-
 //***************************************
 //
 // Class gcTexture
 // Swizzle 16 Bit
 //
 //
-void gcTexture::Swizzle16Bit(char *bits, int width, int height)
-{
+void gcTexture::Swizzle16Bit(char *bits, int width, int height) {
     // Might need to implement this sometime soon.  Sigh.
 }
 
@@ -1035,21 +949,16 @@ void gcTexture::Swizzle16Bit(char *bits, int width, int height)
 // Swizzle 8 Bit
 //
 //
-void gcTexture::Swizzle8Bit(char *bits, int width, int height)
-{
+void gcTexture::Swizzle8Bit(char *bits, int width, int height) {
     char *lines = gcSwizzleBuffer;
     int x, y;
-    for (y = 0; y < height; y += 4)
-    {
-        memcpy(lines, &bits[y * width], (unsigned long)(width * 4));   
-        for (x = 0; x < width; x += 8)
-        {
+    for (y = 0; y < height; y += 4) {
+        memcpy(lines, &bits[y * width], (unsigned long) (width * 4));
+        for (x = 0; x < width; x += 8) {
             char *dest = &bits[y * width + x * 4];
             int tx, ty;
-            for (ty = 0; ty < 4; ty++)
-            {
-                for (tx = x; tx < (x + 8); tx++)
-                {
+            for (ty = 0; ty < 4; ty++) {
+                for (tx = x; tx < (x + 8); tx++) {
                     *dest = lines[ty * width + tx];
                     ++dest;
                 }
@@ -1065,30 +974,25 @@ void gcTexture::Swizzle8Bit(char *bits, int width, int height)
 // Swizzle 4 bit
 //
 //
-void gcTexture::Swizzle4Bit(char *bits, int width, int height)
-{
+void gcTexture::Swizzle4Bit(char *bits, int width, int height) {
     char *lines = gcSwizzleBuffer;
     int bpl = width / 2;
 
     int size = height * width / 2;
     int a;
-    for (a = 0; a < size; a++)
-    {
+    for (a = 0; a < size; a++) {
         char temp = bits[a];
         bits[a] = (char) (((temp >> 4) & 0x0F) | ((temp << 4) & 0xF0));
     }
 
     int x, y;
-    for (y = 0; y < height; y += 8)
-    {
-        memcpy(lines, &bits[y * bpl], (unsigned long)(bpl * 8)); 
-  
-        for (x = 0; x < width; x += 8)
-        {
-            unsigned int *dest = (unsigned int *)(&bits[y * bpl + x * 4]);
+    for (y = 0; y < height; y += 8) {
+        memcpy(lines, &bits[y * bpl], (unsigned long) (bpl * 8));
+
+        for (x = 0; x < width; x += 8) {
+            unsigned int *dest = (unsigned int *) (&bits[y * bpl + x * 4]);
             int ty;
-            for (ty = 0; ty < 8; ty++)
-            {
+            for (ty = 0; ty < 8; ty++) {
                 *dest = *((unsigned int *) &lines[ty * bpl + x / 2]);
                 ++dest;
             }
@@ -1097,15 +1001,13 @@ void gcTexture::Swizzle4Bit(char *bits, int width, int height)
 }
 
 
-
 //***************************************
 //
 // Class gcTexture
 // Swizzle Compressed
 //
 //
-void gcTexture::SwizzleCompressed(char *bits, int width, int height)
-{
+void gcTexture::SwizzleCompressed(char *bits, int width, int height) {
 
     // there are 8 bytes per compressed texel block of 4x4 pixels
 
@@ -1129,26 +1031,24 @@ void gcTexture::SwizzleCompressed(char *bits, int width, int height)
 
     int size = (width * height * mBitsPerPixel) / 8;
     int a;
-    for (a = 0; a < size; a += 8)
-    {
+    for (a = 0; a < size; a += 8) {
         char temp = bits[a + 1];
         bits[a + 1] = bits[a + 0];
         bits[a + 0] = temp;
 
         temp = bits[a + 3];
         bits[a + 3] = bits[a + 2];
-        bits[a + 2] = temp;  
+        bits[a + 2] = temp;
 
         int b;
-        for (b = a + 4; b < a + 8; b++)
-        {
+        for (b = a + 4; b < a + 8; b++) {
             temp = bits[b];
 
             // Swap the bits of the compressed texture
-            bits[b] = (char) (((temp >> 6) & 0x03) | 
-                                    ((temp >> 2) & 0x0C) | 
-                                    ((temp << 2) & 0x30) | 
-                                    ((temp << 6) & 0xC0));
+            bits[b] = (char) (((temp >> 6) & 0x03) |
+                              ((temp >> 2) & 0x0C) |
+                              ((temp << 2) & 0x30) |
+                              ((temp << 6) & 0xC0));
         }
 
     }
@@ -1159,18 +1059,16 @@ void gcTexture::SwizzleCompressed(char *bits, int width, int height)
     char *lines = gcSwizzleBuffer;
     char *line4 = &lines[bpl * 4];
 
-    for (y = 0; y < height; y += 8)
-    {
-        memcpy(lines, &bits[bpl * y], (unsigned long)(bpl * 8));
+    for (y = 0; y < height; y += 8) {
+        memcpy(lines, &bits[bpl * y], (unsigned long) (bpl * 8));
 
-        for (x = 0; x < width; x += 8)
-        {
-            int dest = (bpl * y) + (x * 4); 
-            int src  = (x * 2);
-            memcpy(&bits[dest +  0], &lines[src + 0], 8); 
-            memcpy(&bits[dest +  8], &lines[src + 8], 8); 
-            memcpy(&bits[dest + 16], &line4[src + 0], 8); 
-            memcpy(&bits[dest + 24], &line4[src + 8], 8); 
+        for (x = 0; x < width; x += 8) {
+            int dest = (bpl * y) + (x * 4);
+            int src = (x * 2);
+            memcpy(&bits[dest + 0], &lines[src + 0], 8);
+            memcpy(&bits[dest + 8], &lines[src + 8], 8);
+            memcpy(&bits[dest + 16], &line4[src + 0], 8);
+            memcpy(&bits[dest + 24], &line4[src + 8], 8);
         }
     }
 }
@@ -1181,11 +1079,9 @@ void gcTexture::SwizzleCompressed(char *bits, int width, int height)
 // Turn point sampling on or off
 //
 //
-void gcTexture::SetPointSampling(bool pointSampling)
-{
+void gcTexture::SetPointSampling(bool pointSampling) {
     mPointSampling = pointSampling;
 }
-
 
 
 //***************************************
@@ -1194,13 +1090,11 @@ void gcTexture::SetPointSampling(bool pointSampling)
 // Simpons screwing with shadows.
 //
 //
-void gcTexture::SetWidth( int width )
-{
+void gcTexture::SetWidth(int width) {
     mWidth = width;
 }
 
-void gcTexture::SetHeight( int height )
-{
+void gcTexture::SetHeight(int height) {
     mHeight = height;
 }
 

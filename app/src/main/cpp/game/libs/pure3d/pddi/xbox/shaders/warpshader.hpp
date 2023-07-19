@@ -6,20 +6,22 @@
 #ifndef _WARPSHADER_HPP_
 #define _WARPSHADER_HPP_
 
-#include "..\pddi.hpp"
+#include "../pddi.hpp"
 #include "shader.hpp"
 
 class d3dContext;
+
 class d3dTexture;
 
-class d3dWarpShader : public d3dShader
-{
+class d3dWarpShader : public d3dShader {
 public:
-    d3dWarpShader(d3dContext* c);
+    d3dWarpShader(d3dContext *c);
+
     ~d3dWarpShader();
 
-    const char* GetType(void);
-    int  GetPasses();
+    const char *GetType(void);
+
+    int GetPasses();
 
 protected:
     static pddiShadeColourTable colourTable[];
@@ -29,25 +31,29 @@ protected:
 
     void SetPass(int pass = 0);
 
-    pddiShadeTextureTable* GetTextureTable(void) { return textureTable;}
-    pddiShadeIntTable*     GetIntTable(void)     { return intTable;}
-    pddiShadeFloatTable*   GetFloatTable(void)   { return floatTable;}
-    pddiShadeColourTable*  GetColourTable(void)  { return colourTable;}
+    pddiShadeTextureTable *GetTextureTable(void) { return textureTable; }
+
+    pddiShadeIntTable *GetIntTable(void) { return intTable; }
+
+    pddiShadeFloatTable *GetFloatTable(void) { return floatTable; }
+
+    pddiShadeColourTable *GetColourTable(void) { return colourTable; }
 
     // texture
-    void SetBaseTexture(pddiTexture* texture);
+    void SetBaseTexture(pddiTexture *texture);
 
     //frequence
-    void SetFrequence( float t ){ frequence = t; };
+    void SetFrequence(float t) { frequence = t; };
 
     //bias
-    void SetBias( float b ){ bias = b; };
+    void SetBias(float b) { bias = b; };
 
-    void PreRender( );
-    void PostRender( );
+    void PreRender();
+
+    void PostRender();
 
     // texturing
-    d3dTexture* baseTex;
+    d3dTexture *baseTex;
 
     //timing
     float frequence;

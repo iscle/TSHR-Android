@@ -13,27 +13,30 @@ class tVectorCamera;
 //*********************************************************
 // Class tCameraAnimationController
 //*********************************************************
-class tCameraAnimationController : public tBlendFrameController
-{
+class tCameraAnimationController : public tBlendFrameController {
 public:
     tCameraAnimationController();
-    tCameraAnimationController(tCameraAnimationController* c);
 
-    void SetCamera(tVectorCamera* camera);
-    tVectorCamera* Camera(void) { return mCamera; }
+    tCameraAnimationController(tCameraAnimationController *c);
 
-    virtual bool ValidateAnimation(tAnimation* anim);
+    void SetCamera(tVectorCamera *camera);
 
-    virtual tFrameController* Clone(void);
-    void SetOffsetMatrix( const rmt::Matrix& m );
+    tVectorCamera *Camera(void) { return mCamera; }
+
+    virtual bool ValidateAnimation(tAnimation *anim);
+
+    virtual tFrameController *Clone(void);
+
+    void SetOffsetMatrix(const rmt::Matrix &m);
 
 protected:
     virtual ~tCameraAnimationController();
 
     void UpdateNoBlending();
+
     void UpdateWithBlending();
 
-    tVectorCamera* mCamera;
+    tVectorCamera *mCamera;
     rmt::Matrix mOffsetMatrix;
 };
 

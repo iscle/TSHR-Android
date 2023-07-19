@@ -10,17 +10,17 @@
 
 #include "dolphin/dvd.h"
 
-class tGCFileMap : public tFileMem
-{
+class tGCFileMap : public tFileMem {
 public:
-    tGCFileMap(const char* filename);
+    tGCFileMap(const char *filename);
 
     bool IsOpen(void) { return GetMemory() != NULL; }
 
 protected:
     virtual ~tGCFileMap();
 
-    void Open(const char* filename);
+    void Open(const char *filename);
+
     void Close(void);
 
     DVDFileInfo mFile;

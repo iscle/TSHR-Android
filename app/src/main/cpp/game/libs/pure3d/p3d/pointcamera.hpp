@@ -17,30 +17,38 @@
 // Can exhibit odd behavior if the position and target are directly above/below each other, 
 // due to the difficulty of finding a correct up vector to base the twist value off of.
 //
-class tPointCamera: public tCamera
-{
+class tPointCamera : public tCamera {
 public:
     tPointCamera();
-    tPointCamera(tPointCamera*);
 
-    void  SetTarget(const rmt::Vector&); // world space
-    void  SetPosition(const rmt::Vector&); // world space
-    void  SetTwist(float);
-    void  SetUpVector(const rmt::Vector&);
+    tPointCamera(tPointCamera *);
 
-    const rmt::Vector& GetUpVector(void) { return vup;}
-    const rmt::Vector& GetTarget(void) { return target;}
-    const rmt::Vector& GetPosition(void) { return position;}
+    void SetTarget(const rmt::Vector &); // world space
+    void SetPosition(const rmt::Vector &); // world space
+    void SetTwist(float);
+
+    void SetUpVector(const rmt::Vector &);
+
+    const rmt::Vector &GetUpVector(void) { return vup; }
+
+    const rmt::Vector &GetTarget(void) { return target; }
+
+    const rmt::Vector &GetPosition(void) { return position; }
+
     float GetTwist() { return TwistAngle; }
 
-  // old forms of funcitons, 
-  // not sure why we did it this way in the first place (returning const refs makes more sense)
-  // but we might as well leave 'em to avoid breaking code (nbrooke 11/2001)
-    void GetTarget(rmt::Vector* OutTarget) { *OutTarget = target; }
+    // old forms of funcitons,
+    // not sure why we did it this way in the first place (returning const refs makes more sense)
+    // but we might as well leave 'em to avoid breaking code (nbrooke 11/2001)
+    void GetTarget(rmt::Vector *OutTarget) { *OutTarget = target; }
+
     void GetPosition(rmt::Vector *OutPos) { *OutPos = position; }
+
     void GetUpVector(rmt::Vector *OutVUp) { *OutVUp = vup; }
-    void GetVUp(rmt::Vector * v) { GetUpVector(v);}
-    void SetVUp(const rmt::Vector& v) { SetUpVector(v); }
+
+    void GetVUp(rmt::Vector *v) { GetUpVector(v); }
+
+    void SetVUp(const rmt::Vector &v) { SetUpVector(v); }
 
 protected:
     virtual ~tPointCamera();

@@ -5,44 +5,51 @@
 #include"shader.hpp"
 
 class d3dContext;
+
 class d3dTexture;
 
-class d3dHKToonShader: public d3dShader
-{
+class d3dHKToonShader : public d3dShader {
 public:
-   d3dHKToonShader(d3dContext* c);
-   ~d3dHKToonShader();
+    d3dHKToonShader(d3dContext *c);
 
-   const char* GetType(void);
-   int  GetPasses();
+    ~d3dHKToonShader();
+
+    const char *GetType(void);
+
+    int GetPasses();
 
 protected:
-   static pddiShadeColourTable colourTable[];
-   static pddiShadeTextureTable textureTable[];
-   static pddiShadeIntTable intTable[];
-   static pddiShadeFloatTable floatTable[];
+    static pddiShadeColourTable colourTable[];
+    static pddiShadeTextureTable textureTable[];
+    static pddiShadeIntTable intTable[];
+    static pddiShadeFloatTable floatTable[];
 
-   void PreRender(void);
-   void PostRender(void);
+    void PreRender(void);
 
-   void SetPass(int pass = 0);
+    void PostRender(void);
 
-   pddiShadeTextureTable* GetTextureTable(void) { return textureTable;}
-   pddiShadeIntTable*     GetIntTable(void)     { return intTable;}
-   pddiShadeFloatTable*   GetFloatTable(void)   { return floatTable;}
-   pddiShadeColourTable*  GetColourTable(void)  { return colourTable;}
+    void SetPass(int pass = 0);
 
-   
-   //Pixel shader
-   unsigned long m_PixelShaderHandle;
+    pddiShadeTextureTable *GetTextureTable(void) { return textureTable; }
+
+    pddiShadeIntTable *GetIntTable(void) { return intTable; }
+
+    pddiShadeFloatTable *GetFloatTable(void) { return floatTable; }
+
+    pddiShadeColourTable *GetColourTable(void) { return colourTable; }
 
 
-   void SetTexture(pddiTexture* t);
-   void SetTuneMap(pddiTexture* t);
+    //Pixel shader
+    unsigned long m_PixelShaderHandle;
 
-   // texturing
-   d3dTexture* m_pTexture;
-   d3dTexture* m_pTuneMap;
+
+    void SetTexture(pddiTexture *t);
+
+    void SetTuneMap(pddiTexture *t);
+
+    // texturing
+    d3dTexture *m_pTexture;
+    d3dTexture *m_pTuneMap;
 };
 
 #endif //_HCTUNESHADER_HPP_

@@ -13,28 +13,29 @@
 #include <constants/chunkids.hpp>
 
 
-class tLocator : public tEntity
-{
+class tLocator : public tEntity {
 public:
     tLocator();
+
     void SetPosition(rmt::Vector pos);
-    const rmt::Vector& GetPosition() {return position;}
+
+    const rmt::Vector &GetPosition() { return position; }
 
 protected:
     virtual ~tLocator();
-    rmt::Vector position; 
+
+    rmt::Vector position;
 };
 
-class tLocatorLoader : public tSimpleChunkHandler
-{
+class tLocatorLoader : public tSimpleChunkHandler {
 public:
     tLocatorLoader();
 
 protected:
     ~tLocatorLoader() {};
-    tEntity* LoadObject(tChunkFile*, tEntityStore*);
-};
 
+    tEntity *LoadObject(tChunkFile *, tEntityStore *);
+};
 
 
 #endif//_TLOCATOR_HPP

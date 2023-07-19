@@ -10,22 +10,26 @@
 #include"shader.hpp"
 
 class d3dContext;
+
 class d3dTexture;
 
-class d3dReflectVertexShader : public d3dShader
-{
+class d3dReflectVertexShader : public d3dShader {
 public:
-     d3dReflectVertexShader(d3dContext* c);
-     ~d3dReflectVertexShader();
-    
-     const char* GetType(void);
-     int  GetPasses();
+    d3dReflectVertexShader(d3dContext *c);
 
-     void PreRender(void);
-     void PostRender(void);
+    ~d3dReflectVertexShader();
 
-	 bool IsVertexShader( ){ return true; }
-	 void LoadVSConstants( );
+    const char *GetType(void);
+
+    int GetPasses();
+
+    void PreRender(void);
+
+    void PostRender(void);
+
+    bool IsVertexShader() { return true; }
+
+    void LoadVSConstants();
 
 protected:
     //
@@ -34,8 +38,10 @@ protected:
     void SetPass(int pass = 0);
 
     // texture
-    void SetTexture(pddiTexture* texture);
-    void SetReflectionMap(pddiTexture* texture);
+    void SetTexture(pddiTexture *texture);
+
+    void SetReflectionMap(pddiTexture *texture);
+
     void SetEnvBlend(pddiColour c);
 
     static pddiShadeColourTable colourTable[];
@@ -43,16 +49,19 @@ protected:
     static pddiShadeIntTable intTable[];
     static pddiShadeFloatTable floatTable[];
 
-    pddiShadeTextureTable* GetTextureTable(void) { return textureTable;}
-    pddiShadeIntTable*     GetIntTable(void)     { return intTable;}
-    pddiShadeFloatTable*   GetFloatTable(void)   { return floatTable;}
-    pddiShadeColourTable*  GetColourTable(void)  { return colourTable;}
+    pddiShadeTextureTable *GetTextureTable(void) { return textureTable; }
+
+    pddiShadeIntTable *GetIntTable(void) { return intTable; }
+
+    pddiShadeFloatTable *GetFloatTable(void) { return floatTable; }
+
+    pddiShadeColourTable *GetColourTable(void) { return colourTable; }
 
 
     // texturing
-    d3dTexture*      texture;
-    d3dTexture*      environMap;
-    pddiColour       envBlend;
+    d3dTexture *texture;
+    d3dTexture *environMap;
+    pddiColour envBlend;
 };
 
 #endif

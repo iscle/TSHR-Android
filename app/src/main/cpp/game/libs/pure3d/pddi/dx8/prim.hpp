@@ -16,39 +16,48 @@
 #include "../base/debug.hpp"
 
 //-------------------------------------------------------------------
-class d3dPrimBuffer : public pddiPrimBuffer
-{
+class d3dPrimBuffer : public pddiPrimBuffer {
 public:
     virtual ~d3dPrimBuffer();
-    d3dPrimBuffer(d3dContext* context);
+
+    d3dPrimBuffer(d3dContext *context);
 
     void Create(pddiPrimType type, unsigned vertexFormat,
-        unsigned compressionHint, int maxVertex, int maxIndex,
-        const char* vertexProgram);
+                unsigned compressionHint, int maxVertex, int maxIndex,
+                const char *vertexProgram);
 
     void CreateStripList(pddiPrimType type, unsigned fmt,
-        int maxVertex, int nStrip, int* strLen);
+                         int maxVertex, int nStrip, int *strLen);
 
-    pddiPrimBufferStream* Lock();
-    void Unlock(pddiPrimBufferStream* stream);
+    pddiPrimBufferStream *Lock();
 
-    unsigned char* LockIndexBuffer();
+    void Unlock(pddiPrimBufferStream *stream);
+
+    unsigned char *LockIndexBuffer();
+
     void UnlockIndexBuffer(int count);
 
     bool CheckMemImageVersion(int version);
-    void* LockMemImage(unsigned int);
+
+    void *LockMemImage(unsigned int);
+
     void UnlockMemImage();
+
     unsigned GetMemImageLength();
+
     void SetMemImageParam(unsigned param, unsigned value);
 
     void SetNumVertices(int count);
+
     void SetNumIndices(int count);
-    void SetIndices(unsigned short* indices, int count);
+
+    void SetIndices(unsigned short *indices, int count);
 
     void Display();
 
-    void SetUsedSize(int size) {useSize = size;}
-    void SetVertexProgram(d3dVertexProgram* d) {vertexProgram = d;}
+    void SetUsedSize(int size) { useSize = size; }
+
+    void SetVertexProgram(d3dVertexProgram *d) { vertexProgram = d; }
 
 private:
     friend class d3dPrimBufferStream;
@@ -67,8 +76,8 @@ private:
     bool lockedVertex;
     bool lockedIndex;
     bool lockedMemImage;
-    d3dContext* context;
-    d3dVertexProgram* vertexProgram;
+    d3dContext *context;
+    d3dVertexProgram *vertexProgram;
 };
 
 

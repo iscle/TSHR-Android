@@ -8,16 +8,19 @@
 
 #include <p3d/imagefactory.hpp>
 
-class tTargaHandler : public tImageHandler
-{
+class tTargaHandler : public tImageHandler {
 public:
-    char* GetExtension() { return "tga"; }
-    bool CanLoad()       { return true; }
-    bool CanSave()       { return true; }
+    char *GetExtension() { return "tga"; }
+
+    bool CanLoad() { return true; }
+
+    bool CanSave() { return true; }
 
     bool CheckFormat(Format);
-    void CreateImage(tFile* file, tImageHandler::Builder* builder);
-    bool SaveImage(tImage* image, char* filename);
+
+    void CreateImage(tFile *file, tImageHandler::Builder *builder);
+
+    bool SaveImage(tImage *image, char *filename);
 };
 
 #endif // TARGA_HPP

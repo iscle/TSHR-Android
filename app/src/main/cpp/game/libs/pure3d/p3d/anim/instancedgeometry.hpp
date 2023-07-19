@@ -9,29 +9,32 @@
 #include <p3d/drawable.hpp>
 
 class tPose;
+
 class tPolySkin;
 
-class tInstancedGeometry : public tDrawable
-{
+class tInstancedGeometry : public tDrawable {
 public:
-    tInstancedGeometry(tPolySkin*);
+    tInstancedGeometry(tPolySkin *);
+
     ~tInstancedGeometry();
 
     virtual void Display(void);
+
     virtual void Flush(void);
+
     static void FlushAll(void);
 
-    virtual void ProcessShaders(ShaderCallback&);
+    virtual void ProcessShaders(ShaderCallback &);
 
 protected:
-    tPolySkin* skin;
-    tPose* pose;
-    
+    tPolySkin *skin;
+    tPose *pose;
+
     int curCount;
     int maxCount;
 
-    tInstancedGeometry* prev;
-    tInstancedGeometry* next;
+    tInstancedGeometry *prev;
+    tInstancedGeometry *next;
 };
 
 #endif _INSTANCEDGEOMETRY_HPP_

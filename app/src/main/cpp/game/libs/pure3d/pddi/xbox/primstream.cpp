@@ -20,78 +20,71 @@
 
 // pddiPrimType
 static D3DPRIMITIVETYPE primTable[] =
-{
-    D3DPT_TRIANGLELIST,
-    D3DPT_TRIANGLESTRIP,
-    D3DPT_LINELIST,
-    D3DPT_LINESTRIP,
-    D3DPT_POINTLIST,
-};
+        {
+                D3DPT_TRIANGLELIST,
+                D3DPT_TRIANGLESTRIP,
+                D3DPT_LINELIST,
+                D3DPT_LINESTRIP,
+                D3DPT_POINTLIST,
+        };
 
 // number of vertices that have to be copied into the next vertex
 // buffer when a stripped primitive spans multiple buffers
 static int dupTable[] =
-{
-    0, // D3DPT_TRIANGLELIST,
-    2, // D3DPT_TRIANGLESTRIP,
-    0, // D3DPT_LINELIST,
-    1, // D3DPT_LINESTRIP,
-    0, // D3DPT_POINTLIST
-};
+        {
+                0, // D3DPT_TRIANGLELIST,
+                2, // D3DPT_TRIANGLESTRIP,
+                0, // D3DPT_LINELIST,
+                1, // D3DPT_LINESTRIP,
+                0, // D3DPT_POINTLIST
+        };
 
 //----------------------------------------------------------------------
 
-d3dPrimStream::d3dPrimStream(d3dContext* c) :
-    d3d(0), context(c)
-{
+d3dPrimStream::d3dPrimStream(d3dContext *c) :
+        d3d(0), context(c) {
     d3d = context->GetDisplay()->GetD3DDevice();
     setVertexProgram = 0;
 }
 
-d3dPrimStream::~d3dPrimStream()
-{
+d3dPrimStream::~d3dPrimStream() {
 }
 
-void d3dPrimStream::Begin(pddiPrimType type, unsigned vertexMask, pddiBaseShader* s, unsigned e, unsigned pass )
-{
+void d3dPrimStream::Begin(pddiPrimType type, unsigned vertexMask, pddiBaseShader *s, unsigned e,
+                          unsigned pass) {
     static char dummy[] = "";
     static char skin[] = "skin";
     static char skinob[] = "skin_onebone";
 
-    const char* name = dummy;
+    const char *name = dummy;
 
     expected = e;
     primType = type;
 
-    if(vertexMask & PDDI_V_INDICES)
-    {
+    if (vertexMask & PDDI_V_INDICES) {
         name = (vertexMask & PDDI_V_WEIGHTS) ? skin : skinob;
     }
 
-    if(setVertexProgram)
-    {
+    if (setVertexProgram) {
         vertexProgram = setVertexProgram;
-    }
-    else
-    {
+    } else {
         vertexProgram = context->GetVertexProgram(name, type, vertexMask, 0);
     }
 
     PDDIASSERT(vertexProgram->GetFormat() == vertexMask);
 
-    s->SetMaterial( pass ); // TODO : multipass
+    s->SetMaterial(pass); // TODO : multipass
 
-	d3dShader * shader = (d3dShader *) s;
-	//now check if a shader is vertex shader or not, 
-	//if yes, give the shader a chance to load the vertex shader constants
-	//this will get rid of the risk that the constants are not loaded correctly
-	//when a sinlge shader is cached for different geometry
-	if( shader ->IsVertexShader( ) )
-	{
-		shader ->LoadVSConstants( );
-	}
+    d3dShader *shader = (d3dShader *) s;
+    //now check if a shader is vertex shader or not,
+    //if yes, give the shader a chance to load the vertex shader constants
+    //this will get rid of the risk that the constants are not loaded correctly
+    //when a sinlge shader is cached for different geometry
+    if (shader->IsVertexShader()) {
+        shader->LoadVSConstants();
+    }
 
-    if(vertexMask & PDDI_V_INDICES)
+    if (vertexMask & PDDI_V_INDICES)
         context->LoadSkinConstants(s);
 
     d3d->SetVertexShader(vertexProgram->GetD3DVS());
@@ -100,8 +93,7 @@ void d3dPrimStream::Begin(pddiPrimType type, unsigned vertexMask, pddiBaseShader
     count = 0;
 }
 
-void d3dPrimStream::End()
-{
+void d3dPrimStream::End() {
     PDDIASSERT(count == expected);
     d3d->End();
 

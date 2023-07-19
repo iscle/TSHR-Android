@@ -14,31 +14,30 @@
 #include <pddi/ps2/packet.hpp>
 #include <pddi/ps2/ps2vucode.hpp>
 
-struct ps2LightingProperties
-{
-   // 72 bytes
-   pddiColourVector diffuse;
-   pddiColourVector emissive;
-   float specular;
-   float shininess;
+struct ps2LightingProperties {
+    // 72 bytes
+    pddiColourVector diffuse;
+    pddiColourVector emissive;
+    float specular;
+    float shininess;
 
-   ps2LightingProperties()
-   {
-       specular  = 0.0f;
-       shininess = 0.0f;
-       diffuse.Set(0.0f,0.0f,0.0f,0.0f);
-       emissive.Set(0.0f,0.0f,0.0f,1.0f);
-   }
+    ps2LightingProperties() {
+        specular = 0.0f;
+        shininess = 0.0f;
+        diffuse.Set(0.0f, 0.0f, 0.0f, 0.0f);
+        emissive.Set(0.0f, 0.0f, 0.0f, 1.0f);
+    }
 };
-   
+
 struct GSContext;
+
 class ps2PrimBuffer;
 
-class ps2Shader : public pddiBaseShader
-{
+class ps2Shader : public pddiBaseShader {
 public:
     // return vu program address to run
-    virtual void Bind(GSContext* gsContext, VifStream& stream) = 0;
+    virtual void Bind(GSContext *gsContext, VifStream &stream) = 0;
+
     virtual void Validate(unsigned vertexFormat) = 0;
 
     inline unsigned GetMicrocode() { return microcode; }
@@ -49,19 +48,16 @@ protected:
 
 
 // PDDI enum -> GS 
-namespace SHADER
-{
-    enum DitherMatrixType
-    {
+namespace SHADER {
+    enum DitherMatrixType {
         Opaque,
         Alpha
     };
 
     extern const u_long DitherMatrix[2]; // one for opaque, one for alpha
 
-    typedef struct BlendParam
-    {
-       unsigned A, B, C, D, FIX;
+    typedef struct BlendParam {
+        unsigned A, B, C, D, FIX;
     };
 
     // PDDI enum -> GS translation tables

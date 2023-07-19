@@ -11,36 +11,28 @@
 #include <p3d/anim/skeleton.hpp>
 #include <p3d/error.hpp>
 
-tDrawablePose::~tDrawablePose()
-{
-    if(pose)
-    {
+tDrawablePose::~tDrawablePose() {
+    if (pose) {
         pose->Release();
     }
 }
 
-void tDrawablePose::Display()
-{
-    if(!pose)
-    {
+void tDrawablePose::Display() {
+    if (!pose) {
         GetPose();
     }
 
-    if(pose)
-    {
+    if (pose) {
         Display(pose);
     }
 }
 
-void tDrawablePose::SetPose(tPose* p)
-{
+void tDrawablePose::SetPose(tPose *p) {
     tRefCounted::Assign(pose, p);
 }
 
-tPose* tDrawablePose::GetPose() 
-{
-    if(!pose)
-    {
+tPose *tDrawablePose::GetPose() {
+    if (!pose) {
         P3DASSERT(skeleton);
         pose = skeleton->NewPose();
         pose->AddRef();

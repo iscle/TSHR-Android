@@ -14,41 +14,50 @@ class gcContext;
 
 #include <dolphin/gx.h>
 
-    
 
 //**********************************************************
 //
 // Class gcLayeredLMapShader
 //
 //
-class gcLayeredLMapShader : public pddiBaseShader
-{
+class gcLayeredLMapShader : public pddiBaseShader {
 public:
     gcLayeredLMapShader(gcContext *);
+
     ~gcLayeredLMapShader();
 
     static void Install(void);
 
-    static pddiShadeColourTable  gColourTable[];
+    static pddiShadeColourTable gColourTable[];
     static pddiShadeTextureTable gTextureTable[];
-    static pddiShadeIntTable     gIntTable[];
-    static pddiShadeFloatTable   gFloatTable[];
+    static pddiShadeIntTable gIntTable[];
+    static pddiShadeFloatTable gFloatTable[];
 
     const char *GetType(void);
-    int         GetPasses(void);
-    void        SetPass(int pass);
+
+    int GetPasses(void);
+
+    void SetPass(int pass);
 
     pddiShadeTextureTable *GetTextureTable(void) { return gTextureTable; }
-    pddiShadeIntTable     *GetIntTable(void)     { return gIntTable; }
-    pddiShadeFloatTable   *GetFloatTable(void)   { return gFloatTable; }
-    pddiShadeColourTable  *GetColourTable(void)  { return gColourTable; }
+
+    pddiShadeIntTable *GetIntTable(void) { return gIntTable; }
+
+    pddiShadeFloatTable *GetFloatTable(void) { return gFloatTable; }
+
+    pddiShadeColourTable *GetColourTable(void) { return gColourTable; }
 
     // texture
     void SetTexture(pddiTexture *texture);
+
     void SetTopTex(pddiTexture *texture);
+
     void SetLightMapTex(pddiTexture *texture);
+
     void SetUVMode(int mode);
+
     void SetFilterMode(int mode);
+
     void SetTextureBlendMode(int mode);
 
     // shading
@@ -58,32 +67,40 @@ public:
     void EnableLighting(int);
 
     void SetDiffuse(pddiColour colour);
+
     void SetAmbient(pddiColour colour);
+
     void SetEmissive(pddiColour);
+
     void SetSpecular(pddiColour);
+
     void SetShininess(float power);
 
     // alpha blending
     void SetBlendMode(int mode);
+
     void EnableAlphaTest(int);
+
     void SetAlphaCompare(int compare);
 
-    int  CountDevPasses(void);
+    int CountDevPasses(void);
+
     void SetDevPass(unsigned);
 
 private:
 
     static pddiBaseShader *Allocate(pddiRenderContext *c, const char *name, const char *aux);
-    gcContext *mContext;
-    bool       mDirty;
 
-    gcTexture        *mTexture;
-    gcTexture        *mTopTex;
-    gcTexture        *mLightMapTex;
-    pddiBlendMode    mTexBlendMode;
-    
-    pddiShadeMode  mShadeMode; //Ignored for now
-    pddiUVMode     mUVMode;
+    gcContext *mContext;
+    bool mDirty;
+
+    gcTexture *mTexture;
+    gcTexture *mTopTex;
+    gcTexture *mLightMapTex;
+    pddiBlendMode mTexBlendMode;
+
+    pddiShadeMode mShadeMode; //Ignored for now
+    pddiUVMode mUVMode;
     pddiFilterMode mFilterMode;
     pddiTextureGen mTexGen;
 
@@ -92,17 +109,17 @@ private:
     pddiColour mDiffuse;
     pddiColour mEmissive;
     pddiColour mSpecular;
-    float      mShininess;
+    float mShininess;
 
     bool mIsLit;
     bool mIsSpecular;
 
     bool mAlphaTest;
 
-    pddiBlendMode   mAlphaBlendMode;
+    pddiBlendMode mAlphaBlendMode;
     pddiCompareMode mAlphaCompareMode;
 
-    gcTEVState        mTEVStates[4];
+    gcTEVState mTEVStates[4];
     gcRasterizerState mRasStates[3];
 
     void Rebuild(void);

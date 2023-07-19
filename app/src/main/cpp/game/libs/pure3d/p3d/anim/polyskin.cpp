@@ -31,38 +31,32 @@ __attribute__((aligned(16)))
 ;
 
 tPolySkin::tPolySkin(int npg) :
-    boneMatrix(NULL),
-    primGroup(npg),
-    exprAnimOffsets(NULL)
-{
+        boneMatrix(NULL),
+        primGroup(npg),
+        exprAnimOffsets(NULL) {
     boundingSphere.centre.Set(0.0f, 0.0f, 0.0f);
     boundingSphere.radius = 1.0f;
-    boundingBox.low.Set(0,0,0);
-    boundingBox.high.Set(1,1,1);
+    boundingBox.low.Set(0, 0, 0);
+    boundingBox.high.Set(1, 1, 1);
 }
 
-tPolySkin::~tPolySkin()
-{
+tPolySkin::~tPolySkin() {
 //    delete[] boneMatrix;
 
-    for(unsigned i=0; i < primGroup.Size(); i++)
-    {
+    for (unsigned i = 0; i < primGroup.Size(); i++) {
         primGroup[i]->Release();
     }
-    
+
     tRefCounted::Release(skeleton);
 
-    if(exprAnimOffsets)
-    {
+    if (exprAnimOffsets) {
         exprAnimOffsets->Release();
     }
 }
 
 
-void tPolySkin::Display(tPose* p)
-{
-    if (p == NULL)
-    {
+void tPolySkin::Display(tPose *p) {
+    if (p == NULL) {
         return;
     }
 
@@ -72,8 +66,7 @@ void tPolySkin::Display(tPose* p)
     // The skin vertices are stored in rest-pose relative world space.
     // The below matrix will transform from this space, into bone-local
     // space where the animation is applied, and then back into camera space.
-    for(int i = 0; i < p->GetNumJoint(); i++)
-    {
+    for (int i = 0; i < p->GetNumJoint(); i++) {
 #ifndef RAD_PS2
         boneMatrix[i].Mult(skeleton->GetJoint(i)->inverseWorldMatrix, p->GetJoint(i)->worldMatrix);
 #else
@@ -86,60 +79,49 @@ void tPolySkin::Display(tPose* p)
 
     boneMatrix[skeleton->GetNumJoint()].Identity();
 
-    pddiExtHardwareSkinning* hwSkin = p3d::context->GetHardwareSkinning();
+    pddiExtHardwareSkinning *hwSkin = p3d::context->GetHardwareSkinning();
 
-    if(hwSkin)
-    {
+    if (hwSkin) {
         hwSkin->Begin();
     }
 
-    for(unsigned j=0; j < primGroup.Size(); j++)
-    {
+    for (unsigned j = 0; j < primGroup.Size(); j++) {
         primGroup[j]->Display();
     }
 
-    if(hwSkin)
-    {
+    if (hwSkin) {
         hwSkin->End();
     }
 }
 
-void tPolySkin::DisplayInstanced(tPose* p, unsigned count)
-{
+void tPolySkin::DisplayInstanced(tPose *p, unsigned count) {
     P3DASSERT(p);
 
-    for(int i = 0; i < p->GetNumJoint(); i++)
-    {
+    for (int i = 0; i < p->GetNumJoint(); i++) {
         boneMatrix[i] = p->GetJoint(i)->worldMatrix;
     }
 
-    pddiExtHardwareSkinning* hwSkin = p3d::context->GetHardwareSkinning();
+    pddiExtHardwareSkinning *hwSkin = p3d::context->GetHardwareSkinning();
 
-    if(hwSkin)
-    {
+    if (hwSkin) {
         hwSkin->Begin();
     }
 
-    for(unsigned j=0; j < primGroup.Size(); j++)
-    {
+    for (unsigned j = 0; j < primGroup.Size(); j++) {
         primGroup[j]->DisplayInstanced(count);
     }
 
-    if(hwSkin)
-    {
+    if (hwSkin) {
         hwSkin->End();
     }
 }
 
 
-void tPolySkin::ProcessShaders(ShaderCallback& callback)
-{
-    for(unsigned i = 0; i < primGroup.Size(); i++)
-    {
-        tShader* shader = primGroup[i]->GetShader();
-        tShader* newShader = callback.Process(shader);
-        if(newShader != shader)
-        {
+void tPolySkin::ProcessShaders(ShaderCallback &callback) {
+    for (unsigned i = 0; i < primGroup.Size(); i++) {
+        tShader *shader = primGroup[i]->GetShader();
+        tShader *newShader = callback.Process(shader);
+        if (newShader != shader) {
             primGroup[i]->SetShader(newShader);
         }
     }
@@ -149,17 +131,15 @@ void tPolySkin::ProcessShaders(ShaderCallback& callback)
 static const int POLYSKIN_VERSION = 3;
 static const int POLYSKIN_NONOPTIMISED_VERSION = 4;
 
-tPolySkinLoader::tPolySkinLoader() : tSimpleChunkHandler(Pure3D::Mesh::SKIN), optimise(true) 
-{
+tPolySkinLoader::tPolySkinLoader() : tSimpleChunkHandler(Pure3D::Mesh::SKIN), optimise(true) {
 };
 
-tEntity* tPolySkinLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
+tEntity *tPolySkinLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
     char name[128];
     f->GetPString(name);
-    
+
     int version = f->GetLong();
-    P3DASSERT(version == POLYSKIN_VERSION || version == POLYSKIN_NONOPTIMISED_VERSION );
+    P3DASSERT(version == POLYSKIN_VERSION || version == POLYSKIN_NONOPTIMISED_VERSION);
 
     optimise = version == POLYSKIN_VERSION;
 
@@ -171,8 +151,7 @@ tEntity* tPolySkinLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     skin->SetName(name);
 
     skin->skeleton = p3d::find<tSkeleton>(store, skelName);
-    if(skin->skeleton)
-    {
+    if (skin->skeleton) {
         skin->skeleton->AddRef();
 
         P3DASSERT(skin->skeleton->GetNumJoint() < 256);
@@ -183,27 +162,24 @@ tEntity* tPolySkinLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     int index = 0;
     bool deformed = false;
 
-    while(f->ChunksRemaining())
-    {
+    while (f->ChunksRemaining()) {
         f->BeginChunk();
-        switch(f->GetCurrentID())
-        {
-            case Pure3D::Mesh::PRIMGROUP:
-            {
+        switch (f->GetCurrentID()) {
+            case Pure3D::Mesh::PRIMGROUP: {
                 P3DASSERT(index < nPrimGroup);
-                tPrimGroupLoader pgLoader;                
+                tPrimGroupLoader pgLoader;
                 skin->primGroup[index] = pgLoader.Load(f, store, skin->boneMatrix, optimise, true);
                 skin->primGroup[index]->AddRef();
                 index++;
             }
-            break;
+                break;
 
             case Pure3D::Mesh::SPHERE:
                 skin->boundingSphere.centre.x = f->GetFloat();
                 skin->boundingSphere.centre.y = f->GetFloat();
                 skin->boundingSphere.centre.z = f->GetFloat();
                 skin->boundingSphere.radius = f->GetFloat();
-            break;
+                break;
 
             case Pure3D::Mesh::BOX:
                 skin->boundingBox.low.x = f->GetFloat();
@@ -212,35 +188,32 @@ tEntity* tPolySkinLoader::LoadObject(tChunkFile* f, tEntityStore* store)
                 skin->boundingBox.high.x = f->GetFloat();
                 skin->boundingBox.high.y = f->GetFloat();
                 skin->boundingBox.high.z = f->GetFloat();
-            break;
+                break;
 
-            case Pure3D::Mesh::EXPRESSIONOFFSETS:
-            {
-                skin->exprAnimOffsets = dynamic_cast<tExpressionOffsets*> ( offsetLoader.LoadObject(f, store) );
-                if(skin->exprAnimOffsets)
-                {
+            case Pure3D::Mesh::EXPRESSIONOFFSETS: {
+                skin->exprAnimOffsets = dynamic_cast<tExpressionOffsets *>(offsetLoader.LoadObject(
+                        f, store));
+                if (skin->exprAnimOffsets) {
                     (skin->exprAnimOffsets)->AddRef();
                 }
                 deformed = true;
             }
-            break;
+                break;
 
             default:
-            break;
+                break;
         }
         f->EndChunk();
     }
 
-    if(!deformed)
-    {
-        for(int i = 0; i < nPrimGroup; i++)
-        {
+    if (!deformed) {
+        for (int i = 0; i < nPrimGroup; i++) {
             skin->primGroup[i]->ReleaseTempVertices();
         }
     }
 
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
-    if( skin->primGroup[0]->GetInstanceCount())
+    if(skin->primGroup[0]->GetInstanceCount())
     {
         tInstancedGeometry* inst = new tInstancedGeometry(skin);
         inst->SetName(name);

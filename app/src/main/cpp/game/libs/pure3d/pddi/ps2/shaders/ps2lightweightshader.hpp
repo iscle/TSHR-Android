@@ -13,38 +13,40 @@
 
 class ps2Texture;
 
-class ps2LightweightShader : public ps2Shader
-{
+class ps2LightweightShader : public ps2Shader {
 public:
-    ps2LightweightShader(ps2Context* context);
+    ps2LightweightShader(ps2Context *context);
 
-    virtual const char* GetType(void) { return "lightweight"; }
+    virtual const char *GetType(void) { return "lightweight"; }
 
     // called by the device to install the ps2LightweightShader allocation function
     static void Install();
-    static void SetContext(ps2Context* c){ g_context = c; };
+
+    static void SetContext(ps2Context *c) { g_context = c; };
 
 protected:
     ~ps2LightweightShader();
-      
+
     // pddiBaseShader interface
     static pddiShadeTextureTable textureTable[];
     static pddiShadeFloatTable floatTable[];
-   
-    pddiShadeTextureTable* GetTextureTable(void) { return textureTable; }
-    pddiShadeFloatTable*   GetFloatTable(void)   { return floatTable; }
+
+    pddiShadeTextureTable *GetTextureTable(void) { return textureTable; }
+
+    pddiShadeFloatTable *GetFloatTable(void) { return floatTable; }
 
     // ps2Shader interface
     void Validate(unsigned format);
-    void Bind(GSContext* context, VifStream& vif);
+
+    void Bind(GSContext *context, VifStream &vif);
 
     // ps2LightweightShader interface
-    void SetTexture(pddiTexture* texture);
+    void SetTexture(pddiTexture *texture);
 
     void SetMipSharpness(float mshp);
 
-    static ps2Context* g_context;
-    ps2Texture* texture;
+    static ps2Context *g_context;
+    ps2Texture *texture;
     sceGsPrmode prmode;
     sceGsTex0 tex0;
     sceGsTex1 tex1;

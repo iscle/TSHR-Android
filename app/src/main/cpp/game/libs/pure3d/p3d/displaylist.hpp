@@ -12,35 +12,40 @@
 
 #include <p3d/drawable.hpp>
 
-class DisplayList
-{
+class DisplayList {
 public:
     DisplayList();
+
     ~DisplayList();
+
     void Display(void);
 
-    void Add(tDrawable* object, const rmt::Matrix* worldMatrix = NULL, float sortOrder = 0.5f);
+    void Add(tDrawable *object, const rmt::Matrix *worldMatrix = NULL, float sortOrder = 0.5f);
+
     unsigned GetCount(void) { return nDrawablesEndPos; }
-    tDrawable* GetSorted(unsigned i, rmt::Matrix* matrix);
+
+    tDrawable *GetSorted(unsigned i, rmt::Matrix *matrix);
 
     void Purge();
+
     void SetSize(int size);
 
 private:
-    struct Drawable
-    {
+    struct Drawable {
         float sortPosition;
         float zPosition;
         rmt::Matrix objectToView;
-        tDrawable* draw;
+        tDrawable *draw;
     };
 
-    static int ZSortCompare(const void* drawable1, const void* drawable2);
+    static int ZSortCompare(const void *drawable1, const void *drawable2);
+
     void Sort(void);
+
     unsigned nDrawables;
     unsigned nDrawablesEndPos;
-    Drawable* drawables;
-    Drawable** toSort;
+    Drawable *drawables;
+    Drawable **toSort;
 
     float sortRange;
 

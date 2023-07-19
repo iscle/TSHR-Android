@@ -8,6 +8,7 @@
 #include <pddi/gamecube/gcskin.hpp>
 
 float VertsToPrims(pddiPrimType type, int vertexcount);
+
 float VertsToPrims(GXPrimitive type, int vertexcount);
 
 
@@ -16,8 +17,7 @@ float VertsToPrims(GXPrimitive type, int vertexcount);
 //  gcPrimStream  
 //  Begin
 //
-void gcPrimStream::Begin(gcContext *context, GXPrimitive type, unsigned vType, int vertexcount)
-{
+void gcPrimStream::Begin(gcContext *context, GXPrimitive type, unsigned vType, int vertexcount) {
 
     // Can't send more than 65534 vertices through a single call
     PDDIASSERT(vertexcount < 65535);
@@ -25,8 +25,8 @@ void gcPrimStream::Begin(gcContext *context, GXPrimitive type, unsigned vType, i
     // Can't send zero any more
     PDDIASSERT(vertexcount != 0);
 
-    mPrimType    = type;
-    mVertexType  = vType;   
+    mPrimType = type;
+    mVertexType = vType;
     mVertexCount = vertexcount;
 
     context->FinalizeHardwareMatrix();
@@ -38,28 +38,23 @@ void gcPrimStream::Begin(gcContext *context, GXPrimitive type, unsigned vType, i
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
 
     // there can be binormal, tangents and normals or just normals
-    if (mVertexType & PDDI_V_BINORMAL)
-    {
+    if (mVertexType & PDDI_V_BINORMAL) {
         GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_NBT, GX_NRM_NBT3, GX_F32, 0);
         GXSetVtxDesc(GX_VA_NBT, GX_DIRECT);
-    }
-    else if (mVertexType & PDDI_V_NORMAL)
-    {
+    } else if (mVertexType & PDDI_V_NORMAL) {
         GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_NRM, GX_NRM_XYZ, GX_F32, 0);
         GXSetVtxDesc(GX_VA_NRM, GX_DIRECT);
     }
 
-    if (mVertexType & PDDI_V_COLOUR)
-    {
+    if (mVertexType & PDDI_V_COLOUR) {
         GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_CLR_RGBA, GX_RGBA8, 0);
         GXSetVtxDesc(GX_VA_CLR0, GX_DIRECT);
     }
 
     int numuv = mVertexType & 0xf;
     int a;
-    for (a = 0; a < numuv; a++)
-    {
-        GXAttr attr = (GXAttr) (((int)GX_VA_TEX0) + a);
+    for (a = 0; a < numuv; a++) {
+        GXAttr attr = (GXAttr)(((int) GX_VA_TEX0) + a);
         GXSetVtxAttrFmt(GX_VTXFMT0, attr, GX_TEX_ST, GX_F32, 0);
         GXSetVtxDesc(attr, GX_DIRECT);
     }
@@ -75,19 +70,16 @@ void gcPrimStream::Begin(gcContext *context, GXPrimitive type, unsigned vType, i
 }
 
 
-
 //**************************************************************************
 //
 //  gcPrimStream  
 //  Blend Position
 //
-void gcPrimStream::BlendPosition(pddiVector *v)
-{
+void gcPrimStream::BlendPosition(pddiVector *v) {
     pddiVector position(0.0F, 0.0F, 0.0F);
 
     int a;
-    for (a = 0; a < 4; a++)
-    {
+    for (a = 0; a < 4; a++) {
         float weight = mTempWeights[a];
         if (weight < 0.01F) break;
 
@@ -95,15 +87,16 @@ void gcPrimStream::BlendPosition(pddiVector *v)
         pddiMatrix *m = &mHardwareSkinning->mPalette[mTempIndices[a]];
 
         // compute position
-        position.x += ((m->m[0][0]*mTempPosition.x + m->m[1][0]*mTempPosition.y + m->m[2][0]*mTempPosition.z + m->m[3][0]) * weight);
-        position.y += ((m->m[0][1]*mTempPosition.x + m->m[1][1]*mTempPosition.y + m->m[2][1]*mTempPosition.z + m->m[3][1]) * weight);
-        position.z += ((m->m[0][2]*mTempPosition.x + m->m[1][2]*mTempPosition.y + m->m[2][2]*mTempPosition.z + m->m[3][2]) * weight);
+        position.x += ((m->m[0][0] * mTempPosition.x + m->m[1][0] * mTempPosition.y +
+                        m->m[2][0] * mTempPosition.z + m->m[3][0]) * weight);
+        position.y += ((m->m[0][1] * mTempPosition.x + m->m[1][1] * mTempPosition.y +
+                        m->m[2][1] * mTempPosition.z + m->m[3][1]) * weight);
+        position.z += ((m->m[0][2] * mTempPosition.x + m->m[1][2] * mTempPosition.y +
+                        m->m[2][2] * mTempPosition.z + m->m[3][2]) * weight);
     }
 
     GXPosition3f32(position.x, position.y, position.z);
 }
-
-
 
 
 //**************************************************************************
@@ -111,13 +104,11 @@ void gcPrimStream::BlendPosition(pddiVector *v)
 //  gcPrimStream  
 //  Blend Position
 //
-void gcPrimStream::BlendNormal(pddiVector *v)
-{
+void gcPrimStream::BlendNormal(pddiVector *v) {
     pddiVector normal(0.0F, 0.0F, 0.0F);
 
     int a;
-    for (a = 0; a < 4; a++)
-    {
+    for (a = 0; a < 4; a++) {
         float weight = mTempWeights[a];
         if (weight < 0.01F) break;
 
@@ -125,9 +116,12 @@ void gcPrimStream::BlendNormal(pddiVector *v)
         pddiMatrix *m = &mHardwareSkinning->mPalette[mTempIndices[a]];
 
         // compute normal
-        normal.x += ((m->m[0][0]*mTempNormal.x + m->m[1][0]*mTempNormal.y + m->m[2][0]*mTempNormal.z) * weight);
-        normal.y += ((m->m[0][1]*mTempNormal.x + m->m[1][1]*mTempNormal.y + m->m[2][1]*mTempNormal.z) * weight);
-        normal.z += ((m->m[0][2]*mTempNormal.x + m->m[1][2]*mTempNormal.y + m->m[2][2]*mTempNormal.z) * weight);
+        normal.x += ((m->m[0][0] * mTempNormal.x + m->m[1][0] * mTempNormal.y +
+                      m->m[2][0] * mTempNormal.z) * weight);
+        normal.y += ((m->m[0][1] * mTempNormal.x + m->m[1][1] * mTempNormal.y +
+                      m->m[2][1] * mTempNormal.z) * weight);
+        normal.z += ((m->m[0][2] * mTempNormal.x + m->m[1][2] * mTempNormal.y +
+                      m->m[2][2] * mTempNormal.z) * weight);
     }
 
     GXNormal3f32(normal.x, normal.y, normal.z);

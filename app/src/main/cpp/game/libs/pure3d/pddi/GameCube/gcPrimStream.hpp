@@ -37,55 +37,70 @@
 **************/
 
 class gcContext;
+
 class gcExtHardwareSkinning;
 
-class gcPrimStream
-{
+class gcPrimStream {
 public:
     void Coord(float x, float y, float z);
+
     void Normal(float x, float y, float z);
+
     void Binormal(float x, float y, float z);
+
     void Tangent(float x, float y, float z);
+
     void Colour(pddiColour colour, int channel = 0);
+
     void UV(float u, float v, int channel = 0);
+
     void Specular(pddiColour colour) { /* */ }
 
     void SkinIndices(unsigned, unsigned = 0, unsigned = 0, unsigned = 0);
+
     void SkinWeights(float, float = 0.0F, float = 0.0F);
 
     void Vertex(pddiVector *v, pddiColour c);
+
     void Vertex(pddiVector *v, pddiVector *n);
+
     void Vertex(pddiVector *v, pddiVector2 *uv);
+
     void Vertex(pddiVector *v, pddiColour c, pddiVector2 *uv);
+
     void Vertex(pddiVector *v, pddiVector *n, pddiVector2 *uv);
+
     void Vertex(pddiVector *v, pddiVector *n, pddiVector2 *uv, pddiVector *b, pddiVector *t);
 
 private:
     friend class gcContext;
 
-    GXPrimitive  mPrimType;
-    unsigned     mVertexType;
+    GXPrimitive mPrimType;
+    unsigned mVertexType;
 
     gcExtHardwareSkinning *mHardwareSkinning;
-    
+
     int mVertexCount;
 
-    pddiVector  mTempPosition;
-    pddiColour  mTempColour;
-    pddiVector  mTempNormal;
-    pddiVector  mTempBinormal;
-    pddiVector  mTempTangent;
+    pddiVector mTempPosition;
+    pddiColour mTempColour;
+    pddiVector mTempNormal;
+    pddiVector mTempBinormal;
+    pddiVector mTempTangent;
     pddiVector2 mTempUV[GC_MAX_UV_CHANNELS];
-    unsigned    mTempIndices[4]; 
-    float       mTempWeights[4]; 
+    unsigned mTempIndices[4];
+    float mTempWeights[4];
 
-    void Begin(gcContext* context, GXPrimitive, unsigned vertexType, int vertexCount = 0);
+    void Begin(gcContext *context, GXPrimitive, unsigned vertexType, int vertexCount = 0);
+
     void End(void);
-    
+
     void NextVertex(void);
+
     void VertexNextVertex(void);
 
     void BlendPosition(pddiVector *v);
+
     void BlendNormal(pddiVector *v);
 };
 
@@ -93,8 +108,7 @@ private:
 #define pddiPrimStream gcPrimStream
 
 
-inline void gcPrimStream::Coord(float x, float y, float z)
-{
+inline void gcPrimStream::Coord(float x, float y, float z) {
 
     mTempPosition.x = x;
     mTempPosition.y = y;
@@ -103,51 +117,45 @@ inline void gcPrimStream::Coord(float x, float y, float z)
     NextVertex();
 }
 
-inline void gcPrimStream::Normal(float x, float y, float z)
-{
+inline void gcPrimStream::Normal(float x, float y, float z) {
     mTempNormal.x = x;
     mTempNormal.y = y;
     mTempNormal.z = z;
 }
 
-inline void gcPrimStream::Binormal(float x, float y, float z)
-{
+inline void gcPrimStream::Binormal(float x, float y, float z) {
     mTempBinormal.x = x;
     mTempBinormal.y = y;
     mTempBinormal.z = z;
 }
 
-inline void gcPrimStream::Tangent(float x, float y, float z)
-{
+inline void gcPrimStream::Tangent(float x, float y, float z) {
     mTempTangent.x = x;
     mTempTangent.y = y;
     mTempTangent.z = z;
-}                              
+}
 
-inline void gcPrimStream::Colour(pddiColour colour, int channel)
-{
+inline void gcPrimStream::Colour(pddiColour colour, int channel) {
     // HBW: Multiple CBVs not yet implemented.  For now just ignore channel.
-    unsigned c = ((unsigned)colour.Red() << 24) | ((unsigned)colour.Green() << 16) | ((unsigned)colour.Blue() << 8) | (unsigned)colour.Alpha();
+    unsigned c = ((unsigned) colour.Red() << 24) | ((unsigned) colour.Green() << 16) |
+                 ((unsigned) colour.Blue() << 8) | (unsigned) colour.Alpha();
     mTempColour.c = c;
 }
 
-inline void gcPrimStream::UV(float u, float v, int channel)
-{
+inline void gcPrimStream::UV(float u, float v, int channel) {
     mTempUV[channel].u = u;
     mTempUV[channel].v = v;
 }
 
 
-inline void gcPrimStream::SkinIndices(unsigned a, unsigned b, unsigned c, unsigned d)
-{
+inline void gcPrimStream::SkinIndices(unsigned a, unsigned b, unsigned c, unsigned d) {
     mTempIndices[0] = a;
     mTempIndices[1] = b;
     mTempIndices[2] = c;
     mTempIndices[3] = d;
 }
 
-inline void gcPrimStream::SkinWeights(float a, float b, float c)
-{
+inline void gcPrimStream::SkinWeights(float a, float b, float c) {
     float d = 1.0F - (a + b + c);
     mTempWeights[0] = a;
     mTempWeights[1] = b;
@@ -156,45 +164,40 @@ inline void gcPrimStream::SkinWeights(float a, float b, float c)
 }
 
 
-inline void gcPrimStream::Vertex(pddiVector* v, pddiColour c)
-{
+inline void gcPrimStream::Vertex(pddiVector *v, pddiColour c) {
     GXPosition3f32(v->x, v->y, v->z);
     GXColor4u8(c.Red(), c.Green(), c.Blue(), c.Alpha());
     VertexNextVertex();
 }
 
-inline void gcPrimStream::Vertex(pddiVector* v, pddiVector* n)
-{
+inline void gcPrimStream::Vertex(pddiVector *v, pddiVector *n) {
     GXPosition3f32(v->x, v->y, v->z);
     GXNormal3f32(n->x, n->y, n->z);
     VertexNextVertex();
 }
 
-inline void gcPrimStream::Vertex(pddiVector* v, pddiVector2* uv)
-{
+inline void gcPrimStream::Vertex(pddiVector *v, pddiVector2 *uv) {
     GXPosition3f32(v->x, v->y, v->z);
     GXTexCoord2f32(uv->u, uv->v);
     VertexNextVertex();
 }
 
-inline void gcPrimStream::Vertex(pddiVector* v, pddiColour c, pddiVector2* uv)
-{
+inline void gcPrimStream::Vertex(pddiVector *v, pddiColour c, pddiVector2 *uv) {
     GXPosition3f32(v->x, v->y, v->z);
     GXColor4u8(c.Red(), c.Green(), c.Blue(), c.Alpha());
     GXTexCoord2f32(uv->u, uv->v);
     VertexNextVertex();
 }
 
-inline void gcPrimStream::Vertex(pddiVector* v, pddiVector* n, pddiVector2* uv)
-{
+inline void gcPrimStream::Vertex(pddiVector *v, pddiVector *n, pddiVector2 *uv) {
     GXPosition3f32(v->x, v->y, v->z);
     GXNormal3f32(n->x, n->y, n->z);
     GXTexCoord2f32(uv->u, uv->v);
     VertexNextVertex();
 }
 
-inline void gcPrimStream::Vertex(pddiVector *v, pddiVector *n, pddiVector2 *uv, pddiVector *b, pddiVector *t)
-{
+inline void
+gcPrimStream::Vertex(pddiVector *v, pddiVector *n, pddiVector2 *uv, pddiVector *b, pddiVector *t) {
     GXPosition3f32(v->x, v->y, v->z);
     GXNormal3f32(n->x, n->y, n->z);
     GXNormal3f32(b->x, b->y, b->z);
@@ -204,38 +207,34 @@ inline void gcPrimStream::Vertex(pddiVector *v, pddiVector *n, pddiVector2 *uv, 
 }
 
 // Called by the individual component (ie. Posiiton()) functions
-inline void gcPrimStream::NextVertex(void)
-{
+inline void gcPrimStream::NextVertex(void) {
     PDDIASSERT(mVertexCount > 0);
 
     bool isskin = 0 != (mVertexType & PDDI_V_WEIGHTS);
 
-    if (isskin)
-    {
+    if (isskin) {
         BlendPosition(&mTempPosition);
-    
-        if (mVertexType & PDDI_V_NORMAL)    BlendNormal(&mTempNormal);
-        if (mVertexType & PDDI_V_BINORMAL)  BlendNormal(&mTempBinormal);
-        if (mVertexType & PDDI_V_TANGENT)   BlendNormal(&mTempTangent);
-    }
-    else
-    {
+
+        if (mVertexType & PDDI_V_NORMAL) BlendNormal(&mTempNormal);
+        if (mVertexType & PDDI_V_BINORMAL) BlendNormal(&mTempBinormal);
+        if (mVertexType & PDDI_V_TANGENT) BlendNormal(&mTempTangent);
+    } else {
         GXPosition3f32(mTempPosition.x, mTempPosition.y, mTempPosition.z);
-    
-        if (mVertexType & PDDI_V_NORMAL)    GXNormal3f32(mTempNormal.x,   mTempNormal.y,   mTempNormal.z);
-        if (mVertexType & PDDI_V_BINORMAL)  GXNormal3f32(mTempBinormal.x, mTempBinormal.y, mTempBinormal.z);
-        if (mVertexType & PDDI_V_TANGENT)   GXNormal3f32(mTempTangent.x,   mTempTangent.y,   mTempTangent.z);
+
+        if (mVertexType & PDDI_V_NORMAL) GXNormal3f32(mTempNormal.x, mTempNormal.y, mTempNormal.z);
+        if (mVertexType & PDDI_V_BINORMAL)
+            GXNormal3f32(mTempBinormal.x, mTempBinormal.y, mTempBinormal.z);
+        if (mVertexType & PDDI_V_TANGENT)
+            GXNormal3f32(mTempTangent.x, mTempTangent.y, mTempTangent.z);
     }
 
-    if (mVertexType & PDDI_V_COLOUR)
-    {
+    if (mVertexType & PDDI_V_COLOUR) {
         GXColor1u32(mTempColour.c);
     }
 
     int numuv = mVertexType & 0xf;
     int a;
-    for (a = 0; a < numuv; a++)
-    {
+    for (a = 0; a < numuv; a++) {
         GXTexCoord2f32(mTempUV[a].u, mTempUV[a].v);
     }
 
@@ -244,20 +243,17 @@ inline void gcPrimStream::NextVertex(void)
 
 
 // Called by the complete vertex functions
-inline void gcPrimStream::VertexNextVertex(void)
-{
+inline void gcPrimStream::VertexNextVertex(void) {
     PDDIASSERT(mVertexCount > 0);
     mVertexCount--;
 }
 
 // Called by gcContext
-inline void gcPrimStream::End(void)
-{
+inline void gcPrimStream::End(void) {
     // Verify the amount of vertices sent
     PDDIASSERT(mVertexCount == 0);
     GXEnd();
 }
-
 
 
 #endif GCPRIMSTREAM_HPP

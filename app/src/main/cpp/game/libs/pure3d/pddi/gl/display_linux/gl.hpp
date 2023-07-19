@@ -11,7 +11,7 @@
 
 #include <GL/gl.h>
 
-#define LIGHT_MODEL_COLOR_CONTROL_EXT (GLenum)0x81F8 
+#define LIGHT_MODEL_COLOR_CONTROL_EXT (GLenum)0x81F8
 #define SINGLE_COLOR_EXT              (GLenum)0x81F9
 #define SEPARATE_SPECULAR_COLOR_EXT   (GLenum)0x81FA
 

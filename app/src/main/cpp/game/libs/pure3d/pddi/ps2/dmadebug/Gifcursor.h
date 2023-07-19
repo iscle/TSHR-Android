@@ -6,25 +6,25 @@
 #define NUMGIFREGS (71)
 
 typedef enum {
-    REGDESC_PRIM    = 0,
-    REGDESC_RGBAQ    = 1,
-    REGDESC_ST        = 2,
-    REGDESC_UV        = 3,
-    REGDESC_XYZF2    = 4,
-    REGDESC_XYZ2    = 5,
-    REGDESC_TEX0_1    = 6,
-    REGDESC_TEX0_2    = 7,
+    REGDESC_PRIM = 0,
+    REGDESC_RGBAQ = 1,
+    REGDESC_ST = 2,
+    REGDESC_UV = 3,
+    REGDESC_XYZF2 = 4,
+    REGDESC_XYZ2 = 5,
+    REGDESC_TEX0_1 = 6,
+    REGDESC_TEX0_2 = 7,
     REGDESC_CLAMP_1 = 8,
     REGDESC_CLAMP_2 = 9,
-    REGDESC_FOG        = 0xa,
-    REGDESC_RESERVED= 0xb,
-    REGDESC_XYZF3    = 0xc,
-    REGDESC_XYZ3    = 0xd,
-    REGDESC_A_D        = 0xe,
-    REGDESC_NOP        = 0xf
+    REGDESC_FOG = 0xa,
+    REGDESC_RESERVED = 0xb,
+    REGDESC_XYZF3 = 0xc,
+    REGDESC_XYZ3 = 0xd,
+    REGDESC_A_D = 0xe,
+    REGDESC_NOP = 0xf
 } REGDESC;
 
-    // -------------------------------------
+// -------------------------------------
 
 typedef struct {
     u_int *tagaddr;            // RAM address of this GIF tag
@@ -44,23 +44,31 @@ typedef struct {
 
 
 // ============================================================
-#if defined(__LANGUAGE_C_PLUS_PLUS)||defined(__cplusplus)||defined(c_plusplus)
+#if defined(__LANGUAGE_C_PLUS_PLUS) || defined(__cplusplus) || defined(c_plusplus)
 extern "C" {
 #endif
 
 extern u_int *gGifInput;
 
 void GIF_parseConfig(char *cs);
+
 void GIF_saveGifRegisters(void);
+
 BOOL GIF_isIdle(void);
+
 int GIF_emulateGifCycle(void);
+
 int GIF_disassemble(void);
+
 int GIF_disassembleDmaList(sceDmaChan *d, void *tag);
+
 int GIF_disassembleDmaListN(sceDmaChan *d, void *tag, int numqwords);
+
 int GIF_disassembleXGKICK(void *addr);
+
 void GIF_reset(void);
 
-#if defined(__LANGUAGE_C_PLUS_PLUS)||defined(__cplusplus)||defined(c_plusplus)
+#if defined(__LANGUAGE_C_PLUS_PLUS) || defined(__cplusplus) || defined(c_plusplus)
 }
 #endif
 

@@ -14,13 +14,14 @@
 //  Class TextDataParser
 //  Local Class Definition
 //
-class TextDataParser
-{
+class TextDataParser {
 
- public:
+public:
     TextDataParser(char *data, int len);
+
     TextDataParser(tFile *file);
-  ~TextDataParser();
+
+    ~TextDataParser();
 
 
     void Reset(void);
@@ -36,6 +37,7 @@ class TextDataParser
 
     // Returns data of the current token
     int CurrentToken(char *dest, int destlen);
+
     char *DupCurrentToken(void);
 
     int CurrentLine(void) { return mCurrentLine; }
@@ -43,30 +45,31 @@ class TextDataParser
     int TokenCountAtCurrentBracketLevel(const char *token);
 
 
-    bool  PushPosition(void);
-    bool  PopPosition(void);
+    bool PushPosition(void);
 
- private:
+    bool PopPosition(void);
+
+private:
 
     char *mData;
-    int   mDataLen;
-    
-    int   mCurrentTokenStart;
-    int   mCurrentTokenLen;
+    int mDataLen;
 
-    int   mCurrentLine;
+    int mCurrentTokenStart;
+    int mCurrentTokenLen;
 
-    bool  IsSeperator(char c);
+    int mCurrentLine;
 
-    bool  IsCurrentTokenComment(void);
+    bool IsSeperator(char c);
 
-    int   mBracketLevel;
+    bool IsCurrentTokenComment(void);
 
-    bool  mDataPushed;
-    int   mPushedCurrentTokenStart;
-    int   mPushedCurrentTokenLen;
-    int   mPushedCurrentLine;
-    int   mPushedBracketLevel;
+    int mBracketLevel;
+
+    bool mDataPushed;
+    int mPushedCurrentTokenStart;
+    int mPushedCurrentTokenLen;
+    int mPushedCurrentLine;
+    int mPushedBracketLevel;
 };
 
 

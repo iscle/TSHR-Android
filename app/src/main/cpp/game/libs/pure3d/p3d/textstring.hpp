@@ -10,35 +10,38 @@
 
 class tFont;
 
-class tTextString : public tDrawable
-{
+class tTextString : public tDrawable {
 public:
-    tTextString(tFont* font, P3D_UNICODE* string,  float s = 1.0f, bool del = false);
-  
+    tTextString(tFont *font, P3D_UNICODE *string, float s = 1.0f, bool del = false);
+
     void Display(void);
 
-    void SetScale(float s) {scale = s;}
-    float GetScale(void)   {return scale;}
+    void SetScale(float s) { scale = s; }
 
-    void SetFont(tFont*);
-    tFont* GetFont(void);
+    float GetScale(void) { return scale; }
 
-    void SetString(P3D_UNICODE*, bool del = false);
-    P3D_UNICODE* GetString(void);
+    void SetFont(tFont *);
+
+    tFont *GetFont(void);
+
+    void SetString(P3D_UNICODE *, bool del = false);
+
+    P3D_UNICODE *GetString(void);
 
     void SetColour(tColour colour);
+
     tColour GetColour(void);
 
-    void GetBoundingBox(rmt::Box3D* box);
+    void GetBoundingBox(rmt::Box3D *box);
 
 protected:
     ~tTextString();
 
-    tFont* font;
+    tFont *font;
     tColour colour;
-    char* string;
+    char *string;
     float scale;
-    bool  del;
+    bool del;
 };
 
 #endif

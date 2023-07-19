@@ -9,14 +9,15 @@
 #include <p3d/entity.hpp>
 #include <p3d/light.hpp>
 
-class tAmbientLight : public tLight
-{
+class tAmbientLight : public tLight {
 public:
-   tAmbientLight();
-   tAmbientLight(tAmbientLight *ambLight);
+    tAmbientLight();
+
+    tAmbientLight(tAmbientLight *ambLight);
 
 protected:
-   virtual ~tAmbientLight();
+    virtual ~tAmbientLight();
+
     virtual void Update(void);
 };
 

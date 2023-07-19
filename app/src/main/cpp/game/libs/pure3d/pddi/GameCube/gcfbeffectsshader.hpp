@@ -19,51 +19,61 @@ class gcContext;
 // Class gcFBEffectsShader
 //
 //
-class gcFBEffectsShader : public pddiBaseShader
-{
+class gcFBEffectsShader : public pddiBaseShader {
 public:
     gcFBEffectsShader(gcContext *);
-   ~gcFBEffectsShader();
+
+    ~gcFBEffectsShader();
 
     static void Install(void);
 
-    static pddiShadeColourTable  gColourTable[];
+    static pddiShadeColourTable gColourTable[];
     static pddiShadeTextureTable gTextureTable[];
-    static pddiShadeIntTable     gIntTable[];
-    static pddiShadeFloatTable   gFloatTable[];
+    static pddiShadeIntTable gIntTable[];
+    static pddiShadeFloatTable gFloatTable[];
 
     const char *GetType(void);
-    int         GetPasses(void);
-    void        SetPass(int pass);
+
+    int GetPasses(void);
+
+    void SetPass(int pass);
 
     pddiShadeTextureTable *GetTextureTable(void) { return gTextureTable; }
-    pddiShadeIntTable     *GetIntTable(void)     { return gIntTable; }
-    pddiShadeFloatTable   *GetFloatTable(void)   { return gFloatTable; }
-    pddiShadeColourTable  *GetColourTable(void)  { return gColourTable; }
+
+    pddiShadeIntTable *GetIntTable(void) { return gIntTable; }
+
+    pddiShadeFloatTable *GetFloatTable(void) { return gFloatTable; }
+
+    pddiShadeColourTable *GetColourTable(void) { return gColourTable; }
 
     // texture
     void SetTexture(pddiTexture *texture);
 
     // alpha blending
     void SetBlendMode(int mode);
+
     void EnableAlphaTest(int);
+
     void SetAlphaCompare(int compare);
 
-    int  CountDevPasses(void);
+    int CountDevPasses(void);
+
     void SetDevPass(unsigned);
-    
+
     void PreRender(void);
-    void PostRender(void);    
+
+    void PostRender(void);
 
 private:
 
     static pddiBaseShader *Allocate(pddiRenderContext *c, const char *name, const char *aux);
+
     gcContext *mContext;
 
     gcTexture *mTexture;
 
     bool mAlphaTest;
-    pddiBlendMode   mAlphaBlendMode;
+    pddiBlendMode mAlphaBlendMode;
     pddiCompareMode mAlphaCompareMode;
 
 };

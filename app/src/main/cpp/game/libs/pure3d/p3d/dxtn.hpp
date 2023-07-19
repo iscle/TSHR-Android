@@ -8,16 +8,19 @@
 
 #include <p3d/imagefactory.hpp>
 
-class tDXTNHandler : public tImageHandler
-{
+class tDXTNHandler : public tImageHandler {
 public:
-    char* GetExtension() { return "dds"; }
-    bool CanLoad()       { return true; }
-    bool CanSave()       { return false; }
+    char *GetExtension() { return "dds"; }
+
+    bool CanLoad() { return true; }
+
+    bool CanSave() { return false; }
 
     bool CheckFormat(Format);
-    void CreateImage(tFile* data, tImageHandler::Builder* builder);
-    bool SaveImage(tImage*, char*);
+
+    void CreateImage(tFile *data, tImageHandler::Builder *builder);
+
+    bool SaveImage(tImage *, char *);
 };
 
 #endif // _DXTN_HPP

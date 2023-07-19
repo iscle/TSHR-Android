@@ -38,7 +38,7 @@ tShadowGeneratorImpl::tShadowGeneratorImpl()
 
     washShader->SetInt(PDDI_SP_ISLIT, 0);
     washShader->SetInt(PDDI_SP_SHADEMODE, PDDI_SHADE_FLAT);
-    washShader->SetInt(PDDI_SP_ALPHATEST, false );
+    washShader->SetInt(PDDI_SP_ALPHATEST, false);
     washShader->SetInt(PDDI_SP_BLENDMODE, PDDI_BLEND_MODULATE);
 }
 
@@ -102,7 +102,7 @@ void tShadowGeneratorImpl::End()
 
     // The stencilbuffer values indicates # of shadows that overlap each pixel.
      // We only want to draw pixels that are in shadow, which was set up in
-     // RenderShadow() such that StencilBufferValue >= 1. In the Direct3D API, 
+     // RenderShadow() such that StencilBufferValue>= 1. In the Direct3D API,
      // the stencil test is pseudo coded as:
      // StencilRef CompFunc StencilBufferValue
      // so we set our renderstates with StencilRef = 1 and CompFunc = LESSEQUAL.

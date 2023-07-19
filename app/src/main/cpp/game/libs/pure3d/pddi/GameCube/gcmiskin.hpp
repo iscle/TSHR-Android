@@ -19,39 +19,43 @@
 // Class gc MI Skin Buffer
 //
 //
-class gcMISkinBuffer : public pddiPrimBuffer
-{
+class gcMISkinBuffer : public pddiPrimBuffer {
 public:
     gcMISkinBuffer();
-   ~gcMISkinBuffer();
+
+    ~gcMISkinBuffer();
 
     // pddiPrimBuffer overrides
 
     pddiPrimBufferStream *Lock(void);
-    void Unlock(pddiPrimBufferStream* stream);
+
+    void Unlock(pddiPrimBufferStream *stream);
 
     unsigned char *LockIndexBuffer(void);
+
     void UnlockIndexBuffer(int count);
 
-    void SetIndices(unsigned short* indices, int count);
+    void SetIndices(unsigned short *indices, int count);
 
     // local functions
     void Display(gcContext *c, pddiShader *s, pddiMatrix *palette, gcExtHardwareSkinning *ext);
 
-    bool  CheckMemImageVersion(int version);
+    bool CheckMemImageVersion(int version);
+
     void *LockMemImage(unsigned memImageLength);
-    void  UnlockMemImage();
-    void  SetMemImageParam(unsigned param, unsigned value);
+
+    void UnlockMemImage();
+
+    void SetMemImageParam(unsigned param, unsigned value);
 
 protected:
     void Create(void);
 
     friend class gcMISkinBufferStream;
 
-    struct SkinWeight
-    {
-        unsigned char  weightcount;
-        unsigned char  matrixindices[3];
+    struct SkinWeight {
+        unsigned char weightcount;
+        unsigned char matrixindices[3];
         unsigned short weights[2];
     };
 
@@ -59,10 +63,10 @@ protected:
     gcComponentDescription *mComponents;    // 12  0x0C
     unsigned char *mDisplayList;            // 16  0x14
     unsigned char *mMemImageData;           // 20  0x18
-    unsigned int   mDisplayListSize;        // 24  0x10
+    unsigned int mDisplayListSize;        // 24  0x10
     unsigned short mPositionGQR;            // 28  0x20
-    unsigned char  mComponentCount;         // 30  0x1E
-    unsigned char  mPositionStride;         // 31  0x1F
+    unsigned char mComponentCount;         // 30  0x1E
+    unsigned char mPositionStride;         // 31  0x1F
     unsigned short mVertexCount;            // 32  0x20
     unsigned short mNormalCount;            // 34  0x22
 
@@ -72,6 +76,7 @@ protected:
 #endif
 
     void TransformVerts(pddiMatrix *palette, void *weights, void *verts);
+
     void TransformNormals(pddiMatrix *palette, void *weights, void *normals);
 
 };

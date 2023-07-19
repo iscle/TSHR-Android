@@ -8,35 +8,36 @@
 
 #include <p3d/anim/animate.hpp>
 
-namespace Scenegraph
-{
+namespace Scenegraph {
 
-class Transform;
+    class Transform;
 
 //*********************************************************
 // Class TransformAnimationController
 //*********************************************************
-class TransformAnimationController : public tBlendFrameController
-{
-public:
-    TransformAnimationController();
-    TransformAnimationController(TransformAnimationController* c);
+    class TransformAnimationController : public tBlendFrameController {
+    public:
+        TransformAnimationController();
 
-    virtual tFrameController* Clone(void);
+        TransformAnimationController(TransformAnimationController *c);
 
-    void SetTransformNode(Transform* transform);
-    Transform* GetTransformNode() { return transform; }
+        virtual tFrameController *Clone(void);
 
-    virtual bool ValidateAnimation(tAnimation* anim);
+        void SetTransformNode(Transform *transform);
 
-protected:
-    virtual ~TransformAnimationController();
+        Transform *GetTransformNode() { return transform; }
 
-    void UpdateNoBlending();
-    void UpdateWithBlending();
+        virtual bool ValidateAnimation(tAnimation *anim);
 
-    Transform* transform;
-};
+    protected:
+        virtual ~TransformAnimationController();
+
+        void UpdateNoBlending();
+
+        void UpdateWithBlending();
+
+        Transform *transform;
+    };
 
 }
 

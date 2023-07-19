@@ -7,10 +7,9 @@
 #include <p3d/context.hpp>
 #include <p3d/utility.hpp>
 
-tCamera::tCamera()
-{
+tCamera::tCamera() {
     bool widescreen = p3d::display ? p3d::display->IsWidescreen() : false;
-    SetFOV(rmt::DegToRadian(90.0f), widescreen  ? (16.0f / 9.0f) : (4.0f / 3.0f));
+    SetFOV(rmt::DegToRadian(90.0f), widescreen ? (16.0f / 9.0f) : (4.0f / 3.0f));
 
     nearPlane = 1.0f;
     farPlane = 1000.0f;
@@ -21,8 +20,7 @@ tCamera::tCamera()
     updated = true;
 }
 
-tCamera::tCamera(tCamera* other) : tEntity(other)
-{
+tCamera::tCamera(tCamera *other) : tEntity(other) {
     SetFOV(other->GetFieldOfView(), other->GetAspectRatio());
 
     SetNearPlane(other->GetNearPlane());
@@ -36,13 +34,11 @@ tCamera::tCamera(tCamera* other) : tEntity(other)
     updated = false;
 }
 
-tCamera::~tCamera()
-{
+tCamera::~tCamera() {
     //
 }
 
-void tCamera::SetFOV(float newFov, float newAspect)
-{
+void tCamera::SetFOV(float newFov, float newAspect) {
     fov = newFov;
     aspect = newAspect;
 
@@ -54,8 +50,8 @@ void tCamera::SetFOV(float newFov, float newAspect)
 //        and they won't match up.
 //  fovScaleY = fovScaleX * aspect;
 
-    float fovy = rmt::ATan(rmt::Tan(fov/2.0f) / aspect);
-    float fovx = fov/2;
+    float fovy = rmt::ATan(rmt::Tan(fov / 2.0f) / aspect);
+    float fovx = fov / 2;
 
     float sx = rmt::Sin(fovx);
     float cx = rmt::Cos(fovx);
@@ -64,7 +60,7 @@ void tCamera::SetFOV(float newFov, float newAspect)
 
     leftPlaneX = -cx;
     leftPlaneZ = -sx;
- 
+
     rightPlaneX = cx;
     rightPlaneZ = -sx;
 
@@ -75,42 +71,35 @@ void tCamera::SetFOV(float newFov, float newAspect)
     downPlaneZ = -sy;
 }
 
-void tCamera::GetFOV(float* fovOut, float* aspectOut)
-{
+void tCamera::GetFOV(float *fovOut, float *aspectOut) {
     *fovOut = fov;
     *aspectOut = aspect;
 }
 
-void tCamera::SetNearPlane(float newNear)
-{
+void tCamera::SetNearPlane(float newNear) {
     nearPlane = newNear;
 }
 
-void tCamera::SetFarPlane(float newFar)
-{
+void tCamera::SetFarPlane(float newFar) {
     farPlane = newFar;
 }
 
-float tCamera::GetNearPlane()
-{
+float tCamera::GetNearPlane() {
     return nearPlane;
 }
 
-float tCamera::GetFarPlane()
-{
+float tCamera::GetFarPlane() {
     return farPlane;
 }
 
-void tCamera::GetCameraSpaceClipPlane(ClipCode which, rmt::Plane* plane)
-{
-    switch(which)
-    { 
+void tCamera::GetCameraSpaceClipPlane(ClipCode which, rmt::Plane *plane) {
+    switch (which) {
         case CLIP_NEAR:
-            plane->normal.Set(0.0f,0.0f,-1.0f);
+            plane->normal.Set(0.0f, 0.0f, -1.0f);
             plane->D = nearPlane;
             break;
         case CLIP_FAR:
-            plane->normal.Set(0.0f,0.0f,1.0f);
+            plane->normal.Set(0.0f, 0.0f, 1.0f);
             plane->D = -farPlane;
             break;
         case CLIP_TOP:
@@ -121,7 +110,7 @@ void tCamera::GetCameraSpaceClipPlane(ClipCode which, rmt::Plane* plane)
             plane->normal.Set(0.0f, downPlaneY, downPlaneZ);
             plane->D = 0.0f;
             break;
-        case CLIP_LEFT: 
+        case CLIP_LEFT:
             plane->normal.Set(leftPlaneX, 0.0f, leftPlaneZ);
             plane->D = 0.0f;
             break;
@@ -130,53 +119,46 @@ void tCamera::GetCameraSpaceClipPlane(ClipCode which, rmt::Plane* plane)
             plane->D = 0.0f;
             break;
         default:
-            P3DASSERTMSG(0, "tCamera : Invalid clip plane specified","");
+            P3DASSERTMSG(0, "tCamera : Invalid clip plane specified", "");
             break;
     }
 }
 
-void tCamera::GetWorldSpaceClipPlane(ClipCode which, rmt::Plane* plane)
-{
+void tCamera::GetWorldSpaceClipPlane(ClipCode which, rmt::Plane *plane) {
     GetCameraSpaceClipPlane(which, plane);
     plane->Transform(GetCameraToWorldMatrix());
 }
 
-const rmt::Matrix& tCamera::GetWorldToCameraMatrix(void)
-{
-    if(!updated)
+const rmt::Matrix &tCamera::GetWorldToCameraMatrix(void) {
+    if (!updated)
         Update();
 
     return worldToCamera;
 }
 
-const rmt::Matrix& tCamera::GetCameraToWorldMatrix(void)
-{
-    if(!updated)
+const rmt::Matrix &tCamera::GetCameraToWorldMatrix(void) {
+    if (!updated)
         Update();
 
     return cameraToWorld;
 }
 
-void tCamera::CameraToWorld(const rmt::Vector& cam, rmt::Vector* world)
-{
-    if(!updated)
+void tCamera::CameraToWorld(const rmt::Vector &cam, rmt::Vector *world) {
+    if (!updated)
         Update();
 
-    cameraToWorld.Transform(cam,world);
+    cameraToWorld.Transform(cam, world);
 }
 
-void tCamera::WorldToCamera(const rmt::Vector& world, rmt::Vector* camera)
-{
-    if(!updated)
+void tCamera::WorldToCamera(const rmt::Vector &world, rmt::Vector *camera) {
+    if (!updated)
         Update();
 
-    worldToCamera.Transform(world,camera);
+    worldToCamera.Transform(world, camera);
 }
 
-bool tCamera::CameraToView(const rmt::Vector& cam, rmt::Vector* view)
-{
-    if(cam.z != 0.0f)
-    {
+bool tCamera::CameraToView(const rmt::Vector &cam, rmt::Vector *view) {
+    if (cam.z != 0.0f) {
         float ooz = 1.0f / cam.z;
         view->x = cam.x * ooz * fovScaleX * 0.5f;
         view->y = cam.y * ooz * fovScaleY * 0.5f;
@@ -186,15 +168,13 @@ bool tCamera::CameraToView(const rmt::Vector& cam, rmt::Vector* view)
     return false;
 }
 
-bool tCamera::WorldToView(const rmt::Vector& world, rmt::Vector* view)
-{
+bool tCamera::WorldToView(const rmt::Vector &world, rmt::Vector *view) {
     rmt::Vector tmp;
     WorldToCamera(world, &tmp);
     return CameraToView(tmp, view);
 }
 
-void tCamera::ViewToCamera(const rmt::Vector& view, rmt::Vector* line1, rmt::Vector* line2)
-{
+void tCamera::ViewToCamera(const rmt::Vector &view, rmt::Vector *line1, rmt::Vector *line2) {
     float ooz_near = 1.0f / nearPlane;
     float ooz_far = 1.0f / farPlane;
 
@@ -207,51 +187,45 @@ void tCamera::ViewToCamera(const rmt::Vector& view, rmt::Vector* line1, rmt::Vec
     line2->z = farPlane;
 }
 
-void tCamera::ViewToWorld(const rmt::Vector& view, rmt::Vector* line1, rmt::Vector* line2)
-{
+void tCamera::ViewToWorld(const rmt::Vector &view, rmt::Vector *line1, rmt::Vector *line2) {
     rmt::Vector tmp1, tmp2;
     ViewToCamera(view, &tmp1, &tmp2);
     CameraToWorld(tmp1, line1);
     CameraToWorld(tmp2, line2);
 }
 
-bool tCamera::PointVisibleCamera(const rmt::Vector& camera)
-{
+bool tCamera::PointVisibleCamera(const rmt::Vector &camera) {
     return (PointClipCode(camera) == 0);
 }
 
-bool tCamera::SphereVisibleCamera(const rmt::Vector& camera, float radius)
-{
-    if((camera.z + radius) < nearPlane) return false;
-    if((camera.z - radius) > farPlane) return false;
+bool tCamera::SphereVisibleCamera(const rmt::Vector &camera, float radius) {
+    if ((camera.z + radius) < nearPlane) return false;
+    if ((camera.z - radius) > farPlane) return false;
 
-    if((camera.x * leftPlaneX + camera.z * leftPlaneZ) > radius) return false;
-    if((camera.x * rightPlaneX + camera.z * rightPlaneZ) > radius) return false;
+    if ((camera.x * leftPlaneX + camera.z * leftPlaneZ) > radius) return false;
+    if ((camera.x * rightPlaneX + camera.z * rightPlaneZ) > radius) return false;
 
-    if((camera.y * upPlaneY + camera.z * upPlaneZ) > radius) return false;
-    if((camera.y * downPlaneY + camera.z * downPlaneZ) > radius) return false;
+    if ((camera.y * upPlaneY + camera.z * upPlaneZ) > radius) return false;
+    if ((camera.y * downPlaneY + camera.z * downPlaneZ) > radius) return false;
 
     return true;
 }
 
-bool tCamera::PointVisible(const rmt::Vector& world)
-{
+bool tCamera::PointVisible(const rmt::Vector &world) {
     rmt::Vector camera;
-    WorldToCamera(world,&camera);
+    WorldToCamera(world, &camera);
 
     return PointVisibleCamera(camera);
 }
 
-bool tCamera::SphereVisible(const rmt::Vector& c, float radius)
-{
+bool tCamera::SphereVisible(const rmt::Vector &c, float radius) {
     rmt::Vector centre;
-    WorldToCamera(c,&centre);
+    WorldToCamera(c, &centre);
 
     return SphereVisibleCamera(centre, radius);
 }
 
-unsigned tCamera::PointClipCode(const rmt::Vector& cameraSpacePoint)
-{
+unsigned tCamera::PointClipCode(const rmt::Vector &cameraSpacePoint) {
     unsigned clip = 0;
 
     //fovScaleX = rmt::DegToRadian(90.0f) / fov;
@@ -261,36 +235,33 @@ unsigned tCamera::PointClipCode(const rmt::Vector& cameraSpacePoint)
     float y = cameraSpacePoint.y * fovScaleY;
     float z = cameraSpacePoint.z;
 
-    if(z > farPlane) clip |= CLIP_FAR;
-    else if(z < nearPlane) clip |= CLIP_NEAR;
-    
-    if((y * aspect) > z) clip |= CLIP_TOP;
-    else if((-y * aspect) > z) clip |= CLIP_BOTTOM;
+    if (z > farPlane) clip |= CLIP_FAR;
+    else if (z < nearPlane) clip |= CLIP_NEAR;
 
-    if(x > z) clip |= CLIP_RIGHT;
-    else if(-x > z) clip |= CLIP_LEFT;
+    if ((y * aspect) > z) clip |= CLIP_TOP;
+    else if ((-y * aspect) > z) clip |= CLIP_BOTTOM;
+
+    if (x > z) clip |= CLIP_RIGHT;
+    else if (-x > z) clip |= CLIP_LEFT;
 
     return clip;
 }
 
-void tCamera::GetWorldLookAtDirection(rmt::Vector *v)
-{
-    if(!updated)
+void tCamera::GetWorldLookAtDirection(rmt::Vector *v) {
+    if (!updated)
         Update();
 
     *v = cameraToWorld.Row(2);
 }
 
-void tCamera::GetWorldPosition(rmt::Vector *v)
-{
-    if(!updated)
+void tCamera::GetWorldPosition(rmt::Vector *v) {
+    if (!updated)
         Update();
 
     *v = cameraToWorld.Row(3);
 }
 
-void tCamera::SetCameraMatrix(rmt::Matrix* CameraMatrix)
-{
+void tCamera::SetCameraMatrix(rmt::Matrix *CameraMatrix) {
     cameraToWorld = *CameraMatrix;
 
     // do the update immediatly, so if this is 
@@ -298,16 +269,14 @@ void tCamera::SetCameraMatrix(rmt::Matrix* CameraMatrix)
     tCamera::Update();
 }
 
-void tCamera::SetState(void)
-{
-    if(!updated)
+void tCamera::SetState(void) {
+    if (!updated)
         Update();
 
-    p3d::pddi->SetCamera(nearPlane,farPlane,fov,aspect);
+    p3d::pddi->SetCamera(nearPlane, farPlane, fov, aspect);
 }
 
-void tCamera::Update()
-{
+void tCamera::Update() {
     worldToCamera = cameraToWorld;
     worldToCamera.InvertOrtho();
 }

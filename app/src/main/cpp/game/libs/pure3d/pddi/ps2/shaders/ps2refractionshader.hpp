@@ -9,26 +9,34 @@
 #include <pddi/ps2/ps2texture.hpp>
 #include <pddi/ps2/shaders/ps2simpleshader.hpp>
 
-class ps2RefractionShader : public ps2SimpleShader
-{
+class ps2RefractionShader : public ps2SimpleShader {
 public:
-   ps2RefractionShader(ps2Context* c);
-   ~ps2RefractionShader();
-   virtual const char* GetType(void) { return "refract"; }
+    ps2RefractionShader(ps2Context *c);
+
+    ~ps2RefractionShader();
+
+    virtual const char *GetType(void) { return "refract"; }
 
     // returns the vu1 program to call
-    void Bind(GSContext* gsContext, VifStream& stream);
+    void Bind(GSContext *gsContext, VifStream &stream);
+
     void Validate(unsigned format);
 
     static void Install();
 
     // functions to control the refractions
-    void SetRefractionIndex( float idx );
-    void SetRefractionColour( pddiColour col );
+    void SetRefractionIndex(float idx);
+
+    void SetRefractionColour(pddiColour col);
+
     void SetRefractionBlend(float f);
-    void LowQuality( bool e );
-    virtual pddiBaseShader* CloneSimple();
+
+    void LowQuality(bool e);
+
+    virtual pddiBaseShader *CloneSimple();
+
     static bool RefractionShadersLoaded();
+
 protected:
 
     // pddiBaseShader interface
@@ -37,19 +45,22 @@ protected:
     static pddiShadeIntTable intTable[];
     static pddiShadeFloatTable floatTable[];
 
-    pddiShadeTextureTable* GetTextureTable(void) { return textureTable; }
-    pddiShadeIntTable*     GetIntTable(void)     { return intTable; }
-    pddiShadeFloatTable*   GetFloatTable(void)   { return floatTable; }
-    pddiShadeColourTable*  GetColourTable(void)  { return colourTable; }
+    pddiShadeTextureTable *GetTextureTable(void) { return textureTable; }
+
+    pddiShadeIntTable *GetIntTable(void) { return intTable; }
+
+    pddiShadeFloatTable *GetFloatTable(void) { return floatTable; }
+
+    pddiShadeColourTable *GetColourTable(void) { return colourTable; }
 
 
 private:
 
-    unsigned   lastFrameCopied;
-    bool       lowQuality;
+    unsigned lastFrameCopied;
+    bool lowQuality;
     pddiColour refractColour;
-    float      refractFactor;
-    float      refractBlend;
+    float refractFactor;
+    float refractBlend;
 
     sceGsPrmode vramPrmode;
     sceGsTex0 vramTex0;

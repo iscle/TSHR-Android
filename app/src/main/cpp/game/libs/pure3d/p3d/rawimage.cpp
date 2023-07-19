@@ -14,8 +14,7 @@
 #include <string.h>
 #include <stdio.h>
 
-struct RawHeader
-{
+struct RawHeader {
     unsigned id;            // must be "P3DI"
     unsigned pixelFormat;   // from pddienum.hpp
     unsigned width;
@@ -28,10 +27,8 @@ struct RawHeader
 const unsigned HEADER_FOURCC = PDDI_FOURCC('P', '3', 'D', 'I');
 
 //-------------------------------------------------------------------
-bool tRawImageHandler::CheckFormat(Format format)
-{
-    switch(format)
-    {
+bool tRawImageHandler::CheckFormat(Format format) {
+    switch (format) {
         case IMG_PS2_4BIT:
         case IMG_PS2_8BIT:
         case IMG_PS2_16BIT:
@@ -49,45 +46,40 @@ bool tRawImageHandler::CheckFormat(Format format)
     return false;
 }
 
-static void GetHeader(tFile* file, RawHeader* header)
-{
+static void GetHeader(tFile *file, RawHeader *header) {
     // Toollib is broken.  GC Memory image chunks are ALWAYS in big endian
 #ifdef RAD_GAMECUBE
     bool swap = file->GetEndianSwap();
     file->SetEndianSwap(false);
     file->GetData(header, sizeof(RawHeader)/4, tFile::DWORD);
     file->SetEndianSwap(swap);
-#else    
-    file->GetData(header, sizeof(RawHeader)/4, tFile::DWORD);
+#else
+    file->GetData(header, sizeof(RawHeader) / 4, tFile::DWORD);
 #endif
 }
 
-void tRawImageHandler::CreateImage(tFile* file, tImageHandler::Builder* builder)
-{
+void tRawImageHandler::CreateImage(tFile *file, tImageHandler::Builder *builder) {
     RawHeader header;
     GetHeader(file, &header);
 
-    if(header.id != HEADER_FOURCC)
-    {
-        p3d::printf("Warning: unsuported Pure3D memory imaged format from file %s\n", file->GetFilename());
+    if (header.id != HEADER_FOURCC) {
+        p3d::printf("Warning: unsuported Pure3D memory imaged format from file %s\n",
+                    file->GetFilename());
         return;
     }
 
     // we don't specify a palette since it will be loaded through the memory image interface
     builder->BeginImage(header.width, header.height, header.bpp, tImageHandler::Builder::TOP, NULL);
 
-    if(header.paletteSize > 0)
-    {
-        void* palettePtr = builder->GetPaletteMemoryImagePtr();
-        if(palettePtr)
-        {
-          file->GetData(palettePtr, header.paletteSize, tFile::BYTE); // read palette memory image
+    if (header.paletteSize > 0) {
+        void *palettePtr = builder->GetPaletteMemoryImagePtr();
+        if (palettePtr) {
+            file->GetData(palettePtr, header.paletteSize, tFile::BYTE); // read palette memory image
         }
     }
 
-    void* ptr = builder->GetMemoryImagePtr();
-    if(ptr)
-    {
+    void *ptr = builder->GetMemoryImagePtr();
+    if (ptr) {
         file->GetData(ptr, header.imageSize, tFile::BYTE); // read pixels memory image
     }
 

@@ -46,7 +46,7 @@
 
 #define CV_EYE_POS_OBJECT      24
 
-#define CV_SPECULAR_ENABLED		17
+#define CV_SPECULAR_ENABLED        17
 
-#define CP_SPECULAR		0
-#define CP_DIFFUSE		1
+#define CP_SPECULAR        0
+#define CP_DIFFUSE        1

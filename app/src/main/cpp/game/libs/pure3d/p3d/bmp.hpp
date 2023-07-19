@@ -8,16 +8,19 @@
 
 #include <p3d/imagefactory.hpp>
 
-class tBMPHandler : public tImageHandler
-{
+class tBMPHandler : public tImageHandler {
 public:
-    char* GetExtension() { return "bmp"; }
-    bool CanLoad()       { return true; }
-    bool CanSave()       { return false; }
+    char *GetExtension() { return "bmp"; }
+
+    bool CanLoad() { return true; }
+
+    bool CanSave() { return false; }
 
     bool CheckFormat(Format);
-    void CreateImage(tFile* data, tImageHandler::Builder* builder);
-    bool SaveImage(tImage*, char*);
+
+    void CreateImage(tFile *data, tImageHandler::Builder *builder);
+
+    bool SaveImage(tImage *, char *);
 };
 
 #endif // _BMP_HPP

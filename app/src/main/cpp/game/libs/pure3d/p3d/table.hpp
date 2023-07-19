@@ -12,8 +12,8 @@
 
 #include <radload/utility/hashtable.hpp>
 
-template <class T> class tTable : public RefHashTable<T>
-{
+template<class T>
+class tTable : public RefHashTable<T> {
 };
 
 #endif /* _TABLE_HPP */

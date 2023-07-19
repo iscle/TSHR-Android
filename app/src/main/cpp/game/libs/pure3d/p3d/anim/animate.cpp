@@ -61,24 +61,22 @@ static const int MAX_FC_HANDLERS = 4;
 
 using namespace RadicalMathLibrary;
 
-int AnimationGroupCompareByGroupID( const void* arg1, const void* arg2 )
-{
-    tAnimationGroup* a= *((tAnimationGroup**)arg1);
-    tAnimationGroup* b= *((tAnimationGroup**)arg2);
-    if (a->GetGroupId()<b->GetGroupId())
+int AnimationGroupCompareByGroupID(const void *arg1, const void *arg2) {
+    tAnimationGroup *a = *((tAnimationGroup **) arg1);
+    tAnimationGroup *b = *((tAnimationGroup **) arg2);
+    if (a->GetGroupId() < b->GetGroupId())
         return -1;
-    if (a->GetGroupId()>b->GetGroupId())
+    if (a->GetGroupId() > b->GetGroupId())
         return 1;
     return 0;
 }
 
-int AnimationGroupCompareByUID( const void* arg1, const void* arg2 )
-{
-    tAnimationGroup* a= *((tAnimationGroup**)arg1);
-    tAnimationGroup* b= *((tAnimationGroup**)arg2);
-    if (a->GetUID()<b->GetUID())
+int AnimationGroupCompareByUID(const void *arg1, const void *arg2) {
+    tAnimationGroup *a = *((tAnimationGroup **) arg1);
+    tAnimationGroup *b = *((tAnimationGroup **) arg2);
+    if (a->GetUID() < b->GetUID())
         return -1;
-    if (a->GetUID()>b->GetUID())
+    if (a->GetUID() > b->GetUID())
         return 1;
     return 0;
 }
@@ -87,50 +85,43 @@ int AnimationGroupCompareByUID( const void* arg1, const void* arg2 )
 // Class tFrameController
 //**************************************************************
 tFrameController::tFrameController() :
-    tEntity()
-{
+        tEntity() {
 }
 
 //-------------------------------------------------------------------
-tFrameController::tFrameController(tFrameController* c) :
-    tEntity()
-{
+tFrameController::tFrameController(tFrameController *c) :
+        tEntity() {
     CopyName(c);
 }
 
 //-------------------------------------------------------------------
-tFrameController::~tFrameController()
-{
+tFrameController::~tFrameController() {
 }
 
 //**************************************************************
 // Class tAnimationFrameController
 //**************************************************************
-tAnimationFrameController::tAnimationFrameController() : 
-    cycleMode(DEFAULT_CYCLE_MODE),
-    minFrame(-1.0f), 
-    maxFrame(-1.0f),
-    relativeSpeed(1.0f)
-{ 
+tAnimationFrameController::tAnimationFrameController() :
+        cycleMode(DEFAULT_CYCLE_MODE),
+        minFrame(-1.0f),
+        maxFrame(-1.0f),
+        relativeSpeed(1.0f) {
 }
 
 //-------------------------------------------------------------------
-tAnimationFrameController::tAnimationFrameController(tAnimationFrameController* c) :
-    tFrameController(c)
-{
+tAnimationFrameController::tAnimationFrameController(tAnimationFrameController *c) :
+        tFrameController(c) {
     SetCycleMode(c->cycleMode);
-    SetFrameRange(c->minFrame, c->maxFrame);   
+    SetFrameRange(c->minFrame, c->maxFrame);
     SetRelativeSpeed(c->relativeSpeed);
 }
 
 //-------------------------------------------------------------------
-tAnimationFrameController::~tAnimationFrameController()
-{
+tAnimationFrameController::~tAnimationFrameController() {
 }
 
 //-------------------------------------------------------------------
-void tAnimationFrameController::Reset(void)
-{
+void tAnimationFrameController::Reset(void) {
     cycleMode = DEFAULT_CYCLE_MODE;
     relativeSpeed = 1.0F;
     minFrame = -1.0F;
@@ -141,127 +132,107 @@ void tAnimationFrameController::Reset(void)
 // Class tSimpleFrameController
 //**************************************************************
 tSimpleFrameController::tSimpleFrameController() :
-    frame(0.0f),
-    numCycles(0),
-    animation(NULL)
-{
+        frame(0.0f),
+        numCycles(0),
+        animation(NULL) {
 }
 
 //-------------------------------------------------------------------
-tSimpleFrameController::tSimpleFrameController(tSimpleFrameController* c) :
-    tAnimationFrameController(c),
-    frame(0.0f),
-    numCycles(0),
-    animation(NULL)
-{
+tSimpleFrameController::tSimpleFrameController(tSimpleFrameController *c) :
+        tAnimationFrameController(c),
+        frame(0.0f),
+        numCycles(0),
+        animation(NULL) {
     frame = c->frame;
-    tRefCounted::Assign(animation,c->animation);
+    tRefCounted::Assign(animation, c->animation);
 }
 
 //-------------------------------------------------------------------
-tSimpleFrameController::~tSimpleFrameController()
-{
+tSimpleFrameController::~tSimpleFrameController() {
     tRefCounted::Release(animation);
 }
 
 //-------------------------------------------------------------------
-void tSimpleFrameController::SetAnimation(tAnimation* anim)
-{
+void tSimpleFrameController::SetAnimation(tAnimation *anim) {
     P3DASSERT(ValidateAnimation(anim));
-    tRefCounted::Assign(animation,anim);
+    tRefCounted::Assign(animation, anim);
     SetFrame(0.0f);
     numCycles = 0;
 }
 
 //-------------------------------------------------------------------
-void tSimpleFrameController::SetAnimation(tAnimation* anim, float startFrame, float blendFrames)
-{
+void tSimpleFrameController::SetAnimation(tAnimation *anim, float startFrame, float blendFrames) {
     P3DASSERT(ValidateAnimation(anim));
-    tRefCounted::Assign(animation,anim);
+    tRefCounted::Assign(animation, anim);
     SetFrame(startFrame);
     numCycles = 0;
 }
 
 //-------------------------------------------------------------------
-tAnimation* tSimpleFrameController::GetAnimation()
-{
+tAnimation *tSimpleFrameController::GetAnimation() {
     return animation;
 }
 
 //-------------------------------------------------------------------
-float tSimpleFrameController::GetNumFrames()
-{
-    if (animation)
-    {
+float tSimpleFrameController::GetNumFrames() {
+    if (animation) {
         return animation->GetNumFrames();
     }
     return 0.0f;
 }
 
 //-------------------------------------------------------------------
-void tSimpleFrameController::SetFrame(float f)
-{
+void tSimpleFrameController::SetFrame(float f) {
     frame = f;
     numCycles = 0;
-    if(animation)
-    {
+    if (animation) {
         frame = animation->MakeValidFrame(f, minFrame, maxFrame, cycleMode);
     }
 }
 
 //-------------------------------------------------------------------
-float tSimpleFrameController::GetFrame()
-{
+float tSimpleFrameController::GetFrame() {
     return frame;
 }
 
 //-------------------------------------------------------------------
-int tSimpleFrameController::LastFrameReached()
-{ 
-    if (animation)
-    {
-        float endFrame = maxFrame<0.0f ? animation->GetNumFrames() : maxFrame;
-        if ((cycleMode==FORCE_NON_CYCLIC)||((cycleMode==DEFAULT_CYCLE_MODE)&&(!animation->GetCyclic())))
-        {
-            return (frame>=endFrame) ? 1 : 0;
-        }
-        else if ((minFrame>=0.0f)&&(minFrame==maxFrame))
-        {
+int tSimpleFrameController::LastFrameReached() {
+    if (animation) {
+        float endFrame = maxFrame < 0.0f ? animation->GetNumFrames() : maxFrame;
+        if ((cycleMode == FORCE_NON_CYCLIC) ||
+            ((cycleMode == DEFAULT_CYCLE_MODE) && (!animation->GetCyclic()))) {
+            return (frame >= endFrame) ? 1 : 0;
+        } else if ((minFrame >= 0.0f) && (minFrame == maxFrame)) {
             return 1;
-        }
-        else
-        {
-            return numCycles; 
+        } else {
+            return numCycles;
         }
     }
     return 0;
 }
 
 //-------------------------------------------------------------------
-void tSimpleFrameController::Advance(float deltaTime, bool update)
-{
-    if(animation)
-    {
+void tSimpleFrameController::Advance(float deltaTime, bool update) {
+    if (animation) {
         float deltaFrame = (deltaTime * 0.001f) * animation->GetSpeed() * relativeSpeed;
-        float endFrame = maxFrame<0.0f ? animation->GetNumFrames() : maxFrame;
-        float newFrame = frame+deltaFrame;
-        if (((cycleMode==FORCE_CYCLIC)||((cycleMode==DEFAULT_CYCLE_MODE)&&(animation->GetCyclic())))&&(newFrame>=endFrame))
-        {
+        float endFrame = maxFrame < 0.0f ? animation->GetNumFrames() : maxFrame;
+        float newFrame = frame + deltaFrame;
+        if (((cycleMode == FORCE_CYCLIC) ||
+             ((cycleMode == DEFAULT_CYCLE_MODE) && (animation->GetCyclic()))) &&
+            (newFrame >= endFrame)) {
             numCycles++;
         }
 
         frame = animation->MakeValidFrame(newFrame, minFrame, maxFrame, cycleMode);
 
-        if(update)
-        {
+        if (update) {
             Update();
         }
     }
 }
 
 //-------------------------------------------------------------------
-void tSimpleFrameController::Reset(void)
-{
+void tSimpleFrameController::Reset(void) {
     frame = 0.0f;
     numCycles = 0;
     tAnimationFrameController::Reset();
@@ -271,21 +242,18 @@ void tSimpleFrameController::Reset(void)
 // Class tBlendFrameController
 //**************************************************************
 tBlendFrameController::tBlendFrameController() :
-    tAnimationFrameController(),
-    nAnim(0)
-{
+        tAnimationFrameController(),
+        nAnim(0) {
     memset(playInfo, 0, sizeof(PlayInfo) * P3D_MAX_BLEND_ANIMS);
 }
 
 //-------------------------------------------------------------------
-tBlendFrameController::tBlendFrameController(tBlendFrameController* c) :
-    tAnimationFrameController(c),
-    nAnim(c->nAnim)
-{
+tBlendFrameController::tBlendFrameController(tBlendFrameController *c) :
+        tAnimationFrameController(c),
+        nAnim(c->nAnim) {
     memset(playInfo, 0, sizeof(PlayInfo) * P3D_MAX_BLEND_ANIMS);
-    for (int i = 0; i < nAnim; i++)
-    {
-        tRefCounted::Assign(playInfo[i].anim,c->playInfo[i].anim);
+    for (int i = 0; i < nAnim; i++) {
+        tRefCounted::Assign(playInfo[i].anim, c->playInfo[i].anim);
         playInfo[i].currentFrame = c->playInfo[i].currentFrame;
         playInfo[i].numCycles = 0;
         playInfo[i].blendFrames = c->playInfo[i].blendFrames;
@@ -296,16 +264,14 @@ tBlendFrameController::tBlendFrameController(tBlendFrameController* c) :
 }
 
 //-------------------------------------------------------------------
-tBlendFrameController::~tBlendFrameController()
-{
+tBlendFrameController::~tBlendFrameController() {
 }
 
 //-------------------------------------------------------------------
 // no blending
-void tBlendFrameController::SetAnimation(tAnimation* anim)
-{
+void tBlendFrameController::SetAnimation(tAnimation *anim) {
     P3DASSERT(anim);
-    P3DASSERTMSG(ValidateAnimation(anim),"Unknown animation group.", 
+    P3DASSERTMSG(ValidateAnimation(anim), "Unknown animation group.",
                  "tBlendFrameController::SetAnimation");
 
     playInfo[0].SetAnimation(anim);
@@ -317,8 +283,7 @@ void tBlendFrameController::SetAnimation(tAnimation* anim)
     playInfo[0].t = 1.0f;
 
     // release any currly playing animations
-    for (int i = 1; i < nAnim; i++)
-    {
+    for (int i = 1; i < nAnim; i++) {
         playInfo[i].SetAnimation(NULL);
     }
 
@@ -327,8 +292,7 @@ void tBlendFrameController::SetAnimation(tAnimation* anim)
 
 //-------------------------------------------------------------------
 // no blending with start frame
-void tBlendFrameController::SetAnimation(tAnimation* anim, float startframe)
-{
+void tBlendFrameController::SetAnimation(tAnimation *anim, float startframe) {
     P3DASSERT(anim);
     P3DASSERT(ValidateAnimation(anim));
 
@@ -341,8 +305,7 @@ void tBlendFrameController::SetAnimation(tAnimation* anim, float startframe)
     playInfo[0].t = 1.0f;
 
     // release any currly playing animations
-    for (int i = 1; i < nAnim; i++)
-    {
+    for (int i = 1; i < nAnim; i++) {
         playInfo[i].SetAnimation(NULL);
     }
 
@@ -351,18 +314,15 @@ void tBlendFrameController::SetAnimation(tAnimation* anim, float startframe)
 
 //-------------------------------------------------------------------
 // blending
-void tBlendFrameController::SetAnimation(tAnimation* anim, float startFrame, float blendFrames)
-{
+void tBlendFrameController::SetAnimation(tAnimation *anim, float startFrame, float blendFrames) {
     P3DASSERT(anim);
     P3DASSERT(ValidateAnimation(anim));
-    if (blendFrames <= 0.0f)
-    {
+    if (blendFrames <= 0.0f) {
         SetAnimation(anim, startFrame); // revert to non-blending case
         return;
     }
 
-    if (nAnim == P3D_MAX_BLEND_ANIMS)
-    {
+    if (nAnim == P3D_MAX_BLEND_ANIMS) {
         RemoveOldestAnim(); // could cause a pop
     }
 
@@ -379,17 +339,14 @@ void tBlendFrameController::SetAnimation(tAnimation* anim, float startFrame, flo
 }
 
 //-------------------------------------------------------------------
-tAnimation* tBlendFrameController::GetAnimation()
-{
+tAnimation *tBlendFrameController::GetAnimation() {
     // return most recent animation
-    return nAnim ? playInfo[nAnim-1].GetAnimation() : NULL;
+    return nAnim ? playInfo[nAnim - 1].GetAnimation() : NULL;
 }
 
 //-------------------------------------------------------------------
-float tBlendFrameController::GetNumFrames()
-{
-    if (nAnim != 0)
-    {
+float tBlendFrameController::GetNumFrames() {
+    if (nAnim != 0) {
         tBlendFrameController::PlayInfo *pi = &playInfo[nAnim - 1];
         return playInfo[nAnim - 1].GetAnimation()->GetNumFrames();
     }
@@ -397,10 +354,8 @@ float tBlendFrameController::GetNumFrames()
 }
 
 //-------------------------------------------------------------------
-void tBlendFrameController::SetFrame(float f)
-{
-    if (nAnim != 0)
-    {
+void tBlendFrameController::SetFrame(float f) {
+    if (nAnim != 0) {
         tBlendFrameController::PlayInfo *pi = &playInfo[nAnim - 1];
         pi->currentFrame = pi->GetAnimation()->MakeValidFrame(f, minFrame, maxFrame, cycleMode);
         pi->numCycles = 0;
@@ -408,29 +363,27 @@ void tBlendFrameController::SetFrame(float f)
 }
 
 //-------------------------------------------------------------------
-float tBlendFrameController::GetFrame()
-{
+float tBlendFrameController::GetFrame() {
     // return frame of most recent animation
     return nAnim ? playInfo[nAnim - 1].currentFrame : 0.0f;
 }
 
 //-------------------------------------------------------------------
-void tBlendFrameController::Advance(float deltaTime, bool update)
-{
+void tBlendFrameController::Advance(float deltaTime, bool update) {
     // If there are no animations set don't bother updating.
     if (nAnim == 0) return;
     if (playInfo[0].GetAnimation() == NULL) return;
 
     int activeAnims = 0;
 
-    if(playInfo[0].GetAnimation())
-    {
-        tAnimation* anim = playInfo[0].GetAnimation();
+    if (playInfo[0].GetAnimation()) {
+        tAnimation *anim = playInfo[0].GetAnimation();
         float deltaFrame = (deltaTime * 0.001f) * anim->GetSpeed() * relativeSpeed;
-        float endFrame = maxFrame<0.0f ? (anim->GetNumFrames()-1) : maxFrame;
+        float endFrame = maxFrame < 0.0f ? (anim->GetNumFrames() - 1) : maxFrame;
         float newFrame = playInfo[0].currentFrame + deltaFrame;
-        if (((cycleMode==FORCE_CYCLIC)||((cycleMode==DEFAULT_CYCLE_MODE)&&(anim->GetCyclic())))&&(newFrame>=endFrame))
-        {
+        if (((cycleMode == FORCE_CYCLIC) ||
+             ((cycleMode == DEFAULT_CYCLE_MODE) && (anim->GetCyclic()))) &&
+            (newFrame >= endFrame)) {
             playInfo[0].numCycles++;
         }
         playInfo[0].currentFrame = anim->MakeValidFrame(newFrame, minFrame, maxFrame, cycleMode);
@@ -438,103 +391,88 @@ void tBlendFrameController::Advance(float deltaTime, bool update)
     }
 
     // handle other animations that will be blended in
-    for(int i=1; i < nAnim; i++)
-    {
-        tAnimation* anim = playInfo[i].GetAnimation();
-        if(anim)
-        {
+    for (int i = 1; i < nAnim; i++) {
+        tAnimation *anim = playInfo[i].GetAnimation();
+        if (anim) {
             // compute new frame
             float deltaFrame = (deltaTime * 0.001f) * anim->GetSpeed() * relativeSpeed;
             playInfo[i].accumDelta += deltaFrame;
-            if(playInfo[i].accumDelta < playInfo[i].blendFrames)
-            {
+            if (playInfo[i].accumDelta < playInfo[i].blendFrames) {
                 // this animation is still active
                 // compute new frame and blend weight (t = accumDelta / blendFrames)
-                float endFrame = maxFrame<0.0f ? (anim->GetNumFrames()-1) : maxFrame;
+                float endFrame = maxFrame < 0.0f ? (anim->GetNumFrames() - 1) : maxFrame;
                 float newFrame = playInfo[i].currentFrame + deltaFrame;
-                if (((cycleMode==FORCE_CYCLIC)||((cycleMode==DEFAULT_CYCLE_MODE)&&(anim->GetCyclic())))&&(newFrame>=endFrame))
-                {
+                if (((cycleMode == FORCE_CYCLIC) ||
+                     ((cycleMode == DEFAULT_CYCLE_MODE) && (anim->GetCyclic()))) &&
+                    (newFrame >= endFrame)) {
                     playInfo[i].numCycles++;
                 }
-                playInfo[i].currentFrame = anim->MakeValidFrame(newFrame, minFrame, maxFrame, cycleMode);
+                playInfo[i].currentFrame = anim->MakeValidFrame(newFrame, minFrame, maxFrame,
+                                                                cycleMode);
                 playInfo[i].t = SmoothClamp(playInfo[i].accumDelta * playInfo[i].ooBlendFrames);
                 activeAnims++;
             }
         }
     }
 
-    while(activeAnims != nAnim)
-    {
+    while (activeAnims != nAnim) {
         RemoveOldestAnim();  // some animations have finished their blend -- remove them
     }
 
-    if(update)
-    {
+    if (update) {
         Update();
     }
 }
 
 //-------------------------------------------------------------------
-void tBlendFrameController::Update()
-{
-    if (nAnim < 2)
-    {
-        if (playInfo[0].GetAnimation())
-        {
+void tBlendFrameController::Update() {
+    if (nAnim < 2) {
+        if (playInfo[0].GetAnimation()) {
             UpdateNoBlending();
         }
-    }
-    else
-    {
+    } else {
         UpdateWithBlending();
     }
 }
 
 //-------------------------------------------------------------------
-void tBlendFrameController::RemoveOldestAnim()
-{
+void tBlendFrameController::RemoveOldestAnim() {
     // shift remaining active anims to start of list
     playInfo[0].SetAnimation(NULL);
-    for(int i=1; i < nAnim; i++)
-    {
-        playInfo[i-1] = playInfo[i];
+    for (int i = 1; i < nAnim; i++) {
+        playInfo[i - 1] = playInfo[i];
     }
-    if(nAnim > 0)
-    {
+    if (nAnim > 0) {
         // This has to be done to prevent a double Release(), since
         // the above operation duplicates the anim pointer without
         // increasing the reference count.
-        playInfo[nAnim-1].NullAnimation();
+        playInfo[nAnim - 1].NullAnimation();
     }
     nAnim--;
 }
 
 //-------------------------------------------------------------------
 tBlendFrameController::PlayInfo::PlayInfo() :
-    currentFrame(0.0f),
-    blendFrames(0.0f),
-    ooBlendFrames(0.0f),
-    accumDelta(0.0f),
-    t(1.0f),
-    anim(NULL)
-{
+        currentFrame(0.0f),
+        blendFrames(0.0f),
+        ooBlendFrames(0.0f),
+        accumDelta(0.0f),
+        t(1.0f),
+        anim(NULL) {
 }
 
 //-------------------------------------------------------------------
-tBlendFrameController::PlayInfo::~PlayInfo()
-{
+tBlendFrameController::PlayInfo::~PlayInfo() {
     tRefCounted::Release(anim);
 }
 
 //-------------------------------------------------------------------
-void tBlendFrameController::PlayInfo::SetAnimation(tAnimation* newAnim)
-{
+void tBlendFrameController::PlayInfo::SetAnimation(tAnimation *newAnim) {
     tRefCounted::Assign(anim, newAnim);
 }
 
 //-------------------------------------------------------------------
-void tBlendFrameController::PlayInfo::Reset(void)
-{
+void tBlendFrameController::PlayInfo::Reset(void) {
     currentFrame = 0.0F;
     numCycles = 0;
     blendFrames = 0.0F;
@@ -545,22 +483,18 @@ void tBlendFrameController::PlayInfo::Reset(void)
 
 //-------------------------------------------------------------------
 // Sets an animation pointer to null, ignoring reference counting.
-void tBlendFrameController::PlayInfo::NullAnimation()
-{
+void tBlendFrameController::PlayInfo::NullAnimation() {
     anim = NULL;
 }
 
 //-------------------------------------------------------------------
-void tBlendFrameController::Reset(void)
-{
-    if (nAnim>0)
-    {
+void tBlendFrameController::Reset(void) {
+    if (nAnim > 0) {
         nAnim = 1;
         playInfo[0].Reset();
 
         int a;
-        for(a = 1; a < nAnim; a++)
-        {
+        for (a = 1; a < nAnim; a++) {
             tRefCounted::Release(playInfo[a].anim);
         }
     }
@@ -568,24 +502,17 @@ void tBlendFrameController::Reset(void)
 }
 
 //-------------------------------------------------------------------
-int tBlendFrameController::LastFrameReached()
-{
-    if(nAnim > 0)
-    {
-        if (playInfo[nAnim-1].anim)
-        {
-            float endFrame = maxFrame<0.0f ? playInfo[nAnim-1].anim->GetNumFrames() : maxFrame;
-            if ((cycleMode==FORCE_NON_CYCLIC)||((cycleMode==DEFAULT_CYCLE_MODE)&&(!playInfo[nAnim-1].anim->GetCyclic())))
-            {
-                return (playInfo[nAnim-1].currentFrame>=endFrame) ? 1 : 0;
-            }
-            else if ((minFrame>=0.0f)&&(minFrame==maxFrame))
-            {
+int tBlendFrameController::LastFrameReached() {
+    if (nAnim > 0) {
+        if (playInfo[nAnim - 1].anim) {
+            float endFrame = maxFrame < 0.0f ? playInfo[nAnim - 1].anim->GetNumFrames() : maxFrame;
+            if ((cycleMode == FORCE_NON_CYCLIC) ||
+                ((cycleMode == DEFAULT_CYCLE_MODE) && (!playInfo[nAnim - 1].anim->GetCyclic()))) {
+                return (playInfo[nAnim - 1].currentFrame >= endFrame) ? 1 : 0;
+            } else if ((minFrame >= 0.0f) && (minFrame == maxFrame)) {
                 return 1;
-            }
-            else
-            {
-                return playInfo[nAnim-1].LastFrameReached(); 
+            } else {
+                return playInfo[nAnim - 1].LastFrameReached();
             }
         }
     }
@@ -595,28 +522,24 @@ int tBlendFrameController::LastFrameReached()
 //**************************************************************
 // Class tFrameControllerLoader
 //**************************************************************
-tFrameControllerLoader::tFrameControllerLoader(void) : tSimpleChunkHandler(Pure3D::Animation::FrameControllerData::FRAME_CONTROLLER)
-{
-    handlers = new Handler* [MAX_FC_HANDLERS];
-    for(int i = 0; i < MAX_FC_HANDLERS; i++) handlers[i] = NULL;
+tFrameControllerLoader::tFrameControllerLoader(void) : tSimpleChunkHandler(
+        Pure3D::Animation::FrameControllerData::FRAME_CONTROLLER) {
+    handlers = new Handler *[MAX_FC_HANDLERS];
+    for (int i = 0; i < MAX_FC_HANDLERS; i++) handlers[i] = NULL;
 }
 
 //-------------------------------------------------------------------
-tFrameControllerLoader::~tFrameControllerLoader()
-{
-    for(int i = 0; i < MAX_FC_HANDLERS; i++) 
+tFrameControllerLoader::~tFrameControllerLoader() {
+    for (int i = 0; i < MAX_FC_HANDLERS; i++)
         tRefCounted::Release(handlers[i]);
 
-    delete [] handlers;
+    delete[] handlers;
 }
 
 //-------------------------------------------------------------------
-void tFrameControllerLoader::AddHandler(Handler* h)
-{
-    for(int i = 0; i < MAX_FC_HANDLERS; i++) 
-    {
-        if(handlers[i] == NULL)
-        {
+void tFrameControllerLoader::AddHandler(Handler *h) {
+    for (int i = 0; i < MAX_FC_HANDLERS; i++) {
+        if (handlers[i] == NULL) {
             tRefCounted::Assign(handlers[i], h);
             return;
         }
@@ -625,8 +548,7 @@ void tFrameControllerLoader::AddHandler(Handler* h)
 }
 
 //-------------------------------------------------------------------
-tEntity* tFrameControllerLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
+tEntity *tFrameControllerLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
     unsigned version = f->GetUInt();
     P3DASSERT(version == FRAME_CONTROLLER_VERSION);
 
@@ -634,17 +556,12 @@ tEntity* tFrameControllerLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     f->GetString(buffer);
     unsigned type = f->GetLong();
 
-    if(CheckFC(type))
-    {
+    if (CheckFC(type)) {
         return LoadFC(buffer, type, f, store);
-    }
-    else
-    {
-        for(int i = 0; i < nHandlers; i++)
-        {
-            if(handlers[i]->CheckFC(type))
-            {
-                tEntity* e = handlers[i]->LoadFC(buffer, type, f, store);
+    } else {
+        for (int i = 0; i < nHandlers; i++) {
+            if (handlers[i]->CheckFC(type)) {
+                tEntity *e = handlers[i]->LoadFC(buffer, type, f, store);
                 status = (e == NULL) ? LOAD_ERROR : LOAD_OK;
                 return e;
             }
@@ -656,10 +573,8 @@ tEntity* tFrameControllerLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 }
 
 //-------------------------------------------------------------------
-bool tFrameControllerLoader::CheckFC(unsigned t)
-{
-    switch(t)
-    {
+bool tFrameControllerLoader::CheckFC(unsigned t) {
+    switch (t) {
         case Pure3DAnimationTypes::ANIMATED_OBJECT_AOBJ:
         case Pure3DAnimationTypes::CAMERA_CAM:
         case Pure3DAnimationTypes::EXPRESSION_EXP:
@@ -682,8 +597,8 @@ bool tFrameControllerLoader::CheckFC(unsigned t)
 }
 
 //-------------------------------------------------------------------
-tFrameController* tFrameControllerLoader::LoadFC(char* fcname, unsigned t, tChunkFile* f, tEntityStore* store)
-{
+tFrameController *
+tFrameControllerLoader::LoadFC(char *fcname, unsigned t, tChunkFile *f, tEntityStore *store) {
     char hname[256];
     char aname[256];
     unsigned type;
@@ -694,231 +609,206 @@ tFrameController* tFrameControllerLoader::LoadFC(char* fcname, unsigned t, tChun
     f->GetPString(hname);                  // Hierarchy name
     f->GetPString(aname);                  // Anim name
 
-    tAnimation* animation = NULL;
-    if ((type!=Pure3DAnimationTypes::ANIMATED_OBJECT_AOBJ)&&(type!=Pure3DAnimationTypes::EFFECT_EFX))
-    {
+    tAnimation *animation = NULL;
+    if ((type != Pure3DAnimationTypes::ANIMATED_OBJECT_AOBJ) &&
+        (type != Pure3DAnimationTypes::EFFECT_EFX)) {
         animation = p3d::find<tAnimation>(store, aname);
-        if (!animation)
-        {
-            p3d::printf("framecontroller (%s) has invalid animation (%s), will not be loaded\n", fcname, aname);
+        if (!animation) {
+            p3d::printf("framecontroller (%s) has invalid animation (%s), will not be loaded\n",
+                        fcname, aname);
             return NULL;
         }
     }
 
-    tFrameController* fc = NULL;
+    tFrameController *fc = NULL;
 
-    switch (type)
-    {
-        case Pure3DAnimationTypes::ANIMATED_OBJECT_AOBJ:
-            {
-                tAnimatedObject* object = p3d::find<tAnimatedObject>(store, hname);
-                if (object)
-                {
-                    tAnimatedObjectFrameController* controller = new tAnimatedObjectFrameController;
-                    controller->SetName(fcname);
-                    controller->SetAnimatedObject(object);
-                    controller->SetCurrentAnimation(0);
-                    controller->SetFrame(frameOffset);
-                    fc = controller;
-                }
+    switch (type) {
+        case Pure3DAnimationTypes::ANIMATED_OBJECT_AOBJ: {
+            tAnimatedObject *object = p3d::find<tAnimatedObject>(store, hname);
+            if (object) {
+                tAnimatedObjectFrameController *controller = new tAnimatedObjectFrameController;
+                controller->SetName(fcname);
+                controller->SetAnimatedObject(object);
+                controller->SetCurrentAnimation(0);
+                controller->SetFrame(frameOffset);
+                fc = controller;
             }
+        }
             break;
 
-        case Pure3DAnimationTypes::CAMERA_CAM:
-            {
-                tVectorCamera* camera = p3d::find<tVectorCamera>(store, hname);
-                if (camera)
-                {
-                    tCameraAnimationController* controller = new tCameraAnimationController;
-                    controller->SetName(fcname);
-                    controller->SetCamera(camera);
-                    controller->SetAnimation(animation);
-                    controller->SetFrame(frameOffset);
-                    fc = controller;
-                }
+        case Pure3DAnimationTypes::CAMERA_CAM: {
+            tVectorCamera *camera = p3d::find<tVectorCamera>(store, hname);
+            if (camera) {
+                tCameraAnimationController *controller = new tCameraAnimationController;
+                controller->SetName(fcname);
+                controller->SetCamera(camera);
+                controller->SetAnimation(animation);
+                controller->SetFrame(frameOffset);
+                fc = controller;
             }
+        }
             break;
 
-        case Pure3DAnimationTypes::EXPRESSION_EXP:
-            {
-                tExpressionMixer* mixer = p3d::find<tExpressionMixer>(store, hname);
-                if (mixer)
-                {
-                    tExpressionAnimationController* controller = new tExpressionAnimationController;
-                    controller->SetName(fcname);
-                    controller->SetTargetMixer(mixer);
-                    controller->SetAnimation(animation);
-                    controller->SetFrame(frameOffset);
-                    fc = controller;
-                }
+        case Pure3DAnimationTypes::EXPRESSION_EXP: {
+            tExpressionMixer *mixer = p3d::find<tExpressionMixer>(store, hname);
+            if (mixer) {
+                tExpressionAnimationController *controller = new tExpressionAnimationController;
+                controller->SetName(fcname);
+                controller->SetTargetMixer(mixer);
+                controller->SetAnimation(animation);
+                controller->SetFrame(frameOffset);
+                fc = controller;
             }
+        }
             break;
 
-        case Pure3DAnimationTypes::LIGHT_LITE:
-            {
-                tLight* light = p3d::find<tLight>(store, hname);
-                if (light)
-                {
-                    tLightAnimationController* controller = new tLightAnimationController;
-                    controller->SetName(fcname);
-                    controller->SetLight(light);
-                    controller->SetAnimation(animation);
-                    controller->SetFrame(frameOffset);
-                    fc = controller;
-                }
+        case Pure3DAnimationTypes::LIGHT_LITE: {
+            tLight *light = p3d::find<tLight>(store, hname);
+            if (light) {
+                tLightAnimationController *controller = new tLightAnimationController;
+                controller->SetName(fcname);
+                controller->SetLight(light);
+                controller->SetAnimation(animation);
+                controller->SetFrame(frameOffset);
+                fc = controller;
             }
+        }
             break;
 
-        case Pure3DAnimationTypes::POSE_VISIBILITY_PVIS:
-            {
-                tCompositeDrawable* drawable = p3d::find<tCompositeDrawable>(store, hname);
-                if (drawable)
-                {               
-                    tCompDrawVisibilityAnimationController* controller = new tCompDrawVisibilityAnimationController;
-                    controller->SetName(fcname);
-                    controller->SetDrawable(drawable);  
-                    controller->SetAnimation(animation);
-                    controller->SetFrame(frameOffset);
-                    fc = controller;
-                }
+        case Pure3DAnimationTypes::POSE_VISIBILITY_PVIS: {
+            tCompositeDrawable *drawable = p3d::find<tCompositeDrawable>(store, hname);
+            if (drawable) {
+                tCompDrawVisibilityAnimationController *controller = new tCompDrawVisibilityAnimationController;
+                controller->SetName(fcname);
+                controller->SetDrawable(drawable);
+                controller->SetAnimation(animation);
+                controller->SetFrame(frameOffset);
+                fc = controller;
             }
+        }
             break;
 
-        case Pure3DAnimationTypes::POSE_TRANSFORM_PTRN:
-            {
-                tCompositeDrawable* drawable = p3d::find<tCompositeDrawable>(store, hname);
-                if (drawable)
-                {
-                    tPoseAnimationController* controller = new tPoseAnimationController;
-                    controller->SetName(fcname);
-                    controller->SetPose(drawable->GetPose());
-                    controller->SetAnimation(animation);
-                    controller->SetFrame(frameOffset);
-                    fc = controller;
-                }
+        case Pure3DAnimationTypes::POSE_TRANSFORM_PTRN: {
+            tCompositeDrawable *drawable = p3d::find<tCompositeDrawable>(store, hname);
+            if (drawable) {
+                tPoseAnimationController *controller = new tPoseAnimationController;
+                controller->SetName(fcname);
+                controller->SetPose(drawable->GetPose());
+                controller->SetAnimation(animation);
+                controller->SetFrame(frameOffset);
+                fc = controller;
             }
+        }
             break;
 
-        case Pure3DAnimationTypes::SCENEGRAPH_VISIBILITY_SVIS:
-            {
-                Scenegraph::Scenegraph* scene = p3d::find<Scenegraph::Scenegraph>(store, hname);
-                if (scene)
-                {
-                    tSceneGraphVisibilityAnimationController* controller = new tSceneGraphVisibilityAnimationController;
-                    controller->SetName(fcname);
-                    controller->SetDrawable(scene);  
-                    controller->SetAnimation(animation);
-                    controller->SetFrame(frameOffset);
-                    fc = controller;
-                }
+        case Pure3DAnimationTypes::SCENEGRAPH_VISIBILITY_SVIS: {
+            Scenegraph::Scenegraph *scene = p3d::find<Scenegraph::Scenegraph>(store, hname);
+            if (scene) {
+                tSceneGraphVisibilityAnimationController *controller = new tSceneGraphVisibilityAnimationController;
+                controller->SetName(fcname);
+                controller->SetDrawable(scene);
+                controller->SetAnimation(animation);
+                controller->SetFrame(frameOffset);
+                fc = controller;
             }
+        }
             break;
 
-        case Pure3DAnimationTypes::SCENEGRAPH_TRANSFORM_STRN:
-            {
-                Scenegraph::Scenegraph* scene= p3d::find<Scenegraph::Scenegraph>(store, hname);
-                if (scene)
-                {
-                    const tAnimationGroup* animGroup = animation->GetGroupByIndex(0);
-                    Scenegraph::Transform* transform = dynamic_cast<Scenegraph::Transform*>(scene->Find(animGroup->GetUID()));
-                    
-                    Scenegraph::TransformAnimationController *controller = new Scenegraph::TransformAnimationController ;
-                    controller->SetName(fcname);
-                    controller->SetTransformNode(transform);
-                    controller->SetAnimation(animation);
-                    controller->SetFrame(frameOffset);
-                    fc = controller;
-                }
+        case Pure3DAnimationTypes::SCENEGRAPH_TRANSFORM_STRN: {
+            Scenegraph::Scenegraph *scene = p3d::find<Scenegraph::Scenegraph>(store, hname);
+            if (scene) {
+                const tAnimationGroup *animGroup = animation->GetGroupByIndex(0);
+                Scenegraph::Transform *transform = dynamic_cast<Scenegraph::Transform *>(scene->Find(
+                        animGroup->GetUID()));
+
+                Scenegraph::TransformAnimationController *controller = new Scenegraph::TransformAnimationController;
+                controller->SetName(fcname);
+                controller->SetTransformNode(transform);
+                controller->SetAnimation(animation);
+                controller->SetFrame(frameOffset);
+                fc = controller;
             }
+        }
             break;
 
-        case Pure3DAnimationTypes::TEXTURE_TEX:
-            {
-                tShader* shader = p3d::find<tShader>(store, hname);
-                if (shader)
-                {
-                    tTextureAnimationController* controller = new tTextureAnimationController;
-                    controller->SetName(fcname);
-                    controller->SetShader(shader);
-                    controller->SetAnimation(animation);
-                    controller->SetFrame(frameOffset);
-                    fc = controller;
-                }
+        case Pure3DAnimationTypes::TEXTURE_TEX: {
+            tShader *shader = p3d::find<tShader>(store, hname);
+            if (shader) {
+                tTextureAnimationController *controller = new tTextureAnimationController;
+                controller->SetName(fcname);
+                controller->SetShader(shader);
+                controller->SetAnimation(animation);
+                controller->SetFrame(frameOffset);
+                fc = controller;
             }
+        }
             break;
 
-        case Pure3DAnimationTypes::BILLBOARD_QUAD_GROUP_BQG:
-            {
-                tBillboardQuadGroup* group = p3d::find<tBillboardQuadGroup>(store,hname);
+        case Pure3DAnimationTypes::BILLBOARD_QUAD_GROUP_BQG: {
+            tBillboardQuadGroup *group = p3d::find<tBillboardQuadGroup>(store, hname);
 
-                if (group)
-                {
-                    tBillboardQuadGroupAnimationController* controller = new tBillboardQuadGroupAnimationController;
-                    controller->SetName(fcname);
-                    controller->SetBillboardQuadGroup(group);
-                    controller->SetAnimation(animation);
-                    controller->SetFrame(frameOffset);
-                    fc = controller;
-                }
+            if (group) {
+                tBillboardQuadGroupAnimationController *controller = new tBillboardQuadGroupAnimationController;
+                controller->SetName(fcname);
+                controller->SetBillboardQuadGroup(group);
+                controller->SetAnimation(animation);
+                controller->SetFrame(frameOffset);
+                fc = controller;
             }
+        }
             break;
 
-        case Pure3DAnimationTypes::EFFECT_EFX:
-            {
-                tEffect* effect = p3d::find<tEffect>(store,hname);
+        case Pure3DAnimationTypes::EFFECT_EFX: {
+            tEffect *effect = p3d::find<tEffect>(store, hname);
 
-                if (effect)
-                {
-                    tEffectController *ec = new tEffectController;
-                    ec->SetName(fcname);
-                    ec->SetEffect(effect);
-                    fc = ec;
-                }
+            if (effect) {
+                tEffectController *ec = new tEffectController;
+                ec->SetName(fcname);
+                ec->SetEffect(effect);
+                fc = ec;
             }
+        }
             break;
 
-        //create a vertex-anim object and attached to the new frame controller
-        case Pure3DAnimationTypes::VERTEX_VRTX:
-            {
-                //create a new tVertexAnimObject
-                tVertexAnimObject  *pObject = new tVertexAnimObject;
+            //create a vertex-anim object and attached to the new frame controller
+        case Pure3DAnimationTypes::VERTEX_VRTX: {
+            //create a new tVertexAnimObject
+            tVertexAnimObject *pObject = new tVertexAnimObject;
 
-                //new a vertex anim controller
-                tVertexAnimController *pController = new tVertexAnimController;
-                pController->SetName( fcname );
+            //new a vertex anim controller
+            tVertexAnimController *pController = new tVertexAnimController;
+            pController->SetName(fcname);
 
-                //find the target geometry for vertex animation
-                tGeometry *geometry = p3d::find<tGeometry>( store, hname );
-                P3DASSERT( geometry );
+            //find the target geometry for vertex animation
+            tGeometry *geometry = p3d::find<tGeometry>(store, hname);
+            P3DASSERT(geometry);
 
-                //attach the geometry to a vertex animation object
-                pObject->SetActiveObject( geometry );
+            //attach the geometry to a vertex animation object
+            pObject->SetActiveObject(geometry);
 
-                //set the vertexanimobject as the target of the controller
-                pController->SetTarget( pObject );
+            //set the vertexanimobject as the target of the controller
+            pController->SetTarget(pObject);
 
-                //Add the vertex animation object to entity store
-                store->Store( pObject );
+            //Add the vertex animation object to entity store
+            store->Store(pObject);
 
-                //attach animation to controller
-                pController->SetAnimation( animation );
+            //attach animation to controller
+            pController->SetAnimation(animation);
 
-                fc = pController;
+            fc = pController;
+        }
+
+        case Pure3DAnimationTypes::SHADER_SHAD: {
+            tShader *shader = p3d::find<tShader>(store, hname);
+            if (shader) {
+                tShaderAnimationController *controller = new tShaderAnimationController;
+                controller->SetName(fcname);
+                controller->SetShader(shader);
+                controller->SetAnimation(animation);
+                controller->SetFrame(frameOffset);
+                fc = controller;
             }
-
-        case Pure3DAnimationTypes::SHADER_SHAD:
-            {
-                tShader* shader = p3d::find<tShader>(store, hname);
-                if (shader)
-                {
-                    tShaderAnimationController *controller = new tShaderAnimationController;
-                    controller->SetName(fcname);
-                    controller->SetShader(shader);
-                    controller->SetAnimation(animation);
-                    controller->SetFrame(frameOffset);
-                    fc = controller;
-                }
-            }
+        }
 
             break;
 
@@ -932,232 +822,192 @@ tFrameController* tFrameControllerLoader::LoadFC(char* fcname, unsigned t, tChun
 //**************************************************************
 // Class tAnimationMemoryBlock
 //**************************************************************
-tAnimationMemoryBlock::tAnimationMemoryBlock() : 
-    tRefCounted(),
-    blockSize(0),
-    usedBlocks(0),
-    block(NULL)
-{
+tAnimationMemoryBlock::tAnimationMemoryBlock() :
+        tRefCounted(),
+        blockSize(0),
+        usedBlocks(0),
+        block(NULL) {
 }
 
 //-------------------------------------------------------------------
-tAnimationMemoryBlock::tAnimationMemoryBlock(unsigned int size) : 
-    tRefCounted(),
-    blockSize(size),
-    usedBlocks(0),
-    block(NULL)
-{
-    P3DASSERT(size>0);
+tAnimationMemoryBlock::tAnimationMemoryBlock(unsigned int size) :
+        tRefCounted(),
+        blockSize(size),
+        usedBlocks(0),
+        block(NULL) {
+    P3DASSERT(size > 0);
     block = new char[size];
 
 }
 
 //-------------------------------------------------------------------
-tAnimationMemoryBlock::~tAnimationMemoryBlock()
-{
-    delete [] block;
+tAnimationMemoryBlock::~tAnimationMemoryBlock() {
+    delete[] block;
 }
-    
+
 //-------------------------------------------------------------------
-char* tAnimationMemoryBlock::Allocate(unsigned int size, int alignment)
-{
+char *tAnimationMemoryBlock::Allocate(unsigned int size, int alignment) {
     int alignmentSize = 3;
-    switch (alignment)
-    {
-        case EIGHT_BYTE:
-        {
+    switch (alignment) {
+        case EIGHT_BYTE: {
             alignmentSize = 7;
             break;
         }
         case FOUR_BYTE:
-        default:
-        {
+        default: {
             alignmentSize = 3;
             break;
         }
     }
-    usedBlocks = ((usedBlocks+alignmentSize) & ~alignmentSize);    
-    char* newBlock = &(block[usedBlocks]);
+    usedBlocks = ((usedBlocks + alignmentSize) & ~alignmentSize);
+    char *newBlock = &(block[usedBlocks]);
     usedBlocks += size;
-    P3DASSERT(usedBlocks<=blockSize);
+    P3DASSERT(usedBlocks <= blockSize);
     return newBlock;
 }
 
 //**************************************************************
 // Class tAnimationGroup
 //**************************************************************
-tAnimationGroup::tAnimationGroup() : 
-    groupId(0), 
-    numChannels(0), 
-    channels(NULL),
-    memoryBlock(NULL)
-{
+tAnimationGroup::tAnimationGroup() :
+        groupId(0),
+        numChannels(0),
+        channels(NULL),
+        memoryBlock(NULL) {
 }
 
 //-------------------------------------------------------------------
-tAnimationGroup::~tAnimationGroup()
-{
+tAnimationGroup::~tAnimationGroup() {
     CleanUp();
 }
-    
+
 //-------------------------------------------------------------------
-void tAnimationGroup::CleanUp()
-{    
-    if (!memoryBlock)
-    {
-        for (int i = 0; i < numChannels; i++)
-        {
+void tAnimationGroup::CleanUp() {
+    if (!memoryBlock) {
+        for (int i = 0; i < numChannels; i++) {
             delete channels[i];
         }
-        delete [] channels;
-    }
-    else
-    {
+        delete[] channels;
+    } else {
         name.~tName();
-        for (int i = 0; i < numChannels; i++)
-        {
+        for (int i = 0; i < numChannels; i++) {
             channels[i]->CleanUp();
         }
     }
 }
 
 //-------------------------------------------------------------------
-const tIntChannel* tAnimationGroup::GetIntChannel( unsigned channelCode ) const
-{
-    const tChannel* channel = FindChannel(channelCode);
+const tIntChannel *tAnimationGroup::GetIntChannel(unsigned channelCode) const {
+    const tChannel *channel = FindChannel(channelCode);
 
-    if(channel && channel->GetDataType() == tChannel::INT)
-    {
-        return static_cast<const tIntChannel*>(channel);
+    if (channel && channel->GetDataType() == tChannel::INT) {
+        return static_cast<const tIntChannel *>(channel);
     }
     return NULL;
 }
 
 //-------------------------------------------------------------------
-const tFloat1Channel* tAnimationGroup::GetFloat1Channel( unsigned channelCode ) const
-{
-    const tChannel* channel = FindChannel(channelCode);
+const tFloat1Channel *tAnimationGroup::GetFloat1Channel(unsigned channelCode) const {
+    const tChannel *channel = FindChannel(channelCode);
 
-    if(channel && channel->GetDataType() == tChannel::FLOAT1)
-    {
-        return static_cast<const tFloat1Channel*>(channel);
+    if (channel && channel->GetDataType() == tChannel::FLOAT1) {
+        return static_cast<const tFloat1Channel *>(channel);
     }
     return NULL;
 }
 
 //-------------------------------------------------------------------
-const tFloat2Channel* tAnimationGroup::GetFloat2Channel( unsigned channelCode ) const
-{
-    const tChannel* channel = FindChannel(channelCode);
+const tFloat2Channel *tAnimationGroup::GetFloat2Channel(unsigned channelCode) const {
+    const tChannel *channel = FindChannel(channelCode);
 
-    if(channel && channel->GetDataType() == tChannel::FLOAT2)
-    {
-        return static_cast<const tFloat2Channel*>(channel);
+    if (channel && channel->GetDataType() == tChannel::FLOAT2) {
+        return static_cast<const tFloat2Channel *>(channel);
     }
     return NULL;
 }
 
 //-------------------------------------------------------------------
-const tVectorChannel* tAnimationGroup::GetVectorChannel( unsigned channelCode ) const
-{
-    const tChannel* channel = FindChannel(channelCode);
+const tVectorChannel *tAnimationGroup::GetVectorChannel(unsigned channelCode) const {
+    const tChannel *channel = FindChannel(channelCode);
 
-    if(channel && channel->GetDataType() == tChannel::VECTOR)
-    {
-        return static_cast<const tVectorChannel*>(channel);
+    if (channel && channel->GetDataType() == tChannel::VECTOR) {
+        return static_cast<const tVectorChannel *>(channel);
     }
     return NULL;
 }
 
 //-------------------------------------------------------------------
-const tRotationChannel* tAnimationGroup::GetRotationChannel(unsigned channelCode) const
-{
-    const tChannel* channel = FindChannel(channelCode);
+const tRotationChannel *tAnimationGroup::GetRotationChannel(unsigned channelCode) const {
+    const tChannel *channel = FindChannel(channelCode);
 
-    if(channel && channel->GetDataType() == tChannel::ROTATION)
-    {
-        return static_cast<const tRotationChannel*>(channel);
+    if (channel && channel->GetDataType() == tChannel::ROTATION) {
+        return static_cast<const tRotationChannel *>(channel);
     }
     return NULL;
 }
 
 //-------------------------------------------------------------------
-const tStringChannel* tAnimationGroup::GetStringChannel(unsigned channelCode) const
-{
-    const tChannel* channel = FindChannel(channelCode);
+const tStringChannel *tAnimationGroup::GetStringChannel(unsigned channelCode) const {
+    const tChannel *channel = FindChannel(channelCode);
 
-    if(channel && channel->GetDataType() == tChannel::STRING)
-    {
-        return static_cast<const tStringChannel*>(channel);
+    if (channel && channel->GetDataType() == tChannel::STRING) {
+        return static_cast<const tStringChannel *>(channel);
     }
     return NULL;
 }
 
 //-------------------------------------------------------------------
-const tEntityChannel* tAnimationGroup::GetEntityChannel(unsigned channelCode) const
-{
-    const tChannel* channel = FindChannel(channelCode);
+const tEntityChannel *tAnimationGroup::GetEntityChannel(unsigned channelCode) const {
+    const tChannel *channel = FindChannel(channelCode);
 
-    if(channel && channel->GetDataType() == tChannel::ENTITY)
-    {
-        return static_cast<const tEntityChannel*>(channel);
+    if (channel && channel->GetDataType() == tChannel::ENTITY) {
+        return static_cast<const tEntityChannel *>(channel);
     }
     return NULL;
 }
 
 //-------------------------------------------------------------------
-const tBoolChannel* tAnimationGroup::GetBoolChannel(unsigned channelCode) const
-{
-    const tChannel* channel = FindChannel(channelCode);
+const tBoolChannel *tAnimationGroup::GetBoolChannel(unsigned channelCode) const {
+    const tChannel *channel = FindChannel(channelCode);
 
-    if(channel && channel->GetDataType() == tChannel::BOOL)
-    {
-        return static_cast<const tBoolChannel*>(channel);
+    if (channel && channel->GetDataType() == tChannel::BOOL) {
+        return static_cast<const tBoolChannel *>(channel);
     }
     return NULL;
 }
 
 //-------------------------------------------------------------------
-const tColourChannel* tAnimationGroup::GetColourChannel(unsigned channelCode) const
-{
-    const tChannel* channel = FindChannel(channelCode);
+const tColourChannel *tAnimationGroup::GetColourChannel(unsigned channelCode) const {
+    const tChannel *channel = FindChannel(channelCode);
 
-    if(channel && channel->GetDataType() == tChannel::COLOUR)
-    {
-        return static_cast<const tColourChannel*>(channel);
+    if (channel && channel->GetDataType() == tChannel::COLOUR) {
+        return static_cast<const tColourChannel *>(channel);
     }
     return NULL;
 }
 
 //-------------------------------------------------------------------
-const tEventChannel* tAnimationGroup::GetEventChannel(unsigned channelCode) const
-{
-    const tChannel* channel = FindChannel(channelCode);
+const tEventChannel *tAnimationGroup::GetEventChannel(unsigned channelCode) const {
+    const tChannel *channel = FindChannel(channelCode);
 
-    if(channel && channel->GetDataType() == tChannel::EVENT)
-    {
-        return static_cast<const tEventChannel*>(channel);
+    if (channel && channel->GetDataType() == tChannel::EVENT) {
+        return static_cast<const tEventChannel *>(channel);
     }
     return NULL;
 }
 
 //-------------------------------------------------------------------
-const tChannel* tAnimationGroup::GetChannel(int index) const
-{
+const tChannel *tAnimationGroup::GetChannel(int index) const {
     if ((index >= 0) && (index < GetChannelCount())) return channels[index];
     return NULL;
 }
 
 
 //-------------------------------------------------------------------
-const tChannel* tAnimationGroup::FindChannel(unsigned channelCode) const
-{
-    if(channels)
-    {
-        for(int i=0;i<numChannels;i++)
-        {
-            if(channelCode == channels[i]->GetChannelCode())
-            {
+const tChannel *tAnimationGroup::FindChannel(unsigned channelCode) const {
+    if (channels) {
+        for (int i = 0; i < numChannels; i++) {
+            if (channelCode == channels[i]->GetChannelCode()) {
                 return channels[i];
             }
         }
@@ -1169,44 +1019,35 @@ const tChannel* tAnimationGroup::FindChannel(unsigned channelCode) const
 // Class tAnimation
 //**************************************************************
 tAnimation::tAnimation() :
-    tEntity(),
-    numFrames(0.0f),
-    speed(30.0f),
-    cyclic(false),
-    animType(0),
-    numGroups(0),
-    groups(NULL),
-    memoryBlock(NULL),
-    sortOrder(1)
-{ 
+        tEntity(),
+        numFrames(0.0f),
+        speed(30.0f),
+        cyclic(false),
+        animType(0),
+        numGroups(0),
+        groups(NULL),
+        memoryBlock(NULL),
+        sortOrder(1) {
 }
 
 //-------------------------------------------------------------------------
-tAnimation::~tAnimation()
-{
-    if (!memoryBlock)
-    {
-        for (int i = 0; i < numGroups; i++)
-        {
+tAnimation::~tAnimation() {
+    if (!memoryBlock) {
+        for (int i = 0; i < numGroups; i++) {
             delete groups[i];
         }
-    }
-    else
-    {
-        for (int i = 0; i < numGroups; i++)
-        {
+    } else {
+        for (int i = 0; i < numGroups; i++) {
             groups[i]->CleanUp();
         }
     }
-    delete [] groups;
+    delete[] groups;
     tRefCounted::Release(memoryBlock);
 }
 
 //-------------------------------------------------------------------------
-const tAnimationGroup* tAnimation::GetGroupByIndex(int index) const
-{
-    if ((index>=0)&&(index<numGroups))
-    {
+const tAnimationGroup *tAnimation::GetGroupByIndex(int index) const {
+    if ((index >= 0) && (index < numGroups)) {
         P3DASSERT(groups[index]);
         return groups[index];
     }
@@ -1214,50 +1055,35 @@ const tAnimationGroup* tAnimation::GetGroupByIndex(int index) const
 }
 
 //-------------------------------------------------------------------------
-const tAnimationGroup* tAnimation::GetGroupById(int id) const
-{
-    if (numGroups == 0)
-    { 
+const tAnimationGroup *tAnimation::GetGroupById(int id) const {
+    if (numGroups == 0) {
         return NULL;
-    }
-    else if (sortOrder == 2)
-    {
+    } else if (sortOrder == 2) {
         int left = 0;
-        int right = numGroups-1;
-        int center = right/2;
-    
-        while (left<right)
-        {
-            if (groups[center]->GetGroupId()>id)
-            {
-                right = center-1;
-                center = ((right-left)/2)+left;
-            }
-            else if (groups[center]->GetGroupId()<id)
-            {
-                left = center+1;
-                center = ((right-left)/2)+left;
-            }
-            else
-            {
+        int right = numGroups - 1;
+        int center = right / 2;
+
+        while (left < right) {
+            if (groups[center]->GetGroupId() > id) {
+                right = center - 1;
+                center = ((right - left) / 2) + left;
+            } else if (groups[center]->GetGroupId() < id) {
+                left = center + 1;
+                center = ((right - left) / 2) + left;
+            } else {
                 return groups[center];
             }
         }
 
-        if (groups[center]->GetGroupId()==id)
-        {
+        if (groups[center]->GetGroupId() == id) {
             return groups[center];
         }
         return NULL;
-    }
-    else
-    {
-        for(int i=0;i<numGroups;i++)
-        {
+    } else {
+        for (int i = 0; i < numGroups; i++) {
             P3DASSERT(groups[i]);
-            if(groups[i]->GetGroupId() == id)
-            {
-                return(groups[i]);
+            if (groups[i]->GetGroupId() == id) {
+                return (groups[i]);
             }
         }
         return NULL;
@@ -1265,56 +1091,40 @@ const tAnimationGroup* tAnimation::GetGroupById(int id) const
 }
 
 //-------------------------------------------------------------------------
-const tAnimationGroup* tAnimation::GetGroupByName(const char* name) const
-{
+const tAnimationGroup *tAnimation::GetGroupByName(const char *name) const {
     return GetGroupByUID(tName::MakeUID(name));
 }
 
 //-------------------------------------------------------------------------
-const tAnimationGroup* tAnimation::GetGroupByUID(tUID uid) const
-{
-    if (numGroups == 0)
-    { 
+const tAnimationGroup *tAnimation::GetGroupByUID(tUID uid) const {
+    if (numGroups == 0) {
         return NULL;
-    }
-    else if (sortOrder == 1)
-    {
+    } else if (sortOrder == 1) {
         int left = 0;
-        int right = numGroups-1;
-        int center = right/2;
-    
-        while (left<right)
-        {
-            if (groups[center]->GetUID()>uid)
-            {
-                right = center-1;
-                center = ((right-left)/2)+left;
-            }
-            else if (groups[center]->GetUID()<uid)
-            {
-                left = center+1;
-                center = ((right-left)/2)+left;
-            }
-            else
-            {
+        int right = numGroups - 1;
+        int center = right / 2;
+
+        while (left < right) {
+            if (groups[center]->GetUID() > uid) {
+                right = center - 1;
+                center = ((right - left) / 2) + left;
+            } else if (groups[center]->GetUID() < uid) {
+                left = center + 1;
+                center = ((right - left) / 2) + left;
+            } else {
                 return groups[center];
             }
         }
 
-        if (groups[center]->GetUID()==uid)
-        {
+        if (groups[center]->GetUID() == uid) {
             return groups[center];
         }
         return NULL;
-    }
-    else
-    {
-        for(int i=0;i<numGroups;i++)
-        {
+    } else {
+        for (int i = 0; i < numGroups; i++) {
             P3DASSERT(groups[i]);
-            if(groups[i]->GetUID() == uid)
-            {
-                return(groups[i]);
+            if (groups[i]->GetUID() == uid) {
+                return (groups[i]);
             }
         }
         return NULL;
@@ -1322,13 +1132,10 @@ const tAnimationGroup* tAnimation::GetGroupByUID(tUID uid) const
 }
 
 //-------------------------------------------------------------------------
-int tAnimation::FindGroupIndexById(int id) const
-{
-    for(int i=0;i<numGroups;i++)
-    {
+int tAnimation::FindGroupIndexById(int id) const {
+    for (int i = 0; i < numGroups; i++) {
         P3DASSERT(groups[i]);
-        if(groups[i]->GetGroupId() == id)
-        {
+        if (groups[i]->GetGroupId() == id) {
             return i;
         }
     }
@@ -1336,19 +1143,15 @@ int tAnimation::FindGroupIndexById(int id) const
 }
 
 //-------------------------------------------------------------------------
-int tAnimation::FindGroupIndexByName(const char* name) const
-{
+int tAnimation::FindGroupIndexByName(const char *name) const {
     return FindGroupIndexByUID(tName::MakeUID(name));
 }
 
 //-------------------------------------------------------------------------
-int tAnimation::FindGroupIndexByUID(tUID uid) const
-{
-    for (int i = 0; i < numGroups; i++)
-    {
+int tAnimation::FindGroupIndexByUID(tUID uid) const {
+    for (int i = 0; i < numGroups; i++) {
         P3DASSERT(groups[i]);
-        if(groups[i]->GetUID() == uid)
-        {
+        if (groups[i]->GetUID() == uid) {
             return i;
         }
     }
@@ -1356,58 +1159,45 @@ int tAnimation::FindGroupIndexByUID(tUID uid) const
 }
 
 //-------------------------------------------------------------------------
-float tAnimation::MakeValidFrame(float frame, float rangeMin, float rangeMax, p3dCycleMode mode) const
-{
-    frame = frame>0.0f ? frame : 0.0f;
+float
+tAnimation::MakeValidFrame(float frame, float rangeMin, float rangeMax, p3dCycleMode mode) const {
+    frame = frame > 0.0f ? frame : 0.0f;
 
-    rangeMin = rangeMin>=0.0f ? rangeMin : 0.0f;
-    rangeMax = rangeMax>=0.0f ? rangeMax : numFrames;
+    rangeMin = rangeMin >= 0.0f ? rangeMin : 0.0f;
+    rangeMax = rangeMax >= 0.0f ? rangeMax : numFrames;
 
-    if ((rangeMin <= frame)&&(frame <= rangeMax))
-    {
+    if ((rangeMin <= frame) && (frame <= rangeMax)) {
         return frame;
-    }
-    else if (frame > rangeMax)
-    {
-        switch (mode)
-        {
-            case FORCE_CYCLIC:
-            {
-                return fmodf(frame, rangeMax)+rangeMin;
+    } else if (frame > rangeMax) {
+        switch (mode) {
+            case FORCE_CYCLIC: {
+                return fmodf(frame, rangeMax) + rangeMin;
                 break;
             }
-            case FORCE_NON_CYCLIC:
-            {
+            case FORCE_NON_CYCLIC: {
                 return rangeMax;
                 break;
             }
             case DEFAULT_CYCLE_MODE:
-            default:
-            {
-                return (cyclic ? fmodf(frame, rangeMax)+rangeMin : rangeMax);
+            default: {
+                return (cyclic ? fmodf(frame, rangeMax) + rangeMin : rangeMax);
                 break;
             }
         }
-    }
-    else
-    {
+    } else {
         return rangeMin;
     }
 }
 
 //-------------------------------------------------------------------------
-void tAnimation::SortAnimationGroups()
-{
-    switch (sortOrder)
-    {
-        case 1:
-        {
-            qsort(groups, numGroups, sizeof(tAnimationGroup*), AnimationGroupCompareByUID);
+void tAnimation::SortAnimationGroups() {
+    switch (sortOrder) {
+        case 1: {
+            qsort(groups, numGroups, sizeof(tAnimationGroup * ), AnimationGroupCompareByUID);
             break;
         }
-        case 2:
-        {
-            qsort(groups, numGroups, sizeof(tAnimationGroup*), AnimationGroupCompareByGroupID);
+        case 2: {
+            qsort(groups, numGroups, sizeof(tAnimationGroup * ), AnimationGroupCompareByGroupID);
             break;
         }
         default:
@@ -1418,15 +1208,13 @@ void tAnimation::SortAnimationGroups()
 //**************************************************************
 // Class tAnimationLoader
 //**************************************************************
-tAnimationLoader::tAnimationLoader() : 
-    tSimpleChunkHandler(Pure3D::Animation::AnimationData::ANIMATION),
-    sortOrder(1)
-{
+tAnimationLoader::tAnimationLoader() :
+        tSimpleChunkHandler(Pure3D::Animation::AnimationData::ANIMATION),
+        sortOrder(1) {
 }
 
 //-------------------------------------------------------------------------
-tEntity* tAnimationLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
+tEntity *tAnimationLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
 
 #ifdef RAD_GAMECUBE
     radMemoryAllocator oldAllocator = radMemorySetCurrentAllocator(RADMEMORY_ALLOC_VMM);
@@ -1434,11 +1222,11 @@ tEntity* tAnimationLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 
     unsigned int animVersion = f->GetLong();
     P3DASSERT(animVersion == ANIMATION_VERSION);
-    
+
     char buf[256];
     f->GetPString(buf);
 
-    tAnimation* anim = new tAnimation;
+    tAnimation *anim = new tAnimation;
     anim->SetName(buf);
     anim->animType = f->GetLong();
     anim->numFrames = f->GetFloat();
@@ -1446,15 +1234,11 @@ tEntity* tAnimationLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     anim->cyclic = f->GetLong() == 1;
     anim->sortOrder = sortOrder;
 
-    while(f->ChunksRemaining())
-    {
-        switch(f->BeginChunk())
-        {
-            case Pure3D::Animation::AnimationData::SIZE:
-            {
+    while (f->ChunksRemaining()) {
+        switch (f->BeginChunk()) {
+            case Pure3D::Animation::AnimationData::SIZE: {
                 unsigned int animSizeVersion = f->GetLong();
-                if (animSizeVersion != ANIMATION_SIZE_VERSION)
-                {
+                if (animSizeVersion != ANIMATION_SIZE_VERSION) {
 #ifndef RAD_RELEASE
 #ifdef P3D_ALLOW_ENTITY_GETNAME
                     char buffer[1024];
@@ -1462,9 +1246,7 @@ tEntity* tAnimationLoader::LoadObject(tChunkFile* f, tEntityStore* store)
                     p3d::print(buffer);
 #endif
 #endif
-                }
-                else
-                {
+                } else {
                     unsigned int pcSize = f->GetLong();
                     unsigned int ps2Size = f->GetLong();
                     unsigned int xboxSize = f->GetLong();
@@ -1485,28 +1267,24 @@ tEntity* tAnimationLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 #endif
 #endif
 #endif
-                    if ((anim->numGroups==0)&&(animSize>0))
-                    {
+                    if ((anim->numGroups == 0) && (animSize > 0)) {
                         anim->memoryBlock = new tAnimationMemoryBlock(animSize);
                         anim->memoryBlock->AddRef();
                     }
                 }
                 break;
             }
-            case Pure3D::Animation::AnimationData::GROUP_LIST:
-            {
+            case Pure3D::Animation::AnimationData::GROUP_LIST: {
                 unsigned int groupListVersion = f->GetLong();
                 P3DASSERT(groupListVersion == ANIMATION_GROUP_LIST_VERSION);
-                                                             
+
                 anim->numGroups = f->GetLong();
-                if (anim->numGroups>0)
-                {
-                    anim->groups = new tAnimationGroup*[anim->numGroups];
-                    memset(anim->groups, 0, sizeof(tAnimationGroup*)*(anim->numGroups));
+                if (anim->numGroups > 0) {
+                    anim->groups = new tAnimationGroup *[anim->numGroups];
+                    memset(anim->groups, 0, sizeof(tAnimationGroup * ) * (anim->numGroups));
 
                     int currGroup = 0;
-                    while((f->ChunksRemaining())&&(currGroup<anim->numGroups))
-                    {
+                    while ((f->ChunksRemaining()) && (currGroup < anim->numGroups)) {
                         f->BeginChunk();
                         anim->groups[currGroup] = LoadAnimationGroup(f, store, anim->memoryBlock);
                         P3DASSERT(anim->groups[currGroup]);
@@ -1556,8 +1334,8 @@ tEntity* tAnimationLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 }
 
 //-------------------------------------------------------------------------
-tAnimationGroup* tAnimationLoader::LoadAnimationGroup(tChunkFile* f, tEntityStore* store, tAnimationMemoryBlock* block)
-{
+tAnimationGroup *tAnimationLoader::LoadAnimationGroup(tChunkFile *f, tEntityStore *store,
+                                                      tAnimationMemoryBlock *block) {
     P3DASSERT(f->GetCurrentID() == Pure3D::Animation::AnimationData::GROUP);
 
     unsigned int groupVersion = f->GetLong();
@@ -1566,42 +1344,38 @@ tAnimationGroup* tAnimationLoader::LoadAnimationGroup(tChunkFile* f, tEntityStor
     char buf[256];
     f->GetPString(buf);
 
-    tAnimationGroup* animGroup = NULL;
-    if (!block)
-    {
+    tAnimationGroup *animGroup = NULL;
+    if (!block) {
         animGroup = new tAnimationGroup;
-    }
-    else
-    {
-        animGroup = (tAnimationGroup*)new(block->Allocate(sizeof(tAnimationGroup),tAnimationMemoryBlock::EIGHT_BYTE))tAnimationGroup;
+    } else {
+        animGroup = (tAnimationGroup * )
+        new(block->Allocate(sizeof(tAnimationGroup),
+                            tAnimationMemoryBlock::EIGHT_BYTE))tAnimationGroup;
     }
     animGroup->SetName(buf);
     animGroup->groupId = f->GetLong();
     animGroup->numChannels = f->GetLong();
     animGroup->memoryBlock = block;
-    if (animGroup->numChannels>0)
-    {
-        if (!block)
-        {
-            animGroup->channels = new tChannel*[animGroup->numChannels];             
+    if (animGroup->numChannels > 0) {
+        if (!block) {
+            animGroup->channels = new tChannel *[animGroup->numChannels];
+        } else {
+            animGroup->channels = (tChannel * *)(
+                    block->Allocate(sizeof(tChannel * ) * animGroup->numChannels));
         }
-        else
-        {
-            animGroup->channels = (tChannel**)(block->Allocate(sizeof(tChannel*)*animGroup->numChannels));
-        }
-        memset(animGroup->channels, 0, sizeof(tChannel*)*(animGroup->numChannels));
+        memset(animGroup->channels, 0, sizeof(tChannel * ) * (animGroup->numChannels));
 
         tChannelLoader channelLoader;
-        
+
         int currChannel = 0;
-        while((f->ChunksRemaining())&&(currChannel<animGroup->numChannels))
-        {
+        while ((f->ChunksRemaining()) && (currChannel < animGroup->numChannels)) {
             f->BeginChunk();
-            animGroup->channels[currChannel] = channelLoader.LoadChannel(f,store,animGroup->memoryBlock);
+            animGroup->channels[currChannel] = channelLoader.LoadChannel(f, store,
+                                                                         animGroup->memoryBlock);
             f->EndChunk();
             currChannel++;
         }
-    }   
+    }
     return animGroup;
 }
 

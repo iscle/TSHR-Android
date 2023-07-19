@@ -11,6 +11,7 @@
 
 // Alignment MUST be a power of two
 void *mallocaligned(std::size_t size, unsigned alignment);
+
 void freealigned(void *p);
 
 #endif

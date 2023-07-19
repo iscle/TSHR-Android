@@ -8,7 +8,7 @@
 
 #include <pddi/ps2/ps2buildconfig.hpp>
 
-#ifdef PS2_ENABLE_PROFILER 
+#ifdef PS2_ENABLE_PROFILER
 
 #define MAX_PERF_COUNTERS 32
 
@@ -24,12 +24,12 @@
 // {
 //     ps2Perf perf("mySinCos");
 //
-//     for(int i =0; i < 16; i++)
+//     for(int i =0; i <16; i++)
 //     {
 //         perf.StartSample();
 //
 //         float s,c;
-//         mySinCos( i, &s , &c );
+//         mySinCos(i, &s , &c);
 //
 //         perf.EndSample();
 //     }
@@ -42,7 +42,7 @@ public:
     inline void Reset()
     {
         count = 0;
-        for(int i = 0; i < PC0_NO_EVENT; i++)
+        for(int i = 0; i <PC0_NO_EVENT; i++)
         {
             pc0[i].min = pc1[i].min = 0xffff;
             pc0[i].max = pc1[i].max = 0;
@@ -54,7 +54,7 @@ public:
 
     ps2Perf(const char* what)
     {
-        strncpy( desc,what,sizeof(desc)-1);
+        strncpy(desc,what,sizeof(desc)-1);
         Reset();
 
         // add to global list
@@ -88,13 +88,13 @@ public:
             mtpc    $0,0    # set perfcounter 0 to zero
             mtpc    $0,1    # set perfcounter 1 to zero
             sync.p          # 
-            mtps    %0,0    # truly - we rule ( well stewart does anyway...)         
+            mtps    %0,0    # truly - we rule (well stewart does anyway...)
             .set    reorder
             .set    at
         "
         : // no output
         : "r"(hack)
-        );
+);
     }
 
     inline void BeginSample()
@@ -149,16 +149,16 @@ public:
 private:
     enum PCOUNT0_EVENT    // Performance Counter 0 Events
     {
-        PC0_RESERVED            =(0 ),
-        PC0_CPU_CYCLE           =(1 ), // Processor cycle
-        PC0_SINGLE_ISSUE        =(2 ), // Single instructions issue
-        PC0_BRANCH_ISSUED       =(3 ), // Branch issued
-        PC0_BTAC_MISS           =(4 ), // BTAC miss
-        PC0_ITLB_MISS           =(5 ), // ITLB miss
-        PC0_ICACHE_MISS         =(6 ), // Instruction cache miss
-        PC0_DTLB_ACCESSED       =(7 ), // DTLB accessed
-        PC0_NONBLOCK_LOAD       =(8 ), // Non-blocking load
-        PC0_WBB_SINGLE_REQ      =(9 ), // WBB single request
+        PC0_RESERVED            =(0),
+        PC0_CPU_CYCLE           =(1), // Processor cycle
+        PC0_SINGLE_ISSUE        =(2), // Single instructions issue
+        PC0_BRANCH_ISSUED       =(3), // Branch issued
+        PC0_BTAC_MISS           =(4), // BTAC miss
+        PC0_ITLB_MISS           =(5), // ITLB miss
+        PC0_ICACHE_MISS         =(6), // Instruction cache miss
+        PC0_DTLB_ACCESSED       =(7), // DTLB accessed
+        PC0_NONBLOCK_LOAD       =(8), // Non-blocking load
+        PC0_WBB_SINGLE_REQ      =(9), // WBB single request
         PC0_WBB_BURST_REQ       =(10), // WBB burst request
         PC0_ADDR_BUS_BUSY       =(11), // CPU address bus busy
         PC0_INST_COMP           =(12), // Instruction completed
@@ -170,16 +170,16 @@ private:
 
     enum PCOUNT1_EVENT    // Performance Counter 1 Events
     {
-        PC1_LOW_BRANCH_ISSUED   =(0 ), // Low-order branch issued
-        PC1_CPU_CYCLE           =(1 ), // Processor cycle
-        PC1_DUAL_ISSUE          =(2 ), // Dual instructions issue
-        PC1_BRANCH_MISS_PREDICT =(3 ), // Branch miss-predicted
-        PC1_TLB_MISS            =(4 ), // TLB miss
-        PC1_DTLB_MISS           =(5 ), // DTLB miss
-        PC1_DCACHE_MISS         =(6 ), // Data cache miss
-        PC1_WBB_SINGLE_UNAVAIL  =(7 ), // WBB single request unavailable
-        PC1_WBB_BURST_UNAVAIL   =(8 ), // WBB burst request unavailable
-        PC1_WBB_BURST_ALMOST    =(9 ), // WBB burst request almost full
+        PC1_LOW_BRANCH_ISSUED   =(0), // Low-order branch issued
+        PC1_CPU_CYCLE           =(1), // Processor cycle
+        PC1_DUAL_ISSUE          =(2), // Dual instructions issue
+        PC1_BRANCH_MISS_PREDICT =(3), // Branch miss-predicted
+        PC1_TLB_MISS            =(4), // TLB miss
+        PC1_DTLB_MISS           =(5), // DTLB miss
+        PC1_DCACHE_MISS         =(6), // Data cache miss
+        PC1_WBB_SINGLE_UNAVAIL  =(7), // WBB single request unavailable
+        PC1_WBB_BURST_UNAVAIL   =(8), // WBB burst request unavailable
+        PC1_WBB_BURST_ALMOST    =(9), // WBB burst request almost full
         PC1_WBB_BURST_FULL      =(10), // WBB burst request full
         PC1_DATA_BUS_BUSY       =(11), // CPU data bus busy
         PC1_INST_COMP           =(12), // Instruction completed
@@ -232,19 +232,19 @@ extern ps2Perf RebuildTransformContext_perf;
 extern ps2Perf SyncLight_perf;
 extern ps2Perf PreMultiplyLights_perf;
 
-#define PERFSAMPLE( perf , name ) ps2Perf perf(name)
-#define BEGIN_SAMPLE_EVT( perf, evt ) perf.BeginSample(evt)
-#define END_SAMPLE_EVT( perf ,evt ) perf.EndSample(evt)
-#define BEGIN_SAMPLE( perf ) perf.BeginSample()
-#define END_SAMPLE( perf ) perf.EndSample()
+#define PERFSAMPLE(perf , name) ps2Perf perf(name)
+#define BEGIN_SAMPLE_EVT(perf, evt) perf.BeginSample(evt)
+#define END_SAMPLE_EVT(perf ,evt) perf.EndSample(evt)
+#define BEGIN_SAMPLE(perf) perf.BeginSample()
+#define END_SAMPLE(perf) perf.EndSample()
 
 #else
 
-#define PERFSAMPLE( perf , name ) ((void)0)
-#define BEGIN_SAMPLE_EVT( perf, evt ) ((void)0)
-#define END_SAMPLE_EVT( perf ,evt ) ((void)0)
-#define BEGIN_SAMPLE( perf ) ((void)0)
-#define END_SAMPLE( perf ) ((void)0)
+#define PERFSAMPLE(perf, name) ((void)0)
+#define BEGIN_SAMPLE_EVT(perf, evt) ((void)0)
+#define END_SAMPLE_EVT(perf, evt) ((void)0)
+#define BEGIN_SAMPLE(perf) ((void)0)
+#define END_SAMPLE(perf) ((void)0)
 
 #endif
 

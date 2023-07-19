@@ -15,38 +15,51 @@
 #include <dolphin/gx.h>
 
 class gcDisplay;
+
 class gcDevice;
+
 class gcTEVState;
+
 class gcExtHardwareSkinning;
+
 class gcExtBufferCopy;
+
 class gcExtFramebufferEffects;
+
 class gcExtVisibilityTest;
+
 class SimpleShader;
 
-    
+
 //--------------------------------------------------------------
-class gcContext : public pddiBaseContext
-{
+class gcContext : public pddiBaseContext {
 public:
     gcContext(gcDevice *device, gcDisplay *display);
-   ~gcContext();
+
+    ~gcContext();
 
     // frame synchronisation
     virtual void BeginFrame();
+
     virtual void EndFrame();
 
     virtual void DrawSync();
 
     // buffer clearing
     virtual void Clear(unsigned bufferMask);
+
     virtual void SetClearColour(pddiColour colour);
+
     virtual void SetClearDepth(float depth);
 
     // viewport clipping
     virtual void SetScissor(pddiRect *rect);
 
     // immediate mode prim rendering
-    virtual pddiPrimStream *BeginPrims(pddiShader *material, pddiPrimType primType, unsigned vertexType, int vertexCount, unsigned pass=0);
+    virtual pddiPrimStream *
+    BeginPrims(pddiShader *material, pddiPrimType primType, unsigned vertexType, int vertexCount,
+               unsigned pass = 0);
+
     virtual void EndPrims(pddiPrimStream *stream);
 
     // retained mode prim rendering
@@ -54,15 +67,23 @@ public:
 
     // lighting
     virtual int GetMaxLights();
+
     virtual void SetAmbientLight(pddiColour col);
 
     virtual void EnableLight(int handle, bool active);
+
     virtual void SetLightType(int handle, pddiLightType type);
+
     virtual void SetLightColour(int handle, pddiColour colour);
-    virtual void SetLightPosition(int handle, pddiVector* dir);
-    virtual void SetLightDirection(int handle, pddiVector* dir);
+
+    virtual void SetLightPosition(int handle, pddiVector *dir);
+
+    virtual void SetLightDirection(int handle, pddiVector *dir);
+
     virtual void SetLightRange(int handle, float range);
+
     virtual void SetLightAttenuation(int handle, float a, float b, float c);
+
     virtual void SetLightCone(int handle, float phi, float theta, float falloff);
 
     // colour buffer control
@@ -70,23 +91,32 @@ public:
 
     // backface culling
     virtual void SetCullMode(pddiCullMode mode);
-    
+
     // normal scaling
     virtual void ScaleNormal(float scale);
 
     // z-buffer control
     virtual void EnableZBuffer(bool enable);
+
     virtual void SetZCompare(pddiCompareMode compareMode);
+
     virtual void SetZWrite(bool);
+
     virtual void SetZBias(float bias);
+
     virtual void SetZRange(float n, float f);
 
     // stencil buffer control
     virtual void EnableStencilBuffer(bool enable);
+
     virtual void SetStencilCompare(pddiCompareMode compare);
+
     virtual void SetStencilRef(int ref);
+
     virtual void SetStencilMask(unsigned mask);
+
     virtual void SetStencilWriteMask(unsigned mask);
+
     virtual void SetStencilOp(pddiStencilOp failOp, pddiStencilOp zFailOp, pddiStencilOp zPassOp);
 
     // polygon fill
@@ -94,38 +124,43 @@ public:
 
     // fog
     virtual void EnableFog(bool enable);
+
     virtual void SetFog(pddiColour colour, float start, float end);
 
     // extensions
     virtual pddiExtension *GetExtension(unsigned extension);
+
     virtual bool VerifyExtension(unsigned extension);
 
     // utility
     virtual int GetMaxTextureDimension(void);
 
     // internal pddiglfunctions
-    virtual gcDisplay *GetDisplay(void) { return (gcDisplay*)display; }
+    virtual gcDisplay *GetDisplay(void) { return (gcDisplay *) display; }
 
-    virtual void  BeginTiming();
+    virtual void BeginTiming();
+
     virtual float EndTiming();
 
     void PreMultiplyLights(pddiColour diffuse, pddiColour specular, float shininess);
+
     void FinalizeHardwareMatrix(void);
 
     static gcContext *Context(void) { return gContext; }
 
 protected:
-    void  LoadHardwareMatrix(pddiMatrixType id);
-    void  SetupHardwareProjection(void);
-    void  SetupHardwareLight(int handle);
+    void LoadHardwareMatrix(pddiMatrixType id);
+
+    void SetupHardwareProjection(void);
+
+    void SetupHardwareLight(int handle);
 
     void SetVertexArray(unsigned descr, void *data, int count);
 
-    struct LightPreMultState
-    {
+    struct LightPreMultState {
         pddiColour mDiffuse;
         pddiColour mSpecular;
-        float      mShininess;
+        float mShininess;
     };
 
     // I store an extra set of lights for specular lighting
@@ -133,19 +168,19 @@ protected:
     LightPreMultState mPreMultState[_GC_MAX_LIGHTS];
 
     bool mMatrixDirty[PDDI_MAX_MATRIX_STACKS];
-    
+
     OSTime mTimerStart;
 
     gcExtHardwareSkinning *mExtHardwareSkinning;
     gcExtBufferCopy *mExtBufferCopy;
     gcExtFramebufferEffects *mExtFBEffects;
-	gcExtVisibilityTest *mExtVisibilityTest;
+    gcExtVisibilityTest *mExtVisibilityTest;
     SimpleShader *mClearShader;
 
 
     static gcContext *gContext;
 
-    pddiShader* defaultShader;
+    pddiShader *defaultShader;
 
 #ifdef PDDI_TRACK_STATS
 

@@ -13,26 +13,21 @@
 #include "p3d/entity.hpp"
 #include <radload/utility/inventory.hpp>
 
-class tEntityTable : public radLoadHashedStore
-{
+class tEntityTable : public radLoadHashedStore {
 public:
-    tEntityTable() : m_Name( "" )
-    {
+    tEntityTable() : m_Name("") {
         //
     }
 
-    void SetName(const char* name)
-    {
+    void SetName(const char *name) {
         m_Name = name;
     }
 
-    tName GetName()
-    {
+    tName GetName() {
         return m_Name;
     }
 
-    tUID GetUID()
-    {
+    tUID GetUID() {
         return m_Name.GetUID();
     }
 

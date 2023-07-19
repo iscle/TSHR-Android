@@ -7,27 +7,22 @@
 
 
 //----------------------------------------------------------------
-tLocator::tLocator()
-{
-    
+tLocator::tLocator() {
+
 }
 
-tLocator::~tLocator()
-{
-    
+tLocator::~tLocator() {
+
 }
 
-void tLocator::SetPosition(rmt::Vector pos)
-{
+void tLocator::SetPosition(rmt::Vector pos) {
     position = pos;
 }
 
-tLocatorLoader::tLocatorLoader() : tSimpleChunkHandler(Pure3D::Locator::LOCATOR)
-{
+tLocatorLoader::tLocatorLoader() : tSimpleChunkHandler(Pure3D::Locator::LOCATOR) {
 }
 
-tEntity* tLocatorLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
+tEntity *tLocatorLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
     char name[256];
     f->GetPString(name);
     unsigned long version = f->GetLong();

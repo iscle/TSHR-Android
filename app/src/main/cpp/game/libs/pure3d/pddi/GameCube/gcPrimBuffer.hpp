@@ -15,47 +15,54 @@ class gcPrimBufferStream;
 //
 // gc Prim Buffer
 //
-class gcPrimBuffer : public gcBasePrimBuffer
-{
+class gcPrimBuffer : public gcBasePrimBuffer {
 public:
     gcPrimBuffer(gcContext *context);
-   ~gcPrimBuffer();
+
+    ~gcPrimBuffer();
 
     void Create(pddiPrimBufferDesc *desc);
 
     pddiPrimBufferStream *Lock();
+
     void Unlock(pddiPrimBufferStream *stream);
 
     unsigned char *LockIndexBuffer(void);
+
     void UnlockIndexBuffer(int count);
 
     void SetIndices(unsigned short *indices, int count);
 
     void Display(void);
+
     void DisplayNormals(void);
 
     void SetIndexBufferSize(int bufferSize);
 
-    bool  CheckMemImageVersion(int version);
+    bool CheckMemImageVersion(int version);
+
     void *LockMemImage(unsigned memImageLength);
-    void  UnlockMemImage(void);
-    void  SetMemImageParam(unsigned param, unsigned value);
+
+    void UnlockMemImage(void);
+
+    void SetMemImageParam(unsigned param, unsigned value);
 
 protected:
     friend class gcPrimBufferStream;
+
     gcContext *mContext;
 
     pddiPrimType mPrimType;
-    unsigned     mVertexType;
+    unsigned mVertexType;
 
     int mVertexCount;
     int mIndexCount;
 
     unsigned char *mDisplayList;
-    int            mDisplayListSize;
-    
+    int mDisplayListSize;
+
     char *mVertexData; // Used for Memory imaged data & indexed primitive rendering
-    int   mVertexDataSize;
+    int mVertexDataSize;
 };
 
 #endif // GCPRIMBUFFER_HPP

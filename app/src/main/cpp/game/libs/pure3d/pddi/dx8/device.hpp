@@ -16,30 +16,52 @@
 
 struct ddDisplayInfo;
 
-class d3dDevice : public pddiDevice
-{
+class d3dDevice : public pddiDevice {
 public:
     d3dDevice(LPDIRECT3D8);
+
     virtual ~d3dDevice();
 
-    virtual int GetDisplayInfo(pddiDisplayInfo** info);
-    virtual void GetLibraryInfo(pddiLibInfo* info);
+    virtual int GetDisplayInfo(pddiDisplayInfo **info);
 
-    PDDI_INTERFACE void SetCurrentContext(pddiRenderContext* context);
-    PDDI_INTERFACE pddiRenderContext* GetCurrentContext();
+    virtual void GetLibraryInfo(pddiLibInfo *info);
 
-    PDDI_INTERFACE pddiDisplay* NewDisplay(int id);
-    PDDI_INTERFACE pddiRenderContext* NewRenderContext(pddiDisplay* display);
-    PDDI_INTERFACE pddiTexture* NewTexture(pddiTextureDesc* desc);
-    PDDI_INTERFACE pddiPrimBuffer* NewPrimBuffer(pddiPrimBufferDesc* desc);
-    PDDI_INTERFACE pddiShader* NewShader(const char* name, const char* aux = NULL);
+    PDDI_INTERFACE void SetCurrentContext(pddiRenderContext *context);
 
-    virtual void AddCustomShader(const char* name, const char* aux);
+    PDDI_INTERFACE pddiRenderContext
+    *
+
+    GetCurrentContext();
+
+    PDDI_INTERFACE pddiDisplay
+    *
+
+    NewDisplay(int id);
+
+    PDDI_INTERFACE pddiRenderContext
+    *
+    NewRenderContext(pddiDisplay
+    * display);
+    PDDI_INTERFACE pddiTexture
+    *
+    NewTexture(pddiTextureDesc
+    * desc);
+    PDDI_INTERFACE pddiPrimBuffer
+    *
+    NewPrimBuffer(pddiPrimBufferDesc
+    * desc);
+    PDDI_INTERFACE pddiShader
+    *
+
+    NewShader(const char *name, const char *aux = NULL);
+
+    virtual void AddCustomShader(const char *name, const char *aux);
+
 private:
-    pddiRenderContext* context;
+    pddiRenderContext *context;
 
     int nDisplay;
-    pddiDisplayInfo* displayInfo;
+    pddiDisplayInfo *displayInfo;
 
     LPDIRECT3D8 direct3D;
 };

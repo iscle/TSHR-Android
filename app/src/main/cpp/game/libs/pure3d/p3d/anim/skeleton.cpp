@@ -15,53 +15,42 @@
 #include <p3d/error.hpp>
 #include <p3d/utility.hpp>
 
-tSkeleton::tSkeleton(int nj) 
-{
-    joint.SetSize( nj );
+tSkeleton::tSkeleton(int nj) {
+    joint.SetSize(nj);
 }
 
-tSkeleton::~tSkeleton()
-{
+tSkeleton::~tSkeleton() {
 }
 
-tSkeleton::Joint* tSkeleton::FindJoint(const tUID uid) const
-{
-    for(unsigned i=0; i < joint.Size(); i++)
-    {
-        if(joint[i].uid == uid)
-        {
+tSkeleton::Joint *tSkeleton::FindJoint(const tUID uid) const {
+    for (unsigned i = 0; i < joint.Size(); i++) {
+        if (joint[i].uid == uid) {
             return &joint[i];
         }
     }
     return NULL;
 }
 
-int tSkeleton::FindJointIndex(const tUID uid) const
-{
-    for(unsigned i=0; i < joint.Size(); i++)
-    {
-        if(joint[i].uid == uid)
-        {
-            return(i);
+int tSkeleton::FindJointIndex(const tUID uid) const {
+    for (unsigned i = 0; i < joint.Size(); i++) {
+        if (joint[i].uid == uid) {
+            return (i);
         }
     }
     return -1;
 }
 
-tPose* tSkeleton::NewPose()
-{
+tPose *tSkeleton::NewPose() {
     return new tPose(this);
 }
 
-void tSkeleton::Rebuild()
-{
+void tSkeleton::Rebuild() {
     // build the bone->world matrices, and their inverses
     // based upon the rest-pose local matrix
     joint[0].worldMatrix = joint[0].restPose;
     joint[0].inverseWorldMatrix.InvertOrtho(joint[0].restPose);
 
-    for(unsigned i = 1; i < joint.Size(); i++)
-    {
+    for (unsigned i = 1; i < joint.Size(); i++) {
         joint[i].worldMatrix.Mult(joint[i].restPose, joint[joint[i].parentIndex].worldMatrix);
         joint[i].inverseWorldMatrix.InvertOrtho(joint[i].worldMatrix);
     }
@@ -70,12 +59,10 @@ void tSkeleton::Rebuild()
 //-------------------------------------------------------------------
 static const int SKELETON_VERSION = 0;
 
-tSkeletonLoader::tSkeletonLoader() : tSimpleChunkHandler(P3D_SKELETON)
-{
+tSkeletonLoader::tSkeletonLoader() : tSimpleChunkHandler(P3D_SKELETON) {
 }
 
-tEntity* tSkeletonLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
+tEntity *tSkeletonLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
     char name[128];
     f->GetPString(name);
     int ver = f->GetLong();
@@ -83,22 +70,19 @@ tEntity* tSkeletonLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 
     int nJoint = f->GetLong();
 
-    if(nJoint < 1)
-    {
-        p3d::printf("tSkeletonLoader - skipping skeleton: '%s' because nJoints < 1\n", name );
+    if (nJoint < 1) {
+        p3d::printf("tSkeletonLoader - skipping skeleton: '%s' because nJoints <1\n", name);
         return NULL;
     }
 
-    tSkeleton* skeleton = new tSkeleton(nJoint);
+    tSkeleton *skeleton = new tSkeleton(nJoint);
     skeleton->SetName(name);
 
-    int index = 0;   
-    
-    while(f->ChunksRemaining())
-    {
+    int index = 0;
+
+    while (f->ChunksRemaining()) {
         f->BeginChunk();
-        if(f->GetCurrentID() == P3D_SKELETON_JOINT)
-        {
+        if (f->GetCurrentID() == P3D_SKELETON_JOINT) {
             P3DASSERT(index < nJoint);
             char name[128];
             f->GetPString(name);
@@ -113,7 +97,8 @@ tEntity* tSkeletonLoader::LoadObject(tChunkFile* f, tEntityStore* store)
             //
             // Now build the restPose YZX Euler angles
             //
-            skeleton->joint[index].restPoseYZXEuler.ConvertToEulerYZX(skeleton->joint[index].restPose);
+            skeleton->joint[index].restPoseYZXEuler.ConvertToEulerYZX(
+                    skeleton->joint[index].restPose);
 
             //
             // New Data so setup the defaults before checking for 
@@ -127,27 +112,23 @@ tEntity* tSkeletonLoader::LoadObject(tChunkFile* f, tEntityStore* store)
             //
             // Look for subchunks
             //
-            while(f->ChunksRemaining())
-            {
+            while (f->ChunksRemaining()) {
                 f->BeginChunk();
                 unsigned int subChunkID = f->GetCurrentID();
-                switch(subChunkID)
-                {
-                    case P3D_SKELETON_JOINT_FIX_FLAG:
-                    {
-                        bool preserve = f->GetLong()?true:false;
-                        
+                switch (subChunkID) {
+                    case P3D_SKELETON_JOINT_FIX_FLAG: {
+                        bool preserve = f->GetLong() ? true : false;
+
                         skeleton->joint[index].preserveBoneLengths = preserve;
                     }
-                    break;
-                    case P3D_SKELETON_JOINT_MIRROR_MAP:
-                    {
+                        break;
+                    case P3D_SKELETON_JOINT_MIRROR_MAP: {
                         skeleton->joint[index].mappedJointIndex = f->GetLong();
                         skeleton->joint[index].xAxisMap = f->GetFloat();
                         skeleton->joint[index].yAxisMap = f->GetFloat();
                         skeleton->joint[index].zAxisMap = f->GetFloat();
                     }
-                    break;
+                        break;
                     default:
                         break;
                 }

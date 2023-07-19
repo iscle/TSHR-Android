@@ -16,81 +16,93 @@
 //**********************************************************
 // Class tSimpleVisibilityAnimationController
 //**********************************************************
-class tSimpleVisibilityAnimationController : public tSimpleFrameController
-{
+class tSimpleVisibilityAnimationController : public tSimpleFrameController {
 public:
     tSimpleVisibilityAnimationController() : tSimpleFrameController() {}
-    tSimpleVisibilityAnimationController(tSimpleVisibilityAnimationController* c) : tSimpleFrameController(c) {}
 
-    bool ValidateAnimation(tAnimation* anim) = 0;
+    tSimpleVisibilityAnimationController(tSimpleVisibilityAnimationController *c)
+            : tSimpleFrameController(c) {}
+
+    bool ValidateAnimation(tAnimation *anim) = 0;
 
 protected:
-    ~tSimpleVisibilityAnimationController(){}
+    ~tSimpleVisibilityAnimationController() {}
+
     void Update();
 
     virtual void RebindAnimationAndDrawable() = 0;
+
     virtual bool HasHirarchy(void) = 0;
+
     virtual void SetVisibilityOnNode(int nodeIndex, bool isVisible) = 0;
 };
 
 //**********************************************************
 // Class tSceneGraphVisibilityAnimationController
 //**********************************************************
-class tSceneGraphVisibilityAnimationController : public tSimpleVisibilityAnimationController
-{
+class tSceneGraphVisibilityAnimationController : public tSimpleVisibilityAnimationController {
 public:
     tSceneGraphVisibilityAnimationController();
-    tSceneGraphVisibilityAnimationController(tSceneGraphVisibilityAnimationController* c);
-    
-    virtual tFrameController* Clone(void);
 
-    bool ValidateAnimation(tAnimation* anim);
+    tSceneGraphVisibilityAnimationController(tSceneGraphVisibilityAnimationController *c);
 
-    virtual void SetAnimation(tAnimation* anim);
-    virtual void SetAnimation(tAnimation* anim, float startFrame, float blendFrames);
+    virtual tFrameController *Clone(void);
 
-    void SetDrawable(Scenegraph::Scenegraph* scene);
-    Scenegraph::Scenegraph* GetDrawable(void) { return pScene; }
+    bool ValidateAnimation(tAnimation *anim);
+
+    virtual void SetAnimation(tAnimation *anim);
+
+    virtual void SetAnimation(tAnimation *anim, float startFrame, float blendFrames);
+
+    void SetDrawable(Scenegraph::Scenegraph *scene);
+
+    Scenegraph::Scenegraph *GetDrawable(void) { return pScene; }
 
 protected:
     ~tSceneGraphVisibilityAnimationController();
 
     virtual void RebindAnimationAndDrawable();
-    virtual bool HasHirarchy(void){ return( (pScene)?true:false ); }
+
+    virtual bool HasHirarchy(void) { return ((pScene) ? true : false); }
+
     virtual void SetVisibilityOnNode(int nodeIndex, bool isVisible);
 
-    Scenegraph::Scenegraph*    pScene;     // pointer to the simple scene that this controller animates
-    Scenegraph::Visibility**   visNodes;   // array of pointers to Visibility nodes in the pScene that is animated
+    Scenegraph::Scenegraph *pScene;     // pointer to the simple scene that this controller animates
+    Scenegraph::Visibility **visNodes;   // array of pointers to Visibility nodes in the pScene that is animated
 };
 
 //**********************************************************
 // Class tCompDrawVisibilityAnimationController
 //**********************************************************
-class tCompDrawVisibilityAnimationController : public tSimpleVisibilityAnimationController
-{
+class tCompDrawVisibilityAnimationController : public tSimpleVisibilityAnimationController {
 public:
     tCompDrawVisibilityAnimationController();
-    tCompDrawVisibilityAnimationController(tCompDrawVisibilityAnimationController* c);
-    
-    virtual tFrameController* Clone(void);
 
-    bool ValidateAnimation(tAnimation* anim);
+    tCompDrawVisibilityAnimationController(tCompDrawVisibilityAnimationController *c);
 
-    virtual void SetAnimation(tAnimation* anim);
-    virtual void SetAnimation(tAnimation* anim, float startFrame, float blendFrames);
+    virtual tFrameController *Clone(void);
 
-    void SetDrawable(tCompositeDrawable* compDraw);
-    tCompositeDrawable* GetDrawable(void) { return pCompDraw; }
+    bool ValidateAnimation(tAnimation *anim);
+
+    virtual void SetAnimation(tAnimation *anim);
+
+    virtual void SetAnimation(tAnimation *anim, float startFrame, float blendFrames);
+
+    void SetDrawable(tCompositeDrawable *compDraw);
+
+    tCompositeDrawable *GetDrawable(void) { return pCompDraw; }
 
 protected:
     ~tCompDrawVisibilityAnimationController();
 
     virtual void RebindAnimationAndDrawable();
-    virtual bool HasHirarchy(void){ return( (pCompDraw)?true:false ); }   
+
+    virtual bool HasHirarchy(void) { return ((pCompDraw) ? true : false); }
+
     virtual void SetVisibilityOnNode(int nodeIndex, bool isVisible);
 
-    tCompositeDrawable*                       pCompDraw;   // pointer to the composite drawable that this controller animates
-    tCompositeDrawable::DrawableElement**     visNodes;    // array of pointers to Visibility nodes in the composite drawable that is animated
+    tCompositeDrawable *pCompDraw;   // pointer to the composite drawable that this controller animates
+    tCompositeDrawable::DrawableElement **visNodes;    // array of pointers to Visibility nodes in the composite drawable that is animated
 };
 
 #endif   // _VISIBILITYANIMATION_HPP_

@@ -6,67 +6,66 @@
 #include "state.hpp"
 
 d3dState::Filter d3dState::filterTable[5] =
-{
-    { D3DTEXF_ANISOTROPIC, D3DTEXF_ANISOTROPIC, D3DTEXF_NONE },  // PDDI_TEXF_NONE
-    { D3DTEXF_ANISOTROPIC, D3DTEXF_ANISOTROPIC, D3DTEXF_NONE },  // PDDI_TEXF_BILINEAR
-    { D3DTEXF_ANISOTROPIC, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR}, // PDDI_TEXF_MIPMAP
-    { D3DTEXF_ANISOTROPIC, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR}, // PDDI_TEXF_MIPMAP_BILINEAR
-    { D3DTEXF_ANISOTROPIC, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR} // PDDI_TEXF_MIPMAP_TRILINEAR
-};
+        {
+                {D3DTEXF_ANISOTROPIC, D3DTEXF_ANISOTROPIC, D3DTEXF_NONE},  // PDDI_TEXF_NONE
+                {D3DTEXF_ANISOTROPIC, D3DTEXF_ANISOTROPIC, D3DTEXF_NONE},  // PDDI_TEXF_BILINEAR
+                {D3DTEXF_ANISOTROPIC, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR}, // PDDI_TEXF_MIPMAP
+                {D3DTEXF_ANISOTROPIC, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR}, // PDDI_TEXF_MIPMAP_BILINEAR
+                {D3DTEXF_ANISOTROPIC, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR} // PDDI_TEXF_MIPMAP_TRILINEAR
+        };
 
 d3dState::Blend d3dState::alphaBlendTable[8] =
-{
-    { false, D3DBLENDOP_ADD,           PDDI_BF_ONE,      PDDI_BF_ZERO               }, // PDDI_BLEND_NONE
-    { true,  D3DBLENDOP_ADD,           PDDI_BF_SRCALPHA, PDDI_BF_ONE_MINUS_SRCALPHA }, // PDDI_BLEND_ALPHA
-    { true,  D3DBLENDOP_ADD,           PDDI_BF_ONE,      PDDI_BF_ONE                }, // PDDI_BLEND_ADD
-    { true,  D3DBLENDOP_REVSUBTRACT,   PDDI_BF_ONE,      PDDI_BF_ONE                }, // PDDI_BLEND_SUBTRACT
-    { true,  D3DBLENDOP_ADD,           PDDI_BF_DEST,     PDDI_BF_ZERO               }, // PDDI_BLEND_MODULATE
-    { true,  D3DBLENDOP_ADD,           PDDI_BF_DEST,     PDDI_BF_SRC                }, // PDDI_BLEND_MODULATE2
-    { true,  D3DBLENDOP_ADD,           PDDI_BF_DEST,     PDDI_BF_SRCALPHA           }, // PDDI_BLEND_ADDMODULATEALPHA
-    { true,  D3DBLENDOP_REVSUBTRACT,   PDDI_BF_SRCALPHA, PDDI_BF_SRCALPHA           }  // PDDI_BLEND_SUBMODULATEALPHA
-};
+        {
+                {false, D3DBLENDOP_ADD,         PDDI_BF_ONE,      PDDI_BF_ZERO}, // PDDI_BLEND_NONE
+                {true,  D3DBLENDOP_ADD,         PDDI_BF_SRCALPHA, PDDI_BF_ONE_MINUS_SRCALPHA}, // PDDI_BLEND_ALPHA
+                {true,  D3DBLENDOP_ADD,         PDDI_BF_ONE,      PDDI_BF_ONE}, // PDDI_BLEND_ADD
+                {true,  D3DBLENDOP_REVSUBTRACT, PDDI_BF_ONE,      PDDI_BF_ONE}, // PDDI_BLEND_SUBTRACT
+                {true,  D3DBLENDOP_ADD,         PDDI_BF_DEST,     PDDI_BF_ZERO}, // PDDI_BLEND_MODULATE
+                {true,  D3DBLENDOP_ADD,         PDDI_BF_DEST,     PDDI_BF_SRC}, // PDDI_BLEND_MODULATE2
+                {true,  D3DBLENDOP_ADD,         PDDI_BF_DEST,     PDDI_BF_SRCALPHA}, // PDDI_BLEND_ADDMODULATEALPHA
+                {true,  D3DBLENDOP_REVSUBTRACT, PDDI_BF_SRCALPHA, PDDI_BF_SRCALPHA}  // PDDI_BLEND_SUBMODULATEALPHA
+        };
 
-D3DBLEND d3dState::blendFactorTable[11] = 
-{
-    D3DBLEND_ZERO,
-    D3DBLEND_ONE,
-    D3DBLEND_SRCCOLOR,
-    D3DBLEND_INVSRCCOLOR,
-    D3DBLEND_DESTCOLOR,   
-    D3DBLEND_INVDESTCOLOR,
-    D3DBLEND_SRCALPHA,
-    D3DBLEND_INVSRCALPHA,
-    D3DBLEND_DESTALPHA,   
-    D3DBLEND_INVDESTALPHA,
-    D3DBLEND_SRCALPHASAT
-};
+D3DBLEND d3dState::blendFactorTable[11] =
+        {
+                D3DBLEND_ZERO,
+                D3DBLEND_ONE,
+                D3DBLEND_SRCCOLOR,
+                D3DBLEND_INVSRCCOLOR,
+                D3DBLEND_DESTCOLOR,
+                D3DBLEND_INVDESTCOLOR,
+                D3DBLEND_SRCALPHA,
+                D3DBLEND_INVSRCALPHA,
+                D3DBLEND_DESTALPHA,
+                D3DBLEND_INVDESTALPHA,
+                D3DBLEND_SRCALPHASAT
+        };
 
 D3DTEXTUREADDRESS d3dState::uvTable[2] =
-{
-    D3DTADDRESS_WRAP,
-    D3DTADDRESS_CLAMP
-};
+        {
+                D3DTADDRESS_WRAP,
+                D3DTADDRESS_CLAMP
+        };
 
 D3DCMPFUNC d3dState::compareTable[8] =
-{
-        D3DCMP_NEVER,
-        D3DCMP_ALWAYS,
-        D3DCMP_LESS,
-        D3DCMP_LESSEQUAL,
-        D3DCMP_GREATER,
-        D3DCMP_GREATEREQUAL,
-        D3DCMP_EQUAL,
-        D3DCMP_NOTEQUAL
-};
+        {
+                D3DCMP_NEVER,
+                D3DCMP_ALWAYS,
+                D3DCMP_LESS,
+                D3DCMP_LESSEQUAL,
+                D3DCMP_GREATER,
+                D3DCMP_GREATEREQUAL,
+                D3DCMP_EQUAL,
+                D3DCMP_NOTEQUAL
+        };
 
-D3DSHADEMODE d3dState::shadeTable[2] = 
-{
-        D3DSHADE_FLAT,
-        D3DSHADE_GOURAUD
-};
+D3DSHADEMODE d3dState::shadeTable[2] =
+        {
+                D3DSHADE_FLAT,
+                D3DSHADE_GOURAUD
+        };
 
-d3dState::d3dState(d3dContext* c, LPDIRECT3DDEVICE8 device)
-{
+d3dState::d3dState(d3dContext *c, LPDIRECT3DDEVICE8 device) {
     context = c;
 
     d3d = device;
@@ -74,15 +73,12 @@ d3dState::d3dState(d3dContext* c, LPDIRECT3DDEVICE8 device)
     SetDefault();
 }
 
-d3dState::~d3dState()
-{
+d3dState::~d3dState() {
 }
 
-void d3dState::SetDefault(void)
-{
+void d3dState::SetDefault(void) {
     unsigned i;
-    for(i = 0; i < NUM_STAGES; i++)
-    {
+    for (i = 0; i < NUM_STAGES; i++) {
         textures[i] = NULL;
         filter[i] = PDDI_FILTER_NONE;
         uvMap[i] = i;
@@ -94,7 +90,7 @@ void d3dState::SetDefault(void)
         colourArg3[i] = alphaArg3[i] = D3DTA_CURRENT;
 
         result[i] = D3DTA_CURRENT;
-        
+
         texTransform[i] = D3DTTFF_DISABLE;
     }
 
@@ -122,18 +118,13 @@ void d3dState::SetDefault(void)
     LoadAll();
 }
 
-void d3dState::LoadAll(void) 
-{
+void d3dState::LoadAll(void) {
     unsigned i;
 
-    for(i = 0; i < NUM_STAGES; i++)
-    {
-        if(textures[i])
-        {
-            ((d3dTexture*)textures[i])->SetTexture(i);
-        }
-        else
-        {
+    for (i = 0; i < NUM_STAGES; i++) {
+        if (textures[i]) {
+            ((d3dTexture *) textures[i])->SetTexture(i);
+        } else {
             d3d->SetTexture(i, NULL);
 #ifdef _XBOX
             d3d->SetPalette(i, NULL);
@@ -149,10 +140,10 @@ void d3dState::LoadAll(void)
         d3d->SetTextureStageState(i, D3DTSS_ADDRESSW, uvTable[uvMode[i]]);
 
         d3d->SetTextureStageState(i, D3DTSS_COLORARG1, colourArg1[i]);
-        d3d->SetTextureStageState(i, D3DTSS_COLOROP,   colourOp[i]);
+        d3d->SetTextureStageState(i, D3DTSS_COLOROP, colourOp[i]);
         d3d->SetTextureStageState(i, D3DTSS_COLORARG2, colourArg2[i]);
         d3d->SetTextureStageState(i, D3DTSS_ALPHAARG1, alphaArg1[i]);
-        d3d->SetTextureStageState(i, D3DTSS_ALPHAOP,   alphaOp[i]);
+        d3d->SetTextureStageState(i, D3DTSS_ALPHAOP, alphaOp[i]);
         d3d->SetTextureStageState(i, D3DTSS_ALPHAARG2, alphaArg2[i]);
 
         d3d->SetTextureStageState(i, D3DTSS_COLORARG0, colourArg3[i]);
@@ -177,9 +168,9 @@ void d3dState::LoadAll(void)
     d3d->SetRenderState(D3DRS_TEXTUREFACTOR, textureFactor);
     d3d->SetRenderState(D3DRS_ALPHAREF, alphaRef);
 
-    d3d->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE); 
+    d3d->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
 
-    d3d->SetPixelShader(NULL); 
+    d3d->SetPixelShader(NULL);
 
     d3d->SetTextureStageState(2, D3DTSS_BUMPENVMAT00, F2DW(envMat[0]));
     d3d->SetTextureStageState(2, D3DTSS_BUMPENVMAT01, F2DW(envMat[1]));
@@ -187,8 +178,8 @@ void d3dState::LoadAll(void)
     d3d->SetTextureStageState(2, D3DTSS_BUMPENVMAT11, F2DW(envMat[3]));
 }
 
-    /*
-    float fBias = 2.0f;
-    d3ddev->SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS, *((LPDWORD) (&fBias)));
-    */
+/*
+float fBias = 2.0f;
+d3ddev->SetTextureStageState(0, D3DTSS_MIPMAPLODBIAS, *((LPDWORD) (&fBias)));
+*/
 

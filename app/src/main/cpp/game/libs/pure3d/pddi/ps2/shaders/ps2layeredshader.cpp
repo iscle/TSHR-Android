@@ -10,24 +10,20 @@
 
 // this function is called by the base shader to allocate
 // a new instance of a simple shader
-static pddiBaseShader* ps2LayeredShaderAllocate(pddiRenderContext* c, const char*, const char*)
-{
-    return new ps2LayeredShader((ps2Context*)c);
+static pddiBaseShader *ps2LayeredShaderAllocate(pddiRenderContext *c, const char *, const char *) {
+    return new ps2LayeredShader((ps2Context *) c);
 }
 
 // the device will call this function to register the simple shader
 // with the system
-void ps2LayeredShader::Install()
-{
+void ps2LayeredShader::Install() {
     pddiBaseShader::InstallShader("layered", ps2LayeredShaderAllocate, NULL);
 }
 
-ps2LayeredShader::ps2LayeredShader(ps2Context* c) : ps2LightmapShader(c)
-{
+ps2LayeredShader::ps2LayeredShader(ps2Context *c) : ps2LightmapShader(c) {
     /* */
 }
 
-void ps2LayeredShader::SetTopTex(pddiTexture* texture)
-{
-    ps2LightmapShader::SetTexture(texture,1);
+void ps2LayeredShader::SetTopTex(pddiTexture *texture) {
+    ps2LightmapShader::SetTexture(texture, 1);
 }

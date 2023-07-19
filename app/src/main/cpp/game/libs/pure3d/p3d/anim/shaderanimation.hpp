@@ -13,13 +13,14 @@ class tShader;
 //*********************************************************
 // Class tShaderAnimationController
 //*********************************************************
-class tShaderAnimationController : public tBlendFrameController
-{
+class tShaderAnimationController : public tBlendFrameController {
 public:
     tShaderAnimationController();
-    tShaderAnimationController(tShaderAnimationController* c);
+
+    tShaderAnimationController(tShaderAnimationController *c);
 
     void SetShader(tShader *shader);
+
     tShader *Shader(void) { return mShader; }
 
     virtual bool ValidateAnimation(tAnimation *anim);
@@ -30,6 +31,7 @@ protected:
     virtual ~tShaderAnimationController();
 
     void UpdateNoBlending();
+
     void UpdateWithBlending();
 
     tShader *mShader;

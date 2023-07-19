@@ -16,17 +16,14 @@
 float pddiFont::xscale = 1.0f;
 float pddiFont::yscale = 1.0f;
 
-pddiFont::pddiFont(pddiRenderContext* ctx)
-{
+pddiFont::pddiFont(pddiRenderContext *ctx) {
     context = ctx; // weak reference, don't addref
 }
 
-pddiFont::~pddiFont()
-{
+pddiFont::~pddiFont() {
 }
 
-void pddiFont::Print(const char* str, int x, int y, float z, pddiColour colour)
-{
+void pddiFont::Print(const char *str, int x, int y, float z, pddiColour colour) {
     // tweak these values to adjust the screen size of the font
     const float baseline = 10.0f * yscale;
     const float descender = baseline + (5.0F * yscale);  // inter-line spacing
@@ -35,79 +32,68 @@ void pddiFont::Print(const char* str, int x, int y, float z, pddiColour colour)
 
     const char PEN_UP = -50;
 
-    unsigned char* s = (unsigned char*)str;
-    float basex = (float)x;
-    float basey = (float)((y * yscale) + baseline);
-    float penz = (float)z;
+    unsigned char *s = (unsigned char *) str;
+    float basex = (float) x;
+    float basey = (float) ((y * yscale) + baseline);
+    float penz = (float) z;
 
     // Count verts to send
     int nVerts = 0;
-    while(*s)
-    {
-        if(*s < 32 || *s > 127)
-        {
+    while (*s) {
+        if (*s < 32 || *s > 127) {
             ++s;
             continue;
         }
 
         int glyphIndex = *s - 32;
-        nVerts += (int)GlyphTable[glyphIndex].nVerts;
+        nVerts += (int) GlyphTable[glyphIndex].nVerts;
         ++s;
     }
 
-    pddiPrimStream* stream = NULL;
-    if(nVerts)
-    {
+    pddiPrimStream *stream = NULL;
+    if (nVerts) {
         stream = context->BeginPrims(NULL, PDDI_PRIM_LINES, PDDI_V_C, nVerts);
     }
 
-    s = (unsigned char*)str;
-    while(*s)
-    {
-        if(*s == '\n')
-        {
-            basex = (float)x;
+    s = (unsigned char *) str;
+    while (*s) {
+        if (*s == '\n') {
+            basex = (float) x;
             basey += descender;
             s++;
             continue;
         }
-        if(*s == '\t')
-        {
-            basex = (float)(((((int) basex) / 40) + 1) * 40);
+        if (*s == '\t') {
+            basex = (float) (((((int) basex) / 40) + 1) * 40);
             s++;
             continue;
         }
-        if(*s < 32 || *s > 127)
-        {
+        if (*s < 32 || *s > 127) {
             s++;
             continue;
         }
 
         // the glyph table starts at 32 (space)
         int glyphIndex = *s - 32;
-        Glyph* glyph = &GlyphTable[glyphIndex];
-        Stroke* stroke = &StrokeTable[glyph->firstStroke];
+        Glyph *glyph = &GlyphTable[glyphIndex];
+        Stroke *stroke = &StrokeTable[glyph->firstStroke];
         // move pen to initial position
         // the first stroke x coord is the leftmost position
-        float maxX = 0.5f + (float)abs(stroke[0].x) * xsize;
+        float maxX = 0.5f + (float) abs(stroke[0].x) * xsize;
         basex += maxX;
         pddiVector v;
 
-        for(int i=1; i < glyph->nStroke-1; i++)
-        {
-            if(stroke[i+1].x != PEN_UP)
-            {
-                v.x = basex + xsize*(float)stroke[i].x;
-                v.y = basey + ysize*(float)stroke[i].y;
+        for (int i = 1; i < glyph->nStroke - 1; i++) {
+            if (stroke[i + 1].x != PEN_UP) {
+                v.x = basex + xsize * (float) stroke[i].x;
+                v.y = basey + ysize * (float) stroke[i].y;
                 v.z = penz;
                 stream->Vertex(&v, colour);
 
-                v.x = basex + xsize*(float)stroke[i+1].x;
-                v.y = basey + ysize*(float)stroke[i+1].y;
+                v.x = basex + xsize * (float) stroke[i + 1].x;
+                v.y = basey + ysize * (float) stroke[i + 1].y;
                 stream->Vertex(&v, colour);
-            }
-            else
-            {
+            } else {
                 i++;
             }
         }
@@ -117,14 +103,12 @@ void pddiFont::Print(const char* str, int x, int y, float z, pddiColour colour)
         s++;
     }
 
-    if(nVerts)
-    {
+    if (nVerts) {
         context->EndPrims(stream);
     }
 }
 
-void pddiFont::SetScale(float xScale, float yScale)
-{
+void pddiFont::SetScale(float xScale, float yScale) {
     xscale = xScale;
     yscale = yScale;
 }

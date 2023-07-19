@@ -8,17 +8,17 @@
 
 #include <p3d/file.hpp>
 
-class tLinuxFileMap : public tFileMem
-{
+class tLinuxFileMap : public tFileMem {
 public:
-    tLinuxFileMap(const char* filename);
+    tLinuxFileMap(const char *filename);
 
-    bool IsOpen(void) { return memory != NULL;}
+    bool IsOpen(void) { return memory != NULL; }
 
 protected:
     virtual ~tLinuxFileMap();
 
-    void Open(const char* filename);
+    void Open(const char *filename);
+
     void Close(void);
 
     int fh;

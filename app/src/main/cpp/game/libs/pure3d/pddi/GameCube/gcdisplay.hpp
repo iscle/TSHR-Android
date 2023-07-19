@@ -11,28 +11,34 @@
 
 class gcContext;
 
-class gcDisplay : public pddiDisplay
-{
+class gcDisplay : public pddiDisplay {
 public:
     gcDisplay();
-  ~gcDisplay();
+
+    ~gcDisplay();
 
     // cross-platform functions
     bool InitDisplay(const pddiDisplayInit *initData);
+
     bool InitDisplay(int x, int y, int bpp);
 
     int GetWidth(void);
+
     int GetHeight(void);
+
     int GetDepth(void);
+
     pddiDisplayMode GetDisplayMode(void);
+
     int GetNumColourBuffer(void);
+
     unsigned GetBufferMask(void);
 
     unsigned GetFreeTextureMem(void);
 
     void SwapBuffers(void);
 
-    unsigned Screenshot(pddiColour* buffer, int nBytes);
+    unsigned Screenshot(pddiColour *buffer, int nBytes);
 
     int GetNextField(void);
 
@@ -43,20 +49,20 @@ public:
     static gcDisplay *CurrentDisplay(void);
 
 private:
-    gcContext      *mContext;
+    gcContext *mContext;
 
-    GXFifoObj     *mFifo;
+    GXFifoObj *mFifo;
     unsigned char *mFifoBuffer;
-    unsigned       mFifoBufferSize;
+    unsigned mFifoBufferSize;
 
     unsigned char *mXFB;
-    unsigned       mXFBSize;
-    bool           mResetXFB;
-    bool           mClearOnBlit;
+    unsigned mXFBSize;
+    bool mResetXFB;
+    bool mClearOnBlit;
     GXRenderModeObj mRenderMode;
 
-    int  mDisplayWidth;
-    int  mDisplayHeight;
+    int mDisplayWidth;
+    int mDisplayHeight;
     bool mDestAlpha;
     bool mPal;
     bool mFieldMode;

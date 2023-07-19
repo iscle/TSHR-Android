@@ -11,16 +11,14 @@
 #include <p3d/inventory.hpp>
 #include <p3d/utility.hpp>
 
-tCameraLoader::tCameraLoader() : tSimpleChunkHandler(P3D_CAMERA)
-{
+tCameraLoader::tCameraLoader() : tSimpleChunkHandler(P3D_CAMERA) {
 }
 
-tEntity* tCameraLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
+tEntity *tCameraLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
     char name[256];
     f->GetPString(name);
 
-    tVectorCamera* camera = new tVectorCamera;
+    tVectorCamera *camera = new tVectorCamera;
     camera->SetName(name);
 
     rmt::Vector pos, look, up;
@@ -43,8 +41,8 @@ tEntity* tCameraLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     up.x = f->GetFloat();
     up.y = f->GetFloat();
     up.z = f->GetFloat();
-    
-    camera->SetFOV(fov, aspectratio);   
+
+    camera->SetFOV(fov, aspectratio);
     camera->SetNearPlane(nearclip);
     camera->SetFarPlane(farclip);
 

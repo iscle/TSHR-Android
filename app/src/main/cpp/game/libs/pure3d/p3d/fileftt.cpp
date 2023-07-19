@@ -22,84 +22,74 @@ static const unsigned gYieldTime = 2500;  // microseconds
 static const unsigned gYieldTime = 5200;  // microseconds
 #endif
 
-static char globalCache[ (CACHE_SIZE * 2) + 1024];
+static char globalCache[(CACHE_SIZE * 2) + 1024];
 
 #ifndef RAD_PS2
-    static char globalUncompressedCache[ 4096 ];  // nv:  danger - this should be LZR_BLOCK_SIZE
+static char globalUncompressedCache[4096];  // nv:  danger - this should be LZR_BLOCK_SIZE
 #else
-    static char* globalUncompressedCache = (char*)0x70002500; // nv:  Simpson's hack to put load buffer in SPR
-                                                              // magic address to avoid mfifo, and Pure3D shaders that use SPR
+static char* globalUncompressedCache = (char*)0x70002500; // nv:  Simpson's hack to put load buffer in SPR
+                                                          // magic address to avoid mfifo, and Pure3D shaders that use SPR
 #endif
 
 //--------------------------------------------------------------------------
-void tFileFTT::SetYieldTime(unsigned ms)
-{
+void tFileFTT::SetYieldTime(unsigned ms) {
     // nv:  nop
 }
 
 //--------------------------------------------------------------------------
-tFileFTT::tFileFTT(const char* filename, bool synchronous) :
-     m_pIRadFile( NULL ),
-     fileSize(0),
-     compressedFileSize(0),
-     position(0),
-     filePosition(0),
-     currentCache(0),
-     uncompressedcache(NULL),
-     currentBuffer(NULL),
-     currentPos(0),
-     currentSize(0),
-     cycle_size(0),
-     compressedBuffer(0),
-     compressedPos(0),
-     compressedSize(0),
-     nextSize(0),
-     bufferSize(0)
-{
+tFileFTT::tFileFTT(const char *filename, bool synchronous) :
+        m_pIRadFile(NULL),
+        fileSize(0),
+        compressedFileSize(0),
+        position(0),
+        filePosition(0),
+        currentCache(0),
+        uncompressedcache(NULL),
+        currentBuffer(NULL),
+        currentPos(0),
+        currentSize(0),
+        cycle_size(0),
+        compressedBuffer(0),
+        compressedPos(0),
+        compressedSize(0),
+        nextSize(0),
+        bufferSize(0) {
     SetFilename(filename);
     rAssert(!synchronous);
     uncompressedcache = NULL;
 }
 
 //--------------------------------------------------------------------------
-tFileFTT::~tFileFTT()
-{
-    if(m_pIRadFile != NULL)
-    {
-        m_pIRadFile->Release( );
+tFileFTT::~tFileFTT() {
+    if (m_pIRadFile != NULL) {
+        m_pIRadFile->Release();
     }
 }
 
 //--------------------------------------------------------------------------
-bool tFileFTT::EndOfFile()
-{
+bool tFileFTT::EndOfFile() {
     OpenFile();
     return position >= fileSize;
 }
 
 //--------------------------------------------------------------------------
-unsigned tFileFTT::GetSize()
-{
+unsigned tFileFTT::GetSize() {
     OpenFile();
     return fileSize;
 }
 
 //--------------------------------------------------------------------------
-void tFileFTT::SetPosition(int offset)
-{
+void tFileFTT::SetPosition(int offset) {
     P3DASSERT(!compressed && "SetPosition not implmented for compressed files");
 
     int signedoffset = offset - position;
 
-    if(((currentPos + signedoffset) >= 0) && ((currentPos + signedoffset) <= currentSize))
-    {
+    if (((currentPos + signedoffset) >= 0) && ((currentPos + signedoffset) <= currentSize)) {
         currentPos += signedoffset;
         position = offset;
-    }
-    else
-    {
+    } else {
         filePosition = offset & 0xfffff800;
-        m_pIRadFile->SetPositionAsync( filePosition );
+        m_pIRadFile->SetPositionAsync(filePosition);
         ReadBuffer(cache[!currentCache]);
 
         position = offset;
@@ -108,33 +98,25 @@ void tFileFTT::SetPosition(int offset)
 }
 
 //--------------------------------------------------------------------------
-void tFileFTT::Advance(unsigned offset)
-{
+void tFileFTT::Advance(unsigned offset) {
     OpenFile();
-    if ( offset == 0 )
-    {
+    if (offset == 0) {
         return;
     }
 
-    if(currentPos + (int)offset <= currentSize)
-    {
+    if (currentPos + (int) offset <= currentSize) {
         currentPos += offset;
         position += offset;
-    }
-    else
-    {
-        while(offset > 0)
-        {
+    } else {
+        while (offset > 0) {
             int size = offset;
-            if( currentPos + size > currentSize)
-            {
+            if (currentPos + size > currentSize) {
                 size = currentSize - currentPos;
             }
             currentPos += size;
             position += size;
             offset -= size;
-            if(offset > 0)
-            {
+            if (offset > 0) {
                 FillBuffer();
             }
         }
@@ -142,84 +124,70 @@ void tFileFTT::Advance(unsigned offset)
 }
 
 //--------------------------------------------------------------------------
-unsigned tFileFTT::GetPosition()
-{
+unsigned tFileFTT::GetPosition() {
     return position;
 }
 
 //--------------------------------------------------------------------------
-void tFileFTT::OnFileOperationsComplete(void*)
-{
-     done = true;
+void tFileFTT::OnFileOperationsComplete(void *) {
+    done = true;
 }
 
 //--------------------------------------------------------------------------
-void tFileFTT::WaitForCompletion( void )
-{
+void tFileFTT::WaitForCompletion(void) {
     int i = 0;
     unsigned int time = radTimeGetMicroseconds64();
-    while(!m_pIRadFile->CheckForCompletion())
-    {
+    while (!m_pIRadFile->CheckForCompletion()) {
         i++;
         p3d::loadManager->SwitchTask();
         gLastTime = radTimeGetMicroseconds64();
     }
-    if(i>0)
-    {
-        time = radTimeGetMicroseconds64()-time;
-        rReleasePrintf("P3D Loading Starved for %d frames, %d ms\n",i,(time/1000));
+    if (i > 0) {
+        time = radTimeGetMicroseconds64() - time;
+        rReleasePrintf("P3D Loading Starved for %d frames, %d ms\n", i, (time / 1000));
     }
 }
 
-bool tFileFTT::GetData(void* buf, unsigned count, DataType type)
-{
-    if( m_pIRadFile == NULL )
-    {
+bool tFileFTT::GetData(void *buf, unsigned count, DataType type) {
+    if (m_pIRadFile == NULL) {
         OpenFile();
     }
 
     int numBytes = count * type;
 
-     // No data to read
-     if ( numBytes == 0 )
-     {
-          return true;
-     }
+    // No data to read
+    if (numBytes == 0) {
+        return true;
+    }
 
-     if(currentPos + numBytes <= currentSize)
-     {
-         memcpy(buf, &currentBuffer[ currentPos ], numBytes);
-         currentPos += numBytes;
-         position += numBytes;
-     }
-     else
-     {
-         char* output = (char*) buf;
-         while(numBytes > 0)
-         {
-             int size = numBytes;
-             if( currentPos + size > currentSize)
-             {
-                 size = currentSize - currentPos;
-             }
+    if (currentPos + numBytes <= currentSize) {
+        memcpy(buf, &currentBuffer[currentPos], numBytes);
+        currentPos += numBytes;
+        position += numBytes;
+    } else {
+        char *output = (char *) buf;
+        while (numBytes > 0) {
+            int size = numBytes;
+            if (currentPos + size > currentSize) {
+                size = currentSize - currentPos;
+            }
 
-             memcpy(output, &currentBuffer[ currentPos ], size);
-             output += size;
-             currentPos += size;
-             position += size;
-             numBytes -= size;
-             
-             if(numBytes > 0)
-             {
-                 FillBuffer();
-             }
-         }
-     }
+            memcpy(output, &currentBuffer[currentPos], size);
+            output += size;
+            currentPos += size;
+            position += size;
+            numBytes -= size;
 
-     // Reorder the bits in reverse order when needed
-    #ifndef RAD_PS2
-        EndianSwap(buf, count, type);
-    #endif
+            if (numBytes > 0) {
+                FillBuffer();
+            }
+        }
+    }
+
+    // Reorder the bits in reverse order when needed
+#ifndef RAD_PS2
+    EndianSwap(buf, count, type);
+#endif
 
     // Check to see if we have given this process 
     // enough time to process in a given thread instance
@@ -227,8 +195,7 @@ bool tFileFTT::GetData(void* buf, unsigned count, DataType type)
 
     radTime64 now = radTimeGetMicroseconds64();
     radTime64 elapsed = now - gLastTime;
-    if( elapsed >= gYieldTime )
-    {
+    if (elapsed >= gYieldTime) {
         p3d::loadManager->SwitchTask();
         gLastTime = radTimeGetMicroseconds64();
     }
@@ -237,15 +204,13 @@ bool tFileFTT::GetData(void* buf, unsigned count, DataType type)
 }
 
 //--------------------------------------------------------------------------
-void tFileFTT::SetCompressed(bool b)
-{
+void tFileFTT::SetCompressed(bool b) {
     compressed = b;
-    if(b)
-    {
+    if (b) {
         compressedPos = currentPos;
         compressedBuffer = currentBuffer;
         compressedSize = currentSize;
-        
+
         uncompressedcache = globalUncompressedCache;
         currentBuffer = uncompressedcache;
         currentPos = 0;
@@ -254,32 +219,27 @@ void tFileFTT::SetCompressed(bool b)
 }
 
 //--------------------------------------------------------------------------
-void tFileFTT::SetUncompressedSize(int size)
-{
+void tFileFTT::SetUncompressedSize(int size) {
     compressedFileSize = fileSize;
     fileSize = size;
 }
 
 //--------------------------------------------------------------------------
-void tFileFTT::AdvanceCycle(int numBytes)
-{
-     // nv: nop - inlined into GetData
+void tFileFTT::AdvanceCycle(int numBytes) {
+    // nv: nop - inlined into GetData
 }
 
 
 //--------------------------------------------------------------------------
-void tFileFTT::ReadBuffer(char* buf)
-{
-    unsigned int bytesToRead =  bufferSize;
+void tFileFTT::ReadBuffer(char *buf) {
+    unsigned int bytesToRead = bufferSize;
     int size = fileSize;
 
-    if (compressed)
-    {
+    if (compressed) {
         size = compressedFileSize;
     }
-        
-    if (filePosition >= size)
-    {
+
+    if (filePosition >= size) {
         return;
     }
 
@@ -288,13 +248,10 @@ void tFileFTT::ReadBuffer(char* buf)
     //
     // Do an optimal read at the end of the file.
     //
-    if (filePosition + bytesToRead >= (unsigned int)(size) )
-    {
+    if (filePosition + bytesToRead >= (unsigned int) (size)) {
         bytesToRead = size - filePosition;
-        m_pIRadFile->ReadAsync(buf, ::radMemoryRoundUp( bytesToRead, m_pIRadFile->GetOptimalSize( ) ) );
-    }
-    else
-    {
+        m_pIRadFile->ReadAsync(buf, ::radMemoryRoundUp(bytesToRead, m_pIRadFile->GetOptimalSize()));
+    } else {
         m_pIRadFile->ReadAsync(buf, bytesToRead);
     }
 
@@ -302,33 +259,27 @@ void tFileFTT::ReadBuffer(char* buf)
     nextSize = bytesToRead;
 }
 
-void tFileFTT::Decompress (const unsigned char* input, unsigned int inputsize,
-                            unsigned char* output, unsigned int outputsize)
-{
+void tFileFTT::Decompress(const unsigned char *input, unsigned int inputsize,
+                          unsigned char *output, unsigned int outputsize) {
     unsigned int outputcount = 0;
 
-    while(outputcount < outputsize)
-    {
+    while (outputcount < outputsize) {
         radTime64 now = radTimeGetMicroseconds64();
         radTime64 elapsed = now - gLastTime;
-        if( elapsed >= gYieldTime )
-        {
+        if (elapsed >= gYieldTime) {
             p3d::loadManager->SwitchTask();
             gLastTime = radTimeGetMicroseconds64();
         }
 
         unsigned int code = *input++;
 
-        if(code > 15)
-        {
+        if (code > 15) {
             // a match
             int matchlength = code & 15;
 
-            if(matchlength == 0)
-            {
+            if (matchlength == 0) {
                 matchlength += 15;
-                while (*input == 0)
-                {
+                while (*input == 0) {
                     matchlength += 255;
                     input++;
                 }
@@ -336,37 +287,31 @@ void tFileFTT::Decompress (const unsigned char* input, unsigned int inputsize,
             }
 
             int offset = (code >> 4) | (*input++) << 4;
-            unsigned char* match_ptr = output - offset;
+            unsigned char *match_ptr = output - offset;
 
             // shortest match is 4 characters, so we can unroll the loop
-            int len = matchlength>>2;
-            matchlength -= len<<2;
+            int len = matchlength >> 2;
+            matchlength -= len << 2;
 
-            do
-            {
+            do {
                 *output++ = *match_ptr++;
                 *output++ = *match_ptr++;
                 *output++ = *match_ptr++;
                 *output++ = *match_ptr++;
                 outputcount += 4;
-            } while(--len);
+            } while (--len);
 
-            while(matchlength)
-            {
+            while (matchlength) {
                 *output++ = *match_ptr++;
                 outputcount++;
                 matchlength--;
             }
-        }
-        else
-        {
+        } else {
             // A literal run
             int runlength = code;
-            
-            if(runlength == 0)
-            {
-                while (*input == 0)
-                {
+
+            if (runlength == 0) {
+                while (*input == 0) {
                     runlength += 255;
                     input++;
                 }
@@ -390,36 +335,29 @@ void tFileFTT::Decompress (const unsigned char* input, unsigned int inputsize,
                 outputcount += 15;
             }
 
-            do
-            {
+            do {
                 *output++ = *input++;
                 outputcount++;
-            } while(--runlength);
+            } while (--runlength);
         }
     }
 }
 
 //--------------------------------------------------------------------------
-void tFileFTT::FillBuffer()
-{
-    if (compressed)
-    {
-        struct 
-        {
+void tFileFTT::FillBuffer() {
+    if (compressed) {
+        struct {
             P3D_U32 compressed;
             P3D_U32 uncompressed;
         } sizes;
-            
-        if (compressedPos + 8 <= compressedSize)
-        {
-            memcpy((char*)&sizes, &compressedBuffer[ compressedPos ], 8);
+
+        if (compressedPos + 8 <= compressedSize) {
+            memcpy((char *) &sizes, &compressedBuffer[compressedPos], 8);
             compressedPos += 8;
-        } 
-        else 
-        {
-            char* buf = (char*)&sizes;
+        } else {
+            char *buf = (char *) &sizes;
             int size = compressedSize - compressedPos;
-            memcpy(buf, &compressedBuffer[ compressedPos ], size);
+            memcpy(buf, &compressedBuffer[compressedPos], size);
             buf += size;
 
             WaitForCompletion();
@@ -429,27 +367,24 @@ void tFileFTT::FillBuffer()
             compressedPos = 0;
             compressedSize = nextSize;
             ReadBuffer(cache[!currentCache]);
-            memcpy(buf, &compressedBuffer[ compressedPos ], 8 - size);
+            memcpy(buf, &compressedBuffer[compressedPos], 8 - size);
             compressedPos += 8 - size;
         }
 
         EndianSwap(&sizes, 2, 4);
 
-        if (compressedPos + (int)sizes.compressed <= compressedSize)
-        {
-            Decompress((unsigned char*)&compressedBuffer[ compressedPos ],
-                                 (unsigned int)(sizes.compressed),
-                                 (unsigned char*)uncompressedcache, 
-                                 (unsigned int)(sizes.uncompressed));
+        if (compressedPos + (int) sizes.compressed <= compressedSize) {
+            Decompress((unsigned char *) &compressedBuffer[compressedPos],
+                       (unsigned int) (sizes.compressed),
+                       (unsigned char *) uncompressedcache,
+                       (unsigned int) (sizes.uncompressed));
             compressedPos += sizes.compressed;
             currentPos = 0;
             currentSize = COMPRESSED_BLOCK_SIZE;
-        } 
-        else 
-        {
-            char* buf = cache[currentCache];
+        } else {
+            char *buf = cache[currentCache];
             int size = compressedSize - compressedPos;
-            memcpy(buf, &compressedBuffer[ compressedPos ], size);
+            memcpy(buf, &compressedBuffer[compressedPos], size);
             buf += size;
 
             WaitForCompletion();
@@ -458,50 +393,46 @@ void tFileFTT::FillBuffer()
             compressedBuffer = cache[currentCache];
             compressedPos = 0;
             compressedSize = nextSize;
-            memcpy(buf, &compressedBuffer[ compressedPos ],  (int)sizes.compressed - size);
+            memcpy(buf, &compressedBuffer[compressedPos], (int) sizes.compressed - size);
             compressedPos += sizes.compressed - size;
-            
-            Decompress((unsigned char*)cache[!currentCache],
-                                 (unsigned int)(sizes.compressed),
-                                 (unsigned char*)uncompressedcache,
-                                 (unsigned int)(sizes.uncompressed));
+
+            Decompress((unsigned char *) cache[!currentCache],
+                       (unsigned int) (sizes.compressed),
+                       (unsigned char *) uncompressedcache,
+                       (unsigned int) (sizes.uncompressed));
 
             currentPos = 0;
             currentSize = COMPRESSED_BLOCK_SIZE;
 
             ReadBuffer(cache[!currentCache]);
         }
-    } 
-    else 
-    {
+    } else {
         WaitForCompletion();
 
         currentCache = !currentCache;
         currentBuffer = cache[currentCache];
         currentPos = 0;
         currentSize = nextSize;
-    
+
         ReadBuffer(cache[!currentCache]);
     }
 }
 
 //--------------------------------------------------------------------------
-void tFileFTT::OpenFile( void )
-{
-    if ( m_pIRadFile == NULL )
-    {
+void tFileFTT::OpenFile(void) {
+    if (m_pIRadFile == NULL) {
         gLastTime = radTimeGetMicroseconds64();
 
-        radFileOpen( &m_pIRadFile, this->GetFullFilename() );
+        radFileOpen(&m_pIRadFile, this->GetFullFilename());
         P3DASSERT(m_pIRadFile);
 
-        WaitForCompletion( );
-        P3DASSERT( m_pIRadFile->IsOpen( ));
-     
-        fileSize = m_pIRadFile->GetSize( );
+        WaitForCompletion();
+        P3DASSERT(m_pIRadFile->IsOpen());
+
+        fileSize = m_pIRadFile->GetSize();
 
         // Align to a 128 byte boundary for improved PS2 performance.
-        cache[0] = (char*) (((unsigned int) (globalCache) & 0xffffff80) + 0x80);
+        cache[0] = (char *) (((unsigned int) (globalCache) & 0xffffff80) + 0x80);
         cache[1] = cache[0] + CACHE_SIZE;
         bufferSize = rmt::Min(CACHE_SIZE, fileSize);
 
@@ -509,13 +440,11 @@ void tFileFTT::OpenFile( void )
         P3DASSERT((filePosition & 0x7ff) == 0);
 
         // Do an optimal read at the end of the file.
-        if (filePosition + bytesToRead >= (unsigned int)(fileSize) )
-        {
+        if (filePosition + bytesToRead >= (unsigned int) (fileSize)) {
             bytesToRead = fileSize - filePosition;
-            m_pIRadFile->ReadAsync(cache[0], ::radMemoryRoundUp( bytesToRead, m_pIRadFile->GetOptimalSize( ) ) );
-        }
-        else
-        {
+            m_pIRadFile->ReadAsync(cache[0],
+                                   ::radMemoryRoundUp(bytesToRead, m_pIRadFile->GetOptimalSize()));
+        } else {
             m_pIRadFile->ReadAsync(cache[0], bytesToRead);
         }
 

@@ -9,26 +9,30 @@
 #include <p3d/anim/animate.hpp>
 
 class tVertexAnimObject;
+
 class tAnimation;
 
 //derive vertex animation controller from simplefc, since we 
 //don't do any blend here
-class tVertexAnimController: public tSimpleFrameController
-{
+class tVertexAnimController : public tSimpleFrameController {
 public:
-    tVertexAnimController( );
-    tVertexAnimController( tVertexAnimController *c );
-    virtual bool ValidateAnimation(tAnimation* anim);
-    virtual tFrameController * Clone( );
+    tVertexAnimController();
 
-    void SetTarget( tVertexAnimObject * o );
+    tVertexAnimController(tVertexAnimController *c);
+
+    virtual bool ValidateAnimation(tAnimation *anim);
+
+    virtual tFrameController *Clone();
+
+    void SetTarget(tVertexAnimObject *o);
 
 protected:
-    ~tVertexAnimController( );
-    virtual void Update( );
+    ~tVertexAnimController();
+
+    virtual void Update();
 
     tVertexAnimObject *mObject;
-        
+
 };
 
 #endif

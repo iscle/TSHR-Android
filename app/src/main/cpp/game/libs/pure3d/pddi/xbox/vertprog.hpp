@@ -9,28 +9,30 @@
 #include "../pddienum.hpp"
 
 class d3dContext;
+
 class d3dShader;
 
 const int maxPrograms = 32;
 const int maxTemplates = 16;
 
-class d3dVertexProgram
-{
+class d3dVertexProgram {
 public:
     unsigned GetStride(void) { return stride; }
+
     unsigned GetFormat(void) { return vertexFormat; }
+
     unsigned GetAuxFormat(void) { return vertexFormatAux; }
+
     pddiPrimType GetPrimType(void) { return primType; }
 
     unsigned GetD3DVS(void) { return vertexShader; }
 
-    virtual void Setup(d3dContext*, d3dShader*) {};
+    virtual void Setup(d3dContext *, d3dShader *) {};
 
 protected:
     friend class d3dVertexProgramManager;
 
-    void SetData(pddiPrimType pr, unsigned vf, unsigned vfa, unsigned s, unsigned sh)
-    { 
+    void SetData(pddiPrimType pr, unsigned vf, unsigned vfa, unsigned s, unsigned sh) {
         primType = pr;
         vertexFormat = vf;
         vertexFormatAux = vfa;
@@ -48,25 +50,27 @@ protected:
 
 };
 
-class d3dVertexProgramManager
-{
+class d3dVertexProgramManager {
 public:
-    d3dVertexProgramManager(d3dContext* c);
+    d3dVertexProgramManager(d3dContext *c);
+
     ~d3dVertexProgramManager();
 
-    void AddVertexProgram( const char* name, void* tokens );
-    d3dVertexProgram* GetVertexProgram(const char* name, pddiPrimType primType, unsigned format, unsigned aux);
+    void AddVertexProgram(const char *name, void *tokens);
+
+    d3dVertexProgram *
+    GetVertexProgram(const char *name, pddiPrimType primType, unsigned format, unsigned aux);
+
     void Reset(void);
 
 protected:
-    d3dContext* context;
+    d3dContext *context;
 
     unsigned nTemplates;
 
-    struct Template
-    {
+    struct Template {
         unsigned name;
-        void* tokens;
+        void *tokens;
         int nPrograms;
         d3dVertexProgram programs[maxPrograms];
     } templates[maxTemplates];

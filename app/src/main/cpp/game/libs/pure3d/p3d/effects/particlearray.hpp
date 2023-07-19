@@ -12,7 +12,9 @@
 #include <constants/psenum.hpp>
 
 class tParticlePool;
+
 class tBaseEmitter;
+
 class tBaseParticle;
 
 //*****************************************************************************
@@ -20,45 +22,52 @@ class tBaseParticle;
 // Class tParticleArray
 //
 //*****************************************************************************
-class tParticleArray : public tRefCounted
-{
+class tParticleArray : public tRefCounted {
 public:
-    tParticleArray(tParticlePool* pool);
+    tParticleArray(tParticlePool *pool);
 
-    void            AllocateParticles();
-    void            ReleaseParticles();
-    void            UpdateParticles(float deltaTime, float deltaFrame, tBaseEmitter* emitter);
-    void            KillAllParticles();
-    void            RefreshParticleArray();
+    void AllocateParticles();
 
-    unsigned        GetParticleType()                           { return particleType; }
-    int             GetNumParticles()                           { return numParticles; }
-    int             GetNumLiveParticles()                       { return numLiveParticles; }
-    
+    void ReleaseParticles();
+
+    void UpdateParticles(float deltaTime, float deltaFrame, tBaseEmitter *emitter);
+
+    void KillAllParticles();
+
+    void RefreshParticleArray();
+
+    unsigned GetParticleType() { return particleType; }
+
+    int GetNumParticles() { return numParticles; }
+
+    int GetNumLiveParticles() { return numLiveParticles; }
+
     // MKR - unused and unnecessary
     //int             GetNumDeadParticles()                       { return numDeadParticles; }
-    tBaseParticle** GetLiveParticles()                          { return liveParticles; }
-    tBaseParticle*  RejuenateDeadParticle();
+    tBaseParticle **GetLiveParticles() { return liveParticles; }
+
+    tBaseParticle *RejuenateDeadParticle();
 
     // does not create new live particles only kills particles so that there are a maximum number of live particles
-    void            SetNumLiveParticles(int num);
+    void SetNumLiveParticles(int num);
 
-protected:   
+protected:
     tParticleArray();
+
     virtual ~tParticleArray();
-   
-    unsigned        particleType;
-    tParticlePool*  particlePool;
-    int             numParticles;
-    int             numLiveParticles;
+
+    unsigned particleType;
+    tParticlePool *particlePool;
+    int numParticles;
+    int numLiveParticles;
     //int             numDeadParticles;
     // MKR - particlepools now deal with indices to a master list of particles
     // rather than a actual list of contiguous particles
     // switch the void* to a short*
 
     //void*           particles;
-    tBaseParticle** liveParticles;
-    short*          particleIndices;
+    tBaseParticle **liveParticles;
+    short *particleIndices;
     //tBaseParticle** deadParticles;
 };
 

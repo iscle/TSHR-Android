@@ -12,21 +12,23 @@
 #include <pddi/pdditype.hpp>
 
 class pddiDevice;
+
 class pddiRenderContext;
+
 class pddiShader;
 
-class pddiFont
-{
+class pddiFont {
 public:
-    pddiFont(pddiRenderContext* ctx);
+    pddiFont(pddiRenderContext *ctx);
+
     ~pddiFont();
 
-    void Print(const char* s, int x, int y, float z, pddiColour colour);
+    void Print(const char *s, int x, int y, float z, pddiColour colour);
 
     static void SetScale(float xscale = 1.0f, float yscale = 1.0f);
 
 private:
-    pddiRenderContext* context;
+    pddiRenderContext *context;
     static float xscale;
     static float yscale;
 };

@@ -16,11 +16,10 @@
 #include <string.h>
 #include <stdio.h>
 
-struct BMPHeader
-{
+struct BMPHeader {
     P3D_S32 size;
-    P3D_U8  reserved1[2];
-    P3D_U8  reserved2[2];
+    P3D_U8 reserved1[2];
+    P3D_U8 reserved2[2];
     P3D_S32 offset;
     P3D_S32 headerSize;
     P3D_S32 width;
@@ -36,18 +35,19 @@ struct BMPHeader
 };
 
 
-static void LoadBMP4(tFile*, BMPHeader&, tImageHandler::Builder*);
-static void LoadBMP8(tFile*, BMPHeader&, tImageHandler::Builder*);
-static void LoadBMP24(tFile*, BMPHeader&, tImageHandler::Builder*);
-static void FillHeader(tFile*, BMPHeader*);
+static void LoadBMP4(tFile *, BMPHeader &, tImageHandler::Builder *);
 
-bool tBMPHandler::CheckFormat(Format format)
-{
+static void LoadBMP8(tFile *, BMPHeader &, tImageHandler::Builder *);
+
+static void LoadBMP24(tFile *, BMPHeader &, tImageHandler::Builder *);
+
+static void FillHeader(tFile *, BMPHeader *);
+
+bool tBMPHandler::CheckFormat(Format format) {
     return format == IMG_BMP;
 }
 
-void tBMPHandler::CreateImage(tFile* file, tImageHandler::Builder* builder)
-{
+void tBMPHandler::CreateImage(tFile *file, tImageHandler::Builder *builder) {
     char buf[256];
     char id[2];
 
@@ -59,13 +59,12 @@ void tBMPHandler::CreateImage(tFile* file, tImageHandler::Builder* builder)
     file->GetData(id, 2, tFile::BYTE);
 
 
-    if(id[0] == 'B' && id[1] == 'M')
-    {
+    if (id[0] == 'B' && id[1] == 'M') {
 
-    }
-    else
-    {
-        sprintf(buf, "Attempted to load an unsuported BMP format from file %s\n (Ignore will continue safely)", file->GetFilename());
+    } else {
+        sprintf(buf,
+                "Attempted to load an unsuported BMP format from file %s\n (Ignore will continue safely)",
+                file->GetFilename());
         P3DASSERTMSG(0, buf, "tBMPHandler");
         return;
     }
@@ -73,26 +72,21 @@ void tBMPHandler::CreateImage(tFile* file, tImageHandler::Builder* builder)
     BMPHeader header;
     FillHeader(file, &header);
 
-    if(!( ((header.bpp == 1) || (header.bpp == 4) || (header.bpp == 8) || (header.bpp == 24)) && (header.compression == 0) ))
-    {
-        sprintf(buf, "Attempted to load an unsuported BMP format from file %s\n (Ignore will continue safely)", file->GetFilename());
+    if (!(((header.bpp == 1) || (header.bpp == 4) || (header.bpp == 8) || (header.bpp == 24)) &&
+          (header.compression == 0))) {
+        sprintf(buf,
+                "Attempted to load an unsuported BMP format from file %s\n (Ignore will continue safely)",
+                file->GetFilename());
         P3DASSERTMSG(0, buf, "tBMPHandler");
         return;
     }
 
-    tImage* image = NULL;
-    if(header.bpp == 4)
-    {
+    tImage *image = NULL;
+    if (header.bpp == 4) {
         LoadBMP4(file, header, builder);
-    }
-    else
-    if(header.bpp == 8)
-    {
+    } else if (header.bpp == 8) {
         LoadBMP8(file, header, builder);
-    }
-    else
-    if(header.bpp == 24)
-    {
+    } else if (header.bpp == 24) {
         LoadBMP24(file, header, builder);
     }
 
@@ -101,23 +95,20 @@ void tBMPHandler::CreateImage(tFile* file, tImageHandler::Builder* builder)
 #endif
 }
 
-bool tBMPHandler::SaveImage(tImage*, char*)
-{
+bool tBMPHandler::SaveImage(tImage *, char *) {
     return false;
 }
 
-void LoadBMP4(tFile* file, BMPHeader& header, tImageHandler::Builder* builder)
-{
+void LoadBMP4(tFile *file, BMPHeader &header, tImageHandler::Builder *builder) {
     // get palette
     pddiColour pal[16];
-    memset(pal, 0, 16*sizeof(pddiColour));
+    memset(pal, 0, 16 * sizeof(pddiColour));
     int nColour = header.nColour;
-    if(nColour == 0) nColour = 16;
-    P3DASSERT(nColour <= 16);   
+    if (nColour == 0) nColour = 16;
+    P3DASSERT(nColour <= 16);
     file->GetData(pal, nColour, tFile::DWORD);
-    for(int i=0; i < nColour; i++)
-    {
-#ifdef RAD_GAMECUBE   
+    for (int i = 0; i < nColour; i++) {
+#ifdef RAD_GAMECUBE
         // Munge the palette for the auto up-convert to 32 bit
         int r = pal[i].Red();
         int g = pal[i].Green();
@@ -126,41 +117,39 @@ void LoadBMP4(tFile* file, BMPHeader& header, tImageHandler::Builder* builder)
         pal[i] = pddiColour(g, r, 255, b);
 #else
         // alpha is zero in palette, make it 255
-        int* oldpal = (int*)pal;
+        int *oldpal = (int *) pal;
         oldpal[i] = oldpal[i] | 0xff000000;
         // convert from platform independant to (possibly) platform dependant colour, does nothing on PC
         pal[i] = pddiColour(oldpal[i]);
 #endif
     }
-    tImage* image = NULL;
+    tImage *image = NULL;
 
-    builder->BeginImage(header.width, header.height, 4, tImageHandler::Builder::BOTTOM, (pddiColour*)pal);
+    builder->BeginImage(header.width, header.height, 4, tImageHandler::Builder::BOTTOM,
+                        (pddiColour *) pal);
 
     file->Advance(header.offset - file->GetPosition());
 
     int width = header.width;
     int pad = 0;
-    if((header.width/2) & 3)
-    {
-        pad = 4 - ((header.width/2) & 3);
+    if ((header.width / 2) & 3) {
+        pad = 4 - ((header.width / 2) & 3);
     }
 
-    unsigned char* scanline_in  = (unsigned char*)p3d::MallocTemp(width/2);
-    unsigned char* scanline_out = (unsigned char*)p3d::MallocTemp(width);;
+    unsigned char *scanline_in = (unsigned char *) p3d::MallocTemp(width / 2);
+    unsigned char *scanline_out = (unsigned char *) p3d::MallocTemp(width);;
 
-    for(int y=0; y < header.height; y++)
-    {
-        file->GetData(scanline_in, width/2, tFile::BYTE);
-      
+    for (int y = 0; y < header.height; y++) {
+        file->GetData(scanline_in, width / 2, tFile::BYTE);
+
 
         // promote 4-bit palette indexes to 8-bit palette indexes
-        for (int i=0; i<width/2; i++)
-        {
-            scanline_out[(i*2)+0] = scanline_in[i] >> 4;
-            scanline_out[(i*2)+1] = scanline_in[i] & 0x0f;
+        for (int i = 0; i < width / 2; i++) {
+            scanline_out[(i * 2) + 0] = scanline_in[i] >> 4;
+            scanline_out[(i * 2) + 1] = scanline_in[i] & 0x0f;
         }
 
-        
+
         builder->ProcessScanline8(scanline_out);
         file->Advance(pad);
     }
@@ -171,19 +160,17 @@ void LoadBMP4(tFile* file, BMPHeader& header, tImageHandler::Builder* builder)
 }
 
 
-void LoadBMP8(tFile* file, BMPHeader& header, tImageHandler::Builder* builder)
-{
+void LoadBMP8(tFile *file, BMPHeader &header, tImageHandler::Builder *builder) {
     // get palette
     pddiColour pal[256];
-    memset(pal, 0, 256*sizeof(pddiColour));
+    memset(pal, 0, 256 * sizeof(pddiColour));
     int nColour = header.nColour;
-    if(nColour == 0) nColour = 256;
-    P3DASSERT(nColour <= 256);   
+    if (nColour == 0) nColour = 256;
+    P3DASSERT(nColour <= 256);
     file->GetData(pal, nColour, tFile::DWORD);
-    for(int i=0; i < nColour; i++)
-    {
-        
-#ifdef RAD_GAMECUBE   
+    for (int i = 0; i < nColour; i++) {
+
+#ifdef RAD_GAMECUBE
         // Munge the palette for the auto up-convert to 32 bit
         int r = pal[i].Red();
         int g = pal[i].Green();
@@ -192,30 +179,29 @@ void LoadBMP8(tFile* file, BMPHeader& header, tImageHandler::Builder* builder)
         pal[i] = pddiColour(g, r, 255, b);
 #else
         // alpha is zero in palette, make it 255
-        int* oldpal = (int*)pal;
+        int *oldpal = (int *) pal;
         oldpal[i] = oldpal[i] | 0xff000000;
         // convert from platform independant to (possibly) platform dependant colour, does nothing on PC
         pal[i] = pddiColour(oldpal[i]);
 #endif
 
     }
-    tImage* image = NULL;
+    tImage *image = NULL;
 
-    builder->BeginImage(header.width, header.height, 8, tImageHandler::Builder::BOTTOM, (pddiColour*)pal);
+    builder->BeginImage(header.width, header.height, 8, tImageHandler::Builder::BOTTOM,
+                        (pddiColour *) pal);
 
     file->Advance(header.offset - file->GetPosition());
 
     int width = header.width;
     int pad = 0;
-    if(header.width & 3)
-    {
+    if (header.width & 3) {
         pad = 4 - (header.width & 3);
     }
 
-    unsigned char* scanline = (unsigned char*)p3d::MallocTemp(width);
+    unsigned char *scanline = (unsigned char *) p3d::MallocTemp(width);
 
-    for(int y=0; y < header.height; y++)
-    {
+    for (int y = 0; y < header.height; y++) {
         file->GetData(scanline, width, tFile::BYTE);
         builder->ProcessScanline8(scanline);
         file->Advance(pad);
@@ -225,23 +211,19 @@ void LoadBMP8(tFile* file, BMPHeader& header, tImageHandler::Builder* builder)
     builder->EndImage();
 }
 
-void LoadBMP24(tFile* file, BMPHeader& header, tImageHandler::Builder* builder)
-{
+void LoadBMP24(tFile *file, BMPHeader &header, tImageHandler::Builder *builder) {
     builder->BeginImage(header.width, header.height, 24, tImageHandler::Builder::BOTTOM, NULL);
     int width = header.width;
     int pad = 0;
-    if((header.width*3) & 3)
-    {
-        pad = 4 - ((header.width*3) & 3);
+    if ((header.width * 3) & 3) {
+        pad = 4 - ((header.width * 3) & 3);
     }
 
-    P3D_U32* scanline = (P3D_U32*)p3d::MallocTemp(width * 4);
-    
-    for(int y=0; y < header.height; y++)
-    {
-        unsigned char* c = (unsigned char*)scanline;
-        for(int x=0; x < width; x++)
-        {
+    P3D_U32 *scanline = (P3D_U32 *) p3d::MallocTemp(width * 4);
+
+    for (int y = 0; y < header.height; y++) {
+        unsigned char *c = (unsigned char *) scanline;
+        for (int x = 0; x < width; x++) {
 #ifdef RAD_GAMECUBE
             c[0] = 0xFF;
             c[3] = file->GetByte();
@@ -263,8 +245,7 @@ void LoadBMP24(tFile* file, BMPHeader& header, tImageHandler::Builder* builder)
     builder->EndImage();
 }
 
-static void FillHeader(tFile* f, BMPHeader* h)
-{
+static void FillHeader(tFile *f, BMPHeader *h) {
 //   f->GetData(h, sizeof(BMPHeader), tFile::BYTE);
     h->size = f->GetDWord();
     h->reserved1[0] = f->GetByte();
@@ -275,7 +256,7 @@ static void FillHeader(tFile* f, BMPHeader* h)
     h->headerSize = f->GetDWord();
     h->width = f->GetDWord();
     h->height = f->GetDWord();
-    h->nPlanes  = f->GetWord();
+    h->nPlanes = f->GetWord();
     h->bpp = f->GetWord();
     h->compression = f->GetDWord();
     h->byteSize = f->GetDWord();

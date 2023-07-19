@@ -11,19 +11,34 @@
 
 #include <pddi/base/debug.hpp>
 
-template <class T> class pddiStack
-{
+template<class T>
+class pddiStack {
 public:
-    pddiStack(int d)     { stack = new T[d]; top = 0; depth = d; }
+    pddiStack(int d) {
+        stack = new T[d];
+        top = 0;
+        depth = d;
+    }
+
     virtual ~pddiStack() { delete[] stack; }
-    T* Top()             { return &stack[top]; }
-    void Push()          { PDDIASSERT(top < (depth - 1)); top++; stack[top] = stack[top-1]; }
-    void Pop()           { PDDIASSERT(top > 0); top--; }
+
+    T *Top() { return &stack[top]; }
+
+    void Push() {
+        PDDIASSERT(top < (depth - 1));
+        top++;
+        stack[top] = stack[top - 1];
+    }
+
+    void Pop() {
+        PDDIASSERT(top > 0);
+        top--;
+    }
 
 protected:
     int depth;
     int top;
-    T* stack;
+    T *stack;
 };
 
 #endif /* _BASETYPE_HPP */

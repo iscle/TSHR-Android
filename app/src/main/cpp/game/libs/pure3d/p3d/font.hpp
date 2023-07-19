@@ -12,8 +12,7 @@
 
 class tShader;
 
-enum p3dCentreMode
-{
+enum p3dCentreMode {
     CENTRE_X = 0x1,
     CENTRE_Y = 0x2
 };
@@ -21,31 +20,34 @@ enum p3dCentreMode
 //**************************************************************
 // Class tFontGlyph
 //**************************************************************
-class tFontGlyph
-{
+class tFontGlyph {
 public:
     tFontGlyph();
+
     ~tFontGlyph();
 
-    inline float GetLeftBearing()   { return leftBearing; }
-    inline float GetRightBearing()  { return rightBearing; }
-    inline float GetWidth()         { return width; }
-    inline float GetAdvance()       { return advance; }
-    inline P3D_UNICODE GetCode()    { return code; }
+    inline float GetLeftBearing() { return leftBearing; }
+
+    inline float GetRightBearing() { return rightBearing; }
+
+    inline float GetWidth() { return width; }
+
+    inline float GetAdvance() { return advance; }
+
+    inline P3D_UNICODE GetCode() { return code; }
 
 protected:
-    float        leftBearing;
-    float        rightBearing;
-    float        width;
-    float        advance;
-    P3D_UNICODE  code;
+    float leftBearing;
+    float rightBearing;
+    float width;
+    float advance;
+    P3D_UNICODE code;
 };
 
 //**************************************************************
 // Class tFont
 //**************************************************************
-class tFont : public tEntity
-{
+class tFont : public tEntity {
 public:
     // gets the actual font size
     virtual float GetFontSize() const = 0;
@@ -60,46 +62,43 @@ public:
     virtual float GetFontBaseLine() const = 0;
 
     // gets the height of single or multiline text 
-    float GetTextHeight(const char* text) const
-    {
-        if (!text)
-        {
+    float GetTextHeight(const char *text) const {
+        if (!text) {
             return 0.0f;
         }
 
         P3D_UNICODE unicode[512];
-        p3d::AsciiToUnicode(text,unicode,512);
+        p3d::AsciiToUnicode(text, unicode, 512);
         return GetTextHeight(unicode);
     }
-    virtual float GetTextHeight(const P3D_UNICODE* text) const = 0;
+
+    virtual float GetTextHeight(const P3D_UNICODE *text) const = 0;
 
     // gets the maximum width of single or multiline text
-    float GetTextWidth(const char* text) const
-    {
-        if (!text)
-        {
+    float GetTextWidth(const char *text) const {
+        if (!text) {
             return 0.0f;
         }
 
         P3D_UNICODE unicode[512];
-        p3d::AsciiToUnicode(text,unicode,512);
+        p3d::AsciiToUnicode(text, unicode, 512);
         return GetTextWidth(unicode);
     }
-    virtual float GetTextWidth(const P3D_UNICODE* text) const = 0;
+
+    virtual float GetTextWidth(const P3D_UNICODE *text) const = 0;
 
     // display single or multiline text
-    void DisplayText(const char* text, int formatting) const
-    {
-        if (!text)
-        {
+    void DisplayText(const char *text, int formatting) const {
+        if (!text) {
             return;
         }
 
         P3D_UNICODE unicode[512];
-        p3d::AsciiToUnicode(text,unicode,512);
-        DisplayText(unicode,formatting);
+        p3d::AsciiToUnicode(text, unicode, 512);
+        DisplayText(unicode, formatting);
     }
-    virtual void DisplayText(const P3D_UNICODE* text, int formatting = 0) const; 
+
+    virtual void DisplayText(const P3D_UNICODE *text, int formatting = 0) const;
 
     // get the spacing between lines of multiline text
     virtual float GetLineSpacing() const = 0;
@@ -114,17 +113,17 @@ public:
     virtual void SetColour(tColour colour) = 0;
 
     // get shader used to draw the font
-    virtual tShader* GetShader() const = 0;
+    virtual tShader *GetShader() const = 0;
 
     // set shader used to draw the font
-    virtual void SetShader(tShader* shader) = 0;
+    virtual void SetShader(tShader *shader) = 0;
 
 protected:
     // get the width of one line of text
-    virtual float GetLineWidth(const P3D_UNICODE* text) const = 0;
+    virtual float GetLineWidth(const P3D_UNICODE *text) const = 0;
 
     // display a single line of text
-    virtual void DisplayLine(const P3D_UNICODE* text, int formatting = 0) const = 0;
+    virtual void DisplayLine(const P3D_UNICODE *text, int formatting = 0) const = 0;
 };
 
 #endif

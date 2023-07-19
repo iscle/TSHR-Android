@@ -8,22 +8,18 @@
 #include <math.h>
 #include <pddi/ps2/external/misc.hpp>
 
-double ps2Ftod(float f)
-{
-    return (double)f;
+double ps2Ftod(float f) {
+    return (double) f;
 }
 
-float ps2Dtof(double d)
-{
-    return (float)d;
+float ps2Dtof(double d) {
+    return (float) d;
 }
 
-float ps2Atof(const char* s)
-{
-    return (float)atof(s);
+float ps2Atof(const char *s) {
+    return (float) atof(s);
 }
 
-float ps2Fabs(float f)
-{
-    return (float)fabs(f);
+float ps2Fabs(float f) {
+    return (float) fabs(f);
 }

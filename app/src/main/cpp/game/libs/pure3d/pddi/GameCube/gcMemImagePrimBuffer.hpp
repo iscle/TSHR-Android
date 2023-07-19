@@ -14,26 +14,31 @@
 //
 // gc Mem Image Prim Buffer
 //
-class gcMemImagePrimBuffer : public gcBasePrimBuffer
-{
+class gcMemImagePrimBuffer : public gcBasePrimBuffer {
 public:
     gcMemImagePrimBuffer(gcContext *context);
-   ~gcMemImagePrimBuffer();
+
+    ~gcMemImagePrimBuffer();
 
     pddiPrimBufferStream *Lock(void);
+
     void Unlock(pddiPrimBufferStream *stream);
 
     unsigned char *LockIndexBuffer(void);
+
     void UnlockIndexBuffer(int count);
 
     void SetIndices(unsigned short *indices, int count);
 
     void Display(void);
 
-    bool  CheckMemImageVersion(int version);
+    bool CheckMemImageVersion(int version);
+
     void *LockMemImage(unsigned memImageLength);
-    void  UnlockMemImage(void);
-    void  SetMemImageParam(unsigned param, unsigned value);
+
+    void UnlockMemImage(void);
+
+    void SetMemImageParam(unsigned param, unsigned value);
 
 protected:
     void Create(void);
@@ -41,16 +46,16 @@ protected:
     gcContext *mContext;
 
     unsigned char *mDisplayList;
-    int            mDisplayListSize;
-    
+    int mDisplayListSize;
+
     unsigned char *mMemImageData; // Used for Memory imaged data & indexed primitive rendering
-    int            mMemImageSize;
+    int mMemImageSize;
 
     int mComponentCount;
     gcComponentDescription *mComponents;
 
     pddiPrimType mPrimType;
-    int          mVertexCount; // Number of verts displayed
+    int mVertexCount; // Number of verts displayed
 
 };
 

@@ -15,67 +15,58 @@
 #include <p3d/matrixstack.hpp>
 
 #include <string.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 
-DisplayList::DisplayList() 
-: 
-nDrawables(0), 
-nDrawablesEndPos(0),
-drawables(NULL),
-toSort(NULL),
-sortRange(1.0f),
-sorted(true)
-{
+DisplayList::DisplayList()
+        :
+        nDrawables(0),
+        nDrawablesEndPos(0),
+        drawables(NULL),
+        toSort(NULL),
+        sortRange(1.0f),
+        sorted(true) {
 }
 
-DisplayList::~DisplayList()
-{
-    delete [] drawables;
-    delete [] toSort;
+DisplayList::~DisplayList() {
+    delete[] drawables;
+    delete[] toSort;
 }
 
-void DisplayList::Display(void)
-{   
+void DisplayList::Display(void) {
     p3d::stack->Push();
 
     Sort();
 
-    for(unsigned i = 0; i < nDrawablesEndPos; i++)
-    {
+    for (unsigned i = 0; i < nDrawablesEndPos; i++) {
         P3DASSERT(toSort[i]);
         p3d::stack->Load(toSort[i]->objectToView);
         toSort[i]->draw->Display();
     }
 
-    Purge(); 
+    Purge();
     p3d::stack->Pop();
 }
 
-void DisplayList::Add(tDrawable* object, const rmt::Matrix* worldMatrix, float sortPosition)
-{
+void DisplayList::Add(tDrawable *object, const rmt::Matrix *worldMatrix, float sortPosition) {
     sorted = false;
 
-    if(nDrawablesEndPos<nDrawables)
-    {
+    if (nDrawablesEndPos < nDrawables) {
         // grap a pointer to the next drawable for sortin
         toSort[nDrawablesEndPos] = &drawables[nDrawablesEndPos];
 
         // store away the current modelview matrix
-        if(worldMatrix)
-        {
+        if (worldMatrix) {
             rmt::Matrix tmp;
             tmp.Mult(*worldMatrix, *p3d::stack->GetMatrix());
             drawables[nDrawablesEndPos].objectToView = tmp;
-        }
-        else
-        {
+        } else {
             drawables[nDrawablesEndPos].objectToView = *p3d::stack->GetMatrix();
         }
 
-        
+
         drawables[nDrawablesEndPos].draw = object;
         drawables[nDrawablesEndPos].draw->AddRef();
-    
+
         // calculate the z position in camera soace for sorting
         rmt::Sphere sphere;
         rmt::Vector cameraPosition;
@@ -85,18 +76,15 @@ void DisplayList::Add(tDrawable* object, const rmt::Matrix* worldMatrix, float s
         drawables[nDrawablesEndPos].sortPosition = sortPosition;
 
         nDrawablesEndPos++;
-    }
-    else
-    {
+    } else {
         p3d::print("warning : DisplayList::Add, too many drawables submitted\n");
     }
 }
 
-tDrawable* DisplayList::GetSorted(unsigned i, rmt::Matrix* matrix)
-{
+tDrawable *DisplayList::GetSorted(unsigned i, rmt::Matrix *matrix) {
     P3DASSERT(i < nDrawablesEndPos);
-    
-    if(!sorted)
+
+    if (!sorted)
         Sort();
 
     P3DASSERT(toSort[i]);
@@ -105,10 +93,8 @@ tDrawable* DisplayList::GetSorted(unsigned i, rmt::Matrix* matrix)
     return toSort[i]->draw;
 }
 
-void DisplayList::Purge()
-{
-    for(unsigned i = 0; i < nDrawablesEndPos; i++)
-    {
+void DisplayList::Purge() {
+    for (unsigned i = 0; i < nDrawablesEndPos; i++) {
         drawables[i].draw->Release();
         toSort[i] = NULL;
     }
@@ -116,61 +102,52 @@ void DisplayList::Purge()
     sorted = true;
 }
 
-void DisplayList::SetSize(int size)
-{
+void DisplayList::SetSize(int size) {
     Purge();
 
-    if(drawables)
-    {
-        delete [] drawables;
-        delete [] toSort;
+    if (drawables) {
+        delete[] drawables;
+        delete[] toSort;
     }
 
     nDrawables = size;
 
-    if(nDrawables )
-    {
+    if (nDrawables) {
         drawables = new Drawable[nDrawables];
-        toSort = new Drawable*[nDrawables];
-    }
-    else
-    {
+        toSort = new Drawable *[nDrawables];
+    } else {
         drawables = NULL;
         toSort = NULL;
     }
 }
 
-void DisplayList::Sort(void)
-{
-   if(sorted)
+void DisplayList::Sort(void) {
+    if (sorted)
         return;
 
-    qsort(toSort, nDrawablesEndPos, sizeof(Drawable*), DisplayList::ZSortCompare);
+    qsort(toSort, nDrawablesEndPos, sizeof(Drawable * ), DisplayList::ZSortCompare);
     sorted = true;
 }
 
-// < 0 elem1 less than elem2 
+// <0 elem1 less than elem2
 // 0 elem1 equivalent to elem2 
-// > 0 elem1 greater than elem2 
+//> 0 elem1 greater than elem2
 // 
 // we want to sort the list from far -> new, so we actually invert the comparison
-int DisplayList::ZSortCompare(const void* drawable1, const void* drawable2)
-{
-    Drawable** pdraw1 = (Drawable**)(drawable1);
-    Drawable** pdraw2 = (Drawable**)(drawable2);
-    Drawable* draw1 = (Drawable*)(*pdraw1);
-    Drawable* draw2 = (Drawable*)(*pdraw2);
+int DisplayList::ZSortCompare(const void *drawable1, const void *drawable2) {
+    Drawable **pdraw1 = (Drawable * *)(drawable1);
+    Drawable **pdraw2 = (Drawable * *)(drawable2);
+    Drawable *draw1 = (Drawable * )(*pdraw1);
+    Drawable *draw2 = (Drawable * )(*pdraw2);
 
-    if( draw1->sortPosition != draw2->sortPosition )
-    {
+    if (draw1->sortPosition != draw2->sortPosition) {
         return (draw1->sortPosition < draw2->sortPosition) ? 1 : -1;
     }
 
-    if( draw1->zPosition == draw2->zPosition )
-    {
+    if (draw1->zPosition == draw2->zPosition) {
         return 0;
     }
 
-    return (draw1->zPosition < draw2->zPosition ) ? 1 : -1;
+    return (draw1->zPosition < draw2->zPosition) ? 1 : -1;
 }
 

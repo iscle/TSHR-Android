@@ -13,21 +13,16 @@
 #include "../state.hpp"
 #include "../display.hpp"
 
-class d3dShader : public pddiBaseShader
-{
+class d3dShader : public pddiBaseShader {
 public:
-    d3dShader(d3dContext* c); 
+    d3dShader(d3dContext *c);
 
-    virtual void GetShaderInfo(d3dShaderInfo*);
+    virtual void GetShaderInfo(d3dShaderInfo *);
 
-    void SetTexture(LPDIRECT3DDEVICE8 d3d, int stage, pddiTexture* texture)
-    {
-        if(texture)
-        {
-            ((d3dTexture*)texture)->SetTexture(stage);
-        }
-        else
-        {
+    void SetTexture(LPDIRECT3DDEVICE8 d3d, int stage, pddiTexture *texture) {
+        if (texture) {
+            ((d3dTexture *) texture)->SetTexture(stage);
+        } else {
             d3d->SetTexture(stage, NULL);
         }
     }
@@ -35,22 +30,21 @@ public:
     //
     //  Funcitons to setup parameters in default ways 
     //
-    void SetupAlphaBlend(void)
-    {
+    void SetupAlphaBlend(void) {
         d3d->SetAlphaBlend(blendMode);
-        d3d->SetAlphaTest(alphaTest, alphaCompare);   
-        ((d3dDisplay*)context->GetDisplay())->GetD3DDevice()->SetRenderState(D3DRS_ALPHAREF, (DWORD)(alphaRef * 255));
+        d3d->SetAlphaTest(alphaTest, alphaCompare);
+        ((d3dDisplay *) context->GetDisplay())->GetD3DDevice()->SetRenderState(D3DRS_ALPHAREF,
+                                                                               (DWORD)(alphaRef *
+                                                                                       255));
     }
 
-    void SetupShading(void)
-    {      
+    void SetupShading(void) {
         // set the shading model
         d3d->SetShadeMode(shadeMode);
         d3d->SetMaterial(isLit, twoSided, &shaderInfo);
     }
 
-    void SetupTextureSampling(unsigned stage, unsigned ttf = D3DTTFF_DISABLE)
-    {
+    void SetupTextureSampling(unsigned stage, unsigned ttf = D3DTTFF_DISABLE) {
         // set texture sampling modes
         // using coord set for stage, uv and filter moes are user-set
         d3d->SetTextureCoord(stage, stage);
@@ -65,52 +59,66 @@ public:
 
     // alpha blend
     void SetBlendMode(int mode);
+
     void EnableAlphaTest(int enable);
+
     void SetAlphaCompare(int compare);
+
     void SetAlphaRef(float ref);
 
     // texture sampling
     void SetUVMode(int mode);
+
     void SetFilterMode(int mode);
 
     // shading
     void SetShadeMode(int shade);
+
     void SetTwoSided(int enable);
+
     void EnableLighting(int enable);
+
     void SetAmbient(pddiColour colour);
+
     void SetDiffuse(pddiColour colour);
+
     void SetEmissive(pddiColour);
+
     void SetEmissiveAlpha(int);
+
     void SetSpecular(pddiColour);
+
     void SetShininess(float power);
 
-	//turn on skin mode. when loading constant different contants set
-	//might be set for skin mode
-    void EnableSkinMode( bool b ){ skinMode = b; }
-    bool InSkinMode( ){ return skinMode; }
+    //turn on skin mode. when loading constant different contants set
+    //might be set for skin mode
+    void EnableSkinMode(bool b) { skinMode = b; }
 
-	//for loading vertex shader constants
-	virtual bool IsVertexShader( ){ return false; }			//overload this func for all shader implemented with vertex shader
-	virtual void LoadVSConstants( ){;}						//overload this func for loading vertex shader constants instead of
-															//load constants inside SetPass( ) func
+    bool InSkinMode() { return skinMode; }
+
+    //for loading vertex shader constants
+    virtual bool
+    IsVertexShader() { return false; }            //overload this func for all shader implemented with vertex shader
+    virtual void
+    LoadVSConstants() { ; }                        //overload this func for loading vertex shader constants instead of
+    //load constants inside SetPass() func
 
     // Turns a normalized vector into RGBA form. Used to encode vectors into a height map
-    static DWORD VectortoRGBA(pddiVector* v, FLOAT fHeight)
-    {
-         DWORD r = (DWORD)( 127.0f * v->x + 128.0f );
-         DWORD g = (DWORD)( 127.0f * v->y + 128.0f );
-         DWORD b = (DWORD)( 127.0f * v->z + 128.0f );
-         DWORD a = (DWORD)( 255.0f * fHeight );
-     
-         return( (a<<24L) + (r<<16L) + (g<<8L) + (b<<0L) );
+    static DWORD VectortoRGBA(pddiVector *v, FLOAT fHeight) {
+        DWORD r = (DWORD)(127.0f * v->x + 128.0f);
+        DWORD g = (DWORD)(127.0f * v->y + 128.0f);
+        DWORD b = (DWORD)(127.0f * v->z + 128.0f);
+        DWORD a = (DWORD)(255.0f * fHeight);
+
+        return ((a << 24L) + (r << 16L) + (g << 8L) + (b << 0L));
     }
 
-    void CopySettings( const d3dShader& right );
+    void CopySettings(const d3dShader &right);
 
 protected:
 
-    d3dContext* context;
-    d3dState* d3d;
+    d3dContext *context;
+    d3dState *d3d;
 
     // alpha blending
     pddiBlendMode blendMode;

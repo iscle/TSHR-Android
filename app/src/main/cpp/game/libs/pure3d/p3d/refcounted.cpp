@@ -13,17 +13,15 @@
 
 
 // Overloaded allocator/deallocatorry ref counted objects
-void* tRefCountedTemp::operator new(size_t size)
-{
-  void *memPtr = p3d::MallocTemp(size);  // get the memory
+void *tRefCountedTemp::operator new(size_t size) {
+    void *memPtr = p3d::MallocTemp(size);  // get the memory
 #ifdef RADLOAD_HEAP_DEBUGGING
-  radLoadHeapDebugAddAddress( memPtr );
+    radLoadHeapDebugAddAddress(memPtr);
 #endif
-  return memPtr;
+    return memPtr;
 }
 
-void tRefCountedTemp::operator delete(void *ptr)
-{
-  p3d::FreeTemp(ptr);
+void tRefCountedTemp::operator delete(void *ptr) {
+    p3d::FreeTemp(ptr);
 }                                    
 

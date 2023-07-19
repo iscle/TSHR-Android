@@ -11,15 +11,13 @@
 
 //----------------------------------------------------
 // pddiDisplay enums
-enum pddiDisplayMode
-{
+enum pddiDisplayMode {
     PDDI_DISPLAY_FULLSCREEN,
     PDDI_DISPLAY_WINDOW,
     PDDI_DISPLAY_FULLSCREEN_PAL
 };
 
-enum pddiLockType
-{ 
+enum pddiLockType {
     PDDI_LOCK_READONLY,
     PDDI_LOCK_WRITEONLY,
     PDDI_LOCK_READWRITE
@@ -29,8 +27,7 @@ enum pddiLockType
 // pddiRenderContext enums
 
 // matrix stack types
-enum pddiMatrixType
-{
+enum pddiMatrixType {
     PDDI_MATRIX_MODELVIEW,
     PDDI_MATRIX_TEXTURE0,
     PDDI_MATRIX_TEXTURE1,
@@ -39,25 +36,22 @@ enum pddiMatrixType
 };
 
 // projection
-enum pddiProjectionMode
-{
+enum pddiProjectionMode {
     PDDI_PROJECTION_PERSPECTIVE,
     PDDI_PROJECTION_ORTHOGRAPHIC,
     PDDI_PROJECTION_DEVICE
 };
 
 // buffer clear flags
-enum pddiBufferMask
-{
-    PDDI_BUFFER_COLOUR  = 1,
-    PDDI_BUFFER_DEPTH   = 2,
+enum pddiBufferMask {
+    PDDI_BUFFER_COLOUR = 1,
+    PDDI_BUFFER_DEPTH = 2,
     PDDI_BUFFER_STENCIL = 4,
-    PDDI_BUFFER_ALL     = 0xffffffff
+    PDDI_BUFFER_ALL = 0xffffffff
 };
 
 // z buffer comparison flags
-enum pddiCompareMode
-{
+enum pddiCompareMode {
     PDDI_COMPARE_NONE,
     PDDI_COMPARE_ALWAYS,
     PDDI_COMPARE_LESS,
@@ -69,27 +63,24 @@ enum pddiCompareMode
 };
 
 // stencil modes
-enum pddiStencilOp
-{
-     PDDI_STENCIL_KEEP,
-     PDDI_STENCIL_ZERO,
-     PDDI_STENCIL_REPLACE,
-     PDDI_STENCIL_INCR,
-     PDDI_STENCIL_DECR,
-     PDDI_STENCIL_INVERT
+enum pddiStencilOp {
+    PDDI_STENCIL_KEEP,
+    PDDI_STENCIL_ZERO,
+    PDDI_STENCIL_REPLACE,
+    PDDI_STENCIL_INCR,
+    PDDI_STENCIL_DECR,
+    PDDI_STENCIL_INVERT
 };
 
 // fill modes
-enum pddiFillMode
-{
+enum pddiFillMode {
     PDDI_FILL_SOLID,
     PDDI_FILL_WIRE,
     PDDI_FILL_POINT
 };
 
 // backface culling modes
-enum pddiCullMode
-{
+enum pddiCullMode {
     PDDI_CULL_NONE,
     PDDI_CULL_NORMAL,
     PDDI_CULL_INVERTED,
@@ -100,8 +91,7 @@ enum pddiCullMode
 };
 
 // texture-cbv combine modes
-enum pddiTextureBlendMode
-{
+enum pddiTextureBlendMode {
     PDDI_TEXBLEND_DECAL,
     PDDI_TEXBLEND_DECALALPHA,
     PDDI_TEXBLEND_MODULATE,
@@ -111,15 +101,13 @@ enum pddiTextureBlendMode
 };
 
 // texture coordinate wrapping modes
-enum pddiUVMode
-{
+enum pddiUVMode {
     PDDI_UV_TILE,
     PDDI_UV_CLAMP
 };
 
 // texture filtering modes
-enum pddiFilterMode
-{
+enum pddiFilterMode {
     PDDI_FILTER_NONE,
     PDDI_FILTER_BILINEAR,
     PDDI_FILTER_MIPMAP,
@@ -128,87 +116,89 @@ enum pddiFilterMode
 };
 
 // light types
-enum pddiLightType
-{
+enum pddiLightType {
     PDDI_LIGHT_DIRECTIONAL, // infinite-directional light
     PDDI_LIGHT_POINT,        // pseudo-point light source
     PDDI_LIGHT_SPOT
 };
 
 // vertex components
-enum pddiVertexMask
-{
+enum pddiVertexMask {
     // first four bits of mask specify number of
     // texture co-ordinates
-    PDDI_V_UVCOUNT0    = 0,
-    PDDI_V_UVCOUNT1    = 1,
-    PDDI_V_UVCOUNT2    = 2,
-    PDDI_V_UVCOUNT3    = 3,
-    PDDI_V_UVCOUNT4    = 4,
-    PDDI_V_UVCOUNT5    = 5,
-    PDDI_V_UVCOUNT6    = 6,
-    PDDI_V_UVCOUNT7    = 7,
-    PDDI_V_UVCOUNT8    = 8,
-    PDDI_V_UVMASK      = 15,
+    PDDI_V_UVCOUNT0 = 0,
+    PDDI_V_UVCOUNT1 = 1,
+    PDDI_V_UVCOUNT2 = 2,
+    PDDI_V_UVCOUNT3 = 3,
+    PDDI_V_UVCOUNT4 = 4,
+    PDDI_V_UVCOUNT5 = 5,
+    PDDI_V_UVCOUNT6 = 6,
+    PDDI_V_UVCOUNT7 = 7,
+    PDDI_V_UVCOUNT8 = 8,
+    PDDI_V_UVMASK = 15,
     // remaining bits are flags to indicate the 
     // presence/absence of particular components
-    PDDI_V_NORMAL       = 1<<4,
+    PDDI_V_NORMAL = 1 << 4,
     // PDDI_V_COLOUR and PDDI_V_COLOUR2 are mutually exclusive.
-    PDDI_V_COLOUR       = 1<<5, // Use one colour per vertex. (Pure3D::Mesh::COLOURLIST)
-    PDDI_V_SPECULAR     = 1<<6, 
-    PDDI_V_INDICES      = 1<<7,
-    PDDI_V_WEIGHTS      = 1<<8,
-    PDDI_V_SIZE         = 1<<9,
-    PDDI_V_W            = 1<<10,
-    PDDI_V_BINORMAL     = 1<<11,
-    PDDI_V_TANGENT      = 1<<12,
-    PDDI_V_POSITION     = 1<<13,
-    PDDI_V_COLOUR2      = 1<<14, // Use multiple colours per vertex. (Pure3D::Mesh::MULTICOLOURLIST)
+    PDDI_V_COLOUR = 1 << 5, // Use one colour per vertex. (Pure3D::Mesh::COLOURLIST)
+    PDDI_V_SPECULAR = 1 << 6,
+    PDDI_V_INDICES = 1 << 7,
+    PDDI_V_WEIGHTS = 1 << 8,
+    PDDI_V_SIZE = 1 << 9,
+    PDDI_V_W = 1 << 10,
+    PDDI_V_BINORMAL = 1 << 11,
+    PDDI_V_TANGENT = 1 << 12,
+    PDDI_V_POSITION = 1 << 13,
+    PDDI_V_COLOUR2 = 1 << 14, // Use multiple colours per vertex. (Pure3D::Mesh::MULTICOLOURLIST)
     // The next three bits of mask specify the number of vertex colours.
-    PDDI_V_COLOUR_COUNT0 = 0<<15,
-    PDDI_V_COLOUR_COUNT1 = 1<<15,
-    PDDI_V_COLOUR_COUNT2 = 2<<15,
-    PDDI_V_COLOUR_COUNT3 = 3<<15,
-    PDDI_V_COLOUR_COUNT4 = 4<<15,
-    PDDI_V_COLOUR_COUNT5 = 5<<15,
-    PDDI_V_COLOUR_COUNT6 = 6<<15,
-    PDDI_V_COLOUR_COUNT7 = 7<<15,
-    PDDI_V_COLOUR_MASK   = 7<<15,
+    PDDI_V_COLOUR_COUNT0 = 0 << 15,
+    PDDI_V_COLOUR_COUNT1 = 1 << 15,
+    PDDI_V_COLOUR_COUNT2 = 2 << 15,
+    PDDI_V_COLOUR_COUNT3 = 3 << 15,
+    PDDI_V_COLOUR_COUNT4 = 4 << 15,
+    PDDI_V_COLOUR_COUNT5 = 5 << 15,
+    PDDI_V_COLOUR_COUNT6 = 6 << 15,
+    PDDI_V_COLOUR_COUNT7 = 7 << 15,
+    PDDI_V_COLOUR_MASK = 7 << 15,
     PDDI_V_COLOUR_MASK_OFFSET = 15
 };
-    
+
 // Number of colour sets (CBVs per vertex).  Used with PDDI_V_COLOUR2.
-inline unsigned PddiNumColourSets(unsigned vertexFormat)
-{
+inline unsigned PddiNumColourSets(unsigned vertexFormat) {
     return (vertexFormat & PDDI_V_COLOUR_MASK) >> PDDI_V_COLOUR_MASK_OFFSET;
 }
 
 // vertex types
-const unsigned PDDI_V_C    = PDDI_V_POSITION | PDDI_V_COLOUR;
-const unsigned PDDI_V_C2   = PDDI_V_POSITION | PDDI_V_COLOUR2;
-const unsigned PDDI_V_N    = PDDI_V_POSITION | PDDI_V_NORMAL;
-const unsigned PDDI_V_T    = PDDI_V_POSITION | PDDI_V_UVCOUNT1;
-const unsigned PDDI_V_T2   = PDDI_V_POSITION | PDDI_V_UVCOUNT2;
-const unsigned PDDI_V_CT   = PDDI_V_POSITION | PDDI_V_COLOUR  | PDDI_V_UVCOUNT1;
-const unsigned PDDI_V_C2T  = PDDI_V_POSITION | PDDI_V_COLOUR2 | PDDI_V_UVCOUNT1;
-const unsigned PDDI_V_CT2  = PDDI_V_POSITION | PDDI_V_COLOUR  | PDDI_V_UVCOUNT2;
+const unsigned PDDI_V_C = PDDI_V_POSITION | PDDI_V_COLOUR;
+const unsigned PDDI_V_C2 = PDDI_V_POSITION | PDDI_V_COLOUR2;
+const unsigned PDDI_V_N = PDDI_V_POSITION | PDDI_V_NORMAL;
+const unsigned PDDI_V_T = PDDI_V_POSITION | PDDI_V_UVCOUNT1;
+const unsigned PDDI_V_T2 = PDDI_V_POSITION | PDDI_V_UVCOUNT2;
+const unsigned PDDI_V_CT = PDDI_V_POSITION | PDDI_V_COLOUR | PDDI_V_UVCOUNT1;
+const unsigned PDDI_V_C2T = PDDI_V_POSITION | PDDI_V_COLOUR2 | PDDI_V_UVCOUNT1;
+const unsigned PDDI_V_CT2 = PDDI_V_POSITION | PDDI_V_COLOUR | PDDI_V_UVCOUNT2;
 const unsigned PDDI_V_C2T2 = PDDI_V_POSITION | PDDI_V_COLOUR2 | PDDI_V_UVCOUNT2;
-const unsigned PDDI_V_NT   = PDDI_V_POSITION | PDDI_V_NORMAL  | PDDI_V_UVCOUNT1;
-const unsigned PDDI_V_NT2  = PDDI_V_POSITION | PDDI_V_NORMAL  | PDDI_V_UVCOUNT2;
+const unsigned PDDI_V_NT = PDDI_V_POSITION | PDDI_V_NORMAL | PDDI_V_UVCOUNT1;
+const unsigned PDDI_V_NT2 = PDDI_V_POSITION | PDDI_V_NORMAL | PDDI_V_UVCOUNT2;
 // skinning types
-const unsigned PDDI_V_CKT   = PDDI_V_POSITION | PDDI_V_COLOUR  | PDDI_V_UVCOUNT1 | PDDI_V_INDICES | PDDI_V_WEIGHTS;
-const unsigned PDDI_V_C2KT  = PDDI_V_POSITION | PDDI_V_COLOUR2 | PDDI_V_UVCOUNT1 | PDDI_V_INDICES | PDDI_V_WEIGHTS;
-const unsigned PDDI_V_NKT   = PDDI_V_POSITION | PDDI_V_NORMAL  | PDDI_V_UVCOUNT1 | PDDI_V_INDICES | PDDI_V_WEIGHTS;
-const unsigned PDDI_V_CKT2  = PDDI_V_POSITION | PDDI_V_COLOUR  | PDDI_V_UVCOUNT2 | PDDI_V_INDICES | PDDI_V_WEIGHTS;
-const unsigned PDDI_V_C2KT2 = PDDI_V_POSITION | PDDI_V_COLOUR2 | PDDI_V_UVCOUNT2 | PDDI_V_INDICES | PDDI_V_WEIGHTS;
-const unsigned PDDI_V_NKT2  = PDDI_V_POSITION | PDDI_V_NORMAL  | PDDI_V_UVCOUNT2 | PDDI_V_INDICES | PDDI_V_WEIGHTS;
+const unsigned PDDI_V_CKT =
+        PDDI_V_POSITION | PDDI_V_COLOUR | PDDI_V_UVCOUNT1 | PDDI_V_INDICES | PDDI_V_WEIGHTS;
+const unsigned PDDI_V_C2KT =
+        PDDI_V_POSITION | PDDI_V_COLOUR2 | PDDI_V_UVCOUNT1 | PDDI_V_INDICES | PDDI_V_WEIGHTS;
+const unsigned PDDI_V_NKT =
+        PDDI_V_POSITION | PDDI_V_NORMAL | PDDI_V_UVCOUNT1 | PDDI_V_INDICES | PDDI_V_WEIGHTS;
+const unsigned PDDI_V_CKT2 =
+        PDDI_V_POSITION | PDDI_V_COLOUR | PDDI_V_UVCOUNT2 | PDDI_V_INDICES | PDDI_V_WEIGHTS;
+const unsigned PDDI_V_C2KT2 =
+        PDDI_V_POSITION | PDDI_V_COLOUR2 | PDDI_V_UVCOUNT2 | PDDI_V_INDICES | PDDI_V_WEIGHTS;
+const unsigned PDDI_V_NKT2 =
+        PDDI_V_POSITION | PDDI_V_NORMAL | PDDI_V_UVCOUNT2 | PDDI_V_INDICES | PDDI_V_WEIGHTS;
 // xbox only
-const unsigned PDDI_V_CS  = PDDI_V_POSITION | PDDI_V_COLOUR | PDDI_V_SIZE;
+const unsigned PDDI_V_CS = PDDI_V_POSITION | PDDI_V_COLOUR | PDDI_V_SIZE;
 const unsigned PDDI_V_CSW = PDDI_V_POSITION | PDDI_V_COLOUR | PDDI_V_SIZE | PDDI_V_W;
 
 
-enum pddiPrimType
-{
+enum pddiPrimType {
     PDDI_PRIM_TRIANGLES,
     PDDI_PRIM_TRISTRIP,
     PDDI_PRIM_LINES,
@@ -216,18 +206,16 @@ enum pddiPrimType
     PDDI_PRIM_POINTS
 };
 
-enum pddiStateMask
-{
-    PDDI_STATE_RENDER =     (1<<0),
-    PDDI_STATE_VIEW =       (1<<1),
-    PDDI_STATE_LIGHTING =   (1<<2),
-    PDDI_STATE_FOG =        (1<<3),
-    PDDI_STATE_STENCIL =    (1<<4),
-    PDDI_STATE_ALL =        (0xffffffff)
+enum pddiStateMask {
+    PDDI_STATE_RENDER = (1 << 0),
+    PDDI_STATE_VIEW = (1 << 1),
+    PDDI_STATE_LIGHTING = (1 << 2),
+    PDDI_STATE_FOG = (1 << 3),
+    PDDI_STATE_STENCIL = (1 << 4),
+    PDDI_STATE_ALL = (0xffffffff)
 };
 
-enum pddiStatType
-{
+enum pddiStatType {
     PDDI_STAT_CURRENT_FRAME,
     PDDI_STAT_FRAME_TIME,
     PDDI_STAT_BUFFERED_PRIM,
@@ -270,15 +258,13 @@ enum pddiStatType
 // pddiTexture enums
 
 // orientation
-enum pddiTextureOrigin
-{
+enum pddiTextureOrigin {
     PDDI_ORIGIN_TOP,
     PDDI_ORIGIN_BOTTOM
 };
 
 // texture types
-enum pddiTextureType
-{
+enum pddiTextureType {
     PDDI_TEXTYPE_RGB,
     PDDI_TEXTYPE_PALETTIZED,
     PDDI_TEXTYPE_LUMINANCE,
@@ -304,8 +290,7 @@ enum pddiTextureType
 };
 
 // pixel formats
-enum pddiPixelFormat
-{
+enum pddiPixelFormat {
     PDDI_PIXEL_UNKNOWN,
     PDDI_PIXEL_RGB565,
     PDDI_PIXEL_ARGB1555,
@@ -337,8 +322,7 @@ enum pddiPixelFormat
     PDDI_PIXEL_GC_DXT1
 };
 
-enum pddiTextureUsageHint
-{
+enum pddiTextureUsageHint {
     PDDI_USAGE_STATIC,
     PDDI_USAGE_DYNAMIC,
     PDDI_USAGE_NOCACHE
@@ -346,8 +330,7 @@ enum pddiTextureUsageHint
 
 //-------------------------------------------------------------------
 // pddiMaterial enums
-enum pddiBlendMode
-{
+enum pddiBlendMode {
     PDDI_BLEND_NONE,
     PDDI_BLEND_ALPHA,
     PDDI_BLEND_ADD,
@@ -359,14 +342,12 @@ enum pddiBlendMode
     PDDI_BLEND_DESTALPHA
 };
 
-enum pddiShadeMode
-{
+enum pddiShadeMode {
     PDDI_SHADE_FLAT,
     PDDI_SHADE_GOURAUD
 };
 
-enum pddiTextureGen
-{
+enum pddiTextureGen {
     PDDI_TEXGEN_NONE,
     PDDI_TEXGEN_ENVMAP,    // environment mapping
     PDDI_TEXGEN_SPHEREMAP  // spherical mapping
@@ -376,19 +357,17 @@ enum pddiTextureGen
 // Blend mode for multiple CBVs. Cobmine a colour from CBV SetA and
 // SetB using the float blend value f.  SetA and SetB selected from
 // pddiMultiCBVBlendOperand below.
-enum pddiMultiCBVBlendMode
-{
+enum pddiMultiCBVBlendMode {
     PDDI_MULTI_CBV_BLEND_NONE,       // SetA
     PDDI_MULTI_CBV_BLEND_ADD,        // SetA + f * SetB
     PDDI_MULTI_CBV_BLEND_SUBTRACT,   // SetA - f * SetB
-    PDDI_MULTI_CBV_BLEND_MODULATE,   // SetA * ( ( 1 - f) + f * setB )
-    PDDI_MULTI_CBV_BLEND_INTERPOLATE // ( 1 - f) * SetA + f * setB
+    PDDI_MULTI_CBV_BLEND_MODULATE,   // SetA * ((1 - f) + f * setB)
+    PDDI_MULTI_CBV_BLEND_INTERPOLATE // (1 - f) * SetA + f * setB
 };
 
 //-------------------------------------------------------------------
 // Target operands for multiple CBVs (use with PDDI_V_COLOUR2).
-enum pddiMultiCBVBlendOperand
-{
+enum pddiMultiCBVBlendOperand {
     PDDI_MULTI_CBV_BLEND_COLOUR,
     PDDI_MULTI_CBV_SET1,
     PDDI_MULTI_CBV_SET2,

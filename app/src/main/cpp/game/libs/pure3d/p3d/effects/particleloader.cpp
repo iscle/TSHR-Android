@@ -29,52 +29,46 @@
 // Class tGeneratorFactoryLoader
 //
 //*****************************************************************************
-tBaseGeneratorFactory* tGeneratorFactoryLoader::LoadGeneratorFactory(unsigned generatorType, tChunkFile* file, tEntityStore* store)
-{
+tBaseGeneratorFactory *
+tGeneratorFactoryLoader::LoadGeneratorFactory(unsigned generatorType, tChunkFile *file,
+                                              tEntityStore *store) {
     P3DASSERT(file->GetCurrentID() == Pure3D::ParticleSystem::GENERATOR_ANIMATION);
 
     unsigned version = file->GetLong();
     P3DASSERT(version == GENERATOR_ANIMATION_VERSION);
 
-    tBaseGeneratorFactory* factory = NULL;
-    switch (generatorType)
-    {
-        case p3dParticleSystemConstants::GeneratorType::POINT:
-        {
+    tBaseGeneratorFactory *factory = NULL;
+    switch (generatorType) {
+        case p3dParticleSystemConstants::GeneratorType::POINT: {
             factory = new tPointGeneratorFactory;
             break;
         }
-        case p3dParticleSystemConstants::GeneratorType::PLANE:
-        {
+        case p3dParticleSystemConstants::GeneratorType::PLANE: {
             factory = new tPlaneGeneratorFactory;
             break;
         }
-        case p3dParticleSystemConstants::GeneratorType::SPHERE:
-        {
+        case p3dParticleSystemConstants::GeneratorType::SPHERE: {
             factory = new tSphereGeneratorFactory;
             break;
         }
-        default:
-        {
+        default: {
             return NULL;
             break;
         }
     }
-    
-    tAnimationLoader* loader = dynamic_cast<tAnimationLoader*>(p3d::loadManager->GetP3DHandler()->GetHandler(Pure3D::Animation::AnimationData::ANIMATION));
+
+    tAnimationLoader *loader = dynamic_cast<tAnimationLoader *>(p3d::loadManager->GetP3DHandler()->GetHandler(
+            Pure3D::Animation::AnimationData::ANIMATION));
     loader->AddRef();
 
     int sortOrder = loader->GetSortOrder();
     loader->SetSortOrder(0);
 
-    while(file->ChunksRemaining())
-    {
-        switch(file->BeginChunk())
-        {
-            case Pure3D::Animation::AnimationData::ANIMATION:
-            {   
-                tAnimation* anim = (tAnimation*)loader->LoadObject(file,store);
-                tRefCounted::Assign(factory->generatorAnim,anim);
+    while (file->ChunksRemaining()) {
+        switch (file->BeginChunk()) {
+            case Pure3D::Animation::AnimationData::ANIMATION: {
+                tAnimation *anim = (tAnimation *) loader->LoadObject(file, store);
+                tRefCounted::Assign(factory->generatorAnim, anim);
                 factory->CopyName(anim);
                 break;
             }
@@ -90,7 +84,7 @@ tBaseGeneratorFactory* tGeneratorFactoryLoader::LoadGeneratorFactory(unsigned ge
 
     loader->Release();
 
-    return factory;    
+    return factory;
 }
 
 //*****************************************************************************
@@ -98,28 +92,25 @@ tBaseGeneratorFactory* tGeneratorFactoryLoader::LoadGeneratorFactory(unsigned ge
 // Class tEmitterFactoryLoader
 //
 //*****************************************************************************
-tBaseEmitterFactory* tEmitterFactoryLoader::LoadEmitterFactory(tChunkFile* file, tEntityStore* store)
-{
-    switch(file->GetCurrentID())
-    {
-        case Pure3D::ParticleSystem::SPRITE_EMITTER_FACTORY:
-        {
-            tSpriteEmitterFactory* factory = new tSpriteEmitterFactory;
-            LoadSpriteEmitterFactoryData(file,store,factory);
+tBaseEmitterFactory *
+tEmitterFactoryLoader::LoadEmitterFactory(tChunkFile *file, tEntityStore *store) {
+    switch (file->GetCurrentID()) {
+        case Pure3D::ParticleSystem::SPRITE_EMITTER_FACTORY: {
+            tSpriteEmitterFactory *factory = new tSpriteEmitterFactory;
+            LoadSpriteEmitterFactoryData(file, store, factory);
             return factory;
             break;
         }
-        default:
-        {
+        default: {
             return NULL;
             break;
         }
     }
 }
 
-void tEmitterFactoryLoader::LoadBaseEmitterFactoryData(tChunkFile* file, tEntityStore* store, tBaseEmitterFactory* factory)
-{
-    P3DASSERT(file->GetCurrentID()==Pure3D::ParticleSystem::BASE_EMITTER_FACTORY);
+void tEmitterFactoryLoader::LoadBaseEmitterFactoryData(tChunkFile *file, tEntityStore *store,
+                                                       tBaseEmitterFactory *factory) {
+    P3DASSERT(file->GetCurrentID() == Pure3D::ParticleSystem::BASE_EMITTER_FACTORY);
 
     unsigned version = file->GetLong();
     P3DASSERT(version == BASE_PARTICLE_EMITTER_FACTORY_VERSION);
@@ -129,63 +120,57 @@ void tEmitterFactoryLoader::LoadBaseEmitterFactoryData(tChunkFile* file, tEntity
     factory->SetName(name);
     factory->particleType = file->GetLong();
     factory->generatorType = file->GetLong();
-    factory->zTest = file->GetLong()==1;
-    factory->zWrite = file->GetLong()==1;
-    factory->fog = file->GetLong()==1;
+    factory->zTest = file->GetLong() == 1;
+    factory->zWrite = file->GetLong() == 1;
+    factory->fog = file->GetLong() == 1;
     factory->maxNumParticles = file->GetLong();
-    factory->infiniteLife = file->GetLong()==1;
+    factory->infiniteLife = file->GetLong() == 1;
     factory->rotationalCohesion = file->GetFloat();
     factory->translationalCohesion = file->GetFloat();
 
-    tAnimationLoader* animLoader = dynamic_cast<tAnimationLoader*>(p3d::loadManager->GetP3DHandler()->GetHandler(Pure3D::Animation::AnimationData::ANIMATION));
+    tAnimationLoader *animLoader = dynamic_cast<tAnimationLoader *>(p3d::loadManager->GetP3DHandler()->GetHandler(
+            Pure3D::Animation::AnimationData::ANIMATION));
     animLoader->AddRef();
 
     int sortOrder = animLoader->GetSortOrder();
     animLoader->SetSortOrder(0);
 
-    while(file->ChunksRemaining())
-    {
-        switch(file->BeginChunk())
-        {
-            case Pure3D::ParticleSystem::PARTICLE_ANIMATION:
-            {
+    while (file->ChunksRemaining()) {
+        switch (file->BeginChunk()) {
+            case Pure3D::ParticleSystem::PARTICLE_ANIMATION: {
                 version = file->GetLong();
                 P3DASSERT(version == PARTICLE_ANIMATION_VERSION);
 
                 file->BeginChunk();
-                tAnimation* anim = (tAnimation*)animLoader->LoadObject(file,store);
-                if (anim)
-                {
+                tAnimation *anim = (tAnimation *) animLoader->LoadObject(file, store);
+                if (anim) {
                     anim->AddRef();
-                    switch (factory->particleType)
-                    {
-                        case p3dParticleSystemConstants::ParticleType::SPRITE:
-                        {
-                            LoadSpriteParticleData(anim,(tSpriteEmitterFactory*)factory);
+                    switch (factory->particleType) {
+                        case p3dParticleSystemConstants::ParticleType::SPRITE: {
+                            LoadSpriteParticleData(anim, (tSpriteEmitterFactory *) factory);
                             break;
                         }
-                    }                    
+                    }
                     anim->Release();
                 }
                 file->EndChunk();
                 break;
             }
-            case Pure3D::ParticleSystem::EMITTER_ANIMATION:
-            {
+            case Pure3D::ParticleSystem::EMITTER_ANIMATION: {
                 version = file->GetLong();
                 P3DASSERT(version == EMITTER_ANIMATION_VERSION);
 
                 file->BeginChunk();
-                tAnimation* anim = (tAnimation*)animLoader->LoadObject(file,store);
-                tRefCounted::Assign(factory->emitterAnim,anim);
+                tAnimation *anim = (tAnimation *) animLoader->LoadObject(file, store);
+                tRefCounted::Assign(factory->emitterAnim, anim);
                 file->EndChunk();
                 break;
             }
-            case Pure3D::ParticleSystem::GENERATOR_ANIMATION:
-            {
+            case Pure3D::ParticleSystem::GENERATOR_ANIMATION: {
                 tGeneratorFactoryLoader genLoader;
-                tBaseGeneratorFactory* genFactory = genLoader.LoadGeneratorFactory(factory->generatorType,file,store);
-                tRefCounted::Assign(factory->generatorFactory,genFactory);
+                tBaseGeneratorFactory *genFactory = genLoader.LoadGeneratorFactory(
+                        factory->generatorType, file, store);
+                tRefCounted::Assign(factory->generatorFactory, genFactory);
                 break;
             }
         }
@@ -196,10 +181,10 @@ void tEmitterFactoryLoader::LoadBaseEmitterFactoryData(tChunkFile* file, tEntity
 
     animLoader->Release();
 }
-    
-void tEmitterFactoryLoader::LoadSpriteEmitterFactoryData(tChunkFile* file, tEntityStore* store, tSpriteEmitterFactory* factory)
-{
-    P3DASSERT(file->GetCurrentID()==Pure3D::ParticleSystem::SPRITE_EMITTER_FACTORY);
+
+void tEmitterFactoryLoader::LoadSpriteEmitterFactoryData(tChunkFile *file, tEntityStore *store,
+                                                         tSpriteEmitterFactory *factory) {
+    P3DASSERT(file->GetCurrentID() == Pure3D::ParticleSystem::SPRITE_EMITTER_FACTORY);
 
     unsigned version = file->GetLong();
     P3DASSERT(version == SPRITE_PARTICLE_EMITTER_FACTORY_VERSION);
@@ -209,7 +194,7 @@ void tEmitterFactoryLoader::LoadSpriteEmitterFactoryData(tChunkFile* file, tEnti
     factory->SetName(buf);
 
     file->GetPString(buf);
-    tShader* shader = p3d::find<tShader>(store, buf);
+    tShader *shader = p3d::find<tShader>(store, buf);
 
     tRefCounted::Assign(factory->shader, shader);
     factory->angleMode = file->GetLong();
@@ -218,21 +203,17 @@ void tEmitterFactoryLoader::LoadSpriteEmitterFactoryData(tChunkFile* file, tEnti
     factory->numTexFrames = file->GetLong();
     factory->texFrameRate = file->GetLong();
 
-    P3DASSERT(factory->numTexFrames>0);
-    float inc = 1.0f/(float)factory->numTexFrames;
+    P3DASSERT(factory->numTexFrames > 0);
+    float inc = 1.0f / (float) factory->numTexFrames;
 
-    factory->texFrameCoords = new float[factory->numTexFrames+1];
-    for (int i = 0; i <= factory->numTexFrames; i++)
-    {
-        factory->texFrameCoords[i] = i*inc;
+    factory->texFrameCoords = new float[factory->numTexFrames + 1];
+    for (int i = 0; i <= factory->numTexFrames; i++) {
+        factory->texFrameCoords[i] = i * inc;
     }
 
-    while(file->ChunksRemaining())
-    {
-        switch(file->BeginChunk())
-        {
-            case Pure3D::ParticleSystem::BASE_EMITTER_FACTORY:
-            {
+    while (file->ChunksRemaining()) {
+        switch (file->BeginChunk()) {
+            case Pure3D::ParticleSystem::BASE_EMITTER_FACTORY: {
                 LoadBaseEmitterFactoryData(file, store, factory);
                 break;
             }
@@ -241,126 +222,114 @@ void tEmitterFactoryLoader::LoadSpriteEmitterFactoryData(tChunkFile* file, tEnti
     }
 }
 
-void tEmitterFactoryLoader::LoadBaseParticleData(tAnimation* particleAnim, tBaseEmitterFactory* factory)
-{
-    if ((particleAnim)&&(factory))
-    {
-        const tFloat1Channel* floatchannel = NULL;
-        floatchannel = particleAnim->GetGroupByIndex(0)->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Particle::SPEED_OVER_LIFE_SPOL);
-        if (floatchannel)
-        {
+void tEmitterFactoryLoader::LoadBaseParticleData(tAnimation *particleAnim,
+                                                 tBaseEmitterFactory *factory) {
+    if ((particleAnim) && (factory)) {
+        const tFloat1Channel *floatchannel = NULL;
+        floatchannel = particleAnim->GetGroupByIndex(0)->GetFloat1Channel(
+                Pure3DAnimationChannels::ParticleSystem::Particle::SPEED_OVER_LIFE_SPOL);
+        if (floatchannel) {
             float currentFrame = 0.0f;
-            float frameInc = particleAnim->GetNumFrames()/rmt::LtoF(DEFAULT_LOOK_UP_SIZE);
+            float frameInc = particleAnim->GetNumFrames() / rmt::LtoF(DEFAULT_LOOK_UP_SIZE);
 
-            for (int i = 0; i < DEFAULT_LOOK_UP_SIZE; i++)
-            {
-                floatchannel->GetValue(currentFrame,&(factory->baseLookUp[i].speed));
+            for (int i = 0; i < DEFAULT_LOOK_UP_SIZE; i++) {
+                floatchannel->GetValue(currentFrame, &(factory->baseLookUp[i].speed));
                 currentFrame += frameInc;
-            }      
+            }
         }
-        floatchannel = particleAnim->GetGroupByIndex(0)->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Particle::WEIGHT_OVER_LIFE_WEOL);
-        if (floatchannel)
-        {
+        floatchannel = particleAnim->GetGroupByIndex(0)->GetFloat1Channel(
+                Pure3DAnimationChannels::ParticleSystem::Particle::WEIGHT_OVER_LIFE_WEOL);
+        if (floatchannel) {
             float currentFrame = 0.0f;
-            float frameInc = particleAnim->GetNumFrames()/rmt::LtoF(DEFAULT_LOOK_UP_SIZE);
+            float frameInc = particleAnim->GetNumFrames() / rmt::LtoF(DEFAULT_LOOK_UP_SIZE);
 
-            for (int i = 0; i < DEFAULT_LOOK_UP_SIZE; i++)
-            {
-                floatchannel->GetValue(currentFrame,&(factory->baseLookUp[i].weight));
+            for (int i = 0; i < DEFAULT_LOOK_UP_SIZE; i++) {
+                floatchannel->GetValue(currentFrame, &(factory->baseLookUp[i].weight));
                 currentFrame += frameInc;
-            }      
+            }
         }
     }
 }
 
-void tEmitterFactoryLoader::LoadSpriteParticleData(tAnimation* particleAnim, tSpriteEmitterFactory* factory)
-{
-    if ((particleAnim)&&(factory))
-    {
-        const tIntChannel*    intchannel = NULL;
-        const tFloat1Channel* floatchannel = NULL;
-        const tColourChannel* colourchannel = NULL;
+void tEmitterFactoryLoader::LoadSpriteParticleData(tAnimation *particleAnim,
+                                                   tSpriteEmitterFactory *factory) {
+    if ((particleAnim) && (factory)) {
+        const tIntChannel *intchannel = NULL;
+        const tFloat1Channel *floatchannel = NULL;
+        const tColourChannel *colourchannel = NULL;
 
-        colourchannel = particleAnim->GetGroupByIndex(0)->GetColourChannel(Pure3DAnimationChannels::ParticleSystem::Particle::COLOUR_OVER_LIFE_COOL);
-        if (colourchannel)
-        {
-            float frameInc = particleAnim->GetNumFrames()/rmt::LtoF(DEFAULT_LOOK_UP_SIZE);
+        colourchannel = particleAnim->GetGroupByIndex(0)->GetColourChannel(
+                Pure3DAnimationChannels::ParticleSystem::Particle::COLOUR_OVER_LIFE_COOL);
+        if (colourchannel) {
+            float frameInc = particleAnim->GetNumFrames() / rmt::LtoF(DEFAULT_LOOK_UP_SIZE);
             float currentFrame = 0.0f;
 
-            for (int i = 0; i < DEFAULT_LOOK_UP_SIZE; i++)
-            {
-                colourchannel->GetValue(currentFrame,&(factory->spriteLookUp[i].colour));
+            for (int i = 0; i < DEFAULT_LOOK_UP_SIZE; i++) {
+                colourchannel->GetValue(currentFrame, &(factory->spriteLookUp[i].colour));
                 currentFrame += frameInc;
             }
-            
+
             factory->colourAnimMode = p3dParticleSystemConstants::ColourAnimMode::COLOUR;
         }
-        intchannel = particleAnim->GetGroupByIndex(0)->GetIntChannel(Pure3DAnimationChannels::ParticleSystem::Particle::ALPHA_OVER_LIFE_ALOL);
-        if (intchannel)
-        {
+        intchannel = particleAnim->GetGroupByIndex(0)->GetIntChannel(
+                Pure3DAnimationChannels::ParticleSystem::Particle::ALPHA_OVER_LIFE_ALOL);
+        if (intchannel) {
             float currentFrame = 0.0f;
-            float frameInc = particleAnim->GetNumFrames()/rmt::LtoF(DEFAULT_LOOK_UP_SIZE);
+            float frameInc = particleAnim->GetNumFrames() / rmt::LtoF(DEFAULT_LOOK_UP_SIZE);
 
-            for (int i = 0; i < DEFAULT_LOOK_UP_SIZE; i++)
-            {
+            for (int i = 0; i < DEFAULT_LOOK_UP_SIZE; i++) {
                 int alpha;
-                intchannel->GetValue(currentFrame,&alpha);
+                intchannel->GetValue(currentFrame, &alpha);
                 factory->spriteLookUp[i].colour.SetAlpha(alpha);
                 currentFrame += frameInc;
             }
 
-            if (factory->colourAnimMode == p3dParticleSystemConstants::ColourAnimMode::COLOUR)
-            {
-               factory->colourAnimMode = p3dParticleSystemConstants::ColourAnimMode::BOTH;
-            }
-            else
-            {
+            if (factory->colourAnimMode == p3dParticleSystemConstants::ColourAnimMode::COLOUR) {
+                factory->colourAnimMode = p3dParticleSystemConstants::ColourAnimMode::BOTH;
+            } else {
                 factory->colourAnimMode = p3dParticleSystemConstants::ColourAnimMode::ALPHA;
             }
         }
-        floatchannel = particleAnim->GetGroupByIndex(0)->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Particle::SIZE_OVER_LIFE_SZOL);
-        if (floatchannel)
-        {
+        floatchannel = particleAnim->GetGroupByIndex(0)->GetFloat1Channel(
+                Pure3DAnimationChannels::ParticleSystem::Particle::SIZE_OVER_LIFE_SZOL);
+        if (floatchannel) {
             float currentFrame = 0.0f;
-            float frameInc = particleAnim->GetNumFrames()/rmt::LtoF(DEFAULT_LOOK_UP_SIZE);
+            float frameInc = particleAnim->GetNumFrames() / rmt::LtoF(DEFAULT_LOOK_UP_SIZE);
 
-            for (int i = 0; i < DEFAULT_LOOK_UP_SIZE; i++)
-            {
-                floatchannel->GetValue(currentFrame,&(factory->spriteLookUp[i].size));
+            for (int i = 0; i < DEFAULT_LOOK_UP_SIZE; i++) {
+                floatchannel->GetValue(currentFrame, &(factory->spriteLookUp[i].size));
                 currentFrame += frameInc;
-            }      
+            }
         }
-        if (factory->GetAngleMode()!=p3dParticleSystemConstants::ParticleAngleMode::MOTION_ALIGNED)
-        {            
-            floatchannel = particleAnim->GetGroupByIndex(0)->GetFloat1Channel(Pure3DAnimationChannels::ParticleSystem::Particle::SPIN_OVER_LIFE_SNOL);
-            if (floatchannel)
-            {
+        if (factory->GetAngleMode() !=
+            p3dParticleSystemConstants::ParticleAngleMode::MOTION_ALIGNED) {
+            floatchannel = particleAnim->GetGroupByIndex(0)->GetFloat1Channel(
+                    Pure3DAnimationChannels::ParticleSystem::Particle::SPIN_OVER_LIFE_SNOL);
+            if (floatchannel) {
                 float currentFrame = 0.0f;
-                float frameInc = particleAnim->GetNumFrames()/rmt::LtoF(DEFAULT_LOOK_UP_SIZE);
+                float frameInc = particleAnim->GetNumFrames() / rmt::LtoF(DEFAULT_LOOK_UP_SIZE);
 
-                for (int i = 0; i < DEFAULT_LOOK_UP_SIZE; i++)
-                {
-                    floatchannel->GetValue(currentFrame,&(factory->spriteLookUp[i].spin));
+                for (int i = 0; i < DEFAULT_LOOK_UP_SIZE; i++) {
+                    floatchannel->GetValue(currentFrame, &(factory->spriteLookUp[i].spin));
                     currentFrame += frameInc;
                 }
             }
         }
-        if (factory->GetTextureAnimationMode()==p3dParticleSystemConstants::TextureAnimMode::SPECIFIED)
-        {
-            intchannel = particleAnim->GetGroupByIndex(0)->GetIntChannel(Pure3DAnimationChannels::ParticleSystem::Particle::TEXTURE_OVER_LIFE_TEOL);
-            if (intchannel)
-            {
+        if (factory->GetTextureAnimationMode() ==
+            p3dParticleSystemConstants::TextureAnimMode::SPECIFIED) {
+            intchannel = particleAnim->GetGroupByIndex(0)->GetIntChannel(
+                    Pure3DAnimationChannels::ParticleSystem::Particle::TEXTURE_OVER_LIFE_TEOL);
+            if (intchannel) {
                 float currentFrame = 0.0f;
-                float frameInc = particleAnim->GetNumFrames()/rmt::LtoF(DEFAULT_LOOK_UP_SIZE);
+                float frameInc = particleAnim->GetNumFrames() / rmt::LtoF(DEFAULT_LOOK_UP_SIZE);
 
-                for (int i = 0; i < DEFAULT_LOOK_UP_SIZE; i++)
-                {
-                    intchannel->GetValue(currentFrame,&(factory->spriteLookUp[i].texFrame));
+                for (int i = 0; i < DEFAULT_LOOK_UP_SIZE; i++) {
+                    intchannel->GetValue(currentFrame, &(factory->spriteLookUp[i].texFrame));
                     currentFrame += frameInc;
                 }
             }
         }
-        LoadBaseParticleData(particleAnim,factory);
+        LoadBaseParticleData(particleAnim, factory);
     }
 }
 
@@ -369,13 +338,12 @@ void tEmitterFactoryLoader::LoadSpriteParticleData(tAnimation* particleAnim, tSp
 // Class tParticleSystemFactoryLoader
 //
 //*****************************************************************************
-tParticleSystemFactoryLoader::tParticleSystemFactoryLoader() : tSimpleChunkHandler(Pure3D::ParticleSystem::SYSTEM_FACTORY)
-{
+tParticleSystemFactoryLoader::tParticleSystemFactoryLoader() : tSimpleChunkHandler(
+        Pure3D::ParticleSystem::SYSTEM_FACTORY) {
 }
 
-tEntity* tParticleSystemFactoryLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
-    tParticleSystemFactory* factory = new tParticleSystemFactory;
+tEntity *tParticleSystemFactoryLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
+    tParticleSystemFactory *factory = new tParticleSystemFactory;
 
     // version
     unsigned version = f->GetLong();
@@ -383,63 +351,60 @@ tEntity* tParticleSystemFactoryLoader::LoadObject(tChunkFile* f, tEntityStore* s
 
     // name
     char name[128];
-    f->GetPString( name );
-    factory->SetName( name );   
+    f->GetPString(name);
+    factory->SetName(name);
 
     // frame rate
-    factory->frameTime = 1000.0f/f->GetFloat();
-    
+    factory->frameTime = 1000.0f / f->GetFloat();
+
     // number of frames in animation
-    factory->numFrames = (float)f->GetLong();
+    factory->numFrames = (float) f->GetLong();
 
     // number of frames in over life animation
     f->GetLong();
 
     // cycle anim flag
-    factory->cycleAnim = f->GetWord()==1;
+    factory->cycleAnim = f->GetWord() == 1;
 
     // enable emitter sorting flag
-    factory->enableSorting = f->GetWord()==1;
-   
+    factory->enableSorting = f->GetWord() == 1;
+
     // number of emitters
     factory->numEmitters = f->GetLong();
 
-    if(factory->numEmitters > 0)
-    {
-        factory->emitters = new tBaseEmitterFactory*[factory->numEmitters];
-   
-        int currEmitter = 0;    
-        while( f->ChunksRemaining() )
-        {
-            switch ( f->BeginChunk() )
-            {
-                case Pure3D::ParticleSystem::INSTANCING_INFO:
-                {
+    if (factory->numEmitters > 0) {
+        factory->emitters = new tBaseEmitterFactory *[factory->numEmitters];
+
+        int currEmitter = 0;
+        while (f->ChunksRemaining()) {
+            switch (f->BeginChunk()) {
+                case Pure3D::ParticleSystem::INSTANCING_INFO: {
                     version = f->GetLong();
                     factory->maxInstances = f->GetLong();
                     break;
-                }              
-                case Pure3D::ParticleSystem::SPRITE_EMITTER_FACTORY:
-                {
-                    if (currEmitter<factory->numEmitters)
-                    {
+                }
+                case Pure3D::ParticleSystem::SPRITE_EMITTER_FACTORY: {
+                    if (currEmitter < factory->numEmitters) {
                         tEmitterFactoryLoader loader;
                         factory->emitters[currEmitter] = loader.LoadEmitterFactory(f, store);
                         P3DASSERT(factory->emitters[currEmitter] != NULL);
                         factory->emitters[currEmitter]->AddRef();
-                        factory->emitters[currEmitter]->particlePool = new tParticlePool(factory->emitters[currEmitter]->GetParticleType(), factory->emitters[currEmitter]->GetMaxNumParticles(), factory->GetMaxInstances());                        
+                        factory->emitters[currEmitter]->particlePool = new tParticlePool(
+                                factory->emitters[currEmitter]->GetParticleType(),
+                                factory->emitters[currEmitter]->GetMaxNumParticles(),
+                                factory->GetMaxInstances());
                         factory->emitters[currEmitter]->particlePool->AddRef();
                         currEmitter++;
                     }
                     break;
                 }
                 default:
-                    break;    
+                    break;
             }
             f->EndChunk();
         }
     }
-    
+
     return factory;
 }
 
@@ -448,31 +413,29 @@ tEntity* tParticleSystemFactoryLoader::LoadObject(tChunkFile* f, tEntityStore* s
 // Class tParticleSystemLoader
 //
 //*****************************************************************************
-tParticleSystemLoader::tParticleSystemLoader() : tSimpleChunkHandler(Pure3D::ParticleSystem::SYSTEM)
-{
+tParticleSystemLoader::tParticleSystemLoader() : tSimpleChunkHandler(
+        Pure3D::ParticleSystem::SYSTEM) {
 }
 
-tEntity* tParticleSystemLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{   
+tEntity *tParticleSystemLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
     // version
     unsigned version = f->GetLong();
     P3DASSERT(version == PARTICLE_SYSTEM_VERSION);
 
     char name[256];
-    f->GetPString( name );
-    
+    f->GetPString(name);
+
     char factoryName[256];
-    f->GetPString( factoryName );
+    f->GetPString(factoryName);
 
-    tParticleSystemFactory* factory = p3d::find<tParticleSystemFactory>(store, factoryName);
+    tParticleSystemFactory *factory = p3d::find<tParticleSystemFactory>(store, factoryName);
 
-    if (factory)
-    {
-        tParticleSystem* system = (tParticleSystem*)factory->CreateEffect();
+    if (factory) {
+        tParticleSystem *system = (tParticleSystem *) factory->CreateEffect();
         system->SetName(name);
         return system;
     }
     return NULL;
-    
+
 }
 

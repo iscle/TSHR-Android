@@ -13,28 +13,31 @@
 #include <eestruct.h>
 
 class ps2PrimBuffer;
+
 class ps2Texture;
 
-class ps2SimpleShader : public ps2Shader
-{
+class ps2SimpleShader : public ps2Shader {
 public:
-    ps2SimpleShader(ps2Context* context);
+    ps2SimpleShader(ps2Context *context);
+
     ~ps2SimpleShader();
 
-    virtual const char* GetType()   { return "simple"; }
+    virtual const char *GetType() { return "simple"; }
 
     // called by the device to install the ps2SimpleShader allocation function
     static void Install();
 
     // returns the vu1 program to call
-    void Bind(GSContext* gsContext, VifStream& stream);
+    void Bind(GSContext *gsContext, VifStream &stream);
+
     void Validate(unsigned format);
 
-    static void SetContext(ps2Context* c){ g_context = c; };
-    void CopySettings( const ps2SimpleShader& right );
+    static void SetContext(ps2Context *c) { g_context = c; };
+
+    void CopySettings(const ps2SimpleShader &right);
 
 protected:
-    static ps2Context* g_context;
+    static ps2Context *g_context;
 
     // pddiBaseShader interface
     static pddiShadeColourTable colourTable[];
@@ -42,15 +45,20 @@ protected:
     static pddiShadeIntTable intTable[];
     static pddiShadeFloatTable floatTable[];
 
-    pddiShadeTextureTable* GetTextureTable(void) { return textureTable; }
-    pddiShadeIntTable*     GetIntTable(void)     { return intTable; }
-    pddiShadeFloatTable*   GetFloatTable(void)   { return floatTable; }
-    pddiShadeColourTable*  GetColourTable(void)  { return colourTable; }
+    pddiShadeTextureTable *GetTextureTable(void) { return textureTable; }
+
+    pddiShadeIntTable *GetIntTable(void) { return intTable; }
+
+    pddiShadeFloatTable *GetFloatTable(void) { return floatTable; }
+
+    pddiShadeColourTable *GetColourTable(void) { return colourTable; }
 
     // ps2SimpleShader interface
     // texture
-    void SetTexture(pddiTexture* texture);
+    void SetTexture(pddiTexture *texture);
+
     void SetUVMode(int mode);
+
     void SetFilterMode(int mode);
 
     // shading
@@ -58,19 +66,27 @@ protected:
 
     // lighting
     void EnableLighting(int enable);
+
     void SetDiffuse(pddiColour colour);
+
     void SetEmissive(pddiColour);
+
     void SetSpecular(pddiColour);
+
     void SetShininess(float power);
+
     void SetEmissiveAlpha(int alpha);
-    
+
     // alpha blending
     void SetBlendMode(int mode);
+
     void EnableAlphaTest(int enable);
+
     void SetAlphaCompare(int compare);
 
     // alpha compare
     void SetAlphaThreshold(float threshold);
+
     void SetMipSharpness(float mshp);
 
     // ps2Simple shader specific
@@ -86,7 +102,7 @@ protected:
     sceGsMiptbp2 miptbp2; // 8
     unsigned vuProgramHandle; // 4
     bool isLit;
-    ps2Texture* texture; // 4
+    ps2Texture *texture; // 4
     ps2LightingProperties lighting;
 };
 

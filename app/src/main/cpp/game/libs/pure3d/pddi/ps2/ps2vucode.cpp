@@ -45,25 +45,23 @@ u_int VU1_SKINBLEND1B_CT;
 u_int VU1_SHADOW_VOL;
 
 
-
-int ps2VuCodeInit()
-{
-    VU1_BASE          = VU::ConvertProgramAddress( &VU_BASE, &VU_BASE );
-    VU1_LOAD_CONTEXT  = VU::ConvertProgramAddress( &VU_BASE, &VU_LOAD_CONTEXT );
-    VU1_UNLIT_TRI     = VU::ConvertProgramAddress( &VU_BASE, &VU_UNLIT_TRI );
-    VU1_LIT_TRI       = VU::ConvertProgramAddress( &VU_BASE, &VU_LIT_TRI );
-    VU1_DONOTHING     = VU::ConvertProgramAddress( &VU_BASE, &VU_DONOTHING );
-    VU1_UNLIT_TRI_MT  = VU::ConvertProgramAddress( &VU_BASE, &VU_UNLIT_TRI_MT );
-    VU1_REFLECT       = VU::ConvertProgramAddress( &VU_BASE, &VU_REFLECT );    
-    VU1_REFRACT       = VU::ConvertProgramAddress( &VU_BASE, &VU_REFRACT );
-    //VU1_REFRACT_LIT   = VU::ConvertProgramAddress( &VU_BASE, &VU_REFRACT_LIT );  
-    VU1_TOON          = VU::ConvertProgramAddress( &VU_BASE, &VU_TOON );  
-    VU1_LINE          = VU::ConvertProgramAddress( &VU_BASE, &VU_LINE );
-    VU1_SKINBLEND_NT   = VU::ConvertProgramAddress( &VU_BASE, &VU_SKINBLEND_NT );
-    VU1_SKINBLEND1B_NT = VU::ConvertProgramAddress( &VU_BASE, &VU_SKINBLEND1B_NT );
-    VU1_SKINBLEND_CT   = VU::ConvertProgramAddress( &VU_BASE, &VU_SKINBLEND_CT );
-    VU1_SKINBLEND1B_CT = VU::ConvertProgramAddress( &VU_BASE, &VU_SKINBLEND1B_CT );
-    VU1_SHADOW_VOL     = VU::ConvertProgramAddress( &VU_BASE, &VU_SHADOW_VOL );
+int ps2VuCodeInit() {
+    VU1_BASE = VU::ConvertProgramAddress(&VU_BASE, &VU_BASE);
+    VU1_LOAD_CONTEXT = VU::ConvertProgramAddress(&VU_BASE, &VU_LOAD_CONTEXT);
+    VU1_UNLIT_TRI = VU::ConvertProgramAddress(&VU_BASE, &VU_UNLIT_TRI);
+    VU1_LIT_TRI = VU::ConvertProgramAddress(&VU_BASE, &VU_LIT_TRI);
+    VU1_DONOTHING = VU::ConvertProgramAddress(&VU_BASE, &VU_DONOTHING);
+    VU1_UNLIT_TRI_MT = VU::ConvertProgramAddress(&VU_BASE, &VU_UNLIT_TRI_MT);
+    VU1_REFLECT = VU::ConvertProgramAddress(&VU_BASE, &VU_REFLECT);
+    VU1_REFRACT = VU::ConvertProgramAddress(&VU_BASE, &VU_REFRACT);
+    //VU1_REFRACT_LIT   = VU::ConvertProgramAddress(&VU_BASE, &VU_REFRACT_LIT);
+    VU1_TOON = VU::ConvertProgramAddress(&VU_BASE, &VU_TOON);
+    VU1_LINE = VU::ConvertProgramAddress(&VU_BASE, &VU_LINE);
+    VU1_SKINBLEND_NT = VU::ConvertProgramAddress(&VU_BASE, &VU_SKINBLEND_NT);
+    VU1_SKINBLEND1B_NT = VU::ConvertProgramAddress(&VU_BASE, &VU_SKINBLEND1B_NT);
+    VU1_SKINBLEND_CT = VU::ConvertProgramAddress(&VU_BASE, &VU_SKINBLEND_CT);
+    VU1_SKINBLEND1B_CT = VU::ConvertProgramAddress(&VU_BASE, &VU_SKINBLEND1B_CT);
+    VU1_SHADOW_VOL = VU::ConvertProgramAddress(&VU_BASE, &VU_SHADOW_VOL);
 
     return 0;
 }

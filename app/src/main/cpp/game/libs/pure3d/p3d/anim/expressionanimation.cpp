@@ -23,60 +23,51 @@
 // Class tExpressionAnimationController
 //**************************************************************
 tExpressionAnimationController::tExpressionAnimationController() :
-    tBlendFrameController(),
-    mixer(NULL),
-    expStateAccumulator(NULL)
-{
+        tBlendFrameController(),
+        mixer(NULL),
+        expStateAccumulator(NULL) {
 }
 
 //--------------------------------------------------------------
-tExpressionAnimationController::tExpressionAnimationController(tExpressionAnimationController* c) :
-    tBlendFrameController(c),
-    mixer(NULL),
-    expStateAccumulator(NULL)
-{
+tExpressionAnimationController::tExpressionAnimationController(tExpressionAnimationController *c) :
+        tBlendFrameController(c),
+        mixer(NULL),
+        expStateAccumulator(NULL) {
     SetTargetMixer(c->GetTargetMixer());
 }
 
 //--------------------------------------------------------------
-tExpressionAnimationController::~tExpressionAnimationController()
-{
+tExpressionAnimationController::~tExpressionAnimationController() {
     tRefCounted::Release(mixer);
 
-    if (expStateAccumulator != NULL)
-    {
-        delete [] expStateAccumulator;
+    if (expStateAccumulator != NULL) {
+        delete[] expStateAccumulator;
     }
 }
 
 //--------------------------------------------------------------
-tFrameController* tExpressionAnimationController::Clone(void)
-{
+tFrameController *tExpressionAnimationController::Clone(void) {
     return new tExpressionAnimationController(this);
 }
 
 //--------------------------------------------------------------
-bool tExpressionAnimationController::ValidateAnimation(tAnimation* anim)
-{
+bool tExpressionAnimationController::ValidateAnimation(tAnimation *anim) {
     bool isExpAnim = (anim->GetAnimationType() == Pure3DAnimationTypes::EXPRESSION_EXP);
     bool allExpsPresent = true;
 
-    if (isExpAnim)
-    {
+    if (isExpAnim) {
         // verify that all channels in the animation are defined in the mixer's expression group
         P3DASSERT(mixer != NULL);
 
-        tExpressionGroup* eg = mixer->GetExpressionGroup();
+        tExpressionGroup *eg = mixer->GetExpressionGroup();
         P3DASSERT(eg != NULL);
 
-        for (int i = 0; i < anim->GetNumGroups(); i++)
-        {
-            tExpression* exp = NULL;
+        for (int i = 0; i < anim->GetNumGroups(); i++) {
+            tExpression *exp = NULL;
             int expIndex = -1;
-            
+
             exp = eg->FindExpression(anim->GetGroupByIndex(i)->GetNameObject(), &expIndex);
-            if ((exp == NULL) || (expIndex == -1))
-            {
+            if ((exp == NULL) || (expIndex == -1)) {
                 allExpsPresent = false;
             }
         }
@@ -85,9 +76,8 @@ bool tExpressionAnimationController::ValidateAnimation(tAnimation* anim)
 }
 
 //--------------------------------------------------------------
-void tExpressionAnimationController::SetTargetMixer(tExpressionMixer* target)
-{
-    delete [] expStateAccumulator;
+void tExpressionAnimationController::SetTargetMixer(tExpressionMixer *target) {
+    delete[] expStateAccumulator;
     expStateAccumulator = NULL;
 
     tRefCounted::Assign(mixer, target);
@@ -103,33 +93,28 @@ void tExpressionAnimationController::SetTargetMixer(tExpressionMixer* target)
 }
 
 //--------------------------------------------------------------
-tExpressionMixer* tExpressionAnimationController::GetTargetMixer() const
-{
+tExpressionMixer *tExpressionAnimationController::GetTargetMixer() const {
     return mixer;
 }
 
 //--------------------------------------------------------------
-void tExpressionAnimationController::UpdateNoBlending()
-{
-    if (mixer == NULL)
-    {
+void tExpressionAnimationController::UpdateNoBlending() {
+    if (mixer == NULL) {
         return;
     }
 
-    tAnimation* anim = playInfo[0].GetAnimation();
+    tAnimation *anim = playInfo[0].GetAnimation();
     float frame = playInfo[0].GetCurrentFrame();
 
     int nChannels = anim->GetNumGroups();
-    for (int i = 0; i < nChannels; i++)
-    {
-        const tAnimationGroup* animGroup = anim->GetGroupByIndex(i);
+    for (int i = 0; i < nChannels; i++) {
+        const tAnimationGroup *animGroup = anim->GetGroupByIndex(i);
 
-        if (animGroup)
-        {
-            const tFloat1Channel* stateChannel = animGroup->GetFloat1Channel(Pure3DAnimationChannels::Expression::STATE_STE);
+        if (animGroup) {
+            const tFloat1Channel *stateChannel = animGroup->GetFloat1Channel(
+                    Pure3DAnimationChannels::Expression::STATE_STE);
 
-            if (stateChannel)
-            {
+            if (stateChannel) {
                 float value;
                 stateChannel->GetValue(frame, &value);
                 mixer->SetExpressionState(animGroup->GetNameObject(), value);
@@ -141,33 +126,29 @@ void tExpressionAnimationController::UpdateNoBlending()
 }
 
 //--------------------------------------------------------------
-void tExpressionAnimationController::UpdateWithBlending()
-{
-    if (mixer == NULL)
-    {
+void tExpressionAnimationController::UpdateWithBlending() {
+    if (mixer == NULL) {
         return;
     }
 
     ResetAccumulators();
 
-    tAnimation* anim = playInfo[0].GetAnimation();
+    tAnimation *anim = playInfo[0].GetAnimation();
 
-    tExpressionGroup* eg = mixer->GetExpressionGroup();
+    tExpressionGroup *eg = mixer->GetExpressionGroup();
     P3DASSERT(eg);
 
     int nChannel = anim->GetNumGroups();
     int i;
-    for(i = 0; i < nChannel; i++)
-    {
-        const tAnimationGroup* animGroup = anim->GetGroupByIndex(i);
+    for (i = 0; i < nChannel; i++) {
+        const tAnimationGroup *animGroup = anim->GetGroupByIndex(i);
 
-        if (animGroup)
-        {
-            const tFloat1Channel* stateChannel = animGroup->GetFloat1Channel(Pure3DAnimationChannels::Expression::STATE_STE);
-        
-            if (stateChannel)
-            {
-                tExpression* tmp = NULL;
+        if (animGroup) {
+            const tFloat1Channel *stateChannel = animGroup->GetFloat1Channel(
+                    Pure3DAnimationChannels::Expression::STATE_STE);
+
+            if (stateChannel) {
+                tExpression *tmp = NULL;
                 int expIndex = -1;
 
                 tmp = eg->FindExpression(animGroup->GetUID(), &expIndex);
@@ -182,23 +163,20 @@ void tExpressionAnimationController::UpdateWithBlending()
     }
 
     // blend in remaining animations using the blend weight t
-    for (int j = 1; j < nAnim; j++)
-    {
+    for (int j = 1; j < nAnim; j++) {
         anim = playInfo[j].GetAnimation();
 
         nChannel = anim->GetNumGroups();
 
-        for (i = 0; i < nChannel; i++)
-        {
-            const tAnimationGroup* animGroup = anim->GetGroupByIndex(i);
+        for (i = 0; i < nChannel; i++) {
+            const tAnimationGroup *animGroup = anim->GetGroupByIndex(i);
 
-            if (animGroup)
-            {
-                const tFloat1Channel* stateChannel = animGroup->GetFloat1Channel(Pure3DAnimationChannels::Expression::STATE_STE);
-             
-                if (stateChannel)
-                {
-                    tExpression* tmp = NULL;
+            if (animGroup) {
+                const tFloat1Channel *stateChannel = animGroup->GetFloat1Channel(
+                        Pure3DAnimationChannels::Expression::STATE_STE);
+
+                if (stateChannel) {
+                    tExpression *tmp = NULL;
                     int expIndex = -1;
 
                     tmp = eg->FindExpression(animGroup->GetUID(), &expIndex);
@@ -215,8 +193,7 @@ void tExpressionAnimationController::UpdateWithBlending()
         }
     }
 
-    for (i = 0; i < mixer->GetNumExpression(); i++)
-    {
+    for (i = 0; i < mixer->GetNumExpression(); i++) {
         mixer->SetExpressionState(i, expStateAccumulator[i]);
     }
 
@@ -224,10 +201,8 @@ void tExpressionAnimationController::UpdateWithBlending()
 }
 
 //--------------------------------------------------------------
-void tExpressionAnimationController::ResetAccumulators()
-{
-    for (int i = 0; i < mixer->GetNumExpression(); i++)
-    {
+void tExpressionAnimationController::ResetAccumulators() {
+    for (int i = 0; i < mixer->GetNumExpression(); i++) {
         expStateAccumulator[i] = 0.0f;
     }
 }

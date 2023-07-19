@@ -9,9 +9,11 @@
 #ifdef RAD_XBOX
 #include <xtl.h>
 #else
+
 #include <d3d8.h>
 #include <d3dx8.h>
 #include <d3dx8math.h>
+
 #endif
 
 #endif

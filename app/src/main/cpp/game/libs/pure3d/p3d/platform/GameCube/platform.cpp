@@ -15,50 +15,45 @@
 #include "dolphin.h"
 #include "dolphin/dvd.h"
 
-tContextInitData::tContextInitData()
-{
-   bufferMask  = PDDI_BUFFER_COLOUR | PDDI_BUFFER_DEPTH;
-   xsize       = 640;
-   ysize       = 480;
-   pal         = false;   // true for pal
-   fieldmode   = false;   // true for interlaced display
-   aa          = false;   // true for anti-alising, only works if fieldmode && ysize <= 264
-   progressive = false;   // true for non-interlaced display
-   lockToVsync = false;
+tContextInitData::tContextInitData() {
+    bufferMask = PDDI_BUFFER_COLOUR | PDDI_BUFFER_DEPTH;
+    xsize = 640;
+    ysize = 480;
+    pal = false;   // true for pal
+    fieldmode = false;   // true for interlaced display
+    aa = false;   // true for anti-alising, only works if fieldmode && ysize <= 264
+    progressive = false;   // true for non-interlaced display
+    lockToVsync = false;
 };
-
 
 
 static tPlatform *gGlobalPlatform = NULL;
 
-tPlatform* tPlatform::Create(void)
-{
-    p3d::UsePermanentMem( true );
+tPlatform *tPlatform::Create(void) {
+    p3d::UsePermanentMem(true);
 
     if (gGlobalPlatform == NULL) gGlobalPlatform = new tPlatform;
 
-    p3d::UsePermanentMem( false );
+    p3d::UsePermanentMem(false);
 
     p3d::platform = gGlobalPlatform;
     return gGlobalPlatform;
 }
 
 
-tPlatform::tPlatform(void) : mContext(NULL) 
-{
+tPlatform::tPlatform(void) : mContext(NULL) {
     OSInit();
     DVDInit();
     PADInit();
 }
 
-tContext *tPlatform::CreateContext(tContextInitData *d)
-{
-    pddiDevice  *device  = NULL;
+tContext *tPlatform::CreateContext(tContextInitData *d) {
+    pddiDevice *device = NULL;
     pddiDisplay *display = NULL;
 
     p3d::printf("Pure3D v%s, released %s\n", ATG_VERSION, ATG_RELEASE_DATE);
 
-    p3d::UsePermanentMem( true );
+    p3d::UsePermanentMem(true);
 
     int success = pddiCreate(PDDI_VERSION_MAJOR, PDDI_VERSION_MINOR, &device);
     //P3DASSERT(success == PDDI_OK);
@@ -82,15 +77,14 @@ tContext *tPlatform::CreateContext(tContextInitData *d)
     p3d::device = mContext->GetDevice();
     p3d::display = mContext->GetDisplay();
 
-    p3d::UsePermanentMem( false );
+    p3d::UsePermanentMem(false);
 
     return mContext;
 }
 
-void tPlatform::DestroyContext( tContext * c)
-{
-    P3DASSERT( c != NULL );
-    P3DASSERT( mContext == c );
+void tPlatform::DestroyContext(tContext *c) {
+    P3DASSERT(c != NULL);
+    P3DASSERT(mContext == c);
 
     mContext = NULL;
     p3d::context = NULL;
@@ -103,18 +97,15 @@ void tPlatform::DestroyContext( tContext * c)
     delete c;
 }
 
-tPlatform *tPlatform::GetPlatform(void) 
-{ 
-    return gGlobalPlatform; 
+tPlatform *tPlatform::GetPlatform(void) {
+    return gGlobalPlatform;
 }
 
 
-tFile *tPlatform::OpenFile(const char *filename)
-{
-    tGCFileMap* file = new tGCFileMap(filename);
+tFile *tPlatform::OpenFile(const char *filename) {
+    tGCFileMap *file = new tGCFileMap(filename);
 
-    if (!file->IsOpen())
-    {
+    if (!file->IsOpen()) {
         file->Release();
         return NULL;
     }

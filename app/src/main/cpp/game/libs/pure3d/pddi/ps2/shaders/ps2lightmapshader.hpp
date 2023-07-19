@@ -11,38 +11,45 @@
 
 #include <pddi/ps2/ps2shader.hpp>
 
-class ps2LightmapShader : public ps2Shader
-{
+class ps2LightmapShader : public ps2Shader {
 public:
-    ps2LightmapShader(ps2Context* context);
+    ps2LightmapShader(ps2Context *context);
 
-    virtual const char* GetType(void) { return "lightmap"; }
+    virtual const char *GetType(void) { return "lightmap"; }
 
     // called by the device to install the ps2Lightmap allocation function
     static void Install();
 
-    static void SetContext(ps2Context* c){ g_context = c; };
-      
+    static void SetContext(ps2Context *c) { g_context = c; };
+
 protected:
     ~ps2LightmapShader();
 
     static pddiShadeTextureTable textureTable[];
     static pddiShadeIntTable intTable[];
 
-    pddiShadeTextureTable* GetTextureTable(void) { return textureTable; }
-    pddiShadeIntTable*     GetIntTable(void)     { return intTable; }
+    pddiShadeTextureTable *GetTextureTable(void) { return textureTable; }
+
+    pddiShadeIntTable *GetIntTable(void) { return intTable; }
 
     // ps2Shader interface
     void Validate(unsigned vertexFormat);
-    void Bind(GSContext*, VifStream&);
+
+    void Bind(GSContext *, VifStream &);
 
     // ps2Lightmap interface
-    void SetTexture(pddiTexture* texture, int pass);
-    void SetBase(pddiTexture* texture);
-    void SetLightmap(pddiTexture* texture);
-    virtual void SetTopTex(pddiTexture* texture){ /* nop */ };
+    void SetTexture(pddiTexture *texture, int pass);
+
+    void SetBase(pddiTexture *texture);
+
+    void SetLightmap(pddiTexture *texture);
+
+    virtual void SetTopTex(pddiTexture *texture) { /* nop */ };
+
     void SetUVMode(int mode);
+
     void SetFilterMode(int mode);
+
     // controls blend mode between passes
     void SetBlendMode(int mode);
 
@@ -50,11 +57,10 @@ protected:
 
     void Reset();
 
-    static ps2Context* g_context;
+    static ps2Context *g_context;
 
-    struct Pass
-    {
-        ps2Texture* texture;
+    struct Pass {
+        ps2Texture *texture;
         sceGsPrmode prmode;
         sceGsClamp clamp;
         sceGsAlpha alpha;

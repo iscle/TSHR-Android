@@ -10,46 +10,39 @@
 #include <string.h>
 #include <p3d/lzr.hpp>
 
-tFile::tFile()
-{
+tFile::tFile() {
     fullFilename = filename = extension = NULL;
     compressed = false;
 }
 
-tFile::~tFile()
-{
+tFile::~tFile() {
     p3d::FreeTemp(fullFilename);
 }
 
-void tFile::SetFilename(const char* n)
-{
-    if(fullFilename)
+void tFile::SetFilename(const char *n) {
+    if (fullFilename)
         p3d::FreeTemp(fullFilename);
 
     fullFilename = filename = extension = NULL;
 
-    fullFilename = (char*)p3d::MallocTemp(strlen(n) + 1);
+    fullFilename = (char *) p3d::MallocTemp(strlen(n) + 1);
     strcpy(fullFilename, n);
-    
+
     int i;
 
     filename = fullFilename;
 
-    for(i = strlen(fullFilename); i>= 0; i--)
-    {
-        if((fullFilename[i] == '\\') || (fullFilename[i] == '/'))
-        {
-            filename = &fullFilename[i+1];
+    for (i = strlen(fullFilename); i >= 0; i--) {
+        if ((fullFilename[i] == '\\') || (fullFilename[i] == '/')) {
+            filename = &fullFilename[i + 1];
             break;
         }
     }
 
     extension = &fullFilename[strlen(fullFilename)];
 
-    for(i = strlen(fullFilename); i>= 0; i--)
-    {
-        if(fullFilename[i] == '.')
-        {
+    for (i = strlen(fullFilename); i >= 0; i--) {
+        if (fullFilename[i] == '.') {
             extension = &fullFilename[i];
             break;
         }
@@ -59,10 +52,10 @@ void tFile::SetFilename(const char* n)
 //----------------------------------------------------------
 
 void
-tFile::UncompressBlock(unsigned char* input, unsigned int inputsize, unsigned char* output, unsigned int outputsize)
-{
+tFile::UncompressBlock(unsigned char *input, unsigned int inputsize, unsigned char *output,
+                       unsigned int outputsize) {
 
-    lzr_decompress(input,inputsize,output,outputsize);
+    lzr_decompress(input, inputsize, output, outputsize);
 
 }
 
@@ -74,81 +67,68 @@ static inline void AsyncTest(int c)
 {
     static int count = 0;
     count += c;
-    if(count > 16000)
+    if(count> 16000)
     {
         p3d::platform->CycleTasks();
         count = 0;
     }
 }
 #else
-#define AsyncTest(x) 
+#define AsyncTest(x)
 #endif
 
 
-tFileMem::tFileMem(): length(0)
-{
+tFileMem::tFileMem() : length(0) {
 }
 
-tFileMem::tFileMem(unsigned char* data, unsigned len, bool d)
-: dataStream(NULL), del(d)
-{
-    dataStream = new radLoadDataStream(data,len,d);
+tFileMem::tFileMem(unsigned char *data, unsigned len, bool d)
+        : dataStream(NULL), del(d) {
+    dataStream = new radLoadDataStream(data, len, d);
     dataStream->AddRef();
     SetFilename("temp.p3d");
 }
 
-tFileMem::~tFileMem()
-{
-    if(dataStream)
-    {
+tFileMem::~tFileMem() {
+    if (dataStream) {
         dataStream->Release();
     }
 }
 
-bool tFileMem::GetData(void* buf, unsigned count, DataType type)
-{
+bool tFileMem::GetData(void *buf, unsigned count, DataType type) {
     return dataStream->Read(buf, count, static_cast<unsigned int>(type));
 }
 
-bool tFileMem::EndOfFile(void)              
-{ 
+bool tFileMem::EndOfFile(void) {
     return !(GetPosition() < GetSize());
 }
 
-unsigned tFileMem::GetSize(void)                
-{ 
+unsigned tFileMem::GetSize(void) {
     return dataStream->GetSize();
 }
 
-void tFileMem::Advance(unsigned offset)  
-{ 
-    Read( NULL, offset, 1 );
-} 
+void tFileMem::Advance(unsigned offset) {
+    Read(NULL, offset, 1);
+}
 
-unsigned tFileMem::GetPosition(void)            
-{ 
+unsigned tFileMem::GetPosition(void) {
     return dataStream->GetPosition();
 }
 
-unsigned char* tFileMem::GetMemory()
-{
+unsigned char *tFileMem::GetMemory() {
     return dataStream->GetMemory();
 }
 
-void tFileMem::SetCompressed(bool b)
-{
-    if(b)
-    {
+void tFileMem::SetCompressed(bool b) {
+    if (b) {
         // Check that the uncompressed size has been set first
         rAssert(length);
-        unsigned char* oldmem = GetMemory();
-        unsigned char* position = oldmem;
-        unsigned char* newmem = new unsigned char[length];
-        unsigned char* output = newmem;
+        unsigned char *oldmem = GetMemory();
+        unsigned char *position = oldmem;
+        unsigned char *newmem = new unsigned char[length];
+        unsigned char *output = newmem;
         unsigned int total = 0;
 
-        while( total < length )
-        {
+        while (total < length) {
             int inputsize = GetDWord();
             int outsize = GetDWord();
             UncompressBlock(position, inputsize, output, outsize);
@@ -158,12 +138,11 @@ void tFileMem::SetCompressed(bool b)
         }
         dataStream->Release();
         dataStream = new radLoadDataStream(newmem, length, del);
-        
+
     }
 }
 
-void tFileMem::SetUncompressedSize(int size)
-{
+void tFileMem::SetUncompressedSize(int size) {
     length = size;
 }
 

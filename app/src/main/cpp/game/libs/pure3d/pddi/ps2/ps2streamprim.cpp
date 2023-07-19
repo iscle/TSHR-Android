@@ -17,8 +17,7 @@
 
 #include <eestruct.h>
 
-enum MemLayout
-{
+enum MemLayout {
     LAYOUT_1_IN_1_OUT, // position-only
     LAYOUT_3_IN_3_OUT, // single texture
     LAYOUT_4_IN_3_OUT, // two texture
@@ -29,19 +28,19 @@ enum MemLayout
 
 static ps2VertexList::VUMemLayout vuLayout[LAYOUT_ENUM_COUNT];
 
-static bool initialized = false;    
+static bool initialized = false;
 
-static ps2MFIFO* mfifo = NULL;
+static ps2MFIFO *mfifo = NULL;
 
-static ps2VertexList::VUMemLayout* vu_layout = NULL;
+static ps2VertexList::VUMemLayout *vu_layout = NULL;
 
 // pointer to vertex list header for current SPR packet (need to patch when buffer is flushed)
-static VU1_VertexListHeader* vertexListHeader = NULL;
+static VU1_VertexListHeader *vertexListHeader = NULL;
 
 static pddiPrimType primType = PDDI_PRIM_TRIANGLES;
 
 // pointer to vertex unpack instruction (need to patch when buffer is flushed)
-static unsigned* vertexUnpack = NULL;
+static unsigned *vertexUnpack = NULL;
 
 // number of buffers sent so far
 static int bufferCount = 0;
@@ -61,15 +60,13 @@ static const int MAX_STREAM_VERTEX_COUNT_3 = 66;   // three component vertices
 static const int MAX_STREAM_VERTEX_COUNT_1 = 108;  // one component vertices
 static const int MAX_STREAM_VERTEX_COUNT_1_2 = 144;
 
-static union
-{
+static union {
     sceGifTag tag;
     u_long128 tagQ;
 } gifTag __attribute__((aligned(16)));
 
 
-static void Initialize()
-{
+static void Initialize() {
     gifTag.tagQ = 0;
     gifTag.tag.EOP = 1;
     gifTag.tag.PRE = 1;
@@ -87,26 +84,25 @@ static void Initialize()
     vuDesc.outputVertexSize = 3;
 
     ps2VertexList::QuadPartitionVU(&vuDesc, &vuLayout[LAYOUT_3_IN_3_OUT]);
-    PDDIASSERT((int)vuLayout[LAYOUT_3_IN_3_OUT].nVerticesPerBuffer >= MAX_STREAM_VERTEX_COUNT_3);
-    
+    PDDIASSERT((int) vuLayout[LAYOUT_3_IN_3_OUT].nVerticesPerBuffer >= MAX_STREAM_VERTEX_COUNT_3);
+
     vuDesc.inputVertexSize = 1;
     vuDesc.outputVertexSize = 2;
     ps2VertexList::QuadPartitionVU(&vuDesc, &vuLayout[LAYOUT_1_IN_2_OUT]);
-    PDDIASSERT((int)vuLayout[LAYOUT_1_IN_2_OUT].nVerticesPerBuffer >= MAX_STREAM_VERTEX_COUNT_1_2);
-    
+    PDDIASSERT((int) vuLayout[LAYOUT_1_IN_2_OUT].nVerticesPerBuffer >= MAX_STREAM_VERTEX_COUNT_1_2);
+
     vuDesc.inputVertexSize = 4;
     vuDesc.outputVertexSize = 3;
     ps2VertexList::QuadPartitionVU(&vuDesc, &vuLayout[LAYOUT_4_IN_3_OUT]);
-    PDDIASSERT((int)vuLayout[LAYOUT_4_IN_3_OUT].nVerticesPerBuffer >= MAX_STREAM_VERTEX_COUNT_4);
+    PDDIASSERT((int) vuLayout[LAYOUT_4_IN_3_OUT].nVerticesPerBuffer >= MAX_STREAM_VERTEX_COUNT_4);
 }
 
 
-ps2PrimStream::ps2PrimStream()
-{
+ps2PrimStream::ps2PrimStream() {
     PDDIASSERT(!initialized);
     initialized = true;
     Initialize();
-    
+
     nComponent = 3;
     positionStride = 2;
     colourStride = normalStride = 1;
@@ -121,8 +117,8 @@ ps2PrimStream::ps2PrimStream()
 // | 01 00 00 00 | 00 00 00 00 | 01 01 00 00 | 01 01 00 00 | 02 - mask + vif Col
 // |    40    00 |    00    00 |    50    50 |    50    50 | 03 - mask
 
-void ps2PrimStream::Begin(ps2Context* context, pddiPrimType prmType, unsigned verType, unsigned addr)
-{
+void
+ps2PrimStream::Begin(ps2Context *context, pddiPrimType prmType, unsigned verType, unsigned addr) {
     primType = prmType;
     mpgAddr = addr;
 
@@ -131,7 +127,7 @@ void ps2PrimStream::Begin(ps2Context* context, pddiPrimType prmType, unsigned ve
     totalVertexCount = 0;
 
     colourShift = (verType & PDDI_V_UVCOUNT7) ? 1 : 0;
- 
+
     gifTag.tag.PRIM = SHADER::primTable[primType];
     gifTag.tag.NREG = 3;
     gifTag.tag.REGS0 = 0x02; // ST
@@ -141,8 +137,7 @@ void ps2PrimStream::Begin(ps2Context* context, pddiPrimType prmType, unsigned ve
     unsigned mask;
     unsigned cycles;
 
-    switch(verType)
-    {
+    switch (verType) {
         case PDDI_V_POSITION:
             maxStreamVertexCount = MAX_STREAM_VERTEX_COUNT_1_2;
             vu_layout = &vuLayout[LAYOUT_1_IN_2_OUT];
@@ -155,7 +150,7 @@ void ps2PrimStream::Begin(ps2Context* context, pddiPrimType prmType, unsigned ve
             mask = 0;
             cycles = 1;
             break;
-       
+
         case PDDI_V_C:
         case PDDI_V_N:
         case PDDI_V_T:
@@ -168,7 +163,7 @@ void ps2PrimStream::Begin(ps2Context* context, pddiPrimType prmType, unsigned ve
             vu_layout = &vuLayout[LAYOUT_3_IN_3_OUT];
             mask = (verType & PDDI_V_NORMAL) ? 0x404050 : 0x400050;
             cycles = 3;
-        break;
+            break;
 
         case PDDI_V_CT2:
             maxStreamVertexCount = MAX_STREAM_VERTEX_COUNT_4;
@@ -178,33 +173,32 @@ void ps2PrimStream::Begin(ps2Context* context, pddiPrimType prmType, unsigned ve
             vu_layout = &vuLayout[LAYOUT_4_IN_3_OUT];
             mask = 0x40005050;
             cycles = 4;
-        break;
-        
+            break;
+
         default:
             mask = ~0;
             cycles = 0;
-            PDDIASSERT(0 && "PDDI ERROR:  ps2PrimStream::Begin() - Illegal stream vertex type.\n" );
-        break;
+            PDDIASSERT(0 && "PDDI ERROR:  ps2PrimStream::Begin() - Illegal stream vertex type.\n");
+            break;
     }
 
     // nRestartVertices:  a strip's vertices cannot span across scratchpad buffers, so we
     // have to restart tri and line strips.
     nRestartVertices = 0;
-    switch(primType)
-    {
+    switch (primType) {
         case PDDI_PRIM_TRISTRIP:
             nRestartVertices = 2;
-        break;
+            break;
         case PDDI_PRIM_LINES:
             mpgAddr = VU1_LINE;
-        break;
+            break;
         case PDDI_PRIM_LINESTRIP:
             mpgAddr = VU1_LINE;
             nRestartVertices = 1;
-        break;
-        // this is to get rid of the stupid GCC warning
+            break;
+            // this is to get rid of the stupid GCC warning
         default:
-        break;
+            break;
     }
 
     mfifo = context->GetMFIFO();
@@ -222,21 +216,19 @@ void ps2PrimStream::Begin(ps2Context* context, pddiPrimType prmType, unsigned ve
     NewPacket(&vif);
 }
 
-void ps2PrimStream::End()
-{
-    if(vertexCount > 0)
-    {
+void ps2PrimStream::End() {
+    if (vertexCount > 0) {
         Flush();
     }
 }
 
-void ps2PrimStream::NewPacket(VifStream* vif)
-{
+void ps2PrimStream::NewPacket(VifStream *vif) {
     vif->Align(1);
-    vertexListHeader = (VU1_VertexListHeader*)vif->Unpack(0, sizeof(VU1_VertexListHeader)/16, VIF::V4_32, NULL, VIF::TopsRelative);
+    vertexListHeader = (VU1_VertexListHeader *) vif->Unpack(0, sizeof(VU1_VertexListHeader) / 16,
+                                                            VIF::V4_32, NULL, VIF::TopsRelative);
 
     // prep gifTag
-    u_long128* tag = reinterpret_cast<u_long128*>(&vertexListHeader->gifTag);
+    u_long128 *tag = reinterpret_cast<u_long128 *>(&vertexListHeader->gifTag);
     *tag = gifTag.tagQ;
 
     vertexListHeader->flags.skin = 0;
@@ -244,75 +236,69 @@ void ps2PrimStream::NewPacket(VifStream* vif)
 
     vertexListHeader->outputOffset = vu_layout->outputAddress[0];
     vertexListHeader->scratchAddr = vu_layout->scratchAreaAddress;
-    
+
     vif->Align(1);
     // cache away this address so we can patch the vertex count later
-    vertexUnpack = (unsigned*)vif->GetAddress();
+    vertexUnpack = (unsigned *) vif->GetAddress();
     // unpack instr for vertex upload
-    currentVertex = (StreamVertex*)vif->Unpack(sizeof(VU1_VertexListHeader)/16, 0, VIF::mask_V4_32, NULL, VIF::TopsRelative);
+    currentVertex = (StreamVertex *) vif->Unpack(sizeof(VU1_VertexListHeader) / 16, 0,
+                                                 VIF::mask_V4_32, NULL, VIF::TopsRelative);
 }
 
-void ps2PrimStream::Flush()
-{
+void ps2PrimStream::Flush() {
     // patch vertex count
     vertexListHeader->SetVertexCount(vertexCount);
     *vertexUnpack &= 0xff00ffff; // clear out QWC (bits 16-23)
-    *vertexUnpack |= ((vertexCount*nComponent)<<16);  // write in new count
+    *vertexUnpack |= ((vertexCount * nComponent) << 16);  // write in new count
 
     VifStream vif(currentVertex);
-    if(bufferCount == 0)
+    if (bufferCount == 0)
         vif.MsCal(mpgAddr);
     else
         vif.MsCnt();
     vif.Nop();
- 
+
     vif.Align(); // pad out to 128 bits
 
     // kick off dma
-    unsigned* dma = mfifo->GetBuffer();
-    unsigned sizeQW = ((unsigned)vif.GetAddress() - (unsigned)dma) / 16;
+    unsigned *dma = mfifo->GetBuffer();
+    unsigned sizeQW = ((unsigned) vif.GetAddress() - (unsigned) dma) / 16;
     dma[0] = DMA::SetSourceChainTag(sizeQW - 1, 0, DMA::cnt, 0);
     dma[1] = 0;
 
     mfifo->Add(dma, sizeQW);
-     //mfifo->Dump(dma, sizeQW);
+    //mfifo->Dump(dma, sizeQW);
 
     bufferCount++;
     totalVertexCount += vertexCount;
     vertexCount = 0;
 }
 
-void ps2PrimStream::NextBuffer()
-{
-    StreamVertex* copyVerts = currentVertex - nComponent*2;
+void ps2PrimStream::NextBuffer() {
+    StreamVertex *copyVerts = currentVertex - nComponent * 2;
     Flush();
     VifStream vif(mfifo->GetBuffer() + 2); // reserve space for dma tag
     NewPacket(&vif);
     // restart strip
-    if(nRestartVertices)
-    {
-        EE::QwordCopy(currentVertex, copyVerts, nComponent*nRestartVertices);
+    if (nRestartVertices) {
+        EE::QwordCopy(currentVertex, copyVerts, nComponent * nRestartVertices);
         vertexCount += nRestartVertices;
-        currentVertex += nComponent*nRestartVertices;
+        currentVertex += nComponent * nRestartVertices;
     }
 }
 
-void ps2PrimStream::Advance(int numVert)
-{
+void ps2PrimStream::Advance(int numVert) {
     vertexCount += numVert;
     currentVertex += (numVert * nComponent);
-    if(vertexCount >= maxStreamVertexCount)
-    {
+    if (vertexCount >= maxStreamVertexCount) {
         NextBuffer();
     }
 }
 
-int ps2PrimStream::GetPrimCount()
-{
+int ps2PrimStream::GetPrimCount() {
     return ps2VertexList::VertsToPrims(primType, totalVertexCount);
 }
 
-int ps2PrimStream::GetVertexCount()
-{
+int ps2PrimStream::GetVertexCount() {
     return totalVertexCount;
 }

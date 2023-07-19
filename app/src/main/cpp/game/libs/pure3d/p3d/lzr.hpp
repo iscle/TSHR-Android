@@ -12,8 +12,8 @@
 
 #define LZR_BLOCK_SIZE 4096
 
-void lzr_decompress (const unsigned char* input, unsigned int inputsize,
-                            unsigned char* output, unsigned int outputsize);
+void lzr_decompress(const unsigned char *input, unsigned int inputsize,
+                    unsigned char *output, unsigned int outputsize);
 
 #endif
 

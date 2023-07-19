@@ -9,7 +9,7 @@
 
 // ---------- Verify build config -------------------------------
 // check that we have a build config define
-#if !defined(RAD_DEBUG) && !defined(RAD_TUNE) && !defined(RAD_RELEASE) 
+#if !defined(RAD_DEBUG) && !defined(RAD_TUNE) && !defined(RAD_RELEASE)
 #error No build target defined (define one of RAD_DEBUG, RAD_TUNE or RAD_RELEASE)
 #define RAD_DEBUG
 #endif
@@ -21,14 +21,14 @@
 
 // check that we have a valid platform define
 #if !defined(RAD_GAMECUBE) && !defined(RAD_PS2) && !defined(RAD_XBOX) && !defined(RAD_WIN32) && !defined(RAD_LINUX)
-#error No platform defined (define one of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, RAD_WIN32 or RAD_LINUX) 
+#error No platform defined (define one of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, RAD_WIN32 or RAD_LINUX)
 #endif
 
-#if !defined(RAD_PC) && !defined(RAD_CONSOLE) 
+#if !defined(RAD_PC) && !defined(RAD_CONSOLE)
 #error No platform type defined (Define one of RAD_PC, RAD_CONSOLE)
 #endif
 
-#if defined(RAD_PC) && defined(RAD_CONSOLE) 
+#if defined(RAD_PC) && defined(RAD_CONSOLE)
 #error Cannot define RAD_PC and RAD_CONSOLE at the same time!
 #endif
 
@@ -72,17 +72,19 @@
 
 // Debug build, full debugging support, may be quite slow
 #ifdef RAD_DEBUG
-#include<p3d/buildconfig_debug.hpp>
+
+#include <p3d/buildconfig_debug.hpp>
+
 #else
 
 // Tune Build configuration, some debugging, high speed 
 #ifdef RAD_TUNE
-#include<p3d/buildconfig_tune.hpp>
+#include <p3d/buildconfig_tune.hpp>
 #else
 
 // Release build config, no debugging at all, maximum speed
 #ifdef RAD_RELEASE
-#include<p3d/buildconfig_release.hpp>
+#include <p3d/buildconfig_release.hpp>
 #endif
 
 #endif

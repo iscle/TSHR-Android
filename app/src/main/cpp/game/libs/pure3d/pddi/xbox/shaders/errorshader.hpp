@@ -10,15 +10,16 @@
 #include"shader.hpp"
 
 class d3dContext;
+
 class d3dTexture;
 
-class d3dErrorShader : public d3dShader
-{
+class d3dErrorShader : public d3dShader {
 public:
-    d3dErrorShader(d3dContext* c);
+    d3dErrorShader(d3dContext *c);
 
-    const char* GetType(void);
-    int  GetPasses();
+    const char *GetType(void);
+
+    int GetPasses();
 
 protected:
     void SetPass(int pass = 0);

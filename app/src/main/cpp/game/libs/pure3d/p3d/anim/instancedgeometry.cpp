@@ -3,19 +3,18 @@
 //=============================================================================
 
 
-#include<p3d/anim/instancedgeometry.hpp>
-#include<p3d/anim/polyskin.hpp>
-#include<p3d/anim/pose.hpp>
-#include<p3d/anim/skeleton.hpp>
-#include<p3d/primgroup.hpp>
-#include<p3d/utility.hpp>
-#include<p3d/matrixstack.hpp>
+#include <p3d/anim/instancedgeometry.hpp>
+#include <p3d/anim/polyskin.hpp>
+#include <p3d/anim/pose.hpp>
+#include <p3d/anim/skeleton.hpp>
+#include <p3d/primgroup.hpp>
+#include <p3d/utility.hpp>
+#include <p3d/matrixstack.hpp>
 
 
-static tInstancedGeometry* list = NULL;
+static tInstancedGeometry *list = NULL;
 
-tInstancedGeometry::tInstancedGeometry(tPolySkin* s)
-{
+tInstancedGeometry::tInstancedGeometry(tPolySkin *s) {
     skin = s;
     pose = s->GetSkeleton()->NewPose();
 
@@ -28,30 +27,27 @@ tInstancedGeometry::tInstancedGeometry(tPolySkin* s)
     next = list;
     prev = NULL;
 
-    if(next)
+    if (next)
         next->prev = this;
 
     list = this;
 }
 
-tInstancedGeometry::~tInstancedGeometry()
-{
+tInstancedGeometry::~tInstancedGeometry() {
     skin->Release();
     pose->Release();
 
-    if(next)
+    if (next)
         next->prev = prev;
 
-    if(prev) 
+    if (prev)
         prev->next = next;
     else
         list = next;
 }
 
-void tInstancedGeometry::Display(void)
-{
-    if((curCount + 1) == maxCount)
-    {
+void tInstancedGeometry::Display(void) {
+    if ((curCount + 1) == maxCount) {
         Flush();
     }
 
@@ -59,9 +55,8 @@ void tInstancedGeometry::Display(void)
     curCount++;
 }
 
-void tInstancedGeometry::Flush(void)
-{
-    if(curCount == 0)
+void tInstancedGeometry::Flush(void) {
+    if (curCount == 0)
         return;
 
     pose->SetPoseReady(true);
@@ -73,18 +68,15 @@ void tInstancedGeometry::Flush(void)
     curCount = 0;
 }
 
-void tInstancedGeometry::FlushAll(void)
-{
-    tInstancedGeometry* walk = list;
+void tInstancedGeometry::FlushAll(void) {
+    tInstancedGeometry *walk = list;
 
-    while(walk)
-    {
+    while (walk) {
         walk->Flush();
         walk = walk->next;
     }
 }
 
-void tInstancedGeometry::ProcessShaders(ShaderCallback& callback)
-{
+void tInstancedGeometry::ProcessShaders(ShaderCallback &callback) {
     skin->ProcessShaders(callback);
 }

@@ -15,22 +15,20 @@
 #include <p3d/error.hpp>
 #include <p3d/utility.hpp>
 
-tLightLoader::tLightLoader() : tSimpleChunkHandler(Pure3D::Light::LIGHT)
-{
+tLightLoader::tLightLoader() : tSimpleChunkHandler(Pure3D::Light::LIGHT) {
 }
 
-tEntity* tLightLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
+tEntity *tLightLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
     char name[256];
     f->GetPString(name);
     unsigned long version = f->GetLong();
     unsigned long type = f->GetLong();
-    
+
     tColour colour(f->GetLong());
-    
+
     float constant = f->GetFloat();
-    float linear   = f->GetFloat();
-    float squared  = f->GetFloat();
+    float linear = f->GetFloat();
+    float squared = f->GetFloat();
 
     bool enabled = (f->GetLong() != 0);
 
@@ -45,110 +43,90 @@ tEntity* tLightLoader::LoadObject(tChunkFile* f, tEntityStore* store)
     bool isShadowCaster = false;
     tLight::IlluminationType illuminationType = tLight::POSITIVE_ILLUMINANT;
 
-    while(f->ChunksRemaining())
-    {
+    while (f->ChunksRemaining()) {
         f->BeginChunk();
-        
-        switch(f->GetCurrentID())
-        {
-            case Pure3D::Light::DIRECTION:
-                {
-                    dir.x = f->GetFloat();
-                    dir.y = f->GetFloat();
-                    dir.z = f->GetFloat();
-                }
-                break;
-            case Pure3D::Light::POSITION:
-                {
-                    pos.x = f->GetFloat();
-                    pos.y = f->GetFloat();
-                    pos.z = f->GetFloat();
-                }
-                break;
-            case Pure3D::Light::CONE_PARAM:
-                {
-                    phi = f->GetFloat();
-                    theta = f->GetFloat();
-                    falloff = f->GetFloat();
-                    range = f->GetFloat();
 
-                }
+        switch (f->GetCurrentID()) {
+            case Pure3D::Light::DIRECTION: {
+                dir.x = f->GetFloat();
+                dir.y = f->GetFloat();
+                dir.z = f->GetFloat();
+            }
                 break;
-            case Pure3D::Light::DECAY_RANGE:
-                {
-                    unsigned long type = f->GetLong();
-                    switch(type) 
-                    {
-                    case 1:
-                        {
-                            decayType = tLight::DecayRange::SPHERE_DECAY_RANGE;
-                        }
+            case Pure3D::Light::POSITION: {
+                pos.x = f->GetFloat();
+                pos.y = f->GetFloat();
+                pos.z = f->GetFloat();
+            }
+                break;
+            case Pure3D::Light::CONE_PARAM: {
+                phi = f->GetFloat();
+                theta = f->GetFloat();
+                falloff = f->GetFloat();
+                range = f->GetFloat();
+
+            }
+                break;
+            case Pure3D::Light::DECAY_RANGE: {
+                unsigned long type = f->GetLong();
+                switch (type) {
+                    case 1: {
+                        decayType = tLight::DecayRange::SPHERE_DECAY_RANGE;
+                    }
                         break;
-                    case 2:
-                        {
-                            decayType = tLight::DecayRange::CUBOID_DECAY_RANGE;
-                        }
+                    case 2: {
+                        decayType = tLight::DecayRange::CUBOID_DECAY_RANGE;
+                    }
                         break;
-                    case 3:
-                        {
-                            decayType = tLight::DecayRange::ELLIPSOID_DECAY_RANGE;
-                        }
+                    case 3: {
+                        decayType = tLight::DecayRange::ELLIPSOID_DECAY_RANGE;
+                    }
                         break;
                     case 0:
-                    default:
-                        {
-                            decayType = tLight::DecayRange::NO_DECAY_RANGE;
-                        }
+                    default: {
+                        decayType = tLight::DecayRange::NO_DECAY_RANGE;
+                    }
                         break;
-                    }
-                    innerRange.x = f->GetFloat();
-                    innerRange.y = f->GetFloat();
-                    innerRange.z = f->GetFloat();
-                    outerRange.x = f->GetFloat();
-                    outerRange.y = f->GetFloat();
-                    outerRange.z = f->GetFloat();
-                    while(f->ChunksRemaining())
-                    {
-                        f->BeginChunk();
-                        
-                        switch(f->GetCurrentID())
-                        {
-                        case Pure3D::Light::DECAY_RANGE_ROTATION_Y:
-                            {
-                                rotationY = f->GetFloat();
-                            }
-                            break;
-                        }
-                        f->EndChunk();
-                    }
                 }
+                innerRange.x = f->GetFloat();
+                innerRange.y = f->GetFloat();
+                innerRange.z = f->GetFloat();
+                outerRange.x = f->GetFloat();
+                outerRange.y = f->GetFloat();
+                outerRange.z = f->GetFloat();
+                while (f->ChunksRemaining()) {
+                    f->BeginChunk();
+
+                    switch (f->GetCurrentID()) {
+                        case Pure3D::Light::DECAY_RANGE_ROTATION_Y: {
+                            rotationY = f->GetFloat();
+                        }
+                            break;
+                    }
+                    f->EndChunk();
+                }
+            }
                 break;
-            case Pure3D::Light::SHADOW:
-            {
+            case Pure3D::Light::SHADOW: {
                 isShadowCaster = f->GetLong() == 1;
             }
-            break;
-            
-            case Pure3D::Light::ILLUMINATION_TYPE:
-            {
+                break;
+
+            case Pure3D::Light::ILLUMINATION_TYPE: {
                 unsigned long type = f->GetLong();
-                switch(type) 
-                {
-                    case 1:
-                    {
+                switch (type) {
+                    case 1: {
                         illuminationType = tLight::ZERO_ILLUMINANT;
                     }
-                    break;
-                    case 2:
-                    {
+                        break;
+                    case 2: {
                         illuminationType = tLight::NEGATIVE_ILLUMINANT;
                     }
-                    break;
-                    default:
-                    {
+                        break;
+                    default: {
                         illuminationType = tLight::POSITIVE_ILLUMINANT;
                     }
-                    break;
+                        break;
                 }
             }
         };
@@ -157,11 +135,10 @@ tEntity* tLightLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 
     }
 
-    switch (type)
-    {
-    case 0:    //ambient light
+    switch (type) {
+        case 0:    //ambient light
         {
-            tAmbientLight* al = new tAmbientLight;
+            tAmbientLight *al = new tAmbientLight;
             al->SetName(name);
             al->SetColour(colour);
             al->SetPosition(pos);
@@ -173,10 +150,10 @@ tEntity* tLightLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 
             light = al;
         }
-        break;
-    case 1:  //point light
+            break;
+        case 1:  //point light
         {
-            tPointLight* pl = new tPointLight;
+            tPointLight *pl = new tPointLight;
             pl->SetName(name);
             pl->SetColour(colour);
             pl->SetPosition(pos.x, pos.y, pos.z);
@@ -190,8 +167,8 @@ tEntity* tLightLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 
             light = pl;
         }
-        break;
-    case 2:  //directional light
+            break;
+        case 2:  //directional light
         {
             tDirectionalLight *dl = new tDirectionalLight;
             dl->SetName(name);
@@ -204,14 +181,14 @@ tEntity* tLightLoader::LoadObject(tChunkFile* f, tEntityStore* store)
             dl->SetShadowCaster(isShadowCaster);
             dl->SetDecayRotationY(rotationY);
             dl->SetIlluminationType(illuminationType);
- 
+
             light = dl;
-          break;
+            break;
         }
-        break;
-    case 3:  //spotlight
+            break;
+        case 3:  //spotlight
         {
-            tSpotLight* sl = new tSpotLight;
+            tSpotLight *sl = new tSpotLight;
             sl->SetName(name);
             sl->SetColour(colour);
             sl->SetDirection(dir.x, dir.y, dir.z);
@@ -223,47 +200,44 @@ tEntity* tLightLoader::LoadObject(tChunkFile* f, tEntityStore* store)
             sl->SetDecayType(decayType);
             sl->SetDecayRange(innerRange, outerRange);
             sl->SetShadowCaster(isShadowCaster);
-            sl->SetDecayRotationY(rotationY);            
+            sl->SetDecayRotationY(rotationY);
             sl->SetIlluminationType(illuminationType);
 
-            light = sl; 
+            light = sl;
         }
-        break;
-        
+            break;
+
     };
-    
+
     return light;
 }
 
 //--------------------------------------------------
-tLightGroupLoader::tLightGroupLoader() : tSimpleChunkHandler(P3D_LIGHT_GROUP)
-{
+tLightGroupLoader::tLightGroupLoader() : tSimpleChunkHandler(P3D_LIGHT_GROUP) {
 }
 
 //--------------------------------------------------
-tEntity* tLightGroupLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{
+tEntity *tLightGroupLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
     char name[256];
 
     tLightGroup *lg = new tLightGroup;
 
     f->GetPString(name);
-    lg->SetName(name);  
- 
+    lg->SetName(name);
+
     lg->mNumLights = f->GetLong();
     lg->mCurNumLights = lg->mNumLights;
 
-    lg->mLights.SetSize( lg->mNumLights );
+    lg->mLights.SetSize(lg->mNumLights);
 
     int a;
-    for (a = 0; a < lg->mNumLights; a++)
-    {
+    for (a = 0; a < lg->mNumLights; a++) {
         f->GetPString(name);
         lg->mLights[a] = p3d::find<tLight>(store, name);
-        if(lg->mLights[a])
+        if (lg->mLights[a])
             lg->mLights[a]->AddRef();
     }
-        
+
     return lg;
 }
 

@@ -8,19 +8,25 @@
 
 #include <pddi/gamecube/gccon.hpp>
 
-class gcBasePrimBuffer : public pddiPrimBuffer
-{
+class gcBasePrimBuffer : public pddiPrimBuffer {
 public:
-    PDDI_INTERFACE pddiPrimBufferStream* Lock(void) = 0;
-    PDDI_INTERFACE void Unlock(pddiPrimBufferStream* stream) = 0;
+    PDDI_INTERFACE pddiPrimBufferStream
+    *
 
-    PDDI_INTERFACE unsigned char* LockIndexBuffer(void) = 0;
+    Lock(void) = 0;
+
+    PDDI_INTERFACE void Unlock(pddiPrimBufferStream *stream) = 0;
+
+    PDDI_INTERFACE unsigned char *LockIndexBuffer(void) = 0;
+
     PDDI_INTERFACE void UnlockIndexBuffer(int count) = 0;
 
-    PDDI_INTERFACE void SetIndices(unsigned short* indices, int count) = 0;
+    PDDI_INTERFACE void SetIndices(unsigned short *indices, int count) = 0;
 
     PDDI_INTERFACE bool CheckMemImageVersion(int version) = 0;
-    PDDI_INTERFACE void* LockMemImage(unsigned memImageLength) = 0;
+
+    PDDI_INTERFACE void *LockMemImage(unsigned memImageLength) = 0;
+
     PDDI_INTERFACE void UnlockMemImage(void) = 0;
 
     PDDI_INTERFACE void Display(void) = 0;

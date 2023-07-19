@@ -12,45 +12,38 @@
 // Class tEffectController
 //
 //**********************************************************
-tEffectController::tEffectController():
-    effect(NULL),
-    relativeSpeed(1.0f),
-    accumulatedTime(0.0f)
-{
+tEffectController::tEffectController() :
+        effect(NULL),
+        relativeSpeed(1.0f),
+        accumulatedTime(0.0f) {
 }
 
-tEffectController::tEffectController(tEffectController *c):
-    effect(NULL),
-    relativeSpeed(c->relativeSpeed),
-    accumulatedTime(c->accumulatedTime)
-{
-    CopyName(c);   
+tEffectController::tEffectController(tEffectController *c) :
+        effect(NULL),
+        relativeSpeed(c->relativeSpeed),
+        accumulatedTime(c->accumulatedTime) {
+    CopyName(c);
     SetEffect(c->GetEffect());
 }
 
-tFrameController *tEffectController::Clone(void)
-{
+tFrameController *tEffectController::Clone(void) {
     return new tEffectController(this);
 }
 
-void tEffectController::Update()
-{
+void tEffectController::Update() {
     effect->Advance(accumulatedTime);
     accumulatedTime = 0.0f;
 }
 
-void tEffectController::Advance(float deltaTime, bool update)
-{
+void tEffectController::Advance(float deltaTime, bool update) {
     accumulatedTime += (deltaTime * relativeSpeed);
-    
-    if (update)
-    {
+
+    if (update) {
         Update();
     }
 }
 
-tEffectController::~tEffectController()
-{
+tEffectController::~tEffectController() {
     tRefCounted::Release(effect);
 }
 

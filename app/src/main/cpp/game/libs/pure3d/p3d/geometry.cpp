@@ -21,10 +21,9 @@ using namespace RadicalMathLibrary;
 
 //------------------------------------------------------------------------
 tGeometry::tGeometry(int nPG) :
-    //nFaceNormal(0),
-    //faceNormal(NULL),
-    primGroup( 0 )
-{
+//nFaceNormal(0),
+//faceNormal(NULL),
+        primGroup(0) {
     P3DASSERT(p3d::pddi);
     sphere.centre.x = 0.0f;
     sphere.centre.y = 0.0f;
@@ -37,71 +36,59 @@ tGeometry::tGeometry(int nPG) :
     box.high.y = 0.0f;
     box.high.z = 0.0f;
 
-    primGroup.SetSize( nPG );
+    primGroup.SetSize(nPG);
 }
 
 //------------------------------------------------------------------------
-tGeometry::~tGeometry()
-{
+tGeometry::~tGeometry() {
 //    delete[] faceNormal;
 
 
-    for(unsigned i = 0; i < primGroup.Size(); i++)
-    {
-        tRefCounted::Release( primGroup[i] );
+    for (unsigned i = 0; i < primGroup.Size(); i++) {
+        tRefCounted::Release(primGroup[i]);
     }
 
 }
 
 //------------------------------------------------------------------------
-tShader* tGeometry::GetShader(int i)
-{ 
-    if( primGroup[i])
-        return primGroup[i]->GetShader(); 
+tShader *tGeometry::GetShader(int i) {
+    if (primGroup[i])
+        return primGroup[i]->GetShader();
 
     return NULL;
 }
 
-void tGeometry::SetShader(int i, tShader* shader) 
-{ 
-    if( primGroup[i] )
-        primGroup[i]->SetShader(shader); 
+void tGeometry::SetShader(int i, tShader *shader) {
+    if (primGroup[i])
+        primGroup[i]->SetShader(shader);
 }
 
-void tGeometry::ProcessShaders(ShaderCallback& callback)
-{
-    for( unsigned i = 0; i < primGroup.Size(); i++)
-    {
-        tShader* shader = primGroup[i]->GetShader();
-        tShader* newShader = callback.Process(shader);
-        if(newShader != shader)
-        {
+void tGeometry::ProcessShaders(ShaderCallback &callback) {
+    for (unsigned i = 0; i < primGroup.Size(); i++) {
+        tShader *shader = primGroup[i]->GetShader();
+        tShader *newShader = callback.Process(shader);
+        if (newShader != shader) {
             primGroup[i]->SetShader(newShader);
         }
     }
 }
 
-void tGeometry::SetPrimGroup(int i, tPrimGroup* group)
-{
+void tGeometry::SetPrimGroup(int i, tPrimGroup *group) {
     tRefCounted::Assign(primGroup[i], group);
 }
 
 //------------------------------------------------------------------------
-void tGeometry::Display()
-{
-    for( unsigned i = 0; i < primGroup.Size(); i++)
-    {
-        if( primGroup[i])
-        {
+void tGeometry::Display() {
+    for (unsigned i = 0; i < primGroup.Size(); i++) {
+        if (primGroup[i]) {
             primGroup[i]->Display();
         }
     }
 }
-    
+
 //------------------------------------------------------------------------
 void tGeometry::SetBoundingBox(float x1, float y1, float z1,
-                                         float x2, float y2, float z2)
-{
+                               float x2, float y2, float z2) {
     box.low.x = x1;
     box.low.y = y1;
     box.low.z = z1;
@@ -112,25 +99,23 @@ void tGeometry::SetBoundingBox(float x1, float y1, float z1,
 
 //------------------------------------------------------------------------
 void tGeometry::SetBoundingSphere(float centerx, float centery, float centerz,
-                                             float radius)
-{
-    sphere.centre.x =  centerx;
-    sphere.centre.y =  centery;
-    sphere.centre.z =  centerz;
-    sphere.radius   =  radius;
+                                  float radius) {
+    sphere.centre.x = centerx;
+    sphere.centre.y = centery;
+    sphere.centre.z = centerz;
+    sphere.radius = radius;
 }
 
 //------------------------------------------------------------------------
-tGeometryLoader::tGeometryLoader() : 
-    tSimpleChunkHandler(Pure3D::Mesh::MESH), 
-    mEnableFaceNormals(false), 
-    mOptimize(true), 
-    mVertexMask(0xffffffff) { /**/ }
+tGeometryLoader::tGeometryLoader() :
+        tSimpleChunkHandler(Pure3D::Mesh::MESH),
+        mEnableFaceNormals(false),
+        mOptimize(true),
+        mVertexMask(0xffffffff) { /**/ }
 
 
 //------------------------------------------------------------------------
-tGeometry* tGeometryLoader::Allocate(int nPrimGroup)
-{
+tGeometry *tGeometryLoader::Allocate(int nPrimGroup) {
     return new tGeometry(nPrimGroup);
 }
 
@@ -138,15 +123,14 @@ static const int GEOMETRY_VERSION = 0;
 static const int GEOMETRY_NONOPTIMIZE_VERSION = 1;      //temporarily used
 
 //------------------------------------------------------------------------
-tEntity* tGeometryLoader::LoadObject(tChunkFile* f, tEntityStore* store)
-{ 
+tEntity *tGeometryLoader::LoadObject(tChunkFile *f, tEntityStore *store) {
     char name[255];
     f->GetPString(name);
 
     int version = f->GetLong();
-    P3DASSERT(version == GEOMETRY_VERSION || version == GEOMETRY_NONOPTIMIZE_VERSION );
+    P3DASSERT(version == GEOMETRY_VERSION || version == GEOMETRY_NONOPTIMIZE_VERSION);
 
-    bool bOptimized = ( version != GEOMETRY_NONOPTIMIZE_VERSION );
+    bool bOptimized = (version != GEOMETRY_NONOPTIMIZE_VERSION);
 
     int nPrimGroup = f->GetLong();
     tGeometry *geo = Allocate(nPrimGroup);
@@ -154,21 +138,18 @@ tEntity* tGeometryLoader::LoadObject(tChunkFile* f, tEntityStore* store)
 
     int primGroupCount = 0;
 
-    while(f->ChunksRemaining())
-    {      
+    while (f->ChunksRemaining()) {
         f->BeginChunk();
-        switch(f->GetCurrentID())
-        {
-        
-            case Pure3D::Mesh::PRIMGROUP:
-            {
+        switch (f->GetCurrentID()) {
+
+            case Pure3D::Mesh::PRIMGROUP: {
                 P3DASSERT(primGroupCount < nPrimGroup);
                 tPrimGroupLoader pgLoader;
                 pgLoader.SetVertexFormatMask(mVertexMask);
                 tPrimGroup *pg = pgLoader.Load(f, store, NULL, mOptimize && bOptimized, false);
-                geo->SetPrimGroup( primGroupCount, pg );
+                geo->SetPrimGroup(primGroupCount, pg);
                 ++primGroupCount;
-                
+
                 break;
             }
 
@@ -184,8 +165,7 @@ tEntity* tGeometryLoader::LoadObject(tChunkFile* f, tEntityStore* store)
                 break;
             }
 *****/
-            case Pure3D::Mesh::BOX:
-            {
+            case Pure3D::Mesh::BOX: {
                 float minx = f->GetFloat();
                 float miny = f->GetFloat();
                 float minz = f->GetFloat();
@@ -193,23 +173,21 @@ tEntity* tGeometryLoader::LoadObject(tChunkFile* f, tEntityStore* store)
                 float maxy = f->GetFloat();
                 float maxz = f->GetFloat();
 
-                geo->SetBoundingBox( minx, miny, minz, maxx, maxy, maxz);
+                geo->SetBoundingBox(minx, miny, minz, maxx, maxy, maxz);
                 break;
             }
 
-            case Pure3D::Mesh::SPHERE:
-            {
+            case Pure3D::Mesh::SPHERE: {
                 float cx = f->GetFloat();
                 float cy = f->GetFloat();
                 float cz = f->GetFloat();
-                float r  = f->GetFloat();
+                float r = f->GetFloat();
 
-                geo->SetBoundingSphere(cx,cy,cz,r);
+                geo->SetBoundingSphere(cx, cy, cz, r);
                 break;
             }
 
-            case Pure3D::Mesh::RENDERSTATUS:
-            {
+            case Pure3D::Mesh::RENDERSTATUS: {
                 geo->SetCastsShadow(!(f->GetLong()));
                 break;
             }

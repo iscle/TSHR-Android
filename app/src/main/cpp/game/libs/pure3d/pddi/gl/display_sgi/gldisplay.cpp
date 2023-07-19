@@ -3,23 +3,23 @@
 //=============================================================================
 
 
-#include<gl.hpp>
+#include <gl.hpp>
+
 #ifdef RAD_WIN32
-    #include <pddi/gl/display_win32/gldisplay.hpp>
-    #include <pddi/gl/display_win32/gl.hpp>
+#include <pddi/gl/display_win32/gldisplay.hpp>
+#include <pddi/gl/display_win32/gl.hpp>
 #endif
 
 #ifdef RAD_LINUX
-    #include <pddi/gl/display_linux/gldisplay.hpp>
-    #include <pddi/gl/display_linux/gl.hpp>
+#include <pddi/gl/display_linux/gldisplay.hpp>
+#include <pddi/gl/display_linux/gl.hpp>
 #endif
 
 
-#include<stdio.h>
-#include<string.h>
+#include <stdio.h>
+#include <string.h>
 
-static bool CheckExtension( char *extName )
-{
+static bool CheckExtension(char *extName) {
     char *p = (char *) glGetString(GL_EXTENSIONS);
     char *end;
     int extNameLen;
@@ -30,38 +30,41 @@ static bool CheckExtension( char *extName )
     while (p < end) {
         int n = strcspn(p, " ");
         if ((extNameLen == n) && (strncmp(extName, p, n) == 0)) {
-             return true;
+            return true;
         }
         p += (n + 1);
     }
     return false;
 }
 
-class pglSurface : public pddiSurface
-{
+class pglSurface : public pddiSurface {
     friend class pglDisplay;
 
 public:
-    pglSurface(int x, int y, pglDisplay* display);
+    pglSurface(int x, int y, pglDisplay *display);
+
     ~pglSurface();
 
-    pddiPixelFormat GetPixelFormat(void) {return PDDI_PIXEL_ARGB8888;}
-    int GetWidth(void) { return width;}
-    int GetHeight(void) { return height;}
-    int GetDepth(void) { return 32;}
+    pddiPixelFormat GetPixelFormat(void) { return PDDI_PIXEL_ARGB8888; }
 
-    pddiLockInfo* Lock(pddiLockType lock = PDDI_LOCK_READWRITE);
+    int GetWidth(void) { return width; }
+
+    int GetHeight(void) { return height; }
+
+    int GetDepth(void) { return 32; }
+
+    pddiLockInfo *Lock(pddiLockType lock = PDDI_LOCK_READWRITE);
+
     void Unlock(void);
 
 private:
-    pglDisplay* display;
+    pglDisplay *display;
     int width, height;
-    unsigned* bits;
+    unsigned *bits;
     pddiLockInfo lock;
 };
 
-pglDisplay ::pglDisplay()
-{
+pglDisplay::pglDisplay() {
     mode = PDDI_DISPLAY_WINDOW;
     winWidth = 640;
     winHeight = 480;
@@ -70,42 +73,37 @@ pglDisplay ::pglDisplay()
     context = NULL;
 
     extBGRA = false;
-	m_ForceVSync = false;
+    m_ForceVSync = false;
 }
 
-pglDisplay ::~pglDisplay()
-{
+pglDisplay::~pglDisplay() {
 }
 
 #define KEYPRESSED(x) (GetKeyState((x)) & (1<<(sizeof(int)*8)-1))
 
-bool pglDisplay ::InitDisplay(int x, int y, int bpp)
-{
-    //hRC = wglCreateContext( hDC );
-    //wglMakeCurrent( hDC, hRC );
+bool pglDisplay::InitDisplay(int x, int y, int bpp) {
+    //hRC = wglCreateContext(hDC);
+    //wglMakeCurrent(hDC, hRC);
 
     return InitDisplay(x, y, bpp, PDDI_DISPLAY_WINDOW, 2, PDDI_BUFFER_COLOUR);
 }
 
-bool pglDisplay ::InitDisplay(int x, int y, int bpp, pddiDisplayMode m, int colourBufferCount, unsigned bufferMask)
-{
+bool pglDisplay::InitDisplay(int x, int y, int bpp, pddiDisplayMode m, int colourBufferCount,
+                             unsigned bufferMask) {
     mode = m;
 
-    if(mode == PDDI_DISPLAY_FULLSCREEN)
-    {
+    if (mode == PDDI_DISPLAY_FULLSCREEN) {
         winWidth = x;
         winHeight = y;
-    }
-    else
-    {
+    } else {
         winWidth = x;
         winHeight = y;
     }
 
-    char* glVendor   = (char*)glGetString(GL_VENDOR);
-    char* glRenderer = (char*)glGetString(GL_RENDERER);
-    char* glVersion  = (char*)glGetString(GL_VERSION);
-    char* glExtensions = (char*)glGetString(GL_EXTENSIONS);
+    char *glVendor = (char *) glGetString(GL_VENDOR);
+    char *glRenderer = (char *) glGetString(GL_RENDERER);
+    char *glVersion = (char *) glGetString(GL_VERSION);
+    char *glExtensions = (char *) glGetString(GL_EXTENSIONS);
 
     extBGRA = CheckExtension("GL_EXT_bgra");
 
@@ -114,64 +112,54 @@ bool pglDisplay ::InitDisplay(int x, int y, int bpp, pddiDisplayMode m, int colo
     return true;
 }
 
-unsigned pglDisplay ::GetFreeVideoMem()
-{
+unsigned pglDisplay::GetFreeVideoMem() {
     return unsigned(-1);
 }
 
-unsigned pglDisplay ::GetFreeTextureMem()
-{
+unsigned pglDisplay::GetFreeTextureMem() {
     return unsigned(-1);
 }
 
-unsigned pglDisplay ::GetBufferMask()
-{
+unsigned pglDisplay::GetBufferMask() {
     return unsigned(-1);
 }
 
-int pglDisplay ::GetHeight()
-{
+int pglDisplay::GetHeight() {
     return winHeight;
 }
 
-int pglDisplay ::GetWidth()
-{
+int pglDisplay::GetWidth() {
     return winWidth;
 }
 
-int pglDisplay::GetDepth()
-{
+int pglDisplay::GetDepth() {
     return winBitDepth;
 }
 
-pddiDisplayMode pglDisplay::GetDisplayMode(void)
-{
+pddiDisplayMode pglDisplay::GetDisplayMode(void) {
     return mode;
 }
 
-int pglDisplay::GetNumColourBuffer(void)
-{
+int pglDisplay::GetNumColourBuffer(void) {
     return 2;
 }
 
-void pglDisplay ::SwapBuffers(bool async)
-{
+void pglDisplay::SwapBuffers(bool async) {
     pddiDisplay::SwapBuffers();
 }
 
-    
-bool pglDisplay::ReadPixels(pddiSurface* dest, pddiRect* srcRect)
-{
-    glReadPixels(srcRect->left, winHeight - srcRect->bottom,  dest->GetWidth(), dest->GetHeight(),
-                     ((pglSurface*)dest)->lock.native ? GL_BGRA_EXT : GL_RGBA, GL_UNSIGNED_BYTE, ((pglSurface*)dest)->bits);  
 
-    ((pglSurface*)dest)->lock.pitch = (((pglSurface*)dest)->width * 4);
-    ((pglSurface*)dest)->lock.bits = ((pglSurface*)dest)->bits;
+bool pglDisplay::ReadPixels(pddiSurface *dest, pddiRect *srcRect) {
+    glReadPixels(srcRect->left, winHeight - srcRect->bottom, dest->GetWidth(), dest->GetHeight(),
+                 ((pglSurface *) dest)->lock.native ? GL_BGRA_EXT : GL_RGBA, GL_UNSIGNED_BYTE,
+                 ((pglSurface *) dest)->bits);
+
+    ((pglSurface *) dest)->lock.pitch = (((pglSurface *) dest)->width * 4);
+    ((pglSurface *) dest)->lock.bits = ((pglSurface *) dest)->bits;
     return true;
 }
 
-bool pglDisplay::WritePixels(pddiSurface* src, pddiRect* destRect)
-{
+bool pglDisplay::WritePixels(pddiSurface *src, pddiRect *destRect) {
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -180,8 +168,8 @@ bool pglDisplay::WritePixels(pddiSurface* src, pddiRect* destRect)
     glPushMatrix();
     glLoadIdentity();
 
-    glOrtho(0,GetWidth(),0,GetHeight(),0,-1);
-    glViewport(0, 0, GetWidth(),GetHeight());
+    glOrtho(0, GetWidth(), 0, GetHeight(), 0, -1);
+    glViewport(0, 0, GetWidth(), GetHeight());
 
     glDisable(GL_SCISSOR_TEST);
 
@@ -190,34 +178,36 @@ bool pglDisplay::WritePixels(pddiSurface* src, pddiRect* destRect)
 
     glEnable(GL_SCISSOR_TEST);*/
     glPixelZoom(float(destRect->right - destRect->left) / float(src->GetWidth()),
-                    float(destRect->bottom - destRect->top) / float(src->GetHeight()));
+                float(destRect->bottom - destRect->top) / float(src->GetHeight()));
 
-    glRasterPos2f(float(destRect->left),winHeight-float(destRect->bottom));
+    glRasterPos2f(float(destRect->left), winHeight - float(destRect->bottom));
 
     GLboolean olddepth;
-    glGetBooleanv(GL_DEPTH_TEST,&olddepth);
+    glGetBooleanv(GL_DEPTH_TEST, &olddepth);
 
     GLboolean oldalpha;
-    glGetBooleanv(GL_ALPHA_TEST,&oldalpha);
+    glGetBooleanv(GL_ALPHA_TEST, &oldalpha);
 
-    if(olddepth)
+    if (olddepth)
         glDisable(GL_DEPTH_TEST);
 
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_ALPHA_TEST);
 
-    glDrawPixels(src->GetWidth(),src->GetHeight(),((pglSurface*)src)->lock.native ? GL_BGRA_EXT : GL_RGBA,GL_UNSIGNED_BYTE,((pglSurface*)src)->bits);
+    glDrawPixels(src->GetWidth(), src->GetHeight(),
+                 ((pglSurface *) src)->lock.native ? GL_BGRA_EXT : GL_RGBA, GL_UNSIGNED_BYTE,
+                 ((pglSurface *) src)->bits);
 
-    if(olddepth)
+    if (olddepth)
         glEnable(GL_DEPTH_TEST);
 
-    if(!oldalpha)
+    if (!oldalpha)
         glDisable(GL_ALPHA_TEST);
     else
         glEnable(GL_ALPHA_TEST);
 
     glEnable(GL_SCISSOR_TEST);
-    glPixelZoom(1.0f,1.0f);
+    glPixelZoom(1.0f, 1.0f);
 
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
@@ -227,28 +217,25 @@ bool pglDisplay::WritePixels(pddiSurface* src, pddiRect* destRect)
     return true;
 }
 
-pddiSurface* pglDisplay ::NewSurface(int x, int y)
-{
-    return new pglSurface(x,y,this);
+pddiSurface *pglDisplay::NewSurface(int x, int y) {
+    return new pglSurface(x, y, this);
 }
 
-pglSurface::pglSurface(int x, int y, pglDisplay* d)
-{
+pglSurface::pglSurface(int x, int y, pglDisplay *d) {
     display = d;
 
     width = x;
     height = y;
-    bits = new unsigned[x*y];
+    bits = new unsigned[x * y];
 
     lock.width = x;
     lock.height = y;
     lock.pitch = -(x * 4);
-    lock.bits = bits + (width*(height-1));
+    lock.bits = bits + (width * (height - 1));
     lock.depth = 32;
     lock.format = PDDI_PIXEL_ARGB8888;
 
-    if(d->ExtBGRA())
-    {
+    if (d->ExtBGRA()) {
         lock.native = true;
         lock.rgbaLShift[0] = lock.rgbaRShift[0] =
         lock.rgbaLShift[1] = lock.rgbaRShift[1] =
@@ -259,14 +246,12 @@ pglSurface::pglSurface(int x, int y, pglDisplay* d)
         lock.rgbaMask[1] = 0x0000ff00;
         lock.rgbaMask[2] = 0x000000ff;
         lock.rgbaMask[3] = 0xff000000;
-    }
-    else
-    {
+    } else {
         lock.native = false;
         lock.rgbaRShift[0] = 16;
         lock.rgbaLShift[2] = 16;
 
-        lock.rgbaLShift[0] = 
+        lock.rgbaLShift[0] =
         lock.rgbaLShift[1] = lock.rgbaRShift[1] =
         lock.rgbaRShift[2] =
         lock.rgbaLShift[3] = lock.rgbaRShift[3] = 0;
@@ -278,22 +263,18 @@ pglSurface::pglSurface(int x, int y, pglDisplay* d)
     }
 }
 
-pglSurface::~pglSurface()
-{
+pglSurface::~pglSurface() {
     delete bits;
 }
 
-pddiLockInfo*  pglSurface::Lock(pddiLockType l)
-{
+pddiLockInfo *pglSurface::Lock(pddiLockType l) {
     return &lock;
 }
 
-void pglSurface::Unlock()
-{
+void pglSurface::Unlock() {
 }
 
-unsigned pglDisplay::FillDisplayModes(pddiModeInfo* displayModes)
-{
+unsigned pglDisplay::FillDisplayModes(pddiModeInfo *displayModes) {
     int i = 0;
     int nModes = 0;
 

@@ -21,7 +21,9 @@
 #ifdef RAD_PS2
 #include <p3d/shadow/implementation_ps2.hpp>
 #else
+
 #include <p3d/shadow/implementation_common.hpp>
+
 #endif
 
 

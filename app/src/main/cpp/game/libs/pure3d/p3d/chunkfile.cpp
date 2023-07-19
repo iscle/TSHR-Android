@@ -10,15 +10,13 @@
 
 static const int HEADER_SIZE = 12;
 
-tChunkFile::tChunkFile(tFile* file) : stackTop(-1), realFile(NULL)
-{
-    tRefCounted::Assign(realFile,file);
+tChunkFile::tChunkFile(tFile *file) : stackTop(-1), realFile(NULL) {
+    tRefCounted::Assign(realFile, file);
 
-    P3D_U32  fileChunk;
+    P3D_U32 fileChunk;
     GetData(&fileChunk, 4);
-    
-    switch(fileChunk)
-    {
+
+    switch (fileChunk) {
         case Pure3D::DATA_FILE_COMPRESSED_SWAP :
             realFile->SetEndianSwap(!realFile->GetEndianSwap());
             // fallthrough
@@ -33,8 +31,7 @@ tChunkFile::tChunkFile(tFile* file) : stackTop(-1), realFile(NULL)
             break;
     }
 
-    switch(fileChunk)
-    {
+    switch (fileChunk) {
         case Pure3D::DATA_FILE :
             break;
         case Pure3D::DATA_FILE_SWAP :
@@ -48,30 +45,28 @@ tChunkFile::tChunkFile(tFile* file) : stackTop(-1), realFile(NULL)
     BeginChunk(fileChunk);
 }
 
-tChunkFile::~tChunkFile()
-{
+tChunkFile::~tChunkFile() {
     tRefCounted::Release(realFile);
 }
 
-bool tChunkFile::ChunksRemaining(void)
-{
-    Chunk* chunk = &chunkStack[stackTop];
-    return (chunk->chunkLength > chunk->dataLength) && (realFile->GetPosition() < (chunk->startPosition + chunk->chunkLength));
+bool tChunkFile::ChunksRemaining(void) {
+    Chunk *chunk = &chunkStack[stackTop];
+    return (chunk->chunkLength > chunk->dataLength) &&
+           (realFile->GetPosition() < (chunk->startPosition + chunk->chunkLength));
 }
 
-unsigned tChunkFile::BeginChunk(void)
-{
+unsigned tChunkFile::BeginChunk(void) {
     stackTop++;
     P3DASSERT(stackTop < CHUNK_STACK_SIZE);
 
     // advance to the start of the subchunks
-    if(stackTop != 0)
-    {
+    if (stackTop != 0) {
         // assert that this chunk has subchunks
-        P3DASSERT(chunkStack[stackTop-1].dataLength < chunkStack[stackTop-1].chunkLength);
+        P3DASSERT(chunkStack[stackTop - 1].dataLength < chunkStack[stackTop - 1].chunkLength);
 
-        unsigned start = chunkStack[stackTop-1].startPosition + chunkStack[stackTop-1].dataLength;
-        if(realFile->GetPosition() < start)
+        unsigned start =
+                chunkStack[stackTop - 1].startPosition + chunkStack[stackTop - 1].dataLength;
+        if (realFile->GetPosition() < start)
             realFile->Advance(start - realFile->GetPosition());
     }
 
@@ -84,8 +79,7 @@ unsigned tChunkFile::BeginChunk(void)
     return chunkStack[stackTop].id;
 }
 
-unsigned tChunkFile::BeginChunk(unsigned chunkID)
-{
+unsigned tChunkFile::BeginChunk(unsigned chunkID) {
     stackTop++;
     P3DASSERT(stackTop == 0); // only the p3d file chunk should call this version of the funciton
 
@@ -97,41 +91,36 @@ unsigned tChunkFile::BeginChunk(unsigned chunkID)
     return chunkStack[stackTop].id;
 }
 
-void tChunkFile::EndChunk(void)
-{
+void tChunkFile::EndChunk(void) {
     unsigned start = chunkStack[stackTop].startPosition;
     unsigned chLength = chunkStack[stackTop].chunkLength;
     unsigned dataLength = chunkStack[stackTop].dataLength;
 
     P3DASSERT(stackTop > 0);
-    P3DASSERT(realFile->GetPosition() <=  start + chLength); 
+    P3DASSERT(realFile->GetPosition() <= start + chLength);
 //   P3DASSERT(oldChunkFormat || (chLength == dataLength) || (realFile->GetPosition() == start+chLength));
     realFile->Advance((start + chLength) - realFile->GetPosition());
     stackTop--;
 }
 
-unsigned tChunkFile::GetCurrentID(void)
-{
+unsigned tChunkFile::GetCurrentID(void) {
     return chunkStack[stackTop].id;
 }
 
-unsigned tChunkFile::GetCurrentDataLength(void)
-{
+unsigned tChunkFile::GetCurrentDataLength(void) {
     return chunkStack[stackTop].dataLength - HEADER_SIZE;
 }
 
-unsigned tChunkFile::GetCurrentOffset(void)
-{
+unsigned tChunkFile::GetCurrentOffset(void) {
     return realFile->GetPosition() - chunkStack[stackTop].startPosition - HEADER_SIZE;
 }
-    
-tFile* tChunkFile::BeginInset(void)
-{
+
+tFile *tChunkFile::BeginInset(void) {
     return realFile;
 }
 
-void   tChunkFile::EndInset(tFile* f)
-{
-    P3DASSERT(realFile->GetPosition() <= chunkStack[stackTop].startPosition + chunkStack[stackTop].chunkLength);
+void tChunkFile::EndInset(tFile *f) {
+    P3DASSERT(realFile->GetPosition() <=
+              chunkStack[stackTop].startPosition + chunkStack[stackTop].chunkLength);
 }
 

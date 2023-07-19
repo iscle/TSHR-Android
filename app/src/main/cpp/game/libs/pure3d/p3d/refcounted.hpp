@@ -9,72 +9,104 @@
 
 #include <p3d/buildconfig.hpp>
 #include <p3d/plat_types.hpp>
-#include <stddef.h> 
+#include <stddef.h>
 #include <radload/utility/object.hpp>
 
-class tNonCopyable
-{
+class tNonCopyable {
 protected:
     tNonCopyable() {};
+
     ~tNonCopyable() {};
 
-private: 
+private:
     // private, so derived classes (and pretty much anyone else) can't call them
     // plus there are no implimetations of these functios
     // so if someone does figure out how to call them,  they are rewarded with a linker error
-    tNonCopyable( const tNonCopyable& );
-    const tNonCopyable& operator=( const tNonCopyable& );
+    tNonCopyable(const tNonCopyable &);
+
+    const tNonCopyable &operator=(const tNonCopyable &);
 };
 
 // a reference counted object
-class tRefCounted : public radLoadObject
-{
+class tRefCounted : public radLoadObject {
 
 };
 
 // a reference counted object allocated on the temporary heap
-class tRefCountedTemp : public tRefCounted 
-{
+class tRefCountedTemp : public tRefCounted {
 public:
     // overloaded allocators 
     static void *operator new(size_t size);
-    static void operator delete(void*);
 
-    static void* operator new( size_t size, int allocator );
-    static void  operator delete( void* pMemory, int allocator );
+    static void operator delete(void *);
+
+    static void *operator new(size_t size, int allocator);
+
+    static void operator delete(void *pMemory, int allocator);
 };
 
 // base class for smart pointers
-class tPtrBase
-{
+class tPtrBase {
 protected:
-    inline void Assign(tRefCounted* o) { if(o) o->AddRef(); if(obj) obj->Release(); obj = o; }
-    inline void Release(void) { if(obj) obj->Release(); obj = 0; }
-    tRefCounted* obj;
+    inline void Assign(tRefCounted *o) {
+        if (o) o->AddRef();
+        if (obj) obj->Release();
+        obj = o;
+    }
+
+    inline void Release(void) {
+        if (obj) obj->Release();
+        obj = 0;
+    }
+
+    tRefCounted *obj;
 };
 
 // templatized smart pointer
-template <class T> class tPtr : public tPtrBase
-{
+template<class T>
+class tPtr : public tPtrBase {
 public:
-    tPtr()              { obj = 0;}
-    tPtr(T* const t)          { obj = 0; Assign(t);}
-    tPtr(const tPtr& p)       { obj = 0; Assign(p.obj); }
-    ~tPtr()             { Release(); }
+    tPtr() { obj = 0; }
 
-    tPtr& operator=(const tPtr& p) { Assign(p.obj); return *this;}
-    tPtr& operator=(T* const t)    { Assign(t); return *this;}
-    bool  operator==( const tPtr& p) const { return p == p.obj; }
+    tPtr(T *const t) {
+        obj = 0;
+        Assign(t);
+    }
 
-    T* operator->() { return (T*)obj;}
-    const T* operator->() const { return (T*)obj;}
-    T& operator*()  { return *((T*)obj);}
-    const T& operator*() const { return *((T*)obj); }
-    operator T*()    { return (T*)obj;}
-    operator const T*() const   { return (T*)obj;}
+    tPtr(const tPtr &p) {
+        obj = 0;
+        Assign(p.obj);
+    }
 
-    operator bool() const  { return obj != 0; }
-    bool operator !() const     { return obj == 0; }
+    ~tPtr() { Release(); }
+
+    tPtr &operator=(const tPtr &p) {
+        Assign(p.obj);
+        return *this;
+    }
+
+    tPtr &operator=(T *const t) {
+        Assign(t);
+        return *this;
+    }
+
+    bool operator==(const tPtr &p) const { return p == p.obj; }
+
+    T *operator->() { return (T *) obj; }
+
+    const T *operator->() const { return (T *) obj; }
+
+    T &operator*() { return *((T *) obj); }
+
+    const T &operator*() const { return *((T *) obj); }
+
+    operator T *() { return (T *) obj; }
+
+    operator const T *() const { return (T *) obj; }
+
+    operator bool() const { return obj != 0; }
+
+    bool operator!() const { return obj == 0; }
 //   operator void*() { return (void*)obj;}
 
 //   template <class T2> operator tPtr<T2>() { return tPtr<T2>((T*)obj);}

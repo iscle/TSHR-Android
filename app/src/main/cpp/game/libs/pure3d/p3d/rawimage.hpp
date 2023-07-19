@@ -8,15 +8,17 @@
 
 #include <p3d/imagefactory.hpp>
 
-class tRawImageHandler : public tImageHandler
-{
+class tRawImageHandler : public tImageHandler {
 public:
-    char* GetExtension() { return "raw"; }
-    bool CanLoad()       { return true; }
-    bool CanSave()       { return false; }
+    char *GetExtension() { return "raw"; }
+
+    bool CanLoad() { return true; }
+
+    bool CanSave() { return false; }
 
     bool CheckFormat(Format);
-    void CreateImage(tFile* file, tImageHandler::Builder* builder);
+
+    void CreateImage(tFile *file, tImageHandler::Builder *builder);
 };
 
 #endif // RAWIMAGE_HPP

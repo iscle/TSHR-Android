@@ -122,7 +122,7 @@
 #define DEFAULT_MAX_ERRORS_BEFORE_HALT        (6)
 #define MAX_WARNINGS_BEFORE_HALT            (25)
 
-        // Specified in KB
+// Specified in KB
 #define ERROR_BUFFER_SIZE (10)
 
 // ==================================================
@@ -132,7 +132,7 @@
 static int initialised = FALSE;        // Has this module been initialised?
 
 static int gMaxErrors;                // The maximum number of errors we're prepared to encounter before
-                                    // returning HALT.
+// returning HALT.
 static BOOL gTreatWarningsAsErrors;
 static BOOL gEmbedErrorsInMainOutput;
 
@@ -146,12 +146,12 @@ static int warningsIgnored[MAX_WARNINGS_MASKED];    // Array holding all the war
 char gTempString[1024];                // Just a temporary string for random sprintf calls.
 static char gTempStringBuffer[1024];    // Temporary string for use in this modules only
 
-char gErrorBuffer[ERROR_BUFFER_SIZE*1024];            // The big error buffer
+char gErrorBuffer[ERROR_BUFFER_SIZE * 1024];            // The big error buffer
 char *gOutputBuffer = NULL;        // The big output buffer
-int    gOutputBufferSize;
+int gOutputBufferSize;
 
 static char *gpOutputBuffer;        // optimisation - a pointer showing the current end of the output
-                                    // buffer, so we can add strings onto the end faster.
+// buffer, so we can add strings onto the end faster.
 
 static BOOL gScroll = TRUE;        // Boolean, should we scroll when the buffer fills, or fail with an error.
 
@@ -174,7 +174,7 @@ void DEBUG_parseConfig(char *initString) {
     char *p;
 
     gErrorBuffer[0] = 0;
-    if(gOutputBuffer != NULL) {
+    if (gOutputBuffer != NULL) {
         free(gOutputBuffer);
     }
 
@@ -189,61 +189,62 @@ void DEBUG_parseConfig(char *initString) {
     gOutputBufferSize = 100;
     gScroll = TRUE;
 
-    if(initString != NULL) {
-                // Parse the init string
-        if(strstr(initString, "-w") != NULL) {
+    if (initString != NULL) {
+        // Parse the init string
+        if (strstr(initString, "-w") != NULL) {
             numWarningsIgnored = -1;    // -1 means ignore all warnings
         }
 
-        if((p = strstr(initString, "-E")) != NULL) {
-            p+=2;
+        if ((p = strstr(initString, "-E")) != NULL) {
+            p += 2;
             gMaxErrors = 0;
-            while(*p >= '0' && *p <= '9') {
+            while (*p >= '0' && *p <= '9') {
                 gMaxErrors = gMaxErrors * 10 + *(p++);
             }
         }
 
-        if((p = strstr(initString, "-W")) != NULL) {
-            p+=2;
+        if ((p = strstr(initString, "-W")) != NULL) {
+            p += 2;
             ASSERT((*p != 0), "Invalid debug initialisation string at '-W'!");
 
-            if(*p == 'e') {        // Check for 'error' (actually just check for 'e');
+            if (*p == 'e') {        // Check for 'error' (actually just check for 'e');
                 gTreatWarningsAsErrors = TRUE;
             } else {
-                        // Else we assume its a decimal number and mask that warning
+                // Else we assume its a decimal number and mask that warning
                 maskWarning = 0;
-                while(isdigit(*p)) {
+                while (isdigit(*p)) {
                     maskWarning = maskWarning * 10 + (*(p++) - '0');
                 }
-                if(maskWarning != 0 && numWarningsIgnored >= 0) {
-                    ASSERT( (numWarningsIgnored < MAX_WARNINGS_MASKED),
-                            "Invalid initialisation string at '-W'! Too many warning masks!");
+                if (maskWarning != 0 && numWarningsIgnored >= 0) {
+                    ASSERT((numWarningsIgnored < MAX_WARNINGS_MASKED),
+                           "Invalid initialisation string at '-W'! Too many warning masks!");
                     warningsIgnored[numWarningsIgnored++] = maskWarning;
-                    dprintf( ("Will ignore warning number %d\n", maskWarning ) );
+                    dprintf(("Will ignore warning number %d\n", maskWarning));
                 }
             }
         }
 
-        if(strstr(initString, "-S") != NULL) {
+        if (strstr(initString, "-S") != NULL) {
             gEmbedErrorsInMainOutput = TRUE;
         }
 
-        if((p=strstr(initString, "-B")) != NULL) {
-            p+=2;
+        if ((p = strstr(initString, "-B")) != NULL) {
+            p += 2;
             gOutputBufferSize = 0;
-            while(isdigit(*p)) {
+            while (isdigit(*p)) {
                 gOutputBufferSize = gOutputBufferSize * 10 + (*(p++) - '0');
             }
-            ASSERT( (gOutputBufferSize != 0), "Invalid parameter for buffer size (-B)! Must be a number > 0");
+            ASSERT((gOutputBufferSize != 0),
+                   "Invalid parameter for buffer size (-B)! Must be a number> 0");
         }
 
-        if(strstr(initString, "-noscroll") != NULL) {
+        if (strstr(initString, "-noscroll") != NULL) {
             gScroll = FALSE;
         }
     }
 
-    gOutputBuffer = (char *)memalign(4, gOutputBufferSize * 1024);
-    ASSERT( (gOutputBuffer != NULL), "ERROR in Debug module! Could not allocate output buffer");
+    gOutputBuffer = (char *) memalign(4, gOutputBufferSize * 1024);
+    ASSERT((gOutputBuffer != NULL), "ERROR in Debug module! Could not allocate output buffer");
 
     initialised = TRUE;
 
@@ -251,20 +252,19 @@ void DEBUG_parseConfig(char *initString) {
 }
 
 
-
-
-
 static void warnInit(void) {
     DEBUG_parseConfig("-S");
-    puts(ERRORCOL "WARNING WARNING: An attempt was made to use the DEBUG module without initialising it first!" NORM);
-    puts(ERRORCOL "WARNING WARNING: An attempt was made to use the DEBUG module without initialising it first!" NORM);
+    puts(ERRORCOL
+    "WARNING WARNING: An attempt was made to use the DEBUG module without initialising it first!"
+    NORM);
+    puts(ERRORCOL
+    "WARNING WARNING: An attempt was made to use the DEBUG module without initialising it first!"
+    NORM);
 }
 
 
-
-
 void DEBUG_reset(void) {        // once initialised, this will clear the output buffers
-    if(!initialised) {
+    if (!initialised) {
         warnInit();
     }
 
@@ -285,41 +285,47 @@ int DEBUG_addToOutputBuffer(char *s) {
     int foundError = NO_ERROR;
     int i;
 
-    if(initialised == FALSE) warnInit();
+    if (initialised == FALSE) warnInit();
 
     i = strlen(s);
-    if((gpOutputBuffer + i + 100) > (gOutputBuffer + gOutputBufferSize * 1024)) {    // if adding this string will overflow the buffer...
-        if(gScroll == FALSE) {
+    if ((gpOutputBuffer + i + 100) > (gOutputBuffer + gOutputBufferSize *
+                                                      1024)) {    // if adding this string will overflow the buffer...
+        if (gScroll == FALSE) {
             // Exit with an error;
-            strcat(gpOutputBuffer, "\n\n" ERRORCOL "DEBUG MODULE - OUTPUT BUFFER FULL" NORM "\n");
+            strcat(gpOutputBuffer, "\n\n"
+            ERRORCOL
+            "DEBUG MODULE - OUTPUT BUFFER FULL"
+            NORM
+            "\n");
             return ERROR_FATAL_HALT;
         } else {
-                // Delete the first 20 lines of output and retry.
+            // Delete the first 20 lines of output and retry.
             char *p = gOutputBuffer;
             int numNewlines = 20;
-            while(numNewlines > 0) {
-                if(*p == '\n') {
+            while (numNewlines > 0) {
+                if (*p == '\n') {
                     numNewlines--;
                 }
                 p++;
-                if(p >= gpOutputBuffer) {
+                if (p >= gpOutputBuffer) {
                     break;
                 }
             }
-            if(numNewlines > 0 || p >= gpOutputBuffer) {
+            if (numNewlines > 0 || p >= gpOutputBuffer) {
                 p = gpOutputBuffer;
             }
-                // p should now point to the char after the first char of the 20th line.
-            memmove(gOutputBuffer, p, strlen(p)+1);
+            // p should now point to the char after the first char of the 20th line.
+            memmove(gOutputBuffer, p, strlen(p) + 1);
             gpOutputBuffer = gOutputBuffer + strlen(gOutputBuffer);
-                // If it's still larger then we have to quit.
-            ASSERT( ((gpOutputBuffer + i + 100) <= (gOutputBuffer + gOutputBufferSize * 1024)),
-                "Error - could not fit string into Output Buffer, even after scrolling.");
+            // If it's still larger then we have to quit.
+            ASSERT(((gpOutputBuffer + i + 100) <= (gOutputBuffer + gOutputBufferSize * 1024)),
+                   "Error - could not fit string into Output Buffer, even after scrolling.");
         }
     }
 
     strcat(gpOutputBuffer, s);
-    strcat(gpOutputBuffer, NORM "\n");
+    strcat(gpOutputBuffer, NORM
+    "\n");
     gpOutputBuffer = gpOutputBuffer + strlen(gpOutputBuffer);
 
     return foundError;
@@ -338,44 +344,55 @@ int DEBUG_addError(int errNum, int severity, char *errString) {
     int err = severity;
     int i;
 
-    if(initialised == FALSE) warnInit();
+    if (initialised == FALSE) warnInit();
 
-    if(severity == ERROR_WARNING) {
-        if(numWarningsIgnored == -1) {            // -1 means ignore all warnings
+    if (severity == ERROR_WARNING) {
+        if (numWarningsIgnored == -1) {            // -1 means ignore all warnings
             dputs("ignoring all warnings");
             return 0;
         }
-        for(i = 0; i < numWarningsIgnored; i++) {    // else check to see if we should ignore this warning
-            if(warningsIgnored[i] == errNum) {
-                dprintf( ("Ignoring warning %d\n", errNum) );
+        for (i = 0;
+             i < numWarningsIgnored; i++) {    // else check to see if we should ignore this warning
+            if (warningsIgnored[i] == errNum) {
+                dprintf(("Ignoring warning %d\n", errNum));
                 return 0;
             }
         }
-        sprintf(gTempStringBuffer, WARNINGCOL"warning (%d) : %s" NORM, errNum, errString);
-        if(gTreatWarningsAsErrors) {
+        sprintf(gTempStringBuffer, WARNINGCOL
+        "warning (%d) : %s"
+        NORM, errNum, errString);
+        if (gTreatWarningsAsErrors) {
             gErrCount++;
-            if(gErrCount > gMaxErrors) {
-                puts(ERRORCOL "DMAdebug - too many errors (treating warnings as errors), exiting."NORM);
+            if (gErrCount > gMaxErrors) {
+                puts(ERRORCOL
+                "DMAdebug - too many errors (treating warnings as errors), exiting."
+                NORM);
                 err |= ERROR_FATAL_HALT;
             }
         } else {
             gWarnCount++;
-            if(gWarnCount > MAX_WARNINGS_BEFORE_HALT) {
-                puts(ERRORCOL "DMAdebug - too many warnings, exiting."NORM);
+            if (gWarnCount > MAX_WARNINGS_BEFORE_HALT) {
+                puts(ERRORCOL
+                "DMAdebug - too many warnings, exiting."
+                NORM);
                 err |= ERROR_FATAL_HALT;
             }
         }
 
     } else {    // Errors
-        sprintf(gTempStringBuffer, ERRORCOL"ERROR (%d) : %s"NORM, errNum, errString);
+        sprintf(gTempStringBuffer, ERRORCOL
+        "ERROR (%d) : %s"
+        NORM, errNum, errString);
         gErrCount++;
-        if(gErrCount > gMaxErrors) {
-            puts(ERRORCOL "DMAdebug - too many errors, exiting."NORM);
+        if (gErrCount > gMaxErrors) {
+            puts(ERRORCOL
+            "DMAdebug - too many errors, exiting."
+            NORM);
             err |= ERROR_FATAL_HALT;
         }
     }
 
-    if(gEmbedErrorsInMainOutput) {
+    if (gEmbedErrorsInMainOutput) {
         err |= DEBUG_addToOutputBuffer(gTempStringBuffer);
     } else {
         strcat(gErrorBuffer, gTempStringBuffer);
@@ -386,18 +403,15 @@ int DEBUG_addError(int errNum, int severity, char *errString) {
 }
 
 
-
-
-
 int DEBUG_strlen(char *s) {
     // This returns the length of the string in characters, i.e. the length without
     // ANSI colour codes.
 
     int i = strlen(s);
 
-    while(*s != 0) {
-        if(*s == 0x1b) {
-            while(*s != 'm') {
+    while (*s != 0) {
+        if (*s == 0x1b) {
+            while (*s != 'm') {
                 s++;
                 i--;
             }
@@ -409,20 +423,15 @@ int DEBUG_strlen(char *s) {
 }
 
 
-
-
-
-
-
-        // Returns address of first '%' in a format string that isn't '%%', or NULL if no such pattern exists.
+// Returns address of first '%' in a format string that isn't '%%', or NULL if no such pattern exists.
 char *findFirstPercent(char *s) {
-    while(1) {
+    while (1) {
         s = strchr(s, '%');
-        if(s == NULL) {
+        if (s == NULL) {
             return NULL;
         }
-        if(s[1] == '%') {
-            s+=2;
+        if (s[1] == '%') {
+            s += 2;
         } else {
             break;
         }
@@ -432,32 +441,32 @@ char *findFirstPercent(char *s) {
 
 
 
-    // 'final' is a string containing a bit field's disassembly. addField will add this string
-    // to the output. It checks to see that adding the field
-    // will go off the end of the current line (there's a pre-defined line width), and
-    // if so it will add a new line and indent.
+// 'final' is a string containing a bit field's disassembly. addField will add this string
+// to the output. It checks to see that adding the field
+// will go off the end of the current line (there's a pre-defined line width), and
+// if so it will add a new line and indent.
 
-    // This function essentially duplicates the work of sprintf.
+// This function essentially duplicates the work of sprintf.
 
-    // There's some complex stuff in here because we'd ideally want to pass all the va_args
-    // off to sprintf, but that's a little difficult without writing some assembler or
-    // using the (nonexistant) varargs macros.
+// There's some complex stuff in here because we'd ideally want to pass all the va_args
+// off to sprintf, but that's a little difficult without writing some assembler or
+// using the (nonexistant) varargs macros.
 
 void DEBUG_addField(debug_msg_type type, char *final, char *fmt, ...) {
     va_list ap;
     int argnum;
-    char *p,*q,*r;
+    char *p, *q, *r;
     u_int arg;
     int i;
     char temp[1024];
 
     va_start(ap, fmt);
 
-            // First, calculate the number of arguments
+    // First, calculate the number of arguments
     argnum = 0;
-    for(p = fmt; *p != 0; p++) {
-        if(*p == '%') {
-            if(p[1] == '%') {
+    for (p = fmt; *p != 0; p++) {
+        if (*p == '%') {
+            if (p[1] == '%') {
                 p++;
             } else {
                 argnum++;
@@ -465,28 +474,30 @@ void DEBUG_addField(debug_msg_type type, char *final, char *fmt, ...) {
         }
     }
 
-            // This may seem rather complicated, but it's really the only way of doing it
-            // without completely reinventing sprintf.
-            // Basically, it searches for a '%' symbol, then find finds the next '%' and sets
-            // it to '0'. Then it calls sprintf with the next var_arg. It then unsets the '%'
-            // and continues.
+    // This may seem rather complicated, but it's really the only way of doing it
+    // without completely reinventing sprintf.
+    // Basically, it searches for a '%' symbol, then find finds the next '%' and sets
+    // it to '0'. Then it calls sprintf with the next var_arg. It then unsets the '%'
+    // and continues.
     p = fmt;
     q = NULL;
     r = temp;
-    if(argnum == 0) {
+    if (argnum == 0) {
         sprintf(r, p);    // have to sprintf rather than strcpy, to remove any '%%'s.
     } else {
-        while(argnum > 0) {
+        while (argnum > 0) {
             arg = va_arg(ap, u_int);
 
-            if(argnum != 1) {
-                    // replace next '%' with 0 to stop sprintf from pulling more than 1 arg.
+            if (argnum != 1) {
+                // replace next '%' with 0 to stop sprintf from pulling more than 1 arg.
 
-                q = findFirstPercent(p);        // This is the '%' of the string we're about to reformat
-                ASSERT((q!=NULL), "Logic error - should have found at least 1 '%%'\n");
+                q = findFirstPercent(
+                        p);        // This is the '%' of the string we're about to reformat
+                ASSERT((q != NULL), "Logic error - should have found at least 1 '%%'\n");
 
-                q = findFirstPercent(q+1);        // this is the '%' of the place where we'll put the 0
-                ASSERT((q!=NULL), "Logic error - should have found at least 2 '%%'\n");
+                q = findFirstPercent(
+                        q + 1);        // this is the '%' of the place where we'll put the 0
+                ASSERT((q != NULL), "Logic error - should have found at least 2 '%%'\n");
 
                 *q = 0;
             } else {
@@ -494,8 +505,8 @@ void DEBUG_addField(debug_msg_type type, char *final, char *fmt, ...) {
             }
 
             r += sprintf(r, p, arg);
-                // Replace '%' if we previously set it to 0
-            if(q != NULL) {
+            // Replace '%' if we previously set it to 0
+            if (q != NULL) {
                 *q = '%';
                 p = q;
             }
@@ -504,14 +515,14 @@ void DEBUG_addField(debug_msg_type type, char *final, char *fmt, ...) {
     }
     va_end(ap);
 
-        // Now add the 'temp' string to 'final'.
+    // Now add the 'temp' string to 'final'.
     p = final + strlen(final);
-    switch(type) {
+    switch (type) {
         case ENTRY_TITLE:
             dputs("-=-=-=-=-= DEBUG - Adding new TITLE");
             i = INDENT_SIZE - DEBUG_strlen(temp) - 1;
             strcat(p, temp);
-            while(i-- > 0) {
+            while (i-- > 0) {
                 strcat(p, " ");
             }
             strcat(p, ":");
@@ -519,16 +530,17 @@ void DEBUG_addField(debug_msg_type type, char *final, char *fmt, ...) {
 
         case ENTRY_FIELD:
             dputs("-=-=-=-=-= DEBUG - Adding new FIELD");
-            while(p > final && *p != '\n') {
+            while (p > final && *p != '\n') {
                 p--;
             }
-            if(*p == '\n') p++;
+            if (*p == '\n') p++;
 
             i = DEBUG_strlen(p) + DEBUG_strlen(temp);
-                    // This will add a new line and indent if the field will go off the end... but won't
-                    // if it's the first field on the line.
-            if(i > LINE_WIDTH && DEBUG_strlen(p) > INDENT_SIZE) {
-                strcat(p, "\n" INDENT);
+            // This will add a new line and indent if the field will go off the end... but won't
+            // if it's the first field on the line.
+            if (i > LINE_WIDTH && DEBUG_strlen(p) > INDENT_SIZE) {
+                strcat(p, "\n"
+                INDENT);
             }
             strcat(p, " ");
             strcat(p, temp);
@@ -536,10 +548,12 @@ void DEBUG_addField(debug_msg_type type, char *final, char *fmt, ...) {
 
         case ENTRY_FIELD_NL:
             dputs("-=-=-=-=-= DEBUG - Adding new FIELD_NL");
-            if(p > final && *(p-1) != '\n') {        // add a NL if the last char was not a new line.
+            if (p > final &&
+                *(p - 1) != '\n') {        // add a NL if the last char was not a new line.
                 strcat(p, "\n");
             }
-            strcat(p, INDENT " ");
+            strcat(p, INDENT
+            " ");
             strcat(p, temp);
             break;
 
@@ -553,17 +567,17 @@ void DEBUG_addField(debug_msg_type type, char *final, char *fmt, ...) {
 
 
 
-    // Save the output buffers to a file
+// Save the output buffers to a file
 
 void DEBUG_saveBuffers(char *filename, BOOL append) {
     int handle;
 
     strcpy(gTempStringBuffer, "host0:");
     strcat(gTempStringBuffer, filename);
-    if(append) {
-        handle = sceOpen(gTempStringBuffer, SCE_WRONLY|SCE_CREAT|SCE_APPEND);
+    if (append) {
+        handle = sceOpen(gTempStringBuffer, SCE_WRONLY | SCE_CREAT | SCE_APPEND);
     } else {
-        handle = sceOpen(gTempStringBuffer, SCE_WRONLY|SCE_TRUNC|SCE_CREAT);
+        handle = sceOpen(gTempStringBuffer, SCE_WRONLY | SCE_TRUNC | SCE_CREAT);
     }
     ASSERT((handle >= 0), "Could not open the file for writing.");
 
@@ -574,7 +588,7 @@ void DEBUG_saveBuffers(char *filename, BOOL append) {
 
 
 
-            // initialises all the modules
+// initialises all the modules
 
 
 void DEBUG_init(char *cs) {

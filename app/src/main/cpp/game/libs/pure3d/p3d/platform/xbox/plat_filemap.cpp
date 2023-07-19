@@ -11,14 +11,12 @@
 
 #include <xtl.h>
 
-tWin32FileAsync::tWin32FileAsync(const char* f)
-{
+tWin32FileAsync::tWin32FileAsync(const char *f) {
     char filename[512];
-    strcpy(filename,f);
+    strcpy(filename, f);
 
-    for(unsigned i = 0; i < strlen(filename); i++)
-    {
-        if(filename[i] == '/')
+    for (unsigned i = 0; i < strlen(filename); i++) {
+        if (filename[i] == '/')
             filename[i] = '\\';
     }
 
@@ -26,89 +24,75 @@ tWin32FileAsync::tWin32FileAsync(const char* f)
     hEvent = INVALID_HANDLE_VALUE;
 
     int fh = _open(filename, _O_RDONLY);
-    if(fh == -1)
-    {
+    if (fh == -1) {
         char n[256] = "d:\\";
-        strcat(n,filename);
-        
+        strcat(n, filename);
+
         fh = _open(n, _O_RDONLY);
 
-        if(fh == -1)
-            return;   
+        if (fh == -1)
+            return;
 
-        strcpy(filename,n);
+        strcpy(filename, n);
     }
 
     fileSize = _filelength(fh);
     _close(fh);
 
-    hEvent = CreateEvent(NULL,FALSE,FALSE,NULL);
-    hFile = CreateFile(filename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
+    hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+    hFile = CreateFile(filename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
+                       FILE_FLAG_OVERLAPPED, NULL);
 
-    SetFilename((char*)filename);
+    SetFilename((char *) filename);
     first = true;
     filePosition = 0;
 }
 
-tWin32FileAsync::~tWin32FileAsync()
-{
-    if(hFile != INVALID_HANDLE_VALUE)
-        CloseHandle((HANDLE)hFile);
+tWin32FileAsync::~tWin32FileAsync() {
+    if (hFile != INVALID_HANDLE_VALUE)
+        CloseHandle((HANDLE) hFile);
 
-    if(hEvent != INVALID_HANDLE_VALUE)
-        CloseHandle((HANDLE)hEvent);
+    if (hEvent != INVALID_HANDLE_VALUE)
+        CloseHandle((HANDLE) hEvent);
 }
 
-bool tWin32FileAsync::IsOpen(void)
-{
+bool tWin32FileAsync::IsOpen(void) {
     return (hFile != INVALID_HANDLE_VALUE);
 }
 
-bool tWin32FileAsync::EndOfFile(void)
-{
+bool tWin32FileAsync::EndOfFile(void) {
     return filePosition >= fileSize;
 }
 
-unsigned tWin32FileAsync::GetSize(void)
-{
+unsigned tWin32FileAsync::GetSize(void) {
     return fileSize;
 }
 
-unsigned tWin32FileAsync::GetPosition(void)
-{
+unsigned tWin32FileAsync::GetPosition(void) {
     return filePosition;
 }
 
-void     tWin32FileAsync::Advance(unsigned offset)
-{
+void tWin32FileAsync::Advance(unsigned offset) {
     filePosition += offset;
-    if(offset < (FILE_BUFFER_SIZE - bufferPos))
-    {
+    if (offset < (FILE_BUFFER_SIZE - bufferPos)) {
         bufferPos += offset;
-    }
-    else
-    {
+    } else {
         FillBuffer(filePosition);
     }
 }
 
-void     tWin32FileAsync::SetPosition(int offset)
-{
+void tWin32FileAsync::SetPosition(int offset) {
     filePosition = offset;
-    if(((unsigned)offset >= bufferStart ) & ((unsigned)offset < (bufferStart  + FILE_BUFFER_SIZE)))
-    {
+    if (((unsigned) offset >= bufferStart) &
+        ((unsigned) offset < (bufferStart + FILE_BUFFER_SIZE))) {
         bufferPos = offset - bufferStart;
-    }
-    else
-    {
+    } else {
         FillBuffer(filePosition);
     }
 }
 
-bool tWin32FileAsync::GetData(void* buf, unsigned count, DataType type)
-{
-    if(first)
-    {
+bool tWin32FileAsync::GetData(void *buf, unsigned count, DataType type) {
+    if (first) {
         first = false;
         FillBuffer(filePosition);
     }
@@ -116,26 +100,23 @@ bool tWin32FileAsync::GetData(void* buf, unsigned count, DataType type)
     filePosition += count * type;
 
     // TODO : endian
-    if((bufferPos + (count * type)) < FILE_BUFFER_SIZE)
-    {
+    if ((bufferPos + (count * type)) < FILE_BUFFER_SIZE) {
         memcpy(buf, &buffer[bufferPos], count * type);
         bufferPos += count * type;
         return true;
     }
 
-    char* b = (char*)buf;
+    char *b = (char *) buf;
     unsigned byteCount = count * type;
 
-    while((bufferPos + byteCount) >= FILE_BUFFER_SIZE)
-    {
+    while ((bufferPos + byteCount) >= FILE_BUFFER_SIZE) {
         memcpy(b, &buffer[bufferPos], FILE_BUFFER_SIZE - bufferPos);
         b += FILE_BUFFER_SIZE - bufferPos;
         byteCount -= FILE_BUFFER_SIZE - bufferPos;
         FillBuffer(bufferStart + FILE_BUFFER_SIZE);
     }
 
-    if(byteCount)
-    {
+    if (byteCount) {
         memcpy(b, &buffer[bufferPos], byteCount);
         bufferPos += byteCount;
     }
@@ -143,16 +124,13 @@ bool tWin32FileAsync::GetData(void* buf, unsigned count, DataType type)
     return true;
 }
 
-bool tWin32FileAsync::PeekData(void* buf, unsigned count, DataType type)
-{
-    if(first)
-    {
+bool tWin32FileAsync::PeekData(void *buf, unsigned count, DataType type) {
+    if (first) {
         first = false;
         FillBuffer(filePosition);
     }
 
-    if((bufferPos + (count * type)) < FILE_BUFFER_SIZE)
-    {
+    if ((bufferPos + (count * type)) < FILE_BUFFER_SIZE) {
         memcpy(buf, &buffer[bufferPos], count * type);
         return true;
     }
@@ -163,29 +141,25 @@ bool tWin32FileAsync::PeekData(void* buf, unsigned count, DataType type)
     return true;
 }
 
-void tWin32FileAsync::FillBuffer(unsigned start)
-{
+void tWin32FileAsync::FillBuffer(unsigned start) {
     bufferStart = start;
     bufferPos = 0;
     OVERLAPPED overlapped;
     overlapped.Offset = start;
     overlapped.OffsetHigh = 0;
-    overlapped.hEvent = hEvent; 
+    overlapped.hEvent = hEvent;
 
     int size = ((fileSize - start) < FILE_BUFFER_SIZE) ? (fileSize - start) : FILE_BUFFER_SIZE;
 
 //   P3D_U64 time = p3d::platform->GetTime();
     int rc = ReadFile(hFile, buffer, size, NULL, &overlapped);
 //   time = p3d::platform->GetTime() - time;
-//   p3d::log() << "ReadFile: " << 1000.0f * ((float)time / (float)p3d::platform->GetTimeFreq()) << "ms" << log_endl;
+//   p3d::log() <<"ReadFile: " <<1000.0f * ((float)time / (float)p3d::platform->GetTimeFreq()) <<"ms" <<log_endl;
 
-    if(rc != 0)
-    {
-        do
-        {
+    if (rc != 0) {
+        do {
             p3d::loadManager->SwitchTask();
-        }
-        while(WaitForSingleObject(hEvent, 1) == 0x00000102);
+        } while (WaitForSingleObject(hEvent, 1) == 0x00000102);
     }
 }
 

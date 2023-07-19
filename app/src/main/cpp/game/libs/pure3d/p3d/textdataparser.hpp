@@ -9,15 +9,17 @@
 #define _TEXTDATAPARSER_HPP
 
 class tFile;
+
 #include <ctype.h>
 
-class TextDataParser
-{
+class TextDataParser {
 
- public:
+public:
     TextDataParser(char *data, int len);
+
     TextDataParser(tFile *file);
-  ~TextDataParser();
+
+    ~TextDataParser();
 
     void Reset(void);
 
@@ -32,6 +34,7 @@ class TextDataParser
 
     // Returns data of the current token
     int CurrentToken(char *dest, int destlen);
+
     char *DupCurrentToken(void);
 
     int CurrentLine(void) { return mCurrentLine; }
@@ -41,30 +44,31 @@ class TextDataParser
     // If current token =='{' will skip ahead to the matching close bracket
     bool SkipBracketedSection(void);
 
-    inline bool  PushPosition(void);
-    inline bool  PopPosition(void);
+    inline bool PushPosition(void);
 
- private:
+    inline bool PopPosition(void);
+
+private:
 
     char *mData;
-    int   mDataLen;
-    
-    int   mCurrentTokenStart;
-    int   mCurrentTokenLen;
+    int mDataLen;
 
-    int   mCurrentLine;
+    int mCurrentTokenStart;
+    int mCurrentTokenLen;
+
+    int mCurrentLine;
 
     inline bool IsSeperator(char c);
 
     inline bool IsCurrentTokenComment(void);
 
-    int   mBracketLevel;
+    int mBracketLevel;
 
-    bool  mDataPushed;
-    int   mPushedCurrentTokenStart;
-    int   mPushedCurrentTokenLen;
-    int   mPushedCurrentLine;
-    int   mPushedBracketLevel;
+    bool mDataPushed;
+    int mPushedCurrentTokenStart;
+    int mPushedCurrentTokenLen;
+    int mPushedCurrentLine;
+    int mPushedBracketLevel;
 };
 
 //******************************************************
@@ -73,33 +77,32 @@ class TextDataParser
 // Push Position
 //
 //
-inline bool TextDataParser::PushPosition(void)
-{
+inline bool TextDataParser::PushPosition(void) {
     if (mDataPushed) return false;
 
     mDataPushed = true;
     mPushedCurrentTokenStart = mCurrentTokenStart;
-    mPushedCurrentTokenLen   = mCurrentTokenLen;
-    mPushedCurrentLine       = mCurrentLine;
-    mPushedBracketLevel      = mBracketLevel;
-    
+    mPushedCurrentTokenLen = mCurrentTokenLen;
+    mPushedCurrentLine = mCurrentLine;
+    mPushedBracketLevel = mBracketLevel;
+
     return true;
 }
+
 //******************************************************
 //
 // Class TextDataParser
 // Pop Position
 //
 //
-inline bool TextDataParser::PopPosition(void)
-{
+inline bool TextDataParser::PopPosition(void) {
     if (!mDataPushed) return false;
 
     mDataPushed = false;
     mCurrentTokenStart = mPushedCurrentTokenStart;
-    mCurrentTokenLen   = mPushedCurrentTokenLen;
-    mCurrentLine       = mPushedCurrentLine;
-    mBracketLevel      = mPushedBracketLevel;
+    mCurrentTokenLen = mPushedCurrentTokenLen;
+    mCurrentLine = mPushedCurrentLine;
+    mBracketLevel = mPushedBracketLevel;
     return true;
 }
 
@@ -109,13 +112,12 @@ inline bool TextDataParser::PopPosition(void)
 // Is Seperator
 //
 //
-inline bool TextDataParser::IsSeperator(char c)
-{
+inline bool TextDataParser::IsSeperator(char c) {
 
     if (c == 0x0a) ++mCurrentLine;
 
     if (isalnum(c)) return false;
-    if (c == '_')   return false;
+    if (c == '_') return false;
 
     if (c == '+') return false;
     if (c == '-') return false;
@@ -140,9 +142,8 @@ inline bool TextDataParser::IsSeperator(char c)
 // Is Current Token Comment
 //
 //
-inline bool TextDataParser::IsCurrentTokenComment(void)
-{
-        
+inline bool TextDataParser::IsCurrentTokenComment(void) {
+
     char *s = &mData[mCurrentTokenStart];
     if ((s[0] == '/') && (s[1] == '/')) return true;
 

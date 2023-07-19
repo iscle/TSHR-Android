@@ -16,26 +16,28 @@ class tPose;
 //*********************************************************
 // Class tPoseAnimationController
 //*********************************************************
-class tPoseAnimationController : public tBlendFrameController
-{
+class tPoseAnimationController : public tBlendFrameController {
 public:
     tPoseAnimationController();
-    tPoseAnimationController(tPoseAnimationController* c);
 
-    void SetPose(tPose* pose);
-    tPose* GetPose() { return pose; }
+    tPoseAnimationController(tPoseAnimationController *c);
 
-    virtual bool ValidateAnimation(tAnimation* anim);
+    void SetPose(tPose *pose);
 
-    virtual tFrameController* Clone(void);
+    tPose *GetPose() { return pose; }
+
+    virtual bool ValidateAnimation(tAnimation *anim);
+
+    virtual tFrameController *Clone(void);
 
 protected:
     virtual ~tPoseAnimationController();
 
     void UpdateNoBlending();
+
     void UpdateWithBlending();
 
-    tPose* pose;
+    tPose *pose;
 
     friend class tPoseAnimationLoader;
 };

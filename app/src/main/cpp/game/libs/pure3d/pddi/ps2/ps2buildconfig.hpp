@@ -30,30 +30,30 @@
 
 // Debug build, full debugging support, slow as hell
 #ifdef RAD_DEBUG
-    #ifndef RAD_MW
-        #define DEBUGWATCH
-    #endif
-    #define PS2_VALIDATE_SHADERS            // assert on incompatible shaders and vertex types
-    #define PS2_MFIFO_SANITY_CHECKS         // check for mfifo timeouts
-    //#define PS2_DETECT_RISKY_DELETIONS      // assert if a texture is deleted the same frame it was used (possible corrpution)
-    #define PS2_USE_GAMMA_TABLES            // use gamma tables for gamma corrected images
-    #define PS2_USE_THE_WATCHER             // exposes some PS2 internals in Radcore's Watcher
-    #define PS2_ENABLE_PROFILER             // enabled the internal profiler
-    //#define PS2_NON_MEMORY_IMAGE_WARNING  // warn if memory images aren't being used
+#ifndef RAD_MW
+#define DEBUGWATCH
+#endif
+#define PS2_VALIDATE_SHADERS            // assert on incompatible shaders and vertex types
+#define PS2_MFIFO_SANITY_CHECKS         // check for mfifo timeouts
+//#define PS2_DETECT_RISKY_DELETIONS      // assert if a texture is deleted the same frame it was used (possible corrpution)
+#define PS2_USE_GAMMA_TABLES            // use gamma tables for gamma corrected images
+#define PS2_USE_THE_WATCHER             // exposes some PS2 internals in Radcore's Watcher
+#define PS2_ENABLE_PROFILER             // enabled the internal profiler
+//#define PS2_NON_MEMORY_IMAGE_WARNING  // warn if memory images aren't being used
 #else
 
 // Tune build configuration, some debugging, high speed 
 #ifdef RAD_TUNE
-    #ifndef RAD_MW
-        #define DEBUGWATCH
-    #endif
-    #define PS2_VALIDATE_SHADERS
-    #define PS2_MFIFO_SANITY_CHECKS
-    //#define PS2_DETECT_RISKY_DELETIONS
-    #define PS2_USE_GAMMA_TABLES            // use gamma tables for gamma corrected images
-    #define PS2_USE_THE_WATCHER             // exposes some PS2 internals in Radcore's Watcher
-    #define PS2_ENABLE_PROFILER             // enabled the internal profiler
-    //#define PS2_NON_MEMORY_IMAGE_WARNING
+#ifndef RAD_MW
+#define DEBUGWATCH
+#endif
+#define PS2_VALIDATE_SHADERS
+#define PS2_MFIFO_SANITY_CHECKS
+//#define PS2_DETECT_RISKY_DELETIONS
+#define PS2_USE_GAMMA_TABLES            // use gamma tables for gamma corrected images
+#define PS2_USE_THE_WATCHER             // exposes some PS2 internals in Radcore's Watcher
+#define PS2_ENABLE_PROFILER             // enabled the internal profiler
+//#define PS2_NON_MEMORY_IMAGE_WARNING
 #else
 
 // Release build config, no debugging at all, maximum speed

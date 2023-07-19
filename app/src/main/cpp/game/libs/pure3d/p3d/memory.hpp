@@ -6,10 +6,8 @@
 #ifndef _PURE3D_MEMORY_HPP_
 #define _PURE3D_MEMORY_HPP_
 
-namespace p3d
-{
-    enum AllocType
-    {
+namespace p3d {
+    enum AllocType {
         ALLOC_DEFAULT = 0,
         ALLOC_PERMANENT,
         ALLOC_TEMPORARY,
@@ -19,6 +17,7 @@ namespace p3d
     };
 
     void MemSetup(void);
+
     void MemShutdown(void);
 
     // Retreive current memory type
@@ -29,27 +28,29 @@ namespace p3d
 
     // route alloc types to FTech allocators
     int GetMemAllocator(AllocType);
+
     void SetMemAllocator(AllocType, int);
 
     // overide default routing behavior
-    class MemoryRouter
-    {
-        public:
-           // Retreive current memory type
-           virtual AllocType GetCurrent(void) = 0;
+    class MemoryRouter {
+    public:
+        // Retreive current memory type
+        virtual AllocType GetCurrent(void) = 0;
 
-           // Set current memory type, and return previous 
-           virtual void SetCurrent(AllocType) = 0;
+        // Set current memory type, and return previous
+        virtual void SetCurrent(AllocType) = 0;
     };
 
-    void SetMemRouter(MemoryRouter*);
-    MemoryRouter* GetMemRouter(void);
+    void SetMemRouter(MemoryRouter *);
+
+    MemoryRouter *GetMemRouter(void);
 
     // legacy temporary allocation functions
-    void* MallocTemp(unsigned size);
-    void  FreeTemp(void*);
+    void *MallocTemp(unsigned size);
 
-    void  UsePermanentMem( bool flag );
+    void FreeTemp(void *);
+
+    void UsePermanentMem(bool flag);
 }
 
 #endif

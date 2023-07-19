@@ -9,14 +9,14 @@
 #include <pddi/pddi.hpp>
 #include <pddi/base/baseshader.hpp>
 #include <pddi/gl/glcon.hpp>
+
 class pglTexture;
 
 const int pglMaxPasses = 1;
 
-struct pglTextureEnv
-{
+struct pglTextureEnv {
     bool enabled;
-    pglTexture* texture;
+    pglTexture *texture;
 
     int uvSet;
     pddiTextureGen texGen;
@@ -37,10 +37,10 @@ struct pglTextureEnv
     float shininess;
 };
 
-class pglMat : public pddiBaseShader
-{
+class pglMat : public pddiBaseShader {
 public:
-    pglMat(pglContext*);
+    pglMat(pglContext *);
+
     ~pglMat();
 
     static pddiShadeColourTable colourTable[];
@@ -48,18 +48,25 @@ public:
     static pddiShadeIntTable intTable[];
     static pddiShadeFloatTable floatTable[];
 
-    const char* GetType(void);
-    int         GetPasses(void);
-    void        SetPass(int pass);
+    const char *GetType(void);
 
-    pddiShadeTextureTable* GetTextureTable(void) { return textureTable;}
-    pddiShadeIntTable*     GetIntTable(void)     { return intTable;}
-    pddiShadeFloatTable*   GetFloatTable(void)   { return floatTable;}
-    pddiShadeColourTable*  GetColourTable(void)  { return colourTable;}
+    int GetPasses(void);
+
+    void SetPass(int pass);
+
+    pddiShadeTextureTable *GetTextureTable(void) { return textureTable; }
+
+    pddiShadeIntTable *GetIntTable(void) { return intTable; }
+
+    pddiShadeFloatTable *GetFloatTable(void) { return floatTable; }
+
+    pddiShadeColourTable *GetColourTable(void) { return colourTable; }
 
     // texture
-    void SetTexture(pddiTexture* texture);
+    void SetTexture(pddiTexture *texture);
+
     void SetUVMode(int mode);
+
     void SetFilterMode(int mode);
 
     // shading
@@ -69,23 +76,31 @@ public:
     void EnableLighting(int);
 
     void SetDiffuse(pddiColour colour);
+
     void SetAmbient(pddiColour colour);
+
     void SetEmissive(pddiColour);
+
     void SetSpecular(pddiColour);
+
     void SetShininess(float power);
 
     // alpha blending
     void SetBlendMode(int mode);
+
     void EnableAlphaTest(int);
+
     void SetAlphaCompare(int compare);
+
     void SetAlphaRef(float ref);
 
-    int  CountDevPasses(void);
+    int CountDevPasses(void);
+
     void SetDevPass(unsigned);
 
 private:
-   
-    pglContext* context;
+
+    pglContext *context;
     int pass;
     pglTextureEnv texEnv[pglMaxPasses];
 };

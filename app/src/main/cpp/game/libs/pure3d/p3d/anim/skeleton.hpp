@@ -15,14 +15,12 @@
 
 class tPose;
 
-class tSkeleton : public tEntity
-{
+class tSkeleton : public tEntity {
 public:
     tSkeleton(int nJoint);
 
     //----------------------------------------------------------------
-    class Joint
-    {
+    class Joint {
     public:
         tUID uid;
         int parentIndex;
@@ -32,7 +30,7 @@ public:
         rmt::Matrix worldMatrix;
         rmt::Matrix inverseWorldMatrix;
 
-        int   mappedJointIndex;
+        int mappedJointIndex;
         float xAxisMap;
         float yAxisMap;
         float zAxisMap;
@@ -44,40 +42,48 @@ public:
         // Hierarchys
         bool preserveBoneLengths;
 #ifdef RAD_PS2
-    } __attribute__((aligned(16)));
+        } __attribute__((aligned(16)));
 #else
-	};
+    };
+
 #endif
     //----------------------------------------------------------------
 
-    int GetNumJoint() const                     { return joint.Size(); }
-    Joint* GetJoint(const int i) const          { return &joint[i]; }
-    Joint* FindJoint(const tUID) const;
-    Joint* FindJoint(const char* name)          { return FindJoint(tEntity::MakeUID(name)); }
-    int    FindJointIndex(const tUID uid) const;
-    int    FindJointIndex(const char* name) const    { return FindJointIndex(tEntity::MakeUID(name)); }
+    int GetNumJoint() const { return joint.Size(); }
 
-    tPose* NewPose();
+    Joint *GetJoint(const int i) const { return &joint[i]; }
+
+    Joint *FindJoint(const tUID) const;
+
+    Joint *FindJoint(const char *name) { return FindJoint(tEntity::MakeUID(name)); }
+
+    int FindJointIndex(const tUID uid) const;
+
+    int FindJointIndex(const char *name) const { return FindJointIndex(tEntity::MakeUID(name)); }
+
+    tPose *NewPose();
 
     void Rebuild();
 
 protected:
     tSkeleton();
+
     virtual ~tSkeleton();
 
-    tArray<Joint> joint;
+    tArray <Joint> joint;
 
     friend class tSkeletonLoader;
 };
 
 
 //-------------------------------------------------------------------
-class tSkeletonLoader : public tSimpleChunkHandler
-{
+class tSkeletonLoader : public tSimpleChunkHandler {
 public:
     tSkeletonLoader();
-	// Michael Riegger - moved to public from protected
-    tEntity* LoadObject(tChunkFile*, tEntityStore* store);
+
+    // Michael Riegger - moved to public from protected
+    tEntity *LoadObject(tChunkFile *, tEntityStore *store);
+
 protected:
     ~tSkeletonLoader() {};
 

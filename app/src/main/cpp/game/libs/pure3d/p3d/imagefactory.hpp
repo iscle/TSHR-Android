@@ -11,15 +11,16 @@
 #include <pddi/pddienum.hpp>
 
 class tFile;
+
 class tImage;
+
 class tTexture;
+
 class tImageConverter;
 
-class tImageHandler : public tFileHandler
-{
+class tImageHandler : public tFileHandler {
 public:
-    enum Format
-    {
+    enum Format {
         IMG_RAW,
         IMG_PNG,
         IMG_TGA,
@@ -28,7 +29,7 @@ public:
         IMG_DXT,
         IMG_DXT1,
         IMG_DXT2,            //not used  
-        IMG_DXT3,            
+        IMG_DXT3,
         IMG_DXT4,            //not used
         IMG_DXT5,
         IMG_PS2_4BIT,        // PS2 Memory image formats
@@ -42,46 +43,67 @@ public:
         IMG_GC_DXT1
     };
 
-    class Builder
-    {
+    class Builder {
     public:
-        enum Origin { TOP, BOTTOM };
-        virtual bool BeginImage(int width, int height, int bpp, Origin origin, pddiColour* palette) = 0;
-        virtual void ProcessScanline32(unsigned* src) = 0;
-        virtual void ProcessScanline8(unsigned char* src) = 0;
-        virtual void DirectCopy( unsigned char* data, int len )  {;}
-        virtual void* GetMemoryImagePtr() { return NULL; }
-        virtual void* GetPaletteMemoryImagePtr() { return NULL; }
-        virtual void SetCompressedData( int mipmap, char* data, int len ) {;}
-        virtual void SetExpectedFileSize( const int size )       {;}
-        virtual int  GetExpectedFileSize()                       {return -1;}
-        virtual void SetTextureType( pddiTextureType type )      {;}
+        enum Origin {
+            TOP, BOTTOM
+        };
+
+        virtual bool
+        BeginImage(int width, int height, int bpp, Origin origin, pddiColour *palette) = 0;
+
+        virtual void ProcessScanline32(unsigned *src) = 0;
+
+        virtual void ProcessScanline8(unsigned char *src) = 0;
+
+        virtual void DirectCopy(unsigned char *data, int len) { ; }
+
+        virtual void *GetMemoryImagePtr() { return NULL; }
+
+        virtual void *GetPaletteMemoryImagePtr() { return NULL; }
+
+        virtual void SetCompressedData(int mipmap, char *data, int len) { ; }
+
+        virtual void SetExpectedFileSize(const int size) { ; }
+
+        virtual int GetExpectedFileSize() { return -1; }
+
+        virtual void SetTextureType(pddiTextureType type) { ; }
+
         virtual void EndImage() = 0;
     };
 
     tImageHandler();
 
-    enum LoadType { IMAGE, TEXTURE, SPRITE };
+    enum LoadType {
+        IMAGE, TEXTURE, SPRITE
+    };
 
     virtual bool CanLoad() = 0;
-    virtual bool CanSave() = 0;
-    virtual char* GetExtension() = 0;
 
-    virtual bool CheckExtension(char* filename);
+    virtual bool CanSave() = 0;
+
+    virtual char *GetExtension() = 0;
+
+    virtual bool CheckExtension(char *filename);
+
     virtual bool CheckFormat(Format) = 0;
 
-    virtual void CreateImage(tFile* data, Builder* builder) = 0;
+    virtual void CreateImage(tFile *data, Builder *builder) = 0;
 
-    virtual bool SaveImage(tImage* image, char* filename) { return false; }
+    virtual bool SaveImage(tImage *image, char *filename) { return false; }
 
     virtual void SetLoadType(LoadType l) { loadType = l; }
-    virtual LoadType GetLoadType(void)   { return loadType; }
 
-    virtual void SetFullName(bool b) { fullName = b;}
-    virtual bool GetFullName(void  ) { return fullName;}
+    virtual LoadType GetLoadType(void) { return loadType; }
 
-    virtual tLoadStatus Load(tFile* file, tEntityStore* store);
-    void SetNativeResolution( const int nativeX, const int nativeY );
+    virtual void SetFullName(bool b) { fullName = b; }
+
+    virtual bool GetFullName(void) { return fullName; }
+
+    virtual tLoadStatus Load(tFile *file, tEntityStore *store);
+
+    void SetNativeResolution(const int nativeX, const int nativeY);
 
 
 protected:
@@ -92,60 +114,72 @@ protected:
 };
 
 //-------------------------------------------------------------------
-class tImageFactory
-{
-    public:
-        tImageFactory();
-        ~tImageFactory();
+class tImageFactory {
+public:
+    tImageFactory();
 
-        tImage* LoadAsImage(char* filename, char* inventoryName=NULL);
-        tImage* LoadAsImage(tFile*, char* inventoryName=NULL);
-        tImage* ParseAsImage(tFile*, char* inventoryName, tImageHandler::Format);
-        tTexture* LoadAsTexture(char* filename, char* inventoryName=NULL);
-        tTexture* ParseAsTexture( tFile*, char* inventoryName, const int size, tImageHandler::Format);
-        void LoadIntoTexture(char* filename, tTexture* texture, int mipLevel = 0);
-        void ParseIntoTexture(tFile* file, tTexture* texture, tImageHandler::Format, int mipLevel = 0);
+    ~tImageFactory();
 
-        bool SaveImage(tImage* image, char* filename);
+    tImage *LoadAsImage(char *filename, char *inventoryName = NULL);
 
-        void SetIgnoreExtension(bool ignore) { ignoreExt = ignore; }
-        bool GetIgnoreExtension() const      { return ignoreExt; }
+    tImage *LoadAsImage(tFile *, char *inventoryName = NULL);
 
-        void SetAutoStore(bool store)        { autoStore = store; }
-        bool GetAutoStore(void) const        { return autoStore; }
+    tImage *ParseAsImage(tFile *, char *inventoryName, tImageHandler::Format);
 
-        void SetAlpha(bool alpha)            { hasAlpha = alpha; }
-        bool GetAlpha(void) const            { return hasAlpha; }
+    tTexture *LoadAsTexture(char *filename, char *inventoryName = NULL);
 
-        void SetDesiredDepth(int bpp)        { desiredDepth = bpp; }
-        int GetDesiredDepth() const          { return desiredDepth; }
+    tTexture *ParseAsTexture(tFile *, char *inventoryName, const int size, tImageHandler::Format);
 
-        void SetTextureHints(int alphaDepth, int nMip, pddiTextureType type, pddiTextureUsageHint hint);
+    void LoadIntoTexture(char *filename, tTexture *texture, int mipLevel = 0);
 
-        tImageConverter* GetConverter()      { return converter; }
+    void ParseIntoTexture(tFile *file, tTexture *texture, tImageHandler::Format, int mipLevel = 0);
 
-        void AddHandler(tImageHandler* handler);
-        void ClearHandlers();
+    bool SaveImage(tImage *image, char *filename);
 
-    private:
-        int nHandler;
-        tImageHandler* handler[32];
-        tImageConverter *converter;
-        bool ignoreExt;
-        bool autoStore;
-        bool hasAlpha;
-        int desiredDepth;
-        bool fullName;
+    void SetIgnoreExtension(bool ignore) { ignoreExt = ignore; }
 
-        int alphaDepthHint;
-        int nMipHint;
-        pddiTextureType typeHint;
-        pddiTextureUsageHint usageHint;
+    bool GetIgnoreExtension() const { return ignoreExt; }
 
-        tImageHandler* FindHandler(char* filename);
-        tImageHandler* FindHandler(tImageHandler::Format);
+    void SetAutoStore(bool store) { autoStore = store; }
 
-        tImageHandler* OpenImage(char* filename, tFile** file);
+    bool GetAutoStore(void) const { return autoStore; }
+
+    void SetAlpha(bool alpha) { hasAlpha = alpha; }
+
+    bool GetAlpha(void) const { return hasAlpha; }
+
+    void SetDesiredDepth(int bpp) { desiredDepth = bpp; }
+
+    int GetDesiredDepth() const { return desiredDepth; }
+
+    void SetTextureHints(int alphaDepth, int nMip, pddiTextureType type, pddiTextureUsageHint hint);
+
+    tImageConverter *GetConverter() { return converter; }
+
+    void AddHandler(tImageHandler *handler);
+
+    void ClearHandlers();
+
+private:
+    int nHandler;
+    tImageHandler *handler[32];
+    tImageConverter *converter;
+    bool ignoreExt;
+    bool autoStore;
+    bool hasAlpha;
+    int desiredDepth;
+    bool fullName;
+
+    int alphaDepthHint;
+    int nMipHint;
+    pddiTextureType typeHint;
+    pddiTextureUsageHint usageHint;
+
+    tImageHandler *FindHandler(char *filename);
+
+    tImageHandler *FindHandler(tImageHandler::Format);
+
+    tImageHandler *OpenImage(char *filename, tFile **file);
 };
 
 #endif /* _IMAGEFACTORY_HPP */

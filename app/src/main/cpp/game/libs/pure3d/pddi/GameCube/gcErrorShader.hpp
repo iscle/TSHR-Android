@@ -16,31 +16,35 @@ class gcContext;
 
 //const int gcMaxPasses = 1;
 //const int gcMaxStages = 16;
-    
+
 
 //**********************************************************
 //
 // Class ErrorShader
 //
 //
-class gcErrorShader : public pddiBaseShader
-{
+class gcErrorShader : public pddiBaseShader {
 public:
     gcErrorShader(gcContext *);
-  ~gcErrorShader();
+
+    ~gcErrorShader();
 
     static void Install(void);
 
     const char *GetType(void);
-    int         GetPasses(void);
-    void        SetPass(int pass);
 
-    int  CountDevPasses(void);
+    int GetPasses(void);
+
+    void SetPass(int pass);
+
+    int CountDevPasses(void);
+
     void SetDevPass(unsigned);
 
 private:
 
     static pddiBaseShader *Allocate(pddiRenderContext *c, const char *name, const char *aux);
+
     gcContext *mContext;
 
 };

@@ -11,36 +11,33 @@
 
 #include <radmemory.hpp>
 
-inline void* MallocAligned(size_t alignment, size_t nBytes)
-{
-    void *p = radMemoryAllocAligned( ::radMemoryGetCurrentAllocator (), nBytes, alignment );
+inline void *MallocAligned(size_t alignment, size_t nBytes) {
+    void *p = radMemoryAllocAligned(::radMemoryGetCurrentAllocator(), nBytes, alignment);
 
     return p;
 }
 
-inline void Free(void* ptr)
-{
+inline void Free(void *ptr) {
     radMemoryFreeAligned(ptr);
 }
 
-void pddiMemRegAlloc(void* d, unsigned s);
-void pddiMemRegFree(void* d);
+void pddiMemRegAlloc(void *d, unsigned s);
+
+void pddiMemRegFree(void *d);
 
 //--------------------------------------------------------------------
-inline void* malloc_uncached_accel(const int nBytes)
-{
-   char* ptr = (char*)MallocAligned(64, (nBytes+63) & ~63);
-   ptr = (char*)((unsigned)ptr | 0x30000000);
-   FlushCache(0);
-   pddiMemRegAlloc(ptr,nBytes);
+inline void *malloc_uncached_accel(const int nBytes) {
+    char *ptr = (char *) MallocAligned(64, (nBytes + 63) & ~63);
+    ptr = (char *) ((unsigned) ptr | 0x30000000);
+    FlushCache(0);
+    pddiMemRegAlloc(ptr, nBytes);
 
-   return ptr;
+    return ptr;
 }
 
-inline void free_uncached_accel(void* ptr)
-{
-   Free((char*)((unsigned)ptr & ~0x30000000));
-   pddiMemRegFree(ptr);
+inline void free_uncached_accel(void *ptr) {
+    Free((char *) ((unsigned) ptr & ~0x30000000));
+    pddiMemRegFree(ptr);
 }
 
 

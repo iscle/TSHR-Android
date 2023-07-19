@@ -17,14 +17,16 @@ class tLensFlare;
 // Class tLensFlareGroupLoader - loads lens flare group 
 //
 //*****************************************************************************
-class tLensFlareGroupLoader: public tSimpleChunkHandler
-{
+class tLensFlareGroupLoader : public tSimpleChunkHandler {
 public:
     tLensFlareGroupLoader();
+
 protected:
     ~tLensFlareGroupLoader() {};
-    tEntity* LoadObject(tChunkFile* chunk, tEntityStore* store);
-    tLensFlare* LoadLensFlare(tChunkFile* chunk, tEntityStore* store);
+
+    tEntity *LoadObject(tChunkFile *chunk, tEntityStore *store);
+
+    tLensFlare *LoadLensFlare(tChunkFile *chunk, tEntityStore *store);
 };
 
 #endif;

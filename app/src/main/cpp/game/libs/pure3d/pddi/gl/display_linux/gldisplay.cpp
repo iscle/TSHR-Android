@@ -4,13 +4,13 @@
 
 
 #ifdef RAD_WIN32
-    #include <pddi/gl/display_win32/gldisplay.hpp>
-    #include <pddi/gl/display_win32/gl.hpp>
+#include <pddi/gl/display_win32/gldisplay.hpp>
+#include <pddi/gl/display_win32/gl.hpp>
 #endif
 
 #ifdef RAD_LINUX
-    #include <pddi/gl/display_linux/gldisplay.hpp>
-    #include <pddi/gl/display_linux/gl.hpp>
+#include <pddi/gl/display_linux/gldisplay.hpp>
+#include <pddi/gl/display_linux/gl.hpp>
 #endif
 
 
@@ -24,13 +24,12 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-bool pglDisplay::CheckExtension( char *extName )
-{
+bool pglDisplay::CheckExtension(char *extName) {
     char *p = (char *) glGetString(GL_EXTENSIONS);
 
-    if((p == NULL) || (extName == NULL))
+    if ((p == NULL) || (extName == NULL))
         return false;
-    
+
     char *end;
     int extNameLen;
 
@@ -40,15 +39,14 @@ bool pglDisplay::CheckExtension( char *extName )
     while (p < end) {
         int n = strcspn(p, " ");
         if ((extNameLen == n) && (strncmp(extName, p, n) == 0)) {
-             return true;
+            return true;
         }
         p += (n + 1);
     }
     return false;
 }
 
-pglDisplay::pglDisplay()
-{
+pglDisplay::pglDisplay() {
     mode = PDDI_DISPLAY_WINDOW;
     winWidth = 640;
     winHeight = 480;
@@ -63,49 +61,42 @@ pglDisplay::pglDisplay()
     gammaR = gammaG = gammaB = 1.0f;
 
     reset = true;
-	m_ForceVSync = false;
+    m_ForceVSync = false;
 }
 
-pglDisplay::~pglDisplay()
-{
+pglDisplay::~pglDisplay() {
 }
 
-void  pglDisplay::SetXDisplay(void* dpy)
-{
-    display = (Display*)dpy;
+void pglDisplay::SetXDisplay(void *dpy) {
+    display = (Display *) dpy;
 }
 
-void* pglDisplay::GetXDisplay()
-{
-    return (void*)display;
+void *pglDisplay::GetXDisplay() {
+    return (void *) display;
 }
 
-void pglDisplay::SetXWindow(void* win)
-{
-    window = (Window)win;
+void pglDisplay::SetXWindow(void *win) {
+    window = (Window) win;
 }
 
-void* pglDisplay::GetXWindow()
-{
-    return (void*)window;
+void *pglDisplay::GetXWindow() {
+    return (void *) window;
 }
 
-bool pglDisplay::InitDisplay(const pddiDisplayInit* init)
-{
+bool pglDisplay::InitDisplay(const pddiDisplayInit *init) {
     return InitDisplay(init->xsize, init->ysize, init->bpp);
 }
 
-bool pglDisplay::InitDisplay(int x, int y, int bpp)
-{
+bool pglDisplay::InitDisplay(int x, int y, int bpp) {
     reset = true;
 
     winWidth = x;
     winHeight = y;
 
-    char* glVendor   = (char*)glGetString(GL_VENDOR);
-    char* glRenderer = (char*)glGetString(GL_RENDERER);
-    char* glVersion  = (char*)glGetString(GL_VERSION);
-    char* glExtensions = (char*)glGetString(GL_EXTENSIONS);
+    char *glVendor = (char *) glGetString(GL_VENDOR);
+    char *glRenderer = (char *) glGetString(GL_RENDERER);
+    char *glVersion = (char *) glGetString(GL_VERSION);
+    char *glExtensions = (char *) glGetString(GL_EXTENSIONS);
 
     extBGRA = CheckExtension("GL_EXT_bgra");
 
@@ -116,96 +107,80 @@ bool pglDisplay::InitDisplay(int x, int y, int bpp)
 
 extern pddiDisplayInfo displayInfo[2];
 
-pddiDisplayInfo* pglDisplay::GetDisplayInfo(void)
-{
+pddiDisplayInfo *pglDisplay::GetDisplayInfo(void) {
     return &displayInfo[0];
 }
 
-unsigned pglDisplay::GetFreeTextureMem()
-{
+unsigned pglDisplay::GetFreeTextureMem() {
     return unsigned(-1);
 }
 
-unsigned pglDisplay::GetBufferMask()
-{
+unsigned pglDisplay::GetBufferMask() {
     return ~0U;
 }
 
-int pglDisplay::GetHeight()
-{
+int pglDisplay::GetHeight() {
     return winHeight;
 }
 
-int pglDisplay::GetWidth()
-{
+int pglDisplay::GetWidth() {
     return winWidth;
 }
 
-int pglDisplay::GetDepth()
-{
+int pglDisplay::GetDepth() {
     return winBitDepth;
 }
 
-pddiDisplayMode pglDisplay::GetDisplayMode(void)
-{
+pddiDisplayMode pglDisplay::GetDisplayMode(void) {
     return mode;
 }
 
-int pglDisplay::GetNumColourBuffer(void)
-{
+int pglDisplay::GetNumColourBuffer(void) {
     return 2;
 }
 
-void pglDisplay::GetGamma(float* r, float* g, float* b)
-{
+void pglDisplay::GetGamma(float *r, float *g, float *b) {
     *r = gammaR;
     *g = gammaG;
     *b = gammaB;
 }
 
-void pglDisplay::SetGamma(float r, float g, float b)
-{
+void pglDisplay::SetGamma(float r, float g, float b) {
     gammaR = r;
     gammaG = g;
     gammaB = b;
 }
 
-void pglDisplay ::SwapBuffers()
-{
-    glXSwapBuffers( display, window );
+void pglDisplay::SwapBuffers() {
+    glXSwapBuffers(display, window);
 }
 
-unsigned pglDisplay::Screenshot(pddiColour* buffer, int nBytes)
-{
+unsigned pglDisplay::Screenshot(pddiColour *buffer, int nBytes) {
     // not implemented under linux
     assert(0 && "PDDI: pddiDisplay::ScreenShot() - Not implemented under linux.");
 }
 
-unsigned pglDisplay::FillDisplayModes(pddiModeInfo* displayModes)
-{
+unsigned pglDisplay::FillDisplayModes(pddiModeInfo *displayModes) {
     int i = 0;
     int nModes = 0;
 
     return nModes;
 }
-    
-void pglDisplay::BeginTiming()
-{
-    gettimeofday(&beginTime,NULL);
+
+void pglDisplay::BeginTiming() {
+    gettimeofday(&beginTime, NULL);
 }
 
-float pglDisplay::EndTiming()
-{
+float pglDisplay::EndTiming() {
     struct timeval tv;
-    gettimeofday(&tv,NULL);
+    gettimeofday(&tv, NULL);
     // return time in milliseconds
-    return (float)(tv.tv_sec - beginTime.tv_sec) * 1e3 + (float)(tv.tv_usec - beginTime.tv_usec) * 1e-3;
+    return (float) (tv.tv_sec - beginTime.tv_sec) * 1e3 +
+           (float) (tv.tv_usec - beginTime.tv_usec) * 1e-3;
 }
 
-void pglDisplay::BeginContext(void)
-{
+void pglDisplay::BeginContext(void) {
 }
 
-void pglDisplay::EndContext(void)
-{
+void pglDisplay::EndContext(void) {
 }

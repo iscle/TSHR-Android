@@ -49,25 +49,20 @@
 
 #include <string.h>
 
-void lzr_decompress (const unsigned char* input, unsigned int inputsize,
-                            unsigned char* output, unsigned int outputsize)
-{
+void lzr_decompress(const unsigned char *input, unsigned int inputsize,
+                    unsigned char *output, unsigned int outputsize) {
     unsigned int outputcount = 0;
 
-    while(outputcount < outputsize)
-    {
+    while (outputcount < outputsize) {
         unsigned int code = *input++;
 
-        if(code > 15)
-        {
+        if (code > 15) {
             // a match
             int matchlength = code & 15;
 
-            if(matchlength == 0)
-            {
+            if (matchlength == 0) {
                 matchlength += 15;
-                while (*input == 0)
-                {
+                while (*input == 0) {
                     matchlength += 255;
                     input++;
                 }
@@ -75,37 +70,31 @@ void lzr_decompress (const unsigned char* input, unsigned int inputsize,
             }
 
             int offset = (code >> 4) | (*input++) << 4;
-            unsigned char* match_ptr = output - offset;
+            unsigned char *match_ptr = output - offset;
 
             // shortest match is 4 characters, so we can unroll the loop
-            int len = matchlength>>2;
-            matchlength -= len<<2;
+            int len = matchlength >> 2;
+            matchlength -= len << 2;
 
-            do
-            {
+            do {
                 *output++ = *match_ptr++;
                 *output++ = *match_ptr++;
                 *output++ = *match_ptr++;
                 *output++ = *match_ptr++;
                 outputcount += 4;
-            } while(--len);
+            } while (--len);
 
-            while(matchlength)
-            {
+            while (matchlength) {
                 *output++ = *match_ptr++;
                 outputcount++;
                 matchlength--;
             }
-        }
-        else
-        {
+        } else {
             // A literal run
             int runlength = code;
-            
-            if(runlength == 0)
-            {
-                while (*input == 0)
-                {
+
+            if (runlength == 0) {
+                while (*input == 0) {
                     runlength += 255;
                     input++;
                 }
@@ -129,11 +118,10 @@ void lzr_decompress (const unsigned char* input, unsigned int inputsize,
                 outputcount += 15;
             }
 
-            do
-            {
+            do {
                 *output++ = *input++;
                 outputcount++;
-            } while(--runlength);
+            } while (--runlength);
         }
     }
 }

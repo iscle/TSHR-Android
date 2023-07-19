@@ -13,20 +13,23 @@ class tShader;
 //*********************************************************
 // Class tTextureAnimationController
 //*********************************************************
-class tTextureAnimationController : public tSimpleFrameController
-{
+class tTextureAnimationController : public tSimpleFrameController {
 public:
     tTextureAnimationController();
-    tTextureAnimationController(tTextureAnimationController* c);
 
-    void SetShader(tShader* Shader);
-    tShader* Shader(void) { return mShader; }
+    tTextureAnimationController(tTextureAnimationController *c);
 
-    virtual tFrameController* Clone(void);
-    virtual bool ValidateAnimation(tAnimation* anim);
+    void SetShader(tShader *Shader);
+
+    tShader *Shader(void) { return mShader; }
+
+    virtual tFrameController *Clone(void);
+
+    virtual bool ValidateAnimation(tAnimation *anim);
 
 protected:
     virtual ~tTextureAnimationController();
+
     virtual void Update(void);
 
     tShader *mShader;

@@ -5,46 +5,39 @@
 
 #include <p3d/vectorcamera.hpp>
 
-tVectorCamera::tVectorCamera() : 
-    position(0.0f,  0.0f,  0.0f), 
-    direction(0.0f,  0.0f,  1.0f),
-    up(0.0f,  1.0f,  0.0f)
-{
+tVectorCamera::tVectorCamera() :
+        position(0.0f, 0.0f, 0.0f),
+        direction(0.0f, 0.0f, 1.0f),
+        up(0.0f, 1.0f, 0.0f) {
 }
 
-tVectorCamera::tVectorCamera(tVectorCamera* other) : tCamera(other)
-{
+tVectorCamera::tVectorCamera(tVectorCamera *other) : tCamera(other) {
     position = other->GetPosition();
     direction = other->GetDirection();
     up = other->GetUpVector();
     updated = false;
 }
 
-tVectorCamera::~tVectorCamera()
-{
+tVectorCamera::~tVectorCamera() {
     //
 }
 
-void tVectorCamera::SetDirection(const rmt::Vector& dir)
-{
+void tVectorCamera::SetDirection(const rmt::Vector &dir) {
     direction = dir;
     updated = false;
 }
 
-void tVectorCamera::SetUpVector(const rmt::Vector& vup)
-{
-    up= vup;
+void tVectorCamera::SetUpVector(const rmt::Vector &vup) {
+    up = vup;
     updated = false;
 }
 
-void tVectorCamera::SetPosition(const rmt::Vector& pos)
-{
+void tVectorCamera::SetPosition(const rmt::Vector &pos) {
     position = pos;
     updated = false;
 }
 
-void tVectorCamera::Update()
-{
+void tVectorCamera::Update() {
     rmt::Vector nheading;
 
     direction.Normalize();

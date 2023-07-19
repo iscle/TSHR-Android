@@ -11,401 +11,447 @@
 #include <p3d/displaylist.hpp>
 
 class tDrawablePose;
+
 class tCamera;
+
 class tLightGroup;
 
-namespace Scenegraph
-{
+namespace Scenegraph {
 
 
 // forward declarations
-class Node;
+    class Node;
+
     class Branch;
-        class Transform;
-        class Attachment;
-        class Visibility;
+
+    class Transform;
+
+    class Attachment;
+
+    class Visibility;
+
     class Leaf;
-        class Drawable;
-        class Camera;
-        class Light;
 
-class Scenegraph;
+    class Drawable;
 
-class CustomDisplayCallback
-{
-public:
-    virtual void Display(Drawable* node) = 0;
-};
+    class Camera;
 
-class Node : public tEntity
-{
-public:
-    Node();
+    class Light;
 
-    enum Propagation
-    {
-        PROPAGATE_NONE,
-        PROPAGATE_UP,
-        PROPAGATE_DOWN
+    class Scenegraph;
+
+    class CustomDisplayCallback {
+    public:
+        virtual void Display(Drawable *node) = 0;
     };
 
-    enum NodeFlags
-    {
-        BRANCH_TRANSFORM_DIRTY = 0x01,
-        NODE_TRANSFORM_DIRTY   = 0x02,
-        USER_WORLD_TRANSFORM   = 0x04
+    class Node : public tEntity {
+    public:
+        Node();
+
+        enum Propagation {
+            PROPAGATE_NONE,
+            PROPAGATE_UP,
+            PROPAGATE_DOWN
+        };
+
+        enum NodeFlags {
+            BRANCH_TRANSFORM_DIRTY = 0x01,
+            NODE_TRANSFORM_DIRTY = 0x02,
+            USER_WORLD_TRANSFORM = 0x04
+        };
+
+        // abstract traversal functions
+        virtual unsigned GetNumChildren(void) = 0;
+
+        virtual Node *GetChild(unsigned i) = 0;
+
+        // parent control
+        virtual void SetParent(Node *p);
+
+        virtual Node *GetParent();
+
+        // transforms
+        virtual const rmt::Matrix &GetTransform(void);
+
+        virtual const rmt::Matrix &GetWorldTransform(void);
+
+        // standard traversals
+        virtual void Display(const rmt::Matrix &view, DisplayList &list) = 0;
+
+        virtual void CustomDisplay(const rmt::Matrix &view, CustomDisplayCallback *) = 0;
+
+        virtual void UpdateTransform(const rmt::Matrix &parent) = 0;
+
+        unsigned GetFlags(void) { return flags; }
+
+        virtual void SetFlags(bool set, unsigned flag, Propagation prop, bool stopIfSet);
+
+
+    protected:
+        friend class Scenegraph;
+
+        Node *parent;
+        unsigned flags;
+
+        ~Node();
     };
 
-    // abstract traversal functions
-    virtual unsigned GetNumChildren(void) = 0;
-    virtual Node*    GetChild(unsigned i) = 0;
+    class Branch : public Node {
+    public:
+        Branch(int initialChildren = 2);
 
-    // parent control
-    virtual void     SetParent(Node* p);
-    virtual Node*    GetParent();
+        // traversal/child managment
+        unsigned GetNumChildren(void);
 
-    // transforms
-    virtual const rmt::Matrix& GetTransform(void);
-    virtual const rmt::Matrix& GetWorldTransform(void);
+        Node *GetChild(unsigned i);
 
-    // standard traversals
-    virtual void Display(const rmt::Matrix& view, DisplayList& list) = 0;
-    virtual void CustomDisplay(const rmt::Matrix& view, CustomDisplayCallback*) = 0;
-    virtual void UpdateTransform(const rmt::Matrix& parent) = 0;
+        virtual void AddChild(Node *child);
 
-    unsigned     GetFlags(void) {return flags;}
-    virtual void SetFlags(bool set, unsigned flag, Propagation prop, bool stopIfSet);
+        virtual void RemoveChild(Node *child);
 
+        // standard traversals
+        void Display(const rmt::Matrix &view, DisplayList &list);
 
-protected:
-    friend class Scenegraph;
-    Node* parent;
-    unsigned flags;
+        void CustomDisplay(const rmt::Matrix &view, CustomDisplayCallback *);
 
-    ~Node();
-};
+        void UpdateTransform(const rmt::Matrix &parent);
 
-class Branch : public Node
-{
-public:
-    Branch(int initialChildren = 2);
+        void SetFlags(bool set, unsigned flag, Propagation prop, bool stopIfSet);
 
-    // traversal/child managment
-    unsigned GetNumChildren(void);
-    Node*    GetChild(unsigned i);
+    protected:
+        ~Branch();
 
-    virtual void     AddChild(Node* child);
-    virtual void     RemoveChild(Node* child);
+        virtual void Resize(int n);
 
-    // standard traversals
-    void Display(const rmt::Matrix& view, DisplayList& list);
-    void CustomDisplay(const rmt::Matrix& view, CustomDisplayCallback*);
-    void UpdateTransform(const rmt::Matrix& parent);
+        int nChildren;
+        int allocatedChildren;
+        Node **children;
+    };
 
-    void SetFlags(bool set, unsigned flag, Propagation prop, bool stopIfSet);
+    class Leaf : public Node {
+    public:
+        Leaf();
 
-protected:
-    ~Branch();
+        // stubbed traversal functions
+        unsigned GetNumChildren(void);
 
-    virtual void Resize(int n);
+        Node *GetChild(unsigned i);
 
-    int nChildren;
-    int allocatedChildren;
-    Node** children;
-};
+        void Display(const rmt::Matrix &, DisplayList &);
 
-class Leaf : public Node
-{
-public:
-    Leaf();
+        void CustomDisplay(const rmt::Matrix &view, CustomDisplayCallback *);
 
-    // stubbed traversal functions
-    unsigned GetNumChildren(void);
-    Node*    GetChild(unsigned i);
+        void UpdateTransform(const rmt::Matrix &parent);
 
-    void Display(const rmt::Matrix&, DisplayList&);
-    void CustomDisplay(const rmt::Matrix& view, CustomDisplayCallback*);
-    void UpdateTransform(const rmt::Matrix& parent);
+    protected:
+        ~Leaf();
 
-protected:
-    ~Leaf();
-    
-};
+    };
 
-class Transform : public Branch
-{
-public:
-    Transform(int n);
+    class Transform : public Branch {
+    public:
+        Transform(int n);
 
-    const rmt::Matrix& GetTransform(void);
-    const rmt::Matrix& GetWorldTransform(void);
+        const rmt::Matrix &GetTransform(void);
 
-    rmt::Matrix* ModifyTransform(void);
-    rmt::Matrix* ModifyWorldTransform(void);
+        const rmt::Matrix &GetWorldTransform(void);
 
-    void SetTransform(const rmt::Matrix& t);
-    void SetWorldTransform(const rmt::Matrix& w);
+        rmt::Matrix *ModifyTransform(void);
 
-    // standard traversals
-    void Display(const rmt::Matrix& view, DisplayList& list);
-    void CustomDisplay(const rmt::Matrix& view, CustomDisplayCallback*);
-    void UpdateTransform(const rmt::Matrix& parent);
+        rmt::Matrix *ModifyWorldTransform(void);
 
-protected:
-    ~Transform();
+        void SetTransform(const rmt::Matrix &t);
 
-    rmt::Matrix transform;
-    rmt::Matrix world;
+        void SetWorldTransform(const rmt::Matrix &w);
 
-    void BuildWorld(void);
-};
+        // standard traversals
+        void Display(const rmt::Matrix &view, DisplayList &list);
 
-class Drawable : public Leaf
-{
-public:
-    Drawable();
-    Drawable(char* name);
-    Drawable(tDrawable*);
-    
-    void       SetDrawable(tDrawable* d);
-    // DisplayListDrawable interfaces
-    tDrawable* GetDrawable(void) { return draw;}
-    const rmt::Matrix* GetWorldMatrix(){return(&(GetWorldTransform()));}
+        void CustomDisplay(const rmt::Matrix &view, CustomDisplayCallback *);
 
-    void  SetTranslucent(bool isTrans){isTranslucent = isTrans;}
-    bool  IsTranslucent(void){return(isTranslucent);}
+        void UpdateTransform(const rmt::Matrix &parent);
 
-    void  SetSortOrder(float s){sortOrder = s;}
-    float SortOrder(void){return(sortOrder);}
+    protected:
+        ~Transform();
 
-    // standard traversals
-    void Display(const rmt::Matrix&, DisplayList& list );
-    void CustomDisplay(const rmt::Matrix& view, CustomDisplayCallback*);
+        rmt::Matrix transform;
+        rmt::Matrix world;
 
-protected:
-    ~Drawable();
+        void BuildWorld(void);
+    };
 
-    tDrawable* draw;
-    bool isTranslucent;
-    float sortOrder;
-};
+    class Drawable : public Leaf {
+    public:
+        Drawable();
 
-class Attachment : public Branch
-{
-public:
-    Attachment();
-    Attachment(tDrawablePose* pose, int initialChildren);
+        Drawable(char *name);
 
-    void SetDrawablePose(tDrawablePose*);
-    tDrawablePose* GetDrawablePose();
+        Drawable(tDrawable *);
 
-    void     AddChild(Node* child);
+        void SetDrawable(tDrawable *d);
 
-    Node* GetAttachment(int n);
-    int   GetAttachmentJoint(int n);
-    void  SetAttachment(int joint, Node* graft);
-    void  RemoveAttachment(Node* graft);
+        // DisplayListDrawable interfaces
+        tDrawable *GetDrawable(void) { return draw; }
 
-    void EvaluateAttachments(void);
+        const rmt::Matrix *GetWorldMatrix() { return (&(GetWorldTransform())); }
 
-    // standard traversals
-    void Display(const rmt::Matrix& view, DisplayList& list);
+        void SetTranslucent(bool isTrans) { isTranslucent = isTrans; }
+
+        bool IsTranslucent(void) { return (isTranslucent); }
+
+        void SetSortOrder(float s) { sortOrder = s; }
+
+        float SortOrder(void) { return (sortOrder); }
+
+        // standard traversals
+        void Display(const rmt::Matrix &, DisplayList &list);
+
+        void CustomDisplay(const rmt::Matrix &view, CustomDisplayCallback *);
+
+    protected:
+        ~Drawable();
+
+        tDrawable *draw;
+        bool isTranslucent;
+        float sortOrder;
+    };
+
+    class Attachment : public Branch {
+    public:
+        Attachment();
+
+        Attachment(tDrawablePose *pose, int initialChildren);
+
+        void SetDrawablePose(tDrawablePose *);
+
+        tDrawablePose *GetDrawablePose();
+
+        void AddChild(Node *child);
+
+        Node *GetAttachment(int n);
+
+        int GetAttachmentJoint(int n);
+
+        void SetAttachment(int joint, Node *graft);
+
+        void RemoveAttachment(Node *graft);
+
+        void EvaluateAttachments(void);
+
+        // standard traversals
+        void Display(const rmt::Matrix &view, DisplayList &list);
+
 //    void CustomDisplay(const rmt::Matrix& view, CustomDisplayCallback*);
-    void UpdateTransform(const rmt::Matrix& parent);
+        void UpdateTransform(const rmt::Matrix &parent);
 
-protected:
-    ~Attachment();
-    void Resize(int n);
+    protected:
+        ~Attachment();
 
-    tDrawablePose* pose;
-    int* jointIndices;
-};
+        void Resize(int n);
 
-class Camera : public Leaf
-{
-public:
-    Camera();
-    Camera(tCamera*);
+        tDrawablePose *pose;
+        int *jointIndices;
+    };
 
-    tCamera* GetCamera();
-    void SetCamera(tCamera*);
-    
-protected:
-    ~Camera();
+    class Camera : public Leaf {
+    public:
+        Camera();
 
-    tCamera* camera;
+        Camera(tCamera *);
 
-};
+        tCamera *GetCamera();
 
-class LightGroup : public Leaf
-{
-public:
-    LightGroup();
-    LightGroup(tLightGroup*);
+        void SetCamera(tCamera *);
 
-    tLightGroup* GetLights();
-    void SetLights(tLightGroup*);
+    protected:
+        ~Camera();
 
-protected:
-    ~LightGroup();
+        tCamera *camera;
 
-    tLightGroup* lights;
+    };
 
-};
+    class LightGroup : public Leaf {
+    public:
+        LightGroup();
+
+        LightGroup(tLightGroup *);
+
+        tLightGroup *GetLights();
+
+        void SetLights(tLightGroup *);
+
+    protected:
+        ~LightGroup();
+
+        tLightGroup *lights;
+
+    };
 
 // the basic scenegraph
-class Scenegraph : public tDrawable
-{
-public:
-    Scenegraph();
+    class Scenegraph : public tDrawable {
+    public:
+        Scenegraph();
 
-    Node* GetRoot(void) { return root;}
-    void  SetRoot(Node* n);
+        Node *GetRoot(void) { return root; }
 
-    Node* Find(const char* name);
-    Node* Find(tUID uid){return Search(root, uid);}
+        void SetRoot(Node *n);
+
+        Node *Find(const char *name);
+
+        Node *Find(tUID uid) { return Search(root, uid); }
 
 //   tCamera*     GetCamera();
 //   tLightGroup* GetLights();
 
-    void Display(void);
-    void CustomDisplay(CustomDisplayCallback*);
-    void UpdateTransform(void);
-    void ProcessShaders(ShaderCallback&);
+        void Display(void);
 
-    virtual void GetBoundingBox(rmt::Box3D* b)          { *b = boundingBox; }
-    virtual void GetBoundingSphere(rmt::Sphere* s)          { boundingBox.GetBoundingSphere(s); }
+        void CustomDisplay(CustomDisplayCallback *);
 
-protected:
-    ~Scenegraph();
+        void UpdateTransform(void);
 
-    Node* Search(Node* node, tUID name);
+        void ProcessShaders(ShaderCallback &);
 
-    Node* root;
+        virtual void GetBoundingBox(rmt::Box3D *b) { *b = boundingBox; }
 
-    DisplayList translucentDrawables;
+        virtual void GetBoundingSphere(rmt::Sphere *s) { boundingBox.GetBoundingSphere(s); }
 
-    //Hack
-    friend class SceneGraphGenericLoader;
+    protected:
+        ~Scenegraph();
 
-private:
-    rmt::Box3D boundingBox;
-};
+        Node *Search(Node *node, tUID name);
 
-class Visibility : public Branch
-{
-public:
-    Visibility(int initialChildren = 1);
+        Node *root;
 
-    // standard traversals
-    void Display(const rmt::Matrix&, DisplayList& list);
-    void CustomDisplay(const rmt::Matrix& view, CustomDisplayCallback*);
+        DisplayList translucentDrawables;
 
-    void SetVisibility(bool vis){isVisible = vis;}
+        //Hack
+        friend class SceneGraphGenericLoader;
 
-protected:
-    ~Visibility(){}
+    private:
+        rmt::Box3D boundingBox;
+    };
 
-    bool isVisible;
-};
+    class Visibility : public Branch {
+    public:
+        Visibility(int initialChildren = 1);
 
-class SceneGraphGenericLoader
-{
- public:
-    tEntity* LoadObject(tChunkFile*, tEntityStore* store);
-	Node*    LoadNode(tChunkFile*, tEntityStore* store, rmt::Matrix* Root = 0);
+        // standard traversals
+        void Display(const rmt::Matrix &, DisplayList &list);
 
-private:
-    rmt::Box3D boundingBox;
-};
+        void CustomDisplay(const rmt::Matrix &view, CustomDisplayCallback *);
 
-class Loader : public tSimpleChunkHandler
-{
- public:
-    Loader();
+        void SetVisibility(bool vis) { isVisible = vis; }
 
- protected:
-     ~Loader() {};
-    tEntity* LoadObject(tChunkFile*, tEntityStore* store);
-    Node*    LoadNode(tChunkFile*, tEntityStore* store);
+    protected:
+        ~Visibility() {}
 
-    SceneGraphGenericLoader bothFormatsLoader;
-};
+        bool isVisible;
+    };
+
+    class SceneGraphGenericLoader {
+    public:
+        tEntity *LoadObject(tChunkFile *, tEntityStore *store);
+
+        Node *LoadNode(tChunkFile *, tEntityStore *store, rmt::Matrix *Root = 0);
+
+    private:
+        rmt::Box3D boundingBox;
+    };
+
+    class Loader : public tSimpleChunkHandler {
+    public:
+        Loader();
+
+    protected:
+        ~Loader() {};
+
+        tEntity *LoadObject(tChunkFile *, tEntityStore *store);
+
+        Node *LoadNode(tChunkFile *, tEntityStore *store);
+
+        SceneGraphGenericLoader bothFormatsLoader;
+    };
 
 //----------------------------------------------------------------
 // SceneGraph Traversal objects
 //----------------------------------------------------------------
-class SceneGraphVisitor
-{
-public:
-    virtual void Visit(Node* sceneGraphNode) = 0;
-};
-
-class DrawableCounter : public SceneGraphVisitor
-{
-public:
-    DrawableCounter():nDrawables(0){}
-    virtual void Visit(Node* sceneGraphNode);
-    long GetCount(){return(nDrawables);}
-protected:
-    long nDrawables;
-};
-
-class TranslucentDrawableCounter : public DrawableCounter
-{
-public:
-    virtual void Visit(Node* sceneGraphNode);
-};
-
-class SceneGraphTraversal
-{
-public:
-    static void Traverse(Node* node, SceneGraphVisitor& vis);
-};
-
-class Iterator
-{
-public:
-    Iterator(Scenegraph* scenegraph);
-    virtual ~Iterator();
-
-    virtual void  First(void);
-    virtual void  Next(void);
-    virtual bool  IsDone(void){return(m_isDone);}
-    virtual Node* GetNode(void){return(m_current);}
-
-protected:
-    Scenegraph* m_scenegraph;
-    Node*       m_current;
-    bool        m_isDone;
-
-    class SearchState
-    {
+    class SceneGraphVisitor {
     public:
-        SearchState():sceneNode(NULL),currentChildIndex(0){}
-        Node*    sceneNode;
-        unsigned currentChildIndex;
+        virtual void Visit(Node *sceneGraphNode) = 0;
     };
 
-private:
-    
-    Iterator();
-    
-    long m_currentStackIndex;
-    long m_searchStackSize;
-    SearchState* m_searchStack; 
-};
+    class DrawableCounter : public SceneGraphVisitor {
+    public:
+        DrawableCounter() : nDrawables(0) {}
 
-class LightGroupIterator : public Iterator
-{
-public:
-    LightGroupIterator(Scenegraph* scenegraph):Iterator(scenegraph){}
-    virtual void  First(void);
-    virtual void  Next(void);
-    LightGroup* GetLightGroup(void);
-private:
+        virtual void Visit(Node *sceneGraphNode);
 
-};
+        long GetCount() { return (nDrawables); }
+
+    protected:
+        long nDrawables;
+    };
+
+    class TranslucentDrawableCounter : public DrawableCounter {
+    public:
+        virtual void Visit(Node *sceneGraphNode);
+    };
+
+    class SceneGraphTraversal {
+    public:
+        static void Traverse(Node *node, SceneGraphVisitor &vis);
+    };
+
+    class Iterator {
+    public:
+        Iterator(Scenegraph *scenegraph);
+
+        virtual ~Iterator();
+
+        virtual void First(void);
+
+        virtual void Next(void);
+
+        virtual bool IsDone(void) { return (m_isDone); }
+
+        virtual Node *GetNode(void) { return (m_current); }
+
+    protected:
+        Scenegraph *m_scenegraph;
+        Node *m_current;
+        bool m_isDone;
+
+        class SearchState {
+        public:
+            SearchState() : sceneNode(NULL), currentChildIndex(0) {}
+
+            Node *sceneNode;
+            unsigned currentChildIndex;
+        };
+
+    private:
+
+        Iterator();
+
+        long m_currentStackIndex;
+        long m_searchStackSize;
+        SearchState *m_searchStack;
+    };
+
+    class LightGroupIterator : public Iterator {
+    public:
+        LightGroupIterator(Scenegraph *scenegraph) : Iterator(scenegraph) {}
+
+        virtual void First(void);
+
+        virtual void Next(void);
+
+        LightGroup *GetLightGroup(void);
+
+    private:
+
+    };
 
 
 } // end namespace

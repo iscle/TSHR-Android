@@ -8,7 +8,7 @@
     Mark removed the log from this file, since it was taking up too much space.
     
 ===========================================================================*/
- 
+
 //
 // Chunks ranges:
 //
@@ -39,108 +39,108 @@
 
 #ifndef _CHUNKS_H
 #define _CHUNKS_H
-const unsigned P3D_IMAGE              = 0x3510;
-const unsigned P3D_IMAGE_DATA         = 0x3511;
-const unsigned P3D_IMAGE_FILENAME     = 0x3512;
+const unsigned P3D_IMAGE = 0x3510;
+const unsigned P3D_IMAGE_DATA = 0x3511;
+const unsigned P3D_IMAGE_FILENAME = 0x3512;
 
 // Skeleton Chunks
-const unsigned P3D_SKELETON                  = 0x4500;
-const unsigned P3D_SKELETON_JOINT            = 0x4501;
-const unsigned P3D_SKELETON_JOINT_PHYSICS    = 0x4502;
+const unsigned P3D_SKELETON = 0x4500;
+const unsigned P3D_SKELETON_JOINT = 0x4501;
+const unsigned P3D_SKELETON_JOINT_PHYSICS = 0x4502;
 const unsigned P3D_SKELETON_JOINT_MIRROR_MAP = 0x4503;
-const unsigned P3D_SKELETON_JOINT_FIX_FLAG   = 0x4504;
+const unsigned P3D_SKELETON_JOINT_FIX_FLAG = 0x4504;
 
-const unsigned P3D_COMPOSITE_DRAWABLE           = 0x4512;
+const unsigned P3D_COMPOSITE_DRAWABLE = 0x4512;
 const unsigned P3D_COMPOSITE_DRAWABLE_SKIN_LIST = 0x4513;
 const unsigned P3D_COMPOSITE_DRAWABLE_PROP_LIST = 0x4514;
-const unsigned P3D_COMPOSITE_DRAWABLE_SKIN      = 0x4515;
-const unsigned P3D_COMPOSITE_DRAWABLE_PROP      = 0x4516;
+const unsigned P3D_COMPOSITE_DRAWABLE_SKIN = 0x4515;
+const unsigned P3D_COMPOSITE_DRAWABLE_PROP = 0x4516;
 const unsigned P3D_COMPOSITE_DRAWABLE_EFFECT_LIST = 0x4517;
-const unsigned P3D_COMPOSITE_DRAWABLE_EFFECT    = 0x4518;
+const unsigned P3D_COMPOSITE_DRAWABLE_EFFECT = 0x4518;
 const unsigned P3D_COMPOSITE_DRAWABLE_SORTORDER = 0x4519;
 
 // Frame Controller chunks
-const unsigned P3D_FRAME_CONTROLLER       = 0x4520;
+const unsigned P3D_FRAME_CONTROLLER = 0x4520;
 
-const unsigned P3D_MULTI_CONTROLLER         = 0x48A0;
-const unsigned P3D_MULTI_CONTROLLER_TRACKS  = 0x48A1;
-const unsigned P3D_MULTI_CONTROLLER_TRACK   = 0x48A2;
+const unsigned P3D_MULTI_CONTROLLER = 0x48A0;
+const unsigned P3D_MULTI_CONTROLLER_TRACKS = 0x48A1;
+const unsigned P3D_MULTI_CONTROLLER_TRACK = 0x48A2;
 
-const unsigned P3D_CAMERA             = 0x2200;
+const unsigned P3D_CAMERA = 0x2200;
 
-const unsigned P3D_LIGHT_GROUP         = 0x2380;
+const unsigned P3D_LIGHT_GROUP = 0x2380;
 
 // 0x7000 - 0x7FFF  Tool Specific data (unused by games, or for debugging)
-const unsigned P3D_HISTORY            = 0x7000;
-const unsigned P3D_ALIGN              = 0x7001;
+const unsigned P3D_HISTORY = 0x7000;
+const unsigned P3D_ALIGN = 0x7001;
 
 // Used by the maya exporter
-const unsigned P3D_EXPORT_INFO         = 0x7030;
+const unsigned P3D_EXPORT_INFO = 0x7030;
 const unsigned P3D_EXPORT_NAMED_STRING = 0x7031;
-const unsigned P3D_EXPORT_NAMED_INT    = 0x7032;
+const unsigned P3D_EXPORT_NAMED_INT = 0x7032;
 
 //********************************
 // Chunks needed for conversions
 //********************************
-const unsigned P3D_EXPRESSION_PRESET         = 0x4A00;
-const unsigned P3D_EXPRESSION_GROUP          = 0x4A01;
-const unsigned P3D_EXPRESSION_ANIM           = 0x4A10;
-const unsigned P3D_EXPRESSION_ANIM_CHANNEL   = 0x4A11;
-const unsigned P3D_EXPRESSION_MIXER          = 0x4A20;
+const unsigned P3D_EXPRESSION_PRESET = 0x4A00;
+const unsigned P3D_EXPRESSION_GROUP = 0x4A01;
+const unsigned P3D_EXPRESSION_ANIM = 0x4A10;
+const unsigned P3D_EXPRESSION_ANIM_CHANNEL = 0x4A11;
+const unsigned P3D_EXPRESSION_MIXER = 0x4A20;
 
-const unsigned P3D_VERTEXOFFSET              = 0x4A80;
-const unsigned P3D_VERTEXOFFSET_ANIM         = 0x4A81;
-const unsigned P3D_VERTEX_OFFSET_EXPRESSION  = 0x4A82;
+const unsigned P3D_VERTEXOFFSET = 0x4A80;
+const unsigned P3D_VERTEXOFFSET_ANIM = 0x4A81;
+const unsigned P3D_VERTEX_OFFSET_EXPRESSION = 0x4A82;
 
-const unsigned P3D_SG_TRANSFORM_ANIM        = 0x9150;
+const unsigned P3D_SG_TRANSFORM_ANIM = 0x9150;
 
 // Visibility animation
-const unsigned P3D_VISIBILITY_ANIM           = 0x4290;
-const unsigned P3D_VISIBILITY_ANIM_CHANNEL   = 0x4291;
+const unsigned P3D_VISIBILITY_ANIM = 0x4290;
+const unsigned P3D_VISIBILITY_ANIM_CHANNEL = 0x4291;
 
 // Texture animation
-const unsigned P3D_TEXTURE_ANIM         = 0x3520;
+const unsigned P3D_TEXTURE_ANIM = 0x3520;
 const unsigned P3D_TEXTURE_ANIM_CHANNEL = 0x3521;
 
 // V12 Animation chunks
-const unsigned P3D_POSE_ANIM            = 0x4700;
-const unsigned P3D_JOINT_LIST           = 0x4201;
-const unsigned P3D_ANIM_CHANNEL         = 0x4702;
-const unsigned P3D_POSE_ANIM_MIRRORED   = 0x4703;
+const unsigned P3D_POSE_ANIM = 0x4700;
+const unsigned P3D_JOINT_LIST = 0x4201;
+const unsigned P3D_ANIM_CHANNEL = 0x4702;
+const unsigned P3D_POSE_ANIM_MIRRORED = 0x4703;
 
-const unsigned P3D_CHANNEL_1DOF          = 0x4800;
-const unsigned P3D_CHANNEL_3DOF          = 0x4801;
-const unsigned P3D_CHANNEL_1DOF_ANGLE    = 0x4802;
-const unsigned P3D_CHANNEL_3DOF_ANGLE    = 0x4803;
-const unsigned P3D_CHANNEL_STATIC        = 0x4804;
-const unsigned P3D_CHANNEL_STATIC_ANGLE  = 0x4805;
-const unsigned P3D_CHANNEL_QUATERNION    = 0x4806;
+const unsigned P3D_CHANNEL_1DOF = 0x4800;
+const unsigned P3D_CHANNEL_3DOF = 0x4801;
+const unsigned P3D_CHANNEL_1DOF_ANGLE = 0x4802;
+const unsigned P3D_CHANNEL_3DOF_ANGLE = 0x4803;
+const unsigned P3D_CHANNEL_STATIC = 0x4804;
+const unsigned P3D_CHANNEL_STATIC_ANGLE = 0x4805;
+const unsigned P3D_CHANNEL_QUATERNION = 0x4806;
 const unsigned P3D_CHANNEL_STATIC_QUATERNION = 0x4807;
 
-const unsigned P3D_CAMERA_ANIM                      = 0x4900;
-const unsigned P3D_CAMERA_ANIM_CHANNEL              = 0x4901;
-const unsigned P3D_CAMERA_ANIM_POS_CHANNEL          = 0x4902;
-const unsigned P3D_CAMERA_ANIM_LOOK_CHANNEL         = 0x4903;
-const unsigned P3D_CAMERA_ANIM_UP_CHANNEL           = 0x4904;
-const unsigned P3D_CAMERA_ANIM_FOV_CHANNEL          = 0x4905;
+const unsigned P3D_CAMERA_ANIM = 0x4900;
+const unsigned P3D_CAMERA_ANIM_CHANNEL = 0x4901;
+const unsigned P3D_CAMERA_ANIM_POS_CHANNEL = 0x4902;
+const unsigned P3D_CAMERA_ANIM_LOOK_CHANNEL = 0x4903;
+const unsigned P3D_CAMERA_ANIM_UP_CHANNEL = 0x4904;
+const unsigned P3D_CAMERA_ANIM_FOV_CHANNEL = 0x4905;
 
 // V16 Camera Animation Chunks.
 // Added by Bryan Ewert on 22 Feb 2002
-const unsigned P3D_CAMERA_ANIM_NEARCLIP_CHANNEL     = 0x4906;
-const unsigned P3D_CAMERA_ANIM_FARCLIP_CHANNEL      = 0x4907;
+const unsigned P3D_CAMERA_ANIM_NEARCLIP_CHANNEL = 0x4906;
+const unsigned P3D_CAMERA_ANIM_FARCLIP_CHANNEL = 0x4907;
 
-const unsigned P3D_LIGHT_ANIM                 = 0x4980;
-const unsigned P3D_LIGHT_ANIM_CHANNEL         = 0x4981;
-const unsigned P3D_LIGHT_ANIM_COLOUR_CHANNEL  = 0x4982;
-const unsigned P3D_LIGHT_ANIM_PARAM_CHANNEL   = 0x4983;
-const unsigned P3D_LIGHT_ANIM_ENABLE_CHANNEL  = 0x4985;
+const unsigned P3D_LIGHT_ANIM = 0x4980;
+const unsigned P3D_LIGHT_ANIM_CHANNEL = 0x4981;
+const unsigned P3D_LIGHT_ANIM_COLOUR_CHANNEL = 0x4982;
+const unsigned P3D_LIGHT_ANIM_PARAM_CHANNEL = 0x4983;
+const unsigned P3D_LIGHT_ANIM_ENABLE_CHANNEL = 0x4985;
 
 const unsigned P3D_ENTITY_ANIM_CHANNEL = 0x42A0;
-const unsigned P3D_KEYLIST_COLOUR       = 0x4216;
+const unsigned P3D_KEYLIST_COLOUR = 0x4216;
 
 // v17 Vertex Animaion Chunks
-const unsigned P3D_VERTEX_ANIM      = 0x4a00;
-const unsigned P3D_VERTEX_ANIM_CHANNEL      = 0x4a01;
+const unsigned P3D_VERTEX_ANIM = 0x4a00;
+const unsigned P3D_VERTEX_ANIM_CHANNEL = 0x4a01;
 
 //------------------------------------------------------------------------------------------
 // UNUSED CHUNKS

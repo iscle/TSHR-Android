@@ -8,33 +8,27 @@
 
 #include <pddi/pddi.hpp>
 
-pddiObject::pddiObject()
-{
+pddiObject::pddiObject() {
     refCount = 0;
     lastError = PDDI_OK;
 }
 
-pddiObject::~pddiObject()
-{
+pddiObject::~pddiObject() {
     //
 }
 
-void pddiObject::AddRef()
-{
+void pddiObject::AddRef() {
     refCount++;
 }
 
-void pddiObject::Release()
-{
+void pddiObject::Release() {
     refCount--;
-    if(refCount < 1)
-    {
+    if (refCount < 1) {
         delete this;
     }
 }
 
-int pddiObject::GetLastError()
-{
+int pddiObject::GetLastError() {
     return lastError;
 }
 

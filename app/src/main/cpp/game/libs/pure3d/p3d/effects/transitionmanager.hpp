@@ -13,32 +13,37 @@
 #include <p3d/entity.hpp>
 
 class tTexture;
+
 class tShader;
 
-class tTransitionManager : public tEntity
-{
+class tTransitionManager : public tEntity {
 public:
     tTransitionManager();
-    
+
     void Display();
-    void Advance( float delta = 16.0f );
+
+    void Advance(float delta = 16.0f);
+
     void StartTransition();
 
-    void SetTransitionTime( float time ) { mTime = time; }
+    void SetTransitionTime(float time) { mTime = time; }
+
     float GetTransitionTime() { return mTime; }
 
-    void SetTransitionType( unsigned int type ) { mType = type; }
+    void SetTransitionType(unsigned int type) { mType = type; }
+
     unsigned int GetTransitionType() { return mType; }
 
-    void SetAnimCurveExponent( unsigned int exponent) { mExponent = exponent; }
+    void SetAnimCurveExponent(unsigned int exponent) { mExponent = exponent; }
+
     unsigned int GetAnimCurveExponent() { return mExponent; }
 
     bool IsDrawing() { return mDrawing; }
+
     bool IsGrabbing() { return mGrabbing; }
 
-    enum TransitionType
-    {
-        TRANSITION_NONE=0,
+    enum TransitionType {
+        TRANSITION_NONE = 0,
         TRANSITION_FADE_TO_ALPHA,
         TRANSITION_FADE_TO_BLACK,
         TRANSITION_SLIDE_LEFT,
@@ -57,23 +62,20 @@ public:
 protected:
     ~tTransitionManager();
 
-    struct overlayPoint
-    {
+    struct overlayPoint {
         pddiVector pos;
         pddiVector2 uv;
     };
-    struct overlayTri
-    {
+    struct overlayTri {
         overlayPoint point[3];
     };
-    struct overlayQuad
-    {
+    struct overlayQuad {
         overlayTri tri[2];
     };
 
 
-    tTexture* mTexture;
-    tShader* mShader;
+    tTexture *mTexture;
+    tShader *mShader;
     tColour mColour;
     rmt::Vector mVector;
     rmt::Randomizer mRand;
@@ -90,7 +92,7 @@ protected:
     // Polygon Attributes
     int mXSize;
     int mYSize;
-    overlayQuad* mPositions;
+    overlayQuad *mPositions;
 
 private:
 };

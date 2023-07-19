@@ -11,65 +11,60 @@
 
 #include <p3d/platform/ps2/error.hpp>
 
-template <class T> class tStaticQueue 
-{
+template<class T>
+class tStaticQueue {
 public:
-    tStaticQueue<T>(int s) : size(s), head(0), tail(0), count(0) 
-    { 
-        queue = new T*[size];
+    tStaticQueue<T>(int s) : size(s), head(0), tail(0), count(0) {
+        queue = new T *[size];
     }
 
-    ~tStaticQueue<T>() { delete [] queue; }
+    ~tStaticQueue<T>() { delete[] queue; }
 
     bool Enqueue(T *ptr);
-    T* Dequeue(void);
 
-    T* GetHead(void);
+    T *Dequeue(void);
+
+    T *GetHead(void);
 
 private:
     T **queue;
     int size;
     int head;
-    int tail; 
+    int tail;
     int count;
 };
 
-template <class T>
-bool tStaticQueue<T>::Enqueue(T* ptr)
-{
-    if ((tail == head) && (count != 0))
-    {
+template<class T>
+bool tStaticQueue<T>::Enqueue(T *ptr) {
+    if ((tail == head) && (count != 0)) {
         return false;
     }
 
     queue[tail % size] = ptr;
 
-    count++; tail++;
+    count++;
+    tail++;
 
     return true;
 }
 
-template <class T>
-T* tStaticQueue<T>::Dequeue(void)
-{
-    if (count == 0)
-    {
+template<class T>
+T *tStaticQueue<T>::Dequeue(void) {
+    if (count == 0) {
         return NULL;
     }
-    
+
     count--;
-    
+
     return queue[head++ % size];
 }
 
-template <class T>
-T* tStaticQueue<T>::GetHead(void)
-{
-    if (count == 0)
-    {
+template<class T>
+T *tStaticQueue<T>::GetHead(void) {
+    if (count == 0) {
         return NULL;
     }
-    
+
     return queue[head % size];
 }
 

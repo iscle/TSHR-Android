@@ -13,63 +13,55 @@
 //*********************************************************
 // Class tTextureAnimationController
 //*********************************************************
-tTextureAnimationController::tTextureAnimationController() : 
-    tSimpleFrameController(),
-    mShader(NULL)
-{
+tTextureAnimationController::tTextureAnimationController() :
+        tSimpleFrameController(),
+        mShader(NULL) {
 }
 
 //---------------------------------------------------------
-tTextureAnimationController::tTextureAnimationController(tTextureAnimationController* c) :  
-    tSimpleFrameController(c),
-    mShader(NULL)
-{
+tTextureAnimationController::tTextureAnimationController(tTextureAnimationController *c) :
+        tSimpleFrameController(c),
+        mShader(NULL) {
     SetShader(c->Shader());
 }
 
 //---------------------------------------------------------
-tTextureAnimationController::~tTextureAnimationController()
-{
+tTextureAnimationController::~tTextureAnimationController() {
     tRefCounted::Release(mShader);
 }
 
 //---------------------------------------------------------
-tFrameController* tTextureAnimationController::Clone(void)
-{
+tFrameController *tTextureAnimationController::Clone(void) {
     return new tTextureAnimationController(this);
 }
 
 //---------------------------------------------------------
-void tTextureAnimationController::SetShader(tShader *mat)
-{
+void tTextureAnimationController::SetShader(tShader *mat) {
     tRefCounted::Assign(mShader, mat);
 }
 
 //---------------------------------------------------------
-bool tTextureAnimationController::ValidateAnimation(tAnimation* anim)
-{
-    return (anim->GetAnimationType()==Pure3DAnimationTypes::TEXTURE_TEX);
+bool tTextureAnimationController::ValidateAnimation(tAnimation *anim) {
+    return (anim->GetAnimationType() == Pure3DAnimationTypes::TEXTURE_TEX);
 }
 
 //---------------------------------------------------------
-void tTextureAnimationController::Update()
-{
+void tTextureAnimationController::Update() {
     if (mShader == NULL) return;
     if (animation == NULL) return;
 
-    float pframe = animation->MakeValidFrame(frame,minFrame,maxFrame,cycleMode);
+    float pframe = animation->MakeValidFrame(frame, minFrame, maxFrame, cycleMode);
 
     const tAnimationGroup *animGroup = animation->GetGroupByIndex(0);
 
-    if (animGroup)
-    {
-        const tEntityChannel *textures = animGroup->GetEntityChannel(Pure3DAnimationChannels::Texture::TEXTURE_TEX);
+    if (animGroup) {
+        const tEntityChannel *textures = animGroup->GetEntityChannel(
+                Pure3DAnimationChannels::Texture::TEXTURE_TEX);
 
-        if (textures)
-        {
+        if (textures) {
             tEntity *texture;
             textures->GetValue(pframe, &texture);
-            mShader->SetTexture(PDDI_SP_BASETEX, (tTexture *)texture);
+            mShader->SetTexture(PDDI_SP_BASETEX, (tTexture *) texture);
         }
     }
 }

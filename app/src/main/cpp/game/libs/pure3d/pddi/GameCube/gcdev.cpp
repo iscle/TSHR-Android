@@ -32,13 +32,11 @@
 
 static gcDevice gblDevice;
 
-char libName [] = "GameCube";
+char libName[] = "GameCube";
 
 //--------------------------------------------------------------
-int pddiCreate(int versionMajor, int versionMinor, pddiDevice **device)
-{
-    if ((versionMajor != PDDI_VERSION_MAJOR) || (versionMinor != PDDI_VERSION_MINOR))
-    {
+int pddiCreate(int versionMajor, int versionMinor, pddiDevice **device) {
+    if ((versionMajor != PDDI_VERSION_MAJOR) || (versionMinor != PDDI_VERSION_MINOR)) {
         *device = NULL;
         return PDDI_VERSION_ERROR;
     }
@@ -48,8 +46,7 @@ int pddiCreate(int versionMajor, int versionMinor, pddiDevice **device)
 }
 
 //--------------------------------------------------------------
-gcDevice::gcDevice() 
-{
+gcDevice::gcDevice() {
     mCurrentContext = NULL;
 
     gcErrorShader::Install();
@@ -67,14 +64,12 @@ gcDevice::gcDevice()
 }
 
 //--------------------------------------------------------------
-gcDevice::~gcDevice()
-{
+gcDevice::~gcDevice() {
     mCurrentContext = NULL;
 }
 
 //--------------------------------------------------------------
-void gcDevice::GetLibraryInfo(pddiLibInfo *info)
-{
+void gcDevice::GetLibraryInfo(pddiLibInfo *info) {
     info->versionMajor = PDDI_VERSION_MAJOR;
     info->versionMinor = PDDI_VERSION_MINOR;
     info->versionBuild = PDDI_GC_BUILD;
@@ -82,55 +77,47 @@ void gcDevice::GetLibraryInfo(pddiLibInfo *info)
 }
 
 //--------------------------------------------------------------
-unsigned gcDevice::GetCaps(void)
-{
+unsigned gcDevice::GetCaps(void) {
     return 0;
 }
 
 //--------------------------------------------------------------
-const char* gcDevice::GetDeviceDescription(void)
-{
+const char *gcDevice::GetDeviceDescription(void) {
     return libName;
 }
 
 
-
 //--------------------------------------------------------------
-void gcDevice::SetCurrentContext(pddiRenderContext *context)
-{
+void gcDevice::SetCurrentContext(pddiRenderContext *context) {
     mCurrentContext = (gcContext *) context;
 }
 
 
 //--------------------------------------------------------------
-pddiRenderContext *gcDevice::GetCurrentContext(void)
-{
+pddiRenderContext *gcDevice::GetCurrentContext(void) {
     return mCurrentContext;
 }
 
 
 //--------------------------------------------------------------
-pddiDisplay *gcDevice::NewDisplay(int id)
-{
+pddiDisplay *gcDevice::NewDisplay(int id) {
 
     PDDIASSERT(id < 1);
     gcDisplay *display = new gcDisplay;
 
-    if (display->GetLastError() != PDDI_OK)
-    {
+    if (display->GetLastError() != PDDI_OK) {
         delete display;
         return NULL;
     }
 
-    return (pddiDisplay *)display;
+    return (pddiDisplay *) display;
 }
-//--------------------------------------------------------------
-pddiRenderContext *gcDevice::NewRenderContext(pddiDisplay *display)
-{
-    gcContext *context = new gcContext(this, (gcDisplay *)display);
 
-    if (context->GetLastError() != PDDI_OK)
-    {
+//--------------------------------------------------------------
+pddiRenderContext *gcDevice::NewRenderContext(pddiDisplay *display) {
+    gcContext *context = new gcContext(this, (gcDisplay *) display);
+
+    if (context->GetLastError() != PDDI_OK) {
         delete context;
         return NULL;
     }
@@ -140,13 +127,12 @@ pddiRenderContext *gcDevice::NewRenderContext(pddiDisplay *display)
 }
 
 //--------------------------------------------------------------
-pddiTexture* gcDevice::NewTexture(pddiTextureDesc* desc)
-{
+pddiTexture *gcDevice::NewTexture(pddiTextureDesc *desc) {
     PDDIASSERT(mCurrentContext != NULL);
     gcTexture *tex = new gcTexture(mCurrentContext);
-    if(!tex->Create(desc->GetSizeX(), desc->GetSizeY(), desc->GetBitDepth(), 
-                   desc->GetAlphaDepth(), desc->GetMipMapCount(),desc->GetType(),desc->GetUsage()))
-    {
+    if (!tex->Create(desc->GetSizeX(), desc->GetSizeY(), desc->GetBitDepth(),
+                     desc->GetAlphaDepth(), desc->GetMipMapCount(), desc->GetType(),
+                     desc->GetUsage())) {
         lastError = tex->GetLastError();
         delete tex;
         return NULL;
@@ -155,40 +141,33 @@ pddiTexture* gcDevice::NewTexture(pddiTextureDesc* desc)
 }
 
 //--------------------------------------------------------------
-pddiShader *gcDevice::NewShader(const char *name, const char *aux)
-{ 
+pddiShader *gcDevice::NewShader(const char *name, const char *aux) {
     return pddiBaseShader::AllocateShader(mCurrentContext, name, NULL);
 }
 
 //--------------------------------------------------------------
-pddiPrimBuffer *gcDevice::NewPrimBuffer(pddiPrimBufferDesc *desc)
-{ 
+pddiPrimBuffer *gcDevice::NewPrimBuffer(pddiPrimBufferDesc *desc) {
     PDDIASSERT(mCurrentContext != NULL);
 
     // Is this a skin?
-    if (desc->GetVertexFormat() & PDDI_V_INDICES)
-    {
-        if (desc->GetMemoryImaged())
-        {
+    if (desc->GetVertexFormat() & PDDI_V_INDICES) {
+        if (desc->GetMemoryImaged()) {
             return new gcMISkinBuffer;
         }
         gcSkinBuffer *sb = new gcSkinBuffer;
         if (sb != NULL) sb->Create(desc);
         return sb;
-    }
-    else
-    {
+    } else {
 
         // is this a memory imaged prim buffer?
-        if (desc->GetMemoryImaged())
-        {
+        if (desc->GetMemoryImaged()) {
             return new gcMemImagePrimBuffer(mCurrentContext);
         }
 
         // This a normal prim buffer
         gcPrimBuffer *buffer = new gcPrimBuffer(mCurrentContext);
         if (buffer != NULL) buffer->Create(desc);
-    
+
         return buffer;
     }
 
@@ -196,12 +175,10 @@ pddiPrimBuffer *gcDevice::NewPrimBuffer(pddiPrimBufferDesc *desc)
 }
 
 //--------------------------------------------------------------
-void gcDevice::AddCustomShader(const char* name, const char* aux)
-{
+void gcDevice::AddCustomShader(const char *name, const char *aux) {
 }
 
 //--------------------------------------------------------------
-void gcDevice::Release(void)
-{
+void gcDevice::Release(void) {
 }
 

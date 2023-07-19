@@ -11,12 +11,19 @@
 #include <p3d/loadmanager.hpp>
 
 class tChunkFile;
+
 class tAnimation;
+
 class tBaseGeneratorFactory;
+
 class tPointGeneratorFactory;
+
 class tPlaneGeneratorFactory;
+
 class tSphereGeneratorFactory;
+
 class tBaseEmitterFactory;
+
 class tSpriteEmitterFactory;
 
 //*****************************************************************************
@@ -24,10 +31,10 @@ class tSpriteEmitterFactory;
 // Class tGeneratorFactoryLoader
 //
 //*****************************************************************************
-class tGeneratorFactoryLoader
-{
+class tGeneratorFactoryLoader {
 public:
-    tBaseGeneratorFactory* LoadGeneratorFactory(unsigned generatorType, tChunkFile* file, tEntityStore* store);
+    tBaseGeneratorFactory *
+    LoadGeneratorFactory(unsigned generatorType, tChunkFile *file, tEntityStore *store);
 };
 
 //*****************************************************************************
@@ -35,16 +42,20 @@ public:
 // Class tEmitterFactoryLoader
 //
 //*****************************************************************************
-class tEmitterFactoryLoader
-{
+class tEmitterFactoryLoader {
 public:
-    tBaseEmitterFactory* LoadEmitterFactory(tChunkFile* file, tEntityStore* store);
+    tBaseEmitterFactory *LoadEmitterFactory(tChunkFile *file, tEntityStore *store);
 
 protected:
-    void LoadBaseEmitterFactoryData(tChunkFile* file, tEntityStore* store, tBaseEmitterFactory* factory);
-    void LoadSpriteEmitterFactoryData(tChunkFile* file, tEntityStore* store, tSpriteEmitterFactory* factory);
-    void LoadBaseParticleData(tAnimation* particleAnim, tBaseEmitterFactory* factory);
-    void LoadSpriteParticleData(tAnimation* particleAnim, tSpriteEmitterFactory* factory);
+    void
+    LoadBaseEmitterFactoryData(tChunkFile *file, tEntityStore *store, tBaseEmitterFactory *factory);
+
+    void LoadSpriteEmitterFactoryData(tChunkFile *file, tEntityStore *store,
+                                      tSpriteEmitterFactory *factory);
+
+    void LoadBaseParticleData(tAnimation *particleAnim, tBaseEmitterFactory *factory);
+
+    void LoadSpriteParticleData(tAnimation *particleAnim, tSpriteEmitterFactory *factory);
 };
 
 //*****************************************************************************
@@ -52,12 +63,13 @@ protected:
 // Class tParticleSystemFactoryLoader
 //
 //*****************************************************************************
-class tParticleSystemFactoryLoader : public tSimpleChunkHandler
-{
+class tParticleSystemFactoryLoader : public tSimpleChunkHandler {
 public:
     tParticleSystemFactoryLoader();
-    tEntity* LoadObject(tChunkFile* chunk, tEntityStore* store);
-protected:   
+
+    tEntity *LoadObject(tChunkFile *chunk, tEntityStore *store);
+
+protected:
     ~tParticleSystemFactoryLoader() {};
 
 };
@@ -67,12 +79,13 @@ protected:
 // Class tParticleSystemLoader
 //
 //*****************************************************************************
-class tParticleSystemLoader : public tSimpleChunkHandler
-{
+class tParticleSystemLoader : public tSimpleChunkHandler {
 public:
     tParticleSystemLoader();
-    tEntity* LoadObject(tChunkFile* chunk, tEntityStore* store);
-protected:   
+
+    tEntity *LoadObject(tChunkFile *chunk, tEntityStore *store);
+
+protected:
     ~tParticleSystemLoader() {};
 
 };

@@ -26,30 +26,34 @@
 #define DEFAULT_INITIAL_HEAP_SIZE 4096
 #define DEFAULT_HEAP_GRANULARITY 4096
 
-struct MemHeapBlock
-{
-    unsigned         size;
+struct MemHeapBlock {
+    unsigned size;
     MemHeapBlock *next;
-    char         *data;
+    char *data;
 };
 
 
-class tMemHeap
-{
+class tMemHeap {
 public:
     tMemHeap(unsigned initialSize = DEFAULT_INITIAL_HEAP_SIZE);
+
     virtual ~tMemHeap();
 
     void *malloc(unsigned size);
+
     void DeleteHeap();
+
     void ResetHeap();
+
     void SetupHeap(unsigned initialSize = DEFAULT_INITIAL_HEAP_SIZE);
 
     inline void SetGranularity(unsigned gran) { granularity = gran; }
+
     inline unsigned GetGranularity() { return granularity; }
+
     inline unsigned GetHeapSize() { return heapSize; }
 
-private:   
+private:
     unsigned granularity;
     unsigned topOfHeap;
     unsigned heapSize;
