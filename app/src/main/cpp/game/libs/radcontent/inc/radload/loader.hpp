@@ -23,7 +23,7 @@ typedef unsigned short radLoadWord;
 typedef unsigned int radLoadDWord;
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
 typedef unsigned __int64 radLoadQWord;
-#elif defined(RAD_PS2)
+#elif defined(RAD_PS2) || defined(RAD_ANDROID)
 typedef unsigned long radLoadQWord;
 #else
 typedef unsigned long long radLoadQWord;
