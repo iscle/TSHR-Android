@@ -27,15 +27,21 @@
 
 namespace memory {
 
-void               initialize( radMemoryAllocator allocator );
-void               terminate( void );
-radMemoryAllocator allocator( void );
+    void initialize(radMemoryAllocator allocator);
 
-void *             calloc( size_t, const char * p_name );
-void *             malloc( size_t, const char * p_name );
-void               free( void * p_mem );
-void               free( void * p_mem, size_t size );
-void *             realloc( void *, size_t old_size, size_t new_size, const char * p_name );
+    void terminate(void);
+
+    radMemoryAllocator allocator(void);
+
+    void *calloc(size_t, const char *p_name);
+
+    void *malloc(size_t, const char *p_name);
+
+    void free(void *p_mem);
+
+    void free(void *p_mem, size_t size);
+
+    void *realloc(void *, size_t old_size, size_t new_size, const char *p_name);
 
 }
 #endif // MEMORY_HPP

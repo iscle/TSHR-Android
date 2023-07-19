@@ -26,14 +26,13 @@ namespace radmusic {
 //-----------------------------------------------------------------------------
 // Interface Definitions
 //-----------------------------------------------------------------------------
-           
-struct composition
-{
-    ods::block   blk;
-    ods::comp    ptr_composition;
-    ods::pointer ptr_project;
-    unsigned int ref_count;
-};
+
+    struct composition {
+        ods::block blk;
+        ods::comp ptr_composition;
+        ods::pointer ptr_project;
+        unsigned int ref_count;
+    };
 
 }
 

@@ -30,23 +30,22 @@ namespace radmusic {
 // Interface Definitions
 //-----------------------------------------------------------------------------
 
-void performance_update_all( unsigned int ms );
+    void performance_update_all(unsigned int ms);
 
-const unsigned int EVENT_QUEUE_SIZE = 20;
+    const unsigned int EVENT_QUEUE_SIZE = 20;
 
-struct performance
-{
-    struct_music_engine      music_engine;
-    resource_manager *       p_resource_manager;
+    struct performance {
+        struct_music_engine music_engine;
+        resource_manager *p_resource_manager;
 
-    composition * p_composition;
+        composition *p_composition;
 
-    unsigned char * p_state_values;
-                           
-    unsigned int    event_queue[ EVENT_QUEUE_SIZE ];
-    unsigned int    event_queue_head;
-    unsigned int    event_queue_num_items;       
-};
+        unsigned char *p_state_values;
+
+        unsigned int event_queue[EVENT_QUEUE_SIZE];
+        unsigned int event_queue_head;
+        unsigned int event_queue_num_items;
+    };
 
 }
 #endif PERFORMANCE_HPP

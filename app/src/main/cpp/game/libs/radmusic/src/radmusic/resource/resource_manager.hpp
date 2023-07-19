@@ -25,18 +25,18 @@ namespace radmusic {
 // Constants, Typedefs, and Macro Definitions (needed by external clients)
 //-----------------------------------------------------------------------------
 
-const unsigned int NULL_RESOURCE_BUFFER = 0xFFFF0000;
+    const unsigned int NULL_RESOURCE_BUFFER = 0xFFFF0000;
 
 //-----------------------------------------------------------------------------
 // Interface Definitions
 //-----------------------------------------------------------------------------
 
-void resource_manager_initialize(
-    stream_graph_description *,
-    unsigned int num_stream_graphs,
-    unsigned int num_clips );
-    
-void resource_manager_terminate( void );
+    void resource_manager_initialize(
+            stream_graph_description *,
+            unsigned int num_stream_graphs,
+            unsigned int num_clips);
+
+    void resource_manager_terminate(void);
 
 }
 #endif // RESOURCELOADER_HPP
