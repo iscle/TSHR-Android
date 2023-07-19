@@ -26,78 +26,98 @@
 //======================================================================
 
 class radSoundClipPlayer
-	:
-	public IRadSoundClipPlayer,
-	public radSoundUpdatableObject
-{
-    public:
+        :
+                public IRadSoundClipPlayer,
+                public radSoundUpdatableObject {
+public:
 
-        // IRefCount
+    // IRefCount
 
-	    IMPLEMENT_REFCOUNTED( "radSoundClipPlayer" )
+    IMPLEMENT_REFCOUNTED("radSoundClipPlayer")
 
-        // IRadSoundClipPlayer
+    // IRadSoundClipPlayer
 
-		virtual void SetPlaybackPosition(
-			unsigned int position, IRadSoundHalAudioFormat::SizeType st );
+    virtual void SetPlaybackPosition(
+            unsigned int position, IRadSoundHalAudioFormat::SizeType st);
 
-        virtual void SetPriority( unsigned int priority );
-        virtual unsigned int GetPriority( void );
-        
-	    virtual void SetClip( IRadSoundClip * pIRadSoundClip );
-	    virtual IRadSoundClip * GetClip( void );
+    virtual void SetPriority(unsigned int priority);
 
-	    virtual void Play( void );
-	    virtual bool IsPlaying( void );
-        virtual void Stop( void );
-        virtual State GetState( void );
+    virtual unsigned int GetPriority(void);
 
-         
-        virtual void  SetMuted( bool mute );
-        virtual bool  GetMuted( void );
-        virtual void  SetVolume( float volume );
-        virtual float GetVolume( void );
-        virtual void  SetTrim( float trim );
-        virtual float GetTrim( void );
-        virtual void  SetPitch( float pitch );
-        virtual float GetPitch( void );
-        virtual void  SetPan( float pan );
-        virtual float GetPan( void );        
+    virtual void SetClip(IRadSoundClip *pIRadSoundClip);
 
-    	virtual void  SetAuxMode( unsigned int aux, radSoundAuxMode mode );
-    	virtual radSoundAuxMode GetAuxMode( unsigned int aux );
+    virtual IRadSoundClip *GetClip(void);
 
-    	virtual void  SetAuxGain( unsigned int aux, float gain );
-    	virtual float GetAuxGain( unsigned int aux );
+    virtual void Play(void);
 
-		virtual void SetPositionalGroup( IRadSoundHalPositionalGroup * pIrshpg );	        
-		virtual IRadSoundHalPositionalGroup * GetPositionalGroup( void );
+    virtual bool IsPlaying(void);
 
-		virtual unsigned int GetPlaybackTimeInSamples( void );
+    virtual void Stop(void);
 
-    private: 
+    virtual State GetState(void);
 
-    	radSoundClipPlayer( radMemoryAllocator allocator );
-	    ~radSoundClipPlayer( void );
 
-        void StartVoice( void );
-        void StopVoice( void );
-        void SetVoiceBuffer( void );
-	    void SetState( IRadSoundClipPlayer::State state );
-    
-        // IRadTimerCallback
+    virtual void SetMuted(bool mute);
 
-	    virtual void Update( unsigned int elapsedTime );
+    virtual bool GetMuted(void);
 
-        // Data members
+    virtual void SetVolume(float volume);
 
-	    IRadSoundClipPlayer::State m_State;
-	    
-	    float m_Trim;
+    virtual float GetVolume(void);
 
-	    ref< radSoundClip >         m_xRadSoundClip;
-	    ref< IRadSoundHalVoice > 	m_xIRadSoundHalVoice;
+    virtual void SetTrim(float trim);
 
-    friend IRadSoundClipPlayer * radSoundClipPlayerCreate( radMemoryAllocator allocator );
+    virtual float GetTrim(void);
+
+    virtual void SetPitch(float pitch);
+
+    virtual float GetPitch(void);
+
+    virtual void SetPan(float pan);
+
+    virtual float GetPan(void);
+
+    virtual void SetAuxMode(unsigned int aux, radSoundAuxMode mode);
+
+    virtual radSoundAuxMode GetAuxMode(unsigned int aux);
+
+    virtual void SetAuxGain(unsigned int aux, float gain);
+
+    virtual float GetAuxGain(unsigned int aux);
+
+    virtual void SetPositionalGroup(IRadSoundHalPositionalGroup *pIrshpg);
+
+    virtual IRadSoundHalPositionalGroup *GetPositionalGroup(void);
+
+    virtual unsigned int GetPlaybackTimeInSamples(void);
+
+private:
+
+    radSoundClipPlayer(radMemoryAllocator allocator);
+
+    ~radSoundClipPlayer(void);
+
+    void StartVoice(void);
+
+    void StopVoice(void);
+
+    void SetVoiceBuffer(void);
+
+    void SetState(IRadSoundClipPlayer::State state);
+
+    // IRadTimerCallback
+
+    virtual void Update(unsigned int elapsedTime);
+
+    // Data members
+
+    IRadSoundClipPlayer::State m_State;
+
+    float m_Trim;
+
+    ref <radSoundClip> m_xRadSoundClip;
+    ref <IRadSoundHalVoice> m_xIRadSoundHalVoice;
+
+    friend IRadSoundClipPlayer *radSoundClipPlayerCreate(radMemoryAllocator allocator);
 };
 

@@ -29,33 +29,34 @@
 //============================================================================
 
 radSoundHalListener::radSoundHalListener
-(
-	IDirectSound3DListener * pIDirectSound3DListener
-)
-	:
-	m_OrientationFront( 0.0f, 0.0f, 1.0f ),
-	m_OrientationTop( 0.0f, 1.0f, 0.0f ),
-	m_RollOffFactor( 1.0 ),
-	m_DopplerFactor( 1.0 ),
-	m_DistanceFactor( 1.0 ),
-    m_EnvAuxSend( 0xFFFFFFFF ),
-    m_EnvEffectsEnabled( false )
-{
-    ::radSoundHalCreateRollOffTable( STD_ROLL_OFF_TABLE_MAX_DIST_VOL, s_pRollOffTable, STD_ROLL_OFF_TABLE_NUM_POINTS );
-    ::radSoundHalSetRollOffTable( s_pRollOffTable, STD_ROLL_OFF_TABLE_NUM_POINTS );
+        (
+                IDirectSound3DListener *pIDirectSound3DListener
+        )
+        :
+        m_OrientationFront(0.0f, 0.0f, 1.0f),
+        m_OrientationTop(0.0f, 1.0f, 0.0f),
+        m_RollOffFactor(1.0),
+        m_DopplerFactor(1.0),
+        m_DistanceFactor(1.0),
+        m_EnvAuxSend(0xFFFFFFFF),
+        m_EnvEffectsEnabled(false) {
+    ::radSoundHalCreateRollOffTable(STD_ROLL_OFF_TABLE_MAX_DIST_VOL, s_pRollOffTable,
+                                    STD_ROLL_OFF_TABLE_NUM_POINTS);
+    ::radSoundHalSetRollOffTable(s_pRollOffTable, STD_ROLL_OFF_TABLE_NUM_POINTS);
 
-	rAssert( s_pTheDxSoundListener == NULL );
-	rAssert( pIDirectSound3DListener != NULL );
+    rAssert(s_pTheDxSoundListener == NULL);
+    rAssert(pIDirectSound3DListener != NULL);
 
-	s_pTheDxSoundListener = this;
+    s_pTheDxSoundListener = this;
 
-	// Get the system direct sound listener object
+    // Get the system direct sound listener object
 
-	m_xIDirectSound3DListener = pIDirectSound3DListener;
+    m_xIDirectSound3DListener = pIDirectSound3DListener;
 
     // Ensure that i3dl2 listener settings are appropriate
 
-    m_xIDirectSound3DListener->SetI3DL2Listener( & DirectSoundI3DL2ListenerPreset_NoReverb, DS3D_IMMEDIATE );
+    m_xIDirectSound3DListener->SetI3DL2Listener(&DirectSoundI3DL2ListenerPreset_NoReverb,
+                                                DS3D_IMMEDIATE);
 }
 
 //============================================================================
@@ -63,19 +64,18 @@ radSoundHalListener::radSoundHalListener
 //============================================================================
 
 radSoundHalListener::~radSoundHalListener
-(
-	void
-)
-{
-	rAssert( s_pTheDxSoundListener == this );
-	s_pTheDxSoundListener = NULL;
+        (
+                void
+        ) {
+    rAssert(s_pTheDxSoundListener == this);
+    s_pTheDxSoundListener = NULL;
 
-	//
-	// Must release listener first! or shitty microsoft will make our pointer
-	// to the listener go bad.  You'd think micrsoft would know how to
-	// reference count properly!
-	//
-	m_xIDirectSound3DListener =  NULL;
+    //
+    // Must release listener first! or shitty microsoft will make our pointer
+    // to the listener go bad.  You'd think micrsoft would know how to
+    // reference count properly!
+    //
+    m_xIDirectSound3DListener = NULL;
 }
 
 //========================================================================
@@ -83,21 +83,20 @@ radSoundHalListener::~radSoundHalListener
 //========================================================================
 
 void radSoundHalListener::SetPosition
-(
-	radSoundVector * pPos
-)
-{
-	m_Position = * pPos;
+        (
+                radSoundVector *pPos
+        ) {
+    m_Position = *pPos;
 
-	HRESULT hr = m_xIDirectSound3DListener->SetPosition
-	(
-		m_Position.m_x,
-		m_Position.m_y,
-		m_Position.m_z,
-		DS3D_DEFERRED
-	);
+    HRESULT hr = m_xIDirectSound3DListener->SetPosition
+            (
+                    m_Position.m_x,
+                    m_Position.m_y,
+                    m_Position.m_z,
+                    DS3D_DEFERRED
+            );
 
-	rWarningMsg( SUCCEEDED( hr ), "IDirectSound3DListener::SetPosition failed" );
+    rWarningMsg(SUCCEEDED(hr), "IDirectSound3DListener::SetPosition failed");
 }
 
 //========================================================================
@@ -105,13 +104,12 @@ void radSoundHalListener::SetPosition
 //========================================================================
 
 void radSoundHalListener::GetPosition
-(
-	radSoundVector * pPos
-)
-{
-	rAssert( pPos != NULL );
+        (
+                radSoundVector *pPos
+        ) {
+    rAssert(pPos != NULL);
 
-	*pPos = m_Position;
+    *pPos = m_Position;
 }
 
 //========================================================================
@@ -119,28 +117,27 @@ void radSoundHalListener::GetPosition
 //========================================================================
 
 void radSoundHalListener::SetOrientation
-(
-	radSoundVector * pOrientationFront,
-	radSoundVector * pOrientationTop
-)
-{
+        (
+                radSoundVector *pOrientationFront,
+                radSoundVector *pOrientationTop
+        ) {
 
-	m_OrientationFront = * pOrientationFront;
+    m_OrientationFront = *pOrientationFront;
 
-	m_OrientationTop = * pOrientationTop;
+    m_OrientationTop = *pOrientationTop;
 
-	HRESULT hr = m_xIDirectSound3DListener->SetOrientation
-	(
-		m_OrientationFront.m_x,
-		m_OrientationFront.m_y,
-		m_OrientationFront.m_z,
-		m_OrientationTop.m_x,
-		m_OrientationTop.m_y,
-		m_OrientationTop.m_z,
-		DS3D_DEFERRED
-	);
+    HRESULT hr = m_xIDirectSound3DListener->SetOrientation
+            (
+                    m_OrientationFront.m_x,
+                    m_OrientationFront.m_y,
+                    m_OrientationFront.m_z,
+                    m_OrientationTop.m_x,
+                    m_OrientationTop.m_y,
+                    m_OrientationTop.m_z,
+                    DS3D_DEFERRED
+            );
 
-	rWarningMsg( SUCCEEDED( hr ), "IDirectSound3DListener::SetOrientation" );
+    rWarningMsg(SUCCEEDED(hr), "IDirectSound3DListener::SetOrientation");
 }
 
 //========================================================================
@@ -148,18 +145,17 @@ void radSoundHalListener::SetOrientation
 //========================================================================
 
 void radSoundHalListener::GetOrientation
-(
-	radSoundVector * pOrientationFront,
-	radSoundVector * pOrientationTop
-)
-{
-	rAssert( pOrientationFront != NULL );
+        (
+                radSoundVector *pOrientationFront,
+                radSoundVector *pOrientationTop
+        ) {
+    rAssert(pOrientationFront != NULL);
 
-	*pOrientationFront = m_OrientationFront;
+    *pOrientationFront = m_OrientationFront;
 
-	rAssert( pOrientationTop != NULL );
+    rAssert(pOrientationTop != NULL);
 
-	*pOrientationTop = m_OrientationTop;       
+    *pOrientationTop = m_OrientationTop;
 
 }
 
@@ -168,30 +164,29 @@ void radSoundHalListener::GetOrientation
 //============================================================================
 
 void radSoundHalListener::SetVelocity
-(
-	radSoundVector * pVelocity
-)
-{
-	m_Velocity = * pVelocity;
+        (
+                radSoundVector *pVelocity
+        ) {
+    m_Velocity = *pVelocity;
 
-	#ifdef RAD_DEBUG
-		
-		if ( pVelocity->GetLength( ) > 341.0f )
-		{
-			rDebugString( "radSoundVoice: Velocity > 100.0f!\n" );
-		}
-		
-	#endif
+#ifdef RAD_DEBUG
 
-	HRESULT hr = m_xIDirectSound3DListener->SetVelocity
-	(
-		m_Velocity.m_x,
-		m_Velocity.m_y,
-		m_Velocity.m_z,
-		DS3D_DEFERRED
-	);
+    if (pVelocity->GetLength()> 341.0f)
+    {
+        rDebugString("radSoundVoice: Velocity> 100.0f!\n");
+    }
 
-	rWarningMsg( SUCCEEDED( hr ), "IDirectSound3DListener::SetVelocity failed" );
+#endif
+
+    HRESULT hr = m_xIDirectSound3DListener->SetVelocity
+            (
+                    m_Velocity.m_x,
+                    m_Velocity.m_y,
+                    m_Velocity.m_z,
+                    DS3D_DEFERRED
+            );
+
+    rWarningMsg(SUCCEEDED(hr), "IDirectSound3DListener::SetVelocity failed");
 }
 
 //============================================================================
@@ -199,13 +194,12 @@ void radSoundHalListener::SetVelocity
 //============================================================================
 
 void radSoundHalListener::GetVelocity
-(
-	radSoundVector * pVelocity
-)
-{
-	rAssert( pVelocity != NULL );
+        (
+                radSoundVector *pVelocity
+        ) {
+    rAssert(pVelocity != NULL);
 
-	*pVelocity = m_Velocity;
+    *pVelocity = m_Velocity;
 }
 
 //============================================================================
@@ -213,19 +207,18 @@ void radSoundHalListener::GetVelocity
 //============================================================================
 
 void radSoundHalListener::SetDistanceFactor
-(
-	float distanceFactor
-)
-{
-	m_DistanceFactor = distanceFactor;
+        (
+                float distanceFactor
+        ) {
+    m_DistanceFactor = distanceFactor;
 
-	HRESULT hr = m_xIDirectSound3DListener->SetDistanceFactor
-	(
-		static_cast< float >( m_DistanceFactor ),
-		DS3D_DEFERRED
-	);
+    HRESULT hr = m_xIDirectSound3DListener->SetDistanceFactor
+            (
+                    static_cast<float>(m_DistanceFactor),
+                    DS3D_DEFERRED
+            );
 
-	rWarningMsg( SUCCEEDED( hr ), "IDirectSound3DListener::SetDistanceFactor failed" );
+    rWarningMsg(SUCCEEDED(hr), "IDirectSound3DListener::SetDistanceFactor failed");
 }
 
 //============================================================================
@@ -233,11 +226,10 @@ void radSoundHalListener::SetDistanceFactor
 //============================================================================
 
 float radSoundHalListener::GetDistanceFactor
-(
-	void
-)
-{
-	return m_DistanceFactor;
+        (
+                void
+        ) {
+    return m_DistanceFactor;
 }
 
 //============================================================================
@@ -245,19 +237,18 @@ float radSoundHalListener::GetDistanceFactor
 //============================================================================
 
 void radSoundHalListener::SetDopplerFactor
-(
-	float doppleFactor
-)
-{
-	m_DopplerFactor = doppleFactor;
+        (
+                float doppleFactor
+        ) {
+    m_DopplerFactor = doppleFactor;
 
-	HRESULT hr = m_xIDirectSound3DListener->SetDopplerFactor
-	(
-		static_cast< float >( m_DopplerFactor ),
-		DS3D_DEFERRED
-	);
+    HRESULT hr = m_xIDirectSound3DListener->SetDopplerFactor
+            (
+                    static_cast<float>(m_DopplerFactor),
+                    DS3D_DEFERRED
+            );
 
-	rWarningMsg( SUCCEEDED( hr ), "IDirectSound3DListener::SetDopplerFactor failed" );
+    rWarningMsg(SUCCEEDED(hr), "IDirectSound3DListener::SetDopplerFactor failed");
 }
 
 //============================================================================
@@ -265,11 +256,10 @@ void radSoundHalListener::SetDopplerFactor
 //============================================================================
 
 float radSoundHalListener::GetDopplerFactor
-(
-	void
-)
-{
-	return m_DopplerFactor;
+        (
+                void
+        ) {
+    return m_DopplerFactor;
 }
 
 //============================================================================
@@ -277,19 +267,18 @@ float radSoundHalListener::GetDopplerFactor
 //============================================================================
 
 void radSoundHalListener::SetRollOffFactor
-(
-	float rollOffFactor
-)
-{
-	m_RollOffFactor = rollOffFactor;
+        (
+                float rollOffFactor
+        ) {
+    m_RollOffFactor = rollOffFactor;
 
-	HRESULT hr = m_xIDirectSound3DListener->SetRolloffFactor
-	(
-		static_cast< float >( m_RollOffFactor ),
-		DS3D_DEFERRED
-	);
+    HRESULT hr = m_xIDirectSound3DListener->SetRolloffFactor
+            (
+                    static_cast<float>(m_RollOffFactor),
+                    DS3D_DEFERRED
+            );
 
-	rWarningMsg( SUCCEEDED( hr ), "IDirectSound3DListener::SetRollOffFactor failed" ); 
+    rWarningMsg(SUCCEEDED(hr), "IDirectSound3DListener::SetRollOffFactor failed");
 }
 
 //============================================================================
@@ -297,21 +286,18 @@ void radSoundHalListener::SetRollOffFactor
 //============================================================================
 
 float radSoundHalListener::GetRollOffFactor
-(
-	void
-)
-{
-	return m_RollOffFactor;
+        (
+                void
+        ) {
+    return m_RollOffFactor;
 }
 
 //============================================================================
 // radSoundHalListener::SetEnvEffectsEnabled 
 //============================================================================
 
-void radSoundHalListener::SetEnvEffectsEnabled( bool enabled )
-{
-    if( m_EnvEffectsEnabled != enabled )
-    {
+void radSoundHalListener::SetEnvEffectsEnabled(bool enabled) {
+    if (m_EnvEffectsEnabled != enabled) {
         m_EnvEffectsEnabled = enabled;
     }
 }
@@ -320,8 +306,7 @@ void radSoundHalListener::SetEnvEffectsEnabled( bool enabled )
 // radSoundHalListener::GetEnvEffectsEnabled 
 //============================================================================
 
-bool radSoundHalListener::GetEnvEffectsEnabled( void )
-{
+bool radSoundHalListener::GetEnvEffectsEnabled(void) {
     return m_EnvEffectsEnabled;
 }
 
@@ -329,10 +314,8 @@ bool radSoundHalListener::GetEnvEffectsEnabled( void )
 // radSoundHalListener::SetEnvironmentAuxSend 
 //============================================================================
 
-void radSoundHalListener::SetEnvironmentAuxSend( unsigned int auxsend )
-{
-    if( m_EnvAuxSend != auxsend )
-    {
+void radSoundHalListener::SetEnvironmentAuxSend(unsigned int auxsend) {
+    if (m_EnvAuxSend != auxsend) {
         m_EnvAuxSend = auxsend;
     }
 }
@@ -341,8 +324,7 @@ void radSoundHalListener::SetEnvironmentAuxSend( unsigned int auxsend )
 // radSoundHalListener::SetEnvironmentAuxSend 
 //============================================================================
 
-unsigned int radSoundHalListener::GetEnvironmentAuxSend( void )
-{
+unsigned int radSoundHalListener::GetEnvironmentAuxSend(void) {
     return m_EnvAuxSend;
 }
 
@@ -351,83 +333,75 @@ unsigned int radSoundHalListener::GetEnvironmentAuxSend( void )
 //============================================================================
 
 void radSoundHalListener::UpdatePositionalSettings
-(
-	void
-)
-{
-	radSoundHalPositionalGroup * pRadSoundHalPositionalGroup =
-		radSoundHalPositionalGroup::GetLinkedClassHead( );
+        (
+                void
+        ) {
+    radSoundHalPositionalGroup *pRadSoundHalPositionalGroup =
+            radSoundHalPositionalGroup::GetLinkedClassHead();
 
-	while ( pRadSoundHalPositionalGroup != NULL )
-	{
-		pRadSoundHalPositionalGroup->UpdatePositionalSettings( );
+    while (pRadSoundHalPositionalGroup != NULL) {
+        pRadSoundHalPositionalGroup->UpdatePositionalSettings();
 
-		pRadSoundHalPositionalGroup = pRadSoundHalPositionalGroup->GetLinkedClassNext( );
-	}
+        pRadSoundHalPositionalGroup = pRadSoundHalPositionalGroup->GetLinkedClassNext();
+    }
 
-    HRESULT hr = m_xIDirectSound3DListener->CommitDeferredSettings( );
-	rWarningMsg( SUCCEEDED( hr ), "IDirectSound3DListener::CommitDeferredSettings failed" );    
+    HRESULT hr = m_xIDirectSound3DListener->CommitDeferredSettings();
+    rWarningMsg(SUCCEEDED(hr), "IDirectSound3DListener::CommitDeferredSettings failed");
 
-//	hr = m_xIDirectSound3DListener->CommitEffectData( );
-//	rWarningMsg( SUCCEEDED( hr ), "IDirectSound3DListener::CommitEffectData failed" );    
+//	hr = m_xIDirectSound3DListener->CommitEffectData();
+//	rWarningMsg(SUCCEEDED(hr), "IDirectSound3DListener::CommitEffectData failed");
 }
 
 //========================================================================
 // radSoundHalListener::OnSetEnvEffect
 //========================================================================
 
-void radSoundHalListener::OnSetEnvEffect( unsigned int auxNumber, const DSI3DL2LISTENER * pDsI3DL2Listener )
-{
-    if( auxNumber == m_EnvAuxSend )
-    {
-        if( pDsI3DL2Listener != NULL && m_EnvEffectsEnabled == true )
-        {
-            HRESULT hr = m_xIDirectSound3DListener->SetI3DL2Listener( pDsI3DL2Listener, DS3D_DEFERRED );
-            rAssert( SUCCEEDED( hr ) );
+void radSoundHalListener::OnSetEnvEffect(unsigned int auxNumber,
+                                         const DSI3DL2LISTENER *pDsI3DL2Listener) {
+    if (auxNumber == m_EnvAuxSend) {
+        if (pDsI3DL2Listener != NULL && m_EnvEffectsEnabled == true) {
+            HRESULT hr = m_xIDirectSound3DListener->SetI3DL2Listener(pDsI3DL2Listener,
+                                                                     DS3D_DEFERRED);
+            rAssert(SUCCEEDED(hr));
+        } else {
+            HRESULT hr = m_xIDirectSound3DListener->SetI3DL2Listener(
+                    &DirectSoundI3DL2ListenerPreset_NoReverb, DS3D_DEFERRED);
+            rAssert(SUCCEEDED(hr));
         }
-        else
-        {
-            HRESULT hr = m_xIDirectSound3DListener->SetI3DL2Listener( & DirectSoundI3DL2ListenerPreset_NoReverb, DS3D_DEFERRED );
-            rAssert( SUCCEEDED( hr ) );
-        }
-    }
-    else
-    {
-//        rDebugPrintf( "WARNING: Listener ignoring effect in auxsend[%d]\n", auxNumber );
+    } else {
+//        rDebugPrintf("WARNING: Listener ignoring effect in auxsend[%d]\n", auxNumber);
     }
 }
 
 
-/* static */ radSoundHalListener * radSoundHalListener::s_pTheDxSoundListener = NULL;
+/* static */ radSoundHalListener *radSoundHalListener::s_pTheDxSoundListener = NULL;
 
 //============================================================================
 // ::radSoundHalListenerGet
 //============================================================================
 
-IRadSoundHalListener * radSoundHalListenerGet( void )
-{
-    return radSoundHalListener::GetInstance( );
+IRadSoundHalListener *radSoundHalListenerGet(void) {
+    return radSoundHalListener::GetInstance();
 }
 
 //============================================================================
 // ::radSoundHalListenerWinInitialize
 //============================================================================
 
-void radSoundHalListener::Initialize( radMemoryAllocator allocator, IDirectSound3DListener * pIDs3dl )
-{
-    rAssert( radSoundHalListener::s_pTheDxSoundListener == NULL );
+void
+radSoundHalListener::Initialize(radMemoryAllocator allocator, IDirectSound3DListener *pIDs3dl) {
+    rAssert(radSoundHalListener::s_pTheDxSoundListener == NULL);
 
-    new ( "radSoundHalListener", allocator ) radSoundHalListener( pIDs3dl );
-    radSoundHalListener::s_pTheDxSoundListener->AddRef( );
+    new("radSoundHalListener", allocator) radSoundHalListener(pIDs3dl);
+    radSoundHalListener::s_pTheDxSoundListener->AddRef();
 }
 
 //============================================================================
 // ::radSoundHalListenerWinTerminate
 //============================================================================
 
-void radSoundHalListener::Terminate( void )
-{
-    rAssert( radSoundHalListener::s_pTheDxSoundListener != NULL );
+void radSoundHalListener::Terminate(void) {
+    rAssert(radSoundHalListener::s_pTheDxSoundListener != NULL);
 
-    radSoundHalListener::s_pTheDxSoundListener->Release( );
+    radSoundHalListener::s_pTheDxSoundListener->Release();
 }

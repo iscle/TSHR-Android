@@ -30,68 +30,71 @@
 //======================================================================
 
 class radSoundClip
-	:
-    public IRadSoundClip,
-	public IRadSoundHalBufferLoadCallback,
-	public IRadSoundHalBufferClearCallback,
-	public radLinkedClass< radSoundClip >,
-	public radSoundUpdatableObject
-{
-    public:
+        :
+                public IRadSoundClip,
+                public IRadSoundHalBufferLoadCallback,
+                public IRadSoundHalBufferClearCallback,
+                public radLinkedClass<radSoundClip>,
+                public radSoundUpdatableObject {
+public:
 
-	    IMPLEMENT_REFCOUNTED( "radSoundClip" )
+    IMPLEMENT_REFCOUNTED("radSoundClip")
 
-        // IRadSoundClip
+    // IRadSoundClip
 
-		virtual void Initialize(
-			IRadSoundHalDataSource * pIRshds,
-            IRadSoundHalMemoryRegion * pIRshmr,
+    virtual void Initialize(
+            IRadSoundHalDataSource *pIRshds,
+            IRadSoundHalMemoryRegion *pIRshmr,
             bool looping,
-            const char * pIdentifier );
+            const char *pIdentifier);
 
-		virtual IRadSoundHalMemoryRegion * GetMemoryRegion( void );
-	    virtual bool  GetLooping( void );
+    virtual IRadSoundHalMemoryRegion *GetMemoryRegion(void);
 
-		virtual IRadSoundHalAudioFormat * GetFormat( void );
+    virtual bool GetLooping(void);
 
-	    virtual void  SetTrim( float trim );
-	    virtual float GetTrim( void );
+    virtual IRadSoundHalAudioFormat *GetFormat(void);
 
- 	    virtual IRadSoundClip::State GetState( void );
+    virtual void SetTrim(float trim);
 
-	    virtual IRadSoundHalBuffer * GetBuffer( void );
+    virtual float GetTrim(void);
 
-        virtual bool WillRelease( void );  
-    
-    private: friend IRadSoundClip * radSoundClipCreate( radMemoryAllocator allocator );
+    virtual IRadSoundClip::State GetState(void);
 
-    	radSoundClip( void );
-	    ~radSoundClip( void );
+    virtual IRadSoundHalBuffer *GetBuffer(void);
 
-        void SetState( IRadSoundClip::State state );
+    virtual bool WillRelease(void);
 
-        // radSoundUpdatableObject
+private:
+    friend IRadSoundClip *radSoundClipCreate(radMemoryAllocator allocator);
 
-		virtual void Update( unsigned int elapsedTime );
+    radSoundClip(void);
 
-        // IRadSoundHalBufferLoadCallback
+    ~radSoundClip(void);
 
-	    virtual void OnBufferLoadComplete( unsigned int actualBytesRead );
+    void SetState(IRadSoundClip::State state);
 
-        // IRadSoundHalBufferClearCallback
+    // radSoundUpdatableObject
 
-	    virtual void OnBufferClearComplete( void );
+    virtual void Update(unsigned int elapsedTime);
 
-        // Data Members
+    // IRadSoundHalBufferLoadCallback
 
-	    bool m_Looping;
-	    float m_Trim;
-	    IRadSoundClip::State m_State;
-	    
-	    ref< IRadSoundHalMemoryRegion > m_xIRadSoundHalMemoryRegion;
-	    ref< IRadSoundHalBuffer >		m_xIRadSoundHalBuffer;
-		ref< IRadSoundHalDataSource >   m_xIRadSoundHalDataSource;
-        ref< IRadString >               m_xIRadString_Name;
+    virtual void OnBufferLoadComplete(unsigned int actualBytesRead);
+
+    // IRadSoundHalBufferClearCallback
+
+    virtual void OnBufferClearComplete(void);
+
+    // Data Members
+
+    bool m_Looping;
+    float m_Trim;
+    IRadSoundClip::State m_State;
+
+    ref <IRadSoundHalMemoryRegion> m_xIRadSoundHalMemoryRegion;
+    ref <IRadSoundHalBuffer> m_xIRadSoundHalBuffer;
+    ref <IRadSoundHalDataSource> m_xIRadSoundHalDataSource;
+    ref <IRadString> m_xIRadString_Name;
 };
 
 #endif CLIP_HPP

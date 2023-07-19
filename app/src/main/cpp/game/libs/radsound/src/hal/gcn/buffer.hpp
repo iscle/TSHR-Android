@@ -21,66 +21,70 @@
 //============================================================================
 
 class radSoundBufferGcn
-	:
-	public IRadSoundHalBuffer,
-	public radLinkedClass< radSoundBufferGcn >,
-	public radSoundObject
-{
-    public:
+        :
+                public IRadSoundHalBuffer,
+                public radLinkedClass<radSoundBufferGcn>,
+                public radSoundObject {
+public:
 
-        // IRadSoundHalBuffer
-        
-        virtual void Initialize(
-		    IRadSoundHalAudioFormat * pIRadSoundHalAudioFormat,
-            IRadMemoryObject * pIRadMemoryObject,
+    // IRadSoundHalBuffer
+
+    virtual void Initialize(
+            IRadSoundHalAudioFormat *pIRadSoundHalAudioFormat,
+            IRadMemoryObject *pIRadMemoryObject,
             unsigned int sizeInFrames,
-		    bool looping,
-            bool streaming );
-    
-	    virtual IRadSoundHalAudioFormat * GetFormat( void ) ;
-	    virtual IRadMemoryObject * GetMemoryObject( void );
-	    virtual bool IsLooping( void );
+            bool looping,
+            bool streaming);
 
-	    virtual unsigned int GetSizeInFrames( void );
-    
-	    virtual void LoadAsync(
-		    IRadSoundHalDataSource * pIRadSoundHalDataSource,
-		    unsigned int bufferStartInFrames,
-		    unsigned int numberOfFrames,
-		    IRadSoundHalBufferLoadCallback * pIRadSoundHalBufferLoadCallback );
+    virtual IRadSoundHalAudioFormat *GetFormat(void);
 
-        virtual void ClearAsync( 
+    virtual IRadMemoryObject *GetMemoryObject(void);
+
+    virtual bool IsLooping(void);
+
+    virtual unsigned int GetSizeInFrames(void);
+
+    virtual void LoadAsync(
+            IRadSoundHalDataSource *pIRadSoundHalDataSource,
+            unsigned int bufferStartInFrames,
+            unsigned int numberOfFrames,
+            IRadSoundHalBufferLoadCallback *pIRadSoundHalBufferLoadCallback);
+
+    virtual void ClearAsync(
             unsigned int startPositionInFrames,
-		    unsigned int numberOfFrames,
-            IRadSoundHalBufferClearCallback * pIRadSoundHalBufferClearCallback );
+            unsigned int numberOfFrames,
+            IRadSoundHalBufferClearCallback *pIRadSoundHalBufferClearCallback);
 
-        virtual void CancelAsyncOperations( void );
+    virtual void CancelAsyncOperations(void);
 
-        virtual unsigned int GetMinTransferSize( IRadSoundHalAudioFormat::SizeType sizeType );
+    virtual unsigned int GetMinTransferSize(IRadSoundHalAudioFormat::SizeType sizeType);
 
-        virtual void ReSetAudioFormat( IRadSoundHalAudioFormat * pIRadSoundHalAudioFormat );
-   
-        // Internal
+    virtual void ReSetAudioFormat(IRadSoundHalAudioFormat *pIRadSoundHalAudioFormat);
 
-        IMPLEMENT_REFCOUNTED( "radSoundBuffer" )
+    // Internal
 
-        radSoundBufferGcn( void );
-                
-        unsigned long GetAramStartAddressInBytes( unsigned int channel );
-        unsigned long GetAramSampleStartInLogicalUnits( unsigned int channel, unsigned int startSampleIndex );
-        unsigned long GetAramSampleEndInLogicalUnits( unsigned int channel );
+    IMPLEMENT_REFCOUNTED("radSoundBuffer")
 
-        unsigned long GetAlignedBufferSize( void );        
-                
-    private:
+    radSoundBufferGcn(void);
 
-        ~radSoundBufferGcn( void );
+    unsigned long GetAramStartAddressInBytes(unsigned int channel);
 
-	    bool          m_Looping;
-        unsigned int  m_SizeInBytes;
+    unsigned long
+    GetAramSampleStartInLogicalUnits(unsigned int channel, unsigned int startSampleIndex);
 
-        ref< IRadMemoryObject > m_xIRadMemoryObject;
-        ref< IRadSoundHalAudioFormat > m_xIRadSoundHalAudioFormat;
+    unsigned long GetAramSampleEndInLogicalUnits(unsigned int channel);
+
+    unsigned long GetAlignedBufferSize(void);
+
+private:
+
+    ~radSoundBufferGcn(void);
+
+    bool m_Looping;
+    unsigned int m_SizeInBytes;
+
+    ref <IRadMemoryObject> m_xIRadMemoryObject;
+    ref <IRadSoundHalAudioFormat> m_xIRadSoundHalAudioFormat;
 };
 
 #endif // BUFFER_HPP

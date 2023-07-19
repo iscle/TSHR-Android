@@ -33,43 +33,48 @@
 //=============================================================================
 
 struct radSoundBufferAsyncLoaderXBox
-	:
-	public IRadSoundHalDataSourceCallback,
-	public radSoundPoolObject< radSoundBufferAsyncLoaderXBox >,
-    public radLinkedClass< radSoundBufferAsyncLoaderXBox >
-{
-	public:
+        :
+                public IRadSoundHalDataSourceCallback,
+                public radSoundPoolObject<radSoundBufferAsyncLoaderXBox>,
+                public radLinkedClass<radSoundBufferAsyncLoaderXBox> {
+public:
 
-		virtual void AddRef( void ) { m_RefCount++; }
-		virtual void Release( void ) { m_RefCount--; if ( m_RefCount == 0 ) { delete this; } }
+    virtual void AddRef(void) { m_RefCount++; }
+
+    virtual void Release(void) {
+        m_RefCount--;
+        if (m_RefCount == 0) { delete this; }
+    }
 
     void Initialize(
-		IRadSoundHalDataSource * pIRadSoundHalDataSource,
-		unsigned int bufferFrameOffset,
-        unsigned int numberOfFrames,
-        IRefCount * pIRefCount_Parent,
-		void * pBufferData,
-		IRadSoundHalBufferLoadCallback * pIRadSoundBufferCallback );
+            IRadSoundHalDataSource *pIRadSoundHalDataSource,
+            unsigned int bufferFrameOffset,
+            unsigned int numberOfFrames,
+            IRefCount *pIRefCount_Parent,
+            void *pBufferData,
+            IRadSoundHalBufferLoadCallback *pIRadSoundBufferCallback);
 
-	virtual void OnDataSourceFramesLoaded( unsigned int actualFramesRead );
+    virtual void OnDataSourceFramesLoaded(unsigned int actualFramesRead);
 
-    radSoundBufferAsyncLoaderXBox( void );
-    virtual ~radSoundBufferAsyncLoaderXBox( void );
+    radSoundBufferAsyncLoaderXBox(void);
 
-    static void CancelRequests( IRefCount * pOwner );
-    void Cancel( void );
+    virtual ~radSoundBufferAsyncLoaderXBox(void);
 
-	private:
+    static void CancelRequests(IRefCount *pOwner);
 
-		unsigned int m_RefCount;
-        bool m_Cancelled;
-        unsigned int m_FramesToLoad;
-        unsigned int m_BufferOffset;
-        void * m_pBuffer;
+    void Cancel(void);
 
-		ref< IRadSoundHalDataSource >        m_xIRadSoundHalDataSource;
-		ref< IRadSoundHalBufferLoadCallback> m_xIRadSoundHalBufferLoadCallback;
-		ref< IRefCount > m_xIRefCount_Parent;
+private:
+
+    unsigned int m_RefCount;
+    bool m_Cancelled;
+    unsigned int m_FramesToLoad;
+    unsigned int m_BufferOffset;
+    void *m_pBuffer;
+
+    ref <IRadSoundHalDataSource> m_xIRadSoundHalDataSource;
+    ref <IRadSoundHalBufferLoadCallback> m_xIRadSoundHalBufferLoadCallback;
+    ref <IRefCount> m_xIRefCount_Parent;
 };
 
 #endif // BUFFERASYNCLOADER_HPP

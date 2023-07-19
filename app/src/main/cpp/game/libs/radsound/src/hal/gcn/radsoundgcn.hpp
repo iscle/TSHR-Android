@@ -10,6 +10,6 @@
 // Functions
 //============================================================================
 
-unsigned short radSoundVolumeAnalogToHardwareGcn( float in );
+unsigned short radSoundVolumeAnalogToHardwareGcn(float in);
 
 #endif // RADSOUNDGCN_HPP

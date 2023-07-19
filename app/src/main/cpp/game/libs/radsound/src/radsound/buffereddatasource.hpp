@@ -8,103 +8,114 @@
 #include "radsoundupdatableobject.hpp"
 
 struct radSoundBufferedDataSource
-	:
-	public IRadSoundBufferedDataSource,
-	public IRadSoundHalDataSourceCallback,
-	public radSoundUpdatableObject
-{
+        :
+                public IRadSoundBufferedDataSource,
+                public IRadSoundHalDataSourceCallback,
+                public radSoundUpdatableObject {
 
-	IMPLEMENT_REFCOUNTED( "radSoundBufferedDataSource" )
+    IMPLEMENT_REFCOUNTED("radSoundBufferedDataSource")
 
-	radSoundBufferedDataSource( void );
-	virtual ~radSoundBufferedDataSource( void );
-	
-	// IRadSoundBufferedDataSource
-	
-	void Initialize( radMemorySpace bufferSpace, IRadMemoryAllocator * pIRadMemoryAllocator,
-		unsigned int bufferSize, IRadSoundHalAudioFormat::SizeType sizeType,
-        IRadSoundHalAudioFormat * pIRshaf,
-        const char * pIdentifier );
+    radSoundBufferedDataSource(void);
 
-	void SetInputDataSource( IRadSoundHalDataSource * pIRadSoundHalDataSource );
-	IRadSoundHalDataSource * GetInputDataSource( void );
+    virtual ~radSoundBufferedDataSource(void);
 
-    virtual void SetLowWaterMark( float lowWaterMark );
-    virtual float GetLowWaterMark( void );
+    // IRadSoundBufferedDataSource
 
-	// IRadSoundHalDataSource
+    void Initialize(radMemorySpace bufferSpace, IRadMemoryAllocator *pIRadMemoryAllocator,
+                    unsigned int bufferSize, IRadSoundHalAudioFormat::SizeType sizeType,
+                    IRadSoundHalAudioFormat *pIRshaf,
+                    const char *pIdentifier);
 
-	virtual IRadSoundHalDataSource::State GetState( void );
-	virtual IRadSoundHalAudioFormat * GetFormat( void );
-	virtual unsigned GetRemainingFrames( void );
+    void SetInputDataSource(IRadSoundHalDataSource *pIRadSoundHalDataSource);
 
-	virtual void GetFramesAsync( void * pBytes, radMemorySpace destinationMemorySpace, unsigned int size, IRadSoundHalDataSourceCallback * pIRshdsc );
+    IRadSoundHalDataSource *GetInputDataSource(void);
 
-	// radSoundUpdatableObject
+    virtual void SetLowWaterMark(float lowWaterMark);
 
-	virtual void Update( unsigned int elapsedTime );
+    virtual float GetLowWaterMark(void);
 
-	// IRadSoundHalDataSourceCallback
+    // IRadSoundHalDataSource
 
-	virtual void OnDataSourceFramesLoaded( unsigned int framesActuallyRead );
+    virtual IRadSoundHalDataSource::State GetState(void);
 
-	// IRadMemoryOperationCallback
+    virtual IRadSoundHalAudioFormat *GetFormat(void);
 
-	virtual void OnMemoryCopyAsyncComplete( void * pUserData );
-	
-    virtual const char * GetName( void ) { return "BufferedDataSource"; }	
+    virtual unsigned GetRemainingFrames(void);
 
-    virtual bool IsBufferFull( void );
-    		
-	private:
+    virtual void
+    GetFramesAsync(void *pBytes, radMemorySpace destinationMemorySpace, unsigned int size,
+                   IRadSoundHalDataSourceCallback *pIRshdsc);
 
-        void AllocateResources( void );
+    // radSoundUpdatableObject
 
-		void Service( void );
-		void ServiceInitializingSource( void );
-		void ServiceCopy( void );
-		void ServiceRead( void );
+    virtual void Update(unsigned int elapsedTime);
 
-		void GetFramesInternal( void * pBytes, unsigned int size );
+    // IRadSoundHalDataSourceCallback
 
-		unsigned int GetAvailableFrames( void );
-		
-		enum { NONE, INITIALIZING, INITIALIZED, REINITIALIZING } m_State;
+    virtual void OnDataSourceFramesLoaded(unsigned int framesActuallyRead);
 
-		// Init info
+    // IRadMemoryOperationCallback
 
-		unsigned int m_InitSize;
-		IRadSoundHalAudioFormat::SizeType m_InitSizeType;
-		
-		// Buffer info
+    virtual void OnMemoryCopyAsyncComplete(void *pUserData);
 
-		radMemorySpace	   m_FrameBufferMemorySpace;
-		ref< IRadMemoryAllocator > m_xIRadMemoryAllocator_FrameBuffer;
+    virtual const char *GetName(void) { return "BufferedDataSource"; }
 
-		char *			m_pFrameBuffer;
-		unsigned int	m_BufferSizeInFrames;
-		unsigned int	m_StartOfDataInFrames;
-		unsigned int	m_EndOfDataInFrames;
-		bool			m_QueueFull;
+    virtual bool IsBufferFull(void);
 
-		// Copy info
+private:
 
-		unsigned int	m_FullCopySize;
-		unsigned int	m_FramesLeftToCopy;
-		unsigned int    m_CurrentFramesToCopy;
-		char *			m_pCurrentCopyPointer;
-		radMemorySpace	m_CopyMemorySpace;
-		ref< IRadMemorySpaceCopyRequest > m_xICopyRequest;
-		ref< IRadSoundHalDataSourceCallback > m_xIRadSoundHalDataSourceCallback;
+    void AllocateResources(void);
 
-		// Read info
+    void Service(void);
 
-		unsigned int m_ReadSizeInFrames;
-		bool m_OutOfData;
-        float m_LowWaterMark;
+    void ServiceInitializingSource(void);
 
-		ref< IRadSoundHalAudioFormat > m_xIRadSoundHalAudioFormat;
-		ref< IRadSoundHalDataSource >  m_xIRadSoundHalDataSource;
-        ref< IRadSoundHalDataSource >  m_xIRadSoundHalDataSource_ReInit;
-        ref< IRadString >              m_xIRadString_Name;
+    void ServiceCopy(void);
+
+    void ServiceRead(void);
+
+    void GetFramesInternal(void *pBytes, unsigned int size);
+
+    unsigned int GetAvailableFrames(void);
+
+    enum {
+        NONE, INITIALIZING, INITIALIZED, REINITIALIZING
+    } m_State;
+
+    // Init info
+
+    unsigned int m_InitSize;
+    IRadSoundHalAudioFormat::SizeType m_InitSizeType;
+
+    // Buffer info
+
+    radMemorySpace m_FrameBufferMemorySpace;
+    ref <IRadMemoryAllocator> m_xIRadMemoryAllocator_FrameBuffer;
+
+    char *m_pFrameBuffer;
+    unsigned int m_BufferSizeInFrames;
+    unsigned int m_StartOfDataInFrames;
+    unsigned int m_EndOfDataInFrames;
+    bool m_QueueFull;
+
+    // Copy info
+
+    unsigned int m_FullCopySize;
+    unsigned int m_FramesLeftToCopy;
+    unsigned int m_CurrentFramesToCopy;
+    char *m_pCurrentCopyPointer;
+    radMemorySpace m_CopyMemorySpace;
+    ref <IRadMemorySpaceCopyRequest> m_xICopyRequest;
+    ref <IRadSoundHalDataSourceCallback> m_xIRadSoundHalDataSourceCallback;
+
+    // Read info
+
+    unsigned int m_ReadSizeInFrames;
+    bool m_OutOfData;
+    float m_LowWaterMark;
+
+    ref <IRadSoundHalAudioFormat> m_xIRadSoundHalAudioFormat;
+    ref <IRadSoundHalDataSource> m_xIRadSoundHalDataSource;
+    ref <IRadSoundHalDataSource> m_xIRadSoundHalDataSource_ReInit;
+    ref <IRadString> m_xIRadString_Name;
 };

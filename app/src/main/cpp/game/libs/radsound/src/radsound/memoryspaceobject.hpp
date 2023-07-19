@@ -11,35 +11,39 @@
 #include <radsound.hpp>
 
 struct radSoundMemorySpaceObject
-    :
-    public IRadSoundMemorySpaceObject,
-    public radSoundObject
-{
-    IMPLEMENT_REFCOUNTED( "radSoundMemorySpaceObject" )
+        :
+                public IRadSoundMemorySpaceObject,
+                public radSoundObject {
+    IMPLEMENT_REFCOUNTED("radSoundMemorySpaceObject")
 
-    radSoundMemorySpaceObject( void );
-    virtual ~radSoundMemorySpaceObject( void );
+    radSoundMemorySpaceObject(void);
+
+    virtual ~radSoundMemorySpaceObject(void);
 
     virtual void Initialize(
-        radMemorySpace space,
-        IRadMemoryAllocator * pIRadMemoryAllocator,
-        unsigned int numberOfBytes,
-        unsigned int alignment,
-        const char * pIdentifier );
-    
-    virtual void *                GetAddress( void );
-    virtual IRadMemoryAllocator * GetAllocator( void );
-    virtual radMemorySpace        GetMemorySpace( void );
-    virtual unsigned int          GetSizeInBytes( void );
-    virtual const char *          GetIdentifier( void );
+            radMemorySpace space,
+            IRadMemoryAllocator *pIRadMemoryAllocator,
+            unsigned int numberOfBytes,
+            unsigned int alignment,
+            const char *pIdentifier);
 
-    private:
+    virtual void *GetAddress(void);
 
-        void *             m_pMemory;
-        radMemorySpace     m_RadMemorySpace;
-        unsigned int       m_NumberOfBytes;
-        ref< IRadMemoryAllocator > m_xIRadMemoryAllocator;
-        ref< IRadString >          m_xIRadString_Identifier;
+    virtual IRadMemoryAllocator *GetAllocator(void);
+
+    virtual radMemorySpace GetMemorySpace(void);
+
+    virtual unsigned int GetSizeInBytes(void);
+
+    virtual const char *GetIdentifier(void);
+
+private:
+
+    void *m_pMemory;
+    radMemorySpace m_RadMemorySpace;
+    unsigned int m_NumberOfBytes;
+    ref <IRadMemoryAllocator> m_xIRadMemoryAllocator;
+    ref <IRadString> m_xIRadString_Identifier;
 };
 
 #endif

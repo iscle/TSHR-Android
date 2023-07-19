@@ -7,43 +7,51 @@
 #define ADPCMASYNCREQUEST_HPP
 
 class radSoundHalBufferAsyncRequestAdpcmPs2
-	:
-	public IRefCount
-{
-	public:
+        :
+                public IRefCount {
+public:
 
-		static void Service( void );
-        static bool RequestQueueEmpty( void ) { return s_pRequestHead == 0 ; }
-        static void CancelAllRequests( IRefCount * pIRefCount_Owner);
+    static void Service(void);
 
-        virtual void AddRef( void ) { m_RefCount++; }
-        virtual void Release( void ) { m_RefCount--; if ( m_RefCount == 0 ) { delete this; } }
+    static bool RequestQueueEmpty(void) { return s_pRequestHead == 0; }
 
-	protected:
+    static void CancelAllRequests(IRefCount *pIRefCount_Owner);
 
-		radSoundHalBufferAsyncRequestAdpcmPs2( IRefCount * pIRefCount_Parent );
-		virtual ~radSoundHalBufferAsyncRequestAdpcmPs2( void );
+    virtual void AddRef(void) { m_RefCount++; }
 
-		virtual void BeginRequest( void ) = 0;
-		virtual bool ServiceRequest( void ) = 0;
-		virtual void EndRequest( void ) = 0;
+    virtual void Release(void) {
+        m_RefCount--;
+        if (m_RefCount == 0) { delete this; }
+    }
 
-        virtual void CancelRequest( void ) = 0;
+protected:
 
-		void Initialize( void );
+    radSoundHalBufferAsyncRequestAdpcmPs2(IRefCount *pIRefCount_Parent);
 
-	private:
+    virtual ~radSoundHalBufferAsyncRequestAdpcmPs2(void);
 
-        //
-        // Maintain a linked list of these objects to serialize processing of them. List 
-        // is not reference counted.
-        //
+    virtual void BeginRequest(void) = 0;
 
-        static radSoundHalBufferAsyncRequestAdpcmPs2 * s_pRequestHead;
-        radSoundHalBufferAsyncRequestAdpcmPs2 * m_pNext;
+    virtual bool ServiceRequest(void) = 0;
 
-		ref< IRefCount > m_xIRefCount_Parent;
-        int m_RefCount;	
+    virtual void EndRequest(void) = 0;
+
+    virtual void CancelRequest(void) = 0;
+
+    void Initialize(void);
+
+private:
+
+    //
+    // Maintain a linked list of these objects to serialize processing of them. List
+    // is not reference counted.
+    //
+
+    static radSoundHalBufferAsyncRequestAdpcmPs2 *s_pRequestHead;
+    radSoundHalBufferAsyncRequestAdpcmPs2 *m_pNext;
+
+    ref <IRefCount> m_xIRefCount_Parent;
+    int m_RefCount;
 };
 
 #endif // ADPCMASYNCREQUEST_HPP

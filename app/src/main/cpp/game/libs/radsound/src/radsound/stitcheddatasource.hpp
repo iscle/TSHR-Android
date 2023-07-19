@@ -10,82 +10,83 @@
 #include <radsoundupdatableobject.hpp>
 
 class radSoundStitchedDataSource
-	:
-	public IRadSoundStitchedDataSource,
-	public IRadSoundHalDataSourceCallback,
-	public radSoundUpdatableObject
-{
-	public:
+        :
+                public IRadSoundStitchedDataSource,
+                public IRadSoundHalDataSourceCallback,
+                public radSoundUpdatableObject {
+public:
 
-		IMPLEMENT_REFCOUNTED( "radSoundStitchedDataSource" )
+    IMPLEMENT_REFCOUNTED("radSoundStitchedDataSource")
 
-		radSoundStitchedDataSource( void );
-		virtual ~radSoundStitchedDataSource( void );
+    radSoundStitchedDataSource(void);
 
-		// IRadSoundStitchedDataSource
+    virtual ~radSoundStitchedDataSource(void);
 
-		virtual void InitializeFromAudioFormat(
-			IRadSoundHalAudioFormat * pIRshaf );
+    // IRadSoundStitchedDataSource
 
-		virtual void InitializeFromDataSource( IRadSoundHalDataSource *
-			pIRadSoundHalDataSource );
+    virtual void InitializeFromAudioFormat(
+            IRadSoundHalAudioFormat *pIRshaf);
 
-		// Make sure you set this to NULL when you release the
-		// stiched data source.
+    virtual void InitializeFromDataSource(IRadSoundHalDataSource *
+    pIRadSoundHalDataSource);
 
-		virtual void SetStitchCallback( IRadSoundStitchCallback * pStitchCallback,
-			void * pUserData );
+    // Make sure you set this to NULL when you release the
+    // stiched data source.
 
-        virtual void ResetAudioFormat( IRadSoundHalAudioFormat * );
-		virtual void Reset( void );
+    virtual void SetStitchCallback(IRadSoundStitchCallback *pStitchCallback,
+                                   void *pUserData);
 
-		// IRadSoundHalDataSource
+    virtual void ResetAudioFormat(IRadSoundHalAudioFormat *);
 
-		virtual IRadSoundHalDataSource::State GetState( void );
+    virtual void Reset(void);
 
-		virtual IRadSoundHalAudioFormat * GetFormat( void );
+    // IRadSoundHalDataSource
 
-		virtual unsigned int GetRemainingFrames( void );
-		
-		virtual unsigned int GetAvailableFrames( void ) { return 0xFFFFFFFF; }
+    virtual IRadSoundHalDataSource::State GetState(void);
 
-		virtual void GetFramesAsync( 
-			void * pBytes, 
-			radMemorySpace destinationMemorySpace,
-			unsigned int numberOfFrames,
-			IRadSoundHalDataSourceCallback * pCallback );
+    virtual IRadSoundHalAudioFormat *GetFormat(void);
 
-		// radSoundUpdatableObject
+    virtual unsigned int GetRemainingFrames(void);
 
-		virtual void Update( unsigned int elapsedTime );
-		
-		virtual const char * GetName( void ) { return "MemoryDataSource"; }
+    virtual unsigned int GetAvailableFrames(void) { return 0xFFFFFFFF; }
 
-		// IRadSoundHalDataSourceCallback
+    virtual void GetFramesAsync(
+            void *pBytes,
+            radMemorySpace destinationMemorySpace,
+            unsigned int numberOfFrames,
+            IRadSoundHalDataSourceCallback *pCallback);
 
-		virtual void OnDataSourceFramesLoaded( unsigned int framesRead );
+    // radSoundUpdatableObject
 
+    virtual void Update(unsigned int elapsedTime);
 
-	private:
+    virtual const char *GetName(void) { return "MemoryDataSource"; }
 
-		void Service( void );
+    // IRadSoundHalDataSourceCallback
+
+    virtual void OnDataSourceFramesLoaded(unsigned int framesRead);
 
 
-        unsigned int m_FrameCount;
-        radMemorySpace m_ReadMemorySpace;
-		void *		 m_pCurrentReadPointer;	 // currently reading to this addr
-		unsigned int m_FramesLeftToRead;     // frames left of full read
-		unsigned int m_FullReadSize;         // the complete read size.
-        bool         m_LoadOutstanding;      // DataSourceCallback currently pending         
+private:
 
-        ref< IRadSoundHalDataSourceCallback > m_refIRadSoundHalDataSourceCallback_Cancelled;
+    void Service(void);
 
-		void * m_pRadSoundStitchCallbackUserData;
 
-		IRadSoundStitchCallback	*			  m_pIRadSoundStitchCallback; // Weak
-		ref< IRadSoundHalAudioFormat >        m_xIRadSoundHalAudioFormat;
-		ref< IRadSoundHalDataSourceCallback > m_xIRadSoundHalDataSourceCallback;
-		ref< IRadSoundHalDataSource >         m_xIRadSoundHalDataSource;
+    unsigned int m_FrameCount;
+    radMemorySpace m_ReadMemorySpace;
+    void *m_pCurrentReadPointer;     // currently reading to this addr
+    unsigned int m_FramesLeftToRead;     // frames left of full read
+    unsigned int m_FullReadSize;         // the complete read size.
+    bool m_LoadOutstanding;      // DataSourceCallback currently pending
+
+    ref <IRadSoundHalDataSourceCallback> m_refIRadSoundHalDataSourceCallback_Cancelled;
+
+    void *m_pRadSoundStitchCallbackUserData;
+
+    IRadSoundStitchCallback *m_pIRadSoundStitchCallback; // Weak
+    ref <IRadSoundHalAudioFormat> m_xIRadSoundHalAudioFormat;
+    ref <IRadSoundHalDataSourceCallback> m_xIRadSoundHalDataSourceCallback;
+    ref <IRadSoundHalDataSource> m_xIRadSoundHalDataSource;
 };
 
 #endif

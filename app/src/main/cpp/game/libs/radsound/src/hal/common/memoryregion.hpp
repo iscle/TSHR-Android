@@ -9,90 +9,91 @@
 #include <radsoundobject.hpp>
 
 struct radSoundHalMemoryRegion
-	:
-	public IRadSoundHalMemoryRegion,
-	public radSoundObject
-{
-	IMPLEMENT_REFCOUNTED( "radSoundHalMemoryRegion" )
+        :
+                public IRadSoundHalMemoryRegion,
+                public radSoundObject {
+    IMPLEMENT_REFCOUNTED("radSoundHalMemoryRegion")
 
-	//
-	// Static Functions
-	//
+    //
+    // Static Functions
+    //
 
-	static void Initialize( void * pStartOfMemory,
-		unsigned int rootSize,
-        unsigned int maxRootAllocations,
-        unsigned int alignment,
-        radMemorySpace memorySpace,
-		radMemoryAllocator allocator );
+    static void Initialize(void *pStartOfMemory,
+                           unsigned int rootSize,
+                           unsigned int maxRootAllocations,
+                           unsigned int alignment,
+                           radMemorySpace memorySpace,
+                           radMemoryAllocator allocator);
 
-	static radSoundHalMemoryRegion * GetRootRegion( void );
+    static radSoundHalMemoryRegion *GetRootRegion(void);
 
-	static unsigned int GetTotalFreeMemory(
-		IRadSoundHalMemoryRegion * IRadSoundHalMemoryRegion );
+    static unsigned int GetTotalFreeMemory(
+            IRadSoundHalMemoryRegion *IRadSoundHalMemoryRegion);
 
-	static void Terminate( void );
+    static void Terminate(void);
 
-	//
-	// Class functions
-	//
+    //
+    // Class functions
+    //
 
-	radSoundHalMemoryRegion( void );
-	virtual ~radSoundHalMemoryRegion( void );
+    radSoundHalMemoryRegion(void);
 
-	virtual IRadSoundHalMemoryRegion * CreateChildRegion(
-		unsigned int sizeInBytes,
-        unsigned int maxAllocations,
-        const char * pIdentifier );
+    virtual ~radSoundHalMemoryRegion(void);
 
-	void CreateMemoryObject( IRadMemoryObject ** ppIRadMemoryObject,
-		unsigned int size,
-        const char * pIdentifier );
+    virtual IRadSoundHalMemoryRegion *CreateChildRegion(
+            unsigned int sizeInBytes,
+            unsigned int maxAllocations,
+            const char *pIdentifier);
 
-	virtual IRadSoundHalMemoryRegion * GetParent( void );
-	virtual IRadSoundHalMemoryRegion * GetFirstChild( void );
-	
-	virtual IRadSoundHalMemoryRegion * GetNextChild(
-		IRadSoundHalMemoryRegion * pIRSoundMemoryRegion_LastChild );
+    void CreateMemoryObject(IRadMemoryObject **ppIRadMemoryObject,
+                            unsigned int size,
+                            const char *pIdentifier);
 
-	virtual unsigned int GetSize( void );
+    virtual IRadSoundHalMemoryRegion *GetParent(void);
 
-	virtual void GetStats( unsigned int * pFreeMemory,
-		unsigned * pNumObjects, unsigned int * pLargestBlock,
-		bool recurseChildren );
+    virtual IRadSoundHalMemoryRegion *GetFirstChild(void);
 
-	private:
+    virtual IRadSoundHalMemoryRegion *GetNextChild(
+            IRadSoundHalMemoryRegion *pIRSoundMemoryRegion_LastChild);
 
-		static void GetStats_Recurse(
-			radSoundHalMemoryRegion * pRadSoundMemoryRegion,
-			unsigned int * pFreeMemory, unsigned int * pNumObjects,
-			unsigned int * pLargestBlock,
-			bool recurse
-		);
+    virtual unsigned int GetSize(void);
 
-		void Create( radSoundHalMemoryRegion * pRadSoundMemoryRegion_Parent,
-			IRadMemoryObject * pIRadMemoryObject,
-            unsigned int maxAllocations );
+    virtual void GetStats(unsigned int *pFreeMemory,
+                          unsigned *pNumObjects, unsigned int *pLargestBlock,
+                          bool recurseChildren);
 
-		void CreateRoot
-		(
-			void * pStartOfMemory,
-			unsigned int sizeInBytes,
-            unsigned int maxAllocations
-		);
+private:
 
-		radSoundHalMemoryRegion * m_pMemoryRegion_Next;
-		radSoundHalMemoryRegion * m_pMemoryRegion_Prev;
-		radSoundHalMemoryRegion * m_pMemoryRegion_ChildHead;
+    static void GetStats_Recurse(
+            radSoundHalMemoryRegion *pRadSoundMemoryRegion,
+            unsigned int *pFreeMemory, unsigned int *pNumObjects,
+            unsigned int *pLargestBlock,
+            bool recurse
+    );
 
-		ref< radSoundHalMemoryRegion > m_xRadSoundMemoryRegion_Parent;
-		
-		ref< IRadMemoryObject > m_xIRadMemoryObject_HeapMemory;
-		ref< IRadMemoryHeap >   m_xIRadMemoryHeap;
+    void Create(radSoundHalMemoryRegion *pRadSoundMemoryRegion_Parent,
+                IRadMemoryObject *pIRadMemoryObject,
+                unsigned int maxAllocations);
 
-		static radSoundHalMemoryRegion * s_pRadSoundMemoryRegion_Root;
-		static unsigned int s_Alignment;
-        static radMemorySpace s_MemorySpace;
+    void CreateRoot
+            (
+                    void *pStartOfMemory,
+                    unsigned int sizeInBytes,
+                    unsigned int maxAllocations
+            );
+
+    radSoundHalMemoryRegion *m_pMemoryRegion_Next;
+    radSoundHalMemoryRegion *m_pMemoryRegion_Prev;
+    radSoundHalMemoryRegion *m_pMemoryRegion_ChildHead;
+
+    ref <radSoundHalMemoryRegion> m_xRadSoundMemoryRegion_Parent;
+
+    ref <IRadMemoryObject> m_xIRadMemoryObject_HeapMemory;
+    ref <IRadMemoryHeap> m_xIRadMemoryHeap;
+
+    static radSoundHalMemoryRegion *s_pRadSoundMemoryRegion_Root;
+    static unsigned int s_Alignment;
+    static radMemorySpace s_MemorySpace;
 
 };
 

@@ -6,6 +6,6 @@
 #ifndef BANNER_HPP
 #define BANNER_HPP
 
-void radSoundPrintBanner( void );
+void radSoundPrintBanner(void);
 
 #endif // BANNER_HPP

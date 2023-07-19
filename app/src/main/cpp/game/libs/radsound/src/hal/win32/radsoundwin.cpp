@@ -12,14 +12,12 @@
 //============================================================================
 
 unsigned int radSoundFloatAngleToULongWin
-(
-    float angle
-)
-{
-    unsigned int uangle = static_cast< unsigned int >( angle );
+        (
+                float angle
+        ) {
+    unsigned int uangle = static_cast<unsigned int>(angle);
 
-    if ( uangle > 360 )
-    {
+    if (uangle > 360) {
         uangle = 360;
     }
 
@@ -31,18 +29,14 @@ unsigned int radSoundFloatAngleToULongWin
 //============================================================================
 
 float radSoundULongAngleToFloatWin
-(
-    unsigned int angle
-)
-{
-    float fangle = static_cast< float >( angle );
+        (
+                unsigned int angle
+        ) {
+    float fangle = static_cast<float>(angle);
 
-    if ( fangle > 360.0f)
-    {
+    if (fangle > 360.0f) {
         fangle = 360.0f;
-    }
-    else if ( fangle <= 0.0f )
-    {
+    } else if (fangle <= 0.0f) {
         fangle = 0.0f;
     }
 
@@ -54,32 +48,27 @@ float radSoundULongAngleToFloatWin
 //============================================================================
 
 signed long radSoundVolumeDbToHardwareWin
-(
-    float decibels
-)
-{
-	radSoundVerifyDbVolume( decibels );
+        (
+                float decibels
+        ) {
+    radSoundVerifyDbVolume(decibels);
 
-	// We don't want too many bytes or we will overflow.  It's 
-	// safe to cut this value off at -100
-	
-	if( decibels < -100.0f )
-	{
-		decibels = -100.0f;
-	}
+    // We don't want too many bytes or we will overflow.  It's
+    // safe to cut this value off at -100
 
-    signed long db = static_cast< signed long >( decibels * 100.0f );
-    
-    if ( db > DSBVOLUME_MAX )
-    {
-        db = DSBVOLUME_MAX;
+    if (decibels < -100.0f) {
+        decibels = -100.0f;
     }
-    else if ( db < DSBVOLUME_MIN )
-    {
+
+    signed long db = static_cast<signed long>(decibels * 100.0f);
+
+    if (db > DSBVOLUME_MAX) {
+        db = DSBVOLUME_MAX;
+    } else if (db < DSBVOLUME_MIN) {
         db = DSBVOLUME_MIN;
     }
 
-	return db;
+    return db;
 }
 
 //============================================================================
@@ -87,17 +76,16 @@ signed long radSoundVolumeDbToHardwareWin
 //============================================================================
 
 float radSoundVolumeHardwareToDbWin
-( 
-	signed long hardwareVolume
-)
-{
-	// Just scale the value by 100
+        (
+                signed long hardwareVolume
+        ) {
+    // Just scale the value by 100
 
-	float decibels = ( ( float ) hardwareVolume ) / 100.0f;
+    float decibels = ((float) hardwareVolume) / 100.0f;
 
-	::radSoundVerifyDbVolume( decibels );
+    ::radSoundVerifyDbVolume(decibels);
 
-	return decibels;
+    return decibels;
 }
 
 //============================================================================
@@ -105,21 +93,18 @@ float radSoundVolumeHardwareToDbWin
 //============================================================================
 
 unsigned long radSoundPercentageToHardwarePitchWin
-(
-    float pitch,
-    unsigned int normalFrequency
-)
-{
-	::radSoundVerifyAnalogPitch( pitch );
+        (
+                float pitch,
+                unsigned int normalFrequency
+        ) {
+    ::radSoundVerifyAnalogPitch(pitch);
 
-    unsigned long newPitch = static_cast< unsigned long >( pitch * static_cast< float >( normalFrequency ) );
+    unsigned long newPitch = static_cast<unsigned long>(pitch *
+                                                        static_cast<float>(normalFrequency));
 
-    if (newPitch < DSBFREQUENCY_MIN )
-    {
+    if (newPitch < DSBFREQUENCY_MIN) {
         newPitch = DSBFREQUENCY_MIN;
-    }
-    else if ( newPitch > DSBFREQUENCY_MAX )
-    {
+    } else if (newPitch > DSBFREQUENCY_MAX) {
         newPitch = DSBFREQUENCY_MAX;
     }
 

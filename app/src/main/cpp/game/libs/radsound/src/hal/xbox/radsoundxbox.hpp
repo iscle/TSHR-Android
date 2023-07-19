@@ -41,26 +41,26 @@ struct radSoundObjectXBox;
 // Creation
 //============================================================================
 
-IRadSoundHalSystemXBox * radSoundHalSystemXBoxGet( void );
+IRadSoundHalSystemXBox *radSoundHalSystemXBoxGet(void);
 
 //============================================================================
 // Conversion Functions
 //============================================================================
 
-signed long   radSoundVolumeDbToHardwareXBox( float volume );
-float         radSoundVolumeHardwareToDbXBox( signed long hvol );
+signed long radSoundVolumeDbToHardwareXBox(float volume);
 
-unsigned long radSoundPercentageToHardwarePitchXBox( float pitch, unsigned int normalFrequency );
+float radSoundVolumeHardwareToDbXBox(signed long hvol);
+
+unsigned long radSoundPercentageToHardwarePitchXBox(float pitch, unsigned int normalFrequency);
 
 //============================================================================
 // Interface: IRadDxSoundSystem
 //============================================================================
 
 struct IRadSoundHalSystemXBox
-    :
-    public IRadSoundHalSystem
-{
-    virtual void GetDirectSoundReference( IDirectSound ** ppIDirectSound ) = 0;
+        :
+                public IRadSoundHalSystem {
+    virtual void GetDirectSoundReference(IDirectSound **ppIDirectSound) = 0;
 };
 
 #endif // RADSOUNDXBOX_HPP

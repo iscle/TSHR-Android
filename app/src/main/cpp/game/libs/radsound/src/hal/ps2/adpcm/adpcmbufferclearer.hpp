@@ -9,42 +9,46 @@
 #include "adpcmasyncrequest.hpp"
 
 class radSoundHalAdpcmBufferClearer
-	:
-	public radSoundHalBufferAsyncRequestAdpcmPs2,
-	public radSoundPoolObject< radSoundHalAdpcmBufferClearer >
-{
-	public:
+        :
+                public radSoundHalBufferAsyncRequestAdpcmPs2,
+                public radSoundPoolObject<radSoundHalAdpcmBufferClearer> {
+public:
 
-        virtual void AddRef( void ) { radSoundHalBufferAsyncRequestAdpcmPs2::AddRef( ); }
-        virtual void Release( void ) { radSoundHalBufferAsyncRequestAdpcmPs2::Release( ); }
+    virtual void AddRef(void) { radSoundHalBufferAsyncRequestAdpcmPs2::AddRef(); }
 
-		radSoundHalAdpcmBufferClearer(
-			IRadSoundHalBuffer * pIRadSoundHalBuffer,
-			unsigned int startPositionInFrames,
-			unsigned int numberOfFrames, 
-			IRadSoundHalBufferClearCallback * pIRadSoundHalBufferClearCallback );
+    virtual void Release(void) { radSoundHalBufferAsyncRequestAdpcmPs2::Release(); }
 
-	protected:
+    radSoundHalAdpcmBufferClearer(
+            IRadSoundHalBuffer *pIRadSoundHalBuffer,
+            unsigned int startPositionInFrames,
+            unsigned int numberOfFrames,
+            IRadSoundHalBufferClearCallback *pIRadSoundHalBufferClearCallback);
 
-		virtual void BeginRequest( void );
-		virtual bool ServiceRequest( void );
-		virtual void EndRequest( void );
-        virtual void CancelRequest( void );
+protected:
 
-	private:
+    virtual void BeginRequest(void);
 
-		virtual ~radSoundHalAdpcmBufferClearer( void );
-        void CallbackClient( void );
+    virtual bool ServiceRequest(void);
 
-		int m_RefCount;
+    virtual void EndRequest(void);
 
-        bool m_Started;
-        bool m_Cancelled;
-		unsigned int m_StartPositionInFrames;
-		unsigned int m_NumberOfFrames;
+    virtual void CancelRequest(void);
 
-		ref< IRadSoundHalBuffer > m_xIRadSoundHalBuffer;
-		ref< IRadSoundHalBufferClearCallback > m_xIRadSoundHalBufferClearCallback;
+private:
+
+    virtual ~radSoundHalAdpcmBufferClearer(void);
+
+    void CallbackClient(void);
+
+    int m_RefCount;
+
+    bool m_Started;
+    bool m_Cancelled;
+    unsigned int m_StartPositionInFrames;
+    unsigned int m_NumberOfFrames;
+
+    ref <IRadSoundHalBuffer> m_xIRadSoundHalBuffer;
+    ref <IRadSoundHalBufferClearCallback> m_xIRadSoundHalBufferClearCallback;
 };
 
 #endif

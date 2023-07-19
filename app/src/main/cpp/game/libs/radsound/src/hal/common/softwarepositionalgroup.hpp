@@ -43,16 +43,16 @@ struct IRadSoundHalPositionalEntity;
 // Interface: radSoundHalPositionalEntity
 //=============================================================================
 
-struct radSoundHalPositionalEntity
-{
-	public:
+struct radSoundHalPositionalEntity {
+public:
 
-		virtual void OnApplyPositionalSettings( void ) = 0;
+    virtual void OnApplyPositionalSettings(void) = 0;
 
-	private: friend struct radSoundHalPositionalGroup;
+private:
+    friend struct radSoundHalPositionalGroup;
 
-		radSoundHalPositionalEntity * m_pNext;
-		radSoundHalPositionalEntity * m_pPrev;
+    radSoundHalPositionalEntity *m_pNext;
+    radSoundHalPositionalEntity *m_pPrev;
 };
 
 //============================================================================
@@ -60,29 +60,27 @@ struct radSoundHalPositionalEntity
 //============================================================================
 
 struct radSoundHalPositionalInformation
-    :
-    public radSoundObject
-{
-
-    radSoundHalPositionalInformation( void )
         :
-        m_Position( 0.0f, 0.0f, 0.0f ),
-        m_Velocity( 0.0f, 0.0f, 0.0f ),
-        m_OrientationTop( 0.0f, 1.0f, 0.0f ),
-        m_OrientationFront( 0.0f, 0.0f, 1.0f ), 
-        m_ConeInsideAngle( 360.0f ),
-        m_ConeOutsideAngle( 360.0f ),
-        m_ConeOutsideVolume( 1.0f ),
-        m_MinDistance( 0.0f ),
-        m_MaxDistance( 100.0f ),
-        m_Occlusion( 0.0f ),
-        m_Obstruction( 0.0f ),
-        m_EnvAuxSend( NULL_ENV_AUX ),
-        m_VolumeAdjust( 1.0f ),
-        m_PanAdjust( 0.0f ),
-        m_FrontBackPanAdjust( 0.0f ),
-        m_PitchAdjust( 1.0f )
-    {
+                public radSoundObject {
+
+    radSoundHalPositionalInformation(void)
+            :
+            m_Position(0.0f, 0.0f, 0.0f),
+            m_Velocity(0.0f, 0.0f, 0.0f),
+            m_OrientationTop(0.0f, 1.0f, 0.0f),
+            m_OrientationFront(0.0f, 0.0f, 1.0f),
+            m_ConeInsideAngle(360.0f),
+            m_ConeOutsideAngle(360.0f),
+            m_ConeOutsideVolume(1.0f),
+            m_MinDistance(0.0f),
+            m_MaxDistance(100.0f),
+            m_Occlusion(0.0f),
+            m_Obstruction(0.0f),
+            m_EnvAuxSend(NULL_ENV_AUX),
+            m_VolumeAdjust(1.0f),
+            m_PanAdjust(0.0f),
+            m_FrontBackPanAdjust(0.0f),
+            m_PitchAdjust(1.0f) {
         ;
     }
 
@@ -118,51 +116,67 @@ struct radSoundHalPositionalInformation
 //============================================================================
 
 struct radSoundHalPositionalGroup
-	:
-	public IRadSoundHalPositionalGroup,
-	public radLinkedClass< radSoundHalPositionalGroup >,
-    public radSoundObject
-{
-	public:
+        :
+                public IRadSoundHalPositionalGroup,
+                public radLinkedClass<radSoundHalPositionalGroup>,
+                public radSoundObject {
+public:
 
-		IMPLEMENT_REFCOUNTED( "radSoundHalPositionalGroup" )
-		
-		radSoundHalPositionalGroup( void );
-		virtual ~radSoundHalPositionalGroup( void );
+    IMPLEMENT_REFCOUNTED("radSoundHalPositionalGroup")
 
-		void AddPositionalEntity( radSoundHalPositionalEntity * pRadSoundHalPositionalEntity );
-		void RemovePositionalEntity( radSoundHalPositionalEntity * pRadSoundHalPositionalEntity );
+    radSoundHalPositionalGroup(void);
 
-        // Called by listener after calculations are done
+    virtual ~radSoundHalPositionalGroup(void);
 
-		void UpdatePositionalSettings( void );
+    void AddPositionalEntity(radSoundHalPositionalEntity *pRadSoundHalPositionalEntity);
 
-        // Called by voice to force a re-calculation
+    void RemovePositionalEntity(radSoundHalPositionalEntity *pRadSoundHalPositionalEntity);
 
-        void ForceUpdate( void );
+    // Called by listener after calculations are done
 
-		// IRadSoundHalPositionalGroup
+    void UpdatePositionalSettings(void);
 
-		virtual void  SetPosition( radSoundVector * pPosition );
-		virtual void  GetPosition( radSoundVector * pPosition );
-		virtual void  SetVelocity( radSoundVector * pVelocity );
-		virtual void  GetVelocity( radSoundVector * pVelocity );
-		virtual void  SetOrientation( radSoundVector * pFront, radSoundVector * pTop );
-		virtual void  GetOrientation( radSoundVector * pFront, radSoundVector * pTop );
-		virtual void  SetMinMaxDistance( float min, float max );
-		virtual void  GetMinMaxDistance( float * pMin, float * pMax );
-		virtual void  SetConeOutsideVolume( float ov );
-		virtual float GetConeOutsideVolume( void );
-		virtual void  SetConeAngles( float in, float out );
-		virtual void  GetConeAngles( float * pIn, float * pOut );
-        virtual void  SetOcclusion( float occl );
-        virtual float GetOcclusion( void );
-        virtual void  SetObstruction( float obst );
-        virtual float GetObstruction( void );
+    // Called by voice to force a re-calculation
 
-		radSoundHalPositionalInformation m_RadSoundHalPositionalInformation;
-		
-		radSoundHalPositionalEntity * m_pRadSoundHalPositionalEntity_Head;
+    void ForceUpdate(void);
+
+    // IRadSoundHalPositionalGroup
+
+    virtual void SetPosition(radSoundVector *pPosition);
+
+    virtual void GetPosition(radSoundVector *pPosition);
+
+    virtual void SetVelocity(radSoundVector *pVelocity);
+
+    virtual void GetVelocity(radSoundVector *pVelocity);
+
+    virtual void SetOrientation(radSoundVector *pFront, radSoundVector *pTop);
+
+    virtual void GetOrientation(radSoundVector *pFront, radSoundVector *pTop);
+
+    virtual void SetMinMaxDistance(float min, float max);
+
+    virtual void GetMinMaxDistance(float *pMin, float *pMax);
+
+    virtual void SetConeOutsideVolume(float ov);
+
+    virtual float GetConeOutsideVolume(void);
+
+    virtual void SetConeAngles(float in, float out);
+
+    virtual void GetConeAngles(float *pIn, float *pOut);
+
+    virtual void SetOcclusion(float occl);
+
+    virtual float GetOcclusion(void);
+
+    virtual void SetObstruction(float obst);
+
+    virtual float GetObstruction(void);
+
+    radSoundHalPositionalInformation m_RadSoundHalPositionalInformation;
+
+    radSoundHalPositionalEntity *m_pRadSoundHalPositionalEntity_Head;
 };
 
 #endif // SOFTWAREPOSITIONALGROUP_HPP

@@ -24,37 +24,34 @@
 // Static member definitions
 //========================================================================
 
-radSoundHalPositionalGroup * radLinkedClass< radSoundHalPositionalGroup >::s_pLinkedClassHead = NULL;
-radSoundHalPositionalGroup * radLinkedClass< radSoundHalPositionalGroup >::s_pLinkedClassTail = NULL;
+radSoundHalPositionalGroup *radLinkedClass<radSoundHalPositionalGroup>::s_pLinkedClassHead = NULL;
+radSoundHalPositionalGroup *radLinkedClass<radSoundHalPositionalGroup>::s_pLinkedClassTail = NULL;
 //========================================================================
 // ::radSoundhalPositionalGroupCreate
 //========================================================================
 
-IRadSoundHalPositionalGroup * radSoundHalPositionalGroupCreate( radMemoryAllocator allocator )
-{
-	return new ( "radSoundHalPositionalGroup", allocator ) radSoundHalPositionalGroup( );
+IRadSoundHalPositionalGroup *radSoundHalPositionalGroupCreate(radMemoryAllocator allocator) {
+    return new("radSoundHalPositionalGroup", allocator) radSoundHalPositionalGroup();
 }
 
 //========================================================================
 // radSoundHalPositionalGroup::radSoundHalPositionalGroup
 //========================================================================
 
-radSoundHalPositionalGroup::radSoundHalPositionalGroup( void )
-	:
-	m_pRadSoundHalPositionalEntity_Head( NULL )
-{
-    ::radSoundHalSystemGet( )->AddRef( );
+radSoundHalPositionalGroup::radSoundHalPositionalGroup(void)
+        :
+        m_pRadSoundHalPositionalEntity_Head(NULL) {
+    ::radSoundHalSystemGet()->AddRef();
 }
 
 //========================================================================
 // radSoundHalPositionalGroup::~radSoundHalPositionalGroup
 //========================================================================
 
-radSoundHalPositionalGroup::~radSoundHalPositionalGroup( void )
-{
-    ::radSoundHalSystemGet( )->Release( );
+radSoundHalPositionalGroup::~radSoundHalPositionalGroup(void) {
+    ::radSoundHalSystemGet()->Release();
 
-	rAssert( m_pRadSoundHalPositionalEntity_Head == NULL );
+    rAssert(m_pRadSoundHalPositionalEntity_Head == NULL);
 }
 
 //========================================================================
@@ -62,13 +59,12 @@ radSoundHalPositionalGroup::~radSoundHalPositionalGroup( void )
 //========================================================================
 
 void radSoundHalPositionalGroup::SetPosition
-(
-    radSoundVector * pPosition
-)
-{
-	rAssert( pPosition != NULL );
+        (
+                radSoundVector *pPosition
+        ) {
+    rAssert(pPosition != NULL);
 
-	m_RadSoundHalPositionalInformation.m_Position = * pPosition;
+    m_RadSoundHalPositionalInformation.m_Position = *pPosition;
 }
 
 //========================================================================
@@ -76,13 +72,12 @@ void radSoundHalPositionalGroup::SetPosition
 //========================================================================
 
 void radSoundHalPositionalGroup::GetPosition
-(
-    radSoundVector * pPosition
-)
-{
-    rAssert( pPosition != NULL );
+        (
+                radSoundVector *pPosition
+        ) {
+    rAssert(pPosition != NULL);
 
-	*pPosition = m_RadSoundHalPositionalInformation.m_Position;
+    *pPosition = m_RadSoundHalPositionalInformation.m_Position;
 }
 
 //========================================================================
@@ -90,22 +85,21 @@ void radSoundHalPositionalGroup::GetPosition
 //========================================================================
 
 void radSoundHalPositionalGroup::SetVelocity
-(
-    radSoundVector * pVelocity
-)
-{
-	rAssert( pVelocity != NULL );
+        (
+                radSoundVector *pVelocity
+        ) {
+    rAssert(pVelocity != NULL);
 
-	#ifdef RAD_DEBUG
-	
-		if ( pVelocity->GetLength( ) > 100.0f )
-		{
-			rDebugPrintf( "This radSoundPositionalGroup is going really really fast\n" );
-		}
-	
-	#endif
+#ifdef RAD_DEBUG
 
-	m_RadSoundHalPositionalInformation.m_Velocity = * pVelocity;
+    if (pVelocity->GetLength()> 100.0f)
+    {
+        rDebugPrintf("This radSoundPositionalGroup is going really really fast\n");
+    }
+
+#endif
+
+    m_RadSoundHalPositionalInformation.m_Velocity = *pVelocity;
 
 
 }
@@ -115,13 +109,12 @@ void radSoundHalPositionalGroup::SetVelocity
 //========================================================================
 
 void radSoundHalPositionalGroup::GetVelocity
-(
-    radSoundVector * pVelocity
-)
-{
-    rAssert( pVelocity != NULL );
+        (
+                radSoundVector *pVelocity
+        ) {
+    rAssert(pVelocity != NULL);
 
-	*pVelocity = m_RadSoundHalPositionalInformation.m_Velocity;
+    *pVelocity = m_RadSoundHalPositionalInformation.m_Velocity;
 }
 
 //========================================================================
@@ -129,36 +122,32 @@ void radSoundHalPositionalGroup::GetVelocity
 //========================================================================
 
 void radSoundHalPositionalGroup::SetOrientation
-(
-    radSoundVector * pOrientationFront, radSoundVector * pOrientationTop
-)
-{	
-	rAssert( pOrientationFront != NULL );
-	rAssert( pOrientationTop != NULL );
+        (
+                radSoundVector *pOrientationFront, radSoundVector *pOrientationTop
+        ) {
+    rAssert(pOrientationFront != NULL);
+    rAssert(pOrientationTop != NULL);
 
-	m_RadSoundHalPositionalInformation.m_OrientationFront = * pOrientationFront;
-	m_RadSoundHalPositionalInformation.m_OrientationTop = * pOrientationTop;
+    m_RadSoundHalPositionalInformation.m_OrientationFront = *pOrientationFront;
+    m_RadSoundHalPositionalInformation.m_OrientationTop = *pOrientationTop;
 }
-   
+
 //========================================================================
 // radSoundHalPositionalGroup::GetOrientationFront
 //========================================================================
 
 void radSoundHalPositionalGroup::GetOrientation
-(
-    radSoundVector * pOrientationFront,
-	radSoundVector * pOrientationTop
-)
-{
-	if ( pOrientationTop != NULL )
-	{
-		*pOrientationTop = m_RadSoundHalPositionalInformation.m_OrientationTop;
-	}
-	
-	if ( pOrientationFront != NULL )
-	{
-		*pOrientationFront = m_RadSoundHalPositionalInformation.m_OrientationFront;
-	}
+        (
+                radSoundVector *pOrientationFront,
+                radSoundVector *pOrientationTop
+        ) {
+    if (pOrientationTop != NULL) {
+        *pOrientationTop = m_RadSoundHalPositionalInformation.m_OrientationTop;
+    }
+
+    if (pOrientationFront != NULL) {
+        *pOrientationFront = m_RadSoundHalPositionalInformation.m_OrientationFront;
+    }
 }
 
 //========================================================================
@@ -166,12 +155,11 @@ void radSoundHalPositionalGroup::GetOrientation
 //========================================================================
 
 void radSoundHalPositionalGroup::SetConeAngles
-(
-    float insideConeAngle,
-    float outsideConeAngle
-)
-{
-    m_RadSoundHalPositionalInformation.m_ConeInsideAngle =  insideConeAngle;
+        (
+                float insideConeAngle,
+                float outsideConeAngle
+        ) {
+    m_RadSoundHalPositionalInformation.m_ConeInsideAngle = insideConeAngle;
     m_RadSoundHalPositionalInformation.m_ConeOutsideAngle = outsideConeAngle;
 }
 
@@ -180,18 +168,15 @@ void radSoundHalPositionalGroup::SetConeAngles
 //========================================================================
 
 void radSoundHalPositionalGroup::GetConeAngles
-(
-    float * pIca,
-    float * pOca
-)
-{
-    if ( pIca != NULL )
-    {    
+        (
+                float *pIca,
+                float *pOca
+        ) {
+    if (pIca != NULL) {
         *pIca = m_RadSoundHalPositionalInformation.m_ConeInsideAngle;
     }
-    
-    if ( pOca != NULL )
-    {
+
+    if (pOca != NULL) {
         *pOca = m_RadSoundHalPositionalInformation.m_ConeOutsideAngle;
     }
 }
@@ -201,11 +186,10 @@ void radSoundHalPositionalGroup::GetConeAngles
 //========================================================================
 
 void radSoundHalPositionalGroup::SetConeOutsideVolume
-(
-    float coneOutsideVolume
-)
-{
-	m_RadSoundHalPositionalInformation.m_ConeOutsideVolume = coneOutsideVolume;
+        (
+                float coneOutsideVolume
+        ) {
+    m_RadSoundHalPositionalInformation.m_ConeOutsideVolume = coneOutsideVolume;
 }
 
 //========================================================================
@@ -213,11 +197,10 @@ void radSoundHalPositionalGroup::SetConeOutsideVolume
 //========================================================================
 
 float radSoundHalPositionalGroup::GetConeOutsideVolume
-(
-    void
-)
-{
-	return m_RadSoundHalPositionalInformation.m_ConeOutsideVolume;
+        (
+                void
+        ) {
+    return m_RadSoundHalPositionalInformation.m_ConeOutsideVolume;
 }
 
 //========================================================================
@@ -225,13 +208,12 @@ float radSoundHalPositionalGroup::GetConeOutsideVolume
 //========================================================================
 
 void radSoundHalPositionalGroup::SetMinMaxDistance
-(
-    float minDistance,
-    float maxDistance
-)
-{
-	m_RadSoundHalPositionalInformation.m_MinDistance = minDistance;
-	m_RadSoundHalPositionalInformation.m_MaxDistance = maxDistance;
+        (
+                float minDistance,
+                float maxDistance
+        ) {
+    m_RadSoundHalPositionalInformation.m_MinDistance = minDistance;
+    m_RadSoundHalPositionalInformation.m_MaxDistance = maxDistance;
 }
 
 //========================================================================
@@ -239,29 +221,25 @@ void radSoundHalPositionalGroup::SetMinMaxDistance
 //========================================================================
 
 void radSoundHalPositionalGroup::GetMinMaxDistance
-(
-    float * pMinDistance,
-    float * pMaxDistance
+        (
+                float *pMinDistance,
+                float *pMaxDistance
 
-)
-{
-	if ( pMinDistance != NULL )
-	{
+        ) {
+    if (pMinDistance != NULL) {
         *pMinDistance = m_RadSoundHalPositionalInformation.m_MinDistance;
-	}
+    }
 
-	if ( pMaxDistance != NULL )
-	{
+    if (pMaxDistance != NULL) {
         *pMaxDistance = m_RadSoundHalPositionalInformation.m_MaxDistance;
-	}
+    }
 }
 
 //========================================================================
 // radSoundHalPositionalGroup::SetOcclusion
 //========================================================================
 
-void radSoundHalPositionalGroup::SetOcclusion( float occl )
-{
+void radSoundHalPositionalGroup::SetOcclusion(float occl) {
     m_RadSoundHalPositionalInformation.m_Occlusion = occl;
 }
 
@@ -269,8 +247,7 @@ void radSoundHalPositionalGroup::SetOcclusion( float occl )
 // radSoundHalPositionalGroup::GetOcclusion
 //========================================================================
 
-float radSoundHalPositionalGroup::GetOcclusion( void )
-{
+float radSoundHalPositionalGroup::GetOcclusion(void) {
     return m_RadSoundHalPositionalInformation.m_Occlusion;
 }
 
@@ -278,8 +255,7 @@ float radSoundHalPositionalGroup::GetOcclusion( void )
 // radSoundHalPositionalGroup::SetObstruction
 //========================================================================
 
-void radSoundHalPositionalGroup::SetObstruction( float obst )
-{
+void radSoundHalPositionalGroup::SetObstruction(float obst) {
     m_RadSoundHalPositionalInformation.m_Obstruction = obst;
 }
 
@@ -287,8 +263,7 @@ void radSoundHalPositionalGroup::SetObstruction( float obst )
 // radSoundHalPositionalGroup::GetObstruction
 //========================================================================
 
-float radSoundHalPositionalGroup::GetObstruction( void )
-{
+float radSoundHalPositionalGroup::GetObstruction(void) {
     return m_RadSoundHalPositionalInformation.m_Obstruction;;
 }
 
@@ -297,22 +272,20 @@ float radSoundHalPositionalGroup::GetObstruction( void )
 //========================================================================
 
 void radSoundHalPositionalGroup::AddPositionalEntity
-(
-	radSoundHalPositionalEntity * pRadSoundHalPositionalEntity
-)
-{
-	rAssert( pRadSoundHalPositionalEntity );
+        (
+                radSoundHalPositionalEntity *pRadSoundHalPositionalEntity
+        ) {
+    rAssert(pRadSoundHalPositionalEntity);
 
     pRadSoundHalPositionalEntity->m_pNext = m_pRadSoundHalPositionalEntity_Head;
 
-    if ( pRadSoundHalPositionalEntity->m_pNext != NULL )
-    {
+    if (pRadSoundHalPositionalEntity->m_pNext != NULL) {
         pRadSoundHalPositionalEntity->m_pNext->m_pPrev = pRadSoundHalPositionalEntity;
     }
 
     pRadSoundHalPositionalEntity->m_pPrev = NULL;
 
-	m_pRadSoundHalPositionalEntity_Head = pRadSoundHalPositionalEntity;
+    m_pRadSoundHalPositionalEntity_Head = pRadSoundHalPositionalEntity;
 
 }
 
@@ -321,24 +294,19 @@ void radSoundHalPositionalGroup::AddPositionalEntity
 //========================================================================
 
 void radSoundHalPositionalGroup::RemovePositionalEntity
-(
-	radSoundHalPositionalEntity * pRadSoundHalPositionalEntity
-)
-{
-	rAssert( pRadSoundHalPositionalEntity );
+        (
+                radSoundHalPositionalEntity *pRadSoundHalPositionalEntity
+        ) {
+    rAssert(pRadSoundHalPositionalEntity);
 
-    if ( pRadSoundHalPositionalEntity->m_pPrev != NULL )
-    {
+    if (pRadSoundHalPositionalEntity->m_pPrev != NULL) {
         pRadSoundHalPositionalEntity->m_pPrev->m_pNext =
-			pRadSoundHalPositionalEntity->m_pNext;
-    }
-    else
-    {
+                pRadSoundHalPositionalEntity->m_pNext;
+    } else {
         m_pRadSoundHalPositionalEntity_Head = pRadSoundHalPositionalEntity->m_pNext;
     }
 
-    if ( pRadSoundHalPositionalEntity->m_pNext != NULL )
-    {
+    if (pRadSoundHalPositionalEntity->m_pNext != NULL) {
         pRadSoundHalPositionalEntity->m_pNext->m_pPrev = pRadSoundHalPositionalEntity->m_pPrev;
     }
 }
@@ -347,24 +315,22 @@ void radSoundHalPositionalGroup::RemovePositionalEntity
 // radSoundHalPositionalGroup::UpdatePositionalSettings
 //========================================================================
 
-void radSoundHalPositionalGroup::UpdatePositionalSettings( void )
-{
-	radSoundHalPositionalEntity * p = m_pRadSoundHalPositionalEntity_Head;
+void radSoundHalPositionalGroup::UpdatePositionalSettings(void) {
+    radSoundHalPositionalEntity *p = m_pRadSoundHalPositionalEntity_Head;
 
-	while ( p != NULL )
-	{
-		p->OnApplyPositionalSettings( );
+    while (p != NULL) {
+        p->OnApplyPositionalSettings();
 
-		p = p->m_pNext;
-	}
+        p = p->m_pNext;
+    }
 }
 
 //========================================================================
 // radSoundHalPositionalGroup::ForceUpdate
 //========================================================================
 
-void radSoundHalPositionalGroup::ForceUpdate( void )
-{
-    radSoundHalListener::GetInstance( )->CalculatePositionalInformation( & m_RadSoundHalPositionalInformation );
+void radSoundHalPositionalGroup::ForceUpdate(void) {
+    radSoundHalListener::GetInstance()->CalculatePositionalInformation(
+            &m_RadSoundHalPositionalInformation);
 }
 

@@ -11,7 +11,7 @@
 
 #include <radsound.hpp>
 
-#include "..\common\softwarelistener.hpp"
+#include "../common/softwarelistener.hpp"
 #include "radsoundgcn.hpp"
 #include "voice.hpp"
 #include "effect.hpp"
@@ -23,24 +23,21 @@
 
 #define NUM_SAMPLES_IN_BUFFER 160
 
-struct AuxData
-{
-    s32* l; // Left buffer
-    s32* r; // Right buffer
-    s32* s; // Surround buffer
+struct AuxData {
+    s32 *l; // Left buffer
+    s32 *r; // Right buffer
+    s32 *s; // Surround buffer
 };
 
-void radSoundNullEffectCallback( void * pData, void * pContect )
-{
-    AuxData * pAuxData = (AuxData*) pData;    
-   
-    ::memset( pAuxData->l, 0, sizeof( s32 ) * NUM_SAMPLES_IN_BUFFER );
-    ::memset( pAuxData->r, 0, sizeof( s32 ) * NUM_SAMPLES_IN_BUFFER );
-    ::memset( pAuxData->s, 0, sizeof( s32 ) * NUM_SAMPLES_IN_BUFFER );
+void radSoundNullEffectCallback(void *pData, void *pContect) {
+    AuxData *pAuxData = (AuxData *) pData;
+
+    ::memset(pAuxData->l, 0, sizeof(s32) * NUM_SAMPLES_IN_BUFFER);
+    ::memset(pAuxData->r, 0, sizeof(s32) * NUM_SAMPLES_IN_BUFFER);
+    ::memset(pAuxData->s, 0, sizeof(s32) * NUM_SAMPLES_IN_BUFFER);
 }
 
-/* virtual */ radSoundEffectGcn::~radSoundEffectGcn( void )
-{
+/* virtual */ radSoundEffectGcn::~radSoundEffectGcn(void) {
 
 }
 

@@ -31,95 +31,103 @@
 //=============================================================================
 
 struct radSoundWmaFileDataSource
-	:
-	public IRadSoundWmaFileDataSource,
-	public IRadFileCompletionCallback,
-	public radSoundUpdatableObject
-{
+        :
+                public IRadSoundWmaFileDataSource,
+                public IRadFileCompletionCallback,
+                public radSoundUpdatableObject {
 
-    public:
+public:
 
-	    IMPLEMENT_REFCOUNTED( "radSoundWmaFileDataSource" )
+    IMPLEMENT_REFCOUNTED("radSoundWmaFileDataSource")
 
-	    radSoundWmaFileDataSource( void );
-	    virtual ~radSoundWmaFileDataSource( void );
-	    
-	    // IRadSoundWMAFileDataSource
-	    
-	    virtual void InitializeFromFile( IRadFile * pIRadFile, unsigned int yieldRate );
-        virtual IRadFile * GetFile( void );
+    radSoundWmaFileDataSource(void);
 
-	    // IRadSoundHalDataSource
+    virtual ~radSoundWmaFileDataSource(void);
 
-	    virtual IRadSoundHalDataSource::State GetState( void );
-	    virtual IRadSoundHalAudioFormat * GetFormat( void );
-	    virtual unsigned int GetRemainingFrames( void );
-        virtual unsigned int GetAvailableFrames( void );
-        
-	    virtual void GetFramesAsync(
-		    void * pBytes, 
-		    radMemorySpace destinationMemorySpace, 
-		    unsigned int size, 
-		    IRadSoundHalDataSourceCallback * pIRshdsc );
+    // IRadSoundWMAFileDataSource
 
-	    // IRadFileCompletionCallback
+    virtual void InitializeFromFile(IRadFile *pIRadFile, unsigned int yieldRate);
 
-	    virtual void OnFileOperationsComplete( void * pUserData );
-	    
-		virtual const char * GetName( void ) { return "WmaFileDataSource"; }	    
+    virtual IRadFile *GetFile(void);
 
-	private:
+    // IRadSoundHalDataSource
 
-        virtual void Update( unsigned int elapsed );
+    virtual IRadSoundHalDataSource::State GetState(void);
 
-        void _StateInitialDecodeAndCopy( void );
-        void _StateFixupDecode( void );
-        void _StateFixupCopy( void );
+    virtual IRadSoundHalAudioFormat *GetFormat(void);
 
-		enum State { NONE, OPENING_FILE, INITIAL_DECODE_AND_COPY, FIXUP_DECODE, FIXUP_COPY, IDLE, FILE_ERROR };
+    virtual unsigned int GetRemainingFrames(void);
 
-        State m_State;
+    virtual unsigned int GetAvailableFrames(void);
 
-        void SetState( State state );
+    virtual void GetFramesAsync(
+            void *pBytes,
+            radMemorySpace destinationMemorySpace,
+            unsigned int size,
+            IRadSoundHalDataSourceCallback *pIRshdsc);
 
-        //
-        // Decoder handling
-        //
+    // IRadFileCompletionCallback
 
-        XMEDIAPACKET m_XMediaPacket;
-        HANDLE m_ProcessCompletedEvent;
-        unsigned int m_MaxPackets;
-        unsigned int m_YieldRate;
-        unsigned int m_LookAheadBufferSize;
-        unsigned long m_ActualBytesProcessed;
+    virtual void OnFileOperationsComplete(void *pUserData);
 
-        //
-        // The fixup buffer handling
-        //
+    virtual const char *GetName(void) { return "WmaFileDataSource"; }
 
-        void * m_pFixupBuffer;
-        void * m_pFixupData;
-        unsigned int m_FixupBufferSizeInBytes;
-        unsigned int m_FixupBytesAvailable;
-        ref< IRadMemorySpaceCopyRequest > m_refIRadMemorySpaceCopyRequest;
+private:
 
-        //
-        // Client buffer handling
-        // 
+    virtual void Update(unsigned int elapsed);
 
-        void * m_pFrameBuffer;
-        radMemorySpace m_DestinationMemorySpace;
-        unsigned int m_RequestSizeInBytes;
-        unsigned int m_RemainingRequestSizeInBytes;
+    void _StateInitialDecodeAndCopy(void);
 
-        //
-        // References
-        //
+    void _StateFixupDecode(void);
 
-        ref< XWmaFileMediaObject > m_refXWmaFileMediaObject;
-        ref< IRadSoundHalDataSourceCallback > m_refIRadSoundHalDataSourceCallback;
-		ref< IRadSoundHalAudioFormat > m_refIRadSoundHalAudioFormat;
-		ref< IRadFile > m_refIRadFile;
+    void _StateFixupCopy(void);
+
+    enum State {
+        NONE, OPENING_FILE, INITIAL_DECODE_AND_COPY, FIXUP_DECODE, FIXUP_COPY, IDLE, FILE_ERROR
+    };
+
+    State m_State;
+
+    void SetState(State state);
+
+    //
+    // Decoder handling
+    //
+
+    XMEDIAPACKET m_XMediaPacket;
+    HANDLE m_ProcessCompletedEvent;
+    unsigned int m_MaxPackets;
+    unsigned int m_YieldRate;
+    unsigned int m_LookAheadBufferSize;
+    unsigned long m_ActualBytesProcessed;
+
+    //
+    // The fixup buffer handling
+    //
+
+    void *m_pFixupBuffer;
+    void *m_pFixupData;
+    unsigned int m_FixupBufferSizeInBytes;
+    unsigned int m_FixupBytesAvailable;
+    ref <IRadMemorySpaceCopyRequest> m_refIRadMemorySpaceCopyRequest;
+
+    //
+    // Client buffer handling
+    //
+
+    void *m_pFrameBuffer;
+    radMemorySpace m_DestinationMemorySpace;
+    unsigned int m_RequestSizeInBytes;
+    unsigned int m_RemainingRequestSizeInBytes;
+
+    //
+    // References
+    //
+
+    ref <XWmaFileMediaObject> m_refXWmaFileMediaObject;
+    ref <IRadSoundHalDataSourceCallback> m_refIRadSoundHalDataSourceCallback;
+    ref <IRadSoundHalAudioFormat> m_refIRadSoundHalAudioFormat;
+    ref <IRadFile> m_refIRadFile;
 };
 
 #endif // WMAFILEDATASOURCE_HPP

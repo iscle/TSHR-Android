@@ -11,56 +11,57 @@
 #include <radsoundupdatableobject.hpp>
 
 struct radSoundMemoryDataSource
-	:
-	public IRadSoundMemoryDataSource,
-	public radSoundUpdatableObject
-{
-	IMPLEMENT_REFCOUNTED( "radSoundMemoryBuffer" )
+        :
+                public IRadSoundMemoryDataSource,
+                public radSoundUpdatableObject {
+    IMPLEMENT_REFCOUNTED("radSoundMemoryBuffer")
 
-	radSoundMemoryDataSource( void );
-	virtual ~radSoundMemoryDataSource( void );
+    radSoundMemoryDataSource(void);
 
-	// IRadSoundMemoryDataSource
+    virtual ~radSoundMemoryDataSource(void);
+
+    // IRadSoundMemoryDataSource
 
     virtual void Initialize(
-        IRadSoundHalAudioFormat * pIRshaf,
-        IRadSoundMemorySpaceObject * pIRmso,
-        unsigned int startOffset,
-        unsigned int size,   
-        IRadSoundHalAudioFormat::SizeType st);
+            IRadSoundHalAudioFormat *pIRshaf,
+            IRadSoundMemorySpaceObject *pIRmso,
+            unsigned int startOffset,
+            unsigned int size,
+            IRadSoundHalAudioFormat::SizeType st);
 
-	// IRadSoundHalDataSource
+    // IRadSoundHalDataSource
 
-	virtual State GetState( void );
+    virtual State GetState(void);
 
-	virtual IRadSoundHalAudioFormat * GetFormat( void );
+    virtual IRadSoundHalAudioFormat *GetFormat(void);
 
-	virtual unsigned int GetRemainingFrames( void );
-	virtual unsigned int GetAvailableFrames( void ) { return GetRemainingFrames( ); }
+    virtual unsigned int GetRemainingFrames(void);
 
-	virtual void GetFramesAsync( 
-		void * pBytes, 
-		radMemorySpace destinationMemorySpace, 
-		unsigned int numberOfFrames,
-		IRadSoundHalDataSourceCallback * pCallback );
-		
-    virtual const char * GetName( void ) { return "MemoryDataSource"; }		
+    virtual unsigned int GetAvailableFrames(void) { return GetRemainingFrames(); }
 
-	private:
+    virtual void GetFramesAsync(
+            void *pBytes,
+            radMemorySpace destinationMemorySpace,
+            unsigned int numberOfFrames,
+            IRadSoundHalDataSourceCallback *pCallback);
 
-        // radSoundUpdatableObject
+    virtual const char *GetName(void) { return "MemoryDataSource"; }
 
-        virtual void Update( unsigned int elapsedTime );
+private:
 
-        unsigned int m_StartOffsetInBytes;
-        unsigned int m_LengthInFrames;
-        unsigned int m_NumberOfFramesRead;
-        unsigned int m_FramesToRead;
+    // radSoundUpdatableObject
 
-        ref< IRadSoundMemorySpaceObject >       m_xIRadSoundMemorySpaceObject;
-        ref< IRadSoundHalAudioFormat >          m_xIRadSoundHalAudioFormat;
-        ref< IRadMemorySpaceCopyRequest >       m_xIRadMemorySpaceCopyRequest;
-        ref< IRadSoundHalDataSourceCallback >   m_xIRadSoundHalDataSourceCallback;
+    virtual void Update(unsigned int elapsedTime);
+
+    unsigned int m_StartOffsetInBytes;
+    unsigned int m_LengthInFrames;
+    unsigned int m_NumberOfFramesRead;
+    unsigned int m_FramesToRead;
+
+    ref <IRadSoundMemorySpaceObject> m_xIRadSoundMemorySpaceObject;
+    ref <IRadSoundHalAudioFormat> m_xIRadSoundHalAudioFormat;
+    ref <IRadMemorySpaceCopyRequest> m_xIRadMemorySpaceCopyRequest;
+    ref <IRadSoundHalDataSourceCallback> m_xIRadSoundHalDataSourceCallback;
 
 };
 

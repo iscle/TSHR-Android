@@ -17,7 +17,7 @@
 //=============================================================================
 
 #if !defined(RAD_GAMECUBE) && !defined(RAD_PS2) && !defined(RAD_XBOX) && !defined(RAD_WIN32)
-    #error 'FTech requires definition of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, or RAD_WIN32'
+#error 'FTech requires definition of RAD_GAMECUBE, RAD_PS2, RAD_XBOX, or RAD_WIN32'
 #endif
 
 //=============================================================================
@@ -44,8 +44,7 @@
 #define GCN_ADPCM_BYTES_PER_FRAME   8       // GCN DSP-ADPCM has 8 bytes/frame
 #define GCN_ADPCM_FRAME_HEADER_SIZE 2       // GCN DSP-ADPCM frame header is 2 nibble
 
-struct radSoundHalAdpcmInfoGcn
-{
+struct radSoundHalAdpcmInfoGcn {
     // start context
     unsigned short coef[8][2];
     unsigned short gain;
@@ -65,34 +64,33 @@ struct radSoundHalAdpcmInfoGcn
 //		wavtorsd.exe to build .rsd files.
 //=============================================================================
 
-struct radSoundHalFileHeader
-{
+struct radSoundHalFileHeader {
     char m_RsdDataTag[4];    // RADSOUND_HAL_FILEVERSION
     char m_SoundDataType[4]; // "VAG ", "PCM ", "GADP", "XADP"
     unsigned int m_Channels;
     unsigned int m_BitResolution;
     unsigned int m_SamplingRate;
 
-    union
-    {
-        radSoundHalAdpcmInfoGcn m_gcnAdpcmInfo[ GCN_ADPCM_MAX_CHANNELS ];
-        char m_Padding[ sizeof( radSoundHalAdpcmInfoGcn) * GCN_ADPCM_MAX_CHANNELS ]; // Pad other platforms
+    union {
+        radSoundHalAdpcmInfoGcn m_gcnAdpcmInfo[GCN_ADPCM_MAX_CHANNELS];
+        char m_Padding[
+                sizeof(radSoundHalAdpcmInfoGcn) * GCN_ADPCM_MAX_CHANNELS]; // Pad other platforms
     };
 
     // Round the size of this structure to 128 bytes
 
-    char m_ReservedForFutureUse[ 16 ];
+    char m_ReservedForFutureUse[16];
 
-	// Helper functions
+    // Helper functions
 
-	void ConvertToPlatformEndian( void );
+    void ConvertToPlatformEndian(void);
 
-	// Initializes an audio format component based on this file header.
+    // Initializes an audio format component based on this file header.
 
-	void InitializeAudioFormat( IRadSoundHalAudioFormat * pIRadSoundHalAudioFormat,
-        radMemoryAllocator allocatorCustomInfo );
+    void InitializeAudioFormat(IRadSoundHalAudioFormat *pIRadSoundHalAudioFormat,
+                               radMemoryAllocator allocatorCustomInfo);
 
-    static IRadSoundHalAudioFormat::Encoding GetEncodingFromChars( char chars[ 4 ] );
+    static IRadSoundHalAudioFormat::Encoding GetEncodingFromChars(char chars[4]);
 };
 
 #define RSD_FILE_DATA_OFFSET  2048 // sector size

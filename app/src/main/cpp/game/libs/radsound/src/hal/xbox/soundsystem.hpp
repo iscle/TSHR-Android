@@ -37,67 +37,75 @@
 //============================================================================
 
 struct radSoundHalSystem
-    :
-    public IRadSoundHalSystemXBox,
-    public radSoundObject
-{
-    public:
+        :
+                public IRadSoundHalSystemXBox,
+                public radSoundObject {
+public:
 
-   	    IMPLEMENT_REFCOUNTED( "radSoundHalSystem" )
+    IMPLEMENT_REFCOUNTED("radSoundHalSystem")
 
-        radSoundHalSystem( radMemoryAllocator allocator );
-        virtual ~radSoundHalSystem( void );
+    radSoundHalSystem(radMemoryAllocator allocator);
 
-        //
-        // IRadSoundHalSystemXBox
-        //
+    virtual ~radSoundHalSystem(void);
 
-        virtual void GetDirectSoundReference( IDirectSound ** ppIDirectSound );
+    //
+    // IRadSoundHalSystemXBox
+    //
 
-        // (IRadSoundHalSystem)
+    virtual void GetDirectSoundReference(IDirectSound **ppIDirectSound);
 
-        virtual void Initialize( const SystemDescription & systemDescription );
+    // (IRadSoundHalSystem)
 
-        virtual IRadSoundHalMemoryRegion * GetRootMemoryRegion( void );
+    virtual void Initialize(const SystemDescription &systemDescription);
 
-        virtual unsigned int GetNumAuxSends( void );
-        virtual void SetAuxEffect( unsigned int auxNumber, IRadSoundHalEffect * pIRadSoundHalEffect );
-	    virtual IRadSoundHalEffect * GetAuxEffect( unsigned int auxNumber );
-        virtual void SetAuxGain( unsigned int aux, float gain );
-        virtual float GetAuxGain( unsigned int aux );
+    virtual IRadSoundHalMemoryRegion *GetRootMemoryRegion(void);
 
-	    virtual void SetOutputMode( radSoundOutputMode mode );
-	    virtual radSoundOutputMode GetOutputMode( void );
+    virtual unsigned int GetNumAuxSends(void);
 
-        virtual void Service( void );
-		virtual void ServiceOncePerFrame( void );
+    virtual void SetAuxEffect(unsigned int auxNumber, IRadSoundHalEffect *pIRadSoundHalEffect);
 
-        virtual void GetStats( IRadSoundHalSystem::Stats * pStats );
+    virtual IRadSoundHalEffect *GetAuxEffect(unsigned int auxNumber);
 
-        //
-        // other public methods
-        //
-        static radSoundHalSystem * GetInstance( void );
-        static void Initialize( void );
-        static void Terminate( void );
+    virtual void SetAuxGain(unsigned int aux, float gain);
 
-    private:
+    virtual float GetAuxGain(unsigned int aux);
 
-	    void DownloadScratchImage( void );
-       
-	    void *          m_pRootMemory;
-        unsigned int    m_NumAuxSends;
-        float           m_AuxGain[ RSDSYSTEM_EFFECTS_MAX ];
-        unsigned int    m_LastServiceTime;
+    virtual void SetOutputMode(radSoundOutputMode mode);
 
-        ref< IDirectSound > m_xIDirectSound;
-        ref< IDirectSoundBuffer > m_xIDirectSoundBuffer_Primary;
-        ref< IDirectSound3DListener > m_xIDirectSound3DListener;
+    virtual radSoundOutputMode GetOutputMode(void);
 
-        static radSoundHalSystem * s_pTheSoundSystem;
+    virtual void Service(void);
 
-        ref< IRadSoundHalEffect > m_xIRadSoundHalEffect[ RSDSYSTEM_EFFECTS_MAX ];
+    virtual void ServiceOncePerFrame(void);
+
+    virtual void GetStats(IRadSoundHalSystem::Stats *pStats);
+
+    //
+    // other public methods
+    //
+    static radSoundHalSystem *GetInstance(void);
+
+    static void Initialize(void);
+
+    static void Terminate(void);
+
+private:
+
+    void DownloadScratchImage(void);
+
+    void *m_pRootMemory;
+    unsigned int m_NumAuxSends;
+    float m_AuxGain[RSDSYSTEM_EFFECTS_MAX];
+    unsigned int m_LastServiceTime;
+
+    ref <IDirectSound> m_xIDirectSound;
+    ref <IDirectSoundBuffer> m_xIDirectSoundBuffer_Primary;
+    ref <IDirectSound3DListener> m_xIDirectSound3DListener;
+
+    static radSoundHalSystem *s_pTheSoundSystem;
+
+    ref <IRadSoundHalEffect> m_xIRadSoundHalEffect[RSDSYSTEM_EFFECTS_MAX];
 };
-    
+
 
 #endif  // SOUNDSYSTEM_HPP

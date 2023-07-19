@@ -16,74 +16,74 @@
 //=============================================================================
 
 class radSoundBufferAdpcmPs2
-    :
-    public IRadSoundHalBuffer,
-	public radLinkedClass< radSoundBufferAdpcmPs2 >,
-    public radSoundObject
-{
-    public:
+        :
+                public IRadSoundHalBuffer,
+                public radLinkedClass<radSoundBufferAdpcmPs2>,
+                public radSoundObject {
+public:
 
-        radSoundBufferAdpcmPs2( void );
+    radSoundBufferAdpcmPs2(void);
 
-        IMPLEMENT_REFCOUNTED( "radSoundBufferAdpcmPs2" )
+    IMPLEMENT_REFCOUNTED("radSoundBufferAdpcmPs2")
 
-		// IRadSoundHalBuffer
+    // IRadSoundHalBuffer
 
-		virtual void Initialize(
-			IRadSoundHalAudioFormat * pIRadSoundHalAudioFormat,
-			IRadMemoryObject * pIRadMemoryObject,
-			unsigned int sizeInFrames,
-			bool looping,
-            bool streaming );
-    
-		virtual IRadSoundHalAudioFormat * GetFormat( void );
+    virtual void Initialize(
+            IRadSoundHalAudioFormat *pIRadSoundHalAudioFormat,
+            IRadMemoryObject *pIRadMemoryObject,
+            unsigned int sizeInFrames,
+            bool looping,
+            bool streaming);
 
-		virtual IRadMemoryObject * GetMemoryObject( void );
+    virtual IRadSoundHalAudioFormat *GetFormat(void);
 
-		virtual bool IsLooping( void );
+    virtual IRadMemoryObject *GetMemoryObject(void);
 
-		virtual unsigned int GetSizeInFrames( void );
+    virtual bool IsLooping(void);
 
-		virtual void LoadAsync(
-			IRadSoundHalDataSource * pIRadSoundHalDataSource,
-			unsigned int startPositionInFrames,
-			unsigned int numberOfFrames,
-			IRadSoundHalBufferLoadCallback * pIRadSoundHalBufferLoadCallback );
+    virtual unsigned int GetSizeInFrames(void);
 
-		virtual void ClearAsync( 
-			unsigned int startPositionInFrames,
-			unsigned int numberOfFrames,
-			IRadSoundHalBufferClearCallback * pIRadSoundHalBufferClearCallback );
+    virtual void LoadAsync(
+            IRadSoundHalDataSource *pIRadSoundHalDataSource,
+            unsigned int startPositionInFrames,
+            unsigned int numberOfFrames,
+            IRadSoundHalBufferLoadCallback *pIRadSoundHalBufferLoadCallback);
 
-        virtual void CancelAsyncOperations( void );
+    virtual void ClearAsync(
+            unsigned int startPositionInFrames,
+            unsigned int numberOfFrames,
+            IRadSoundHalBufferClearCallback *pIRadSoundHalBufferClearCallback);
 
-        virtual unsigned int GetMinTransferSize( IRadSoundHalAudioFormat::SizeType sizeType );
+    virtual void CancelAsyncOperations(void);
 
-        virtual void ReSetAudioFormat( IRadSoundHalAudioFormat * pIRadSoundHalAudioFormat ) { };
+    virtual unsigned int GetMinTransferSize(IRadSoundHalAudioFormat::SizeType sizeType);
 
-		// Internal
+    virtual void ReSetAudioFormat(IRadSoundHalAudioFormat *pIRadSoundHalAudioFormat) {};
 
-        unsigned int GetStartAddress( void );
-        unsigned int GetSizeInBytes( void );
+    // Internal
 
-    protected: 
-        
-        virtual ~radSoundBufferAdpcmPs2( void );
+    unsigned int GetStartAddress(void);
 
-    private: 
+    unsigned int GetSizeInBytes(void);
 
-		bool TestSamplingRateTruncation( unsigned int samplingRate );
+protected:
+
+    virtual ~radSoundBufferAdpcmPs2(void);
+
+private:
+
+    bool TestSamplingRateTruncation(unsigned int samplingRate);
 
 
-        //======================================================================
-        // Data Members
-        //======================================================================
+    //======================================================================
+    // Data Members
+    //======================================================================
 
-        bool m_Looping;
-		unsigned int m_SizeInFrames;
+    bool m_Looping;
+    unsigned int m_SizeInFrames;
 
-		ref< IRadMemoryObject > m_xIRadMemoryObject;
-        ref< IRadSoundHalAudioFormat > m_xIRadSoundHalAudioFormat;
+    ref <IRadMemoryObject> m_xIRadMemoryObject;
+    ref <IRadSoundHalAudioFormat> m_xIRadSoundHalAudioFormat;
 };
 
 #endif // ADPCMBUFFER_HPP

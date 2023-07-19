@@ -20,8 +20,8 @@
 //============================================================================
 
 #if defined RAD_WIN32 || defined RAD_XBOX
-#pragma warning ( disable : 4291 )
-#endif 
+#pragma warning (disable : 4291)
+#endif
 
 //============================================================================
 // Include Files
@@ -37,8 +37,8 @@
 #include <radobjectlist.hpp>
 
 #include "soundsystem.hpp"
-#include "..\common\banner.hpp"
-#include "..\common\memoryregion.hpp"
+#include "../common/banner.hpp"
+#include "../common/memoryregion.hpp"
 #include "buffer.hpp"
 #include "voice.hpp"
 #include "bufferasyncloader.hpp"
@@ -57,52 +57,49 @@
 // radSoundHalSystem::radSoundHalSystem
 //========================================================================
 
-radSoundHalSystem::radSoundHalSystem( radMemoryAllocator allocator )
-    :
-	m_pRootMemory( NULL ),
-	m_xIDirectSound( NULL ),
-	m_xIDirectSoundBuffer_Primary( NULL ),
-	m_xIDirectSound3DListener( NULL ),
-    m_NumAuxSends( 0 ),
-    m_LastServiceTime( ::radTimeGetMilliseconds( ) )
-{
-    rAssert( s_pTheSoundSystem == NULL );
+radSoundHalSystem::radSoundHalSystem(radMemoryAllocator allocator)
+        :
+        m_pRootMemory(NULL),
+        m_xIDirectSound(NULL),
+        m_xIDirectSoundBuffer_Primary(NULL),
+        m_xIDirectSound3DListener(NULL),
+        m_NumAuxSends(0),
+        m_LastServiceTime(::radTimeGetMilliseconds()) {
+    rAssert(s_pTheSoundSystem == NULL);
     s_pTheSoundSystem = this;
-    ::radSoundPrintBanner( );
-   
-    for( unsigned int i = 0; i < RSDSYSTEM_EFFECTS_MAX; i++ )
-    {
-        m_AuxGain[ i ] = 0.0f;    
+    ::radSoundPrintBanner();
+
+    for (unsigned int i = 0; i < RSDSYSTEM_EFFECTS_MAX; i++) {
+        m_AuxGain[i] = 0.0f;
     }
 
-    HRESULT hr = DirectSoundCreate( NULL, & m_xIDirectSound, NULL );
+    HRESULT hr = DirectSoundCreate(NULL, &m_xIDirectSound, NULL);
 
-    rAssertMsg( SUCCEEDED( hr ), "DirectSoundCreate8 Failed." );
+    rAssertMsg(SUCCEEDED(hr), "DirectSoundCreate8 Failed.");
 
-	DownloadScratchImage( );
+    DownloadScratchImage();
 
     radSoundHalListener::Initialize(
-		GetThisAllocator( ),
-		reinterpret_cast< IDirectSound3DListener * >( m_xIDirectSound.m_pInterface ) );
+            GetThisAllocator(),
+            reinterpret_cast<IDirectSound3DListener *>(m_xIDirectSound.m_pInterface));
 }
 
 //========================================================================
 // radSoundHalSystem::~radSoundHalSystem
 //========================================================================
 
-radSoundHalSystem::~radSoundHalSystem( void )
-{
-	radSoundPoolObject< radSoundBufferAsyncLoaderXBox >::Terminate( );
+radSoundHalSystem::~radSoundHalSystem(void) {
+    radSoundPoolObject<radSoundBufferAsyncLoaderXBox>::Terminate();
 
-	radSoundHalMemoryRegion::Terminate( );
+    radSoundHalMemoryRegion::Terminate();
 
-    radSoundVoiceXBox::Terminate( );
+    radSoundVoiceXBox::Terminate();
 
-	::radMemoryFreeAligned( GetThisAllocator( ), m_pRootMemory );
+    ::radMemoryFreeAligned(GetThisAllocator(), m_pRootMemory);
 
-    rAssert( s_pTheSoundSystem == this );
+    rAssert(s_pTheSoundSystem == this);
 
-    radSoundHalListener::Terminate( );
+    radSoundHalListener::Terminate();
 
     s_pTheSoundSystem = NULL;
 
@@ -114,20 +111,17 @@ radSoundHalSystem::~radSoundHalSystem( void )
 //========================================================================
 
 void radSoundHalSystem::GetDirectSoundReference
-(
-    IDirectSound ** ppIDirectSound
-)
-{
-    rAssert( ppIDirectSound != NULL );
+        (
+                IDirectSound **ppIDirectSound
+        ) {
+    rAssert(ppIDirectSound != NULL);
 
-    if ( ppIDirectSound != NULL )
-    {
-        rAssert( m_xIDirectSound != NULL );
+    if (ppIDirectSound != NULL) {
+        rAssert(m_xIDirectSound != NULL);
 
-        if ( m_xIDirectSound != NULL )
-        {
+        if (m_xIDirectSound != NULL) {
             *ppIDirectSound = m_xIDirectSound;
-            (*ppIDirectSound)->AddRef( );
+            (*ppIDirectSound)->AddRef();
         }
     }
 }
@@ -136,48 +130,46 @@ void radSoundHalSystem::GetDirectSoundReference
 // radSoundHalSystem::Initialize
 //============================================================================
 
-void radSoundHalSystem::Initialize( const SystemDescription & systemDescription )
-{
-    rAssert( systemDescription.m_NumAuxSends < RSDSYSTEM_EFFECTS_MAX );
+void radSoundHalSystem::Initialize(const SystemDescription &systemDescription) {
+    rAssert(systemDescription.m_NumAuxSends < RSDSYSTEM_EFFECTS_MAX);
     m_NumAuxSends = systemDescription.m_NumAuxSends;
 
-	m_pRootMemory = ::radMemoryAllocAligned( 
-        GetThisAllocator( ), 
-        systemDescription.m_ReservedSoundMemory, 
-        radSoundHalDataSourceReadAlignmentGet( ) );
+    m_pRootMemory = ::radMemoryAllocAligned(
+            GetThisAllocator(),
+            systemDescription.m_ReservedSoundMemory,
+            radSoundHalDataSourceReadAlignmentGet());
 
-	radSoundHalMemoryRegion::Initialize(
-        m_pRootMemory, 
-        systemDescription.m_ReservedSoundMemory, 
-        systemDescription.m_MaxRootAllocations,
-        radSoundHalDataSourceReadAlignmentGet( ), 
-        radMemorySpace_Local, 
-        GetThisAllocator( ) );
+    radSoundHalMemoryRegion::Initialize(
+            m_pRootMemory,
+            systemDescription.m_ReservedSoundMemory,
+            systemDescription.m_MaxRootAllocations,
+            radSoundHalDataSourceReadAlignmentGet(),
+            radMemorySpace_Local,
+            GetThisAllocator());
 
-    radSoundVoiceXBox::Initialize( GetThisAllocator( ) );
+    radSoundVoiceXBox::Initialize(GetThisAllocator());
 
-	rDebugPrintf( "radSound: Total Sound Memory Available: [%dK]\n", radSoundHalMemoryRegion::GetRootRegion( )->GetSize( ) / 1024 );
-	rDebugPrintf( "radSound: Total Aux Sends Available:    [%d]\n", m_NumAuxSends );
+    rDebugPrintf("radSound: Total Sound Memory Available: [%dK]\n",
+                 radSoundHalMemoryRegion::GetRootRegion()->GetSize() / 1024);
+    rDebugPrintf("radSound: Total Aux Sends Available:    [%d]\n", m_NumAuxSends);
 
-	radSoundPoolObject< radSoundBufferAsyncLoaderXBox >::Initialize(
-		GetThisAllocator( ), LOADER_POOL_SIZE, LOADER_POOL_SIZE );
+    radSoundPoolObject<radSoundBufferAsyncLoaderXBox>::Initialize(
+            GetThisAllocator(), LOADER_POOL_SIZE, LOADER_POOL_SIZE);
 }
 
 //============================================================================
 // radSoundHalSystem::GetRootMemoryRegion
 //============================================================================
 
-IRadSoundHalMemoryRegion * radSoundHalSystem::GetRootMemoryRegion( void )
-{
-	return radSoundHalMemoryRegion::GetRootRegion( );
-}   
- 
+IRadSoundHalMemoryRegion *radSoundHalSystem::GetRootMemoryRegion(void) {
+    return radSoundHalMemoryRegion::GetRootRegion();
+}
+
 //============================================================================
 // radSoundHalSystem::GetNumAuxSends
 //============================================================================
 
-unsigned int radSoundHalSystem::GetNumAuxSends( void )
-{
+unsigned int radSoundHalSystem::GetNumAuxSends(void) {
     return m_NumAuxSends;
 }
 
@@ -185,34 +177,31 @@ unsigned int radSoundHalSystem::GetNumAuxSends( void )
 // radSoundHalSystem::SetAuxEffect
 //============================================================================
 
-void radSoundHalSystem::SetAuxEffect( unsigned int auxNumber, IRadSoundHalEffect * pIRadSoundHalEffect )
-{
-	rAssert( auxNumber < m_NumAuxSends );
+void
+radSoundHalSystem::SetAuxEffect(unsigned int auxNumber, IRadSoundHalEffect *pIRadSoundHalEffect) {
+    rAssert(auxNumber < m_NumAuxSends);
 
-    if( m_xIRadSoundHalEffect[ auxNumber ] != NULL )
-    {
+    if (m_xIRadSoundHalEffect[auxNumber] != NULL) {
         //
         // Clean up the old effect
         //
-        m_xIRadSoundHalEffect[ auxNumber ]->Detach( );
-        m_xIRadSoundHalEffect[ auxNumber ] = NULL;
+        m_xIRadSoundHalEffect[auxNumber]->Detach();
+        m_xIRadSoundHalEffect[auxNumber] = NULL;
     }
 
     //
     // Attach the new effect
     //
-    if( pIRadSoundHalEffect != NULL )
-    {
-        m_xIRadSoundHalEffect[ auxNumber ] = pIRadSoundHalEffect;
-        m_xIRadSoundHalEffect[ auxNumber ]->SetMasterGain( m_AuxGain[ auxNumber ] );        
-        m_xIRadSoundHalEffect[ auxNumber ]->Attach( auxNumber );
+    if (pIRadSoundHalEffect != NULL) {
+        m_xIRadSoundHalEffect[auxNumber] = pIRadSoundHalEffect;
+        m_xIRadSoundHalEffect[auxNumber]->SetMasterGain(m_AuxGain[auxNumber]);
+        m_xIRadSoundHalEffect[auxNumber]->Attach(auxNumber);
     }
 
-    ref< radSoundVoiceXBox > pVoice = radSoundVoiceXBox::GetLinkedClassHead( );
-    while( pVoice != NULL )
-    {
-        pVoice->OnSetAuxEffect( auxNumber, m_xIRadSoundHalEffect[ auxNumber ] );
-        pVoice = pVoice->GetLinkedClassNext( );
+    ref <radSoundVoiceXBox> pVoice = radSoundVoiceXBox::GetLinkedClassHead();
+    while (pVoice != NULL) {
+        pVoice->OnSetAuxEffect(auxNumber, m_xIRadSoundHalEffect[auxNumber]);
+        pVoice = pVoice->GetLinkedClassNext();
     }
 }
 
@@ -220,44 +209,36 @@ void radSoundHalSystem::SetAuxEffect( unsigned int auxNumber, IRadSoundHalEffect
 // radSoundHalSystem::GetAuxEffect
 //============================================================================
 
-IRadSoundHalEffect * radSoundHalSystem::GetAuxEffect( unsigned int auxNumber )
-{
-	rAssert( auxNumber < m_NumAuxSends );
+IRadSoundHalEffect *radSoundHalSystem::GetAuxEffect(unsigned int auxNumber) {
+    rAssert(auxNumber < m_NumAuxSends);
 
-	return m_xIRadSoundHalEffect[ auxNumber ];
+    return m_xIRadSoundHalEffect[auxNumber];
 }
 
 //============================================================================
 // radSoundHalSystem::SetAuxGain
 //============================================================================
 
-void radSoundHalSystem::SetAuxGain( unsigned int aux, float gain )
-{
-	rAssert( aux < m_NumAuxSends );
+void radSoundHalSystem::SetAuxGain(unsigned int aux, float gain) {
+    rAssert(aux < m_NumAuxSends);
 
-    if( aux < m_NumAuxSends )
-    {
-		rWarning( gain >= 0.0f );
-		rWarning( gain <= 1.0f );
-    
-		if ( gain < 0.0f )
-		{
-			gain = 0.0f;
-		}
-		else if ( gain > 1.0f )
-		{
-			gain = 1.0f;
-		}
-    
-		if ( m_AuxGain[ aux ] != gain )
-		{
-			m_AuxGain[ aux ] = gain;
-        
-			if ( m_xIRadSoundHalEffect[ aux ] != NULL )
-			{
-				m_xIRadSoundHalEffect[ aux ]->SetMasterGain( gain );
-			}
-		}
+    if (aux < m_NumAuxSends) {
+        rWarning(gain >= 0.0f);
+        rWarning(gain <= 1.0f);
+
+        if (gain < 0.0f) {
+            gain = 0.0f;
+        } else if (gain > 1.0f) {
+            gain = 1.0f;
+        }
+
+        if (m_AuxGain[aux] != gain) {
+            m_AuxGain[aux] = gain;
+
+            if (m_xIRadSoundHalEffect[aux] != NULL) {
+                m_xIRadSoundHalEffect[aux]->SetMasterGain(gain);
+            }
+        }
     }
 }
 
@@ -265,41 +246,37 @@ void radSoundHalSystem::SetAuxGain( unsigned int aux, float gain )
 // radSoundHalSystem::GetAuxGain
 //============================================================================
 
-float radSoundHalSystem::GetAuxGain( unsigned int aux )
-{
-	rAssert( aux < m_NumAuxSends );
+float radSoundHalSystem::GetAuxGain(unsigned int aux) {
+    rAssert(aux < m_NumAuxSends);
 
-    return m_AuxGain[ aux ];
+    return m_AuxGain[aux];
 }
 
 //============================================================================
 // radSoundHalSystem::SetOutputMode
 //============================================================================
 
-void radSoundHalSystem::SetOutputMode( radSoundOutputMode mode )
-{
-	rDebugString( "radSoundHalSystem: SetOutputMode() not supported on Win32/XBox use DashBoard\n" );
+void radSoundHalSystem::SetOutputMode(radSoundOutputMode mode) {
+    rDebugString("radSoundHalSystem: SetOutputMode() not supported on Win32/XBox use DashBoard\n");
 }
 
 //============================================================================
 // radSoundHalSystem::GetOutputMode
 //============================================================================
 
-radSoundOutputMode radSoundHalSystem::GetOutputMode( void )
-{
-	return radSoundOutputMode_Stereo;
+radSoundOutputMode radSoundHalSystem::GetOutputMode(void) {
+    return radSoundOutputMode_Stereo;
 }
 
 //============================================================================
 // radSoundHalSystem::Service
 //============================================================================
 
-void radSoundHalSystem::Service( void )
-{
-    unsigned int now = ::radTimeGetMilliseconds( );
+void radSoundHalSystem::Service(void) {
+    unsigned int now = ::radTimeGetMilliseconds();
 
-    radSoundVoiceXBox::Service( );
-    radSoundUpdatableObject::UpdateAll( now - m_LastServiceTime );
+    radSoundVoiceXBox::Service();
+    radSoundUpdatableObject::UpdateAll(now - m_LastServiceTime);
 
     m_LastServiceTime = now;
 }
@@ -307,88 +284,77 @@ void radSoundHalSystem::Service( void )
 // radSoundHalSystem::ServiceOncePerFrame
 //============================================================================
 
-void radSoundHalSystem::ServiceOncePerFrame( void )
-{
-	radSoundHalListener::GetInstance( )->UpdatePositionalSettings( );
-    
-    for( unsigned int i = 0; i < m_NumAuxSends; i++ )
-    {
-        if( m_xIRadSoundHalEffect[ i ] != NULL )
-        {
-            m_xIRadSoundHalEffect[ i ]->Update( );
+void radSoundHalSystem::ServiceOncePerFrame(void) {
+    radSoundHalListener::GetInstance()->UpdatePositionalSettings();
+
+    for (unsigned int i = 0; i < m_NumAuxSends; i++) {
+        if (m_xIRadSoundHalEffect[i] != NULL) {
+            m_xIRadSoundHalEffect[i]->Update();
         }
     }
 
-    ::DirectSoundDoWork( );
+    ::DirectSoundDoWork();
 }
 
 //============================================================================
 // radSoundHalSystem::GetStats
 //============================================================================
-    
-void radSoundHalSystem::GetStats( IRadSoundHalSystem::Stats * pStats )
-{
-    rAssert( pStats );
 
-    ::ZeroMemory( pStats, sizeof( IRadSoundHalSystem::Stats ) );
+void radSoundHalSystem::GetStats(IRadSoundHalSystem::Stats *pStats) {
+    rAssert(pStats);
 
-	//
-	// Get voice info
-	//
+    ::ZeroMemory(pStats, sizeof(IRadSoundHalSystem::Stats));
 
-	radSoundVoiceXBox * pVoiceSearch = radSoundVoiceXBox::GetLinkedClassHead( );
-		
-    while ( pVoiceSearch != NULL )
-    {
-		if ( pVoiceSearch->GetPositionalGroup( ) != NULL )
-		{
-			pStats->m_NumPosVoices++;
+    //
+    // Get voice info
+    //
 
-			if ( pVoiceSearch->IsPlaying( ) )
-			{
-				pStats->m_NumPosVoicesPlaying++;
-			}				
-		}
-		else
-		{
-			pStats->m_NumVoices++;
+    radSoundVoiceXBox *pVoiceSearch = radSoundVoiceXBox::GetLinkedClassHead();
 
-			if ( pVoiceSearch->IsPlaying( ) )
-			{
-				pStats->m_NumVoicesPlaying++;
-			}
-		}
+    while (pVoiceSearch != NULL) {
+        if (pVoiceSearch->GetPositionalGroup() != NULL) {
+            pStats->m_NumPosVoices++;
 
-        pVoiceSearch = pVoiceSearch->GetLinkedClassNext( );
+            if (pVoiceSearch->IsPlaying()) {
+                pStats->m_NumPosVoicesPlaying++;
+            }
+        } else {
+            pStats->m_NumVoices++;
+
+            if (pVoiceSearch->IsPlaying()) {
+                pStats->m_NumVoicesPlaying++;
+            }
+        }
+
+        pVoiceSearch = pVoiceSearch->GetLinkedClassNext();
     }
 
-	//
-	// GetBuffer info
-	//
-	
-	radSoundBufferXBox * pBufferSearch = radSoundBufferXBox::GetLinkedClassHead( );
+    //
+    // GetBuffer info
+    //
 
-	while ( pBufferSearch != NULL )
-	{
-		pStats->m_NumBuffers ++;
-		pStats->m_BufferMemoryUsed += pBufferSearch->GetMemoryObject( )->GetMemorySize( );
-		
-		pBufferSearch = pBufferSearch->GetLinkedClassNext( );
-	}
-	
-	// Effects Memory is always zero it is in the hardware.
+    radSoundBufferXBox *pBufferSearch = radSoundBufferXBox::GetLinkedClassHead();
 
-	pStats->m_EffectsMemoryUsed = 0;
-									
-	radSoundHalMemoryRegion::GetRootRegion( )->GetStats( & pStats->m_TotalFreeSoundMemory, NULL, NULL, true );
+    while (pBufferSearch != NULL) {
+        pStats->m_NumBuffers++;
+        pStats->m_BufferMemoryUsed += pBufferSearch->GetMemoryObject()->GetMemorySize();
+
+        pBufferSearch = pBufferSearch->GetLinkedClassNext();
+    }
+
+    // Effects Memory is always zero it is in the hardware.
+
+    pStats->m_EffectsMemoryUsed = 0;
+
+    radSoundHalMemoryRegion::GetRootRegion()->GetStats(&pStats->m_TotalFreeSoundMemory, NULL, NULL,
+                                                       true);
 }
 
 //========================================================================
 // radSoundHalSystem::GetInstance
 //========================================================================
 
-radSoundHalSystem * radSoundHalSystem::GetInstance( void )
-{
+radSoundHalSystem *radSoundHalSystem::GetInstance(void) {
     return s_pTheSoundSystem;
 }
 
@@ -396,43 +362,41 @@ radSoundHalSystem * radSoundHalSystem::GetInstance( void )
 // radSoundHalSystem::DownloadScratchImage
 //========================================================================
 
-void radSoundHalSystem::DownloadScratchImage( void )
-{
-	ref< IRadFile > xIRadFile;
+void radSoundHalSystem::DownloadScratchImage(void) {
+    ref <IRadFile> xIRadFile;
 
-	::radFileOpen( & xIRadFile, "img\\rsdeffects.bin", false,
-		 OpenExisting, NormalPriority, 0, RADMEMORY_ALLOC_TEMP, radMemorySpace_Local );
-	
-	xIRadFile->WaitForCompletion( );
+    ::radFileOpen(&xIRadFile, "img\\rsdeffects.bin", false,
+                  OpenExisting, NormalPriority, 0, RADMEMORY_ALLOC_TEMP, radMemorySpace_Local);
 
-	rAssertMsg( xIRadFile->IsOpen(), "Failed to open XBox SPU effects image!\n" );
+    xIRadFile->WaitForCompletion();
 
-	if ( xIRadFile->IsOpen( ) )
-	{
-		char * pImageBuffer = (char*) ::radMemoryAlloc(
-			RADMEMORY_ALLOC_TEMP, xIRadFile->GetSize( ) );
+    rAssertMsg(xIRadFile->IsOpen(), "Failed to open XBox SPU effects image!\n");
 
-		xIRadFile->ReadAsync( pImageBuffer, xIRadFile->GetSize( ) );
+    if (xIRadFile->IsOpen()) {
+        char *pImageBuffer = (char *) ::radMemoryAlloc(
+                RADMEMORY_ALLOC_TEMP, xIRadFile->GetSize());
 
-		xIRadFile->WaitForCompletion( );
+        xIRadFile->ReadAsync(pImageBuffer, xIRadFile->GetSize());
 
-		DSEFFECTIMAGELOC dsEffectImageLoc;
-		//
-		// This may not be the best way to initialize the i3dl2 settings
-		//
-		dsEffectImageLoc.dwI3DL2ReverbIndex = I3DL2_CHAIN_I3DL2_REVERB;
+        xIRadFile->WaitForCompletion();
 
-		dsEffectImageLoc.dwCrosstalkIndex = I3DL2_CHAIN_XTALK;
+        DSEFFECTIMAGELOC dsEffectImageLoc;
+        //
+        // This may not be the best way to initialize the i3dl2 settings
+        //
+        dsEffectImageLoc.dwI3DL2ReverbIndex = I3DL2_CHAIN_I3DL2_REVERB;
 
-		DSEFFECTIMAGEDESC* pImageDesc = NULL;
+        dsEffectImageLoc.dwCrosstalkIndex = I3DL2_CHAIN_XTALK;
 
-		HRESULT hr = m_xIDirectSound->DownloadEffectsImage(
-			pImageBuffer, xIRadFile->GetSize( ), & dsEffectImageLoc, & pImageDesc );
+        DSEFFECTIMAGEDESC *pImageDesc = NULL;
 
-		rAssertMsg( SUCCEEDED( hr ), "DirectSound8::DownloadEffectsImage() Failed" );
-					
-		radMemoryFree( RADMEMORY_ALLOC_TEMP, pImageBuffer );
-	}
+        HRESULT hr = m_xIDirectSound->DownloadEffectsImage(
+                pImageBuffer, xIRadFile->GetSize(), &dsEffectImageLoc, &pImageDesc);
+
+        rAssertMsg(SUCCEEDED(hr), "DirectSound8::DownloadEffectsImage() Failed");
+
+        radMemoryFree(RADMEMORY_ALLOC_TEMP, pImageBuffer);
+    }
 
     DirectSoundUseFullHRTF();
 }
@@ -442,18 +406,17 @@ void radSoundHalSystem::DownloadScratchImage( void )
 // Static Members
 //================================================================================
 
-radSoundHalSystem * radSoundHalSystem::s_pTheSoundSystem = NULL;
+radSoundHalSystem *radSoundHalSystem::s_pTheSoundSystem = NULL;
 static int g_RadSoundInitializeCount = 0;
 
 //================================================================================
 // ::radSoundGetSystem
 //================================================================================
 
-IRadSoundHalSystem * radSoundHalSystemGet( )
-{
-    rAssertMsg( radSoundHalSystem::GetInstance( ) != NULL, "radSound: Not Initialized." );
+IRadSoundHalSystem *radSoundHalSystemGet() {
+    rAssertMsg(radSoundHalSystem::GetInstance() != NULL, "radSound: Not Initialized.");
 
-    return radSoundHalSystem::GetInstance( );
+    return radSoundHalSystem::GetInstance();
 }
 
 //================================================================================
@@ -461,22 +424,19 @@ IRadSoundHalSystem * radSoundHalSystemGet( )
 //================================================================================
 
 
-IRadSoundHalSystemXBox * radSoundHalSystemXBoxGet( void )
-{
-    return radSoundHalSystem::GetInstance( );
-    
+IRadSoundHalSystemXBox *radSoundHalSystemXBoxGet(void) {
+    return radSoundHalSystem::GetInstance();
+
 }
 
 //================================================================================
 // ::radSoundIntialize
 //================================================================================
 
-void radSoundHalSystemInitialize( radMemoryAllocator allocator  )
-{
-    if ( g_RadSoundInitializeCount == 0 )
-    {
-        new ( "radSoundHalSystem", allocator ) radSoundHalSystem( allocator );
-        ::radSoundHalSystemGet( )->AddRef( );
+void radSoundHalSystemInitialize(radMemoryAllocator allocator) {
+    if (g_RadSoundInitializeCount == 0) {
+        new("radSoundHalSystem", allocator) radSoundHalSystem(allocator);
+        ::radSoundHalSystemGet()->AddRef();
 
     }
 
@@ -486,15 +446,13 @@ void radSoundHalSystemInitialize( radMemoryAllocator allocator  )
 //================================================================================
 // ::radSoundTerminate
 //================================================================================
-        
-void radSoundHalSystemTerminate( void )
-{
-    rAssert( g_RadSoundInitializeCount > 0 );
 
-    g_RadSoundInitializeCount --;
+void radSoundHalSystemTerminate(void) {
+    rAssert(g_RadSoundInitializeCount > 0);
 
-    if ( g_RadSoundInitializeCount == 0 )
-    {
-        radSoundHalSystem::GetInstance( )->Release( );
+    g_RadSoundInitializeCount--;
+
+    if (g_RadSoundInitializeCount == 0) {
+        radSoundHalSystem::GetInstance()->Release();
     }
 }

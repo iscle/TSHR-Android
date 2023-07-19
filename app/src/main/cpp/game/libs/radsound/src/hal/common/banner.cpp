@@ -6,9 +6,8 @@
 #include "pch.hpp"
 #include <raddebug.hpp>
 
-void radSoundPrintBanner( void )
-{
-	rDebugString( "::RadSound Version 3.7\n" );
+void radSoundPrintBanner(void) {
+    rDebugString("::RadSound Version 3.7\n");
 }
 
-const char * radSoundDebugChannel = "radsound";
+const char *radSoundDebugChannel = "radsound";

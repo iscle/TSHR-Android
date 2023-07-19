@@ -12,10 +12,14 @@
 // Helper Functions
 //============================================================================
 
-unsigned int  radSoundFloatAngleToULongWin( float angle );
-float         radSoundULongAngleToFloatWin( unsigned int angle );
-signed long   radSoundVolumeDbToHardwareWin( float volume );
-float         radSoundVolumeHardwareToDbWin( signed long hardwareVolume );
-unsigned long radSoundPercentageToHardwarePitchWin( float pitch, unsigned int normalFrequency );
+unsigned int radSoundFloatAngleToULongWin(float angle);
+
+float radSoundULongAngleToFloatWin(unsigned int angle);
+
+signed long radSoundVolumeDbToHardwareWin(float volume);
+
+float radSoundVolumeHardwareToDbWin(signed long hardwareVolume);
+
+unsigned long radSoundPercentageToHardwarePitchWin(float pitch, unsigned int normalFrequency);
 
 #endif // RADSOUNDWIN32_HPP

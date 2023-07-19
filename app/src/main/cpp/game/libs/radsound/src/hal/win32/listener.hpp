@@ -33,58 +33,77 @@
 //============================================================================
 
 struct radSoundHalListener
-	:
-    public IRadSoundHalListener,
-    public radSoundObject
-{
-	public:
+        :
+                public IRadSoundHalListener,
+                public radSoundObject {
+public:
 
-		IMPLEMENT_REFCOUNTED( "radSoundHalListener" )
+    IMPLEMENT_REFCOUNTED("radSoundHalListener")
 
-		static void Initialize( radMemoryAllocator allocator, IDirectSound3DListener * pIDirectSound3DListener );
-		static radSoundHalListener * GetInstance( void );
-		static void Terminate( void );
+    static void
+    Initialize(radMemoryAllocator allocator, IDirectSound3DListener *pIDirectSound3DListener);
 
-		virtual void SetPosition( radSoundVector * pPos );
-		virtual void GetPosition( radSoundVector * pPos );
-		virtual void SetOrientation( radSoundVector * pOrientationFront, radSoundVector * pOrientationTop );
-		virtual void GetOrientation( radSoundVector * pOrientationFront, radSoundVector * pOrientationTop );
-		virtual void SetVelocity( radSoundVector * pVelocity );
-		virtual void GetVelocity( radSoundVector * pVelocity );
-		virtual void SetDistanceFactor( float distanceFactor );
-		virtual float GetDistanceFactor( void );
-		virtual void SetDopplerFactor( float doppleFactor );
-		virtual float GetDopplerFactor( void );
-		virtual void SetRollOffFactor( float rollOffFactor );
-		virtual float GetRollOffFactor( void );
-        virtual void  SetEnvEffectsEnabled( bool enabled );
-        virtual bool  GetEnvEffectsEnabled( void );
-        virtual void  SetEnvironmentAuxSend( unsigned int auxsend );
-        virtual unsigned int GetEnvironmentAuxSend( void );
+    static radSoundHalListener *GetInstance(void);
 
-        void SetEaxListenerProperties( EAXLISTENERPROPERTIES * pEaxListenerProperties );
-		void UpdatePositionalSettings( void );
+    static void Terminate(void);
 
-	private:
+    virtual void SetPosition(radSoundVector *pPos);
 
-		radSoundHalListener( IDirectSound3DListener * pIDirectSound3DListener );
-		~radSoundHalListener( void );
+    virtual void GetPosition(radSoundVector *pPos);
 
-		static radSoundHalListener * s_pTheRadSoundHalListener;
+    virtual void SetOrientation(radSoundVector *pOrientationFront, radSoundVector *pOrientationTop);
 
-		DS3DLISTENER m_Ds3dListener;
+    virtual void GetOrientation(radSoundVector *pOrientationFront, radSoundVector *pOrientationTop);
 
-		ref< IDirectSound3DListener > m_xIDirectSound3DListener;
-        ref< IKsPropertySet > m_xIKsPropertySet;
+    virtual void SetVelocity(radSoundVector *pVelocity);
 
-        bool m_EnvEffectsEnabled;
-        unsigned int m_EnvAuxSend;
-        
-		float m_RolloffFactor;
-        float m_pRollOffTable[ STD_ROLL_OFF_TABLE_NUM_POINTS ];
+    virtual void GetVelocity(radSoundVector *pVelocity);
 
-        bool m_IsEaxListenerClean;
-        EAXLISTENERPROPERTIES m_EaxListenerProperties;
+    virtual void SetDistanceFactor(float distanceFactor);
+
+    virtual float GetDistanceFactor(void);
+
+    virtual void SetDopplerFactor(float doppleFactor);
+
+    virtual float GetDopplerFactor(void);
+
+    virtual void SetRollOffFactor(float rollOffFactor);
+
+    virtual float GetRollOffFactor(void);
+
+    virtual void SetEnvEffectsEnabled(bool enabled);
+
+    virtual bool GetEnvEffectsEnabled(void);
+
+    virtual void SetEnvironmentAuxSend(unsigned int auxsend);
+
+    virtual unsigned int GetEnvironmentAuxSend(void);
+
+    void SetEaxListenerProperties(EAXLISTENERPROPERTIES *pEaxListenerProperties);
+
+    void UpdatePositionalSettings(void);
+
+private:
+
+    radSoundHalListener(IDirectSound3DListener *pIDirectSound3DListener);
+
+    ~radSoundHalListener(void);
+
+    static radSoundHalListener *s_pTheRadSoundHalListener;
+
+    DS3DLISTENER m_Ds3dListener;
+
+    ref <IDirectSound3DListener> m_xIDirectSound3DListener;
+    ref <IKsPropertySet> m_xIKsPropertySet;
+
+    bool m_EnvEffectsEnabled;
+    unsigned int m_EnvAuxSend;
+
+    float m_RolloffFactor;
+    float m_pRollOffTable[STD_ROLL_OFF_TABLE_NUM_POINTS];
+
+    bool m_IsEaxListenerClean;
+    EAXLISTENERPROPERTIES m_EaxListenerProperties;
 };
 
 #endif // LISTENER_HPP

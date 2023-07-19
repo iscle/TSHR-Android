@@ -11,100 +11,101 @@
 #include <radsoundupdatableobject.hpp>
 
 struct radSoundDataCache
-	:
-	public IRadSoundDataCache,
-    public IRadSoundHalDataSourceCallback,
-	public radSoundUpdatableObject
-{
-	IMPLEMENT_REFCOUNTED( "radSoundDataCache" )
+        :
+                public IRadSoundDataCache,
+                public IRadSoundHalDataSourceCallback,
+                public radSoundUpdatableObject {
+    IMPLEMENT_REFCOUNTED("radSoundDataCache")
 
-	radSoundDataCache( void );
-	virtual ~radSoundDataCache( void );
+    radSoundDataCache(void);
+
+    virtual ~radSoundDataCache(void);
 
     // IRadSoundDataCache
 
     virtual void InitializeAsync(
-        radMemorySpace memorySpace,
-        IRadMemoryAllocator * pIRadMemoryAllocator,
-        IRadSoundHalDataSource * pIRshds,
-        const char * pIdentifier );
+            radMemorySpace memorySpace,
+            IRadMemoryAllocator *pIRadMemoryAllocator,
+            IRadSoundHalDataSource *pIRshds,
+            const char *pIdentifier);
 
-    virtual IRadSoundHalDataSource * CreateDataSource(
-        unsigned int startOnFrame,
-        radMemoryAllocator a );
+    virtual IRadSoundHalDataSource *CreateDataSource(
+            unsigned int startOnFrame,
+            radMemoryAllocator a);
 
-    IRadSoundDataCache::State GetState( void );
+    IRadSoundDataCache::State GetState(void);
 
-    virtual bool WillRelease( void ) { return GetRefCount( ) <= 1; }
-    
-    inline IRadSoundHalAudioFormat       * GetAudioFormat( void );
-    inline IRadSoundMemorySpaceObject    * GetMemorySpaceObject( void );
-    
-    
+    virtual bool WillRelease(void) { return GetRefCount() <= 1; }
 
-    private:
+    inline IRadSoundHalAudioFormat *GetAudioFormat(void);
 
-        virtual void OnDataSourceFramesLoaded( unsigned int framesActuallyRead );
+    inline IRadSoundMemorySpaceObject *GetMemorySpaceObject(void);
 
-        // IRadTimerCallback
 
-        virtual void Update( unsigned int elapsed );
+private:
 
-        IRadSoundDataCache::State m_State;
-        radMemorySpace                    m_RadMemorySpace;
-        ref< IRadMemoryAllocator >        m_xIRadMemoryAllocator;
-        ref< IRadSoundHalAudioFormat >    m_xIRadSoundHalAudioFormat;
-        ref< IRadSoundMemorySpaceObject > m_xIRadSoundMemorySpaceObject;
-        ref< IRadSoundHalDataSource >     m_xIRadSoundHalDataSource;
-        ref< IRadString >                 m_xIRadString_Name;
+    virtual void OnDataSourceFramesLoaded(unsigned int framesActuallyRead);
+
+    // IRadTimerCallback
+
+    virtual void Update(unsigned int elapsed);
+
+    IRadSoundDataCache::State m_State;
+    radMemorySpace m_RadMemorySpace;
+    ref <IRadMemoryAllocator> m_xIRadMemoryAllocator;
+    ref <IRadSoundHalAudioFormat> m_xIRadSoundHalAudioFormat;
+    ref <IRadSoundMemorySpaceObject> m_xIRadSoundMemorySpaceObject;
+    ref <IRadSoundHalDataSource> m_xIRadSoundHalDataSource;
+    ref <IRadString> m_xIRadString_Name;
 };
 
-inline IRadSoundHalAudioFormat * radSoundDataCache::GetAudioFormat( void )
-{
-    rAssert( m_State == IRadSoundDataCache::Initialized );
-    
+inline IRadSoundHalAudioFormat *radSoundDataCache::GetAudioFormat(void) {
+    rAssert(m_State == IRadSoundDataCache::Initialized);
+
     return m_xIRadSoundHalAudioFormat;
 }
 
-inline IRadSoundMemorySpaceObject * radSoundDataCache::GetMemorySpaceObject( void )
-{
-    rAssert( m_State == IRadSoundDataCache::Initialized );
+inline IRadSoundMemorySpaceObject *radSoundDataCache::GetMemorySpaceObject(void) {
+    rAssert(m_State == IRadSoundDataCache::Initialized);
 
     return m_xIRadSoundMemorySpaceObject;
 }
 
 
 struct radSoundDataCacheDataSource
-    :
-    public IRadSoundHalDataSource,
-    public radSoundObject
-{
-    IMPLEMENT_REFCOUNTED( "radSoundDataCacheDataSource" )
+        :
+                public IRadSoundHalDataSource,
+                public radSoundObject {
+    IMPLEMENT_REFCOUNTED("radSoundDataCacheDataSource")
 
     radSoundDataCacheDataSource(
-        radSoundDataCache * pRadSoundDataCache,
-        unsigned int startOnFrame );
+            radSoundDataCache *pRadSoundDataCache,
+            unsigned int startOnFrame);
 
     // IRadSoundHalDataSource
 
-	virtual State GetState( void );
-	virtual IRadSoundHalAudioFormat * GetFormat( void );
-	virtual unsigned int GetRemainingFrames( void );
-	virtual unsigned int GetAvailableFrames( void ) { return GetRemainingFrames( ); }
-	virtual void GetFramesAsync( 
-		void * pBytes, 
-		radMemorySpace destinationMemorySpace, 
-		unsigned int numberOfFrames,
-		IRadSoundHalDataSourceCallback * pCallback );
+    virtual State GetState(void);
 
-    virtual const char * GetName( void ) { return "DataCacheDataSource"; }		
+    virtual IRadSoundHalAudioFormat *GetFormat(void);
 
-    public:
+    virtual unsigned int GetRemainingFrames(void);
 
-        unsigned int m_StartFrame;
+    virtual unsigned int GetAvailableFrames(void) { return GetRemainingFrames(); }
 
-        ref< radSoundDataCache >         m_xRadSoundDataCache;
-        ref< IRadSoundMemoryDataSource > m_xIRadSoundMemoryDataSource;
+    virtual void GetFramesAsync(
+            void *pBytes,
+            radMemorySpace destinationMemorySpace,
+            unsigned int numberOfFrames,
+            IRadSoundHalDataSourceCallback *pCallback);
+
+    virtual const char *GetName(void) { return "DataCacheDataSource"; }
+
+public:
+
+    unsigned int m_StartFrame;
+
+    ref <radSoundDataCache> m_xRadSoundDataCache;
+    ref <IRadSoundMemoryDataSource> m_xIRadSoundMemoryDataSource;
 
 };
 

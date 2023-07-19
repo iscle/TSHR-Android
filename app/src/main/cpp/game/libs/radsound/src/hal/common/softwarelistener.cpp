@@ -24,13 +24,13 @@
 
 #include <stdio.h>
 
-#define EPSILON 0.0001 
+#define EPSILON 0.0001
 
 //============================================================================
 // Static definitions
 //============================================================================
 
-/* static */ radSoundHalListener * radSoundHalListener::s_pTheRadSoundSoftwareListener = NULL;
+/* static */ radSoundHalListener *radSoundHalListener::s_pTheRadSoundSoftwareListener = NULL;
 
 //============================================================================
 // Component: radSoundHalListener
@@ -41,29 +41,28 @@
 // radSoundHalListener::radSoundHalListener
 //========================================================================
 
-radSoundHalListener::radSoundHalListener( radMemoryAllocator allocator )
-    :
-    m_OrientationFront( 0.0f, 0.0f, 1.0f ),
-    m_OrientationTop(0.0f, 1.0f, 0.0f ),
-    m_DistanceFactor( 1.0f ), // meters == meters
-    m_DoppleFactor( 1.0f ),   // normal doppler
-    m_RollOffFactor( 1.0f ),   // normal roll-off
-    m_SurroundSupported( false ),
-    m_EnvEffectsEnabled( false ),
-    m_EnvAuxSend( NULL_ENV_AUX )
-{
+radSoundHalListener::radSoundHalListener(radMemoryAllocator allocator)
+        :
+        m_OrientationFront(0.0f, 0.0f, 1.0f),
+        m_OrientationTop(0.0f, 1.0f, 0.0f),
+        m_DistanceFactor(1.0f), // meters == meters
+        m_DoppleFactor(1.0f),   // normal doppler
+        m_RollOffFactor(1.0f),   // normal roll-off
+        m_SurroundSupported(false),
+        m_EnvEffectsEnabled(false),
+        m_EnvAuxSend(NULL_ENV_AUX) {
     s_pTheRadSoundSoftwareListener = this;
 
-    ::radSoundHalCreateRollOffTable( STD_ROLL_OFF_TABLE_MAX_DIST_VOL, s_pRollOffTable, STD_ROLL_OFF_TABLE_NUM_POINTS );
-    ::radSoundHalSetRollOffTable( s_pRollOffTable, STD_ROLL_OFF_TABLE_NUM_POINTS );
+    ::radSoundHalCreateRollOffTable(STD_ROLL_OFF_TABLE_MAX_DIST_VOL, s_pRollOffTable,
+                                    STD_ROLL_OFF_TABLE_NUM_POINTS);
+    ::radSoundHalSetRollOffTable(s_pRollOffTable, STD_ROLL_OFF_TABLE_NUM_POINTS);
 }
 
 //========================================================================
 // radSoundHalListener::~radSoundHalListener
 //========================================================================
 
-radSoundHalListener::~radSoundHalListener( void )
-{
+radSoundHalListener::~radSoundHalListener(void) {
     s_pTheRadSoundSoftwareListener = NULL;
 }
 
@@ -71,17 +70,15 @@ radSoundHalListener::~radSoundHalListener( void )
 // radSoundHalListener::SetPosition
 //========================================================================
 
-/* virtual */ void  radSoundHalListener::SetPosition( radSoundVector * pP )
-{
-	m_Position = *pP;
+/* virtual */ void radSoundHalListener::SetPosition(radSoundVector *pP) {
+    m_Position = *pP;
 }
 
 //========================================================================
 // radSoundHalListener::GetPosition
 //========================================================================
 
-/* virtual */ void  radSoundHalListener::GetPosition( radSoundVector * pP)
-{
+/* virtual */ void radSoundHalListener::GetPosition(radSoundVector *pP) {
     *pP = m_Position;
 }
 
@@ -89,8 +86,7 @@ radSoundHalListener::~radSoundHalListener( void )
 // radSoundHalListener::SetVelocity
 //========================================================================
 
-/* virtual */ void  radSoundHalListener::SetVelocity( radSoundVector * pV )
-{
+/* virtual */ void radSoundHalListener::SetVelocity(radSoundVector *pV) {
     m_Velocity = *pV;
 }
 
@@ -98,8 +94,7 @@ radSoundHalListener::~radSoundHalListener( void )
 // radSoundHalListener::GetVelocity
 //========================================================================
 
-/* virtual */ void  radSoundHalListener::GetVelocity( radSoundVector * pV )
-{
+/* virtual */ void radSoundHalListener::GetVelocity(radSoundVector *pV) {
     *pV = m_Velocity;
 }
 
@@ -107,32 +102,28 @@ radSoundHalListener::~radSoundHalListener( void )
 // radSoundHalListener::SetOrientation
 //========================================================================
 
-/* virtual */ void radSoundHalListener::SetOrientation( radSoundVector * pFront, radSoundVector * pTop )
-{
-    if ( pFront != NULL )
-    {
+/* virtual */ void
+radSoundHalListener::SetOrientation(radSoundVector *pFront, radSoundVector *pTop) {
+    if (pFront != NULL) {
         m_OrientationFront = *pFront;
     }
-    
-    if ( pTop != NULL )
-    {
+
+    if (pTop != NULL) {
         m_OrientationTop = *pTop;
-    }    
+    }
 }
 
 //========================================================================
 // radSoundHalListener::GetOrientation
 //========================================================================
 
-/* virtual */ void  radSoundHalListener::GetOrientation( radSoundVector * pFront, radSoundVector * pTop )
-{
-    if ( pFront != NULL )
-    {
+/* virtual */ void
+radSoundHalListener::GetOrientation(radSoundVector *pFront, radSoundVector *pTop) {
+    if (pFront != NULL) {
         *pFront = m_OrientationFront;
     }
 
-    if ( pTop != NULL )
-    {
+    if (pTop != NULL) {
         *pTop = m_OrientationTop;
     }
 }
@@ -141,8 +132,7 @@ radSoundHalListener::~radSoundHalListener( void )
 // radSoundHalListener::SetDistanceFactor
 //========================================================================
 
-/* virtual */ void radSoundHalListener::SetDistanceFactor( float df )
-{
+/* virtual */ void radSoundHalListener::SetDistanceFactor(float df) {
     m_DistanceFactor = df;
 }
 
@@ -150,8 +140,7 @@ radSoundHalListener::~radSoundHalListener( void )
 // radSoundHalListener::GetDistanceFactor
 //========================================================================
 
-/* virtual */ float radSoundHalListener::GetDistanceFactor( void )
-{
+/* virtual */ float radSoundHalListener::GetDistanceFactor(void) {
     return m_DistanceFactor;
 }
 
@@ -159,8 +148,7 @@ radSoundHalListener::~radSoundHalListener( void )
 // radSoundHalListener::SetDoppleFactor
 //========================================================================
 
-/* virtual */ void  radSoundHalListener::SetDopplerFactor( float df )
-{
+/* virtual */ void radSoundHalListener::SetDopplerFactor(float df) {
     m_DoppleFactor = df;
 }
 
@@ -168,8 +156,7 @@ radSoundHalListener::~radSoundHalListener( void )
 // radSoundHalListener::GetDoppleFactor
 //========================================================================
 
-/* virtual */ float radSoundHalListener::GetDopplerFactor( void )
-{
+/* virtual */ float radSoundHalListener::GetDopplerFactor(void) {
     return m_DoppleFactor;
 }
 
@@ -177,8 +164,7 @@ radSoundHalListener::~radSoundHalListener( void )
 // radSoundHalListener::SetRollOffFactor
 //========================================================================
 
-/* virtual */ void  radSoundHalListener::SetRollOffFactor( float rof )
-{
+/* virtual */ void radSoundHalListener::SetRollOffFactor(float rof) {
     m_RollOffFactor = rof;
 }
 
@@ -186,8 +172,7 @@ radSoundHalListener::~radSoundHalListener( void )
 // radSoundHalListener::GetRoll
 //========================================================================
 
-/* virtual */ float radSoundHalListener::GetRollOffFactor( void )
-{
+/* virtual */ float radSoundHalListener::GetRollOffFactor(void) {
     return m_RollOffFactor;
 }
 
@@ -195,8 +180,7 @@ radSoundHalListener::~radSoundHalListener( void )
 // radSoundHalListener::SetEnvEffectsEnabled
 //========================================================================
 
-/* virtual */ void radSoundHalListener::SetEnvEffectsEnabled( bool enabled )
-{
+/* virtual */ void radSoundHalListener::SetEnvEffectsEnabled(bool enabled) {
     m_EnvEffectsEnabled = enabled;
 }
 
@@ -204,8 +188,7 @@ radSoundHalListener::~radSoundHalListener( void )
 // radSoundHalListener::GetEnvEffectsEnabled
 //========================================================================
 
-/* virtual */ bool radSoundHalListener::GetEnvEffectsEnabled( void )
-{
+/* virtual */ bool radSoundHalListener::GetEnvEffectsEnabled(void) {
     return m_EnvEffectsEnabled;
 }
 
@@ -213,8 +196,7 @@ radSoundHalListener::~radSoundHalListener( void )
 // radSoundHalListener::SetEnvironmentAuxSend
 //========================================================================
 
-/* virtual */ void radSoundHalListener::SetEnvironmentAuxSend( unsigned int auxsend )
-{
+/* virtual */ void radSoundHalListener::SetEnvironmentAuxSend(unsigned int auxsend) {
     m_EnvAuxSend = auxsend;
 }
 
@@ -222,8 +204,7 @@ radSoundHalListener::~radSoundHalListener( void )
 // radSoundHalListener::GetEnvironmentAuxSend
 //========================================================================
 
-/* virtual */ unsigned int radSoundHalListener::GetEnvironmentAuxSend( void )
-{
+/* virtual */ unsigned int radSoundHalListener::GetEnvironmentAuxSend(void) {
     return m_EnvAuxSend;
 }
 
@@ -232,18 +213,16 @@ radSoundHalListener::~radSoundHalListener( void )
 //=========================================================================
 
 float radSoundHalListener::CalculatePositionalPitchFactor
-(
-    const radSoundHalPositionalInformation * pSpi
+        (
+                const radSoundHalPositionalInformation *pSpi
 
-)
-{
+        ) {
     // The right way...the above calcualtion sounds ok, but is more
     // acureate as t tends towards zero.
 
     float relativeSpeed;
 
-    if ( m_Position != pSpi->m_Position )
-    {
+    if (m_Position != pSpi->m_Position) {
         float a = m_Velocity.m_x - pSpi->m_Velocity.m_x;
         float b = m_Velocity.m_y - pSpi->m_Velocity.m_y;
         float c = m_Velocity.m_z - pSpi->m_Velocity.m_z;
@@ -251,16 +230,15 @@ float radSoundHalListener::CalculatePositionalPitchFactor
         float e = m_Position.m_y - pSpi->m_Position.m_y;
         float f = m_Position.m_z - pSpi->m_Position.m_z;
 
-        relativeSpeed = -( ( (a * d) + (b * e) + (c * f) ) / radSoundSqrt( (d * d) + (e * e) + (f * f) ) );
-    }
-    else
-    {
+        relativeSpeed = -(((a * d) + (b * e) + (c * f)) /
+                          radSoundSqrt((d * d) + (e * e) + (f * f)));
+    } else {
         relativeSpeed = 0.0f;
     }
 
     //
     // The above calculation assumed meters/second.  Convert this to game units.
-    // If the game specified .38 (feet / per meter ) Then the relative speed
+    // If the game specified .38 (feet / per meter) Then the relative speed
     // would be less meters per second, which is correct because a foot is
     // smaller than a meter.
     //
@@ -298,11 +276,11 @@ float radSoundHalListener::CalculatePositionalPitchFactor
     //                               343    then --> 172.5
     //                               344    then --> 345.0
     //                               344.5  then --> 690.0
-    //                              >345.0  then --> undefined ( no sound / infinately high )
+    //>345.0  then --> undefined (no sound / infinately high)
     //                              -100    then --> 0.71
     //                              -200    then --> 0.42
     //                              -300    then --> 0.13
-    //                             <-345.0  then --> undefined ( no sound / infinately low )
+    //                             <-345.0  then --> undefined (no sound / infinately low)
     //                              ...etc
     //
 
@@ -312,49 +290,38 @@ float radSoundHalListener::CalculatePositionalPitchFactor
 
     float pitchFactor;
 
-    if ( relativeSpeed > 0.0f )
-    {
+    if (relativeSpeed > 0.0f) {
         //
-        // Cap it because > 345.0f is undefined
+        // Cap it because> 345.0f is undefined
         //
 
-        if ( relativeSpeed >= 345.0f )
-        {
+        if (relativeSpeed >= 345.0f) {
             relativeSpeed = 344.99f;
         }
 
-        pitchFactor = 345.0f / ( 345.0f - relativeSpeed );
-    }
-    else if ( relativeSpeed < 0.0f )
-    {
-        if ( relativeSpeed <= -345.0f )
-        {
+        pitchFactor = 345.0f / (345.0f - relativeSpeed);
+    } else if (relativeSpeed < 0.0f) {
+        if (relativeSpeed <= -345.0f) {
             relativeSpeed = -344.99f;
         }
-        pitchFactor = 1.0f / ( 345.0f / ( 345.0f + relativeSpeed ) );
-    }
-    else
-    {
+        pitchFactor = 1.0f / (345.0f / (345.0f + relativeSpeed));
+    } else {
 
         pitchFactor = 1.0f;
-    }               
+    }
 
-    rAssert( pitchFactor >= 0.0f );
+    rAssert(pitchFactor >= 0.0f);
 
     return pitchFactor;
 }
 
-inline void radSoundHalListener::ClampPan( float * pPan )
-{
-    if ( *pPan > 1.0 )
-    {
-        rAssert( *pPan <= ( 1.0f + EPSILON ) );
+inline void radSoundHalListener::ClampPan(float *pPan) {
+    if (*pPan > 1.0) {
+        rAssert(*pPan <= (1.0f + EPSILON));
         *pPan = 1.0f;
-    }
-    else if ( *pPan < -1.0f )
-    {
-        rAssert( *pPan >= ( -1.0f - EPSILON ) );
-        *pPan = -1.0f;        
+    } else if (*pPan < -1.0f) {
+        rAssert(*pPan >= (-1.0f - EPSILON));
+        *pPan = -1.0f;
     }
 }
 
@@ -372,12 +339,11 @@ inline void radSoundHalListener::ClampPan( float * pPan )
 //=========================================================================
 
 void radSoundHalListener::CalculatePositionalPanFactor
-(
-    const radSoundHalPositionalInformation* pRsspi,
-    float* pLeftRightPan,
-    float* pFrontBackPan
-)
-{
+        (
+                const radSoundHalPositionalInformation *pRsspi,
+                float *pLeftRightPan,
+                float *pFrontBackPan
+        ) {
     //
     // The pan factor various from -1.0f (left ear) to +1.0f (right ear)
     //
@@ -387,27 +353,24 @@ void radSoundHalListener::CalculatePositionalPanFactor
     // More specifically, we are projecting the sound source vector onto
     // a vector passing through the ears.
     // eqn.
-    //      pan = 1 - { acos[ ( v dot s ) / ( len(v) * len(s) ) ] * 2 / PI }
+    //      pan = 1 - { acos[ (v dot s) / (len(v) * len(s)) ] * 2 / PI }
     //
     float panFactor = 0.0f;
 
-    if ( m_Position != pRsspi->m_Position )
-    {
-        radSoundVector source = m_Position.GetVectorFrom( pRsspi->m_Position );
-        radSoundVector rightEar = m_OrientationFront.Cross( m_OrientationTop );
-        float cosPanFactor = source.Dot( rightEar ) / ( source.GetLength( ) * rightEar.GetLength( ) );
+    if (m_Position != pRsspi->m_Position) {
+        radSoundVector source = m_Position.GetVectorFrom(pRsspi->m_Position);
+        radSoundVector rightEar = m_OrientationFront.Cross(m_OrientationTop);
+        float cosPanFactor = source.Dot(rightEar) / (source.GetLength() * rightEar.GetLength());
 
         // 
         // Don't need to convert to an angle, we want to pan based on
         // the cos, not the angle (we need the "circular") power curve
         //            
-        // panFactor = 1.0f - ( radSoundACos( cosPanFactor ) * 2 / 3.141592655f );
-        
+        // panFactor = 1.0f - (radSoundACos(cosPanFactor) * 2 / 3.141592655f);
+
         panFactor = cosPanFactor;
-    
-    }
-    else
-    {
+
+    } else {
         panFactor = 0.0f;
     }
 
@@ -416,28 +379,25 @@ void radSoundHalListener::CalculatePositionalPanFactor
     //
     (*pLeftRightPan) = panFactor;
 
-    if ( m_SurroundSupported == true )
-    {        
+    if (m_SurroundSupported == true) {
         //
         // Now, the front and back pan is done in the same way, but using the front vector
         // instead of the right ear.
         //
-        if ( m_Position != pRsspi->m_Position )
-        {
-            radSoundVector source = m_Position.GetVectorFrom( pRsspi->m_Position );
+        if (m_Position != pRsspi->m_Position) {
+            radSoundVector source = m_Position.GetVectorFrom(pRsspi->m_Position);
             float cosPanFactor =
-                - source.Dot( m_OrientationFront ) / ( source.GetLength( ) * m_OrientationFront.GetLength( ) );
+                    -source.Dot(m_OrientationFront) /
+                    (source.GetLength() * m_OrientationFront.GetLength());
             // 
             // Don't need to convert to an angle, we want to pan based on
             // the cos, not the angle (we need the "circular") power curve
             //
-            
-            // panFactor = 1.0f - ( radSoundACos( cosPanFactor ) * 2 / 3.141592655f );
-            
-            panFactor = cosPanFactor; 
-        }
-        else
-        {
+
+            // panFactor = 1.0f - (radSoundACos(cosPanFactor) * 2 / 3.141592655f);
+
+            panFactor = cosPanFactor;
+        } else {
             panFactor = 0.0f;
         }
 
@@ -445,27 +405,24 @@ void radSoundHalListener::CalculatePositionalPanFactor
         // Set the front and back pan
         //
         (*pFrontBackPan) = panFactor;
-    }
-    else
-    {
+    } else {
         *pFrontBackPan = 0.0f;
     }
 
-    ClampPan( pFrontBackPan );
-    ClampPan( pLeftRightPan );
-    
-    radSoundVerifyAnalogPan( *pFrontBackPan );
-    radSoundVerifyAnalogPan( *pLeftRightPan );
+    ClampPan(pFrontBackPan);
+    ClampPan(pLeftRightPan);
+
+    radSoundVerifyAnalogPan(*pFrontBackPan);
+    radSoundVerifyAnalogPan(*pLeftRightPan);
 }
 //=========================================================================
 // radSoundHalListener::CalculatePositionalVolumeFactor
 //=========================================================================
 
 float radSoundHalListener::CalculatePositionalVolumeFactor
-(
-    const radSoundHalPositionalInformation * pSpi
-)
-{
+        (
+                const radSoundHalPositionalInformation *pSpi
+        ) {
     float coneVolumeFactor = 1.0f;
 
     //==================================
@@ -476,43 +433,36 @@ float radSoundHalListener::CalculatePositionalVolumeFactor
 
     // Avoid divide by zero
 
-    if ( m_Position != pSpi->m_Position )
-    {
-        angleToCone = pSpi->m_OrientationFront.GetAngleBetween( m_Position.GetVectorFrom( pSpi->m_Position ) );
-    }
-    else
-    {
+    if (m_Position != pSpi->m_Position) {
+        angleToCone = pSpi->m_OrientationFront.GetAngleBetween(
+                m_Position.GetVectorFrom(pSpi->m_Position));
+    } else {
         angleToCone = 0.0f;
     }
 
-    if ( angleToCone <= pSpi->m_ConeInsideAngle )
-    {
+    if (angleToCone <= pSpi->m_ConeInsideAngle) {
         //
         // Here we are inside the inner cone, so we don't scale the volume
         //
         coneVolumeFactor = 1.0f;
-    }
-    else if ( ( angleToCone > pSpi->m_ConeInsideAngle ) &&
-              ( angleToCone < pSpi->m_ConeOutsideAngle ) )
-    {
+    } else if ((angleToCone > pSpi->m_ConeInsideAngle) &&
+               (angleToCone < pSpi->m_ConeOutsideAngle)) {
         //
         // here we are between the inner and outer cones so we scale the volume
         // from 1.0f --> coneOutsideVolume
 
-        float percentThroughTransition = ( angleToCone - pSpi->m_ConeInsideAngle ) / 
-                                         ( pSpi->m_ConeOutsideAngle - pSpi->m_ConeInsideAngle );    
+        float percentThroughTransition = (angleToCone - pSpi->m_ConeInsideAngle) /
+                                         (pSpi->m_ConeOutsideAngle - pSpi->m_ConeInsideAngle);
 
-        coneVolumeFactor = percentThroughTransition * ( 1.0f - pSpi->m_ConeOutsideVolume );
-    }
-    else
-    {
+        coneVolumeFactor = percentThroughTransition * (1.0f - pSpi->m_ConeOutsideVolume);
+    } else {
         //
         // Here we are outside the outer cone, so the volume is just the
         // outside cone volume.
         //
 
         coneVolumeFactor = pSpi->m_ConeOutsideVolume;
-    }     
+    }
 
     //==========================================
     // D I S T A N C E  V O L U M E  F A C T O R
@@ -522,10 +472,10 @@ float radSoundHalListener::CalculatePositionalVolumeFactor
     // We now use a simple fall-off between min and max distance.
     //
 
-    float distanceToObject = m_Position.GetDistanceBetween( pSpi->m_Position );
+    float distanceToObject = m_Position.GetDistanceBetween(pSpi->m_Position);
 
     float distanceVolumeFactor = radSoundHalCalcualteRollOff(
-        pSpi->m_MinDistance, pSpi->m_MaxDistance, distanceToObject );
+            pSpi->m_MinDistance, pSpi->m_MaxDistance, distanceToObject);
 
     float finalVol = distanceVolumeFactor * coneVolumeFactor;
 
@@ -542,8 +492,9 @@ float radSoundHalListener::CalculatePositionalVolumeFactor
     // Calculate the cos of the angle between the source and the listener
     // in the plane of the listener's head (normal is top vector).
     //
-    radSoundVector source = m_Position.GetVectorFrom( pSpi->m_Position );
-    float cosAngle = - source.Dot( m_OrientationFront ) / ( source.GetLength( ) * m_OrientationFront.GetLength( ) );
+    radSoundVector source = m_Position.GetVectorFrom(pSpi->m_Position);
+    float cosAngle =
+            -source.Dot(m_OrientationFront) / (source.GetLength() * m_OrientationFront.GetLength());
 
     //
     // Depending on the angle (we keep the cosine to avoid extra computation, nd becuase it is semetric),
@@ -551,23 +502,20 @@ float radSoundHalListener::CalculatePositionalVolumeFactor
     // If the disance is very small, we cannot pretend to know the direction of the object, so we
     // can assume it is in front of us.
     //
-    if( distanceToObject == 0.0f || cosAngle > 0.0f )
-    {
+    if (distanceToObject == 0.0f || cosAngle > 0.0f) {
         //
         // In front of listener
         //
         finalVol *= InFrontVolumeFactor;
-    }
-    else if( cosAngle > CosBehindListenerAngle )
-    {
+    } else if (cosAngle > CosBehindListenerAngle) {
         //
         // Not quite behind the listener
         //
-        float change = InFrontVolumeFactor - ( ( InFrontVolumeFactor - BehindVolumeFactor ) * cosAngle / CosBehindListenerAngle );
+        float change = InFrontVolumeFactor -
+                       ((InFrontVolumeFactor - BehindVolumeFactor) * cosAngle /
+                        CosBehindListenerAngle);
         finalVol *= change;
-    }
-    else
-    {
+    } else {
         //
         // Behind the listener
         //
@@ -578,7 +526,7 @@ float radSoundHalListener::CalculatePositionalVolumeFactor
     // Return the volume
     //
 
-    radSoundVerifyAmplitudeVolume( finalVol );
+    radSoundVerifyAmplitudeVolume(finalVol);
 
     return finalVol;
 }
@@ -592,13 +540,13 @@ float radSoundHalListener::CalculatePositionalVolumeFactor
 //    IRadSoundSoftwarePositionalEntity * pIRsspe
 //)
 //{
-//   ref< IRadWeakInterfaceWrapper > xIRadWeakInterfaceWrapper;
+//   ref<IRadWeakInterfaceWrapper> xIRadWeakInterfaceWrapper;
 //
-//    ::radWeakInterfaceWrapperCreate( & xIRadWeakInterfaceWrapper, GetThisAllocator( ) );
+//    ::radWeakInterfaceWrapperCreate(& xIRadWeakInterfaceWrapper, GetThisAllocator());
 //    
-//    xIRadWeakInterfaceWrapper->SetWeakInterface( pIRsspe );
+//    xIRadWeakInterfaceWrapper->SetWeakInterface(pIRsspe);
 //
-//    m_xIObjectList_PositionalVoices->AddObject( xIRadWeakInterfaceWrapper );
+//    m_xIObjectList_PositionalVoices->AddObject(xIRadWeakInterfaceWrapper);
 //}
 
 //=========================================================================
@@ -612,20 +560,20 @@ float radSoundHalListener::CalculatePositionalVolumeFactor
 //{
 //    IRadWeakInterfaceWrapper * pIRadWeakInterfaceWrappper;
 //
-//    m_xIObjectList_PositionalVoices->Reset( );
+//    m_xIObjectList_PositionalVoices->Reset();
 //    
-//    while ( pIRadWeakInterfaceWrappper = reinterpret_cast< IRadWeakInterfaceWrapper * >( m_xIObjectList_PositionalVoices->GetNext( ) ) )
+//    while (pIRadWeakInterfaceWrappper = reinterpret_cast<IRadWeakInterfaceWrapper *>(m_xIObjectList_PositionalVoices->GetNext()))
 //    {
-//        IRadSoundSoftwarePositionalEntity * pTest = reinterpret_cast< IRadSoundSoftwarePositionalEntity * >( pIRadWeakInterfaceWrappper->GetWeakInterface( ) );
+//        IRadSoundSoftwarePositionalEntity * pTest = reinterpret_cast<IRadSoundSoftwarePositionalEntity *>(pIRadWeakInterfaceWrappper->GetWeakInterface());
 //        
-//        if ( pTest == pIRsspe )
+//        if (pTest == pIRsspe)
 //        {
-//            m_xIObjectList_PositionalVoices->RemoveObject( pIRadWeakInterfaceWrappper );
+//            m_xIObjectList_PositionalVoices->RemoveObject(pIRadWeakInterfaceWrappper);
 //            return;
 //        }
 //    }
 //
-//    rAssert( false );
+//    rAssert(false);
 //}
 
 //=========================================================================
@@ -633,38 +581,37 @@ float radSoundHalListener::CalculatePositionalVolumeFactor
 //=========================================================================
 
 /* virtual */ void radSoundHalListener::UpdatePositionalSettings
-(
-    void
-)
-{
-	radSoundHalPositionalInformation * pRadSoundHalPositionalInformation = NULL;
-	
-	radSoundHalPositionalGroup * pRadSoundHalPositionalGroup =
-		radSoundHalPositionalGroup::GetLinkedClassHead( );
+        (
+                void
+        ) {
+    radSoundHalPositionalInformation *pRadSoundHalPositionalInformation = NULL;
+
+    radSoundHalPositionalGroup *pRadSoundHalPositionalGroup =
+            radSoundHalPositionalGroup::GetLinkedClassHead();
 
     //
     // Loop through the positional group and calculate
     // new pan, volume and pitch settings.
     //
-	
-	while ( pRadSoundHalPositionalGroup != NULL )
-	{
+
+    while (pRadSoundHalPositionalGroup != NULL) {
         //
         // Get a positional information structure pointer, this is for speed
         // so we don't have to call GetThis(), GetThat(), etc. NULL if 
         // the item is not active
         //
 
-		CalculatePositionalInformation( & pRadSoundHalPositionalGroup->m_RadSoundHalPositionalInformation );
+        CalculatePositionalInformation(
+                &pRadSoundHalPositionalGroup->m_RadSoundHalPositionalInformation);
 
-		//
-		// Inform the positional group of our calculations
-		//
+        //
+        // Inform the positional group of our calculations
+        //
 
-		pRadSoundHalPositionalGroup->UpdatePositionalSettings(  );
+        pRadSoundHalPositionalGroup->UpdatePositionalSettings();
 
-		pRadSoundHalPositionalGroup = pRadSoundHalPositionalGroup->GetLinkedClassNext( );
-	}
+        pRadSoundHalPositionalGroup = pRadSoundHalPositionalGroup->GetLinkedClassNext();
+    }
 }
 
 
@@ -672,28 +619,27 @@ float radSoundHalListener::CalculatePositionalVolumeFactor
 // radSoundHalListener::CalculatePositionalInformation
 //=========================================================================
 
-/* virtual */ void radSoundHalListener::CalculatePositionalInformation( radSoundHalPositionalInformation * pRsspi )
-{
+/* virtual */ void
+radSoundHalListener::CalculatePositionalInformation(radSoundHalPositionalInformation *pRsspi) {
     //
     // Call our helper functions to calculate each attribute
     // 
-    pRsspi->m_VolumeAdjust = CalculatePositionalVolumeFactor( pRsspi );
+    pRsspi->m_VolumeAdjust = CalculatePositionalVolumeFactor(pRsspi);
     CalculatePositionalPanFactor
-    (
-        pRsspi,
-        &pRsspi->m_PanAdjust,
-        &pRsspi->m_FrontBackPanAdjust
-    );
-    pRsspi->m_PitchAdjust = CalculatePositionalPitchFactor( pRsspi );
-    pRsspi->m_EnvAuxSend = ( m_EnvEffectsEnabled ? m_EnvAuxSend : NULL_ENV_AUX );
+            (
+                    pRsspi,
+                    &pRsspi->m_PanAdjust,
+                    &pRsspi->m_FrontBackPanAdjust
+            );
+    pRsspi->m_PitchAdjust = CalculatePositionalPitchFactor(pRsspi);
+    pRsspi->m_EnvAuxSend = (m_EnvEffectsEnabled ? m_EnvAuxSend : NULL_ENV_AUX);
 }
 
 //=========================================================================
 // radSoundHalListener::SetSupportSurround
 //=========================================================================
 
-/* virtual */ void radSoundHalListener::SetSupportSurround( bool support )
-{
+/* virtual */ void radSoundHalListener::SetSupportSurround(bool support) {
     m_SurroundSupported = support;
 }
 
@@ -701,8 +647,7 @@ float radSoundHalListener::CalculatePositionalVolumeFactor
 // radSoundHalListener::GetSupportSurround
 //=========================================================================
 
-/* virtual */ bool radSoundHalListener::GetSupportSurround( void )
-{
+/* virtual */ bool radSoundHalListener::GetSupportSurround(void) {
     return m_SurroundSupported;
 }
 
@@ -710,43 +655,39 @@ float radSoundHalListener::CalculatePositionalVolumeFactor
 // radSoundHalListener::GetInstance
 //=========================================================================
 
-/* static */ radSoundHalListener * radSoundHalListener::GetInstance( void )
-{
-	rAssert( s_pTheRadSoundSoftwareListener != NULL );
+/* static */ radSoundHalListener *radSoundHalListener::GetInstance(void) {
+    rAssert(s_pTheRadSoundSoftwareListener != NULL);
 
-	return s_pTheRadSoundSoftwareListener;
+    return s_pTheRadSoundSoftwareListener;
 }
 
 //=========================================================================
 // radSoundHalListener::Initialize
 //=========================================================================
 
-/* static */ void radSoundHalListener::Initialize( radMemoryAllocator allocator )
-{
-    rAssert( s_pTheRadSoundSoftwareListener == NULL );
+/* static */ void radSoundHalListener::Initialize(radMemoryAllocator allocator) {
+    rAssert(s_pTheRadSoundSoftwareListener == NULL);
 
-    new( "radSoundHalListener", allocator ) radSoundHalListener( allocator );
-    s_pTheRadSoundSoftwareListener->AddRef( );
+    new("radSoundHalListener", allocator) radSoundHalListener(allocator);
+    s_pTheRadSoundSoftwareListener->AddRef();
 }
 
 //=========================================================================
 // radSoundHalListener::Termintate
 //=========================================================================
 
-/* static */ void radSoundHalListener::Terminate( void )
-{
-    rAssert( s_pTheRadSoundSoftwareListener != NULL );
+/* static */ void radSoundHalListener::Terminate(void) {
+    rAssert(s_pTheRadSoundSoftwareListener != NULL);
 
-    radSoundHalListener::s_pTheRadSoundSoftwareListener->Release( );
+    radSoundHalListener::s_pTheRadSoundSoftwareListener->Release();
 }
 
 //=========================================================================
 // ::radSoundHalListenerGet
 //=========================================================================
 
-/* static */ IRadSoundHalListener * radSoundHalListenerGet( void )
-{
-	return radSoundHalListener::GetInstance( );
+/* static */ IRadSoundHalListener *radSoundHalListenerGet(void) {
+    return radSoundHalListener::GetInstance();
 }
 
 

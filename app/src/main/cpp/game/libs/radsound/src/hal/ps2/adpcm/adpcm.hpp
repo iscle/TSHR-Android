@@ -12,8 +12,10 @@
 
 #include <radsound.hpp>
 
-short radSoundVolumeAnalogToHardwareAdpcmPs2( float analogVol );
-short radSoundVolumeAmplitudeToHardwareAdpcmPs2( float amplitude );
-short radSoundPitchPercentageToHardwareAdpcmPs2( float pitch, unsigned int samplingRate );
+short radSoundVolumeAnalogToHardwareAdpcmPs2(float analogVol);
+
+short radSoundVolumeAmplitudeToHardwareAdpcmPs2(float amplitude);
+
+short radSoundPitchPercentageToHardwareAdpcmPs2(float pitch, unsigned int samplingRate);
 
 #endif // ADPCM_HPP

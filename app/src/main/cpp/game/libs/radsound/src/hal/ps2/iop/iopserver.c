@@ -24,7 +24,7 @@
 //
 //      o bit 0 is the loop/end bit.  All data must have this set.  In the case
 //        of a looping sample it signifies when to loop back to the loop/start
-//        point ( see bit 2 ).  In the case of non looping data this signifies
+//        point (see bit 2).  In the case of non looping data this signifies
 //        the end of the data and the spu will mute, but not stop!,  the voice.
 //
 //      o bit 1 is the loop existence bit.  Looping data must have this bit
@@ -49,7 +49,7 @@
 // Global Data
 //============================================================================
 
-ModuleInfo Module = { "radsound", 0x0101 };
+ModuleInfo Module = {"radsound", 0x0101};
 
 //============================================================================
 //
@@ -60,15 +60,14 @@ ModuleInfo Module = { "radsound", 0x0101 };
 //============================================================================
 
 int start
-(
-    void
-)
-{
-    FlushDcache();  
+        (
+                void
+        ) {
+    FlushDcache();
     CpuEnableIntr();
 
-    radSoundVoiceServerInitialize( );
-    radSoundLoadServerInitialize( );
+    radSoundVoiceServerInitialize();
+    radSoundLoadServerInitialize();
 
     return 0;
 }

@@ -25,16 +25,16 @@ struct radSoundhalPositionalEntity;
 // radSoundhalPostionalEntity
 //============================================================================
 
-struct radSoundHalPositionalEntity
-{
-	public:
+struct radSoundHalPositionalEntity {
+public:
 
-		virtual void OnApplyPositionalInfo( void ) = 0;
+    virtual void OnApplyPositionalInfo(void) = 0;
 
-	private: friend struct radSoundHalPositionalGroup;
+private:
+    friend struct radSoundHalPositionalGroup;
 
-		radSoundHalPositionalEntity * m_pNext;
-		radSoundHalPositionalEntity * m_pPrev;
+    radSoundHalPositionalEntity *m_pNext;
+    radSoundHalPositionalEntity *m_pPrev;
 };
 
 //============================================================================
@@ -42,47 +42,68 @@ struct radSoundHalPositionalEntity
 //============================================================================
 
 struct radSoundHalPositionalGroup
-	:
-	public IRadSoundHalPositionalGroup,
-	public radLinkedClass< radSoundHalPositionalGroup >,
-	public radSoundObject
-{
-	public:
+        :
+                public IRadSoundHalPositionalGroup,
+                public radLinkedClass<radSoundHalPositionalGroup>,
+                public radSoundObject {
+public:
 
-		IMPLEMENT_REFCOUNTED( "radSoundHalPositionalGroup" )
-		
-		radSoundHalPositionalGroup( void );
-		virtual ~radSoundHalPositionalGroup( void );
+    IMPLEMENT_REFCOUNTED("radSoundHalPositionalGroup")
 
-		void AddPositionalEntity( radSoundHalPositionalEntity * pRadSoundHalPositionalEntity );
-		void RemovePositionalEntity( radSoundHalPositionalEntity * pRadSoundHalPositionalEntity );
+    radSoundHalPositionalGroup(void);
 
-		void UpdatePositionalSettings( radSoundVector * pListenerPosition, float listenerRolloffFactor );
+    virtual ~radSoundHalPositionalGroup(void);
 
-		// IRadSoundHalPositionalGroup
+    void AddPositionalEntity(radSoundHalPositionalEntity *pRadSoundHalPositionalEntity);
 
-		virtual void  SetPosition( radSoundVector * pPosition );
-		virtual void  GetPosition( radSoundVector * pPosition );
-		virtual void  SetVelocity( radSoundVector * pVelocity );
-		virtual void  GetVelocity( radSoundVector * pVelocity );
-		virtual void  SetOrientation( radSoundVector * pFront, radSoundVector * pTop );
-		virtual void  GetOrientation( radSoundVector * pFront, radSoundVector * pTop );
-		virtual void  SetMinMaxDistance( float min, float max );
-		virtual void  GetMinMaxDistance( float * pMin, float * pMax );
-		virtual void  SetConeOutsideVolume( float ov );
-		virtual float GetConeOutsideVolume( void );
-		virtual void  SetConeAngles( float in, float out );
-		virtual void  GetConeAngles( float * pIn, float * pOut );
+    void RemovePositionalEntity(radSoundHalPositionalEntity *pRadSoundHalPositionalEntity);
 
-        virtual void  SetOcclusion( float occl ) { rDebugPrintf( "Win32 Occlusion not supported\n" ); }
-        virtual float GetOcclusion( void ) { rDebugPrintf( "Win32 Occlusion not supported\n"); return 0.0f; }
-        virtual void  SetObstruction( float obst ) { rDebugPrintf( "Win32 Obstruction not supported\n" ); }
-        virtual float GetObstruction( void ) { rDebugPrintf( "Win32 Obstruction not supported\n" ); return 0.0f; }
+    void UpdatePositionalSettings(radSoundVector *pListenerPosition, float listenerRolloffFactor);
 
-		DS3DBUFFER m_Ds3dBuffer;
-		float m_VolumeRolloffFactor;
+    // IRadSoundHalPositionalGroup
 
-		radSoundHalPositionalEntity * m_pRadSoundHalPositionalEntity_Head;
+    virtual void SetPosition(radSoundVector *pPosition);
+
+    virtual void GetPosition(radSoundVector *pPosition);
+
+    virtual void SetVelocity(radSoundVector *pVelocity);
+
+    virtual void GetVelocity(radSoundVector *pVelocity);
+
+    virtual void SetOrientation(radSoundVector *pFront, radSoundVector *pTop);
+
+    virtual void GetOrientation(radSoundVector *pFront, radSoundVector *pTop);
+
+    virtual void SetMinMaxDistance(float min, float max);
+
+    virtual void GetMinMaxDistance(float *pMin, float *pMax);
+
+    virtual void SetConeOutsideVolume(float ov);
+
+    virtual float GetConeOutsideVolume(void);
+
+    virtual void SetConeAngles(float in, float out);
+
+    virtual void GetConeAngles(float *pIn, float *pOut);
+
+    virtual void SetOcclusion(float occl) { rDebugPrintf("Win32 Occlusion not supported\n"); }
+
+    virtual float GetOcclusion(void) {
+        rDebugPrintf("Win32 Occlusion not supported\n");
+        return 0.0f;
+    }
+
+    virtual void SetObstruction(float obst) { rDebugPrintf("Win32 Obstruction not supported\n"); }
+
+    virtual float GetObstruction(void) {
+        rDebugPrintf("Win32 Obstruction not supported\n");
+        return 0.0f;
+    }
+
+    DS3DBUFFER m_Ds3dBuffer;
+    float m_VolumeRolloffFactor;
+
+    radSoundHalPositionalEntity *m_pRadSoundHalPositionalEntity_Head;
 };
 
 #endif // RADSOUNDHALPOSITIONALGROUP_HPP

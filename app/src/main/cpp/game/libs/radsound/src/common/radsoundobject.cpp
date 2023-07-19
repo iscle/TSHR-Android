@@ -6,5 +6,5 @@
 #include "pch.hpp"
 #include <radsoundobject.hpp>
 
-const char * radSoundObject::s_SoundObjectName = "error!";
+const char *radSoundObject::s_SoundObjectName = "error!";
 unsigned int radSoundObject::s_SoundObjectCount = 0;

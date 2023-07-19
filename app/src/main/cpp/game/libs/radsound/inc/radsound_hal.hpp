@@ -52,13 +52,12 @@ struct IRadSoundHalBufferLoadCallback;
 
 // The auxillary mode affects the way voice output is sent to an Fx send.
 
-enum radSoundAuxMode
-{
-	radSoundAuxMode_Off,        // No signal to effects send
-	radSoundAuxMode_PreFader,   // signal after trim, but before volume
-	radSoundAuxMode_PostFader,  // signal after trim, and after volume
-	radSoundAuxMode_PostFaderDirect // Ps2 optomization, aux volume is disabled
-                                    // and one less hw voice is used for sound.
+enum radSoundAuxMode {
+    radSoundAuxMode_Off,        // No signal to effects send
+    radSoundAuxMode_PreFader,   // signal after trim, but before volume
+    radSoundAuxMode_PostFader,  // signal after trim, and after volume
+    radSoundAuxMode_PostFaderDirect // Ps2 optomization, aux volume is disabled
+    // and one less hw voice is used for sound.
 };
 
 // The global mode of the sound system.  XBox TRC says that this must be set
@@ -66,29 +65,35 @@ enum radSoundAuxMode
 // doesn't allow control of this so it is igored.  Ps2 doesn't support surround
 // so _Surround is equivalent to _Stereo.  Game cube supports all modes.
 
-enum radSoundOutputMode
-{
-	radSoundOutputMode_Mono,    // radsound mixes to mono (GAMECUBE/PS2 only)
-	radSoundOutputMode_Stereo,  // radsound mixes to stereo (GAMECUBE/PS2 only)
-	radSoundOutputMode_Surround // GAMECUBE only
+enum radSoundOutputMode {
+    radSoundOutputMode_Mono,    // radsound mixes to mono (GAMECUBE/PS2 only)
+    radSoundOutputMode_Stereo,  // radsound mixes to stereo (GAMECUBE/PS2 only)
+    radSoundOutputMode_Surround // GAMECUBE only
 };
 
 //============================================================================
 // Functions and Factories
 //============================================================================
 
-void radSoundHalSystemInitialize( radMemoryAllocator allocator );
-void radSoundHalSystemTerminate( void );
+void radSoundHalSystemInitialize(radMemoryAllocator allocator);
 
-IRadSoundHalSystem			* radSoundHalSystemGet( void );
-IRadSoundHalListener		* radSoundHalListenerGet( void );
-IRadSoundHalVoice			* radSoundHalVoiceCreate( radMemoryAllocator allocator );
-IRadSoundHalBuffer			* radSoundHalBufferCreate( radMemoryAllocator allocator );
-IRadSoundHalAudioFormat		* radSoundHalAudioFormatCreate( radMemoryAllocator allocator );
-IRadSoundHalPositionalGroup * radSoundHalPositionalGroupCreate( radMemoryAllocator allocator );
+void radSoundHalSystemTerminate(void);
 
-unsigned int radSoundHalDataSourceReadAlignmentGet( );
-unsigned int radSoundHalDataSourceReadMultipleGet( );
+IRadSoundHalSystem *radSoundHalSystemGet(void);
+
+IRadSoundHalListener *radSoundHalListenerGet(void);
+
+IRadSoundHalVoice *radSoundHalVoiceCreate(radMemoryAllocator allocator);
+
+IRadSoundHalBuffer *radSoundHalBufferCreate(radMemoryAllocator allocator);
+
+IRadSoundHalAudioFormat *radSoundHalAudioFormatCreate(radMemoryAllocator allocator);
+
+IRadSoundHalPositionalGroup *radSoundHalPositionalGroupCreate(radMemoryAllocator allocator);
+
+unsigned int radSoundHalDataSourceReadAlignmentGet();
+
+unsigned int radSoundHalDataSourceReadMultipleGet();
 
 //=============================================================================
 // Component: IRadSoundHalAudioFormat
@@ -104,56 +109,73 @@ unsigned int radSoundHalDataSourceReadMultipleGet( );
 #define PCM_SILENCE_16_BIT ((short)0)
 #define PCM_SILENCE_8_BIT ((unsigned char)128)
 
-struct IRadSoundHalAudioFormat : public IRefCount
-{
-	enum Encoding
-	{
-		PCM,
-		VAG,
-		PCM_BIGENDIAN,
-		XBOXADPCM,
-		GCNADPCM,
-		RadicalAdpcm
-	};
+struct IRadSoundHalAudioFormat : public IRefCount {
+    enum Encoding {
+        PCM,
+        VAG,
+        PCM_BIGENDIAN,
+        XBOXADPCM,
+        GCNADPCM,
+        RadicalAdpcm
+    };
 
-	enum SizeType { Milliseconds, Frames, Samples, Bytes };
+    enum SizeType {
+        Milliseconds, Frames, Samples, Bytes
+    };
 
-	virtual void Initialize(
-		Encoding encoding,
-        IRefCount * pIRefCount_CustomInfo,
-		unsigned int samplingRate,
-		unsigned int channels,
-		unsigned int bitResolution ) = 0;
+    virtual void Initialize(
+            Encoding encoding,
+            IRefCount *pIRefCount_CustomInfo,
+            unsigned int samplingRate,
+            unsigned int channels,
+            unsigned int bitResolution) = 0;
 
-	virtual Encoding     GetEncoding( void ) = 0;
-	virtual IRefCount *  GetCustomEncodingInfo( void ) = 0;
-	virtual unsigned int GetNumberOfChannels( void ) = 0;
-	virtual unsigned int GetFrameSizeInBytes( void ) = 0;
-	virtual unsigned int GetFrameSizeInSamples( void ) = 0;
-	virtual unsigned int GetSampleRate( void ) = 0;
-	virtual unsigned int GetSampleSizeInBits( void ) = 0; // stereo matters here
+    virtual Encoding GetEncoding(void) = 0;
 
-	virtual bool Matches( IRadSoundHalAudioFormat * pOther ) = 0;
+    virtual IRefCount *GetCustomEncodingInfo(void) = 0;
 
-	// Conversion functions
+    virtual unsigned int GetNumberOfChannels(void) = 0;
 
-	virtual unsigned int SamplesToBytes( unsigned int samples ) = 0;
-	virtual unsigned int BytesToSamples( unsigned int bytes ) = 0;
-	virtual unsigned int SamplesToFrames( unsigned int samples ) = 0;
-	virtual unsigned int FramesToSamples( unsigned int frames ) = 0;
-	virtual unsigned int FramesToBytes( unsigned int frames ) = 0;
-	virtual unsigned int BytesToFrames( unsigned int bytes ) = 0;
-    virtual unsigned int SamplesToMilliseconds( unsigned int samples ) = 0;
-    virtual unsigned int MillisecondsToSamples( unsigned int milliseconds ) = 0;
-    virtual unsigned int BytesToMilliseconds( unsigned int bytes ) = 0;
-    virtual unsigned int MillisecondsToBytes( unsigned int samples ) = 0;
-    virtual unsigned int FramesToMilliseconds( unsigned int frames ) = 0;
-    virtual unsigned int MillisecondsToFrames( unsigned int milliseconds ) = 0;
+    virtual unsigned int GetFrameSizeInBytes(void) = 0;
 
-	virtual unsigned int ConvertSizeType(
-		SizeType target, unsigned int size, SizeType source ) = 0;
+    virtual unsigned int GetFrameSizeInSamples(void) = 0;
 
-	virtual unsigned int GetBitResolution( void ) = 0;
+    virtual unsigned int GetSampleRate(void) = 0;
+
+    virtual unsigned int GetSampleSizeInBits(void) = 0; // stereo matters here
+
+    virtual bool Matches(IRadSoundHalAudioFormat *pOther) = 0;
+
+    // Conversion functions
+
+    virtual unsigned int SamplesToBytes(unsigned int samples) = 0;
+
+    virtual unsigned int BytesToSamples(unsigned int bytes) = 0;
+
+    virtual unsigned int SamplesToFrames(unsigned int samples) = 0;
+
+    virtual unsigned int FramesToSamples(unsigned int frames) = 0;
+
+    virtual unsigned int FramesToBytes(unsigned int frames) = 0;
+
+    virtual unsigned int BytesToFrames(unsigned int bytes) = 0;
+
+    virtual unsigned int SamplesToMilliseconds(unsigned int samples) = 0;
+
+    virtual unsigned int MillisecondsToSamples(unsigned int milliseconds) = 0;
+
+    virtual unsigned int BytesToMilliseconds(unsigned int bytes) = 0;
+
+    virtual unsigned int MillisecondsToBytes(unsigned int samples) = 0;
+
+    virtual unsigned int FramesToMilliseconds(unsigned int frames) = 0;
+
+    virtual unsigned int MillisecondsToFrames(unsigned int milliseconds) = 0;
+
+    virtual unsigned int ConvertSizeType(
+            SizeType target, unsigned int size, SizeType source) = 0;
+
+    virtual unsigned int GetBitResolution(void) = 0;
 };
 
 //======================================================================
@@ -164,9 +186,8 @@ struct IRadSoundHalAudioFormat : public IRefCount
 //      complete.
 //======================================================================
 
-struct IRadSoundHalDataSourceCallback : public IRefCount
-{
-	virtual void OnDataSourceFramesLoaded( unsigned int framesActuallyRead ) = 0;
+struct IRadSoundHalDataSourceCallback : public IRefCount {
+    virtual void OnDataSourceFramesLoaded(unsigned int framesActuallyRead) = 0;
 };
 
 //======================================================================
@@ -174,12 +195,12 @@ struct IRadSoundHalDataSourceCallback : public IRefCount
 //
 // Description: All data fed to buffers must come from a component
 //		that supports this interface.  You can only issue one
-//      GetFramesAsync( ) request at a time.
+//      GetFramesAsync() request at a time.
 //
 //      Generally, there are two types of data sources.  Finite length
 //      and unknown length.  An unknown length data source such as a
 //      network radio stream or interactive music stream will report
-//      -1 (0xFFFFFFFF) when GetRemainingFrames( ) is called.  In this
+//      -1 (0xFFFFFFFF) when GetRemainingFrames() is called.  In this
 //      case the end of stream (EOS) is signalled when the data source
 //      returns less frames then it was asked for.  Note that it is an
 //      error to ask for more frames than are available from a finite
@@ -190,31 +211,32 @@ struct IRadSoundHalDataSourceCallback : public IRefCount
 //      radsound.
 //======================================================================
 
-struct IRadSoundHalDataSource : public IRefCount
-{
-	// This function Allows us to hide async activity.
-	
-	enum State { Initializing, Initialized, Error };
+struct IRadSoundHalDataSource : public IRefCount {
+    // This function Allows us to hide async activity.
 
-	virtual State GetState( void ) = 0;
+    enum State {
+        Initializing, Initialized, Error
+    };
 
-	virtual IRadSoundHalAudioFormat * GetFormat( void ) = 0;
+    virtual State GetState(void) = 0;
 
-	// (0xFFFFFFFF) signifies infinitely long or unknown length.
+    virtual IRadSoundHalAudioFormat *GetFormat(void) = 0;
 
-	virtual unsigned int GetRemainingFrames( void ) = 0;
+    // (0xFFFFFFFF) signifies infinitely long or unknown length.
+
+    virtual unsigned int GetRemainingFrames(void) = 0;
 
     // Only one outstanding request is allowed.
 
-	virtual void GetFramesAsync( 
-		void * pBytes, 
-		radMemorySpace destinationMemorySpace, 
-		unsigned int numberOfFrames,
-		IRadSoundHalDataSourceCallback * pCallback ) = 0;
-		    
-    virtual const char * GetName( void ) = 0;
-    
-    virtual unsigned int GetAvailableFrames( void ) = 0;
+    virtual void GetFramesAsync(
+            void *pBytes,
+            radMemorySpace destinationMemorySpace,
+            unsigned int numberOfFrames,
+            IRadSoundHalDataSourceCallback *pCallback) = 0;
+
+    virtual const char *GetName(void) = 0;
+
+    virtual unsigned int GetAvailableFrames(void) = 0;
 };
 
 //============================================================================
@@ -226,9 +248,8 @@ struct IRadSoundHalDataSource : public IRefCount
 //      the datasource.
 //============================================================================
 
-struct IRadSoundHalBufferLoadCallback :	public IRefCount
-{
-	virtual void OnBufferLoadComplete( unsigned int dataSourceFrames ) = 0;
+struct IRadSoundHalBufferLoadCallback : public IRefCount {
+    virtual void OnBufferLoadComplete(unsigned int dataSourceFrames) = 0;
 };
 
 //============================================================================
@@ -238,9 +259,8 @@ struct IRadSoundHalBufferLoadCallback :	public IRefCount
 //		a buffer that the current oustanding async clear is completed.
 //============================================================================
 
-struct IRadSoundHalBufferClearCallback : public IRefCount
-{
-    virtual void OnBufferClearComplete( void ) = 0;
+struct IRadSoundHalBufferClearCallback : public IRefCount {
+    virtual void OnBufferClearComplete(void) = 0;
 };
 
 //======================================================================
@@ -252,69 +272,70 @@ struct IRadSoundHalBufferClearCallback : public IRefCount
 //      hardware playback, etc.
 //======================================================================
 
-struct IRadSoundHalBuffer : public IRefCount
-{
+struct IRadSoundHalBuffer : public IRefCount {
     virtual void Initialize(
-		IRadSoundHalAudioFormat * pIRadSoundHalAudioFormat,
-        IRadMemoryObject * pIRadMemoryObject,
-        unsigned int sizeInFrames, // For Re-using a memory object for a smaller buffer
-		bool looping,
-        bool streaming ) = 0;
-    
-	virtual IRadSoundHalAudioFormat * GetFormat( void ) = 0;
-	virtual IRadMemoryObject * GetMemoryObject( void ) = 0;
-	virtual bool IsLooping( void ) = 0;
+            IRadSoundHalAudioFormat *pIRadSoundHalAudioFormat,
+            IRadMemoryObject *pIRadMemoryObject,
+            unsigned int sizeInFrames, // For Re-using a memory object for a smaller buffer
+            bool looping,
+            bool streaming) = 0;
 
-	// SizeInSamples( ) is now size in frames.  Frames is smallest
+    virtual IRadSoundHalAudioFormat *GetFormat(void) = 0;
+
+    virtual IRadMemoryObject *GetMemoryObject(void) = 0;
+
+    virtual bool IsLooping(void) = 0;
+
+    // SizeInSamples() is now size in frames.  Frames is smallest
     // manipulatable unit of data.
 
-	virtual unsigned int GetSizeInFrames( void ) = 0;
+    virtual unsigned int GetSizeInFrames(void) = 0;
 
-	// Loads and clears are now specified in terms of frames, not samples.
-	// A frame is the smallest logical unit of data.
+    // Loads and clears are now specified in terms of frames, not samples.
+    // A frame is the smallest logical unit of data.
     // If the datasource provides less frames than were reqested, the
     // buffer will fill the remaining frames with silence and still load
     // the entire request.  In the callback will report the number of frames
     // obtained from the datasource, however it is safe to assume that the
     // entire load request was satisfied.
-		
-	virtual void LoadAsync(
-		IRadSoundHalDataSource * pIRadSoundHalDataSource,
-		unsigned int startPositionInFrames,
-		unsigned int numberOfFrames,
-		IRadSoundHalBufferLoadCallback * pIRadSoundHalBufferLoadCallback ) = 0;
 
-    virtual void ClearAsync( 
-        unsigned int startPositionInFrames,
-		unsigned int numberOfFrames,
-        IRadSoundHalBufferClearCallback * pIRadSoundHalBufferClearCallback ) = 0;
+    virtual void LoadAsync(
+            IRadSoundHalDataSource *pIRadSoundHalDataSource,
+            unsigned int startPositionInFrames,
+            unsigned int numberOfFrames,
+            IRadSoundHalBufferLoadCallback *pIRadSoundHalBufferLoadCallback) = 0;
+
+    virtual void ClearAsync(
+            unsigned int startPositionInFrames,
+            unsigned int numberOfFrames,
+            IRadSoundHalBufferClearCallback *pIRadSoundHalBufferClearCallback) = 0;
 
     //
     // The number of frames to be transfered by Load or Clear operations
     // must be a multiple of the minimum transfer size
     //
 
-    virtual unsigned int GetMinTransferSize( IRadSoundHalAudioFormat::SizeType sizeType ) = 0;
+    virtual unsigned int GetMinTransferSize(IRadSoundHalAudioFormat::SizeType sizeType) = 0;
 
     // This will cancel all outstaning load/clear operations.
 
-    virtual void CancelAsyncOperations( void ) = 0;
+    virtual void CancelAsyncOperations(void) = 0;
 
     // This solves GameCube ADPCM problems.  The audio formats must be the same
     // except for the custom encoding info.
 
-    virtual void ReSetAudioFormat( IRadSoundHalAudioFormat * pIRadSoundHalAudioFormat ) = 0;
+    virtual void ReSetAudioFormat(IRadSoundHalAudioFormat *pIRadSoundHalAudioFormat) = 0;
 };
 
 // Helper function for initialization of IRadSoundHalBuffer.  Rounds requested 
 // buffer size, taking audio format and optimal dma transfer multiples into account.
 // Will calculate the required IRadMemoryObject size.
 
-unsigned int radSoundHalBufferCalculateMemorySize( 
-    IRadSoundHalAudioFormat::SizeType resultType,
-    unsigned int requestedSize, 
-    IRadSoundHalAudioFormat::SizeType requestedSizeType, 
-    IRadSoundHalAudioFormat * pIRadSoundHalAudioFormat );
+unsigned int radSoundHalBufferCalculateMemorySize(
+        IRadSoundHalAudioFormat::SizeType resultType,
+        unsigned int requestedSize,
+        IRadSoundHalAudioFormat::SizeType requestedSizeType,
+        IRadSoundHalAudioFormat *pIRadSoundHalAudioFormat);
 
 //======================================================================
 // Interface: IRadSoundHalVoice
@@ -324,57 +345,69 @@ unsigned int radSoundHalBufferCalculateMemorySize(
 //      consumed only when the voice is actually playing.
 //======================================================================
 
-struct IRadSoundHalVoice : public IRefCount
-{
+struct IRadSoundHalVoice : public IRefCount {
     // Priority is a number from zero to 10, where 10 is the highest
     // prioirty.  If the system run's out of voices, voices of lowere
     // priority will be stopped and given to the higher priority voices.
 
-	virtual void SetPriority( unsigned int priority ) = 0;
-    virtual unsigned int GetPriority( void ) = 0;
-        
-    virtual void SetBuffer( IRadSoundHalBuffer * pIRadSoundHalBuffer ) = 0;
-    virtual IRadSoundHalBuffer * GetBuffer( void ) = 0;
+    virtual void SetPriority(unsigned int priority) = 0;
 
-    virtual void Play( void ) = 0;
-    virtual void Stop( void ) = 0;
-    virtual bool IsPlaying( void ) = 0;
+    virtual unsigned int GetPriority(void) = 0;
 
-    virtual void SetPlaybackPositionInSamples( unsigned int position ) = 0;
-    virtual unsigned int GetPlaybackPositionInSamples( void ) = 0;
+    virtual void SetBuffer(IRadSoundHalBuffer *pIRadSoundHalBuffer) = 0;
 
-    virtual void SetVolume( float volume ) = 0;
-    virtual float GetVolume( void ) = 0;
-	    
-    virtual void SetTrim( float trim ) = 0;
-    virtual float GetTrim( void ) = 0;
-	    
-    virtual void SetMuted( bool muteOn ) = 0;
-    virtual bool GetMuted( void ) = 0;
+    virtual IRadSoundHalBuffer *GetBuffer(void) = 0;
 
-	virtual void  SetPan( float pan ) = 0;
-	virtual float GetPan( void ) = 0;
+    virtual void Play(void) = 0;
 
-    virtual void SetPitch( float pitch ) = 0;
-    virtual float GetPitch( void ) = 0;
-	    
+    virtual void Stop(void) = 0;
+
+    virtual bool IsPlaying(void) = 0;
+
+    virtual void SetPlaybackPositionInSamples(unsigned int position) = 0;
+
+    virtual unsigned int GetPlaybackPositionInSamples(void) = 0;
+
+    virtual void SetVolume(float volume) = 0;
+
+    virtual float GetVolume(void) = 0;
+
+    virtual void SetTrim(float trim) = 0;
+
+    virtual float GetTrim(void) = 0;
+
+    virtual void SetMuted(bool muteOn) = 0;
+
+    virtual bool GetMuted(void) = 0;
+
+    virtual void SetPan(float pan) = 0;
+
+    virtual float GetPan(void) = 0;
+
+    virtual void SetPitch(float pitch) = 0;
+
+    virtual float GetPitch(void) = 0;
+
     // This is the Fx send mode (see radSoundAuxMode above)
-    virtual void SetAuxMode( unsigned int aux, radSoundAuxMode mode ) = 0;
-    virtual radSoundAuxMode GetAuxMode( unsigned int aux ) = 0;
+    virtual void SetAuxMode(unsigned int aux, radSoundAuxMode mode) = 0;
+
+    virtual radSoundAuxMode GetAuxMode(unsigned int aux) = 0;
 
     // How much signal to send to the Fx send.  Global effects sends
     // are set up through the IRadSoundHalSystem component.
 
-    virtual void  SetAuxGain( unsigned int aux, float gain ) = 0;
-    virtual float GetAuxGain( unsigned int aux ) = 0; 
+    virtual void SetAuxGain(unsigned int aux, float gain) = 0;
 
-	// Set the positional group, there is no longer individual SetPosition( ),
-	// SetVelocity( ), etc. parameters.
+    virtual float GetAuxGain(unsigned int aux) = 0;
+
+    // Set the positional group, there is no longer individual SetPosition(),
+    // SetVelocity(), etc. parameters.
     // NOTE: Positional voices lose control of their aux sends (the environmental
     // effects system gains control)
 
-	virtual void SetPositionalGroup( IRadSoundHalPositionalGroup * pIRshpg ) = 0;
-	virtual IRadSoundHalPositionalGroup * GetPositionalGroup( void ) = 0;
+    virtual void SetPositionalGroup(IRadSoundHalPositionalGroup *pIRshpg) = 0;
+
+    virtual IRadSoundHalPositionalGroup *GetPositionalGroup(void) = 0;
 };
 
 //============================================================================
@@ -385,26 +418,38 @@ struct IRadSoundHalVoice : public IRefCount
 //               hears from positional groups.
 //============================================================================
 
-struct IRadSoundHalListener : public IRefCount
-{
-    virtual void  SetPosition( radSoundVector * ) = 0;
-    virtual void  GetPosition( radSoundVector * ) = 0;
-    virtual void  SetVelocity( radSoundVector * ) = 0;
-    virtual void  GetVelocity( radSoundVector * ) = 0;
-    virtual void  SetOrientation( radSoundVector * pFront, radSoundVector * pTop ) = 0;
-    virtual void  GetOrientation( radSoundVector * pFront, radSoundVector * pTop ) = 0;
+struct IRadSoundHalListener : public IRefCount {
+    virtual void SetPosition(radSoundVector *) = 0;
 
-    virtual void  SetDistanceFactor( float ) = 0;
-    virtual float GetDistanceFactor( void ) = 0;
-    virtual void  SetDopplerFactor( float ) = 0;
-    virtual float GetDopplerFactor( void ) = 0;
-    virtual void  SetRollOffFactor( float ) = 0;
-    virtual float GetRollOffFactor( void ) = 0;
+    virtual void GetPosition(radSoundVector *) = 0;
 
-    virtual void  SetEnvEffectsEnabled( bool enabled ) = 0;
-    virtual bool  GetEnvEffectsEnabled( void ) = 0;
-    virtual void  SetEnvironmentAuxSend( unsigned int auxsend ) = 0;
-    virtual unsigned int GetEnvironmentAuxSend( void ) = 0;
+    virtual void SetVelocity(radSoundVector *) = 0;
+
+    virtual void GetVelocity(radSoundVector *) = 0;
+
+    virtual void SetOrientation(radSoundVector *pFront, radSoundVector *pTop) = 0;
+
+    virtual void GetOrientation(radSoundVector *pFront, radSoundVector *pTop) = 0;
+
+    virtual void SetDistanceFactor(float) = 0;
+
+    virtual float GetDistanceFactor(void) = 0;
+
+    virtual void SetDopplerFactor(float) = 0;
+
+    virtual float GetDopplerFactor(void) = 0;
+
+    virtual void SetRollOffFactor(float) = 0;
+
+    virtual float GetRollOffFactor(void) = 0;
+
+    virtual void SetEnvEffectsEnabled(bool enabled) = 0;
+
+    virtual bool GetEnvEffectsEnabled(void) = 0;
+
+    virtual void SetEnvironmentAuxSend(unsigned int auxsend) = 0;
+
+    virtual unsigned int GetEnvironmentAuxSend(void) = 0;
 };
 
 //======================================================================
@@ -426,24 +471,38 @@ struct IRadSoundHalListener : public IRefCount
 //
 //======================================================================
 
-struct IRadSoundHalPositionalGroup : public IRefCount
-{
-    virtual void  SetPosition( radSoundVector * pPosition ) = 0;
-    virtual void  GetPosition( radSoundVector * pPosition ) = 0;
-    virtual void  SetVelocity( radSoundVector * pVelocity ) = 0;
-    virtual void  GetVelocity( radSoundVector * pVelocity ) = 0;
-    virtual void  SetOrientation( radSoundVector * pFront, radSoundVector * pTop ) = 0;
-    virtual void  GetOrientation( radSoundVector * pFront, radSoundVector * pTop ) = 0;
-    virtual void  SetMinMaxDistance( float min, float max ) = 0;
-    virtual void  GetMinMaxDistance( float * pMin, float * pMax ) = 0;
-    virtual void  SetConeOutsideVolume( float ov ) = 0;
-    virtual float GetConeOutsideVolume( void ) = 0;
-    virtual void  SetConeAngles( float in, float out ) = 0;
-    virtual void  GetConeAngles( float * pIn, float * pOut ) = 0;
-    virtual void  SetOcclusion( float occl ) = 0;
-    virtual float GetOcclusion( void ) = 0;
-    virtual void  SetObstruction( float obst ) = 0;
-    virtual float GetObstruction( void ) = 0;
+struct IRadSoundHalPositionalGroup : public IRefCount {
+    virtual void SetPosition(radSoundVector *pPosition) = 0;
+
+    virtual void GetPosition(radSoundVector *pPosition) = 0;
+
+    virtual void SetVelocity(radSoundVector *pVelocity) = 0;
+
+    virtual void GetVelocity(radSoundVector *pVelocity) = 0;
+
+    virtual void SetOrientation(radSoundVector *pFront, radSoundVector *pTop) = 0;
+
+    virtual void GetOrientation(radSoundVector *pFront, radSoundVector *pTop) = 0;
+
+    virtual void SetMinMaxDistance(float min, float max) = 0;
+
+    virtual void GetMinMaxDistance(float *pMin, float *pMax) = 0;
+
+    virtual void SetConeOutsideVolume(float ov) = 0;
+
+    virtual float GetConeOutsideVolume(void) = 0;
+
+    virtual void SetConeAngles(float in, float out) = 0;
+
+    virtual void GetConeAngles(float *pIn, float *pOut) = 0;
+
+    virtual void SetOcclusion(float occl) = 0;
+
+    virtual float GetOcclusion(void) = 0;
+
+    virtual void SetObstruction(float obst) = 0;
+
+    virtual float GetObstruction(void) = 0;
 };
 
 //============================================================================
@@ -454,37 +513,37 @@ struct IRadSoundHalPositionalGroup : public IRefCount
 //		radsound_???.hpp headers (where ??? is the platform).
 //============================================================================
 
-struct IRadSoundHalEffect : public IRefCount
-{
-    virtual void Attach( unsigned int auxSend ) = 0;
-    virtual void Detach( void ) = 0;
-    virtual void Update( void ) = 0;
+struct IRadSoundHalEffect : public IRefCount {
+    virtual void Attach(unsigned int auxSend) = 0;
 
-    #ifdef RAD_XBOX
-        virtual unsigned long GetIndex( void ) = 0;
-        virtual unsigned int GetNumInputs( void ) = 0;
-        virtual unsigned int GetNumOutputs( void ) = 0;
-        virtual unsigned int GetInput( unsigned int index ) = 0;
-        virtual unsigned int GetOutput( unsigned int index ) = 0;
-    #endif
+    virtual void Detach(void) = 0;
 
-    #if defined RAD_GAMECUBE || defined RAD_PS2 || defined RAD_XBOX
-        virtual void SetMasterGain( float masterGain ) = 0;
-        virtual float GetMasterGain( void ) = 0;
-    #endif
+    virtual void Update(void) = 0;
+
+#ifdef RAD_XBOX
+    virtual unsigned long GetIndex(void) = 0;
+    virtual unsigned int GetNumInputs(void) = 0;
+    virtual unsigned int GetNumOutputs(void) = 0;
+    virtual unsigned int GetInput(unsigned int index) = 0;
+    virtual unsigned int GetOutput(unsigned int index) = 0;
+#endif
+
+#if defined RAD_GAMECUBE || defined RAD_PS2 || defined RAD_XBOX
+    virtual void SetMasterGain(float masterGain) = 0;
+    virtual float GetMasterGain(void) = 0;
+#endif
 };
 
 //============================================================================
 // Interface: IRadSoundSoundSystem
 //
 // Description: This is the one sigleton object that represents "The Sound
-//      System"  call radSoundHalSystemGet( ) to retrieve a pointer to it.
+//      System"  call radSoundHalSystemGet() to retrieve a pointer to it.
 //============================================================================
 
-struct IRadSoundHalSystem : public IRefCount
-{
-	// Set up the root memory region, on the PS2 the reserved sound memory must
-	// be zero because it is physically dedicated hardware.
+struct IRadSoundHalSystem : public IRefCount {
+    // Set up the root memory region, on the PS2 the reserved sound memory must
+    // be zero because it is physically dedicated hardware.
     //
     // Because sound memory is managed externally, we need local memory to
     // manage it.  You are required to set an upper limit on the number of
@@ -498,72 +557,75 @@ struct IRadSoundHalSystem : public IRefCount
     // sound will continue to play if the game's window loses focus, otherwise
     // the sounds will mute.
 
-    struct SystemDescription
-    {
+    struct SystemDescription {
         unsigned int m_MaxRootAllocations;
         unsigned int m_NumAuxSends;
 
-        #if defined RAD_WIN32 || defined RAD_XBOX || defined RAD_GAMECUBE
+#if defined RAD_WIN32 || defined RAD_XBOX || defined RAD_GAMECUBE
         unsigned int m_ReservedSoundMemory;
-        #endif 
+#endif
 
-        #ifdef RAD_WIN32
+#ifdef RAD_WIN32
         unsigned int m_SamplingRate;
         bool m_EnableStickyFocus;
-        #endif
-        
-        #if defined RAD_GAMECUBE
-            radMemoryAllocator m_EffectsAllocator;
-        #endif
+#endif
+
+#if defined RAD_GAMECUBE
+        radMemoryAllocator m_EffectsAllocator;
+#endif
     };
 
-    virtual void Initialize( const SystemDescription & systemDescription ) = 0;
+    virtual void Initialize(const SystemDescription &systemDescription) = 0;
 
-	// Create a region tree based on this root to organize your sound memory
+    // Create a region tree based on this root to organize your sound memory
 
-	virtual IRadSoundHalMemoryRegion * GetRootMemoryRegion( void ) = 0;
-    virtual unsigned int GetNumAuxSends( ) = 0;
+    virtual IRadSoundHalMemoryRegion *GetRootMemoryRegion(void) = 0;
 
-	// Assign effects to auxillary sends
+    virtual unsigned int GetNumAuxSends() = 0;
 
-	virtual void SetAuxEffect( unsigned int auxNumber, IRadSoundHalEffect * pIRadSoundHalEffect ) = 0;
-	virtual IRadSoundHalEffect * GetAuxEffect( unsigned int auxNumber ) = 0;
-    virtual void SetAuxGain( unsigned int aux, float gain ) = 0;
-    virtual float GetAuxGain( unsigned int aux ) = 0;
-    
+    // Assign effects to auxillary sends
+
+    virtual void SetAuxEffect(unsigned int auxNumber, IRadSoundHalEffect *pIRadSoundHalEffect) = 0;
+
+    virtual IRadSoundHalEffect *GetAuxEffect(unsigned int auxNumber) = 0;
+
+    virtual void SetAuxGain(unsigned int aux, float gain) = 0;
+
+    virtual float GetAuxGain(unsigned int aux) = 0;
+
     // The global output mode (see radSoundOutputMode) above.
 
-	virtual void SetOutputMode( radSoundOutputMode mode ) = 0;
-	virtual radSoundOutputMode GetOutputMode( void ) = 0;
+    virtual void SetOutputMode(radSoundOutputMode mode) = 0;
 
-	// Call Service() as often as possible
+    virtual radSoundOutputMode GetOutputMode(void) = 0;
 
-    virtual void Service( void ) = 0;
-    
-	// Call ServiceOncePerFrame() like you would call Render(), positions are
-	// calculated and sounds are played.  You only need to call this function
-	// once per frame.
+    // Call Service() as often as possible
 
-	virtual void ServiceOncePerFrame( void ) = 0;
+    virtual void Service(void) = 0;
 
-	//
-	// Bulk memory statistics
-	//
+    // Call ServiceOncePerFrame() like you would call Render(), positions are
+    // calculated and sounds are played.  You only need to call this function
+    // once per frame.
 
-    struct Stats
-    {
-		unsigned int m_NumBuffers;
+    virtual void ServiceOncePerFrame(void) = 0;
+
+    //
+    // Bulk memory statistics
+    //
+
+    struct Stats {
+        unsigned int m_NumBuffers;
         unsigned int m_NumVoices;
         unsigned int m_NumVoicesPlaying;
         unsigned int m_NumPosVoices;
         unsigned int m_NumPosVoicesPlaying;
-    
-		unsigned int m_BufferMemoryUsed;       
-        unsigned int m_EffectsMemoryUsed;	
-		unsigned int m_TotalFreeSoundMemory;
+
+        unsigned int m_BufferMemoryUsed;
+        unsigned int m_EffectsMemoryUsed;
+        unsigned int m_TotalFreeSoundMemory;
     };
 
-    virtual void GetStats( IRadSoundHalSystem::Stats * pStats ) = 0;
+    virtual void GetStats(IRadSoundHalSystem::Stats *pStats) = 0;
 };
 
 //============================================================================
@@ -573,41 +635,41 @@ struct IRadSoundHalSystem : public IRefCount
 //		tree structure to avoid memory fragmentation.  You can create
 //      buffers using only the memory returned from this region tree.
 //		
-//		Memory regions abstract the actual physical memory space ( XBOX Main
-//		memory, PS2SPU ram, ARAM, etc. )
+//		Memory regions abstract the actual physical memory space (XBOX Main
+//		memory, PS2SPU ram, ARAM, etc.)
 //============================================================================
 
-struct IRadSoundHalMemoryRegion : public IRefCount
-{
-	// Create sub region, using memory from this region
+struct IRadSoundHalMemoryRegion : public IRefCount {
+    // Create sub region, using memory from this region
 
-	virtual IRadSoundHalMemoryRegion * CreateChildRegion(
-		unsigned int sizeInBytes,
-        unsigned int maxAllocations,
-        const char * pIdentifier ) = 0;
+    virtual IRadSoundHalMemoryRegion *CreateChildRegion(
+            unsigned int sizeInBytes,
+            unsigned int maxAllocations,
+            const char *pIdentifier) = 0;
 
-	// Allocate memory from this region
+    // Allocate memory from this region
 
-	virtual void CreateMemoryObject(
-		IRadMemoryObject ** ppIRadMemoryObject,
-        unsigned int bytes,
-        const char * pIdentifier ) = 0;
+    virtual void CreateMemoryObject(
+            IRadMemoryObject **ppIRadMemoryObject,
+            unsigned int bytes,
+            const char *pIdentifier) = 0;
 
-	// Functions for recursing through region tree.
+    // Functions for recursing through region tree.
 
-	virtual IRadSoundHalMemoryRegion * GetParent( void ) = 0;
+    virtual IRadSoundHalMemoryRegion *GetParent(void) = 0;
 
-	virtual IRadSoundHalMemoryRegion * GetFirstChild( void ) = 0;	
-	virtual IRadSoundHalMemoryRegion * GetNextChild(
-		IRadSoundHalMemoryRegion * pIRSoundMemoryRegion_NextChild ) = 0;
-	
-	// Status funcions
-	 
-	virtual unsigned int GetSize( void ) = 0;
+    virtual IRadSoundHalMemoryRegion *GetFirstChild(void) = 0;
 
-	virtual void GetStats( unsigned int * pFreeMemory,
-		unsigned * pNumObjects, unsigned int * pLargestBlock,
-		bool recurseChildren ) = 0;
+    virtual IRadSoundHalMemoryRegion *GetNextChild(
+            IRadSoundHalMemoryRegion *pIRSoundMemoryRegion_NextChild) = 0;
+
+    // Status funcions
+
+    virtual unsigned int GetSize(void) = 0;
+
+    virtual void GetStats(unsigned int *pFreeMemory,
+                          unsigned *pNumObjects, unsigned int *pLargestBlock,
+                          bool recurseChildren) = 0;
 };
 
 #endif // RADSOUND_HAL

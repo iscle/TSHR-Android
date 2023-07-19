@@ -9,7 +9,7 @@
 #include <dsound.h>
 #include <radfile.hpp>
 #include <radlinkedclass.hpp>
-#include <radsound_hal.hpp>  
+#include <radsound_hal.hpp>
 #include <radsoundobject.hpp>
 
 //=============================================================================
@@ -17,41 +17,41 @@
 //=============================================================================
 
 class radSoundBufferLoaderWin
-	:
-    public IRadSoundHalDataSourceCallback,
-    public radLinkedClass< radSoundBufferLoaderWin >,
-    public radSoundObject
-{
-    public:
+        :
+                public IRadSoundHalDataSourceCallback,
+                public radLinkedClass<radSoundBufferLoaderWin>,
+                public radSoundObject {
+public:
 
-        IMPLEMENT_REFCOUNTED( "radSoundBufferLoaderWin" )
+    IMPLEMENT_REFCOUNTED("radSoundBufferLoaderWin")
 
-        radSoundBufferLoaderWin(
-            IRefCount * pIRefCount_Owner,
-            void * pBuffer,
-		    IRadSoundHalDataSource * pIRadSoundHalDataSource,
-            IRadSoundHalAudioFormat * pIRadSoundHalAudioFormat,
+    radSoundBufferLoaderWin(
+            IRefCount *pIRefCount_Owner,
+            void *pBuffer,
+            IRadSoundHalDataSource *pIRadSoundHalDataSource,
+            IRadSoundHalAudioFormat *pIRadSoundHalAudioFormat,
             unsigned int numberOfFrames,
-            IRadSoundHalBufferLoadCallback * pISoundBufferCallback );
+            IRadSoundHalBufferLoadCallback *pISoundBufferCallback);
 
-        virtual void OnDataSourceFramesLoaded( unsigned int framesActuallyRead );
+    virtual void OnDataSourceFramesLoaded(unsigned int framesActuallyRead);
 
-    static void CancelOperations( IRefCount * pIRefCount_Owner );
+    static void CancelOperations(IRefCount *pIRefCount_Owner);
 
-    void Cancel( void );
+    void Cancel(void);
 
-    private:
-        
-        void Start( void );
-        void Finish( void );
+private:
 
-        ref< IRadSoundHalBufferLoadCallback >	m_xIRadSoundHalBufferLoadCallback;
-        ref< IRadSoundHalDataSource >			m_xIRadSoundHalDataSource;
-        ref< IRefCount >                        m_xIRefCount_Owner;
+    void Start(void);
 
-        unsigned int m_NumberOfFrames;
-        void * m_pBuffer;
-        bool m_Cancelled;
+    void Finish(void);
+
+    ref <IRadSoundHalBufferLoadCallback> m_xIRadSoundHalBufferLoadCallback;
+    ref <IRadSoundHalDataSource> m_xIRadSoundHalDataSource;
+    ref <IRefCount> m_xIRefCount_Owner;
+
+    unsigned int m_NumberOfFrames;
+    void *m_pBuffer;
+    bool m_Cancelled;
 };
 
 #endif // BUFFERLOADER_HPP

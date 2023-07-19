@@ -17,7 +17,7 @@
 //=============================================================================
 
 #if defined RAD_WIN32 || defined RAD_XBOX
-#pragma warning ( disable : 4291 )
+#pragma warning (disable : 4291)
 #endif
 
 //============================================================================
@@ -40,60 +40,78 @@
 //============================================================================
 
 struct radSoundHalListener
-	:
-    public IRadSoundHalListener,
-    public radSoundObject
-{
-	public:
+        :
+                public IRadSoundHalListener,
+                public radSoundObject {
+public:
 
-		IMPLEMENT_REFCOUNTED( "radSoundHalListener" )
+    IMPLEMENT_REFCOUNTED("radSoundHalListener")
 
-		static void Initialize( radMemoryAllocator allocator, IDirectSound3DListener * pIDirectSound3DListener );
-		static radSoundHalListener * GetInstance( void ) { return s_pTheDxSoundListener; }
-		static void Terminate( void );
+    static void
+    Initialize(radMemoryAllocator allocator, IDirectSound3DListener *pIDirectSound3DListener);
 
-		virtual void SetPosition( radSoundVector * pPos );
-		virtual void GetPosition( radSoundVector * pPos );
-		virtual void SetOrientation( radSoundVector * pOrientationFront, radSoundVector * pOrientationTop );
-		virtual void GetOrientation( radSoundVector * pOrientationFront, radSoundVector * pOrientationTop );
-		virtual void SetVelocity( radSoundVector * pVelocity );
-		virtual void GetVelocity( radSoundVector * pVelocity );
-		virtual void SetDistanceFactor( float distanceFactor );
-		virtual float GetDistanceFactor( void );
-		virtual void SetDopplerFactor( float doppleFactor );
-		virtual float GetDopplerFactor( void );
-		virtual void SetRollOffFactor( float rollOffFactor );
-		virtual float GetRollOffFactor( void );
+    static radSoundHalListener *GetInstance(void) { return s_pTheDxSoundListener; }
 
-        virtual void  SetEnvEffectsEnabled( bool enabled );
-        virtual bool  GetEnvEffectsEnabled( void );
-        virtual void  SetEnvironmentAuxSend( unsigned int auxsend );
-        virtual unsigned int GetEnvironmentAuxSend( void );
+    static void Terminate(void);
 
-		void UpdatePositionalSettings( void );
-        void OnSetEnvEffect( unsigned int auxNumber, const DSI3DL2LISTENER * pDsI3DL2Listener );
+    virtual void SetPosition(radSoundVector *pPos);
 
-	private:
+    virtual void GetPosition(radSoundVector *pPos);
 
-		radSoundHalListener( IDirectSound3DListener * pIDirectSound3DListener );
-		~radSoundHalListener( void );
+    virtual void SetOrientation(radSoundVector *pOrientationFront, radSoundVector *pOrientationTop);
 
-		static radSoundHalListener * s_pTheDxSoundListener;
+    virtual void GetOrientation(radSoundVector *pOrientationFront, radSoundVector *pOrientationTop);
 
-		radSoundVector m_Position;
-		radSoundVector m_Velocity;
-		radSoundVector m_OrientationFront;
-		radSoundVector m_OrientationTop;
+    virtual void SetVelocity(radSoundVector *pVelocity);
 
-		float m_RollOffFactor;
-		float m_DopplerFactor;
-		float m_DistanceFactor;
+    virtual void GetVelocity(radSoundVector *pVelocity);
 
-        bool m_EnvEffectsEnabled;
-        unsigned int m_EnvAuxSend;
+    virtual void SetDistanceFactor(float distanceFactor);
 
-        float s_pRollOffTable[ STD_ROLL_OFF_TABLE_NUM_POINTS ];
+    virtual float GetDistanceFactor(void);
 
-		ref< IDirectSound3DListener > m_xIDirectSound3DListener;
+    virtual void SetDopplerFactor(float doppleFactor);
+
+    virtual float GetDopplerFactor(void);
+
+    virtual void SetRollOffFactor(float rollOffFactor);
+
+    virtual float GetRollOffFactor(void);
+
+    virtual void SetEnvEffectsEnabled(bool enabled);
+
+    virtual bool GetEnvEffectsEnabled(void);
+
+    virtual void SetEnvironmentAuxSend(unsigned int auxsend);
+
+    virtual unsigned int GetEnvironmentAuxSend(void);
+
+    void UpdatePositionalSettings(void);
+
+    void OnSetEnvEffect(unsigned int auxNumber, const DSI3DL2LISTENER *pDsI3DL2Listener);
+
+private:
+
+    radSoundHalListener(IDirectSound3DListener *pIDirectSound3DListener);
+
+    ~radSoundHalListener(void);
+
+    static radSoundHalListener *s_pTheDxSoundListener;
+
+    radSoundVector m_Position;
+    radSoundVector m_Velocity;
+    radSoundVector m_OrientationFront;
+    radSoundVector m_OrientationTop;
+
+    float m_RollOffFactor;
+    float m_DopplerFactor;
+    float m_DistanceFactor;
+
+    bool m_EnvEffectsEnabled;
+    unsigned int m_EnvAuxSend;
+
+    float s_pRollOffTable[STD_ROLL_OFF_TABLE_NUM_POINTS];
+
+    ref <IDirectSound3DListener> m_xIDirectSound3DListener;
 };
 

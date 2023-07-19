@@ -9,97 +9,92 @@
 #include <radsound.hpp>
 #include <radmemorymonitor.hpp>
 #include <typeinfo>
+
 #undef new
 
 //============================================================================
 // Class: radSoundObject
 //============================================================================
 
-struct radSoundObject : public radRefCount
-{
-	inline radSoundObject( void );
-    inline virtual ~radSoundObject( void );
+struct radSoundObject : public radRefCount {
+    inline radSoundObject(void);
 
-    inline void * operator new ( size_t size, const char * pName, radMemoryAllocator allocator );
-    
-    unsigned int GetRefCount( void ) { return radRefCount::GetRefCount( ); }
+    inline virtual ~radSoundObject(void);
 
-    static const char * s_SoundObjectName;
+    inline void *operator new(size_t size, const char *pName, radMemoryAllocator allocator);
+
+    unsigned int GetRefCount(void) { return radRefCount::GetRefCount(); }
+
+    static const char *s_SoundObjectName;
     static unsigned int s_SoundObjectCount;
 };
 
-inline radSoundObject::radSoundObject( void )
-    :
-    radRefCount( 0 )
-{
+inline radSoundObject::radSoundObject(void)
+        :
+        radRefCount(0) {
     ::radMemoryMonitorIdentifyAllocation(
-        this,
-        radSoundDebugChannel,
-        s_SoundObjectName,
-        NULL,
-        radMemorySpace_Local );
+            this,
+            radSoundDebugChannel,
+            s_SoundObjectName,
+            NULL,
+            radMemorySpace_Local);
 
     s_SoundObjectCount++;
 }
 
-inline radSoundObject::~radSoundObject( void )
-{
+inline radSoundObject::~radSoundObject(void) {
     s_SoundObjectCount--;
 }
 
-inline void * radSoundObject::operator new ( size_t size, const char * pName, radMemoryAllocator allocator )
-{
+inline void *
+radSoundObject::operator new(size_t size, const char *pName, radMemoryAllocator allocator) {
     s_SoundObjectName = pName;
 
-    return radObject::operator new( size, allocator );
+    return radObject::operator new(size, allocator);
 }
 
 //============================================================================
 // Class: radSoundPoolObject
 //============================================================================
 
-template < class T > class radSoundPoolObject
-	:
-	public radSoundObject
-{
-	public:
+template<class T>
+class radSoundPoolObject
+        :
+                public radSoundObject {
+public:
 
-		static void Initialize( radMemoryAllocator allocator,
-			unsigned int maxObjects, unsigned int growBy )
-		{
-			rAssert( s_pIRadMemoryPool == NULL );
+    static void Initialize(radMemoryAllocator allocator,
+                           unsigned int maxObjects, unsigned int growBy) {
+        rAssert(s_pIRadMemoryPool == NULL);
 
-			::radMemoryCreatePool(
-				& s_pIRadMemoryPool,
-				sizeof( T ), 
+        ::radMemoryCreatePool(
+                &s_pIRadMemoryPool,
+                sizeof(T),
                 maxObjects,
-				growBy,
-                false, 
+                growBy,
+                false,
                 None,
-                allocator );
-		}
-	
-		static void Terminate( )
-		{
-			s_pIRadMemoryPool->Release( );
-		}
+                allocator);
+    }
 
-		void * operator new ( size_t size, char * pName )
-		{
-            s_SoundObjectName = pName;
+    static void Terminate() {
+        s_pIRadMemoryPool->Release();
+    }
 
-		    rAssertMsg( s_pIRadMemoryPool != NULL, "Class memory pool not initialized." );
-			return s_pIRadMemoryPool->GetMemory( );
-		}
+    void *operator new(size_t size, char *pName) {
+        s_SoundObjectName = pName;
 
-		void operator delete ( void * pMemory )
-		{
-			s_pIRadMemoryPool->FreeMemory( pMemory );
-		}
+        rAssertMsg(s_pIRadMemoryPool != NULL, "Class memory pool not initialized.");
+        return s_pIRadMemoryPool->GetMemory();
+    }
 
-	private:
+    void operator delete(void *pMemory) {
+        s_pIRadMemoryPool->FreeMemory(pMemory);
+    }
 
-		static IRadMemoryPool * s_pIRadMemoryPool;
+private:
+
+    static IRadMemoryPool *s_pIRadMemoryPool;
 };
 
 #endif // RADSOUNDOBJECT_HPP

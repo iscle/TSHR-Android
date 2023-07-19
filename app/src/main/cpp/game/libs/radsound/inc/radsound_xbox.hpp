@@ -32,10 +32,15 @@ struct IRadSoundHalEffectDistortionXBox;
 // Factories and static functions
 //============================================================================
 
-IRadSoundWmaFileDataSource *        radSoundWmaFileDataSourceCreate( radMemoryAllocator allocator );
-IRadSoundHalEffectEchoXBox *        radSoundHalEffectEchoXBoxCreate( radMemoryAllocator allocator );
-IRadSoundHalEffectI3DL2ReverbXBox * radSoundHalEffectI3DL2ReverbXBoxCreate( radMemoryAllocator allocator );
-IRadSoundHalEffectDistortionXBox *  radSoundHalEffectDistortionXBoxCreate( radMemoryAllocator allocator );
+IRadSoundWmaFileDataSource *radSoundWmaFileDataSourceCreate(radMemoryAllocator allocator);
+
+IRadSoundHalEffectEchoXBox *radSoundHalEffectEchoXBoxCreate(radMemoryAllocator allocator);
+
+IRadSoundHalEffectI3DL2ReverbXBox *
+radSoundHalEffectI3DL2ReverbXBoxCreate(radMemoryAllocator allocator);
+
+IRadSoundHalEffectDistortionXBox *
+radSoundHalEffectDistortionXBoxCreate(radMemoryAllocator allocator);
 
 //============================================================================
 // Interface: IRadSoundWmaFileDataSource
@@ -45,13 +50,12 @@ IRadSoundHalEffectDistortionXBox *  radSoundHalEffectDistortionXBoxCreate( radMe
 //      custom buffering to compensate for file and decoding latencies
 //============================================================================
 
-struct IRadSoundWmaFileDataSource : public IRadSoundHalDataSource
-{
+struct IRadSoundWmaFileDataSource : public IRadSoundHalDataSource {
     // NOTE: When using XSoundtrack interfaces... Get file handle
-    // (HANDLE) using XOpenSoundTrackSong( ), the create IRadFile
-    // using ::radFileOpenFromHandle( ).  
+    // (HANDLE) using XOpenSoundTrackSong(), the create IRadFile
+    // using ::radFileOpenFromHandle().
     //
-    // ** When calling XOpenSoundTrackSong( ) you MUST set the 
+    // ** When calling XOpenSoundTrackSong() you MUST set the
     // second parameter (BOOL fAsyncMode) to false.  This is a
     // requirement of the xbox decoder that is contained within
     // IRadSoundWmaFileDataSource
@@ -61,9 +65,9 @@ struct IRadSoundWmaFileDataSource : public IRadSoundHalDataSource
     // yield. 1 means always yield.  2 or more means yield once
     // every n iterations (n = yieldRate)
 
-    virtual void InitializeFromFile( IRadFile * pIRadFile, unsigned int yieldRate = 3 ) = 0;
+    virtual void InitializeFromFile(IRadFile *pIRadFile, unsigned int yieldRate = 3) = 0;
 
-    virtual IRadFile * GetFile( void ) = 0;
+    virtual IRadFile *GetFile(void) = 0;
 };
 
 
@@ -75,13 +79,13 @@ struct IRadSoundWmaFileDataSource : public IRadSoundHalDataSource
 //
 //============================================================================
 
-struct IRadSoundHalEffectEchoXBox : public IRadSoundHalEffect
-{
+struct IRadSoundHalEffectEchoXBox : public IRadSoundHalEffect {
     //
     // Gain applied to delay line input when mixing with dry signal
     //
-    virtual void SetGain( float gain ) = 0;
-    virtual float GetGain( void ) = 0;
+    virtual void SetGain(float gain) = 0;
+
+    virtual float GetGain(void) = 0;
 };
 
 //============================================================================
@@ -94,64 +98,75 @@ struct IRadSoundHalEffectEchoXBox : public IRadSoundHalEffect
 //
 //============================================================================
 
-struct IRadSoundHalEffectI3DL2ReverbXBox : public IRadSoundHalEffect
-{
+struct IRadSoundHalEffectI3DL2ReverbXBox : public IRadSoundHalEffect {
     // Intensity level and low-pass filter for room effect (wet signal)
     // (-10000mB...1000mB)
-    virtual void  SetRoom( int mBvalue ) = 0;
-    virtual int   GetRoom( void ) = 0;
+    virtual void SetRoom(int mBvalue) = 0;
+
+    virtual int GetRoom(void) = 0;
 
     // Attenuation at high frequencies relative to intensity at low frequencies
     // (-10000mB...0mB)
-    virtual void  SetRoomHF( int mBvalue ) = 0;
-    virtual int   GetRoomHF( void ) = 0;
+    virtual void SetRoomHF(int mBvalue) = 0;
+
+    virtual int GetRoomHF(void) = 0;
 
     // Rolloff effect intensity vs. distance (0.0...10.0)
-    virtual void  SetRoomRolloffFactor( float value ) = 0;
-    virtual float GetRoomRolloffFactor( void ) = 0;
+    virtual void SetRoomRolloffFactor(float value) = 0;
+
+    virtual float GetRoomRolloffFactor(void) = 0;
 
     // Decay time at low frequencies (0.1...20.0 seconds)
-    virtual void  SetDecayTime( float value ) = 0;
-    virtual float GetDecayTime( void ) = 0;
+    virtual void SetDecayTime(float value) = 0;
+
+    virtual float GetDecayTime(void) = 0;
 
     // Ratio of high-frequency decay time to low frequency decay time
     // (0.1...2.0)
-    virtual void  SetDecayHFRatio( float value ) = 0;
-    virtual float GetDecayHFRatio( void ) = 0;
+    virtual void SetDecayHFRatio(float value) = 0;
+
+    virtual float GetDecayHFRatio(void) = 0;
 
     // Intensity level of early reflections relative to 'Room' value
     // (-10000mB...1000mB)
-    virtual void  SetReflections( int mBvalue ) = 0;
-    virtual int   GetReflections( void ) = 0;
+    virtual void SetReflections(int mBvalue) = 0;
+
+    virtual int GetReflections(void) = 0;
 
     // Delay time of first reflection relative to direct path
     // (0.0...0.3seconds
-    virtual void  SetReflectionsDelay( float value ) = 0;
-    virtual float GetReflectionsDelay( void ) = 0;
+    virtual void SetReflectionsDelay(float value) = 0;
+
+    virtual float GetReflectionsDelay(void) = 0;
 
     // Intensity of late reverberations relative to 'Room' value
     // (-10000mB...2000mB)
-    virtual void  SetReverb( int mBvalue ) = 0;
-    virtual int   GetReverb( void ) = 0;
+    virtual void SetReverb(int mBvalue) = 0;
+
+    virtual int GetReverb(void) = 0;
 
     // Time limit between the early reflections and the late reverberation, 
     // relative to the time of the first reflection (0.0...0.4seconds)
-    virtual void  SetReverbDelay( float value ) = 0;
-    virtual float GetReverbDelay( void ) = 0;
+    virtual void SetReverbDelay(float value) = 0;
+
+    virtual float GetReverbDelay(void) = 0;
 
     // Echo density in late reverberation decay (0.0%...100.0%)
     // Proportional to # echoes per second
-    virtual void  SetDiffusion( float value ) = 0;
-    virtual float GetDiffusion( void ) = 0;
+    virtual void SetDiffusion(float value) = 0;
+
+    virtual float GetDiffusion(void) = 0;
 
     // Modal density in late reverberation decay (0.0%...100.0%)
     // Proportional to # resonances per Hertz
-    virtual void  SetDensity( float value ) = 0;
-    virtual float GetDensity( void ) = 0;
+    virtual void SetDensity(float value) = 0;
+
+    virtual float GetDensity(void) = 0;
 
     // Reference high frequency value (20.0Hz...20000.0Hz)
-    virtual void  SetHFReference( float value ) = 0;
-    virtual float GetHFReference( void ) = 0;
+    virtual void SetHFReference(float value) = 0;
+
+    virtual float GetHFReference(void) = 0;
 
 };
 
@@ -162,8 +177,7 @@ struct IRadSoundHalEffectI3DL2ReverbXBox : public IRadSoundHalEffect
 //
 //============================================================================
 
-struct IRadSoundHalEffectDistortionXBox : public IRadSoundHalEffect
-{
+struct IRadSoundHalEffectDistortionXBox : public IRadSoundHalEffect {
     // Distortion includes a pre-filter IIR2 effect and a 
     // post-filter IIR2 effect, where the output of the
     // IIR2 effect is expressed by the following equation:
@@ -171,14 +185,21 @@ struct IRadSoundHalEffectDistortionXBox : public IRadSoundHalEffect
     // y[n] = b0*x[n] + b1*x[n-1] + b2*x[n-2] + a1*y[n-1] + a2*y[n-2] 
     //
 
-    enum IIR2FilterCoefficient { B0, B1, B2, A1, A2 };
+    enum IIR2FilterCoefficient {
+        B0, B1, B2, A1, A2
+    };
 
-    virtual void SetGain( float gain ) = 0;
-    virtual float GetGain( void ) = 0;
-    virtual void SetPreFilterCoefficient( IIR2FilterCoefficient coef, float value ) = 0;
-    virtual float GetPreFilterCoefficient( IIR2FilterCoefficient coef ) = 0;
-    virtual void SetPostFilterCoefficient( IIR2FilterCoefficient coef, float value ) = 0;
-    virtual float GetPostFilterCoefficient( IIR2FilterCoefficient coef ) = 0;
+    virtual void SetGain(float gain) = 0;
+
+    virtual float GetGain(void) = 0;
+
+    virtual void SetPreFilterCoefficient(IIR2FilterCoefficient coef, float value) = 0;
+
+    virtual float GetPreFilterCoefficient(IIR2FilterCoefficient coef) = 0;
+
+    virtual void SetPostFilterCoefficient(IIR2FilterCoefficient coef, float value) = 0;
+
+    virtual float GetPostFilterCoefficient(IIR2FilterCoefficient coef) = 0;
 };
 
 #endif // RADSOUND_XBOX_HPP

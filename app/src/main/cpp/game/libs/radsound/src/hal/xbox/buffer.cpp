@@ -14,42 +14,40 @@ const unsigned int RADSOUNDHAL_BUFFER_CHANNEL_ALIGNMENT = 0;
 //========================================================================
 
 /* virtual */ void radSoundBufferXBox::Initialize
-(
-    IRadSoundHalAudioFormat * pIRadSoundHalAudioFormat,
-	IRadMemoryObject * pIRadMemoryObject,
-	unsigned int sizeInFrames,
-    bool looping,
-    bool streaming
-)
-{    
+        (
+                IRadSoundHalAudioFormat *pIRadSoundHalAudioFormat,
+                IRadMemoryObject *pIRadMemoryObject,
+                unsigned int sizeInFrames,
+                bool looping,
+                bool streaming
+        ) {
     //
     // Do some validity checks
     //
-    rAssert( pIRadSoundHalAudioFormat != NULL );
-    rAssert( pIRadSoundHalAudioFormat->GetEncoding() == IRadSoundHalAudioFormat::PCM ||
-		     pIRadSoundHalAudioFormat->GetEncoding( ) == IRadSoundHalAudioFormat::XBOXADPCM);
-	rAssert( pIRadMemoryObject != NULL );
-	rAssert( pIRadMemoryObject->GetMemorySize( ) >= ::radSoundHalBufferCalculateMemorySize( 
-        IRadSoundHalAudioFormat::Bytes, sizeInFrames, 
-        IRadSoundHalAudioFormat::Frames, pIRadSoundHalAudioFormat ) );
+    rAssert(pIRadSoundHalAudioFormat != NULL);
+    rAssert(pIRadSoundHalAudioFormat->GetEncoding() == IRadSoundHalAudioFormat::PCM ||
+            pIRadSoundHalAudioFormat->GetEncoding() == IRadSoundHalAudioFormat::XBOXADPCM);
+    rAssert(pIRadMemoryObject != NULL);
+    rAssert(pIRadMemoryObject->GetMemorySize() >= ::radSoundHalBufferCalculateMemorySize(
+            IRadSoundHalAudioFormat::Bytes, sizeInFrames,
+            IRadSoundHalAudioFormat::Frames, pIRadSoundHalAudioFormat));
 
     //
     // Store the information about this chunk of memory
     //
-	m_xIRadMemoryObject_WavData = pIRadMemoryObject;
+    m_xIRadMemoryObject_WavData = pIRadMemoryObject;
     m_xIRadSoundHalAudioFormat = pIRadSoundHalAudioFormat;
     m_Looping = looping;
     m_SizeInSamples = m_xIRadSoundHalAudioFormat->FramesToSamples(
-		sizeInFrames );       
+            sizeInFrames);
 }
 
 //========================================================================
 // radSoundBufferXBox::GetMemoryObject
 //========================================================================
 
-IRadMemoryObject * radSoundBufferXBox::GetMemoryObject( void )
-{
-	return m_xIRadMemoryObject_WavData;
+IRadMemoryObject *radSoundBufferXBox::GetMemoryObject(void) {
+    return m_xIRadMemoryObject_WavData;
 }
 
 //========================================================================
@@ -57,34 +55,32 @@ IRadMemoryObject * radSoundBufferXBox::GetMemoryObject( void )
 //========================================================================
 
 void radSoundBufferXBox::ClearAsync
-( 
-	unsigned int offsetInFrames,
-	unsigned int sizeInFrames,
-	IRadSoundHalBufferClearCallback * pIRadSoundHalBufferClearCallback
-)
-{
-    unsigned int offsetInBytes = m_xIRadSoundHalAudioFormat->FramesToBytes( offsetInFrames );
-    unsigned int sizeInBytes = m_xIRadSoundHalAudioFormat->FramesToBytes( sizeInFrames );  
+        (
+                unsigned int offsetInFrames,
+                unsigned int sizeInFrames,
+                IRadSoundHalBufferClearCallback *pIRadSoundHalBufferClearCallback
+        ) {
+    unsigned int offsetInBytes = m_xIRadSoundHalAudioFormat->FramesToBytes(offsetInFrames);
+    unsigned int sizeInBytes = m_xIRadSoundHalAudioFormat->FramesToBytes(sizeInFrames);
 
-    unsigned char fillChar = ( m_xIRadSoundHalAudioFormat->GetBitResolution( ) == 8 ) ? 128 : 0;
+    unsigned char fillChar = (m_xIRadSoundHalAudioFormat->GetBitResolution() == 8) ? 128 : 0;
 
     ::memset(
-		(char*) m_xIRadMemoryObject_WavData->GetMemoryAddress( ) + offsetInBytes,
-		fillChar, sizeInBytes );
+            (char *) m_xIRadMemoryObject_WavData->GetMemoryAddress() + offsetInBytes,
+            fillChar, sizeInBytes);
 
-	if ( pIRadSoundHalBufferClearCallback != NULL )
-	{
-		pIRadSoundHalBufferClearCallback->OnBufferClearComplete( );
-	}
+    if (pIRadSoundHalBufferClearCallback != NULL) {
+        pIRadSoundHalBufferClearCallback->OnBufferClearComplete();
+    }
 }
 
 //========================================================================
 // radSoundBufferXBox::GetMinTransferSizeInFrames
 //========================================================================
 
-/* virtual */ unsigned int radSoundBufferXBox::GetMinTransferSize( IRadSoundHalAudioFormat::SizeType sizeType )
-{
-    rAssert( m_xIRadSoundHalAudioFormat != NULL );
+/* virtual */ unsigned int
+radSoundBufferXBox::GetMinTransferSize(IRadSoundHalAudioFormat::SizeType sizeType) {
+    rAssert(m_xIRadSoundHalAudioFormat != NULL);
 
     //
     // Channels of data are eventually dma'd seperately to spu.
@@ -92,17 +88,17 @@ void radSoundBufferXBox::ClearAsync
     // dma multiple * the number of channels.
     //
 
-    return m_xIRadSoundHalAudioFormat->ConvertSizeType( sizeType, 
-        radMemorySpace_OptimalMultiple * m_xIRadSoundHalAudioFormat->GetNumberOfChannels( ),
-        IRadSoundHalAudioFormat::Bytes );
+    return m_xIRadSoundHalAudioFormat->ConvertSizeType(sizeType,
+                                                       radMemorySpace_OptimalMultiple *
+                                                       m_xIRadSoundHalAudioFormat->GetNumberOfChannels(),
+                                                       IRadSoundHalAudioFormat::Bytes);
 }
 
 //========================================================================
 // radSoundBufferXBox::GetSizeInSamples
 //========================================================================
 
-/* virtual */ unsigned int radSoundBufferXBox::GetSizeInSamples( void )
-{
+/* virtual */ unsigned int radSoundBufferXBox::GetSizeInSamples(void) {
     return m_SizeInSamples;
 }
 
@@ -110,18 +106,16 @@ void radSoundBufferXBox::ClearAsync
 // radSoundBufferXBox::GetSizeInFrames
 //========================================================================
 
-/* virtual */ unsigned int radSoundBufferXBox::GetSizeInFrames( void )
-{
-    return m_xIRadSoundHalAudioFormat->SamplesToFrames( m_SizeInSamples );
+/* virtual */ unsigned int radSoundBufferXBox::GetSizeInFrames(void) {
+    return m_xIRadSoundHalAudioFormat->SamplesToFrames(m_SizeInSamples);
 }
 
 //========================================================================
 // radSoundBufferXBox::GetBufferMemory
 //========================================================================
 
-/* virtual */ void * radSoundBufferXBox::GetBufferMemory( void )
-{
-    return m_xIRadMemoryObject_WavData->GetMemoryAddress( );
+/* virtual */ void *radSoundBufferXBox::GetBufferMemory(void) {
+    return m_xIRadMemoryObject_WavData->GetMemoryAddress();
 }
 
 //========================================================================
@@ -129,10 +123,9 @@ void radSoundBufferXBox::ClearAsync
 //========================================================================
 
 radSoundBufferXBox::~radSoundBufferXBox
-(
-    void
-)
-{
+        (
+                void
+        ) {
 
 }
 
@@ -141,23 +134,21 @@ radSoundBufferXBox::~radSoundBufferXBox
 //========================================================================
 
 radSoundBufferXBox::radSoundBufferXBox
-(
-    void
-)
-    :
-    m_xIRadSoundHalAudioFormat( NULL ),
-    m_SizeInSamples( 0 ),
-    m_Looping( false )
-{
+        (
+                void
+        )
+        :
+        m_xIRadSoundHalAudioFormat(NULL),
+        m_SizeInSamples(0),
+        m_Looping(false) {
 }
 
 //========================================================================
 // radSoundBufferXBox::GetSoundSamplingFormat
 //========================================================================
-    
-/* virtual */ IRadSoundHalAudioFormat * radSoundBufferXBox::GetFormat( void )
-{
-	return m_xIRadSoundHalAudioFormat;
+
+/* virtual */ IRadSoundHalAudioFormat *radSoundBufferXBox::GetFormat(void) {
+    return m_xIRadSoundHalAudioFormat;
 }
 
 //========================================================================
@@ -165,29 +156,30 @@ radSoundBufferXBox::radSoundBufferXBox
 //========================================================================
 
 void radSoundBufferXBox::LoadAsync
-(
-	IRadSoundHalDataSource * pIRadSoundHalDataSource,
-	unsigned int bufferStartInFrames,
-	unsigned int numberOfFrames,
-	IRadSoundHalBufferLoadCallback * pIRadSoundHalBufferLoadCallback
-)
-{
-	rAssert( pIRadSoundHalDataSource != NULL );
+        (
+                IRadSoundHalDataSource *pIRadSoundHalDataSource,
+                unsigned int bufferStartInFrames,
+                unsigned int numberOfFrames,
+                IRadSoundHalBufferLoadCallback *pIRadSoundHalBufferLoadCallback
+        ) {
+    rAssert(pIRadSoundHalDataSource != NULL);
 
-	unsigned int bufferByteOffset = m_xIRadSoundHalAudioFormat->FramesToBytes( bufferStartInFrames );
+    unsigned int bufferByteOffset = m_xIRadSoundHalAudioFormat->FramesToBytes(bufferStartInFrames);
 
-//	rAssert( pIRadSoundHalDataSource->GetRemainingFrames( ) >= numberOfFrames );
-	rAssert( bufferByteOffset + m_xIRadSoundHalAudioFormat->FramesToBytes( numberOfFrames ) <= m_xIRadSoundHalAudioFormat->SamplesToBytes( m_SizeInSamples ) );
-	
-	ref< radSoundBufferAsyncLoaderXBox > pLoader = new ( "radSoundBufferAsyncLoaderXBox" ) radSoundBufferAsyncLoaderXBox( );
+//	rAssert(pIRadSoundHalDataSource->GetRemainingFrames()>= numberOfFrames);
+    rAssert(bufferByteOffset + m_xIRadSoundHalAudioFormat->FramesToBytes(numberOfFrames) <=
+            m_xIRadSoundHalAudioFormat->SamplesToBytes(m_SizeInSamples));
 
-	pLoader->Initialize(
-		pIRadSoundHalDataSource,
-		bufferStartInFrames,
-		numberOfFrames,
-		this,
-		m_xIRadMemoryObject_WavData->GetMemoryAddress( ),
-		pIRadSoundHalBufferLoadCallback );
+    ref <radSoundBufferAsyncLoaderXBox> pLoader = new(
+            "radSoundBufferAsyncLoaderXBox") radSoundBufferAsyncLoaderXBox();
+
+    pLoader->Initialize(
+            pIRadSoundHalDataSource,
+            bufferStartInFrames,
+            numberOfFrames,
+            this,
+            m_xIRadMemoryObject_WavData->GetMemoryAddress(),
+            pIRadSoundHalBufferLoadCallback);
 
 }
 
@@ -196,26 +188,23 @@ void radSoundBufferXBox::LoadAsync
 //========================================================================
 
 /* virtual */ bool radSoundBufferXBox::IsLooping
-(
-    void
-)
-{
+        (
+                void
+        ) {
     return m_Looping;
 }
 
-void radSoundBufferXBox::CancelAsyncOperations( void )
-{
-    radSoundBufferAsyncLoaderXBox::CancelRequests( this );
+void radSoundBufferXBox::CancelAsyncOperations(void) {
+    radSoundBufferAsyncLoaderXBox::CancelRequests(this);
 }
 
 //========================================================================
 // ::radSoundHalBufferCreate
 //========================================================================
 
-IRadSoundHalBuffer * radSoundHalBufferCreate( radMemoryAllocator allocator )
-{
-	return new ( "radSoundHalBuffer", allocator ) radSoundBufferXBox( );
+IRadSoundHalBuffer *radSoundHalBufferCreate(radMemoryAllocator allocator) {
+    return new("radSoundHalBuffer", allocator) radSoundBufferXBox();
 }
 
-radSoundBufferXBox * radLinkedClass<radSoundBufferXBox>::s_pLinkedClassHead = NULL;
-radSoundBufferXBox * radLinkedClass<radSoundBufferXBox>::s_pLinkedClassTail = NULL;
+radSoundBufferXBox *radLinkedClass<radSoundBufferXBox>::s_pLinkedClassHead = NULL;
+radSoundBufferXBox *radLinkedClass<radSoundBufferXBox>::s_pLinkedClassTail = NULL;
