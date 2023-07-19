@@ -639,6 +639,8 @@ namespace choreo {
         {
             choreoBreakToDebugger();
         }
+#elif defined(RAD_ANDROID)
+        choreoBreakToDebugger(); // FIXME: Show a dialog
 #else
         choreoBreakToDebugger();
 #endif
@@ -648,6 +650,8 @@ namespace choreo {
     static void choreoPrintDebugMessage(const char *message) {
 #if defined(RAD_WIN32) || defined(RAD_XBOX)
         OutputDebugString(message);
+#elif defined(RAD_ANDROID)
+        printf(message); // FIXME: Print to logcat instead of printf
 #else
         printf(message);
 #endif

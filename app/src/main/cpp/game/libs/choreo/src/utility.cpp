@@ -102,9 +102,9 @@ namespace choreo {
 #if !defined(RAD_GAMECUBE)
 
     int VStrPrintf(char *str, int len, const char *fmt, va_list ap) {
-#if (defined(RAD_WIN32) || defined(RAD_XBOX))
+#if defined(RAD_WIN32) || defined(RAD_XBOX)
 #define vsnprintf _vsnprintf
-#elif (defined(RAD_PS2))
+#elif defined(RAD_PS2) || defined(RAD_ANDROID)
         // FIXME:  this sucks
 #define vsnprintf(a, b, c, d) vsprintf(a, c, d)
 #endif
