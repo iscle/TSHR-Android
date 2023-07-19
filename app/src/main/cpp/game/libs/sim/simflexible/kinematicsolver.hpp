@@ -3,32 +3,33 @@
 
 #include "simflexible/particlesystemsolver.hpp"
 
-namespace sim
-{
-    
-    class KinematicSolver : public ParticleSystemSolver
-    {
-        
+namespace sim {
+
+    class KinematicSolver : public ParticleSystemSolver {
+
     public:
-        KinematicSolver( int inNbp, ParticleSystem* inPSyst );
+        KinematicSolver(int inNbp, ParticleSystem *inPSyst);
+
         virtual ~KinematicSolver();
-        
+
         //Generic services:
         virtual void InitParticleSystemSolver();
+
         virtual void SolverApplyForces();
-        virtual void SolverAdvanceSystem(float*);
+
+        virtual void SolverAdvanceSystem(float *);
+
         virtual void SolverClear();
-        
+
     protected:
-        KinematicSolver ()
-        {
+        KinematicSolver() {
             mSolverType = eKinematicSolver;
         }
-        
+
         float *m_b, *m_z;
-        
+
     };
-    
+
 } // sim
 
 #endif //_KinematicSolver_hpp_

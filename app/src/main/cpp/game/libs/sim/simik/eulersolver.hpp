@@ -36,8 +36,7 @@ agreement.
 #include "simik/myvec.hpp"
 #include "simik/jtlimits.hpp"
 
-namespace sim
-{
+namespace sim {
 
 //
 // Encodes various euler angle conventions. Upper case means a 
@@ -51,68 +50,68 @@ namespace sim
 // Do not renumber these entries as they are used to index
 // an internal table in eulersolver.cpp
 
-enum 
-{
-    ZXY = 0,	// left shoulder, ankle, hip
-        YXZ = 1,	// left wrist
-        Yxz = 2,	// right wrist
-        zxY = 3,	// right shoulder, ankle, hip
+    enum {
+        ZXY = 0,    // left shoulder, ankle, hip
+        YXZ = 1,    // left wrist
+        Yxz = 2,    // right wrist
+        zxY = 3,    // right shoulder, ankle, hip
         XYZ = 4
-};
+    };
 
 
 // Given an IKMatrix find the corresponding euler angles
-void EulerSolve(int euler_type, const IKMatrix R, float t[3], int family = 1);
-void EulerSolve2(int euler_type, const IKMatrix R, float f1[3], float f2[3]);
+    void EulerSolve(int euler_type, const IKMatrix R, float t[3], int family = 1);
 
-void EulerEval(int euler_type, const float t[3], IKMatrix R);		 
+    void EulerSolve2(int euler_type, const IKMatrix R, float f1[3], float f2[3]);
+
+    void EulerEval(int euler_type, const float t[3], IKMatrix R);
 
 
-class EulerPsiSolver
-{
-private:
-    int euler_type; // ZXY, YXZ, etc
-    int jt_type;    // simple jt is either sin(theta) or cos(theta)
-    // index[0] = index of simple jt, index[1],index[2] indices of complex joints
-    short index[3];
-    
-    short num_singular;
-    float singular[2]; 
-    
-    SimpleJtLimit  j0;
-    ComplexJtLimit j1;
-    ComplexJtLimit j2;
-    
-public:
-    
-    EulerPsiSolver(int etype, 
-        const IKMatrix c,
-        const IKMatrix s,
-        const IKMatrix o,
-        const float low[3],
-        const float high[3]);
-    
-    ~EulerPsiSolver() {}
-    
-    // Solve for psi ranges that lie in joint limits. Return each 
-    // family for each joint in psi1[0..2] and psi2[0..2]
-    void SolvePsiRanges(AngleIntList psi1[3], 
-        AngleIntList psi2[3]) const;
-    
-    // Given a IKMatrix or psi angle find the corresponding euler angles
-    void Solve(const IKMatrix R, float t[3], int family = 1) const;
-    void Solve(float psi, float t[3], int family = 1) const;
-    
-    void Solve2(const IKMatrix R,
-        float f1[3], 
-        float f2[3]) const;
-    
-    
-    // Given a psi angle find the derivatives of the euler angles relative to psi
-    void Derivatives(float psi, float t[3], int family = 1) const;
-    
-    int Singularities(float psi[2]) const; 
-};
+    class EulerPsiSolver {
+    private:
+        int euler_type; // ZXY, YXZ, etc
+        int jt_type;    // simple jt is either sin(theta) or cos(theta)
+        // index[0] = index of simple jt, index[1],index[2] indices of complex joints
+        short index[3];
+
+        short num_singular;
+        float singular[2];
+
+        SimpleJtLimit j0;
+        ComplexJtLimit j1;
+        ComplexJtLimit j2;
+
+    public:
+
+        EulerPsiSolver(int etype,
+                       const IKMatrix c,
+                       const IKMatrix s,
+                       const IKMatrix o,
+                       const float low[3],
+                       const float high[3]);
+
+        ~EulerPsiSolver() {}
+
+        // Solve for psi ranges that lie in joint limits. Return each
+        // family for each joint in psi1[0..2] and psi2[0..2]
+        void SolvePsiRanges(AngleIntList psi1[3],
+                            AngleIntList psi2[3]) const;
+
+        // Given a IKMatrix or psi angle find the corresponding euler angles
+        void Solve(const IKMatrix R, float t[3], int family = 1) const;
+
+        void Solve(float psi, float t[3], int family = 1) const;
+
+        void Solve2(const IKMatrix R,
+                    float f1[3],
+                    float f2[3]) const;
+
+
+        // Given a psi angle find the derivatives of the euler angles relative to psi
+        void Derivatives(float psi, float t[3], int family = 1) const;
+
+        int Singularities(float psi[2]) const;
+    };
 
 } // sim
 

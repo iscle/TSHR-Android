@@ -1,46 +1,43 @@
 #ifndef _COLLISIONANALYSEREVENT_HPP_
 #define _COLLISIONANALYSEREVENT_HPP_
 
-#include "simcollision\collisionanalyserinfo.hpp"
+#include "simcollision/collisionanalyserinfo.hpp"
 
-namespace sim
-{
+namespace sim {
 
-enum CollisionAnalyserEventEnum {
-    cCollisionAnalyserEventUnknown=0,
-    cCollisionAnalyserEventBounce,
-    cCollisionAnalyserEventStartInteraction,
-    cCollisionAnalyserEventEndInteraction
-};
+    enum CollisionAnalyserEventEnum {
+        cCollisionAnalyserEventUnknown = 0,
+        cCollisionAnalyserEventBounce,
+        cCollisionAnalyserEventStartInteraction,
+        cCollisionAnalyserEventEndInteraction
+    };
 
-class CollisionAnalyserEvent {
-public:
-    CollisionAnalyserEventEnum mEvent;
-    CollisionAnalyserInfo mInfo;
+    class CollisionAnalyserEvent {
+    public:
+        CollisionAnalyserEventEnum mEvent;
+        CollisionAnalyserInfo mInfo;
 
-    CollisionAnalyserEvent():
-    mEvent(cCollisionAnalyserEventUnknown),
-    mInfo()
-    {
-    }
+        CollisionAnalyserEvent() :
+                mEvent(cCollisionAnalyserEventUnknown),
+                mInfo() {
+        }
 
-    CollisionAnalyserEvent(const CollisionAnalyserEvent& event):
-    mEvent(event.mEvent),
-    mInfo(event.mInfo)
-    {
-    }
+        CollisionAnalyserEvent(const CollisionAnalyserEvent &event) :
+                mEvent(event.mEvent),
+                mInfo(event.mInfo) {
+        }
 
-    CollisionAnalyserEvent(CollisionAnalyserEventEnum newEvent, CollisionAnalyserInfo &newInfo):
-    mEvent(newEvent),
-    mInfo(newInfo)
-    {
-    }
+        CollisionAnalyserEvent(CollisionAnalyserEventEnum newEvent, CollisionAnalyserInfo &newInfo)
+                :
+                mEvent(newEvent),
+                mInfo(newInfo) {
+        }
 
-    CollisionAnalyserEvent& operator=(const CollisionAnalyserEvent& rhs);
-    ~CollisionAnalyserEvent()
-    {
-    }
-};
+        CollisionAnalyserEvent &operator=(const CollisionAnalyserEvent &rhs);
+
+        ~CollisionAnalyserEvent() {
+        }
+    };
 
 }
 

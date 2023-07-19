@@ -1,6 +1,5 @@
 #include "simcollision/collisionanalyserdataUID.hpp"
 
-namespace sim
-{
+namespace sim {
 
 }

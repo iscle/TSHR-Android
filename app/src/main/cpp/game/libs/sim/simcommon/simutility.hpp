@@ -12,42 +12,55 @@
 #endif
 #endif
 
-namespace sim
-{
+namespace sim {
 
-enum GeometryUnitsEnum { MillimetersUnits, CentimetersUnits, MetersUnits, KilometersUnits, InchesUnits, FeetUnits, YardsUnits, MilesUnits, NoUnits };
+    enum GeometryUnitsEnum {
+        MillimetersUnits,
+        CentimetersUnits,
+        MetersUnits,
+        KilometersUnits,
+        InchesUnits,
+        FeetUnits,
+        YardsUnits,
+        MilesUnits,
+        NoUnits
+    };
 
-void InstallSimLoaders();
+    void InstallSimLoaders();
 
-void InitializeSimulation(GeometryUnitsEnum units);
-void ResetSimulation();
-void SetupLineDrawing ();
-void CleanupLineDrawing ();
-inline bool SimulationInitialized() { return SimUnits::UnitSet(); }
+    void InitializeSimulation(GeometryUnitsEnum units);
+
+    void ResetSimulation();
+
+    void SetupLineDrawing();
+
+    void CleanupLineDrawing();
+
+    inline bool SimulationInitialized() { return SimUnits::UnitSet(); }
 
 //
 //
 //
 
-class tExportInfo
-    : public tEntity
-{
-public:
-    tExportInfo() {}
-    virtual ~tExportInfo() { }
-    
-    char geomUnits[32];
-    bool NIS;
-    bool autoBoundingVolume;
-};
+    class tExportInfo
+            : public tEntity {
+    public:
+        tExportInfo() {}
 
-class tExportInfoLoader
-    : public tSimpleChunkHandler
-{
-public:
-    tExportInfoLoader();
-    virtual tEntity* LoadObject(tChunkFile*, tEntityStore*);
-};
+        virtual ~tExportInfo() {}
+
+        char geomUnits[32];
+        bool NIS;
+        bool autoBoundingVolume;
+    };
+
+    class tExportInfoLoader
+            : public tSimpleChunkHandler {
+    public:
+        tExportInfoLoader();
+
+        virtual tEntity *LoadObject(tChunkFile *, tEntityStore *);
+    };
 
 
 //
@@ -82,130 +95,143 @@ public:
 
 #ifdef USE_SIMSTATS
 
-enum LevelOfStatsDetail { BasicsStats = 0, IntermediateStats, AdvancedStats };
+    enum LevelOfStatsDetail {
+        BasicsStats = 0, IntermediateStats, AdvancedStats
+    };
 
-class SimStats
-{
-public:
+    class SimStats {
+    public:
 
-    SimStats();
-    ~SimStats() {}
+        SimStats();
 
-    static void SetLevelOfStatsDetail(LevelOfStatsDetail in) { sLevelOfStatsDetail = in; }
-    static LevelOfStatsDetail GetLevelOfStatsDetail() { return sLevelOfStatsDetail; }
+        ~SimStats() {}
 
-    static void StartDetectCollision();
-    static void EndDetectCollision();
-    static void StartSolveCollision();
-    static void EndSolveCollision();
-    static void StartSimulation();
-    static void EndSimulation();
-    static void StartFlexSimulation();
-    static void EndFlexSimulation();
-    static void StartRCasSimulation();
-    static void EndRCasSimulation();
+        static void SetLevelOfStatsDetail(LevelOfStatsDetail in) { sLevelOfStatsDetail = in; }
 
-    static void StartTime(unsigned& starttime);
-    static void EndTime(unsigned& starttime, float& tottime);
+        static LevelOfStatsDetail GetLevelOfStatsDetail() { return sLevelOfStatsDetail; }
 
-    static void DisplayStats(bool compute = true, unsigned xpos = 50, unsigned ypos = 50, tColour* inColor = NULL)
-    {
-        SimStats stat;
-        stat.Display(compute, xpos, ypos, inColor);
-    }
+        static void StartDetectCollision();
 
-    static void ResetPeakTimes()
-    {
-        sSimPeakTime = sDColPeakTime = sSColPeakTime = sFlexPeakTime = sRCasPeakTime = sTotPeakTime = 0.0f;
-        sMaxDetectedCollisions = sMaxCollisionPairTested = 0;
-        sMaxDetectedCollisionsFrame = sMaxCollisionPairTestedFrame = 0;
-        sSimPeakTimeFrame = sSColPeakTimeFrame = sDColPeakTimeFrame = sFlexPeakTimeFrame = sRCasPeakTimeFrame = sTotPeakTimeFrame = 0;
-        sFrameCounter = 0; // wait a few frames before starting accumulating the peaks.
-    }
+        static void EndDetectCollision();
 
-protected:
-    void Display(bool compute = true, unsigned xpos = 50, unsigned ypos = 50, tColour* inColor = NULL);
+        static void StartSolveCollision();
 
-    void Reset();   // called from compute
-    void Compute(); // call from display
+        static void EndSolveCollision();
 
-    unsigned mCollisionArea;
-    unsigned mCollisionObject;
-    unsigned mStaticCollisionObject;
-    unsigned mCollisionPair;
-    unsigned mCollisionPairTested;
-    unsigned mDetectedCollisions;
+        static void StartSimulation();
 
-    unsigned mSimulatedObject;
-    unsigned mSimulatedObjectAtRest;
+        static void EndSimulation();
 
-    static LevelOfStatsDetail sLevelOfStatsDetail;
+        static void StartFlexSimulation();
 
-    static unsigned sMaxDetectedCollisions;
-    static unsigned sMaxDetectedCollisionsFrame;
-    static unsigned sMaxCollisionPairTested;
-    static unsigned sMaxCollisionPairTestedFrame;
+        static void EndFlexSimulation();
 
-    static float sSimTime;
-    static float sSimPeakTime;
-    static float sSimAveTime;
-    static unsigned sSimPeakTimeFrame;
-    static unsigned sStartSimTime;
+        static void StartRCasSimulation();
 
-    static float sDColTime;
-    static float sDColPeakTime;
-    static float sDColAveTime;
-    static unsigned sDColPeakTimeFrame;
-    static unsigned sStartDColTime;
+        static void EndRCasSimulation();
 
-    static float sSColTime;
-    static float sSColPeakTime;
-    static float sSColAveTime;
-    static unsigned sSColPeakTimeFrame;
-    static unsigned sStartSColTime;
+        static void StartTime(unsigned &starttime);
 
-    static float sFlexTime;
-    static float sFlexPeakTime;
-    static float sFlexAveTime;
-    static unsigned sFlexPeakTimeFrame;
-    static unsigned sStartFlexTime;
+        static void EndTime(unsigned &starttime, float &tottime);
 
-    static float sRCasTime;
-    static float sRCasPeakTime;
-    static float sRCasAveTime;
-    static unsigned sRCasPeakTimeFrame;
-    static unsigned sStartRCasTime;
+        static void DisplayStats(bool compute = true, unsigned xpos = 50, unsigned ypos = 50,
+                                 tColour *inColor = NULL) {
+            SimStats stat;
+            stat.Display(compute, xpos, ypos, inColor);
+        }
 
-    static float sTotPeakTime;
-    static unsigned sTotPeakTimeFrame;
+        static void ResetPeakTimes() {
+            sSimPeakTime = sDColPeakTime = sSColPeakTime = sFlexPeakTime = sRCasPeakTime = sTotPeakTime = 0.0f;
+            sMaxDetectedCollisions = sMaxCollisionPairTested = 0;
+            sMaxDetectedCollisionsFrame = sMaxCollisionPairTestedFrame = 0;
+            sSimPeakTimeFrame = sSColPeakTimeFrame = sDColPeakTimeFrame = sFlexPeakTimeFrame = sRCasPeakTimeFrame = sTotPeakTimeFrame = 0;
+            sFrameCounter = 0; // wait a few frames before starting accumulating the peaks.
+        }
 
-    static unsigned sFrameCounter;
+    protected:
+        void Display(bool compute = true, unsigned xpos = 50, unsigned ypos = 50,
+                     tColour *inColor = NULL);
 
-    static char buf[1024];
+        void Reset();   // called from compute
+        void Compute(); // call from display
 
-};
+        unsigned mCollisionArea;
+        unsigned mCollisionObject;
+        unsigned mStaticCollisionObject;
+        unsigned mCollisionPair;
+        unsigned mCollisionPairTested;
+        unsigned mDetectedCollisions;
+
+        unsigned mSimulatedObject;
+        unsigned mSimulatedObjectAtRest;
+
+        static LevelOfStatsDetail sLevelOfStatsDetail;
+
+        static unsigned sMaxDetectedCollisions;
+        static unsigned sMaxDetectedCollisionsFrame;
+        static unsigned sMaxCollisionPairTested;
+        static unsigned sMaxCollisionPairTestedFrame;
+
+        static float sSimTime;
+        static float sSimPeakTime;
+        static float sSimAveTime;
+        static unsigned sSimPeakTimeFrame;
+        static unsigned sStartSimTime;
+
+        static float sDColTime;
+        static float sDColPeakTime;
+        static float sDColAveTime;
+        static unsigned sDColPeakTimeFrame;
+        static unsigned sStartDColTime;
+
+        static float sSColTime;
+        static float sSColPeakTime;
+        static float sSColAveTime;
+        static unsigned sSColPeakTimeFrame;
+        static unsigned sStartSColTime;
+
+        static float sFlexTime;
+        static float sFlexPeakTime;
+        static float sFlexAveTime;
+        static unsigned sFlexPeakTimeFrame;
+        static unsigned sStartFlexTime;
+
+        static float sRCasTime;
+        static float sRCasPeakTime;
+        static float sRCasAveTime;
+        static unsigned sRCasPeakTimeFrame;
+        static unsigned sStartRCasTime;
+
+        static float sTotPeakTime;
+        static unsigned sTotPeakTimeFrame;
+
+        static unsigned sFrameCounter;
+
+        static char buf[1024];
+
+    };
 
 #else // USE_SIMSTATS
 
-class SimStats
-{
-public:
+    class SimStats
+    {
+    public:
 
-    SimStats() {}
-    ~SimStats() {}
-    static void StartDetectCollision() {}
-    static void EndDetectCollision() {}
-    static void StartSolveCollision() {}
-    static void EndSolveCollision() {}
-    static void StartSimulation() {}
-    static void EndSimulation() {}
-    static void StartFlexSimulation() {}
-    static void EndFlexSimulation() {}
-    static void StartRCasSimulation() {}
-    static void EndRCasSimulation() {}
-    static void DisplayStats(bool compute = true, unsigned xpos = 50, unsigned ypos = 50, tColour* inColor = NULL) {}
-    static void ResetPeakTimes() {}
-};
+        SimStats() {}
+        ~SimStats() {}
+        static void StartDetectCollision() {}
+        static void EndDetectCollision() {}
+        static void StartSolveCollision() {}
+        static void EndSolveCollision() {}
+        static void StartSimulation() {}
+        static void EndSimulation() {}
+        static void StartFlexSimulation() {}
+        static void EndFlexSimulation() {}
+        static void StartRCasSimulation() {}
+        static void EndRCasSimulation() {}
+        static void DisplayStats(bool compute = true, unsigned xpos = 50, unsigned ypos = 50, tColour* inColor = NULL) {}
+        static void ResetPeakTimes() {}
+    };
 
 #endif // USE_SIMSTATS
 

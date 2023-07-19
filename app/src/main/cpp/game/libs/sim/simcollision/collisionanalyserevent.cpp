@@ -1,17 +1,15 @@
-#include "simcollision\collisionanalyserevent.hpp"
+#include "simcollision/collisionanalyserevent.hpp"
 
-namespace sim
-{
+namespace sim {
 
-CollisionAnalyserEvent& CollisionAnalyserEvent::operator=(const CollisionAnalyserEvent& rhs)
-{
-    if(this == &rhs)
+    CollisionAnalyserEvent &CollisionAnalyserEvent::operator=(const CollisionAnalyserEvent &rhs) {
+        if (this == &rhs)
+            return *this;
+
+        mEvent = rhs.mEvent;
+        mInfo = rhs.mInfo;
+
         return *this;
-    
-    mEvent = rhs.mEvent;
-    mInfo = rhs.mInfo;
-    
-    return *this;
-}
+    }
 
 }

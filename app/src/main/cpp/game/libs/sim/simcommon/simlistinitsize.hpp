@@ -10,19 +10,18 @@ In order to prevent that, the user can customize the initial size of these
 lists so that the resize request will be minimal or even inexistant.
 */
 
-namespace sim
-{
+namespace sim {
 
-const int CollisionAreaListSize           = 37;
-const int CollisionObjectListSize         = 48;
-const int CollisionObjectPairListSize     = 256;
-const int CollisionListSize               = 128;
+    const int CollisionAreaListSize = 37;
+    const int CollisionObjectListSize = 48;
+    const int CollisionObjectPairListSize = 256;
+    const int CollisionListSize = 128;
 
-const int CollisionAnalyserDataListSize   = 40;
-const int CollisionAnalyserEventListSize  = 10;
+    const int CollisionAnalyserDataListSize = 40;
+    const int CollisionAnalyserEventListSize = 10;
 
-const int PhysicsObjectListSize           = 10;
-const int SimulatedObjectListSize         = 512;
+    const int PhysicsObjectListSize = 10;
+    const int SimulatedObjectListSize = 512;
 
 } // sim
 

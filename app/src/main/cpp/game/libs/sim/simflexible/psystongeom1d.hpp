@@ -6,36 +6,41 @@
 
 class tGeometry;
 
-namespace sim
-{
+namespace sim {
 
-   class ParticleSystemOnGeom1D
-: public ParticleSystem 
-{
-public:
-   ParticleSystemOnGeom1D(tGeometry* g);
-   virtual ~ParticleSystemOnGeom1D();
+    class ParticleSystemOnGeom1D
+            : public ParticleSystem {
+    public:
+        ParticleSystemOnGeom1D(tGeometry *g);
 
-   void BuildConditions();
-   virtual void Display();
-   virtual void PreDisplay();
-   virtual void PreStepModification();
+        virtual ~ParticleSystemOnGeom1D();
 
-   virtual void StartIntermediateParticle() { }
-   virtual bool GetIntermediateParticle(float pos[]) { return false; }
-   virtual bool NeighborParticle(int i, int j) const { return false; }
+        void BuildConditions();
 
-protected:
-   void CreateVertexMapList(rmt::Vector* pos);
-   void CreateLineList();
+        virtual void Display();
 
-   tGeometry* tgeom;
-   unsigned* mapPtoVL;
+        virtual void PreDisplay();
 
-   unsigned nLines;
-   unsigned* lineMap;
-   float* lineLength;
-};
+        virtual void PreStepModification();
+
+        virtual void StartIntermediateParticle() {}
+
+        virtual bool GetIntermediateParticle(float pos[]) { return false; }
+
+        virtual bool NeighborParticle(int i, int j) const { return false; }
+
+    protected:
+        void CreateVertexMapList(rmt::Vector *pos);
+
+        void CreateLineList();
+
+        tGeometry *tgeom;
+        unsigned *mapPtoVL;
+
+        unsigned nLines;
+        unsigned *lineMap;
+        float *lineLength;
+    };
 
 } // sim
 

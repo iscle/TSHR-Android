@@ -35,159 +35,176 @@ used in the program don't have to be adapted by the programmer.
 #include <simcommon/tlist.hpp>
 
 
-namespace sim
-{
+namespace sim {
 
-class SimWind;
+    class SimWind;
 
-class SimUnits
-{
-public:
-    virtual ~SimUnits();
-    
-    virtual void UpdateUnits() {}
-    
-    static void Initialize();
-    static bool UnitSet() { return sUnitSet; }
-    static void Reset();
-    
-protected:
-    SimUnits(); // this class can't be instantiate by itself
-    
-    static bool  sUnitSet;
-    static float sL;  // length scale
-    static float sM;  // mass scale
-    static float sT;  // time scale
-    
-    static TList<SimUnits*>* sList;
-    
-};
+    class SimUnits {
+    public:
+        virtual ~SimUnits();
+
+        virtual void UpdateUnits() {}
+
+        static void Initialize();
+
+        static bool UnitSet() { return sUnitSet; }
+
+        static void Reset();
+
+    protected:
+        SimUnits(); // this class can't be instantiate by itself
+
+        static bool sUnitSet;
+        static float sL;  // length scale
+        static float sM;  // mass scale
+        static float sT;  // time scale
+
+        static TList<SimUnits *> *sList;
+
+    };
 
 //
 //
 //
 
-class SimulatedObject;
+    class SimulatedObject;
 
-class SimEnvironment
-    : public tEntity, 
-    protected SimUnits
-{
-public:
-    SimEnvironment();
-    
-    // collision distance is static
-    static float CollisionDistanceCGS()  { return sCollisionDistanceCGS; }
-    static float CollisionDistance()     { return sCollisionDistance; }
-    static void SetCollisionDistanceCGS(float d);
-    
-    void SetGravityCGS(float gx, float gy, float gz);
-    void SetViscosityCGS(float v);
-    const rmt::Vector& GravityCGS()  const { return mGravityCGS; }
-    const rmt::Vector& Gravity()     const { return mGravity; }
-    float GravityNorm()              const { return mGravityNorm; }
-    
-    void SetWind(SimWind* inWind);
-    SimWind* Wind()                  const { return mSimWind; }
-    float Viscosity()                const { return mViscosity; }
-    
-    void Update(float inDt_sec);
-    SimEnvironment & operator = (const SimEnvironment &in_env )
-    {
-        mGravityCGS           = in_env.mGravityCGS;      
-        mGravity              = in_env.mGravity;         
-        mGravityNorm          = in_env.mGravityNorm;     
-        mViscosityCGS         = in_env.mViscosityCGS;    
-        mViscosity            = in_env.mViscosity;       
-        
-        SetWind( in_env.Wind());
-        return *this;
-    }
+    class SimEnvironment
+            : public tEntity,
+              protected SimUnits {
+    public:
+        SimEnvironment();
 
-    static SimEnvironment* GetDefaultSimEnvironment();
-    static SimEnvironment* GetCurrentDefaultSimEnvironment() { return sDefaultSimEnvironment; }
-    
+        // collision distance is static
+        static float CollisionDistanceCGS() { return sCollisionDistanceCGS; }
+
+        static float CollisionDistance() { return sCollisionDistance; }
+
+        static void SetCollisionDistanceCGS(float d);
+
+        void SetGravityCGS(float gx, float gy, float gz);
+
+        void SetViscosityCGS(float v);
+
+        const rmt::Vector &GravityCGS() const { return mGravityCGS; }
+
+        const rmt::Vector &Gravity() const { return mGravity; }
+
+        float GravityNorm() const { return mGravityNorm; }
+
+        void SetWind(SimWind *inWind);
+
+        SimWind *Wind() const { return mSimWind; }
+
+        float Viscosity() const { return mViscosity; }
+
+        void Update(float inDt_sec);
+
+        SimEnvironment &operator=(const SimEnvironment &in_env) {
+            mGravityCGS = in_env.mGravityCGS;
+            mGravity = in_env.mGravity;
+            mGravityNorm = in_env.mGravityNorm;
+            mViscosityCGS = in_env.mViscosityCGS;
+            mViscosity = in_env.mViscosity;
+
+            SetWind(in_env.Wind());
+            return *this;
+        }
+
+        static SimEnvironment *GetDefaultSimEnvironment();
+
+        static SimEnvironment *GetCurrentDefaultSimEnvironment() { return sDefaultSimEnvironment; }
+
 #ifndef RAD_RELEASE
-    static TList<SimulatedObject*>* sListOfActiveSimulatedObject;
-    static void AddObject(SimulatedObject* inObject) { sListOfActiveSimulatedObject->Add(inObject); }
-    static void RemoveObject(SimulatedObject* inObject) { sListOfActiveSimulatedObject->Remove(inObject); }
+        static TList<SimulatedObject *> *sListOfActiveSimulatedObject;
+
+        static void AddObject(SimulatedObject *inObject) {
+            sListOfActiveSimulatedObject->Add(inObject);
+        }
+
+        static void RemoveObject(SimulatedObject *inObject) {
+            sListOfActiveSimulatedObject->Remove(inObject);
+        }
+
 #else
-    static void AddObject(SimulatedObject* inObject) { }
-    static void RemoveObject(SimulatedObject* inObject) { }
+        static void AddObject(SimulatedObject* inObject) { }
+        static void RemoveObject(SimulatedObject* inObject) { }
 #endif
 
-protected:
+    protected:
 
-    virtual ~SimEnvironment();
+        virtual ~SimEnvironment();
 
-    virtual void UpdateUnits();
-    
-    rmt::Vector mGravityCGS;      // gravity
-    rmt::Vector mGravity;         // gravity, gram*cm / sec^2
-    float mGravityNorm;     
-    
-    float mViscosityCGS;          // ambiant viscosity, gram / sec / cm^2
-    float mViscosity;             // 
-    SimWind* mSimWind;
-    
-    static float sCollisionDistanceCGS;
-    static float sCollisionDistance;
-    
-    static SimEnvironment* sDefaultSimEnvironment;
-};
+        virtual void UpdateUnits();
 
-//
-//
-//
+        rmt::Vector mGravityCGS;      // gravity
+        rmt::Vector mGravity;         // gravity, gram*cm / sec^2
+        float mGravityNorm;
 
-class SimCGSValue
-    : protected SimUnits
-{
-public:
-    virtual void SetValueCGS(float f) = 0;
-    virtual float ValueCGS() const { return mValueCGS; }
-    virtual float Value() const { return mValue; }
-    
-protected:
-    SimCGSValue() {}
-    virtual ~SimCGSValue() {}
-    
-    float mValue;
-    float mValueCGS;  // gram / cm^3
-};
+        float mViscosityCGS;          // ambiant viscosity, gram / sec / cm^2
+        float mViscosity;             //
+        SimWind *mSimWind;
+
+        static float sCollisionDistanceCGS;
+        static float sCollisionDistance;
+
+        static SimEnvironment *sDefaultSimEnvironment;
+    };
 
 //
+//
+//
 
-class SimTime
-    : public SimCGSValue
-{
-public:
-    SimTime(float r=0);
-    void SetValueCGS(float t);
-};
+    class SimCGSValue
+            : protected SimUnits {
+    public:
+        virtual void SetValueCGS(float f) = 0;
+
+        virtual float ValueCGS() const { return mValueCGS; }
+
+        virtual float Value() const { return mValue; }
+
+    protected:
+        SimCGSValue() {}
+
+        virtual ~SimCGSValue() {}
+
+        float mValue;
+        float mValueCGS;  // gram / cm^3
+    };
 
 //
 
-class SimLength
-    : public SimCGSValue
-{
-public:
-    SimLength(float r=0);
-    void SetValueCGS(float t);
-};
+    class SimTime
+            : public SimCGSValue {
+    public:
+        SimTime(float r = 0);
+
+        void SetValueCGS(float t);
+    };
 
 //
 
-class SimSpeed
-    : public SimCGSValue
-{
-public:
-    SimSpeed(float r=0);
-    void SetValueCGS(float t);
-};
+    class SimLength
+            : public SimCGSValue {
+    public:
+        SimLength(float r = 0);
+
+        void SetValueCGS(float t);
+    };
+
+//
+
+    class SimSpeed
+            : public SimCGSValue {
+    public:
+        SimSpeed(float r = 0);
+
+        void SetValueCGS(float t);
+    };
 
 // cm/sec is not intuitive so this function converts km/hour to cm/sec
-inline float KmHourToCmSec(float inKmHour) { return inKmHour * 27.7778f; }
+    inline float KmHourToCmSec(float inKmHour) { return inKmHour * 27.7778f; }
 
 } // sim
 

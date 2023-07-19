@@ -1,30 +1,27 @@
 #include "simflexible/flexiblejointobject.hpp"
 
-namespace sim
-{
+namespace sim {
 
-FlexibleJointObject::FlexibleJointObject(FlexJointModifier* inFlexJointModifier, PhysicsProperties* inProperties)
-    : FlexibleObject(inProperties),
-    mFlexJointModifier(inFlexJointModifier)
-{
-    rAssert(mFlexJointModifier);
-    mFlexJointModifier->AddRef();
-    
-    SetUID(mFlexJointModifier->GetUID());
-    
-    mPsyst = mFlexJointModifier->GetParticleSystem();
-    //mPsyst->mPhysicsProperties = mPhysicsProperties; to set in simstate
-}
+    FlexibleJointObject::FlexibleJointObject(FlexJointModifier *inFlexJointModifier,
+                                             PhysicsProperties *inProperties)
+            : FlexibleObject(inProperties),
+              mFlexJointModifier(inFlexJointModifier) {
+        rAssert(mFlexJointModifier);
+        mFlexJointModifier->AddRef();
 
-FlexibleJointObject::~FlexibleJointObject()
-{
-    mFlexJointModifier->Release();
-    mPsyst = NULL;
-}
+        SetUID(mFlexJointModifier->GetUID());
 
-void FlexibleJointObject::SetSimState(SimState *inSimState)
-{
-    SimulatedObject::SetSimState(inSimState);
-}
+        mPsyst = mFlexJointModifier->GetParticleSystem();
+        //mPsyst->mPhysicsProperties = mPhysicsProperties; to set in simstate
+    }
+
+    FlexibleJointObject::~FlexibleJointObject() {
+        mFlexJointModifier->Release();
+        mPsyst = NULL;
+    }
+
+    void FlexibleJointObject::SetSimState(SimState *inSimState) {
+        SimulatedObject::SetSimState(inSimState);
+    }
 
 } // sim

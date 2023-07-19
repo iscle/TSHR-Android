@@ -61,7 +61,7 @@ SimStateFlexible* SimStateFlexible::CreateSimStateFlexible(tUID inUid, SimStateA
     
     SimStateFlexible* simState = new SimStateFlexible();
     
-    if (simState == NULL )
+    if (simState == NULL)
     {
         return NULL;
     }
@@ -102,17 +102,17 @@ SimStateFlexible* SimStateFlexible::CreateManSimStateFlexible(int m, int n, floa
     ParticleSystem *psyst = NULL;
     float sphereRadius = 0;
     
-    if( m==0 && n==0 )
+    if(m==0 && n==0)
     {
         return NULL;
     }
-    else if ( m!=0 && n!=0 )
+    else if (m!=0 && n!=0)
     {
-        if( inType == 1 )
+        if(inType == 1)
             solverType = eLargeStepSolver;
-        else if( inType == 2 )
+        else if(inType == 2)
             solverType = eSemiImplicitSolver2D;
-        else if( inType == 3 )
+        else if(inType == 3)
             solverType = eKinematicSolver;
         else
         {
@@ -127,36 +127,36 @@ SimStateFlexible* SimStateFlexible::CreateManSimStateFlexible(int m, int n, floa
     }
     else if (m==0)
     {
-        if( inType == 1 )
+        if(inType == 1)
             solverType = eLargeStepSolver;
-        else if( inType == 2 )
+        else if(inType == 2)
             solverType = eSemiImplicitSolver1D;
-        else if( inType == 3 )
+        else if(inType == 3)
             solverType = eKinematicSolver;
         else
         {
             rAssert(0);
             solverType = eSemiImplicitSolver1D;
         }
-        psyst = new ParticleSystem1D( n, size);
+        psyst = new ParticleSystem1D(n, size);
         psyst->SetParticleSystemSolver(solverType);//eSemiImplicitSolver1D, eSemiImplicitSolver2D
         
         sphereRadius = n*size;
     }
     else 
     {
-        if( inType == 1 )
+        if(inType == 1)
             solverType = eLargeStepSolver;
-        else if( inType == 2 )
+        else if(inType == 2)
             solverType = eSemiImplicitSolver1D;
-        else if( inType == 3 )
+        else if(inType == 3)
             solverType = eKinematicSolver;
         else
         {
             rAssert(0);
             solverType = eSemiImplicitSolver1D;
         }
-        psyst = new ParticleSystem1D( m, size);
+        psyst = new ParticleSystem1D(m, size);
         psyst->SetParticleSystemSolver(solverType);//eSemiImplicitSolver1D, eSemiImplicitSolver2D
         
         sphereRadius = m*size;
@@ -189,7 +189,7 @@ SimStateFlexible* SimStateFlexible::CreateManSimStateFlexible(int m, int n, floa
     }
     
     char name[128];
-    sprintf( name, "flexible %s", (solverType == eLargeStepSolver)?"LStep":"SemiI");
+    sprintf(name, "flexible %s", (solverType == eLargeStepSolver)?"LStep":"SemiI");
     
     CollisionObject* collObj = new CollisionObject(bbox);
     collObj->SetName(name);
@@ -227,7 +227,7 @@ void SimStateFlexible::SetTransform(const rmt::Matrix& inTransform, float dt)
     
     if (mObjectMoving)
     {
-        rAssert (Fabs(mScale - ComputeScaleFromMatrix(inTransform))/mScale < MILLI_EPS);
+        rAssert (Fabs(mScale - ComputeScaleFromMatrix(inTransform))/mScale <MILLI_EPS);
         
         if (dt != 0)
         {
@@ -268,7 +268,7 @@ const rmt::Matrix& SimStateFlexible::GetTransform(int inIndex) const
     // this method is dangerous to use since the dame temp matrix might be used
     // more than once in the same equation... the alternative is to allocate an array of matrix
     // with a size = nb of particle.
-    if (inIndex >= 0)
+    if (inIndex>= 0)
     {
         sTmpMatrix.Row(3) = ((FlexibleObject*) mSimulatedObject)->ParticlePosition(inIndex);
         return sTmpMatrix;
@@ -279,7 +279,7 @@ const rmt::Matrix& SimStateFlexible::GetTransform(int inIndex) const
 
 const rmt::Vector& SimStateFlexible::GetPosition(int inIndex) const
 {
-    if (inIndex >= 0)
+    if (inIndex>= 0)
     {
         return ((FlexibleObject*) mSimulatedObject)->ParticlePosition(inIndex);
     }
@@ -289,7 +289,7 @@ const rmt::Vector& SimStateFlexible::GetPosition(int inIndex) const
 
 void SimStateFlexible::GetVelocity(const rmt::Vector& inPosition, rmt::Vector& oVelocity, int inIndex)
 {
-    if (inIndex >= 0)
+    if (inIndex>= 0)
     {
         oVelocity = GetFlexibleObject()->ParticleVelocity(inIndex);
     }
@@ -304,7 +304,7 @@ void SimStateFlexible::SetHasMoved(bool in_hasMoved)
     if (in_hasMoved && GetCollisionObject())
     {
         float volSphereRadius = GetCollisionObject()->GetCollisionVolume()->mSphereRadius;
-        if ( volSphereRadius < mSphereRadius )
+        if (volSphereRadius <mSphereRadius)
         {
             GetCollisionObject()->GetCollisionVolume()->mSphereRadius = mSphereRadius;
             GetCollisionObject()->GetCollisionVolume()->mBoxSize.Set(mSphereRadius, mSphereRadius, mSphereRadius);
@@ -323,7 +323,7 @@ void SimStateFlexible::DebugDisplay(int debugIndex)
     
     tColour colour(0, 255, 0);
     static float speedScale = 10.0f;
-    if ( debugIndex & 1 )
+    if (debugIndex & 1)
     {
         for (int i=0; i<mSimulatedObject->GetNumSubObj(); i++)
         {
