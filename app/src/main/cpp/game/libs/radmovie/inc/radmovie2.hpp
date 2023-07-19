@@ -137,7 +137,7 @@ struct IRadMoviePlayer2 : public IRefCount {
     //      * Audio Secondary Buffer:   This can be quite small (you'll hear skips if it's too small)
     //
 
-#if (defined RAD_XBOX || defined RAD_WIN32 || defined RAD_MOVIEPLAYER_USE_BINK)
+#if defined RAD_XBOX || defined RAD_WIN32 || defined RAD_MOVIEPLAYER_USE_BINK || defined(RAD_ANDROID)
 
     virtual void Initialize(
         IRadMovieRenderLoop * pIRadMovieRenderLoop, 
